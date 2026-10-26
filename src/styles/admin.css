@@ -1,3 +1,46 @@
+.admin-home-images-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.admin-home-image-editor {
+  min-width: 0;
+  padding: 24px;
+}
+.admin-home-image-heading h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.admin-home-image-heading p {
+  color: #859080;
+  line-height: 1.8;
+}
+.admin-home-image-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  background: #f5f5f7;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0 12px;
+}
+.admin-home-image-preview img {
+  object-fit: contain;
+  padding: 20px;
+}
+.admin-home-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+@media (max-width: 800px) {
+  .admin-home-images-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-app {
   --admin-border: #e7e9e4;
   --admin-text: #272c27;

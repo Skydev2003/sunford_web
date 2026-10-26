@@ -51,3 +51,12 @@ model AdminUser {
 
   @@map("admin_users")
 }
+
+model HomepageImage {
+  slot      String   @id
+  image     String
+  updatedAt DateTime @updatedAt
+
+  @@index([image])
+  @@map("homepage_images")
+}

@@ -4,36 +4,47 @@ import { ProductImage } from "@/components/ui/product-image";
 import { importedPages, getContentPage } from "@/features/content/server/content-repository";
 import type { Product } from "@/features/catalog/types";
 import { VideoGallery } from "@/features/content/components/video-gallery";
+import { defaultHomeImages, type HomeImages } from "../data/image-slots";
 
-export function SourceShowcase({ products }: { products: Product[] }) {
+export function SourceShowcase({
+  products,
+  images = {},
+}: {
+  products: Product[];
+  images?: HomeImages;
+}) {
+  const defaults = defaultHomeImages(
+    products,
+    getContentPage("/applications-and-softwares")?.images[0],
+  );
   const tiles = [
     {
       name: "เครื่องชั่งดิจิทัล",
       english: "DIGITAL SCALE",
       description: "ความแม่นยำที่พร้อมสำหรับทุกงาน ตั้งแต่บ้าน ร้านค้า ไปจนถึงโรงงาน",
       href: "/Product/Digital-weighing",
-      image: products.find((item) => item.id === "feh5ks")?.image,
+      image: images.digital ?? defaults.digital,
     },
     {
       name: "เครื่องชั่งอัจฉริยะ",
       english: "SMART SCALE",
       description: "เชื่อมต่อข้อมูลและอุปกรณ์ ให้การทำงานในยุคดิจิทัลคล่องตัวยิ่งขึ้น",
       href: "/Product/MES",
-      image: products.find((item) => item.id === "rls1100")?.image,
+      image: images.smart ?? defaults.smart,
     },
     {
       name: "อุปกรณ์เสริม",
       english: "ACCESSORIES",
       description: "เครื่องพิมพ์ จอแสดงผล และระบบ POS ที่เติมเต็มงานชั่งของคุณ",
       href: "/product/อุปกรณ์ประกอบเครื่องชั่ง",
-      image: products.find((item) => /^LP50|^LP51/i.test(item.name))?.image,
+      image: images.accessories ?? defaults.accessories,
     },
     {
       name: "แอปพลิเคชันและซอฟต์แวร์",
       english: "APPLICATIONS & SOFTWARE",
       description: "ติดตาม วิเคราะห์ และจัดการข้อมูล เพื่อการตัดสินใจที่แม่นยำ",
       href: "/applications-and-softwares",
-      image: getContentPage("/applications-and-softwares")?.images[0],
+      image: images.software ?? defaults.software,
     },
   ];
   return (

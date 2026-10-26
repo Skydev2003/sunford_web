@@ -20,7 +20,12 @@ export function isAllowedProductImage(image: string) {
 }
 export async function removeUnusedImage(supabase: SupabaseClient, image: string) {
   const path = storageImagePath(image);
-  if (!path || (await getPrisma().product.count({ where: { image } }))) return;
+  if (
+    !path ||
+    (await getPrisma().product.count({ where: { image } })) ||
+    (await getPrisma().homepageImage.count({ where: { image } }))
+  )
+    return;
   // Never change database state when Storage cleanup fails; retained files can be cleaned later.
   const { error } = await supabase.storage.from(PRODUCT_IMAGE_BUCKET).remove([path]);
   if (error) throw new Error("Storage cleanup failed.");
