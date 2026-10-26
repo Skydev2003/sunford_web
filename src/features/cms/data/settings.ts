@@ -23,6 +23,7 @@ export const defaultSite: SiteSettings = {
   phoneHref: sunford.phoneHref,
   email: sunford.email,
   line: sunford.line,
+  messenger: sunford.messenger,
 };
 export const linkFields: Field[] = [
   { key: "label", label: "ข้อความ" },
@@ -74,6 +75,11 @@ export const siteFields: Field[] = [
   { key: "phoneHref", label: "ลิงก์โทรศัพท์ เช่น tel:034276999" },
   { key: "email", label: "อีเมล" },
   { key: "line", label: "ลิงก์ LINE" },
+  {
+    key: "messenger",
+    label: "ลิงก์แชท Facebook Messenger",
+    hint: "เช่น https://m.me/sunfordthai · เว้นว่างเพื่อไม่แสดงช่องทางนี้",
+  },
 ];
 export const spotlightDefaults = {
   title: "ชั่ง. พิมพ์. จัดการ.",

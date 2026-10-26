@@ -12,6 +12,8 @@ export const sunford = {
   mes: "/solution/mes",
   catalogue: "/products",
   line: "https://line.me/R/ti/p/@sunford",
+  // Verified against the contact widget on the original SUNFORD website.
+  messenger: "https://m.me/sunfordthai",
   phone: "03-427-6999",
   phoneHref: "tel:034276999",
   email: "info@sunford.co.th",

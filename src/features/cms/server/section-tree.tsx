@@ -8,6 +8,10 @@ function key(type: string, value: string) {
   for (const char of `${type}:${value}`) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
   return `${type}_${(hash >>> 0).toString(16)}`;
 }
+export function sectionValue(data: CmsData, type: "text" | "image" | "href", original: string) {
+  const value = data[key(type, original)];
+  return typeof value === "string" ? value : original;
+}
 export function sectionFields(tree: ReactNode) {
   const fields = new Map<string, Field>();
   const data: CmsData = {};
