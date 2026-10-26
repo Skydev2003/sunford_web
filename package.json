@@ -21,7 +21,8 @@
     "admin:create": "node scripts/admin-create.mjs",
     "test:admin": "node scripts/test-admin.mjs",
     "uat:local": "node scripts/uat-local.mjs",
-    "test:uat": "node --test tests/uat/*.test.mjs"
+    "test:uat": "node --test tests/uat/*.test.mjs",
+    "render:build": "node scripts/render-build.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
