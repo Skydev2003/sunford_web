@@ -1,30 +1,44 @@
 "use client";
-import { ArrowUpRight, CookingPot, Factory, Monitor, ScanLine, Store } from "lucide-react";
-import { categories } from "../types";
+import { Monitor, Plug, Scale, ScanLine } from "lucide-react";
 import { useCatalogStore } from "@/stores/catalog-store";
-const icons = [Store, Factory, CookingPot, ScanLine, Monitor];
+import { sunford } from "@/features/home/data/brand";
 
 export function CategoryNavigation() {
-  const setCategory = useCatalogStore((s) => s.setCategory);
+  const setCategory = useCatalogStore((state) => state.setCategory);
   return (
-    <div className="category-navigation container">
+    <nav className="category-navigation container" aria-label="กลุ่มผลิตภัณฑ์ Sunford">
       <div className="category-intro">
-        <span>FIND YOUR FIT</span>
-        <strong>แม่นยำ ในแบบคุณ</strong>
+        <span>OUR PRODUCTS</span>
+        <strong>ครบทุกงานชั่ง</strong>
       </div>
-      {categories.slice(1).map((category, index) => {
-        const Icon = icons[index];
-        return (
-          <a key={category.id} href="#products" onClick={() => setCategory(category.id)}>
-            <Icon size={27} strokeWidth={1.2} />
-            <div>
-              <strong>{category.label}</strong>
-              <span>{category.english}</span>
-            </div>
-            <ArrowUpRight className="category-arrow" size={14} />
-          </a>
-        );
-      })}
-    </div>
+      <a href="#products" onClick={() => setCategory("all")}>
+        <Scale size={27} strokeWidth={1.3} />
+        <div>
+          <strong>เครื่องชั่งดิจิทัล</strong>
+          <span>Digital scale</span>
+        </div>
+      </a>
+      <a href="#products" onClick={() => setCategory("smart")}>
+        <ScanLine size={27} strokeWidth={1.3} />
+        <div>
+          <strong>เครื่องชั่งอัจฉริยะ</strong>
+          <span>Smart scale</span>
+        </div>
+      </a>
+      <a href={sunford.accessories}>
+        <Plug size={27} strokeWidth={1.3} />
+        <div>
+          <strong>อุปกรณ์เสริม</strong>
+          <span>Accessories</span>
+        </div>
+      </a>
+      <a href={sunford.software}>
+        <Monitor size={27} strokeWidth={1.3} />
+        <div>
+          <strong>แอปพลิเคชันและซอฟต์แวร์</strong>
+          <span>Applications & software</span>
+        </div>
+      </a>
+    </nav>
   );
 }

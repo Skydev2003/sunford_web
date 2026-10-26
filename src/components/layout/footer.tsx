@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Phone } from "lucide-react";
 import { cacheLife } from "next/cache";
+import { sunford } from "@/features/home/data/brand";
 
 export async function Footer() {
   "use cache";
@@ -18,12 +19,7 @@ export async function Footer() {
               เริ่มต้นด้วยการเลือกที่ใช่
             </h2>
           </div>
-          <a
-            href="https://line.me/R/ti/p/@sunford"
-            className="button button-white"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href={sunford.line} className="button button-white" target="_blank" rel="noreferrer">
             คุยกับผู้เชี่ยวชาญ <ArrowUpRight size={18} />
           </a>
         </div>
@@ -38,20 +34,37 @@ export async function Footer() {
             <br />
             Precision you can trust.
           </p>
-          <a href="tel:034276999">
-            <Phone size={15} /> 034-276-999
+          <a href={sunford.phoneHref}>
+            <Phone size={15} /> {sunford.phone}
           </a>
+          <a href={`mailto:${sunford.email}`}>{sunford.email}</a>
+          <p className="footer-hours">
+            {sunford.hours}
+            <br />
+            หยุดวันอาทิตย์และวันหยุดราชการ
+          </p>
         </div>
         <div>
           <h3>ผลิตภัณฑ์</h3>
           <Link href="/products">เครื่องชั่งดิจิทัล</Link>
-          <Link href="/products">เครื่องชั่งอุตสาหกรรม</Link>
+          <a href={sunford.accessories} target="_blank" rel="noreferrer">
+            อุปกรณ์เสริม
+          </a>
           <Link href="/products">ระบบ POS และอุปกรณ์</Link>
+          <a href={sunford.software} target="_blank" rel="noreferrer">
+            แอปพลิเคชันและซอฟต์แวร์
+          </a>
         </div>
         <div>
           <h3>รู้จักซันฟอร์ด</h3>
           <Link href="/#story">เรื่องราวของเรา</Link>
           <Link href="/#solutions">โซลูชันธุรกิจ</Link>
+          <a href={sunford.erp} target="_blank" rel="noreferrer">
+            ERP
+          </a>
+          <a href={sunford.mes} target="_blank" rel="noreferrer">
+            MES
+          </a>
           <a href="https://www.sunford.co" target="_blank" rel="noreferrer">
             เว็บไซต์ Sunford <ArrowUpRight size={12} />
           </a>
@@ -59,10 +72,18 @@ export async function Footer() {
         <div>
           <h3>พร้อมดูแลคุณ</h3>
           <Link href="/#support">บริการหลังการขาย</Link>
+          <a href={sunford.warranty} target="_blank" rel="noreferrer">
+            ลงทะเบียนรับประกัน
+          </a>
+          <a href={sunford.downloads} target="_blank" rel="noreferrer">
+            ดาวน์โหลดซอฟต์แวร์
+          </a>
           <a href="https://line.me/R/ti/p/@sunford" target="_blank" rel="noreferrer">
             LINE @sunford <ArrowUpRight size={12} />
           </a>
           <p className="footer-address">
+            ศูนย์บริการลูกค้าซันฟอร์ด
+            <br />
             99 หมู่ 9 ต.บางระกำ อ.บางเลน
             <br />
             จ.นครปฐม 73130

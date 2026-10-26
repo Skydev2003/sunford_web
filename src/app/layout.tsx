@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CatalogOverlays } from "@/features/catalog/components/catalog-overlays";
 import { getProducts } from "@/features/catalog/server/product-repository";
+import { getPageSearchIndex } from "@/features/content/server/content-repository";
 import "./globals.css";
 
 const sunfordFont = localFont({
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
 };
 async function Overlays() {
-  return <CatalogOverlays products={await getProducts()} />;
+  return <CatalogOverlays products={await getProducts()} pages={getPageSearchIndex()} />;
 }
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

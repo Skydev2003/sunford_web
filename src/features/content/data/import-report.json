@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-26T03:58:29.206Z",
+  "source": "https://www.sunford.co",
+  "pages": 392,
+  "products": 150,
+  "collections": 112,
+  "assets": 909,
+  "failedPages": [
+    {
+      "path": "/products/LP50",
+      "reason": "HTTP 404"
+    },
+    {
+      "path": "/products/LP51",
+      "reason": "HTTP 404"
+    },
+    {
+      "path": "/products/FCS",
+      "reason": "HTTP 404"
+    },
+    {
+      "path": "/product/POS-เชื่อมต่อเครื่องชั่ง",
+      "reason": "HTTP 404"
+    },
+    {
+      "path": "/product/เครื่องชั่ง",
+      "reason": "HTTP 404"
+    },
+    {
+      "path": "/Product/ระบบชั่งควบคุมการผลิต",
+      "reason": "HTTP 404"
+    }
+  ],
+  "missingImages": [
+    "https://rcommerce-assets-enterprise.s3.ap-southeast-1.amazonaws.com/sunford/cms/article/2025/10/2/68de1e719ce773f7c541fc90.png",
+    "https://rcommerce-assets-enterprise.s3.ap-southeast-1.amazonaws.com/sunford/cms/article/2025/10/2/68de1f6f9ce773f7c541fc98.png",
+    "https://rcommerce-assets-enterprise.s3.ap-southeast-1.amazonaws.com/sunford/cms/article/2025/10/2/68de22d99ce773f7c541fc9c.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/14/68ee04980d05663ec99cea13.png",
+    "https://rcommerce-assets-enterprise.s3.ap-southeast-1.amazonaws.com/sunford/cms/article/2025/10/2/68de359f9ce773f7c541fca4.png",
+    "https://rcommerce-assets-enterprise.s3.ap-southeast-1.amazonaws.com/sunford/cms/article/2025/10/2/68de1f149ce773f7c541fc94.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/15/68ef4e1db188e21863153052.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/15/68ef5de5b188e2186315305e.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/15/68ef5d70b188e2186315305a.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/15/68ef5e7eb188e21863153062.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/15/68ef5ec2b188e21863153066.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/15/68ef7025b188e2186315306e.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/15/68ef7442b188e21863153072.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/16/68f048e3b188e2186315307a.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/16/68f04a8cb188e21863153082.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/16/68f04d4bb188e21863153096.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/16/68f04f93b188e2186315309a.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/16/68f04b4cb188e2186315308a.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/16/68f04b9fb188e2186315308e.png",
+    "https://dl7mrzlmq0qvh.cloudfront.net/customer-sun/cms/article/2025/10/16/68f04bffb188e21863153092.png"
+  ],
+  "excludedPaths": [
+    "/signin",
+    "/forgot-password",
+    "/search",
+    "/cart",
+    "/payment",
+    "/signup",
+    "/checkout",
+    "/home-test",
+    "/Oder"
+  ],
+  "placeholderPages": ["/solution/erp"]
+}

@@ -1,16 +1,23 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { categories, type Product } from "../types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { ProductCard } from "./product-card";
+import { useState } from "react";
 
 export function ProductCatalog({
   products,
   full = false,
+  heading,
+  scoped = false,
+  headingLevel,
 }: {
   products: Product[];
   full?: boolean;
+  heading?: string;
+  scoped?: boolean;
+  headingLevel?: "h1" | "h2";
 }) {
   const category = useCatalogStore((s) => s.category);
   const query = useCatalogStore((s) => s.query);
@@ -18,27 +25,32 @@ export function ProductCatalog({
   const setQuery = useCatalogStore((s) => s.setQuery);
   const filtered = products.filter(
     (p) =>
-      (category === "all" || p.category === category) &&
+      (scoped || category === "all" || p.category === category) &&
       `${p.name} ${p.subtitle} ${p.description}`.toLowerCase().includes(query.toLowerCase().trim()),
   );
-  const visible =
+  const matching =
     !full && category === "all" && !query
       ? filtered.filter((p) => p.featured).slice(0, 3)
       : filtered;
+  const filterKey = `${category}:${query}`;
+  const [pagination, setPagination] = useState({ key: filterKey, limit: 24 });
+  const limit = pagination.key === filterKey ? pagination.limit : 24;
+  const visible = matching.slice(0, limit);
+  const Heading = headingLevel ?? (full && !scoped ? "h1" : "h2");
   return (
     <section id="products" className={`catalog-section container ${full ? "full-catalog" : ""}`}>
       <div className="section-heading">
         <div>
-          <p className="eyebrow">FIND YOUR NEXT STANDARD</p>
-          <h2>
+          <p className="eyebrow">THE SUNFORD COLLECTION</p>
+          <Heading>
             {full ? (
-              "ผลิตภัณฑ์ทั้งหมด"
+              (heading ?? "ผลิตภัณฑ์ทั้งหมด")
             ) : (
               <>
-                ออกแบบมาเพื่อ<span className="muted">ทุกความเป็นไปได้</span>
+                เลือกความแม่นยำ<span className="muted">ในแบบของคุณ.</span>
               </>
             )}
-          </h2>
+          </Heading>
         </div>
         {!full && (
           <Link href="/products" className="text-link">
@@ -47,18 +59,20 @@ export function ProductCatalog({
         )}
       </div>
       <div className="catalog-toolbar">
-        <div className="category-tabs" aria-label="กรองหมวดหมู่สินค้า">
-          {categories.map((c) => (
-            <button
-              key={c.id}
-              className={category === c.id ? "active" : ""}
-              onClick={() => setCategory(c.id)}
-              aria-pressed={category === c.id}
-            >
-              {c.label}
-            </button>
-          ))}
-        </div>
+        {!scoped && (
+          <div className="category-tabs" aria-label="กรองหมวดหมู่สินค้า">
+            {categories.map((c) => (
+              <button
+                key={c.id}
+                className={category === c.id ? "active" : ""}
+                onClick={() => setCategory(c.id)}
+                aria-pressed={category === c.id}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        )}
         {full ? (
           <label className="catalog-search">
             <Search size={16} />
@@ -69,15 +83,28 @@ export function ProductCatalog({
               aria-label="ค้นหารุ่นสินค้า"
             />
           </label>
-        ) : (
-          <SlidersHorizontal className="filter-icon" size={18} />
-        )}
+        ) : null}
       </div>
+      {full && (
+        <p className="catalog-result-count" aria-live="polite">
+          {filtered.length} ผลิตภัณฑ์
+        </p>
+      )}
       <div className="product-grid" aria-live="polite">
         {visible.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
+      {matching.length > visible.length && (
+        <div className="catalog-load-more">
+          <button
+            className="button button-outline"
+            onClick={() => setPagination({ key: filterKey, limit: limit + 24 })}
+          >
+            ดูเพิ่มเติม ({visible.length} / {matching.length})
+          </button>
+        </div>
+      )}
       {!visible.length && (
         <div className="empty-state">
           <Search size={30} />

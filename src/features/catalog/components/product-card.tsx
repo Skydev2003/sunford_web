@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ArrowUpRight, Check, Plus } from "lucide-react";
 import type { Product } from "../types";
@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
       </div>
       <Link href={`/products/${product.slug}`} className="product-card-image">
-        <Image
+        <ProductImage
           src={product.image}
           alt={`เครื่องชั่ง Sunford ${product.name}`}
           fill

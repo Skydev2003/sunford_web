@@ -16,7 +16,7 @@
   border: 0;
   background: transparent;
   outline: none;
-  font-size: 10px;
+  font-size: 13px;
 }
 .empty-state {
   padding: 60px 25px;
@@ -30,7 +30,7 @@
   font-size: 20px;
 }
 .empty-state p {
-  color: #8b9380;
+  color: var(--muted);
 }
 .not-found {
   padding-block: 120px;
