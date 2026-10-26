@@ -173,6 +173,7 @@ export const siteSchema = z.object({
   phoneHref: linkSchema,
   email: z.email(),
   line: linkSchema,
+  messenger: linkSchema.optional(),
 });
 export const navigationSchema = z.object({
   exploreLabel: text,

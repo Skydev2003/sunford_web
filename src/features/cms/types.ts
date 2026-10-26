@@ -35,6 +35,7 @@ export type SiteSettings = {
   phoneHref: string;
   email: string;
   line: string;
+  messenger?: string;
 };
 export type NavigationItem = {
   label: string;
