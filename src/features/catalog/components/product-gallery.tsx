@@ -2,8 +2,17 @@
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 
-export function ProductGallery({ images, name }: { images: string[]; name: string }) {
-  const [active, setActive] = useState(images.length > 1 ? 1 : 0);
+export function ProductGallery({
+  images,
+  name,
+  primaryImage,
+}: {
+  images: string[];
+  name: string;
+  primaryImage?: string;
+}) {
+  const initial = primaryImage ? images.indexOf(primaryImage) : -1;
+  const [active, setActive] = useState(initial >= 0 ? initial : images.length > 1 ? 1 : 0);
   return (
     <div className="product-gallery">
       <div className="detail-image">

@@ -204,8 +204,15 @@ test("create draft, validate upload, publish, edit, and delete a temporary produ
     await dialog.getByRole("button", { name: "ยืนยันลบสินค้า" }).click();
     await expect(dialog).not.toBeVisible();
     await expect(page.getByRole("row").filter({ hasText: name })).toHaveCount(0);
-    expect((await db.query("SELECT id FROM products WHERE slug=$1", [slug])).rowCount).toBe(0);
-    // Public CDN copies can outlive deletion; verify the backing object, not its cached URL.
+    expect(
+      (await db.query('SELECT id FROM products WHERE slug=$1 AND "deletedAt" IS NULL', [slug]))
+        .rowCount,
+    ).toBe(0);
+    expect(
+      (await db.query('SELECT id FROM products WHERE slug=$1 AND "deletedAt" IS NOT NULL', [slug]))
+        .rowCount,
+    ).toBe(1);
+    // Archived products retain their image for recovery; they are no longer public catalogue entries.
     expect(
       (
         await db.query("SELECT id FROM storage.objects WHERE bucket_id=$1 AND name=$2", [
@@ -213,8 +220,7 @@ test("create draft, validate upload, publish, edit, and delete a temporary produ
           imagePath,
         ])
       ).rowCount,
-    ).toBe(0);
-    imagePath = undefined;
+    ).toBe(1);
     catalogue = await (await request.get("/api/products")).json();
     expect(catalogue.products.some((p: { slug: string }) => p.slug === slug)).toBe(false);
     // Replay a valid mutation request with no cookies. Server Actions must recheck authorization.
@@ -227,7 +233,10 @@ test("create draft, validate upload, publish, edit, and delete a temporary produ
       },
       data: createRequest!.body,
     });
-    expect((await db.query("SELECT id FROM products WHERE slug=$1", [slug])).rowCount).toBe(0);
+    expect(
+      (await db.query('SELECT id FROM products WHERE slug=$1 AND "deletedAt" IS NULL', [slug]))
+        .rowCount,
+    ).toBe(0);
   } finally {
     await db.query("DELETE FROM products WHERE slug=$1", [slug]);
     if (imagePath) {

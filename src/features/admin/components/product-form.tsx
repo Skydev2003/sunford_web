@@ -110,7 +110,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
             >
               ยกเลิก
             </button>
-            <button type="submit" className="button button-red" disabled={busy || !image}>
+            <button type="submit" className="button button-red" disabled={busy}>
               <Save size={16} />
               {saving ? "กำลังบันทึก…" : "บันทึกสินค้า"}
             </button>
@@ -139,7 +139,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                     defaultValue={product?.name}
                     placeholder="เช่น WPS10KS"
                     error={fieldError("name")}
-                    maxLength={100}
+                    maxLength={300}
                     required
                     disabled={busy}
                   />
@@ -380,7 +380,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
             >
               <X size={15} /> ยกเลิก
             </button>
-            <button type="submit" className="button button-red" disabled={busy || !image}>
+            <button type="submit" className="button button-red" disabled={busy}>
               <Save size={16} />
               {saving ? "กำลังบันทึก…" : "บันทึกสินค้า"}
             </button>
@@ -418,7 +418,9 @@ function FormField({
         </small>
       )}
       {name === "slug" && !error && (
-        <small className="admin-field-hint">/products/your-product · ใช้ a-z, 0-9 และขีดกลาง</small>
+        <small className="admin-field-hint">
+          /products/your-product · ใช้ A-Z, a-z, 0-9 ขีดกลางหรือขีดล่าง
+        </small>
       )}
     </div>
   );

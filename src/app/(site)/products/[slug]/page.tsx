@@ -10,6 +10,8 @@ import { getSourceProduct } from "@/features/content/server/content-repository";
 import { ProductGallery } from "@/features/catalog/components/product-gallery";
 import { getContentPage } from "@/features/content/server/content-repository";
 import { VideoGallery } from "@/features/content/components/video-gallery";
+import { getSnapshotProducts } from "@/features/content/data/catalog-snapshot";
+import { productPresentation } from "@/features/catalog/data/product-presentation";
 
 // Resolve the product before streaming so unknown URLs retain an HTTP 404.
 // Catalogue reads remain cached; this route deliberately allows URL resolution.
@@ -35,6 +37,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const related = (await getProducts()).filter((p) => p.id !== product.id).slice(0, 3);
   const source = getSourceProduct(product.sourceId ?? product.slug);
   const sourcePage = source && getContentPage(source.path);
+  const snapshot = getSnapshotProducts().find((row) => row.id === product.id);
+  const presentation = productPresentation(product, snapshot, source);
   return (
     <main id="main-content" className="product-detail container">
       <Link href="/products" className="text-link back-link">
@@ -42,8 +46,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </Link>
       <div className="detail-grid">
         <ProductGallery
-          key={product.id}
-          images={source?.images.length ? source.images : product.image ? [product.image] : []}
+          key={`${product.id}:${product.image}`}
+          images={presentation.images}
+          primaryImage={product.image}
           name={product.name}
         />
         <div className="detail-copy">
@@ -57,17 +62,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               )}
             </p>
           ) : null}
-          {source?.descriptionHtml ? (
+          {presentation.descriptionHtml ? (
             <div
               className="product-introduction source-prose"
-              dangerouslySetInnerHTML={{ __html: source.descriptionHtml }}
+              dangerouslySetInnerHTML={{ __html: presentation.descriptionHtml }}
             />
           ) : (
             <p>{product.description}</p>
           )}
           <dl className="spec-list">
-            {source?.specifications?.length ? (
-              source.specifications.map((spec, index) => (
+            {presentation.specifications.length ? (
+              presentation.specifications.map((spec, index) => (
                 <div key={`${spec.label}-${index}`}>
                   <dt>{spec.label}</dt>
                   <dd>{spec.value}</dd>

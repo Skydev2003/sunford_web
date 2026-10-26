@@ -13,7 +13,8 @@ export function storageImagePath(image: string): string | null {
 }
 export function isAllowedProductImage(image: string) {
   return (
-    /^\/images\/products\/[a-z0-9][a-z0-9._-]*\.(png|jpe?g|webp)$/i.test(image) ||
+    image === "" ||
+    /^\/images\/(?:products|imported)\/[a-z0-9][a-z0-9._-]*\.(png|jpe?g|webp|avif)$/i.test(image) ||
     storageImagePath(image) !== null
   );
 }

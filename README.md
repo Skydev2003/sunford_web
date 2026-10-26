@@ -70,15 +70,15 @@ tests/e2e/                  # Playwright user journeys
    npm run dev
    ```
 
-Initial migration สร้างเฉพาะตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม คำสั่ง `npm run db:seed` สร้าง Prisma Client ก่อนแล้วใช้ upsert ตาม product id และจะอัปเดตรายละเอียดของ 6 รุ่นเดิม จึงควรตรวจข้อมูลก่อนรันซ้ำหลังแก้สินค้าในฐานข้อมูล
+Initial migration สร้างตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม คำสั่ง `npm run db:seed` สำรองตารางสินค้าและเพิ่มเฉพาะสินค้านำเข้าที่ยังขาดให้ครบ 150 รายการ ไม่เขียนทับข้อมูลเดิม การแก้ไข ฉบับร่าง หรือสินค้าที่ลบแล้ว
 
-เมื่อมี `DATABASE_URL` จริง repository จะรวมสินค้าที่ `published = true` จาก PostgreSQL กับ snapshot ที่นำเข้า ข้อมูล Sunford ที่นำเข้ามีลำดับความสำคัญก่อนรายการรุ่นเดียวกันใน seed หากการเชื่อมต่อล้มเหลวจะแสดง error state โดยไม่แทนที่ข้อมูลจริงด้วยข้อมูลตัวอย่าง
+เมื่อมี `DATABASE_URL` จริง repository ใช้ PostgreSQL เป็นรายการสินค้าหลัก อ่านเฉพาะ `published=true` และ `deletedAt=null` โดยแอดมินเพิ่ม แก้ไข ซ่อน และลบสินค้าได้ครบทั้ง 8 หมวด ข้อมูลนำเข้าใช้รักษารายละเอียด รูป และ URL เดิม ไม่เพิ่มสินค้าที่ถูกซ่อนหรือลบกลับมา หากไม่มีฐานข้อมูลยังดู snapshot ได้ หากตั้งค่าฐานข้อมูลแล้วเชื่อมต่อล้มเหลวจะแสดง error state
 
 ข้อมูลสินค้าสาธารณะถูก cache 1 ชั่วโมงด้วย Next.js Cache Components การแก้ผ่านหน้าแอดมิน invalidate tag และหน้าที่เกี่ยวข้องทันที หากแก้ฐานข้อมูลโดยตรงให้รอ cache หมดอายุหรือ deploy ใหม่ หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่
 
 `SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` ใช้สำหรับ Supabase Auth และการอัปโหลด Storage แบบมีสิทธิ์ผู้ใช้ รูปสินค้าเดิมยังอยู่ใน `public/images` ส่วนรูปใหม่จากแอดมินเก็บใน bucket `product-images`
 
-**สถานะตรวจสอบล่าสุด:** เชื่อมต่อ Supabase จริงผ่านทั้ง `DATABASE_URL` และ `DIRECT_URL` สำเร็จแล้ว ตาราง `products` และ initial migration มีอยู่ครบ ไม่มี migration ค้าง รัน seed สำเร็จ และทดสอบอ่านสินค้าที่เผยแพร่ครบ 6 รุ่นผ่าน Prisma Client ของแอปโดยใช้ `DATABASE_URL` แล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
+**สถานะตรวจสอบล่าสุด:** รัน migration และนำเข้าสินค้าครบ 150 รายการแล้ว ตรวจว่าข้อมูลทุกช่องและ timestamps ของ 6 รายการเดิมไม่เปลี่ยน และข้อมูลสาธารณะของทั้ง 150 รายการยังตรงกับต้นฉบับ ทดสอบ CRUD ครบ 8 หมวดใน transaction ที่ rollback ทั้งหมดแล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
 
 ## คำสั่งพัฒนา
 

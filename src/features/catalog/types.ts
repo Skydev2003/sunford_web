@@ -28,4 +28,5 @@ export type Product = {
   sourceId?: string;
   sourceUrl?: string;
   price?: number | null;
+  imageOverridden?: boolean;
 };
