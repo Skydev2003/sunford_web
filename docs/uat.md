@@ -1,6 +1,6 @@
-# UAT ชั่วคราวบนเครื่องทีม + nip.io
+# UAT บนคลาวด์และ LAN
 
-ใช้เครื่องพัฒนาเป็น UAT ใน LAN ก่อน ตามข้อตกลงตอนนี้ยังไม่มีเซิร์ฟเวอร์ และใช้ Supabase project ปัจจุบันสำหรับ UAT ไม่มี Render/VPS หรือบริการโฮสต์ถูกสร้างขึ้น
+สำหรับ UAT ที่ไม่ต้องเปิดเครื่องตัวเอง ใช้ [Render Free ตามคู่มือนี้](render.md) โดย deploy จาก branch `uat` หลัง CI ผ่าน และใช้ Supabase project ปัจจุบัน ส่วนวิธี LAN ด้านล่างยังใช้ทดสอบชั่วคราวได้ ไฟล์ config เพียงอย่างเดียวยังไม่สร้าง hosting ต้องตั้งค่า Render ครั้งแรกด้วย
 
 `nip.io` เป็น DNS ที่อ่าน IP จากชื่อโดเมน ไม่ได้ให้พื้นที่รัน Next.js ตัวอย่าง `64.176.22.9.nip.io` บนเว็บไซต์ nip.io เป็นเว็บของผู้ให้บริการเอง จึงใช้เป็นเซิร์ฟเวอร์ Sunford ไม่ได้
 
@@ -102,8 +102,8 @@ npm run uat:local
 
 บันทึก commit SHA, ผู้ทดสอบ, วันที่, อุปกรณ์/เบราว์เซอร์, ผล Pass/Fail และภาพปัญหาใน PR/issue ของทีม หลังทดสอบให้ลบเฉพาะข้อมูลที่สร้างสำหรับการทดสอบ อย่ารัน seed ทุกครั้งที่อัปเดตโค้ด เพราะจะเขียนทับรายละเอียดสินค้าเดิมตามไฟล์ seed
 
-## เมื่อมีเซิร์ฟเวอร์ในอนาคต
+## Hosting บนคลาวด์
 
-ใช้ branch `uat` และ CI เดิมต่อได้ แต่ต้องเพิ่ม deployment job/hosting และเปลี่ยน hostname ให้ชี้ IP ที่เซิร์ฟเวอร์นั้นเข้าถึงได้จริง พร้อมตั้ง HTTPS ก่อนใช้ `next start` แบบ production เนื่องจากระบบล็อกอิน production ใช้ Secure cookies
+`render.yaml` ใช้ branch `uat` และ CI เดิมต่อได้ พร้อม HTTPS URL ของ Render ดูการตั้งค่า Environment และ auto-deploy ใน [render.md](render.md) ระบบล็อกอิน production ใช้ Secure cookies จึงต้องเปิดผ่าน HTTPS
 
 ดูพฤติกรรม DNS และข้อกำหนดการออก TLS ได้จาก [nip.io](https://nip.io/) และ [Next.js self-hosting](https://nextjs.org/docs/app/guides/self-hosting)

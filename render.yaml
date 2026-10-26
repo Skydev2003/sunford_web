@@ -1,0 +1,27 @@
+# Select branch uat when creating the Blueprint in Render.
+services:
+  - type: web
+    name: sunford-uat
+    runtime: node
+    plan: free
+    region: singapore
+    branch: uat
+    autoDeployTrigger: checksPass
+    buildCommand: npm ci --include=dev && npm run render:build
+    startCommand: npm run start -- --hostname 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_ENV
+        value: uat
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
