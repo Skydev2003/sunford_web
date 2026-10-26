@@ -1,3 +1,100 @@
+import type { NavigationGroup } from "../types";
+
+export const defaultNavigationGroups: Record<string, NavigationGroup[]> = {
+  "/products": [
+    {
+      label: "เลือกตามการใช้งาน",
+      links: [
+        { label: "ชั่งน้ำหนัก", href: "/collections/เครื่องชั่งน้ำหนัก" },
+        { label: "นับจำนวน", href: "/collections/เครื่องชั่งนับจำนวน" },
+        { label: "คำนวณราคา", href: "/collections/เครื่องชั่งคำนวณราคา" },
+        { label: "พิมพ์ฉลาก", href: "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์" },
+      ],
+    },
+    {
+      label: "เลือกเครื่องชั่งให้เหมาะกับงาน",
+      links: [
+        { label: "วิธีเลือกพิกัดน้ำหนัก", href: "/guides/scales#capacity" },
+        { label: "ความละเอียด", href: "/guides/scales#resolution" },
+        { label: "เปรียบเทียบรุ่น", href: "/guides/scales#compare" },
+      ],
+    },
+  ],
+  "/Indicator": [
+    {
+      label: "เลือกตามคุณสมบัติ",
+      links: [
+        { label: "ชั่งน้ำหนัก", href: "/collections/อินดิเคเตอร์ชั่งน้ำหนัก" },
+        { label: "นับจำนวน", href: "/collections/อินดิเคเตอร์นับจำนวน" },
+        { label: "กันน้ำ", href: "/collections/อินดิเคเตอร์กันน้ำ" },
+        { label: "เชื่อมต่อข้อมูล", href: "/product/อุปกรณ์ส่งข้อมูล" },
+      ],
+    },
+    {
+      label: "ก่อนเลือกอินดิเคเตอร์",
+      links: [
+        { label: "การจับคู่กับแท่นชั่ง", href: "/guides/indicators#platforms" },
+        { label: "รูปแบบการเชื่อมต่อ", href: "/guides/indicators#connections" },
+        { label: "เปรียบเทียบรุ่น", href: "/guides/indicators#compare" },
+      ],
+    },
+  ],
+  "/product/โครงสร้างแท่นชั่ง": [
+    {
+      label: "เลือกตามลักษณะงาน",
+      links: [
+        { label: "งานทั่วไป", href: "/product/โครงสร้างแท่นชั่ง" },
+        { label: "งานเปียก", href: "/guides/platforms#environment" },
+        { label: "งานน้ำหนักมาก", href: "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่" },
+      ],
+    },
+    {
+      label: "ก่อนเลือกแท่นชั่ง",
+      links: [
+        { label: "ขนาดแท่น", href: "/guides/platforms#size" },
+        { label: "พิกัดน้ำหนัก", href: "/guides/platforms#capacity" },
+        { label: "การเลือกหัวอ่านที่ใช้ร่วมกัน", href: "/guides/platforms#indicators" },
+      ],
+    },
+  ],
+  "/Product/POS": [
+    {
+      label: "ซอฟต์แวร์และอุปกรณ์",
+      links: [
+        { label: "ซอฟต์แวร์ POS", href: "/software/download" },
+        { label: "เครื่องพิมพ์", href: "/collections/เครื่องพิมพ์" },
+        { label: "อุปกรณ์ต่อพ่วง", href: "/product/อุปกรณ์ต่อพ่วง" },
+      ],
+    },
+    {
+      label: "รู้จักระบบ POS",
+      links: [
+        { label: "เปรียบเทียบ Android / Windows", href: "/guides/pos#systems" },
+        { label: "ตัวอย่างการใช้งาน", href: "/guides/pos#workflows" },
+        { label: "การเชื่อมต่อเครื่องชั่ง", href: "/guides/pos#scales" },
+      ],
+    },
+  ],
+  "/product/อุปกรณ์ประกอบเครื่องชั่ง": [
+    {
+      label: "เลือกอุปกรณ์ให้ตรงงาน",
+      links: [
+        { label: "สำหรับเครื่องชั่ง", href: "/product/อุปกรณ์ประกอบเครื่องชั่ง" },
+        { label: "สำหรับระบบ POS", href: "/collections/POS Related" },
+        { label: "สำหรับงานพิมพ์", href: "/collections/เครื่องพิมพ์" },
+      ],
+    },
+    {
+      label: "ก่อนเลือกอุปกรณ์",
+      links: [
+        { label: "ตรวจสอบรุ่นที่รองรับ", href: "/guides/accessories#compatibility" },
+        { label: "เลือกเครื่องพิมพ์", href: "/guides/accessories#printers" },
+        { label: "เลือกวัสดุสิ้นเปลือง", href: "/guides/accessories#consumables" },
+      ],
+    },
+  ],
+};
+
 const navigation = [
   {
     label: "เครื่องชั่ง",
@@ -63,6 +160,7 @@ const navigation = [
 export const defaultNavigation = navigation.map((item) => ({
   ...item,
   submenuLabel: item.submenuLabel ?? item.label,
+  groups: defaultNavigationGroups[item.href] ?? [],
   links: item.links.map(([label, href]) => ({ label, href })),
 }));
 export const defaultNavigationExtras = {
