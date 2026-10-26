@@ -37,9 +37,14 @@ export type SiteSettings = {
   line: string;
   messenger?: string;
 };
+export type NavigationGroup = {
+  label: string;
+  links: { label: string; href: string }[];
+};
 export type NavigationItem = {
   label: string;
   submenuLabel?: string;
   href: string;
   links: { label: string; href: string }[];
+  groups?: NavigationGroup[];
 };

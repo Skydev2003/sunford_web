@@ -1,5 +1,6 @@
 /* Keep responsive overrides last. Feature styles share the design tokens in base.css. */
 @import "../styles/base.css";
+@import "../styles/tooltip.css";
 @import "../styles/header.css";
 @import "../styles/hero.css";
 @import "../styles/catalog.css";

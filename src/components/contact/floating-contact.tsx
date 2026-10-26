@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import Image from "next/image";
 import { MessageCircle, Phone, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
@@ -104,23 +105,25 @@ export function FloatingContact({
           </a>
         )}
       </section>
-      <button
-        ref={launcher}
-        type="button"
-        className="contact-launcher"
-        aria-label={open ? "ปิดช่องทางติดต่อ" : expertLabel}
-        aria-expanded={open}
-        aria-controls={id}
-        onClick={() => {
-          setLabelsVisible(!open);
-          setOpen(!open);
-        }}
-      >
-        <span className="contact-launcher-icon">
-          <MessageCircle className="contact-open-icon" size={28} aria-hidden="true" />
-          <X className="contact-close-icon" size={31} strokeWidth={3} aria-hidden="true" />
-        </span>
-      </button>
+      <Tooltip>
+        <button
+          ref={launcher}
+          type="button"
+          className="contact-launcher"
+          aria-label={open ? "ปิดช่องทางติดต่อ" : expertLabel}
+          aria-expanded={open}
+          aria-controls={id}
+          onClick={() => {
+            setLabelsVisible(!open);
+            setOpen(!open);
+          }}
+        >
+          <span className="contact-launcher-icon">
+            <MessageCircle className="contact-open-icon" size={28} aria-hidden="true" />
+            <X className="contact-close-icon" size={31} strokeWidth={3} aria-hidden="true" />
+          </span>
+        </button>
+      </Tooltip>
     </aside>
   );
 }

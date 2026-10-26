@@ -27,7 +27,11 @@ import {
   textFields,
   videoFields,
 } from "../data/settings";
-import { defaultNavigation, defaultNavigationExtras } from "../data/navigation";
+import {
+  defaultNavigation,
+  defaultNavigationExtras,
+  defaultNavigationGroups,
+} from "../data/navigation";
 import { getCategories } from "./categories";
 import type { CmsData, Field } from "../types";
 
@@ -149,7 +153,7 @@ export async function getEditor(id: string) {
         key: "items",
         label: "เมนูหลัก",
         type: "array",
-        initial: { label: "เมนูใหม่", href: "/", links: [] },
+        initial: { label: "เมนูใหม่", href: "/", links: [], groups: [] },
         fields: [
           ...linkFields,
           {
@@ -163,6 +167,23 @@ export async function getEditor(id: string) {
             type: "array",
             initial: { label: "", href: "" },
             fields: linkFields,
+          },
+          {
+            key: "groups",
+            label: "คอลัมน์รอง (ไม่เกิน 2 คอลัมน์)",
+            type: "array",
+            initial: { label: "", links: [] },
+            hint: "เมนูบริการฯ ใช้หัวข้อสำรวจเพิ่มเติมและให้เราช่วยคุณด้านล่าง",
+            fields: [
+              { key: "label", label: "หัวข้อคอลัมน์" },
+              {
+                key: "links",
+                label: "ลิงก์ในคอลัมน์",
+                type: "array",
+                initial: { label: "", href: "" },
+                fields: linkFields,
+              },
+            ],
           },
         ],
       },
@@ -360,11 +381,18 @@ export async function getEditor(id: string) {
     ];
   } else return null;
   if (row && row.kind !== kind) return null;
+  const editorData = { ...data, ...((row?.data as CmsData) ?? {}) };
+  if (id === "navigation") {
+    editorData.items = (editorData.items as CmsData[]).map((item) => ({
+      ...item,
+      groups: item.groups ?? defaultNavigationGroups[String(item.href)] ?? [],
+    }));
+  }
   return {
     id,
     kind,
     title,
-    data: { ...data, ...((row?.data as CmsData) ?? {}) },
+    data: editorData,
     fields,
     version: row?.updatedAt.toISOString() ?? "",
     productVersion,

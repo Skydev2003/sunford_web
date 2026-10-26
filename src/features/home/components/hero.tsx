@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
@@ -106,13 +107,15 @@ export function Hero({
           )}
           {slides.length > 1 && (
             <div className="slide-controls" aria-label="เลือกสินค้าแนะนำ">
-              <button
-                className="icon-button"
-                aria-label="สินค้าก่อนหน้า"
-                onClick={() => setActive((active + slides.length - 1) % slides.length)}
-              >
-                <ChevronLeft size={18} />
-              </button>
+              <Tooltip>
+                <button
+                  className="icon-button"
+                  aria-label="สินค้าก่อนหน้า"
+                  onClick={() => setActive((active + slides.length - 1) % slides.length)}
+                >
+                  <ChevronLeft size={18} />
+                </button>
+              </Tooltip>
               <div className="slide-progress">
                 {slides.map((slide, index) => (
                   <button
@@ -124,13 +127,15 @@ export function Hero({
                   />
                 ))}
               </div>
-              <button
-                className="icon-button"
-                aria-label="สินค้าถัดไป"
-                onClick={() => setActive((active + 1) % slides.length)}
-              >
-                <ChevronRight size={18} />
-              </button>
+              <Tooltip>
+                <button
+                  className="icon-button"
+                  aria-label="สินค้าถัดไป"
+                  onClick={() => setActive((active + 1) % slides.length)}
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </Tooltip>
             </div>
           )}
         </div>

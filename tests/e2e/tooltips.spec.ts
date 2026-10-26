@@ -1,0 +1,107 @@
+import { expect, test } from "@playwright/test";
+
+test("tooltip explains a header icon, remains hoverable and does not move the button", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const search = page.getByRole("button", { name: "ค้นหาสินค้า", exact: true });
+  const before = (await search.boundingBox())!;
+  await search.hover();
+  const tooltip = page.getByRole("tooltip");
+  await expect(tooltip).toHaveText("ค้นหาสินค้า");
+  await expect(search).toHaveAttribute("aria-describedby", (await tooltip.getAttribute("id"))!);
+  expect(await search.boundingBox()).toEqual(before);
+  const bounds = (await tooltip.boundingBox())!;
+  expect(bounds.y).toBeGreaterThanOrEqual(before.y + before.height);
+  await tooltip.hover();
+  await page.waitForTimeout(400);
+  await expect(tooltip).toBeVisible();
+  await page.mouse.move(5, 500);
+  await expect(tooltip).toHaveCount(0);
+});
+
+test("keyboard tooltip dismisses with Escape and remains visible above a modal", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const search = page.getByRole("button", { name: "ค้นหาสินค้า", exact: true });
+  await search.focus();
+  await expect(page.getByRole("tooltip")).toHaveText("ค้นหาสินค้า");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("tooltip")).toHaveCount(0);
+  await expect(search).toBeFocused();
+  await search.press("Enter");
+  const dialog = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
+  await expect(dialog).toBeVisible();
+  const close = dialog.getByRole("button", { name: "ปิด", exact: true });
+  await close.focus();
+  const tooltip = dialog.getByRole("tooltip");
+  await expect(tooltip).toHaveText("ปิด");
+  expect(
+    await tooltip.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      return (
+        document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2) ===
+        element
+      );
+    }),
+  ).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("tooltip")).toHaveCount(0);
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+});
+
+test("tooltip descriptions follow comparison state while the original action still works", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const add = page.getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ WPS10KS", exact: true });
+  await add.hover();
+  await expect(page.getByRole("tooltip")).toHaveText("เพิ่มเพื่อเปรียบเทียบ WPS10KS");
+  await add.click();
+  await expect(page.getByRole("tooltip")).toHaveCount(0);
+  await expect(page.locator(".compare-bar")).toBeVisible();
+  const remove = page.getByRole("button", { name: "นำออกจากเปรียบเทียบ WPS10KS", exact: true });
+  await expect(remove).toHaveAttribute("aria-pressed", "true");
+  await page.mouse.move(5, 5);
+  await remove.hover();
+  await expect(page.getByRole("tooltip")).toHaveText("นำออกจากเปรียบเทียบ WPS10KS");
+  await remove.click();
+  await expect(page.locator(".compare-bar")).toHaveCount(0);
+});
+
+test("tooltip at the bottom edge stays within narrow and wide viewports", async ({ page }) => {
+  await page.goto("/");
+  for (const width of [320, 390, 1440]) {
+    await page.mouse.move(0, 0);
+    await page.setViewportSize({ width, height: 844 });
+    const launcher = page.locator(".contact-launcher");
+    await launcher.hover();
+    const tooltip = page.getByRole("tooltip");
+    await expect(tooltip).toHaveText((await launcher.getAttribute("aria-label"))!);
+    const bounds = (await tooltip.boundingBox())!;
+    expect(bounds.x).toBeGreaterThanOrEqual(7);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width - 7);
+    expect(bounds.y).toBeGreaterThanOrEqual(7);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(837);
+    await page.mouse.move(0, 0);
+    await expect(tooltip).toHaveCount(0);
+  }
+});
+
+test.describe("touch tooltip behavior", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test("tapping an icon performs its action without leaving a tooltip open", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).tap();
+    const dialog = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
+    await expect(dialog).toBeVisible();
+    await page.waitForTimeout(400);
+    await expect(page.getByRole("tooltip")).toHaveCount(0);
+    await dialog.getByRole("button", { name: "ปิด", exact: true }).tap();
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByRole("tooltip")).toHaveCount(0);
+  });
+});

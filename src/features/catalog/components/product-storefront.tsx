@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import Link from "next/link";
 import {
@@ -73,15 +74,17 @@ function StoreProductCard({
           />
         </div>
       </Link>
-      <button
-        className={`store-compare ${selected ? "is-selected" : ""}`}
-        aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
-        aria-pressed={selected}
-        disabled={!selected && ids.length >= 3}
-        onClick={() => toggleCompare(product.id)}
-      >
-        {selected ? <Check size={17} /> : <Plus size={17} />}
-      </button>
+      <Tooltip>
+        <button
+          className={`store-compare ${selected ? "is-selected" : ""}`}
+          aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
+          aria-pressed={selected}
+          disabled={!selected && ids.length >= 3}
+          onClick={() => toggleCompare(product.id)}
+        >
+          {selected ? <Check size={17} /> : <Plus size={17} />}
+        </button>
+      </Tooltip>
     </article>
   );
 }

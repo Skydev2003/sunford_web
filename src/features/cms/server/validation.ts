@@ -188,6 +188,17 @@ export const navigationSchema = z.object({
         submenuLabel: text.optional(),
         href: linkSchema.refine(Boolean),
         links: z.array(z.object({ label: text.min(1), href: linkSchema.refine(Boolean) })).max(30),
+        groups: z
+          .array(
+            z.object({
+              label: text.min(1),
+              links: z
+                .array(z.object({ label: text.min(1), href: linkSchema.refine(Boolean) }))
+                .max(30),
+            }),
+          )
+          .max(2)
+          .optional(),
       }),
     )
     .min(1)

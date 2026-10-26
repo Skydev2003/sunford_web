@@ -11,3 +11,15 @@
 - Observed: Updating categories from reference images also changed submenu typography, arrows, headings and the mobile menu hierarchy.
 - Root cause: Images supplied for menu content were treated as instructions to redesign the interaction and presentation.
 - Correct behavior: For menu data updates, change labels and destinations only. Preserve the existing submenu typography, spacing, hover behavior, animation and mobile menu structure unless the user explicitly requests UX changes.
+
+## Install dependencies after manifest changes
+
+- Observed: Product pages failed to compile because `@google/model-viewer` was declared in the npm manifest and lockfile but missing from local `node_modules` and `bun.lock`.
+- Root cause: Dependency changes were committed without refreshing the local installation and the Bun lockfile used by the deployment workflow.
+- Correct behavior: After pulling dependency changes, run `npm install` before starting development. When changing dependencies, synchronize both `package-lock.json` and `bun.lock`, verify Bun accepts the frozen lockfile, and run the production build.
+
+## Isolate concurrent Playwright output
+
+- Observed: A CMS browser check failed during trace cleanup with a missing trace file while another Playwright process used the same output directory. The same check passed when rerun with its own output directory.
+- Root cause: Separate Playwright processes cleaned and wrote the shared `test-results` directory concurrently.
+- Correct behavior: Run Playwright processes sequentially, or pass a distinct `--output` directory to each process before running them concurrently.

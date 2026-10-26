@@ -1,0 +1,16 @@
+.ui-tooltip {
+  position: fixed;
+  z-index: 1000;
+  width: max-content;
+  max-width: min(260px, calc(100vw - 16px));
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 4px 16px #0002;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  overflow-wrap: anywhere;
+}

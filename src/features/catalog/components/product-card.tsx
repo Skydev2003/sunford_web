@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
@@ -18,15 +19,17 @@ export function ProductCard({ product }: { product: Product }) {
         <span className={product.badge ? "product-badge" : "category-tag"}>
           {product.badge ?? categories.find((c) => c.id === product.category)?.english}
         </span>
-        <button
-          className={`compare-button ${selected ? "selected" : ""}`}
-          aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
-          aria-pressed={selected}
-          disabled={!selected && ids.length >= 3}
-          onClick={() => toggleCompare(product.id)}
-        >
-          {selected ? <Check size={16} /> : <Plus size={16} />}
-        </button>
+        <Tooltip>
+          <button
+            className={`compare-button ${selected ? "selected" : ""}`}
+            aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
+            aria-pressed={selected}
+            disabled={!selected && ids.length >= 3}
+            onClick={() => toggleCompare(product.id)}
+          >
+            {selected ? <Check size={16} /> : <Plus size={16} />}
+          </button>
+        </Tooltip>
       </div>
       <Link href={`/products/${product.slug}`} className="product-card-image">
         <ProductImage
