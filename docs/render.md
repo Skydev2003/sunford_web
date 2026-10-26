@@ -1,6 +1,26 @@
-# Deploy main บน Render Free
+# Deploy main และ uat บน Render Free
 
 เว็บรันบน Render โดยไม่ต้องเปิดเครื่องพัฒนา ใช้ Next.js Node server และ Supabase project ปัจจุบันสำหรับ PostgreSQL, Auth และ Storage ไฟล์ `render.yaml` กำหนด Free instance ใน Singapore และ deploy branch `main` หลัง CI ผ่าน โดยคงชื่อ service `sunford-uat` เดิมไว้
+
+## คำสั่ง deploy
+
+```bash
+bun run deploy --check
+bun run deploy
+```
+
+`--check` ตรวจ branch และ Environment โดยไม่รัน migration, seed หรือ build ส่วนคำสั่งปกติรัน `db:deploy` → `db:seed` → `build` และหยุดทันทีเมื่อขั้นตอนใดล้มเหลว ต้องติดตั้ง dependencies ก่อนด้วย `npm ci --include=dev` (ยังใช้ `package-lock.json` เดิม) และติดตั้ง Bun ตาม `.bun-version`
+
+| Branch | APP_ENV      |
+| ------ | ------------ |
+| `main` | `production` |
+| `uat`  | `uat`        |
+
+ในเครื่องอ่าน branch จาก Git และกำหนด `APP_ENV` ให้อัตโนมัติถ้ายังไม่ได้ตั้งค่า บน Render อ่าน `RENDER_GIT_BRANCH` เนื่องจาก checkout เป็น detached HEAD ปฏิเสธ branch อื่น, detached HEAD ในเครื่อง และ `APP_ENV` ที่ไม่ตรงกับ branch ก่อนแตะฐานข้อมูล `render:build` เดิมเรียกสคริปต์เดียวกัน
+
+คำสั่งนี้เป็นขั้นตอน build สำหรับ Render ไม่ได้ push Git หรือเรียก Render API จากเครื่อง การอัปเดตเว็บบน Render ต้อง push commit ไป branch ที่ service ติดตาม แล้วรอ CI และ Render deploy
+
+หากหน้า `/admin/home-images` ยังไม่มีช่อง **เมื่อคลิกรูปภาพหรือปุ่มดูเพิ่มเติม** ให้ตรวจว่า Render deploy commit ที่มีฟีเจอร์นี้แล้ว เปิด `/api/health` เพื่อเทียบ `revision` กับ commit บน GitHub Migration `20261026040000_homepage_link_targets` จะถูก apply โดยคำสั่ง deploy ก่อน build จากนั้นโหลดหน้าแอดมินใหม่
 
 ## เตรียมโค้ดขึ้น GitHub
 
@@ -28,6 +48,8 @@
 
 Blueprint กำหนด `NODE_ENV=production`, `APP_ENV=production`, `NEXT_TELEMETRY_DISABLED=1` ไว้แล้ว Node version อ่านจาก `.node-version` ไม่ต้องใส่ `PORT` เอง Render จัดการให้
 
+Bun version อ่านจาก `.bun-version` เพื่อให้ Render ติดตั้ง Bun สำหรับ `bun run deploy` ตาม [เอกสาร Render](https://render.com/docs/bun-version) หากเคยตั้ง `BUN_VERSION` ใน Dashboard ให้ใช้เวอร์ชันเดียวกับไฟล์นี้
+
 ไม่ต้องนำ `SUPABASE_SECRET_KEY` หรือ `SUPABASE_SERVICE_ROLE_KEY` ขึ้น Render เพราะหน้าแอดมินใช้ user session และ Storage RLS ไม่ต้องเปลี่ยน Supabase redirect URL สำหรับการล็อกอินด้วยอีเมล/รหัสผ่านปัจจุบัน หากเพิ่ม OAuth หรือ email reset ภายหลังจึงตั้ง Site URL/Redirect URLs ให้ตรงกับ hosting
 
 ถ้าสร้าง **New → Web Service** เองแทน Blueprint ให้กรอกเพิ่มเติม:
@@ -38,10 +60,12 @@ Blueprint กำหนด `NODE_ENV=production`, `APP_ENV=production`, `NEXT_TEL
 | Runtime           | `Node`                                             |
 | Region            | `Singapore`                                        |
 | Instance Type     | `Free`                                             |
-| Build Command     | `npm ci --include=dev && npm run render:build`     |
+| Build Command     | `npm ci --include=dev && bun run deploy`           |
 | Start Command     | `npm run start -- --hostname 0.0.0.0 --port $PORT` |
 | Health Check Path | `/api/health`                                      |
 | Auto-Deploy       | `After CI Checks Pass`                             |
+
+สำหรับ UAT ให้ตั้ง service เป็น branch `uat` และ `APP_ENV=uat` โดยใช้ Build/Start Command เดียวกัน ถ้าต้องการให้ main และ UAT เปิดพร้อมกันต้องมีคนละ service และควรตั้งค่า Supabase ของแต่ละ environment ให้ตรงกับฐานข้อมูลที่ต้องการ ไฟล์ Blueprint นี้ยังคง service เดิมไว้ตัวเดียวและไม่ได้สร้าง service เพิ่มอัตโนมัติ
 
 ## อัปเดตหลัง merge
 

@@ -1,9 +1,11 @@
 // Errors name variables only: deployment logs must never include credentials.
 export function validateRenderEnvironment(env) {
   const errors = [];
-  const branches = { uat: "uat", production: "main" };
-  const expectedBranch = branches[env.APP_ENV];
+  const expectedBranch =
+    env.APP_ENV === "production" ? "main" : env.APP_ENV === "uat" ? "uat" : undefined;
   if (!expectedBranch) errors.push("APP_ENV must be uat or production.");
+  if (!["main", "uat"].includes(env.RENDER_GIT_BRANCH))
+    errors.push("Deployment branch must be main or uat; detached HEAD is not allowed.");
   if (expectedBranch && env.RENDER_GIT_BRANCH && env.RENDER_GIT_BRANCH !== expectedBranch)
     errors.push(`Deploy the ${expectedBranch} branch for this environment.`);
 

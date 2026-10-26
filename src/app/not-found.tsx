@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Header } from "@/components/layout/header";
+import { SiteHeader } from "@/features/cms/components/site-header";
 import { Footer } from "@/components/layout/footer";
 export default function NotFound() {
   return (
     <>
-      <Header />
+      <SiteHeader />
       <main id="main-content" className="container empty-state not-found">
         <p className="eyebrow">404 — NOT FOUND</p>
         <h1>ยังไม่พบหน้าที่คุณกำลังมองหา</h1>

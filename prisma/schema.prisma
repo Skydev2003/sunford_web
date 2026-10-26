@@ -23,6 +23,7 @@ model Product {
   slug           String          @unique
   name           String
   category       ProductCategory
+  categoryId     String?
   subtitle       String
   description    String
   image          String
@@ -42,6 +43,18 @@ model Product {
   @@index([published, sortOrder])
   @@index([category])
   @@map("products")
+}
+
+// Overrides keep the imported catalogue and pages intact as fallback content.
+model CmsDocument {
+  id        String    @id
+  kind      String
+  data      Json
+  deletedAt DateTime?
+  updatedAt DateTime  @updatedAt
+
+  @@index([kind, deletedAt])
+  @@map("cms_documents")
 }
 
 // Foreign key to auth.users is maintained in the SQL migration, outside Prisma's public schema.

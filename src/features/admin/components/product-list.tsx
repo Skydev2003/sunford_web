@@ -1,4 +1,5 @@
 "use client";
+import { useCategories } from "@/features/cms/components/categories-provider";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,7 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
-import { categories } from "@/features/catalog/types";
+
 import { deleteProductAction } from "../server/product-actions";
 import type { AdminProduct } from "../types";
 export function AdminProductList({
@@ -26,6 +27,7 @@ export function AdminProductList({
   products: AdminProduct[];
   saved?: boolean;
 }) {
+  const categories = useCategories();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [target, setTarget] = useState<AdminProduct | null>(null);

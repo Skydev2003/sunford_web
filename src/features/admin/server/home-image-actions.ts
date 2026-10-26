@@ -48,7 +48,7 @@ export async function saveHomeImageAction(
         if (!product) return { error: "กรุณาเลือกสินค้าที่เผยแพร่และยังไม่ถูกลบเป็นปลายทาง" };
         targetProductId = product.id;
       } else if (targetType === "page") {
-        if (!homePageOptions().some((page) => page.path === parsed.data.targetPagePath))
+        if (!(await homePageOptions()).some((page) => page.path === parsed.data.targetPagePath))
           return { error: "กรุณาเลือกหน้าข้อมูลจากรายการในเว็บไซต์" };
         targetPagePath = parsed.data.targetPagePath!;
       }

@@ -17,4 +17,5 @@ export type AdminProduct = {
   published: boolean;
   sortOrder: number;
   updatedAt: string;
+  gallery?: string[];
 };

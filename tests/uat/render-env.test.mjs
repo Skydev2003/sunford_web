@@ -13,7 +13,7 @@ const valid = {
 
 test("UAT requires real configuration instead of silently deploying catalogue fixtures", () => {
   assert.deepEqual(validateRenderEnvironment(valid), []);
-  assert.equal(validateRenderEnvironment({}).length, 5);
+  assert.equal(validateRenderEnvironment({}).length, 6);
   assert.ok(validateRenderEnvironment({ ...valid, DATABASE_URL: "YOUR-PASSWORD" }).length);
   assert.ok(validateRenderEnvironment({ ...valid, SUPABASE_PUBLISHABLE_KEY: " " }).length);
 });

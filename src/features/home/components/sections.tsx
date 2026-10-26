@@ -1,3 +1,5 @@
+import { getSettings } from "@/features/cms/server/documents";
+import { patchSection } from "@/features/cms/server/section-tree";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,7 +14,7 @@ import {
 } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";
 
-export function BusinessSolutions() {
+export function BusinessSolutionsTemplate() {
   return (
     <section id="solutions" className="solutions-section container">
       <div className="section-heading">
@@ -104,7 +106,7 @@ export function BusinessSolutions() {
   );
 }
 
-export function BrandStory() {
+export function BrandStoryTemplate() {
   return (
     <section id="story" className="story-section">
       <div className="container story-grid">
@@ -144,7 +146,7 @@ export function BrandStory() {
   );
 }
 
-export function SupportSection() {
+export function SupportSectionTemplate() {
   const services = [
     {
       icon: BookOpen,
@@ -193,4 +195,16 @@ export function SupportSection() {
       </div>
     </section>
   );
+}
+
+export async function BusinessSolutions() {
+  return patchSection(BusinessSolutionsTemplate(), await getSettings("section:solutions", {}));
+}
+
+export async function BrandStory() {
+  return patchSection(BrandStoryTemplate(), await getSettings("section:story", {}));
+}
+
+export async function SupportSection() {
+  return patchSection(SupportSectionTemplate(), await getSettings("section:support", {}));
 }

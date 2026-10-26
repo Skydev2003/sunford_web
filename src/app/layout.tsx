@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { getCategories } from "@/features/cms/server/categories";
+import { CategoriesProvider } from "@/features/cms/components/categories-provider";
 
 const sunfordFont = localFont({
   src: [
@@ -18,10 +20,13 @@ export const metadata: Metadata = {
     "ค้นพบเครื่องชั่งดิจิทัล เครื่องชั่งอุตสาหกรรม และระบบ POS จาก Sunford เทคโนโลยีการชั่งและโซลูชันที่เติบโตไปพร้อมธุรกิจคุณ",
   icons: { icon: "/icon.svg" },
 };
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const categories = await getCategories();
   return (
     <html lang="th" className={sunfordFont.variable} data-scroll-behavior="smooth">
-      <body>{children}</body>
+      <body>
+        <CategoriesProvider categories={categories}>{children}</CategoriesProvider>
+      </body>
     </html>
   );
 }

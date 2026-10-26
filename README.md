@@ -133,9 +133,11 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:admin -- admin@example.co
 
 ทั้งสองคำสั่งถามรหัสผ่านแบบซ่อน ไม่ใส่รหัสผ่านลง command arguments หรือ source code คีย์ secret/service-role ใช้เฉพาะเครื่องมือ provisioning/การทดสอบและห้ามส่งไปเบราว์เซอร์ หน้าแอดมิน runtime ไม่จำเป็นต้องใช้คีย์นี้
 
-## UAT บน Render Free
+## Deploy บน Render Free
 
-เตรียม `render.yaml` สำหรับ Next.js Node server บน Free instance ที่ Singapore ใช้ Supabase เดิม และ deploy จาก branch `uat` หลัง GitHub Actions ผ่าน ไม่รัน seed ซ้ำ ดูขั้นตอนเชื่อม GitHub, กรอก Environment และตรวจ deployment ใน [docs/render.md](docs/render.md) ต้องสร้าง Blueprint บน Render ครั้งแรกก่อน hosting จึงจะใช้งานได้
+ใช้ `bun run deploy` สำหรับ migration → เติมสินค้าที่ขาด → production build อนุญาตเฉพาะ branch `main` (`APP_ENV=production`) และ `uat` (`APP_ENV=uat`) ตรวจค่าก่อนทำงานได้ด้วย `bun run deploy --check` คำสั่งนี้ไม่ push Git หรือสั่ง Render deploy จากเครื่องโดยตรง
+
+`render.yaml` กำหนด Next.js Node server บน Free instance ที่ Singapore ใช้ Supabase เดิม และ deploy จาก branch `main` หลัง GitHub Actions ผ่าน หากต้องการ service UAT ให้เลือก branch `uat` และ `APP_ENV=uat` ใช้ build command เดียวกัน ดูขั้นตอนใน [docs/render.md](docs/render.md)
 
 ## UAT บน LAN ชั่วคราว
 

@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { getContentPage, importedPages } from "@/features/content/server/content-repository";
+import {
+  getContentPage,
+  getContentPages,
+  importedPages,
+} from "@/features/content/server/content-repository";
 import { getProducts, getProduct } from "@/features/catalog/server/product-repository";
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { ContentDirectory } from "@/features/content/components/content-directory";
@@ -22,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ path: string[] }>;
 }): Promise<Metadata> {
   const { path } = await params;
-  const page = getContentPage(`/${path.join("/")}`);
+  const page = await getContentPage(`/${path.join("/")}`);
   return {
     title: page?.title ?? "ไม่พบข้อมูล",
     description: page?.text.replace(/\s+/g, " ").slice(0, 160),
@@ -39,11 +43,14 @@ export default async function SourceContentPage({
     const product = await getProduct(path.at(-1)!);
     if (product) redirect(`/products/${product.slug}`);
   }
-  const page = getContentPage(pathname);
+  const page = await getContentPage(pathname);
   if (!page) notFound();
+  if (page.path !== pathname && page.managed) redirect(page.path);
   const allProducts = await getProducts();
   let products = allProducts.filter((product) =>
-    page.productHandles.includes(product.sourceId || ""),
+    page.managed
+      ? page.productIds?.includes(product.id)
+      : page.productHandles.includes(product.sourceId || ""),
   );
   const categoryPaths: Record<string, Product["category"] | "all"> = {
     "/product/digital-weighing": "all",
@@ -60,14 +67,15 @@ export default async function SourceContentPage({
     "/product/อุปกรณ์ประกอบเครื่องชั่ง": "accessories",
   };
   const catalogCategory = categoryPaths[page.path.toLowerCase()];
-  if (catalogCategory && !products.length)
+  if (catalogCategory && !products.length && !page.managed)
     products = allProducts.filter((product) =>
       catalogCategory === "all"
         ? product.category !== "accessories"
         : product.category === catalogCategory,
     );
-  const title =
-    page.path === "/about-us"
+  const title = page.managed
+    ? page.title
+    : page.path === "/about-us"
       ? "รู้จัก Sunford"
       : page.path === "/applications-and-softwares"
         ? "แอปพลิเคชันและซอฟต์แวร์"
@@ -79,7 +87,7 @@ export default async function SourceContentPage({
   const newsIndex = /news-and-activities|\/blogs\/editorial$|^\/business$/.test(page.path);
   const softwareIndex =
     page.path === "/software/download" || page.path === "/applications-and-softwares";
-  const linkedPages = importedPages.filter(
+  const linkedPages = (await getContentPages()).filter(
     (item) =>
       item.path !== page.path &&
       item.kind !== "product" &&
@@ -117,6 +125,17 @@ export default async function SourceContentPage({
           </a>
         )}
       </header>
+      {page.managed && page.images[0] && (
+        <div className="container source-image-slot">
+          <ProductImage src={page.images[0]} alt={page.title} width={1180} height={340} />
+        </div>
+      )}
+      {page.managed && page.kind === "collection" && page.html && (
+        <article
+          className="source-prose container"
+          dangerouslySetInnerHTML={{ __html: page.html }}
+        />
+      )}
       {page.kind === "collection" ? (
         <>
           {products.length ? (
@@ -138,13 +157,13 @@ export default async function SourceContentPage({
               <ProductImage alt={page.title} width={1180} height={340} />
             </div>
           )}
-          {hasContent && !newsIndex && !softwareIndex && (
+          {hasContent && (page.managed || (!newsIndex && !softwareIndex)) && (
             <article
               className={`source-prose container ${page.kind === "article" ? "source-article" : ""}`}
               dangerouslySetInnerHTML={{ __html: page.html }}
             />
           )}
-          {newsIndex && (
+          {newsIndex && !page.managed && (
             <div className="container source-prose source-article">
               <p>
                 {page.text
@@ -164,7 +183,7 @@ export default async function SourceContentPage({
           )}
         </>
       )}
-      {catalogCategory && products.length > 0 && (
+      {catalogCategory && page.kind !== "collection" && products.length > 0 && (
         <ProductCatalog products={products} full heading={title} scoped />
       )}
       {page.videos?.length ? <VideoGallery videos={page.videos} /> : null}

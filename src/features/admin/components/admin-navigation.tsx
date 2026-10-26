@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, ImageIcon, LayoutGrid, Package } from "lucide-react";
+import { ArrowUpRight, ImageIcon, LayoutGrid, Package, FileText, Tags } from "lucide-react";
 
 export function AdminNavigation() {
   const pathname = usePathname();
@@ -10,6 +10,8 @@ export function AdminNavigation() {
       {[
         { href: "/admin/products", label: "ผลิตภัณฑ์", icon: Package },
         { href: "/admin/home-images", label: "รูปภาพหน้าแรก", icon: ImageIcon },
+        { href: "/admin/categories", label: "หมวดหมู่", icon: Tags },
+        { href: "/admin/content", label: "เนื้อหาและตั้งค่าเว็บไซต์", icon: FileText },
       ].map(({ href, label, icon: Icon }) => (
         <Link
           href={href}

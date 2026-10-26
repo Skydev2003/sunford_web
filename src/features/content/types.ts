@@ -17,6 +17,8 @@ export type SourceProduct = {
 };
 
 export type SourcePage = {
+  managed?: boolean;
+  productIds?: string[];
   path: string;
   title: string;
   sourceUrl: string;

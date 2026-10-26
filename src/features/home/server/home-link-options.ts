@@ -1,16 +1,15 @@
 import "server-only";
-import { importedPages } from "@/features/content/server/content-repository";
-import { defaultHomePagePaths, type HomePageOption } from "../data/link-targets";
+import { getContentPages } from "@/features/content/server/content-repository";
+import { type HomePageOption } from "../data/link-targets";
 
-export function homePageOptions(): HomePageOption[] {
+export async function homePageOptions(): Promise<HomePageOption[]> {
   const options: HomePageOption[] = [
     { path: "/", title: "หน้าแรก" },
     { path: "/products", title: "ผลิตภัณฑ์ทั้งหมด" },
     { path: "/explore", title: "สำรวจ Sunford" },
-    ...importedPages
+    ...(await getContentPages())
       .filter((page) => page.kind !== "product")
       .map(({ path, title }) => ({ path, title })),
-    ...Object.entries(defaultHomePagePaths).map(([title, path]) => ({ path, title })),
   ];
   return options.filter(
     (page, index) =>

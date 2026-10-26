@@ -1,7 +1,7 @@
 import "dotenv/config";
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { mkdir, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -18,6 +18,21 @@ import { homeImageSlots, type HomeImages } from "../../src/features/home/data/im
 import { resolveHomeLink, type HomeLinkTargets } from "../../src/features/home/data/link-targets";
 
 type Harness = {
+  getAdminProduct: (
+    id: string,
+  ) => Promise<(Product & { updatedAt: string; gallery?: string[] }) | null>;
+  saveDocumentAction: (previous: ActionState, form: FormData) => Promise<ActionState>;
+  deleteDocumentAction: (previous: ActionState, form: FormData) => Promise<ActionState>;
+  getCategories: () => Promise<Array<{ id: string; label: string; english: string }>>;
+  getContentPages: () => Promise<Array<{ path: string; title: string }>>;
+  getContentPage: (
+    path: string,
+  ) => Promise<
+    { path: string; title: string; html: string; videos?: { id: string }[] } | undefined
+  >;
+  getSettings: <T>(id: string, defaults: T) => Promise<T>;
+  safeLink: (value: string) => boolean;
+  cleanHtml: (value: string) => string;
   saveProductAction: (previous: ActionState, form: FormData) => Promise<ActionState>;
   deleteProductAction: (form: FormData) => Promise<ActionState>;
   getProducts: () => Promise<Product[]>;
@@ -35,20 +50,20 @@ test(
   "real database: complete catalogue CRUD, all categories, concurrency and preserved originals",
   {
     skip: !process.env.DATABASE_URL || process.env.DATABASE_URL.includes("YOUR-PASSWORD"),
-    timeout: 90000,
+    timeout: 150000,
   },
   async () => {
     const prisma = new PrismaClient({
       adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
     });
-    const harnessPath = resolve("test-results", `catalog-actions-${randomUUID()}.mjs`);
-    await mkdir(resolve("test-results"), { recursive: true });
+    const harnessPath = resolve("node_modules/.cache", `catalog-actions-${randomUUID()}.mjs`);
+    await mkdir(resolve("node_modules/.cache"), { recursive: true });
     // Exercise production actions and repositories against real PostgreSQL. Only the
     // verified auth boundary and Next's request/cache context are supplied by this harness.
     await build({
       stdin: {
         contents:
-          'export * from "./src/features/admin/server/product-actions"; export * from "./src/features/catalog/server/product-repository"; export * from "./src/features/admin/server/products"; export * from "./src/features/admin/server/home-image-actions"; export * from "./src/features/home/server/home-images"; export * from "./src/features/admin/server/media";',
+          'export * from "./src/features/admin/server/product-actions"; export * from "./src/features/catalog/server/product-repository"; export * from "./src/features/admin/server/products"; export * from "./src/features/admin/server/home-image-actions"; export * from "./src/features/home/server/home-images"; export * from "./src/features/admin/server/media"; export * from "./src/features/cms/server/actions"; export * from "./src/features/cms/server/categories"; export * from "./src/features/cms/server/documents"; export * from "./src/features/cms/server/validation"; export * from "./src/features/content/server/content-repository";',
         resolveDir: process.cwd(),
         loader: "ts",
       },
@@ -62,7 +77,10 @@ test(
           name: "next-test-context",
           setup(builder) {
             builder.onResolve(
-              { filter: /^(server-only|next\/cache|next\/navigation|@\/lib\/prisma|\.\/auth)$/ },
+              {
+                filter:
+                  /^(server-only|next\/cache|next\/navigation|@\/lib\/prisma|\.\/auth|@\/features\/admin\/server\/auth)$/,
+              },
               (args) => ({ path: args.path, namespace: "context" }),
             );
             builder.onLoad({ filter: /.*/, namespace: "context" }, ({ path }) => {
@@ -71,7 +89,7 @@ test(
                   ? "export {};"
                   : path === "@/lib/prisma"
                     ? "export const getPrisma = () => globalThis.__catalogActionTest.db;"
-                    : path === "./auth"
+                    : path === "./auth" || path === "@/features/admin/server/auth"
                       ? "export const getAdminSession = async () => globalThis.__catalogActionTest.authenticated ? { user: { id: 'transaction-test' }, supabase: {} } : null; export const requireAdmin = async () => { const session = await getAdminSession(); if (!session) throw new Error('Unauthorized'); return session; };"
                       : path === "next/navigation"
                         ? "export const redirect = (url) => { throw new Error('REDIRECT:' + url); };"
@@ -86,6 +104,7 @@ test(
     try {
       const actions = (await import(pathToFileURL(harnessPath).href)) as Harness;
       const before = await prisma.product.findMany({ orderBy: { id: "asc" } });
+      const documentsBefore = await prisma.cmsDocument.findMany({ orderBy: { id: "asc" } });
       const homeImagesBefore = await prisma.homepageImage.findMany({ orderBy: { slot: "asc" } });
       const makeForm = (
         product: Product & { published?: boolean; updatedAt?: Date | string },
@@ -124,7 +143,17 @@ test(
       await assert.rejects(
         prisma.$transaction(
           async (tx) => {
-            const context: TestContext = { db: tx, authenticated: true, invalidated: [] };
+            const context: TestContext = {
+              db: new Proxy(tx, {
+                get(target, key) {
+                  return key === "$transaction"
+                    ? (run: (client: typeof tx) => unknown) => run(tx)
+                    : Reflect.get(target, key);
+                },
+              }),
+              authenticated: true,
+              invalidated: [],
+            };
             globals.__catalogActionTest = context;
             const initial = await actions.getProducts();
             assert.equal(initial.length, before.filter((p) => p.published && !p.deletedAt).length);
@@ -395,6 +424,335 @@ test(
               assert.deepEqual(await actions.deleteProductAction(makeForm(stored)), {});
               assert.equal(await actions.getProduct(input.slug), undefined);
             }
+
+            // The CMS uses additive overrides. Every mutation here is rolled back.
+            const documentForm = (
+              id: string,
+              kind: string,
+              data: unknown,
+              version = "",
+              productVersion = "",
+            ) => {
+              const form = new FormData();
+              form.set("id", id);
+              form.set("kind", kind);
+              form.set("data", JSON.stringify(data));
+              form.set("version", version);
+              form.set("productVersion", productVersion);
+              return form;
+            };
+            const savedDocument = (
+              id: string,
+              kind: string,
+              data: unknown,
+              version = "",
+              productVersion = "",
+            ) =>
+              assert.rejects(
+                actions.saveDocumentAction(
+                  {},
+                  documentForm(id, kind, data, version, productVersion),
+                ),
+                /REDIRECT:\/admin\/content\//,
+              );
+            const live = (await actions.getProducts())[0];
+            const galleryProduct = (await actions.getAdminProduct("feh5ks"))!;
+            assert.equal(
+              galleryProduct.gallery?.length,
+              4,
+              "The editor must expose all four original product images",
+            );
+            const replacedGallery = [...galleryProduct.gallery!];
+            replacedGallery[2] = "/images/products/wps10ks.png";
+            const galleryForm = makeForm({ ...galleryProduct, published: true });
+            galleryForm.set("gallery", JSON.stringify(replacedGallery));
+            await save(galleryForm);
+            assert.deepEqual(
+              (await actions.getProduct(galleryProduct.slug))?.media?.gallery.map(
+                (entry) => entry.image,
+              ),
+              replacedGallery,
+            );
+            const latestGalleryProduct = (await actions.getAdminProduct("feh5ks"))!;
+            const reorderedGallery = [replacedGallery[3], replacedGallery[0], replacedGallery[2]];
+            const reorderForm = makeForm({
+              ...latestGalleryProduct,
+              published: true,
+              image: reorderedGallery[0],
+            });
+            reorderForm.set("gallery", JSON.stringify(reorderedGallery));
+            await save(reorderForm);
+            assert.deepEqual((await actions.getAdminProduct("feh5ks"))?.gallery, reorderedGallery);
+            assert.equal(
+              (await actions.getProduct(galleryProduct.slug))?.image,
+              reorderedGallery[0],
+            );
+            assert.match((await actions.saveProductAction({}, galleryForm)).error!, /ถูกแก้ไข/);
+            const invalidGalleryForm = makeForm({
+              ...(await actions.getAdminProduct("feh5ks"))!,
+              published: true,
+            });
+            invalidGalleryForm.set("gallery", JSON.stringify(["https://evil.test/image.png"]));
+            assert.match(
+              (await actions.saveProductAction({}, invalidGalleryForm)).error!,
+              /แกลเลอรี/,
+            );
+            const liveRaw = await tx.product.findUniqueOrThrow({ where: { id: live.id } });
+            const hero = {
+              announcement: "ประกาศทดสอบ",
+              announcementLabel: "อ่านต่อ",
+              announcementHref: "/about-us",
+              tagline: "คำโฆษณา",
+              primaryLabel: "ดูข้อมูล",
+              secondaryLabel: "สินค้า",
+              secondaryHref: "/products",
+              slides: [
+                {
+                  productId: live.id,
+                  title: "หัวข้อใหม่",
+                  description: "คำโปรยใหม่",
+                  image: "",
+                  href: "",
+                },
+              ],
+            };
+            await savedDocument("hero", "settings", hero);
+            assert.equal((await actions.getSettings("hero", hero)).announcement, "ประกาศทดสอบ");
+            assert.match(
+              (await actions.saveDocumentAction({}, documentForm("hero", "settings", hero))).error!,
+              /ถูกแก้ไข/,
+            );
+            const unsafeHero = { ...hero, announcementHref: "javascript:alert(1)" };
+            assert.match(
+              (await actions.saveDocumentAction({}, documentForm("hero", "settings", unsafeHero)))
+                .error!,
+              /ลิงก์/,
+            );
+            for (const value of [
+              "javascript:alert(1)",
+              "//evil.test",
+              "/foo/../admin/products",
+              "/%61dmin/login",
+              "/api/products",
+              "/\\evil.test",
+              "data:text/html,x",
+            ])
+              assert.equal(actions.safeLink(value), false, value);
+            for (const value of [
+              "/collections/Smart weighing",
+              "/about-us",
+              "#support",
+              "https://line.me/R/ti/p/@sunford",
+              "tel:034276999",
+            ])
+              assert.equal(actions.safeLink(value), true, value);
+            assert.doesNotMatch(
+              actions.cleanHtml(
+                '<p onclick="alert(1)">text<script>alert(1)</script><a href="javascript:alert(1)">link</a><img src="https://evil.test/x.png" onerror="x"></p>',
+              ),
+              /script|onclick|onerror|evil.test/,
+            );
+
+            const categoryId = "category:" + randomUUID();
+            await savedDocument(categoryId, "category", {
+              label: "หมวดใหม่ทดสอบ",
+              english: "Custom category",
+            });
+            const customId = categoryId.slice(9);
+            await save(
+              makeForm({
+                ...live,
+                updatedAt: liveRaw.updatedAt,
+                published: true,
+                category: customId,
+              }),
+            );
+            assert.equal((await actions.getProduct(live.slug))?.category, customId);
+            assert.equal(
+              (await tx.product.findUniqueOrThrow({ where: { id: live.id } })).category,
+              "accessories",
+            );
+            let categoryDoc = await tx.cmsDocument.findUniqueOrThrow({ where: { id: categoryId } });
+            await savedDocument(
+              categoryId,
+              "category",
+              { label: "ชื่อหมวดใหม่", english: "Renamed custom category" },
+              categoryDoc.updatedAt.toISOString(),
+            );
+            assert.equal(
+              (await actions.getCategories()).find((category) => category.id === customId)?.label,
+              "ชื่อหมวดใหม่",
+            );
+            assert.equal((await actions.getProduct(live.slug))?.category, customId);
+            categoryDoc = await tx.cmsDocument.findUniqueOrThrow({ where: { id: categoryId } });
+            const deleteCategory = documentForm(
+              categoryId,
+              "category",
+              {},
+              categoryDoc.updatedAt.toISOString(),
+            );
+            assert.match(
+              (await actions.deleteDocumentAction({}, deleteCategory)).error!,
+              /เลือกหมวดหมู่/,
+            );
+            deleteCategory.set("replacement", "food");
+            await assert.rejects(
+              actions.deleteDocumentAction({}, deleteCategory),
+              /REDIRECT:\/admin\/categories/,
+            );
+            assert.equal((await actions.getProduct(live.slug))?.category, "food");
+            assert.equal(
+              (await actions.getCategories()).some((category) => category.id === customId),
+              false,
+            );
+            const categoryProduct = await tx.product.findUniqueOrThrow({ where: { id: live.id } });
+            const invalidCategory = await actions.saveProductAction(
+              {},
+              makeForm({
+                ...live,
+                updatedAt: categoryProduct.updatedAt,
+                published: true,
+                category: customId,
+              }),
+            );
+            assert.ok(invalidCategory.error);
+            await savedDocument("category:food", "category", {
+              label: "อาหารชื่อใหม่",
+              english: "Food renamed",
+            });
+            assert.equal(
+              (await actions.getCategories()).find((category) => category.id === "food")?.label,
+              "อาหารชื่อใหม่",
+            );
+
+            const mediaId = "product-media:" + live.id;
+            const media = {
+              price: 1234.5,
+              gallery: [
+                { image: "/images/products/feh5ks.png" },
+                { image: "/images/products/rls1100.png" },
+              ],
+              descriptionHtml: "<p>เนื้อหาใหม่<script>bad()</script></p>",
+              detailsHtml: "<table><tbody><tr><td>รายละเอียด</td></tr></tbody></table>",
+              specifications: [{ label: "กำลังไฟ", value: "220 V" }],
+              videos: [
+                { id: "https://youtu.be/abcdefghijk", image: "/images/products/feh5ks.png" },
+              ],
+            };
+            await savedDocument(
+              mediaId,
+              "product-media",
+              media,
+              "",
+              categoryProduct.updatedAt.toISOString(),
+            );
+            const rendered = await actions.getProduct(live.slug);
+            assert.equal(rendered?.price, 1234.5);
+            assert.equal(rendered?.media?.gallery.length, 2);
+            assert.equal(rendered?.media?.videos[0].id, "abcdefghijk");
+            assert.doesNotMatch(rendered?.media?.descriptionHtml ?? "", /script|bad/);
+            assert.match(
+              (
+                await actions.saveDocumentAction(
+                  {},
+                  documentForm(
+                    mediaId,
+                    "product-media",
+                    media,
+                    "",
+                    categoryProduct.updatedAt.toISOString(),
+                  ),
+                )
+              ).error!,
+              /ถูกแก้ไข/,
+            );
+            const mediaProduct = await tx.product.findUniqueOrThrow({ where: { id: live.id } });
+            await save(
+              makeForm({
+                ...resolveManagedProduct(mediaProduct),
+                description: "คำอธิบายที่แก้จากข้อมูลสินค้า",
+                image: "/images/products/wps10ks.png",
+                capacity: "99 kg",
+                published: true,
+              }),
+            );
+            const updatedMedia = (await actions.getProduct(live.slug))!.media!;
+            assert.match(updatedMedia.descriptionHtml, /คำอธิบายที่แก้/);
+            assert.equal(updatedMedia.gallery[0].image, "/images/products/wps10ks.png");
+            assert.ok(updatedMedia.specifications.some((spec) => spec.value === "99 kg"));
+            assert.equal(updatedMedia.price, 1234.5);
+
+            const pageId =
+              "page:" + createHash("sha256").update("/about-us").digest("hex").slice(0, 32);
+            const pagePath = "/qa-" + randomUUID();
+            const pageData = {
+              sourcePath: "/about-us",
+              path: pagePath,
+              title: "ข่าวที่แก้ไข",
+              kind: "article",
+              html: "<h2>เนื้อหาข่าวที่บันทึก</h2>",
+              images: [{ image: "/images/products/feh5ks.png" }],
+              videos: [{ id: "abcdefghijk", image: "" }],
+              productIds: [{ id: live.id }],
+              published: true,
+              order: 0,
+            };
+            await saveTarget(await targetForm("digital", "page", "/about-us"));
+            await savedDocument(pageId, "page", pageData);
+            assert.equal((await actions.getHomeLinkTargets()).digital?.pagePath, pagePath);
+            assert.equal((await actions.getContentPage("/about-us"))?.path, pagePath);
+            assert.equal((await actions.getContentPage(pagePath))?.title, "ข่าวที่แก้ไข");
+            let pageDoc = await tx.cmsDocument.findUniqueOrThrow({ where: { id: pageId } });
+            await savedDocument(
+              pageId,
+              "page",
+              { ...pageData, path: pagePath + "-new" },
+              pageDoc.updatedAt.toISOString(),
+            );
+            assert.equal((await actions.getContentPage(pagePath))?.path, pagePath + "-new");
+            pageDoc = await tx.cmsDocument.findUniqueOrThrow({ where: { id: pageId } });
+            await savedDocument(
+              pageId,
+              "page",
+              { ...pageData, path: pagePath + "-new", published: false },
+              pageDoc.updatedAt.toISOString(),
+            );
+            assert.equal(await actions.getContentPage("/about-us"), undefined);
+            assert.equal((await actions.getHomeLinkTargets()).digital?.disabled, true);
+            assert.equal(await actions.getContentPage(pagePath), undefined);
+            assert.equal(
+              (await actions.getContentPages()).some((page) => page.path === pagePath + "-new"),
+              false,
+            );
+            pageDoc = await tx.cmsDocument.findUniqueOrThrow({ where: { id: pageId } });
+            await assert.rejects(
+              actions.deleteDocumentAction(
+                {},
+                documentForm(pageId, "page", {}, pageDoc.updatedAt.toISOString()),
+              ),
+              /REDIRECT:\/admin\/content/,
+            );
+            assert.equal(await actions.getContentPage("/about-us"), undefined);
+            assert.equal((await actions.getContentPage("/contact-us"))?.path, "/contact-us");
+            const collision = await actions.saveDocumentAction(
+              {},
+              documentForm("page:" + randomUUID(), "page", {
+                ...pageData,
+                sourcePath: "",
+                path: pagePath,
+              }),
+            );
+            assert.match(collision.error!, /URL/);
+            context.authenticated = false;
+            assert.match(
+              (await actions.saveDocumentAction({}, documentForm("hero", "settings", hero))).error!,
+              /เข้าสู่ระบบ/,
+            );
+            assert.match(
+              (await actions.deleteDocumentAction({}, deleteCategory)).error!,
+              /เข้าสู่ระบบ/,
+            );
+            context.authenticated = true;
             context.authenticated = false;
             assert.match(
               (await actions.saveHomeImageAction({}, imageForm("spotlight", ""))).error!,
@@ -420,11 +778,15 @@ test(
             assert.deepEqual(await tx.product.findMany({ orderBy: { id: "asc" } }), changed);
             throw rollback;
           },
-          { timeout: 60000 },
+          { timeout: 120000 },
         ),
         (error: unknown) => error === rollback,
       );
       assert.deepEqual(await prisma.product.findMany({ orderBy: { id: "asc" } }), before);
+      assert.deepEqual(
+        await prisma.cmsDocument.findMany({ orderBy: { id: "asc" } }),
+        documentsBefore,
+      );
       assert.deepEqual(
         await prisma.homepageImage.findMany({ orderBy: { slot: "asc" } }),
         homeImagesBefore,

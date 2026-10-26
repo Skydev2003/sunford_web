@@ -3,8 +3,10 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTarget } from "../data/link-targets";
+import { getSettings } from "@/features/cms/server/documents";
+import { spotlightDefaults } from "@/features/cms/data/settings";
 
-export function ProductSpotlight({
+export async function ProductSpotlight({
   products,
   image,
   target,
@@ -13,6 +15,7 @@ export function ProductSpotlight({
   image?: string;
   target?: HomeLinkTarget;
 }) {
+  const copy = await getSettings("spotlight", spotlightDefaults);
   const defaultProduct = products.find((item) => item.id === "rls1100");
   const product = target?.productId
     ? products.find((item) => item.id === target.productId)
@@ -40,23 +43,19 @@ export function ProductSpotlight({
         <div className="spotlight-copy">
           <p className="eyebrow">SUNFORD {product?.name}</p>
           <h2 id="spotlight-title">
-            ชั่ง. พิมพ์. จัดการ.
+            {copy.title}
             <br />
-            <span>ง่ายในเครื่องเดียว.</span>
+            <span>{copy.accent}</span>
           </h2>
-          <p>
-            เครื่องชั่งพิมพ์ฉลากบาร์โค้ด
-            <br />
-            ให้ทุกร้านค้า ทำงานได้เป็นระบบยิ่งขึ้น
-          </p>
+          <p style={{ whiteSpace: "pre-line" }}>{copy.description}</p>
           <div className="spotlight-actions">
             {href && (
               <Link href={href} className="button button-red">
-                ดูเพิ่มเติม
+                {copy.primaryLabel}
               </Link>
             )}
-            <a href="#contact" className="text-link">
-              ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={17} />
+            <a href={copy.secondaryHref} className="text-link">
+              {copy.secondaryLabel} <ChevronRight size={17} />
             </a>
           </div>
         </div>

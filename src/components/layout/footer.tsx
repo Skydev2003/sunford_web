@@ -1,12 +1,15 @@
+import { defaultSite } from "@/features/cms/data/settings";
+import type { SiteSettings } from "@/features/cms/types";
+import { cacheLife, cacheTag } from "next/cache";
+import { getSettings } from "@/features/cms/server/documents";
+import { patchSection } from "@/features/cms/server/section-tree";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Phone } from "lucide-react";
-import { cacheLife } from "next/cache";
+
 import { sunford } from "@/features/home/data/brand";
 
-export async function Footer() {
-  "use cache";
-  cacheLife("days");
+export function FooterTemplate(site: SiteSettings = defaultSite) {
   return (
     <footer id="contact">
       <div className="contact-banner">
@@ -19,7 +22,7 @@ export async function Footer() {
               เริ่มต้นด้วยการเลือกที่ใช่
             </h2>
           </div>
-          <a href={sunford.line} className="button button-white" target="_blank" rel="noreferrer">
+          <a href={site.line} className="button button-white" target="_blank" rel="noreferrer">
             คุยกับผู้เชี่ยวชาญ <ArrowUpRight size={18} />
           </a>
         </div>
@@ -27,17 +30,17 @@ export async function Footer() {
       <div className="container footer-main">
         <div className="footer-brand">
           <Link href="/">
-            <Image src="/images/sunford-logo.png" alt="SUNFORD" width={151} height={31} />
+            <Image src={site.logo} alt={site.name} width={151} height={31} />
           </Link>
           <p>
             ความเที่ยงตรง ที่คุณวางใจ
             <br />
             Precision you can trust.
           </p>
-          <a href={sunford.phoneHref}>
-            <Phone size={15} /> {sunford.phone}
+          <a href={site.phoneHref}>
+            <Phone size={15} /> {site.phone}
           </a>
-          <a href={`mailto:${sunford.email}`}>{sunford.email}</a>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
           <p className="footer-hours">
             {sunford.hours}
             <br />
@@ -78,7 +81,7 @@ export async function Footer() {
           <a href={sunford.downloads} target="_blank" rel="noreferrer">
             ดาวน์โหลดซอฟต์แวร์
           </a>
-          <a href="https://line.me/R/ti/p/@sunford" target="_blank" rel="noreferrer">
+          <a href={site.line} target="_blank" rel="noreferrer">
             LINE @sunford <ArrowUpRight size={12} />
           </a>
           <p className="footer-address">
@@ -96,5 +99,15 @@ export async function Footer() {
         <a href="#main-content">กลับด้านบน ↑</a>
       </div>
     </footer>
+  );
+}
+
+export async function Footer() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
+  return patchSection(
+    FooterTemplate(await getSettings("site", defaultSite)),
+    await getSettings("section:footer", {}),
   );
 }

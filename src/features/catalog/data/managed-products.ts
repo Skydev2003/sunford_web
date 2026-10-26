@@ -5,12 +5,14 @@ const snapshots = new Map(getSnapshotProducts().map((product) => [product.id, pr
 
 // Preserve the current public presentation of the six legacy seed records without
 // overwriting their stored values. An explicit admin save takes ownership thereafter.
-export function resolveManagedProduct<T extends Product & { catalogManaged: boolean }>(
-  row: T,
-): T & Product {
+export function resolveManagedProduct<
+  T extends Product & { catalogManaged: boolean; categoryId?: string | null },
+>(row: T): T & Product {
   const snapshot = snapshots.get(row.id);
-  if (!snapshot) return row;
-  return row.catalogManaged
-    ? { ...snapshot, ...row, imageOverridden: row.image !== snapshot.image }
-    : { ...row, ...snapshot, imageOverridden: false };
+  const resolved = !snapshot
+    ? row
+    : row.catalogManaged
+      ? { ...snapshot, ...row, imageOverridden: row.image !== snapshot.image }
+      : { ...row, ...snapshot, imageOverridden: false };
+  return { ...resolved, category: row.categoryId ?? resolved.category };
 }

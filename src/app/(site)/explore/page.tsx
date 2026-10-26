@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { ContentDirectory } from "@/features/content/components/content-directory";
-import { importedPages } from "@/features/content/server/content-repository";
+import { getContentPages } from "@/features/content/server/content-repository";
 
 export const metadata: Metadata = { title: "สำรวจ Sunford" };
-export default function ExplorePage() {
-  const pages = importedPages
+export default async function ExplorePage() {
+  const pages = (await getContentPages())
     .filter((page) => page.kind !== "product" && page.path !== "/")
     .map(({ path, title, kind, images }) => ({ path, title, kind, image: images[0] }));
   return (

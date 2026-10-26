@@ -2,6 +2,12 @@ import type { Product } from "../types";
 import type { SourceProduct } from "@/features/content/types";
 
 export function productPresentation(product: Product, snapshot?: Product, source?: SourceProduct) {
+  if (product.media)
+    return {
+      images: product.media.gallery.map((entry) => entry.image),
+      descriptionHtml: product.media.descriptionHtml,
+      specifications: product.media.specifications,
+    };
   const images = source?.images ?? [];
   const imageChanged = snapshot && product.image !== snapshot.image;
   const specifications = [...(source?.specifications ?? [])];
