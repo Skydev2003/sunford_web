@@ -127,7 +127,7 @@ test("catalogue API returns data and unknown products render an unindexable 404 
   const data = await response.json();
   expect(data.products.length).toBeGreaterThanOrEqual(150);
   await page.goto("/products");
-  await page.getByRole("button", { name: "สำรวจผลิตภัณฑ์ทั้งหมด", exact: true }).click();
+  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
   await expect(page.locator(".product-card")).toHaveCount(24);
   await page.getByRole("button", { name: /ดูเพิ่มเติม \(24/ }).click();
   await expect(page.locator(".product-card")).toHaveCount(48);

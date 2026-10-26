@@ -26,7 +26,12 @@ npm run admin:create -- admin@example.com
 - `src/features/admin/server/auth.ts` ตรวจตัวตนด้วย `supabase.auth.getUser()` และตรวจ membership จาก PostgreSQL ไม่มีการเชื่อ session cookie ที่ยังไม่ได้ตรวจสอบหรือ `user_metadata` เพื่อให้สิทธิ์
 - ทุก Server Action ที่แก้สินค้า อัปโหลด หรือทิ้งรูป ตรวจสิทธิ์ซ้ำ ไม่พึ่งการซ่อนปุ่มหรือ redirect ใน layout
 - `src/proxy.ts` refresh session เฉพาะ `/admin/*` และส่ง `Cache-Control: private, no-store` ใช้ cookie แบบ HttpOnly, SameSite=Lax และ Secure เมื่อรัน production ผ่าน HTTPS
-- หน้าสินค้าแอดมินอ่านข้อมูลสด รวมฉบับร่าง ส่วนหน้าสาธารณะอ่านเฉพาะ `published=true`
+- หน้าสินค้าแอดมินอ่านข้อมูลสดครบ 150 รายการที่นำเข้า รวมสินค้าใหม่และฉบับร่าง ส่วนหน้าสาธารณะอ่านเฉพาะ `published=true` และ `deletedAt=null`
+- รองรับครบ 8 หมวด: พาณิชย์ อุตสาหกรรม อาหาร อัจฉริยะ POS ห้องปฏิบัติการ อุปกรณ์เสริม และไลฟ์สไตล์/สุขภาพ
+- ใช้ `npm run db:deploy` แล้ว `npm run db:seed` ในแต่ละ environment เพื่อเพิ่ม schema และนำเข้าสินค้าที่ขาด คำสั่ง seed สำรองตารางสินค้าในโฟลเดอร์ Sunford/backups ใต้ LOCALAPPDATA (หรือ home directory) ก่อนนำเข้า และเพิ่มเฉพาะ ID ที่ยังไม่มี ไม่เขียนทับสินค้าเดิม ฉบับร่าง หรือสินค้าที่ลบแล้ว
+- ข้อมูล 6 รุ่นเดิมเก็บค่าในฐานข้อมูลเดิมไว้ครบ ใช้ snapshot สำหรับการแสดงผลก่อนแก้ครั้งแรก เมื่อกดบันทึกจากแอดมินจะตั้ง `catalogManaged=true` และใช้ค่าที่บันทึก การเปลี่ยนชื่อ คำโปรย รูป หมวด สเปกย่อ และสถานะจึงมีผลจริง โดยคง source ID ราคา แกลเลอรี และรายละเอียดต้นฉบับไว้
+- URL เดิมที่มีตัวพิมพ์ใหญ่/เล็กและขีดล่างยังใช้ได้ หลังเปลี่ยน slug ของสินค้านำเข้า URL เดิมกับ source ID ยังอ้างอิงสินค้าตัวเดิม
+- ลบสินค้าใช้ `deletedAt` เพื่อนำออกจากเว็บและรายการแอดมิน โดยเก็บข้อมูลและรูปไว้ภายใน ไม่ลบไฟล์ต้นฉบับ และไม่ถูก seed เพิ่มกลับมาเอง การซ่อนใช้การยกเลิก “เผยแพร่บนเว็บไซต์” แล้วบันทึก จึงยังแก้และเผยแพร่ใหม่ได้
 - บันทึก/ลบแล้ว invalidate tag `products` และหน้าที่เกี่ยวข้อง เพื่อให้แคตตาล็อกอัปเดตทันที
 - ฟอร์มตรวจข้อมูลด้วย Zod และตรวจ `updatedAt` ตอนแก้/ลบ เพื่อไม่ทับข้อมูลที่ถูกแก้จากอีกหน้า
 - `products` ไม่เปิด Data API writes ให้ anonymous/authenticated users การแก้ไขผ่าน Prisma หลังตรวจแอดมินฝั่งเซิร์ฟเวอร์เท่านั้น
@@ -41,12 +46,21 @@ Bucket: `product-images` เปิด public read สำหรับรูปบ
 - SELECT/DELETE: ต้องเป็นแอดมิน
 - ไม่มี UPDATE policy; ใช้ชื่อไฟล์ UUID ใหม่ทุกครั้งเพื่อเลี่ยงการเขียนทับและปัญหา cache
 - Server Action ตรวจชนิดจาก bytes จริงด้วย `file-type` ปฏิเสธ SVG/ไฟล์ที่ปลอมชื่อเป็นภาพ
-- ฟอร์มยอมรับภาพเดิมใน `/images/products` หรือ URL ที่สร้างจาก bucket ของ project นี้เท่านั้น
-- เมื่อเปลี่ยนรูปหรือลบสินค้า จะพยายามลบรูปเดิมที่ไม่มีสินค้าอื่นอ้างอิง หลังบันทึกฐานข้อมูลสำเร็จแล้ว ความล้มเหลวของ Storage cleanup จะไม่ย้อนการบันทึกสินค้า
+- ฟอร์มยอมรับภาพเดิมใน `/images/products` และ `/images/imported` รวม AVIF เดิม หรือ URL ที่สร้างจาก bucket ของ project นี้เท่านั้น สินค้าที่ยังไม่มีรูปสามารถบันทึกได้
+- เมื่อเปลี่ยนรูป จะพยายามลบรูปอัปโหลดเก่าที่ไม่มีสินค้าอื่นอ้างอิงหลังบันทึกสำเร็จ แต่การลบสินค้าเก็บรูปไว้สำหรับกู้คืน ความล้มเหลวของ Storage cleanup จะไม่ย้อนการบันทึกสินค้า
 - ปุ่มยกเลิก/กลับจากฟอร์มพยายามลบรูปที่เพิ่งอัปโหลดและยังไม่ได้ใช้ หากปิดแท็บทันทีหรือเน็ตหลุด อาจมีไฟล์ที่ไม่ถูกอ้างอิงเหลือใน bucket ต้องตรวจผ่านเครื่องมือ Storage ก่อนลบ ไม่ลบไฟล์จาก `storage.objects` ด้วย SQL
 - Public images may remain cached by a CDN/browser for their cache lifetime after deletion. Deleting a product removes it from the catalogue immediately; images are public marketing assets, not private documents.
 
 ## ทดสอบ
+
+ตรวจแบบไม่ใช้บัญชีแอดมิน:
+
+```bash
+npm run test:catalog
+npm run test:catalog:integration
+```
+
+Integration test ใช้ฐานข้อมูลจริงและ transaction ที่ rollback ทั้งหมด โดยจำลองเฉพาะ session ที่ผ่านการตรวจและ Next.js cache context ตรวจ CRUD ครบ 8 หมวด สินค้าเดิม/สินค้านำเข้า การชนกันของเวอร์ชัน และ seed ซ้ำแล้วไม่เขียนทับข้อมูล ไม่ส่งอีเมลหรือแก้ข้อมูลจริงค้างไว้
 
 เปิด dev server แล้วรัน:
 

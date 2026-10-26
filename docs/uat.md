@@ -1,6 +1,6 @@
 # UAT บนคลาวด์และ LAN
 
-สำหรับ UAT ที่ไม่ต้องเปิดเครื่องตัวเอง ใช้ [Render Free ตามคู่มือนี้](render.md) โดย deploy จาก branch `uat` หลัง CI ผ่าน และใช้ Supabase project ปัจจุบัน ส่วนวิธี LAN ด้านล่างยังใช้ทดสอบชั่วคราวได้ ไฟล์ config เพียงอย่างเดียวยังไม่สร้าง hosting ต้องตั้งค่า Render ครั้งแรกด้วย
+สำหรับ UAT ที่ไม่ต้องเปิดเครื่องตัวเอง ใช้ [Render Free ตามคู่มือนี้](render.md) โดย Blueprint หลัก deploy จาก branch `main` หลัง CI ผ่าน (การทดสอบ UAT แยกยังใช้ `APP_ENV=uat` และ branch `uat` ได้) และใช้ Supabase project ปัจจุบัน ส่วนวิธี LAN ด้านล่างยังใช้ทดสอบชั่วคราวได้ ไฟล์ config เพียงอย่างเดียวยังไม่สร้าง hosting ต้องตั้งค่า Render ครั้งแรกด้วย
 
 `nip.io` เป็น DNS ที่อ่าน IP จากชื่อโดเมน ไม่ได้ให้พื้นที่รัน Next.js ตัวอย่าง `64.176.22.9.nip.io` บนเว็บไซต์ nip.io เป็นเว็บของผู้ให้บริการเอง จึงใช้เป็นเซิร์ฟเวอร์ Sunford ไม่ได้
 
@@ -100,10 +100,10 @@ npm run uat:local
 | ยืนยันลบ        | ลบเฉพาะสินค้าทดสอบที่เพิ่งสร้าง                                   | มีการยืนยันก่อนลบ และสินค้าหายจากเว็บไซต์      |
 | ออกจากระบบ      | ออกจากระบบ แล้วเปิด URL แอดมินอีกครั้ง                            | ต้องล็อกอินใหม่                                |
 
-บันทึก commit SHA, ผู้ทดสอบ, วันที่, อุปกรณ์/เบราว์เซอร์, ผล Pass/Fail และภาพปัญหาใน PR/issue ของทีม หลังทดสอบให้ลบเฉพาะข้อมูลที่สร้างสำหรับการทดสอบ อย่ารัน seed ทุกครั้งที่อัปเดตโค้ด เพราะจะเขียนทับรายละเอียดสินค้าเดิมตามไฟล์ seed
+บันทึก commit SHA, ผู้ทดสอบ, วันที่, อุปกรณ์/เบราว์เซอร์, ผล Pass/Fail และภาพปัญหาใน PR/issue ของทีม หลังทดสอบให้ลบเฉพาะข้อมูลที่สร้างสำหรับการทดสอบ คำสั่ง seed ปัจจุบันเพิ่มเฉพาะ ID ที่ยังขาดและไม่เขียนทับข้อมูลเดิมหรือสินค้าที่ลบแล้ว
 
 ## Hosting บนคลาวด์
 
-`render.yaml` ใช้ branch `uat` และ CI เดิมต่อได้ พร้อม HTTPS URL ของ Render ดูการตั้งค่า Environment และ auto-deploy ใน [render.md](render.md) ระบบล็อกอิน production ใช้ Secure cookies จึงต้องเปิดผ่าน HTTPS
+`render.yaml` ใช้ branch `main` และ CI เดิมต่อได้ พร้อม HTTPS URL ของ Render ดูการตั้งค่า Environment และ auto-deploy ใน [render.md](render.md) ระบบล็อกอิน production ใช้ Secure cookies จึงต้องเปิดผ่าน HTTPS
 
 ดูพฤติกรรม DNS และข้อกำหนดการออก TLS ได้จาก [nip.io](https://nip.io/) และ [Next.js self-hosting](https://nextjs.org/docs/app/guides/self-hosting)

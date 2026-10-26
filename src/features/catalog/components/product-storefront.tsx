@@ -100,7 +100,7 @@ export function ProductStorefront({
   const setQuery = useCatalogStore((state) => state.setQuery);
   const storeProducts = products.map((product) => ({
     ...product,
-    image: cleanImages[product.id] ?? product.image,
+    image: product.imageOverridden ? product.image : (cleanImages[product.id] ?? product.image),
   }));
   const browse = showAll || category !== "all" || Boolean(query.trim());
   const featured = ["rls1100", "wps10ks", "feh5ks", "tis150", "pos1100", "acs30-jc21"].flatMap(
@@ -194,15 +194,6 @@ export function ProductStorefront({
             id="store-featured"
             title="สินค้าแนะนำของเรา."
             subtitle="ค้นพบความแม่นยำที่เหมาะกับคุณ"
-            action={
-              <button
-                className="store-view-all"
-                aria-label="สำรวจผลิตภัณฑ์ทั้งหมด"
-                onClick={() => openCatalogue()}
-              >
-                ดูทั้งหมด {products.length} รายการ <ChevronRight size={16} />
-              </button>
-            }
           >
             {featured.map((product) => (
               <StoreProductCard

@@ -42,7 +42,7 @@ test("category images open the filtered catalogue and all products remain search
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await page.getByRole("button", { name: "กลับไปหน้าแนะนำผลิตภัณฑ์", exact: true }).click();
   await expect(page.locator("#store-featured")).toBeVisible();
-  await page.getByRole("button", { name: "สำรวจผลิตภัณฑ์ทั้งหมด", exact: true }).click();
+  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
   await page.getByPlaceholder("ค้นหารุ่นสินค้า").fill("RLS1100");
   await expect(
     page.locator(".product-card").getByRole("heading", { name: "RLS1100", exact: true }),

@@ -245,10 +245,7 @@ export function AdminProductList({
           <p>
             คุณกำลังลบ <strong>{target?.name}</strong>
           </p>
-          <p>
-            สินค้าจะถูกนำออกจากแคตตาล็อกและเว็บไซต์ รูปที่ไม่มีสินค้าอื่นใช้งานจะถูกลบจาก Storage
-            ด้วย
-          </p>
+          <p>สินค้าจะถูกนำออกจากแคตตาล็อกและเว็บไซต์ โดยเก็บข้อมูลและรูปเดิมไว้ภายในระบบ</p>
           {error && (
             <p className="admin-alert error" role="alert">
               {error}
