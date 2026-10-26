@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, LayoutGrid, LogOut, Package, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, LogOut, ShieldCheck } from "lucide-react";
 import { logoutAction } from "../server/auth-actions";
+import { AdminNavigation } from "./admin-navigation";
 export function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
   return (
     <div className="admin-shell">
@@ -11,16 +12,7 @@ export function AdminShell({ email, children }: { email: string; children: React
           <span>ADMIN WORKSPACE</span>
         </Link>
         <div className="admin-nav-label">จัดการเว็บไซต์</div>
-        <nav aria-label="เมนูแอดมิน">
-          <Link href="/admin/products" className="active">
-            <Package size={18} /> ผลิตภัณฑ์
-            <ArrowUpRight size={13} />
-          </Link>
-          <Link href="/" target="_blank">
-            <LayoutGrid size={18} /> ดูหน้าเว็บไซต์
-            <ArrowUpRight size={13} />
-          </Link>
-        </nav>
+        <AdminNavigation />
         <div className="admin-sidebar-bottom">
           <span>
             <ShieldCheck size={15} /> สิทธิ์ผู้ดูแลระบบ
@@ -36,7 +28,7 @@ export function AdminShell({ email, children }: { email: string; children: React
       <div className="admin-workspace">
         <header className="admin-topbar">
           <span>
-            Workspace <span>/</span> ผลิตภัณฑ์
+            Workspace <span>/</span> จัดการเว็บไซต์
           </span>
           <Link href="/" target="_blank">
             ดูเว็บไซต์ <ArrowUpRight size={14} />

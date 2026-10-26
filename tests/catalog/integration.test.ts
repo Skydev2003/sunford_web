@@ -14,6 +14,7 @@ import { categories } from "../../src/features/catalog/types";
 import { importCatalog } from "../../prisma/catalog-import";
 import type { ActionState } from "../../src/features/admin/types";
 import type { Product } from "../../src/features/catalog/types";
+import { homeImageSlots, type HomeImages } from "../../src/features/home/data/image-slots";
 
 type Harness = {
   saveProductAction: (previous: ActionState, form: FormData) => Promise<ActionState>;
@@ -21,6 +22,9 @@ type Harness = {
   getProducts: () => Promise<Product[]>;
   getProduct: (slug: string) => Promise<Product | undefined>;
   listAdminProducts: () => Promise<Array<Product & { updatedAt: string }>>;
+  saveHomeImageAction: (previous: ActionState, form: FormData) => Promise<ActionState>;
+  getHomeImages: () => Promise<HomeImages>;
+  removeUnusedImage: (service: unknown, image: string) => Promise<void>;
 };
 type TestContext = { db: unknown; authenticated: boolean; invalidated: string[] };
 const globals = globalThis as typeof globalThis & { __catalogActionTest?: TestContext };
@@ -42,7 +46,7 @@ test(
     await build({
       stdin: {
         contents:
-          'export * from "./src/features/admin/server/product-actions"; export * from "./src/features/catalog/server/product-repository"; export * from "./src/features/admin/server/products";',
+          'export * from "./src/features/admin/server/product-actions"; export * from "./src/features/catalog/server/product-repository"; export * from "./src/features/admin/server/products"; export * from "./src/features/admin/server/home-image-actions"; export * from "./src/features/home/server/home-images"; export * from "./src/features/admin/server/media";',
         resolveDir: process.cwd(),
         loader: "ts",
       },
@@ -80,6 +84,7 @@ test(
     try {
       const actions = (await import(pathToFileURL(harnessPath).href)) as Harness;
       const before = await prisma.product.findMany({ orderBy: { id: "asc" } });
+      const homeImagesBefore = await prisma.homepageImage.findMany({ orderBy: { slot: "asc" } });
       const makeForm = (
         product: Product & { published?: boolean; updatedAt?: Date | string },
         editing = true,
@@ -150,6 +155,87 @@ test(
               ] as const)
                 assert.deepEqual(product[key], expected[key]);
             }
+            // Each homepage slot is independent of product images. Save/replace/reset
+            // only inside this transaction, which is rolled back before finishing.
+            const imageForm = (slot: string, image: string, version = "") => {
+              const form = new FormData();
+              form.set("slot", slot);
+              form.set("image", image);
+              form.set("updatedAt", version);
+              return form;
+            };
+            for (const slot of homeImageSlots) {
+              const previous = await tx.homepageImage.findUnique({ where: { slot: slot.id } });
+              const stale = imageForm(
+                slot.id,
+                "/images/products/feh5ks.png",
+                previous?.updatedAt.toISOString(),
+              );
+              await assert.rejects(
+                actions.saveHomeImageAction(
+                  {},
+                  imageForm(
+                    slot.id,
+                    "/images/products/rls1100.png",
+                    previous?.updatedAt.toISOString(),
+                  ),
+                ),
+                /REDIRECT:\/admin\/home-images\?saved=/,
+              );
+              assert.equal(
+                (await actions.getHomeImages())[slot.id],
+                "/images/products/rls1100.png",
+              );
+              assert.match(
+                (await actions.saveHomeImageAction({}, stale)).error!,
+                /ถูกแก้ไขจากอีกหน้า/,
+              );
+              const saved = await tx.homepageImage.findUniqueOrThrow({ where: { slot: slot.id } });
+              await assert.rejects(
+                actions.saveHomeImageAction(
+                  {},
+                  imageForm(slot.id, "", saved.updatedAt.toISOString()),
+                ),
+                /REDIRECT:\/admin\/home-images\?saved=/,
+              );
+              assert.equal((await actions.getHomeImages())[slot.id], undefined);
+            }
+            if (process.env.SUPABASE_URL) {
+              const sharedImage = `${process.env.SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/product-images/${randomUUID()}/${randomUUID()}.png`;
+              await tx.homepageImage.create({ data: { slot: "smart", image: sharedImage } });
+              let removals = 0;
+              const service = {
+                storage: {
+                  from: () => ({
+                    remove: async () => {
+                      removals++;
+                      return { error: null };
+                    },
+                  }),
+                },
+              };
+              await actions.removeUnusedImage(service, sharedImage);
+              assert.equal(
+                removals,
+                0,
+                "Product cleanup must preserve images referenced by the homepage",
+              );
+              await tx.homepageImage.delete({ where: { slot: "smart" } });
+              await actions.removeUnusedImage(service, sharedImage);
+              assert.equal(removals, 1);
+            }
+            assert.deepEqual(await actions.getProducts(), initial);
+            assert.deepEqual(await tx.product.findMany({ orderBy: { id: "asc" } }), before);
+            assert.ok((await actions.saveHomeImageAction({}, imageForm("unknown", ""))).error);
+            assert.ok(
+              (
+                await actions.saveHomeImageAction(
+                  {},
+                  imageForm("smart", "https://untrusted.example/image.png"),
+                )
+              ).error,
+            );
+
             // Existing seed and imported records are changed only inside this uncommitted
             // transaction; other requests continue to see their original values throughout.
             for (const id of ["wps10ks", "sunford-RLS1100", "sunford-10730"]) {
@@ -198,12 +284,17 @@ test(
             }
             context.authenticated = false;
             assert.match(
+              (await actions.saveHomeImageAction({}, imageForm("spotlight", ""))).error!,
+              /เข้าสู่ระบบ/,
+            );
+            assert.match(
               (await actions.saveProductAction({}, makeForm(getSnapshotProducts()[0], false)))
                 .error!,
               /เข้าสู่ระบบ/,
             );
             assert.match((await actions.deleteProductAction(new FormData())).error!, /เข้าสู่ระบบ/);
             assert.ok(context.invalidated.includes("products"));
+            assert.ok(context.invalidated.includes("home-images"));
             assert.ok(context.invalidated.includes("/api/products"));
             const changed = await tx.product.findMany({ orderBy: { id: "asc" } });
             // Seed again inside the same transaction. Archived imported records
@@ -221,6 +312,10 @@ test(
         (error: unknown) => error === rollback,
       );
       assert.deepEqual(await prisma.product.findMany({ orderBy: { id: "asc" } }), before);
+      assert.deepEqual(
+        await prisma.homepageImage.findMany({ orderBy: { slot: "asc" } }),
+        homeImagesBefore,
+      );
     } finally {
       delete globals.__catalogActionTest;
       await prisma.$disconnect();

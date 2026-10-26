@@ -9,14 +9,15 @@ import { CategoryNavigation } from "@/features/catalog/components/category-navig
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { BrandStory, BusinessSolutions, SupportSection } from "@/features/home/components/sections";
 import { getProducts } from "@/features/catalog/server/product-repository";
+import { getHomeImages } from "@/features/home/server/home-images";
 
 export default async function Home() {
-  const products = await getProducts();
+  const [products, images] = await Promise.all([getProducts(), getHomeImages()]);
   return (
     <main id="main-content">
       <Hero products={products} />
-      <ProductSpotlight products={products} />
-      <SourceShowcase products={products} />
+      <ProductSpotlight products={products} image={images.spotlight} />
+      <SourceShowcase products={products} images={images} />
       <CategoryNavigation />
       <ProductCatalog products={products} />
       <BusinessSolutions />

@@ -34,9 +34,11 @@ test("anonymous admin routes stay protected and separate from the public layout"
     !process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY,
     "Supabase Auth configuration is required to check the anonymous login flow.",
   );
-  await page.goto("/admin/products");
-  await expect(page).toHaveURL(/\/admin\/login$/);
-  await expect(page.getByRole("heading", { name: "เข้าสู่พื้นที่แอดมิน" })).toBeVisible();
+  for (const route of ["/admin/products", "/admin/home-images"]) {
+    await page.goto(route);
+    await expect(page).toHaveURL(/\/admin\/login$/);
+    await expect(page.getByRole("heading", { name: "เข้าสู่พื้นที่แอดมิน" })).toBeVisible();
+  }
   await expect(page.locator(".admin-app")).toHaveCount(1);
   await expect(page.locator(".site-header")).toHaveCount(0);
   await expect(page.getByRole("contentinfo")).toHaveCount(0);
