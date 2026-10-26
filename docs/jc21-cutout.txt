@@ -1,0 +1,6 @@
+Mode: built-in image_gen image editing; transparent_background=true.
+Source: public/images/products/acs30-jc21.jpg
+Output: public/images/products/acs30-jc21-cutout.png
+
+Final prompt:
+Use case: background-extraction. Edit target: the supplied original SUNFORD ACS-30-JC21 product photograph. Remove only the white background and the external floor/cast shadow so the output contains only the physical weighing scale on a genuinely transparent alpha background. Preserve the exact original scale, silhouette, perspective, metal tray, red and blue control panel, all SUNFORD branding, Thai labels, digits, buttons, displays, texture and colors. Do not redraw, redesign, enhance, relight, or invent any product details. Preserve original subject pixels as closely as possible. Keep the complete product without cutting any edge. Center it with modest transparent padding, landscape framing suitable for a website hero. No added text, objects, backdrop, checkerboard, or watermark.

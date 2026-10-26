@@ -25,12 +25,20 @@ test("homepage renders product imagery and cycles featured products", async ({ p
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("SUNFORD WPS10KS");
-  await expect(page.locator(".hero-model")).toContainText("WPS10KS");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("SUNFORD ACS-30-JC21");
+  await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
+  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
+    "href",
+    "/products/acs30-jc21",
+  );
+  await expect(page.locator(".hero-product-image")).toHaveAttribute(
+    "alt",
+    "เครื่องชั่ง SUNFORD ACS-30-JC21",
+  );
   await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
   await expect(page.locator(".hero-model")).toContainText("FEH5KS");
   await page.getByRole("button", { name: "สินค้าก่อนหน้า" }).click();
-  await expect(page.locator(".hero-model")).toContainText("WPS10KS");
+  await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator(".hero-product-image")).toBeVisible();
   await loadPageImages(page);

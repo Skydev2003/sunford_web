@@ -5,9 +5,16 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
 
+const heroImages: Record<string, string> = {
+  "acs30-jc21": "/images/products/acs30-jc21-cutout.png",
+  wps10ks: "/images/products/wps10ks.png",
+  feh5ks: "/images/products/feh5ks.png",
+  rls1100: "/images/products/rls1100.png",
+};
+
 export function Hero({ products }: { products: Product[] }) {
   const [active, setActive] = useState(0);
-  const preferred = ["wps10ks", "feh5ks", "rls1100"].flatMap((id) =>
+  const preferred = ["acs30-jc21", "feh5ks", "rls1100"].flatMap((id) =>
     products.filter((product) => product.id === id),
   );
   const slides = preferred.length ? preferred : products.slice(0, 3);
@@ -49,9 +56,9 @@ export function Hero({ products }: { products: Product[] }) {
               <ProductImage
                 key={product.id}
                 src={
-                  !product.imageOverridden && ["wps10ks", "feh5ks", "rls1100"].includes(product.id)
-                    ? `/images/products/${product.id}.png`
-                    : product.image
+                  product.imageOverridden
+                    ? product.image
+                    : (heroImages[product.id] ?? product.image)
                 }
                 alt={`เครื่องชั่ง SUNFORD ${product.name}`}
                 width={690}
