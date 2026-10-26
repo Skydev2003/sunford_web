@@ -1,9 +1,11 @@
+import type { Product } from "@/features/catalog/types";
+
 export type ActionState = { error?: string; fieldErrors?: Record<string, string[]> };
 export type AdminProduct = {
   id: string;
   slug: string;
   name: string;
-  category: "commercial" | "industrial" | "food" | "smart" | "pos";
+  category: Product["category"];
   subtitle: string;
   description: string;
   image: string;

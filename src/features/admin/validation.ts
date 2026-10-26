@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { categories } from "../catalog/types";
 const text = (label: string, max = 200) =>
   z.string().trim().min(1, `กรุณากรอก${label}`).max(max, `${label}ยาวเกิน ${max} ตัวอักษร`);
 export const productInputSchema = z.object({
@@ -7,7 +8,7 @@ export const productInputSchema = z.object({
     /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
     "ใช้ a-z, 0-9 และขีดกลาง เช่น wps10ks",
   ),
-  category: z.enum(["commercial", "industrial", "food", "smart", "pos"]),
+  category: z.enum(categories.filter((category) => category.id !== "all").map(({ id }) => id)),
   subtitle: text("คำโปรย", 200),
   description: text("รายละเอียด", 5000),
   image: text("รูปสินค้า", 2048),
