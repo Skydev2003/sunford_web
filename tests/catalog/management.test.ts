@@ -9,6 +9,41 @@ import { findCatalogProduct } from "../../src/features/catalog/data/product-look
 import sourceProducts from "../../src/features/content/data/products.json";
 import type { SourceProduct } from "../../src/features/content/types";
 import { defaultHomeImages, homeImageSlots } from "../../src/features/home/data/image-slots";
+import { resolveHomeLink } from "../../src/features/home/data/link-targets";
+
+test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {
+  const products = getSnapshotProducts();
+  assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/rls1100");
+  assert.equal(resolveHomeLink("digital", undefined, products), "/Product/Digital-weighing");
+  const target = { productId: "wps10ks" };
+  assert.equal(resolveHomeLink("digital", target, products), "/products/wps10ks");
+  assert.equal(
+    resolveHomeLink(
+      "digital",
+      target,
+      products.map((p) => (p.id === "wps10ks" ? { ...p, slug: "renamed-wps" } : p)),
+    ),
+    "/products/renamed-wps",
+  );
+  assert.equal(
+    resolveHomeLink(
+      "digital",
+      target,
+      products.filter((p) => p.id !== "wps10ks"),
+    ),
+    undefined,
+  );
+  assert.equal(resolveHomeLink("smart", { pagePath: "/about-us" }, products), "/about-us");
+  for (const path of [
+    "javascript:alert(1)",
+    "https://example.com",
+    "//example.com",
+    "/admin/products",
+    "/api/products",
+    "/\\example.com",
+  ])
+    assert.equal(resolveHomeLink("smart", { pagePath: path }, products), undefined);
+});
 
 test("homepage image defaults preserve the current artwork in five independent positions", () => {
   const products = getSnapshotProducts();

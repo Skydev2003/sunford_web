@@ -2,15 +2,43 @@ import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
+import { resolveHomeLink, type HomeLinkTarget } from "../data/link-targets";
 
-export function ProductSpotlight({ products, image }: { products: Product[]; image?: string }) {
-  const product = products.find((item) => item.id === "rls1100");
-  if (!product) return null;
+export function ProductSpotlight({
+  products,
+  image,
+  target,
+}: {
+  products: Product[];
+  image?: string;
+  target?: HomeLinkTarget;
+}) {
+  const defaultProduct = products.find((item) => item.id === "rls1100");
+  const product = target?.productId
+    ? products.find((item) => item.id === target.productId)
+    : defaultProduct;
+  if (!product && !target?.pagePath) return null;
+  const href = resolveHomeLink("spotlight", target, products);
+  const visual = (
+    <>
+      <ProductImage
+        src={
+          image ??
+          (defaultProduct?.imageOverridden ? defaultProduct.image : "/images/products/rls1100.png")
+        }
+        alt={product ? `SUNFORD ${product.name}` : "ผลิตภัณฑ์ Sunford"}
+        width={614}
+        height={614}
+        sizes="(max-width: 720px) 85vw, 440px"
+      />
+      <span>{product?.connection ?? "ดูรายละเอียดเพิ่มเติม"}</span>
+    </>
+  );
   return (
     <section className="product-spotlight" aria-labelledby="spotlight-title">
       <div className="container spotlight-inner">
         <div className="spotlight-copy">
-          <p className="eyebrow">SUNFORD {product.name}</p>
+          <p className="eyebrow">SUNFORD {product?.name}</p>
           <h2 id="spotlight-title">
             ชั่ง. พิมพ์. จัดการ.
             <br />
@@ -22,30 +50,27 @@ export function ProductSpotlight({ products, image }: { products: Product[]; ima
             ให้ทุกร้านค้า ทำงานได้เป็นระบบยิ่งขึ้น
           </p>
           <div className="spotlight-actions">
-            <Link href={`/products/${product.slug}`} className="button button-red">
-              ดูเพิ่มเติม
-            </Link>
+            {href && (
+              <Link href={href} className="button button-red">
+                ดูเพิ่มเติม
+              </Link>
+            )}
             <a href="#contact" className="text-link">
               ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={17} />
             </a>
           </div>
         </div>
-        <Link
-          href={`/products/${product.slug}`}
-          className="spotlight-visual"
-          aria-label={`ดูรายละเอียด ${product.name}`}
-        >
-          <ProductImage
-            src={
-              image ?? (product.imageOverridden ? product.image : "/images/products/rls1100.png")
-            }
-            alt={`เครื่องชั่งพิมพ์ฉลาก SUNFORD ${product.name}`}
-            width={614}
-            height={614}
-            sizes="(max-width: 720px) 85vw, 440px"
-          />
-          <span>{product.connection}</span>
-        </Link>
+        {href ? (
+          <Link
+            href={href}
+            className="spotlight-visual"
+            aria-label={product ? `ดูรายละเอียด ${product.name}` : "ดูข้อมูลเพิ่มเติม"}
+          >
+            {visual}
+          </Link>
+        ) : (
+          <div className="spotlight-visual">{visual}</div>
+        )}
       </div>
     </section>
   );

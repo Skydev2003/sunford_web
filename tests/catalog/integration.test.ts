@@ -15,6 +15,7 @@ import { importCatalog } from "../../prisma/catalog-import";
 import type { ActionState } from "../../src/features/admin/types";
 import type { Product } from "../../src/features/catalog/types";
 import { homeImageSlots, type HomeImages } from "../../src/features/home/data/image-slots";
+import { resolveHomeLink, type HomeLinkTargets } from "../../src/features/home/data/link-targets";
 
 type Harness = {
   saveProductAction: (previous: ActionState, form: FormData) => Promise<ActionState>;
@@ -24,6 +25,7 @@ type Harness = {
   listAdminProducts: () => Promise<Array<Product & { updatedAt: string }>>;
   saveHomeImageAction: (previous: ActionState, form: FormData) => Promise<ActionState>;
   getHomeImages: () => Promise<HomeImages>;
+  getHomeLinkTargets: () => Promise<HomeLinkTargets>;
   removeUnusedImage: (service: unknown, image: string) => Promise<void>;
 };
 type TestContext = { db: unknown; authenticated: boolean; invalidated: string[] };
@@ -223,6 +225,117 @@ test(
               await tx.homepageImage.delete({ where: { slot: "smart" } });
               await actions.removeUnusedImage(service, sharedImage);
               assert.equal(removals, 1);
+            }
+            const storedProduct = await tx.product.findFirstOrThrow();
+            const referenced = await tx.product.create({
+              data: {
+                ...storedProduct,
+                id: randomUUID(),
+                slug: `qa-home-link-${randomUUID()}`,
+                name: "QA homepage target",
+                published: true,
+                deletedAt: null,
+                catalogManaged: true,
+              },
+            });
+            const targetForm = async (slot: string, type: string, value = "") => {
+              const previous = await tx.homepageImage.findUnique({ where: { slot } });
+              const form = imageForm(
+                slot,
+                previous?.image ?? "",
+                previous?.updatedAt.toISOString(),
+              );
+              form.set("targetType", type);
+              if (type === "product") form.set("targetProductId", value);
+              if (type === "page") form.set("targetPagePath", value);
+              return form;
+            };
+            const saveTarget = (form: FormData) =>
+              assert.rejects(
+                actions.saveHomeImageAction({}, form),
+                /REDIRECT:\/admin\/home-images\?saved=/,
+              );
+            for (const slot of homeImageSlots) {
+              await saveTarget(await targetForm(slot.id, "product", referenced.id));
+              assert.equal((await actions.getHomeLinkTargets())[slot.id]?.productId, referenced.id);
+              assert.equal(
+                (await actions.getHomeImages())[slot.id],
+                undefined,
+                "Link-only settings must preserve default artwork",
+              );
+              assert.equal(
+                resolveHomeLink(
+                  slot.id,
+                  (await actions.getHomeLinkTargets())[slot.id],
+                  await actions.getProducts(),
+                ),
+                `/products/${referenced.slug}`,
+              );
+            }
+            const renamedSlug = `qa-renamed-${randomUUID()}`;
+            await tx.product.update({ where: { id: referenced.id }, data: { slug: renamedSlug } });
+            assert.equal(
+              resolveHomeLink(
+                "digital",
+                (await actions.getHomeLinkTargets()).digital,
+                await actions.getProducts(),
+              ),
+              `/products/${renamedSlug}`,
+            );
+            await tx.product.update({ where: { id: referenced.id }, data: { published: false } });
+            assert.equal(
+              resolveHomeLink(
+                "digital",
+                (await actions.getHomeLinkTargets()).digital,
+                await actions.getProducts(),
+              ),
+              undefined,
+            );
+            assert.ok(
+              (
+                await actions.saveHomeImageAction(
+                  {},
+                  await targetForm("digital", "product", referenced.id),
+                )
+              ).error,
+            );
+            await tx.product.delete({ where: { id: referenced.id } });
+            assert.equal(
+              resolveHomeLink(
+                "digital",
+                (await actions.getHomeLinkTargets()).digital,
+                await actions.getProducts(),
+              ),
+              undefined,
+            );
+            for (const path of [
+              "https://example.com",
+              "//example.com",
+              "/admin/login",
+              "/api/products",
+              "/not-a-real-public-page",
+            ])
+              assert.ok(
+                (await actions.saveHomeImageAction({}, await targetForm("digital", "page", path)))
+                  .error,
+              );
+            for (const slot of homeImageSlots) {
+              await saveTarget(await targetForm(slot.id, "page", "/about-us"));
+              assert.deepEqual((await actions.getHomeLinkTargets())[slot.id], {
+                productId: null,
+                pagePath: "/about-us",
+              });
+              const previous = await tx.homepageImage.findUniqueOrThrow({
+                where: { slot: slot.id },
+              });
+              await saveTarget(imageForm(slot.id, "", previous.updatedAt.toISOString()));
+              assert.equal(
+                (await actions.getHomeLinkTargets())[slot.id]?.pagePath,
+                "/about-us",
+                "Resetting only the image must not reset its destination",
+              );
+              await saveTarget(await targetForm(slot.id, "default"));
+              assert.equal((await actions.getHomeLinkTargets())[slot.id], undefined);
             }
             assert.deepEqual(await actions.getProducts(), initial);
             assert.deepEqual(await tx.product.findMany({ orderBy: { id: "asc" } }), before);
