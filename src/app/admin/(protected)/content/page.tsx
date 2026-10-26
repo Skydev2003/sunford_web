@@ -3,7 +3,17 @@ import { Plus } from "lucide-react";
 import { requireAdmin } from "@/features/admin/server/auth";
 import { listContentEditors, settingCards } from "@/features/cms/server/editors";
 import { ContentList } from "@/features/cms/components/content-list";
-export default async function ContentAdminPage() {
+import { Suspense } from "react";
+import { AdminPageLoading } from "@/features/admin/components/admin-page-loading";
+
+export default function ContentAdminPage() {
+  return (
+    <Suspense fallback={<AdminPageLoading />}>
+      <ContentAdminContent />
+    </Suspense>
+  );
+}
+async function ContentAdminContent() {
   await requireAdmin();
   const pages = await listContentEditors();
   return (

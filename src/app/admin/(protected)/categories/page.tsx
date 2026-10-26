@@ -2,7 +2,17 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { requireAdmin } from "@/features/admin/server/auth";
 import { getCategories } from "@/features/cms/server/categories";
-export default async function CategoriesPage() {
+import { Suspense } from "react";
+import { AdminPageLoading } from "@/features/admin/components/admin-page-loading";
+
+export default function CategoriesPage() {
+  return (
+    <Suspense fallback={<AdminPageLoading />}>
+      <CategoriesContent />
+    </Suspense>
+  );
+}
+async function CategoriesContent() {
   await requireAdmin();
   const categories = (await getCategories()).filter((category) => category.id !== "all");
   return (
