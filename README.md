@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sunford — Product Showcase
 
-## Getting Started
+เว็บไซต์แนะนำผลิตภัณฑ์ Sunford ภาษาไทย ใช้ภาพสินค้าจริง ออกแบบให้เรียบ สะอาด และเน้นสินค้า รองรับมือถือ การค้นหา กรองหมวดหมู่ และเปรียบเทียบสินค้าได้ 3 รุ่น
 
-First, run the development server:
+## เริ่มต้น
+
+ใช้ Node.js 20.19+ หรือ 22.12+ (พัฒนาและตรวจด้วย Node.js 24)
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+เปิด URL ที่ Next.js แสดงใน terminal (ปกติ http://localhost:3000) หากยังไม่ตั้งค่าฐานข้อมูล เว็บไซต์จะใช้ curated catalogue 6 รุ่นจาก `src/features/catalog/data/products.ts` เพื่อให้พัฒนาหน้าบ้านได้ทันที
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## โครงสร้าง
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+src/
+  app/                       # Route composition, metadata, error boundaries, API
+    products/[slug]/         # รายละเอียดสินค้า ใช้ Server Components
+    api/products/            # Read-only catalogue endpoint
+  components/
+    layout/                  # Header, Footer
+    ui/                      # Native accessible dialog
+  features/
+    catalog/
+      components/            # Catalogue, cards, search, comparison
+      data/                  # Curated initial catalogue
+      server/                # Repository: จุดเดียวที่อ่านข้อมูลสินค้า
+      types.ts               # Domain model และหมวดหมู่
+    home/components/         # Hero, solutions, brand story, support
+  stores/                    # Zustand: filter, search, comparison UI state
+  lib/                       # Server-only Prisma / Supabase integrations
+  styles/                    # Design tokens และ CSS แยกตามส่วน
+  generated/prisma/          # สร้างด้วย prisma generate ไม่ commit
+prisma/
+  schema.prisma              # PostgreSQL schema + indexes
+  migrations/                # Initial migration + RLS
+  seed.ts                    # Idempotent upsert catalogue
+tests/e2e/                  # Playwright user journeys
+```
 
-## Learn More
+หลักการ: `app → features → repository → Prisma → Supabase PostgreSQL` โดย Client Components รับเฉพาะข้อมูลสินค้าสาธารณะ ส่วน credentials และ database client อยู่ฝั่งเซิร์ฟเวอร์ Zustand เก็บเฉพาะสถานะ UI; ข้อมูลสินค้าอยู่ใน Server Components ไม่เก็บสำเนาใน global store
 
-To learn more about Next.js, take a look at the following resources:
+## เชื่อม Supabase PostgreSQL
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. คัดลอกไฟล์ตัวอย่างและแก้ในเครื่องเท่านั้น:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   cp .env.example .env
+   ```
 
-## Deploy on Vercel
+2. ใส่รหัสผ่านฐานข้อมูลที่ URL-encode แล้วแทน `YOUR-PASSWORD` และตรวจ endpoint ใน Supabase Dashboard → Connect:
+   - `DATABASE_URL`: transaction pooler พอร์ต `6543` สำหรับ runtime
+   - `DIRECT_URL`: session pooler พอร์ต `5432` สำหรับ Prisma CLI / migrations (หรือ direct endpoint ที่เข้าถึงได้)
+3. เมื่อตรวจแล้วว่าเป็นฐานข้อมูลที่ต้องการ ให้รัน:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run db:deploy
+   npm run db:seed
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Initial migration สร้างเฉพาะตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม การ seed ใช้ upsert ตาม product id และจะอัปเดตรายละเอียดของ 6 รุ่นเดิม จึงควรตรวจข้อมูลก่อนรันซ้ำหลังแก้สินค้าในฐานข้อมูล
+
+เมื่อมี `DATABASE_URL` จริง repository จะอ่านเฉพาะสินค้าที่ `published = true` จาก PostgreSQL หากการเชื่อมต่อล้มเหลวจะแสดง error state โดยไม่แทนที่ข้อมูลจริงด้วยข้อมูลตัวอย่าง
+
+ข้อมูลสินค้าถูก cache 1 ชั่วโมงด้วย Next.js Cache Components หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่ หลังแก้ข้อมูลสินค้ารอ cache หมดอายุ หรือ deploy ใหม่
+
+`SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` เป็นตัวเลือกสำหรับต่อยอด Storage ผ่าน `src/lib/supabase.ts` ตอนนี้ภาพถูกเก็บใน `public/images` จึงยังไม่เรียก Supabase Storage หรือ Auth
+
+**สถานะ:** เตรียม integration, migration และ seed แล้ว ยังไม่ได้เชื่อมต่อหรือรันคำสั่งกับ Supabase จริง เนื่องจากยังไม่มีรหัสผ่าน
+
+## คำสั่งพัฒนา
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm run build
+npm run start
+npm run db:validate
+```
+
+สร้าง migration ใหม่ระหว่างพัฒนา: `npm run db:migrate -- --name descriptive_name` โดยต้องตั้งค่า `DIRECT_URL` และ shadow database ให้เหมาะกับสภาพแวดล้อมก่อน ไม่ควรใช้ `migrate dev` กับฐานข้อมูล production
+
+## ตรวจการใช้งานด้วยเบราว์เซอร์
+
+```bash
+npx playwright install chromium
+# รัน dev server แยกอีก terminal
+PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
+```
+
+หากมี Chrome ในเครื่อง สามารถใช้ `PLAYWRIGHT_CHANNEL=chrome` แทนการติดตั้ง Chromium ค่าเริ่มต้นของ test config ใช้ URL `http://127.0.0.1:3001`; กำหนด `PLAYWRIGHT_BASE_URL` ให้ตรงกับ server ที่รัน
+
+ครอบคลุม hero, category filters, search + empty results, product navigation, comparison, mobile navigation / overflow, catalogue API และ 404 ภาพหน้าจอสำหรับตรวจ UI จะถูกบันทึกลง `/tmp/sunford-*.png`
+
+## เนื้อหาและภาพ
+
+แหล่งข้อมูล: เว็บไซต์ [Sunford](https://www.sunford.co) และ [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) ราคาถูกละไว้เพราะเว็บไซต์นี้เน้นแนะนำสินค้า ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford ไม่มีฟอร์มที่แกล้งบันทึกข้อมูล
+
+ฟอนต์ Inter และ Noto Sans Thai ถูก self-host ด้วย `next/font/local` ดูใบอนุญาตใน `src/app/fonts` การติดตั้งและ build ไม่ต้องเรียก Google Fonts

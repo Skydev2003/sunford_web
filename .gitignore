@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Commit the safe example, never actual credentials.
+!.env.example
+/src/generated/prisma/
+/test-results/
+/playwright-report/

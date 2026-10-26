@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductCategory {
+  commercial
+  industrial
+  food
+  smart
+  pos
+}
+
+model Product {
+  id          String          @id
+  slug        String          @unique
+  name        String
+  category    ProductCategory
+  subtitle    String
+  description String
+  image       String
+  capacity    String
+  readability String
+  connection  String
+  badge       String?
+  featured    Boolean         @default(false)
+  published   Boolean         @default(true)
+  sortOrder   Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([published, sortOrder])
+  @@index([category])
+  @@map("products")
+}

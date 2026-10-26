@@ -1,0 +1,40 @@
+.full-catalog {
+  padding-block: 70px;
+  min-height: 70vh;
+}
+.catalog-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  padding: 9px 13px;
+  border-radius: 30px;
+  margin-bottom: 8px;
+}
+.catalog-search input {
+  width: 140px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 10px;
+}
+.empty-state {
+  padding: 60px 25px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 17px;
+}
+.empty-state h3 {
+  font-size: 20px;
+}
+.empty-state p {
+  color: #8b9380;
+}
+.not-found {
+  padding-block: 120px;
+}
+.not-found h1 {
+  font-size: 29px;
+}
