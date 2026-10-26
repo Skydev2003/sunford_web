@@ -38,6 +38,7 @@ export type SiteSettings = {
 };
 export type NavigationItem = {
   label: string;
+  submenuLabel?: string;
   href: string;
   links: { label: string; href: string }[];
 };

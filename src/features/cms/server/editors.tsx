@@ -153,6 +153,11 @@ export async function getEditor(id: string) {
         fields: [
           ...linkFields,
           {
+            key: "submenuLabel",
+            label: "ชื่อเต็มในเมนูย่อย",
+            hint: "เว้นว่างเพื่อใช้ชื่อเมนูหลัก",
+          },
+          {
             key: "links",
             label: "เมนูย่อย",
             type: "array",

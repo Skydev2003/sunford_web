@@ -104,7 +104,7 @@ test("mobile navigation works and page does not overflow", async ({ page }) => {
   await expect(page.getByRole("navigation", { name: "เมนูมือถือ" })).toBeVisible();
   await page
     .getByRole("navigation", { name: "เมนูมือถือ" })
-    .getByRole("link", { name: "โซลูชันสำหรับธุรกิจ" })
+    .getByRole("link", { name: "ระบบ POS", exact: true })
     .click();
   await expect(page.getByRole("navigation", { name: "เมนูมือถือ" })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(

@@ -1,10 +1,8 @@
 const navigation = [
   {
-    label: "ผลิตภัณฑ์",
+    label: "เครื่องชั่ง",
     href: "/products",
     links: [
-      ["สำรวจผลิตภัณฑ์ทั้งหมด", "/products"],
-      ["เครื่องชั่งดิจิทัล", "/Product/Digital-weighing"],
       ["ห้องปฏิบัติการ", "/product/ห้องปฏิบัติการ"],
       ["อุตสาหกรรม", "/product/อุตสาหกรรม"],
       ["พาณิชยกรรมและบริการ", "/product/พาณิชยกรรมและบริการ"],
@@ -12,54 +10,41 @@ const navigation = [
     ],
   },
   {
-    label: "เครื่องชั่งอัจฉริยะ",
-    href: "/Product/MES",
+    label: "อินดิเคเตอร์แท่นชั่ง",
+    href: "/Indicator",
     links: [
-      ["ระบบ MES ชั่งน้ำหนักเพื่อการผลิต", "/Product/MES"],
-      ["ระบบ POS ชั่งน้ำหนักเพื่อการขาย", "/Product/POS"],
-      ["Smart weighing", "/collections/Smart weighing"],
-      ["เครื่องชั่งเชื่อมต่อแบบมีสาย", "/product/wired-smart-scale"],
-      ["เครื่องชั่งเชื่อมต่อไร้สาย", "/product/wireless-smart-scale"],
+      ["ห้องปฏิบัติการ", "/Indicator/ห้องปฏิบัติการ"],
+      ["อุตสาหกรรม", "/Indicator/อุตสาหกรรม"],
+      ["พาณิชยกรรมและบริการ", "/Indicator/พาณิชยกรรมและบริการ"],
+    ],
+  },
+  {
+    label: "โครงสร้างแท่นชั่ง",
+    href: "/product/โครงสร้างแท่นชั่ง",
+    links: [
+      ["แท่นชั่งตั้งโต๊ะ", "/Product/แท่นชั่งตั้งโต๊ะ"],
+      ["แท่นชั่งตั้งพื้น", "/Product/แท่นชั่งตั้งพืั้น"],
+    ],
+  },
+  {
+    label: "ระบบ POS",
+    submenuLabel: "ระบบ POS ชั่งน้ำหนักเพื่อการขาย",
+    href: "/Product/POS",
+    links: [
+      ["POS ระบบ Android", "/Product/POS/Android"],
+      ["POS ระบบ Windows", "/Product/POS/Windows"],
     ],
   },
   {
     label: "อุปกรณ์เสริม",
+    submenuLabel: "อุปกรณ์และวัสดุเสริม",
     href: "/product/อุปกรณ์ประกอบเครื่องชั่ง",
     links: [
-      ["อุปกรณ์และวัสดุเสริมทั้งหมด", "/product/อุปกรณ์ประกอบเครื่องชั่ง"],
       ["อุปกรณ์ส่งข้อมูล", "/product/อุปกรณ์ส่งข้อมูล"],
       ["อุปกรณ์ต่อพ่วง", "/product/อุปกรณ์ต่อพ่วง"],
-      ["อินดิเคเตอร์แท่นชั่ง", "/Indicator"],
-      ["โครงสร้างแท่นชั่ง", "/product/โครงสร้างแท่นชั่ง"],
-    ],
-  },
-  {
-    label: "ซอฟต์แวร์",
-    href: "/applications-and-softwares",
-    links: [
-      ["แอปพลิเคชันและซอฟต์แวร์", "/applications-and-softwares"],
-      ["ดาวน์โหลดซอฟต์แวร์", "/software/download"],
-      ["SUNFORD POS Android", "/software/download/sunford-pos-android"],
-      ["SUNFORD POS Basic", "/software/download/sunford-pos-basic"],
-      ["SUNFORD INDUS", "/software/download/sunford-indus"],
-    ],
-  },
-  {
-    label: "โซลูชันสำหรับธุรกิจ",
-    href: "/#solutions",
-    links: [
-      ["โซลูชันทั้งหมด", "/#solutions"],
-      ["โซลูชัน ERP", "/solution/erp"],
-      ["โซลูชัน MES", "/solution/mes"],
-    ],
-  },
-  {
-    label: "รู้จักซันฟอร์ด",
-    href: "/about-us",
-    links: [
-      ["เรื่องราวของเรา", "/about-us"],
-      ["ข่าวสารและกิจกรรม", "/news-and-activities"],
-      ["สำรวจข้อมูลทั้งหมด", "/explore"],
+      ["Thermal Printer", "/collections/เครื่องพิมพ์"],
+      ["ชิ้นส่วนเสริม", "/product/Scale-parts"],
+      ["วัสดุสิ้นเปลือง", "/product/Consumables"],
     ],
   },
   {
@@ -77,6 +62,7 @@ const navigation = [
 ];
 export const defaultNavigation = navigation.map((item) => ({
   ...item,
+  submenuLabel: item.submenuLabel ?? item.label,
   links: item.links.map(([label, href]) => ({ label, href })),
 }));
 export const defaultNavigationExtras = {
