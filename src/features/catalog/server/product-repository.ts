@@ -5,6 +5,8 @@ import type { Product } from "../types";
 import { hasDatabase } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
 import { getSnapshotProducts } from "@/features/content/server/content-repository";
+import { resolveManagedProduct } from "../data/managed-products";
+import { findCatalogProduct } from "../data/product-lookup";
 
 export async function getProducts(): Promise<Product[]> {
   "use cache";
@@ -13,7 +15,7 @@ export async function getProducts(): Promise<Product[]> {
   const snapshot = getSnapshotProducts();
   if (!hasDatabase()) return snapshot.length ? snapshot : products;
   const managed = await getPrisma().product.findMany({
-    where: { published: true },
+    where: { published: true, deletedAt: null },
     orderBy: { sortOrder: "asc" },
     select: {
       id: true,
@@ -29,20 +31,12 @@ export async function getProducts(): Promise<Product[]> {
       badge: true,
       featured: true,
       sortOrder: true,
+      catalogManaged: true,
     },
   });
-  // Imported public content is authoritative for this source clone. Preserve any
-  // additional products managed in the database without duplicating source models.
-  return snapshot.length
-    ? [...snapshot, ...managed.filter((item) => !snapshot.some((source) => source.id === item.id))]
-    : managed;
+  // Never append the snapshot here: doing so would resurrect hidden/deleted rows.
+  return managed.map(resolveManagedProduct).sort((a, b) => a.sortOrder - b.sortOrder);
 }
 export async function getProduct(slug: string) {
-  const aliases: Record<string, string> = { lp50: "10728", lp51: "10730" };
-  const target = aliases[slug.toLowerCase()] ?? slug;
-  return (await getProducts()).find(
-    (product) =>
-      product.slug.toLowerCase() === target.toLowerCase() ||
-      product.sourceId?.toLowerCase() === target.toLowerCase(),
-  );
+  return findCatalogProduct(await getProducts(), slug);
 }

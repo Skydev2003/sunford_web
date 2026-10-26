@@ -24,6 +24,17 @@ test("deployment rejects the wrong branch and transaction pooler for migrations"
   assert.ok(validateRenderEnvironment({ ...valid, DIRECT_URL: valid.DATABASE_URL }).length);
 });
 
+test("production deploys main while UAT keeps its own branch", () => {
+  assert.deepEqual(
+    validateRenderEnvironment({ ...valid, APP_ENV: "production", RENDER_GIT_BRANCH: "main" }),
+    [],
+  );
+  assert.ok(
+    validateRenderEnvironment({ ...valid, APP_ENV: "production", RENDER_GIT_BRANCH: "uat" }).length,
+  );
+  assert.ok(validateRenderEnvironment({ ...valid, APP_ENV: "ci" }).length);
+});
+
 test("invalid credentials and URLs never appear in configuration error logs", () => {
   const errors = validateRenderEnvironment({
     ...valid,

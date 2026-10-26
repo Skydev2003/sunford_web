@@ -1,9 +1,11 @@
 // Errors name variables only: deployment logs must never include credentials.
 export function validateRenderEnvironment(env) {
   const errors = [];
-  if (env.APP_ENV !== "uat") errors.push("APP_ENV must be uat.");
-  if (env.RENDER_GIT_BRANCH && env.RENDER_GIT_BRANCH !== "uat")
-    errors.push("Deploy the uat branch only.");
+  const branches = { uat: "uat", production: "main" };
+  const expectedBranch = branches[env.APP_ENV];
+  if (!expectedBranch) errors.push("APP_ENV must be uat or production.");
+  if (expectedBranch && env.RENDER_GIT_BRANCH && env.RENDER_GIT_BRANCH !== expectedBranch)
+    errors.push(`Deploy the ${expectedBranch} branch for this environment.`);
 
   for (const name of ["DATABASE_URL", "DIRECT_URL", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"]) {
     if (!env[name]?.trim() || env[name].includes("YOUR-PASSWORD"))

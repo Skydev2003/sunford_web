@@ -1,17 +1,17 @@
 import { z } from "zod";
-import { categories } from "../catalog/types";
+import { categories } from "@/features/catalog/types";
 const text = (label: string, max = 200) =>
   z.string().trim().min(1, `กรุณากรอก${label}`).max(max, `${label}ยาวเกิน ${max} ตัวอักษร`);
 export const productInputSchema = z.object({
-  name: text("ชื่อสินค้า", 100),
+  name: text("ชื่อสินค้า", 300),
   slug: text("URL สินค้า", 120).regex(
-    /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-    "ใช้ a-z, 0-9 และขีดกลาง เช่น wps10ks",
+    /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i,
+    "ใช้ A-Z, a-z, 0-9 ขีดกลางหรือขีดล่าง เช่น wps10ks",
   ),
   category: z.enum(categories.filter((category) => category.id !== "all").map(({ id }) => id)),
   subtitle: text("คำโปรย", 200),
   description: text("รายละเอียด", 5000),
-  image: text("รูปสินค้า", 2048),
+  image: z.string().trim().max(2048),
   capacity: text("พิกัดน้ำหนัก"),
   readability: text("ความละเอียด"),
   connection: text("การเชื่อมต่อ"),

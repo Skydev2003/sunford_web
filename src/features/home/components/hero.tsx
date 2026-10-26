@@ -49,7 +49,7 @@ export function Hero({ products }: { products: Product[] }) {
               <ProductImage
                 key={product.id}
                 src={
-                  ["wps10ks", "feh5ks", "rls1100"].includes(product.id)
+                  !product.imageOverridden && ["wps10ks", "feh5ks", "rls1100"].includes(product.id)
                     ? `/images/products/${product.id}.png`
                     : product.image
                 }

@@ -9,8 +9,15 @@ if (errors.length) {
 }
 
 // The build reads products during prerendering, so apply committed migrations first.
-// Never seed here: upserting the initial catalogue would overwrite admin edits.
-for (const script of ["db:deploy", "build"]) {
-  const result = spawnSync("npm", ["run", script], { stdio: "inherit", env: process.env });
+// Seed now inserts missing IDs only, retaining all edits, drafts and deleted rows.
+if (!process.env.npm_execpath) {
+  console.error("Run this script with npm run render:build.");
+  process.exit(1);
+}
+for (const script of ["db:deploy", "db:seed", "build"]) {
+  const result = spawnSync(process.execPath, [process.env.npm_execpath, "run", script], {
+    stdio: "inherit",
+    env: process.env,
+  });
   if (result.error || result.status !== 0) process.exit(result.status || 1);
 }
