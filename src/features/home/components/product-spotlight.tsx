@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
 
-export function ProductSpotlight({ products }: { products: Product[] }) {
+export function ProductSpotlight({ products, image }: { products: Product[]; image?: string }) {
   const product = products.find((item) => item.id === "rls1100");
   if (!product) return null;
   return (
@@ -36,7 +36,9 @@ export function ProductSpotlight({ products }: { products: Product[] }) {
           aria-label={`ดูรายละเอียด ${product.name}`}
         >
           <ProductImage
-            src="/images/products/rls1100.png"
+            src={
+              image ?? (product.imageOverridden ? product.image : "/images/products/rls1100.png")
+            }
             alt={`เครื่องชั่งพิมพ์ฉลาก SUNFORD ${product.name}`}
             width={614}
             height={614}

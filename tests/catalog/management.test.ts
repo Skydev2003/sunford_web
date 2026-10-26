@@ -8,6 +8,20 @@ import { categories } from "../../src/features/catalog/types";
 import { findCatalogProduct } from "../../src/features/catalog/data/product-lookup";
 import sourceProducts from "../../src/features/content/data/products.json";
 import type { SourceProduct } from "../../src/features/content/types";
+import { defaultHomeImages, homeImageSlots } from "../../src/features/home/data/image-slots";
+
+test("homepage image defaults preserve the current artwork in five independent positions", () => {
+  const products = getSnapshotProducts();
+  const before = structuredClone(products);
+  const defaults = defaultHomeImages(products, "/images/software.png");
+  assert.equal(homeImageSlots.length, 5);
+  assert.equal(new Set(homeImageSlots.map((slot) => slot.id)).size, 5);
+  assert.equal(defaults.spotlight, "/images/products/rls1100.png");
+  assert.equal(defaults.smart, products.find((p) => p.id === "rls1100")?.image);
+  assert.equal(defaults.digital, products.find((p) => p.id === "feh5ks")?.image);
+  assert.equal(defaults.software, "/images/software.png");
+  assert.deepEqual(products, before);
+});
 
 test("all 150 existing products can be saved without changing their slugs or categories", () => {
   const snapshot = getSnapshotProducts();
