@@ -26,7 +26,8 @@
     "test:uat": "node --test tests/uat/*.test.mjs",
     "test:catalog": "tsx --test tests/catalog/management.test.ts",
     "test:catalog:integration": "tsx --test tests/catalog/integration.test.ts",
-    "render:build": "node scripts/render-build.mjs"
+    "deploy": "bun scripts/deploy.mjs",
+    "render:build": "bun run deploy"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
