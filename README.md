@@ -1,6 +1,6 @@
 # Sunford — Product Showcase
 
-เว็บไซต์แนะนำผลิตภัณฑ์ Sunford ภาษาไทย ใช้ภาพสินค้าจริง ออกแบบให้เรียบ สะอาด และเน้นสินค้า รองรับมือถือ การค้นหา กรองหมวดหมู่ และเปรียบเทียบสินค้าได้ 3 รุ่น
+เว็บไซต์แนะนำผลิตภัณฑ์ Sunford ภาษาไทย รองรับมือถือ การค้นหา กรองหมวดหมู่ และเปรียบเทียบสินค้า พร้อมหน้าแอดมินเพิ่ม/แก้ไข/ลบสินค้า ล็อกอินด้วย Supabase Auth และอัปโหลดรูปผ่าน Supabase Storage
 
 ## เริ่มต้น
 
@@ -18,7 +18,8 @@ npm run dev
 ```text
 src/
   app/                       # Route composition, metadata, error boundaries, API
-    products/[slug]/         # รายละเอียดสินค้า ใช้ Server Components
+    (site)/                  # หน้าเว็บสาธารณะ + products/[slug] (URL เดิม)
+    admin/                   # Login และ protected product management
     api/products/            # Read-only catalogue endpoint
   components/
     layout/                  # Header, Footer
@@ -30,8 +31,10 @@ src/
       server/                # Repository: จุดเดียวที่อ่านข้อมูลสินค้า
       types.ts               # Domain model และหมวดหมู่
     home/components/         # Hero, solutions, brand story, support
+    admin/                   # Admin UI, validation, auth guards, Server Actions
   stores/                    # Zustand: filter, search, comparison UI state
   lib/                       # Server-only Prisma / Supabase integrations
+  proxy.ts                   # Auth session refresh เฉพาะเส้นทางแอดมิน
   styles/                    # Design tokens และ CSS แยกตามส่วน
   generated/prisma/          # สร้างด้วย prisma generate ไม่ commit
 prisma/
@@ -66,9 +69,9 @@ Initial migration สร้างเฉพาะตาราง `products`, enum
 
 เมื่อมี `DATABASE_URL` จริง repository จะอ่านเฉพาะสินค้าที่ `published = true` จาก PostgreSQL หากการเชื่อมต่อล้มเหลวจะแสดง error state โดยไม่แทนที่ข้อมูลจริงด้วยข้อมูลตัวอย่าง
 
-ข้อมูลสินค้าถูก cache 1 ชั่วโมงด้วย Next.js Cache Components หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่ หลังแก้ข้อมูลสินค้ารอ cache หมดอายุ หรือ deploy ใหม่
+ข้อมูลสินค้าสาธารณะถูก cache 1 ชั่วโมงด้วย Next.js Cache Components การแก้ผ่านหน้าแอดมิน invalidate tag และหน้าที่เกี่ยวข้องทันที หากแก้ฐานข้อมูลโดยตรงให้รอ cache หมดอายุหรือ deploy ใหม่ หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่
 
-`SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` เป็นตัวเลือกสำหรับต่อยอด Storage ผ่าน `src/lib/supabase.ts` ตอนนี้ภาพถูกเก็บใน `public/images` จึงยังไม่เรียก Supabase Storage หรือ Auth
+`SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` ใช้สำหรับ Supabase Auth และการอัปโหลด Storage แบบมีสิทธิ์ผู้ใช้ รูปสินค้าเดิมยังอยู่ใน `public/images` ส่วนรูปใหม่จากแอดมินเก็บใน bucket `product-images`
 
 **สถานะตรวจสอบล่าสุด:** เชื่อมต่อ Supabase จริงผ่านทั้ง `DATABASE_URL` และ `DIRECT_URL` สำเร็จแล้ว ตาราง `products` และ initial migration มีอยู่ครบ ไม่มี migration ค้าง รัน seed สำเร็จ และทดสอบอ่านสินค้าที่เผยแพร่ครบ 6 รุ่นผ่าน Prisma Client ของแอปโดยใช้ `DATABASE_URL` แล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
 
@@ -102,3 +105,14 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 แหล่งข้อมูล: เว็บไซต์ [Sunford](https://www.sunford.co) และ [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) ราคาถูกละไว้เพราะเว็บไซต์นี้เน้นแนะนำสินค้า ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford ไม่มีฟอร์มที่แกล้งบันทึกข้อมูล
 
 ฟอนต์ Inter และ Noto Sans Thai ถูก self-host ด้วย `next/font/local` ดูใบอนุญาตใน `src/app/fonts` การติดตั้งและ build ไม่ต้องเรียก Google Fonts
+
+## หน้าแอดมิน
+
+เปิด `/admin/login` ด้วยบัญชี Supabase Auth ที่มี membership ใน `admin_users` ดูวิธีสร้าง/ถอนสิทธิ์แอดมิน การตั้งค่า Storage และการทดสอบใน [docs/admin.md](docs/admin.md)
+
+```bash
+npm run admin:create -- admin@example.com
+PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:admin -- admin@example.com
+```
+
+ทั้งสองคำสั่งถามรหัสผ่านแบบซ่อน ไม่ใส่รหัสผ่านลง command arguments หรือ source code คีย์ secret/service-role ใช้เฉพาะเครื่องมือ provisioning/การทดสอบและห้ามส่งไปเบราว์เซอร์ หน้าแอดมิน runtime ไม่จำเป็นต้องใช้คีย์นี้
