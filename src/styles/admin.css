@@ -35,6 +35,24 @@
   gap: 10px;
   margin-top: 18px;
 }
+.admin-home-image-editor .admin-home-link-fields {
+  padding: 16px 0 0;
+}
+.admin-home-link-fields .admin-field {
+  min-width: 0;
+}
+.admin-home-link-fields select {
+  width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+.admin-home-link-fields .admin-field-hint {
+  overflow-wrap: anywhere;
+}
+.admin-home-link-fields .text-link {
+  display: inline;
+  overflow-wrap: anywhere;
+}
 @media (max-width: 800px) {
   .admin-home-images-grid {
     grid-template-columns: 1fr;

@@ -5,13 +5,16 @@ import { importedPages, getContentPage } from "@/features/content/server/content
 import type { Product } from "@/features/catalog/types";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { defaultHomeImages, type HomeImages } from "../data/image-slots";
+import { resolveHomeLink, type HomeLinkTargets } from "../data/link-targets";
 
 export function SourceShowcase({
   products,
   images = {},
+  targets = {},
 }: {
   products: Product[];
   images?: HomeImages;
+  targets?: HomeLinkTargets;
 }) {
   const defaults = defaultHomeImages(
     products,
@@ -19,56 +22,68 @@ export function SourceShowcase({
   );
   const tiles = [
     {
+      id: "digital",
       name: "เครื่องชั่งดิจิทัล",
       english: "DIGITAL SCALE",
       description: "ความแม่นยำที่พร้อมสำหรับทุกงาน ตั้งแต่บ้าน ร้านค้า ไปจนถึงโรงงาน",
-      href: "/Product/Digital-weighing",
       image: images.digital ?? defaults.digital,
     },
     {
+      id: "smart",
       name: "เครื่องชั่งอัจฉริยะ",
       english: "SMART SCALE",
       description: "เชื่อมต่อข้อมูลและอุปกรณ์ ให้การทำงานในยุคดิจิทัลคล่องตัวยิ่งขึ้น",
-      href: "/Product/MES",
       image: images.smart ?? defaults.smart,
     },
     {
+      id: "accessories",
       name: "อุปกรณ์เสริม",
       english: "ACCESSORIES",
       description: "เครื่องพิมพ์ จอแสดงผล และระบบ POS ที่เติมเต็มงานชั่งของคุณ",
-      href: "/product/อุปกรณ์ประกอบเครื่องชั่ง",
       image: images.accessories ?? defaults.accessories,
     },
     {
+      id: "software",
       name: "แอปพลิเคชันและซอฟต์แวร์",
       english: "APPLICATIONS & SOFTWARE",
       description: "ติดตาม วิเคราะห์ และจัดการข้อมูล เพื่อการตัดสินใจที่แม่นยำ",
-      href: "/applications-and-softwares",
       image: images.software ?? defaults.software,
     },
-  ];
+  ] as const;
   return (
     <section className="source-showcase" aria-label="ผลิตภัณฑ์และเทคโนโลยี Sunford">
-      {tiles.map((tile) => (
-        <article className="showcase-tile" key={tile.href}>
-          <div className="showcase-tile-copy">
-            <p className="eyebrow">{tile.english}</p>
-            <h2>{tile.name}</h2>
-            <p>{tile.description}</p>
-            <Link className="text-link" href={tile.href}>
-              ดูเพิ่มเติม <ChevronRight size={16} />
-            </Link>
-          </div>
-          <Link className="showcase-tile-image" href={tile.href} aria-label={tile.name}>
-            <ProductImage
-              src={tile.image}
-              alt={tile.name}
-              fill
-              sizes="(max-width: 720px) 90vw, 45vw"
-            />
-          </Link>
-        </article>
-      ))}
+      {tiles.map((tile) => {
+        const href = resolveHomeLink(tile.id, targets[tile.id], products);
+        const visual = (
+          <ProductImage
+            src={tile.image}
+            alt={tile.name}
+            fill
+            sizes="(max-width: 720px) 90vw, 45vw"
+          />
+        );
+        return (
+          <article className="showcase-tile" key={tile.id}>
+            <div className="showcase-tile-copy">
+              <p className="eyebrow">{tile.english}</p>
+              <h2>{tile.name}</h2>
+              <p>{tile.description}</p>
+              {href && (
+                <Link className="text-link" href={href}>
+                  ดูเพิ่มเติม <ChevronRight size={16} />
+                </Link>
+              )}
+            </div>
+            {href ? (
+              <Link className="showcase-tile-image" href={href} aria-label={tile.name}>
+                {visual}
+              </Link>
+            ) : (
+              <div className="showcase-tile-image">{visual}</div>
+            )}
+          </article>
+        );
+      })}
     </section>
   );
 }

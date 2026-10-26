@@ -5,6 +5,7 @@ import { ProductImage } from "@/components/ui/product-image";
 import { saveHomeImageAction } from "../server/home-image-actions";
 import { discardProductImage, uploadProductImage } from "../server/media-actions";
 import type { HomeImageSlot } from "@/features/home/data/image-slots";
+import type { HomePageOption, HomeProductOption } from "@/features/home/data/link-targets";
 
 export function HomeImageEditor({
   slot,
@@ -13,6 +14,11 @@ export function HomeImageEditor({
   currentImage = "",
   defaultImage,
   updatedAt = "",
+  currentProductId,
+  currentPagePath,
+  defaultHref,
+  products,
+  pages,
 }: {
   slot: HomeImageSlot;
   title: string;
@@ -20,6 +26,11 @@ export function HomeImageEditor({
   currentImage?: string;
   defaultImage?: string;
   updatedAt?: string;
+  currentProductId?: string | null;
+  currentPagePath?: string | null;
+  defaultHref?: string;
+  products: HomeProductOption[];
+  pages: HomePageOption[];
 }) {
   const id = useId();
   const [state, action, saving] = useActionState(saveHomeImageAction, {});
@@ -27,6 +38,17 @@ export function HomeImageEditor({
   const [uploadedImage, setUploadedImage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [targetType, setTargetType] = useState(
+    currentProductId ? "product" : currentPagePath ? "page" : "default",
+  );
+  const [productId, setProductId] = useState(currentProductId ?? "");
+  const [pagePath, setPagePath] = useState(currentPagePath ?? "");
+  const href =
+    targetType === "product"
+      ? products.find((product) => product.id === productId)?.href
+      : targetType === "page"
+        ? pages.find((page) => page.path === pagePath)?.path
+        : defaultHref;
   const input = useRef<HTMLInputElement>(null);
   const busy = saving || uploading;
 
@@ -122,6 +144,80 @@ export function HomeImageEditor({
           {error || state.error}
         </p>
       )}
+      <div className="admin-home-link-fields admin-fields">
+        <div className="admin-field">
+          <label htmlFor={`${id}-target-type`}>เมื่อคลิกรูปภาพหรือปุ่มดูเพิ่มเติม</label>
+          <select
+            id={`${id}-target-type`}
+            name="targetType"
+            value={targetType}
+            onChange={(event) => setTargetType(event.target.value)}
+            disabled={busy}
+          >
+            <option value="default">ใช้ปลายทางเดิมของตำแหน่งนี้</option>
+            <option value="product">ไปหน้ารายละเอียดสินค้า</option>
+            <option value="page">ไปหน้าข้อมูลในเว็บไซต์</option>
+          </select>
+        </div>
+        {targetType === "product" && (
+          <div className="admin-field">
+            <label htmlFor={`${id}-product`}>สินค้าที่ต้องการอ้างอิง</label>
+            <select
+              id={`${id}-product`}
+              name="targetProductId"
+              value={productId}
+              onChange={(event) => setProductId(event.target.value)}
+              disabled={busy}
+              required
+            >
+              <option value="">เลือกสินค้า</option>
+              {productId && !products.some((product) => product.id === productId) && (
+                <option value={productId} disabled>
+                  สินค้าที่เลือกถูกซ่อนหรือถูกลบ กรุณาเลือกใหม่
+                </option>
+              )}
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} — {product.href}
+                </option>
+              ))}
+            </select>
+            <p className="admin-field-hint">
+              ลิงก์จะตามสินค้าตัวนี้ แม้เปลี่ยนชื่อหรือ URL ภายหลัง
+            </p>
+          </div>
+        )}
+        {targetType === "page" && (
+          <div className="admin-field">
+            <label htmlFor={`${id}-page`}>หน้าข้อมูลที่ต้องการอ้างอิง</label>
+            <select
+              id={`${id}-page`}
+              name="targetPagePath"
+              value={pagePath}
+              onChange={(event) => setPagePath(event.target.value)}
+              disabled={busy}
+              required
+            >
+              <option value="">เลือกหน้าข้อมูล</option>
+              {pages.map((page) => (
+                <option key={page.path} value={page.path}>
+                  {page.title} — {page.path}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <p className="admin-field-hint">
+          ปลายทาง:{" "}
+          {href ? (
+            <a href={href} target="_blank" rel="noreferrer" className="text-link">
+              {href} ↗
+            </a>
+          ) : (
+            "ยังไม่มีปลายทางที่เปิดดูได้ กรุณาเลือกรายการ"
+          )}
+        </p>
+      </div>
       <div className="admin-home-image-actions">
         <button
           className="admin-button-secondary"
@@ -143,7 +239,7 @@ export function HomeImageEditor({
         </button>
         <button className="button button-red" type="submit" disabled={busy}>
           <Save size={15} />
-          {saving ? "กำลังบันทึก…" : "บันทึกรูป"}
+          {saving ? "กำลังบันทึก…" : "บันทึกรูปและลิงก์"}
         </button>
       </div>
     </form>

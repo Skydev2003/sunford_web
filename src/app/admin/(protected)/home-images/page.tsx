@@ -5,6 +5,8 @@ import { listHomeImages } from "@/features/admin/server/home-images";
 import { getProducts } from "@/features/catalog/server/product-repository";
 import { getContentPage } from "@/features/content/server/content-repository";
 import { defaultHomeImages, homeImageSlots } from "@/features/home/data/image-slots";
+import { resolveHomeLink } from "@/features/home/data/link-targets";
+import { homePageOptions } from "@/features/home/server/home-link-options";
 
 export const instant = false;
 
@@ -21,6 +23,12 @@ export default async function HomeImagesPage({
     getContentPage("/applications-and-softwares")?.images[0],
   );
   const savedSlot = (await searchParams).saved;
+  const productOptions = products.map(({ id, name, slug }) => ({
+    id,
+    name,
+    href: `/products/${slug}`,
+  }));
+  const pageOptions = homePageOptions();
   return (
     <>
       <div className="admin-page-heading">
@@ -29,7 +37,7 @@ export default async function HomeImagesPage({
           <h1>
             รูปภาพหน้าแรก<span>.</span>
           </h1>
-          <p>เปลี่ยนรูปแต่ละตำแหน่งได้แยกจากรูปสินค้า เลือกรูปแล้วกดบันทึกในช่องนั้น</p>
+          <p>เลือกรูปและหน้าปลายทางที่ต้องการให้เปิดเมื่อคลิก แล้วกดบันทึกในช่องนั้น</p>
         </div>
         <Link href="/" target="_blank" className="admin-button-secondary">
           ดูหน้าแรก <ArrowUpRight size={15} />
@@ -37,7 +45,7 @@ export default async function HomeImagesPage({
       </div>
       {homeImageSlots.some((slot) => slot.id === savedSlot) && (
         <div className="admin-alert success" role="status">
-          บันทึกรูปภาพเรียบร้อยแล้ว
+          บันทึกรูปภาพและปลายทางเรียบร้อยแล้ว
         </div>
       )}
       <p className="admin-list-note">
@@ -56,6 +64,11 @@ export default async function HomeImagesPage({
               currentImage={current?.image}
               updatedAt={current?.updatedAt}
               defaultImage={defaults[slot.id]}
+              currentProductId={current?.targetProductId}
+              currentPagePath={current?.targetPagePath}
+              defaultHref={resolveHomeLink(slot.id, undefined, products)}
+              products={productOptions}
+              pages={pageOptions}
             />
           );
         })}

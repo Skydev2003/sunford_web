@@ -53,9 +53,12 @@ model AdminUser {
 }
 
 model HomepageImage {
-  slot      String   @id
-  image     String
-  updatedAt DateTime @updatedAt
+  slot            String   @id
+  image           String
+  // Stable product identity, resolved against published products at render time.
+  targetProductId String?
+  targetPagePath  String?
+  updatedAt       DateTime @updatedAt
 
   @@index([image])
   @@map("homepage_images")
