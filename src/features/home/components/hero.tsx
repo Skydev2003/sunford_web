@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
 import { defaultHero } from "@/features/cms/data/settings";
 import type { HeroSettings } from "@/features/cms/types";
+import { HeroProductVideo } from "./hero-product-video";
 
 const heroImages: Record<string, string> = {
   "acs30-jc21": "/images/products/acs30-jc21-cutout.png",
@@ -40,6 +41,10 @@ export function Hero({
               : (heroImages[product.id] ?? product.image)
             : ""),
         href: slide.href || (product ? `/products/${product.slug}` : "/products"),
+        video:
+          product?.id === "acs30-jc21" && !slide.image
+            ? "/videos/sunford-homepage-16x9.webm"
+            : undefined,
       },
     ];
   });
@@ -52,7 +57,10 @@ export function Hero({
           {settings.announcementLabel} <ChevronRight size={14} />
         </a>
       </div>
-      <section className="hero" aria-label="Sunford ความแม่นยำที่เรียบง่ายกว่า">
+      <section
+        className={`hero ${product?.video ? "hero-has-motion" : ""}`}
+        aria-label="Sunford ความแม่นยำที่เรียบง่ายกว่า"
+      >
         <div className="container hero-main">
           <div className="hero-copy">
             <h1 className="hero-model">{product?.title ?? "SUNFORD PRECISION"}</h1>
@@ -69,23 +77,32 @@ export function Hero({
               </a>
             </div>
           </div>
-          {product && (
-            <Link
-              className="hero-visual"
-              href={product.href}
-              aria-label={`ดูรายละเอียด ${product.name}`}
-            >
-              <ProductImage
-                key={product.id}
-                src={product.image}
-                alt={`เครื่องชั่ง SUNFORD ${product.name}`}
-                width={690}
-                height={440}
-                preload={active === 0}
-                sizes="(max-width: 720px) 90vw, 620px"
-                className="hero-product-image"
-              />
-            </Link>
+          {product?.video ? (
+            <HeroProductVideo
+              key={product.id}
+              src={product.video}
+              poster={product.image}
+              name={product.name}
+            />
+          ) : (
+            product && (
+              <Link
+                className="hero-visual"
+                href={product.href}
+                aria-label={`ดูรายละเอียด ${product.name}`}
+              >
+                <ProductImage
+                  key={product.id}
+                  src={product.image}
+                  alt={`เครื่องชั่ง SUNFORD ${product.name}`}
+                  width={690}
+                  height={440}
+                  preload={active === 0}
+                  sizes="(max-width: 720px) 90vw, 620px"
+                  className="hero-product-image"
+                />
+              </Link>
+            )
           )}
           {slides.length > 1 && (
             <div className="slide-controls" aria-label="เลือกสินค้าแนะนำ">

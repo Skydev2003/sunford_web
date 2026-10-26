@@ -31,16 +31,18 @@ test("homepage renders product imagery and cycles featured products", async ({ p
     "href",
     "/products/acs30-jc21",
   );
-  await expect(page.locator(".hero-product-image")).toHaveAttribute(
-    "alt",
-    "เครื่องชั่ง SUNFORD ACS-30-JC21",
+  await expect(page.locator(".hero-product-video")).toHaveAttribute(
+    "aria-label",
+    "แอนิเมชันสินค้า ACS-30-JC21",
   );
   await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
   await expect(page.locator(".hero-model")).toContainText("FEH5KS");
+  await expect(page.locator(".hero-product-image")).toBeVisible();
+  await expect(page.locator(".hero-product-video")).toHaveCount(0);
   await page.getByRole("button", { name: "สินค้าก่อนหน้า" }).click();
   await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator(".hero-product-image")).toBeVisible();
+  await expect(page.locator(".hero-product-video")).toBeVisible();
   await loadPageImages(page);
   await page.screenshot({
     path: "/tmp/sunford-desktop.png",
