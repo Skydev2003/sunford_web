@@ -3,14 +3,14 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
-  Boxes,
+  BookOpen,
   CircleCheck,
-  Headphones,
   Monitor,
   PackageCheck,
   ShieldCheck,
   Wrench,
 } from "lucide-react";
+import { sunford } from "@/features/home/data/brand";
 
 export function BusinessSolutions() {
   return (
@@ -58,38 +58,47 @@ export function BusinessSolutions() {
               sizes="(max-width: 800px) 90vw, 50vw"
             />
           </div>
-          <span className="solution-watermark" aria-hidden="true">
-            connected.
-          </span>
         </div>
         <div className="solution-small-cards">
-          <a href="#contact" className="solution-small">
+          <a href={sunford.accessories} className="solution-small">
             <div className="solution-icon">
-              <Boxes size={24} strokeWidth={1.4} />
+              <PackageCheck size={24} strokeWidth={1.4} />
               <ArrowUpRight size={19} />
             </div>
-            <span>FOR YOUR PRODUCTION</span>
-            <h3>งานผลิตที่คล่องตัวกว่า</h3>
+            <span>ACCESSORIES</span>
+            <h3>อุปกรณ์เสริม</h3>
             <p>
-              จัดการข้อมูลการชั่งและกระบวนการผลิต
+              เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS
               <br />
-              ด้วยโซลูชันที่เหมาะกับโรงงานของคุณ
+              เพื่อขยายการใช้งานให้เหมาะกับธุรกิจ
             </p>
           </a>
-          <a href="#contact" className="solution-small">
+          <a href={sunford.software} className="solution-small">
             <div className="solution-icon">
               <Monitor size={24} strokeWidth={1.4} />
               <ArrowUpRight size={19} />
             </div>
             <span>SOFTWARE & APPLICATIONS</span>
-            <h3>ข้อมูลที่พร้อมให้คุณตัดสินใจ</h3>
+            <h3>แอปพลิเคชันและซอฟต์แวร์</h3>
             <p>
-              เชื่อมต่อข้อมูล สู่การจัดการที่ง่ายขึ้น
+              สำหรับงานค้าปลีก การผลิตอุตสาหกรรม
               <br />
-              ด้วยแอปพลิเคชันและซอฟต์แวร์ Sunford
+              และการดูแลครัวเรือนกับสุขภาพ
             </p>
           </a>
         </div>
+      </div>
+      <div className="ecosystem-links">
+        <span>เชื่อมต่อกับ Sunford</span>
+        <a href={sunford.erp}>
+          โซลูชัน ERP <ArrowUpRight size={15} />
+        </a>
+        <a href={sunford.mes}>
+          โซลูชัน MES <ArrowUpRight size={15} />
+        </a>
+        <a href={sunford.downloads}>
+          ดาวน์โหลดซอฟต์แวร์ <ArrowUpRight size={15} />
+        </a>
       </div>
     </section>
   );
@@ -116,14 +125,14 @@ export function BrandStory() {
             คือ<span>ความตั้งใจของคุณ</span>
           </h2>
           <p>
-            เราเชื่อว่าความแม่นยำเล็ก ๆ สร้างโอกาสที่ยิ่งใหญ่ได้ ตั้งแต่ส่วนผสมจานแรก
-            ยอดขายในแต่ละวัน ไปจนถึงสายการผลิตที่เติบโต
+            Sunford เริ่มต้นจากความตั้งใจที่จะช่วยให้ผู้ประกอบการ โรงงาน ร้านค้าปลีก
+            และผู้ค้ารายย่อย พัฒนาธุรกิจด้วยเทคโนโลยีเครื่องชั่งดิจิทัล
           </p>
           <p>
-            Sunford จึงพัฒนาเครื่องชั่งและโซลูชันที่ใช้งานง่าย
-            เพื่อให้ผู้ประกอบการได้ทำสิ่งที่รักอย่างมั่นใจ และก้าวต่อไปได้ในทุกวัน
+            เราให้ความสำคัญกับคุณภาพ ความทนทาน การใช้งานที่ไม่ซับซ้อน และบริการหลังการขาย
+            เพื่อเป็นส่วนหนึ่งของโอกาสและการเติบโตของคุณ
           </p>
-          <a className="text-link" href="https://www.sunford.co" target="_blank" rel="noreferrer">
+          <a className="text-link" href={sunford.about}>
             รู้จักเรื่องราวของ Sunford <ArrowUpRight size={17} />
           </a>
           <div className="story-signature">
@@ -138,24 +147,28 @@ export function BrandStory() {
 export function SupportSection() {
   const services = [
     {
-      icon: ShieldCheck,
-      title: "มั่นใจในคุณภาพ",
-      description: "เลือกสินค้าที่เหมาะกับงาน พร้อมคำแนะนำจากทีมงาน",
+      icon: BookOpen,
+      title: "E-Catalogue",
+      description: "สำรวจรุ่นสินค้าและรายละเอียดจากแคตตาล็อก Sunford",
+      href: sunford.catalogue,
     },
     {
       icon: Wrench,
-      title: "ดูแลตลอดการใช้งาน",
-      description: "บริการหลังการขายและทีมช่างของ Sunford",
+      title: "ศูนย์บริการลูกค้า",
+      description: "ติดต่อทีม Sunford สำหรับคำปรึกษาและบริการหลังการขาย",
+      href: sunford.contact,
     },
     {
       icon: PackageCheck,
       title: "ส่งถึงธุรกิจคุณ",
       description: "บริการจัดส่งสินค้า ครอบคลุมทั่วประเทศไทย",
+      href: sunford.contact,
     },
     {
-      icon: Headphones,
-      title: "ผู้เชี่ยวชาญที่พร้อมช่วย",
-      description: "ให้คำปรึกษา เลือกเครื่องชั่งและโซลูชันที่ใช่",
+      icon: ShieldCheck,
+      title: "ลงทะเบียนรับประกัน",
+      description: "ลงทะเบียนผลิตภัณฑ์และตรวจเงื่อนไขการรับประกัน",
+      href: sunford.warranty,
     },
   ];
   return (
@@ -163,12 +176,15 @@ export function SupportSection() {
       <div className="support-heading">
         <p className="eyebrow">ALWAYS BY YOUR SIDE</p>
         <h2>
-          มากกว่าสินค้า คือการดูแลที่วางใจได้ <CircleCheck size={23} strokeWidth={1.4} />
+          <span>
+            มากกว่าสินค้า <span className="support-heading-tail">คือการดูแลที่วางใจได้</span>
+          </span>
+          <CircleCheck size={23} strokeWidth={1.4} />
         </h2>
       </div>
       <div className="support-grid">
-        {services.map(({ icon: Icon, title, description }) => (
-          <a href="#contact" key={title}>
+        {services.map(({ icon: Icon, title, description, href }) => (
+          <a href={href} key={title}>
             <Icon size={30} strokeWidth={1.2} />
             <h3>{title}</h3>
             <p>{description}</p>

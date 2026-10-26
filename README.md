@@ -1,6 +1,10 @@
 # Sunford — Product Showcase
 
-เว็บไซต์แนะนำผลิตภัณฑ์ Sunford ภาษาไทย รองรับมือถือ การค้นหา กรองหมวดหมู่ และเปรียบเทียบสินค้า พร้อมหน้าแอดมินเพิ่ม/แก้ไข/ลบสินค้า ล็อกอินด้วย Supabase Auth และอัปโหลดรูปผ่าน Supabase Storage
+เว็บไซต์ Sunford ภาษาไทย จัดหน้าโดยอ้างอิง UX/UI ของ Apple ในธีมขาว แดง และดำ รองรับมือถือ เมนูขยายพร้อมฉากหลังเบลอไล่ระดับ การค้นหา กรองหมวดหมู่ เปรียบเทียบสินค้า และแกลเลอรีรูปสินค้า
+
+นำเข้าข้อมูลสาธารณะจาก sunford.co เมื่อ 26 ตุลาคม 2026: 392 หน้า รวมหน้าสินค้า 150 รายการ หมวดสินค้า 112 หน้า รูป 909 ไฟล์ และการอ้างอิงวิดีโอ 20 รายการ เก็บรายละเอียดสินค้า ซอฟต์แวร์ บทความ บริการ และนโยบายไว้ในโปรเจกต์ รูปที่ต้นฉบับไม่พร้อมใช้งานแสดงช่องภาพว่าง
+
+มีหน้าแอดมินเพิ่ม/แก้ไข/ลบสินค้า ล็อกอินด้วย Supabase Auth และอัปโหลดรูปผ่าน Supabase Storage โดยแยก layout จากหน้าเว็บสาธารณะ
 
 ## เริ่มต้น
 
@@ -11,7 +15,7 @@ npm install
 npm run dev
 ```
 
-เปิด URL ที่ Next.js แสดงใน terminal (ปกติ http://localhost:3000) หากยังไม่ตั้งค่าฐานข้อมูล เว็บไซต์จะใช้ curated catalogue 6 รุ่นจาก `src/features/catalog/data/products.ts` เพื่อให้พัฒนาหน้าบ้านได้ทันที
+เปิด URL ที่ Next.js แสดงใน terminal (ปกติ http://localhost:3000) แคตตาล็อกที่นำเข้าทั้งหมดแสดงได้โดยไม่ต้องตั้งค่าฐานข้อมูล หากตั้งค่าฐานข้อมูลจะรวมสินค้าที่ดูแลเพิ่มในฐานข้อมูลเข้ากับข้อมูลต้นฉบับ โดยไม่สร้างรายการซ้ำสำหรับสินค้าแนะนำเดิม
 
 ## โครงสร้าง
 
@@ -25,6 +29,7 @@ src/
     layout/                  # Header, Footer
     ui/                      # Native accessible dialog
   features/
+    content/                 # Imported public pages, full product details, search and videos
     catalog/
       components/            # Catalogue, cards, search, comparison
       data/                  # Curated initial catalogue
@@ -67,7 +72,7 @@ tests/e2e/                  # Playwright user journeys
 
 Initial migration สร้างเฉพาะตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม คำสั่ง `npm run db:seed` สร้าง Prisma Client ก่อนแล้วใช้ upsert ตาม product id และจะอัปเดตรายละเอียดของ 6 รุ่นเดิม จึงควรตรวจข้อมูลก่อนรันซ้ำหลังแก้สินค้าในฐานข้อมูล
 
-เมื่อมี `DATABASE_URL` จริง repository จะอ่านเฉพาะสินค้าที่ `published = true` จาก PostgreSQL หากการเชื่อมต่อล้มเหลวจะแสดง error state โดยไม่แทนที่ข้อมูลจริงด้วยข้อมูลตัวอย่าง
+เมื่อมี `DATABASE_URL` จริง repository จะรวมสินค้าที่ `published = true` จาก PostgreSQL กับ snapshot ที่นำเข้า ข้อมูล Sunford ที่นำเข้ามีลำดับความสำคัญก่อนรายการรุ่นเดียวกันใน seed หากการเชื่อมต่อล้มเหลวจะแสดง error state โดยไม่แทนที่ข้อมูลจริงด้วยข้อมูลตัวอย่าง
 
 ข้อมูลสินค้าสาธารณะถูก cache 1 ชั่วโมงด้วย Next.js Cache Components การแก้ผ่านหน้าแอดมิน invalidate tag และหน้าที่เกี่ยวข้องทันที หากแก้ฐานข้อมูลโดยตรงให้รอ cache หมดอายุหรือ deploy ใหม่ หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่
 
@@ -76,6 +81,17 @@ Initial migration สร้างเฉพาะตาราง `products`, enum
 **สถานะตรวจสอบล่าสุด:** เชื่อมต่อ Supabase จริงผ่านทั้ง `DATABASE_URL` และ `DIRECT_URL` สำเร็จแล้ว ตาราง `products` และ initial migration มีอยู่ครบ ไม่มี migration ค้าง รัน seed สำเร็จ และทดสอบอ่านสินค้าที่เผยแพร่ครบ 6 รุ่นผ่าน Prisma Client ของแอปโดยใช้ `DATABASE_URL` แล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
 
 ## คำสั่งพัฒนา
+
+อัปเดตและตรวจสอบข้อมูลจากเว็บไซต์ต้นฉบับ:
+
+```bash
+npm run content:import
+npm run content:validate
+```
+
+ตัวนำเข้าอ่าน sitemap และลิงก์สาธารณะ เก็บรายละเอียดและรูปในเครื่อง ลบสคริปต์และ event handlers จาก HTML และบันทึกข้อจำกัดที่ `src/features/content/data/import-report.json` ดูรายละเอียดที่ `docs/content-import.md`
+
+แบบฟอร์มลงทะเบียนรับประกันและคำขอบริการมีปุ่มเปิดระบบต้นฉบับจริง การแสดงเนื้อหาในเว็บนี้ไม่ได้ส่งแบบฟอร์มหรือสร้างรายการบริการแทนผู้ใช้
 
 ```bash
 npm run typecheck
@@ -102,7 +118,7 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 
 ## เนื้อหาและภาพ
 
-แหล่งข้อมูล: เว็บไซต์ [Sunford](https://www.sunford.co) และ [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) ราคาถูกละไว้เพราะเว็บไซต์นี้เน้นแนะนำสินค้า ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford ไม่มีฟอร์มที่แกล้งบันทึกข้อมูล
+แหล่งข้อมูลหลักคือเว็บไซต์ [Sunford](https://www.sunford.co) เก็บข้อมูลเต็มไว้ใน snapshot ส่วนภาพสินค้าแบบตัดพื้นหลังเดิมและภาพแบรนด์บางส่วนมาจาก [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) แสดงราคาเฉพาะรายการที่เว็บไซต์ต้นฉบับเปิดเผยราคา ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford
 
 ฟอนต์ Inter และ Noto Sans Thai ถูก self-host ด้วย `next/font/local` ดูใบอนุญาตใน `src/app/fonts` การติดตั้งและ build ไม่ต้องเรียก Google Fonts
 

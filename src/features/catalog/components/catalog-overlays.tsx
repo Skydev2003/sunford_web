@@ -1,13 +1,20 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
+import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ArrowRight, GitCompareArrows, Search, X } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { categories, type Product } from "../types";
+import type { SearchPage } from "@/features/content/types";
 
-export function CatalogOverlays({ products }: { products: Product[] }) {
+export function CatalogOverlays({
+  products,
+  pages = [],
+}: {
+  products: Product[];
+  pages?: SearchPage[];
+}) {
   const searchOpen = useCatalogStore((s) => s.searchOpen);
   const compareOpen = useCatalogStore((s) => s.compareOpen);
   const ids = useCatalogStore((s) => s.compareIds);
@@ -22,6 +29,13 @@ export function CatalogOverlays({ products }: { products: Product[] }) {
       .includes(search.trim().toLowerCase()),
   );
   const selected = products.filter((p) => ids.includes(p.id));
+  const pageResults = search.trim()
+    ? pages
+        .filter((page) =>
+          `${page.title} ${page.path}`.toLowerCase().includes(search.toLowerCase().trim()),
+        )
+        .slice(0, 20)
+    : [];
   return (
     <>
       <Modal
@@ -48,9 +62,9 @@ export function CatalogOverlays({ products }: { products: Product[] }) {
           {search ? `พบ ${found.length} ผลิตภัณฑ์` : "ผลิตภัณฑ์ของ Sunford"}
         </p>
         <div className="search-results">
-          {found.map((p) => (
+          {found.slice(0, 40).map((p) => (
             <Link key={p.id} href={`/products/${p.slug}`} onClick={() => setSearchOpen(false)}>
-              <Image src={p.image} alt={p.name} width={65} height={65} />
+              <ProductImage src={p.image} alt={p.name} width={65} height={65} />
               <div>
                 <strong>{p.name}</strong>
                 <span>{p.subtitle}</span>
@@ -58,7 +72,16 @@ export function CatalogOverlays({ products }: { products: Product[] }) {
               <ArrowRight size={18} />
             </Link>
           ))}
-          {!found.length && (
+          {pageResults.map((page) => (
+            <Link key={page.path} href={page.path} onClick={() => setSearchOpen(false)}>
+              <div>
+                <strong>{page.title}</strong>
+                <span>ข้อมูลและบริการ Sunford</span>
+              </div>
+              <ArrowRight size={18} />
+            </Link>
+          ))}
+          {!found.length && !pageResults.length && (
             <p className="empty-state">ไม่พบสินค้า ลองค้นหา WPS, FEH หรือเครื่องชั่ง</p>
           )}
         </div>
@@ -104,7 +127,7 @@ export function CatalogOverlays({ products }: { products: Product[] }) {
                         >
                           <X size={15} />
                         </button>
-                        <Image src={p.image} alt={p.name} width={145} height={130} />
+                        <ProductImage src={p.image} alt={p.name} width={145} height={130} />
                         <Link href={`/products/${p.slug}`} onClick={() => setCompareOpen(false)}>
                           {p.name} <ArrowRight size={13} />
                         </Link>

@@ -1,14 +1,17 @@
 # Content and asset sources
 
-Initial content checked on 26 October 2026. Marketing copy is newly written for this concept; product images and product facts come from Sunford's official public websites. Specifications should be reconfirmed by Sunford before publication.
+Public content was imported and checked on 26 October 2026. The main content source is sunford.co, including complete product introductions, specifications, galleries, collections, software, articles, services and policies. See [the import audit](content-import.md) for coverage and unavailable source material. The original Sunford Shop images below remain useful as clean product photography for the hero and existing brand assets.
+
+The products landing page follows the supplied [Apple Thailand Store layout reference](https://www.apple.com/th/store): a large introduction, image category rail, horizontal product and accessory shelves, assistance cards, benefits and quick links. Images and content remain Sunford's. Missing editorial photos have reserved image slots. The complete searchable catalogue is available from the category rail and “ดูทั้งหมด” control.
 
 - [Sunford corporate site](https://www.sunford.co): categories, company context, customer service telephone, address, LINE handle.
 - [Sunford Shop](https://sunfordshop.com): logo, product images and catalogue.
-- [WPS10KS](https://sunfordshop.com/รายละเอียดสินค้า/WPS10KS): 10 kg; 0–5 kg / 0.5 g, 5–10 kg / 1 g; food production scale.
-- [FEH5KS](https://sunfordshop.com/รายละเอียดสินค้า/SUNFORD-FEH5KS): 5 kg / 1 g; SUNFORD Connect and printer support.
-- [RLS1100](https://sunfordshop.com/รายละเอียดสินค้า/SUNFORD-RLS1100): 30 kg; 15 kg / 5 g and 30 kg / 10 g; Wi-Fi and label printing.
-- [Commercial scales](https://sunfordshop.com/สินค้า/2/เครื่องชั่งเพื่อการพาณิชย์): ACS-30-JC21 30 kg, 15 kg / 5 g and 30 kg / 10 g; TIS-150-JC62Z 150 kg, 60 kg / 20 g and 150 kg / 50 g.
-- [POS1100 Type A](https://sunfordshop.com/รายละเอียดสินค้า/SUNFORD-POS1100-A): 30 kg; connection to SUNFORD Connect POS.
+- [WPS10KS](https://www.sunford.co/products/10669): 10 kg, 0.5/1 g, IP67 and SUS304 weighing pan.
+- [FEH5KS](https://www.sunford.co/products/10637): 5 kg / 1 g, RS232 printer connectivity and SUNFORD CONNECT.
+- [RLS1100](https://www.sunford.co/products/10639): 30 kg, 5/10 g, label printing and up to 10,000 stored items. Wireless connectivity is not asserted without current source confirmation.
+- [ACS-30-JC21](https://www.sunford.co/products/10609): 30 kg, 5/10 g and dual-sided price displays.
+- [TIS-150-JC62Z](https://www.sunford.co/products/10855): 150 kg, 20/50 g and SUS201 construction/pan.
+- [POS1100-A](https://www.sunford.co/products/10658): 30 kg, 5/10 g, USB-RJ11 data and power connection.
 
 Product image paths on sunfordshop.com:
 
