@@ -62,7 +62,7 @@ tests/e2e/                  # Playwright user journeys
    npm run dev
    ```
 
-Initial migration สร้างเฉพาะตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม การ seed ใช้ upsert ตาม product id และจะอัปเดตรายละเอียดของ 6 รุ่นเดิม จึงควรตรวจข้อมูลก่อนรันซ้ำหลังแก้สินค้าในฐานข้อมูล
+Initial migration สร้างเฉพาะตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม คำสั่ง `npm run db:seed` สร้าง Prisma Client ก่อนแล้วใช้ upsert ตาม product id และจะอัปเดตรายละเอียดของ 6 รุ่นเดิม จึงควรตรวจข้อมูลก่อนรันซ้ำหลังแก้สินค้าในฐานข้อมูล
 
 เมื่อมี `DATABASE_URL` จริง repository จะอ่านเฉพาะสินค้าที่ `published = true` จาก PostgreSQL หากการเชื่อมต่อล้มเหลวจะแสดง error state โดยไม่แทนที่ข้อมูลจริงด้วยข้อมูลตัวอย่าง
 
@@ -70,7 +70,7 @@ Initial migration สร้างเฉพาะตาราง `products`, enum
 
 `SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` เป็นตัวเลือกสำหรับต่อยอด Storage ผ่าน `src/lib/supabase.ts` ตอนนี้ภาพถูกเก็บใน `public/images` จึงยังไม่เรียก Supabase Storage หรือ Auth
 
-**สถานะ:** เตรียม integration, migration และ seed แล้ว ยังไม่ได้เชื่อมต่อหรือรันคำสั่งกับ Supabase จริง เนื่องจากยังไม่มีรหัสผ่าน
+**สถานะตรวจสอบล่าสุด:** เชื่อมต่อ Supabase จริงผ่านทั้ง `DATABASE_URL` และ `DIRECT_URL` สำเร็จแล้ว ตาราง `products` และ initial migration มีอยู่ครบ ไม่มี migration ค้าง รัน seed สำเร็จ และทดสอบอ่านสินค้าที่เผยแพร่ครบ 6 รุ่นผ่าน Prisma Client ของแอปโดยใช้ `DATABASE_URL` แล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
 
 ## คำสั่งพัฒนา
 
