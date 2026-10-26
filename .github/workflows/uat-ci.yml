@@ -1,0 +1,48 @@
+name: UAT checks
+
+on:
+  pull_request:
+    branches: [uat, main]
+  push:
+    branches: [uat]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uat-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  uat-checks:
+    name: uat-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      APP_ENV: ci
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --include=dev
+      - name: Lint and formatting
+        run: npm run lint && npm run format:check
+      - name: Validate database schema and LAN UAT configuration
+        run: npm run db:validate && npm run test:uat
+      # No Supabase credentials or database migrations run in CI.
+      # With DATABASE_URL absent, public catalogue tests use the curated local fixture.
+      - name: Production build and TypeScript
+        run: npm run build && npm run typecheck
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Public catalogue browser checks
+        run: npm run test:e2e -- tests/e2e/catalog.spec.ts
