@@ -1,0 +1,66 @@
+# Sunford Admin
+
+เข้าใช้งานที่ `/admin/login` ระบบใช้ Supabase Auth แบบอีเมล/รหัสผ่าน และใช้ตาราง `public.admin_users` เป็นแหล่งสิทธิ์แอดมิน ไม่มีหน้าสมัครแอดมินแบบสาธารณะ
+
+## ตั้งค่า
+
+`.env` ต้องมี `DATABASE_URL`, `DIRECT_URL`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` โดยเป็น Supabase project เดียวกันทั้งหมด
+
+```bash
+npm install
+npm run db:deploy
+npm run admin:create -- admin@example.com
+```
+
+คำสั่งสร้างบัญชีต้องมี `SUPABASE_SECRET_KEY` หรือ `SUPABASE_SERVICE_ROLE_KEY` ใน `.env` และจะถามรหัสผ่านแบบไม่แสดงตัวอักษร ไม่ส่งรหัสผ่านเป็น command argument ไม่เก็บไว้ใน source code ถ้าอีเมลมีอยู่แล้ว คำสั่งจะเพิ่มสิทธิ์แอดมินให้โดยไม่เปลี่ยนรหัสผ่าน บัญชีใหม่สร้างผ่าน Supabase Auth Admin API และยืนยันอีเมลผ่าน API นี้โดยไม่ส่งอีเมลออกไป
+
+คีย์ secret/service-role ใช้เฉพาะเครื่องมือ provisioning และการทดสอบ ไม่จำเป็นสำหรับ runtime ของหน้าแอดมิน และห้ามใช้ชื่อ environment ที่ขึ้นต้นด้วย `NEXT_PUBLIC_` สำหรับคีย์นี้
+
+การถอนสิทธิ์ให้ลบแถว `admin_users` ที่ตรงกับ user id ผ่านเครื่องมือฐานข้อมูลที่เชื่อถือได้ ไม่ต้องลบบัญชี Auth ผู้ใช้จะไม่ผ่านการตรวจสิทธิ์ในคำขอถัดไป
+
+## โครงสร้างและสิทธิ์
+
+- `src/app/(site)` คือหน้าเว็บสาธารณะ URL เดิมยังเหมือนเดิม
+- `src/app/admin/login` คือหน้าเข้าสู่ระบบ
+- `src/app/admin/(protected)` คือหน้าแอดมินที่มี layout ตรวจสิทธิ์
+- `src/features/admin/server/auth.ts` ตรวจตัวตนด้วย `supabase.auth.getUser()` และตรวจ membership จาก PostgreSQL ไม่มีการเชื่อ session cookie ที่ยังไม่ได้ตรวจสอบหรือ `user_metadata` เพื่อให้สิทธิ์
+- ทุก Server Action ที่แก้สินค้า อัปโหลด หรือทิ้งรูป ตรวจสิทธิ์ซ้ำ ไม่พึ่งการซ่อนปุ่มหรือ redirect ใน layout
+- `src/proxy.ts` refresh session เฉพาะ `/admin/*` และส่ง `Cache-Control: private, no-store` ใช้ cookie แบบ HttpOnly, SameSite=Lax และ Secure เมื่อรัน production ผ่าน HTTPS
+- หน้าสินค้าแอดมินอ่านข้อมูลสด รวมฉบับร่าง ส่วนหน้าสาธารณะอ่านเฉพาะ `published=true`
+- บันทึก/ลบแล้ว invalidate tag `products` และหน้าที่เกี่ยวข้อง เพื่อให้แคตตาล็อกอัปเดตทันที
+- ฟอร์มตรวจข้อมูลด้วย Zod และตรวจ `updatedAt` ตอนแก้/ลบ เพื่อไม่ทับข้อมูลที่ถูกแก้จากอีกหน้า
+- `products` ไม่เปิด Data API writes ให้ anonymous/authenticated users การแก้ไขผ่าน Prisma หลังตรวจแอดมินฝั่งเซิร์ฟเวอร์เท่านั้น
+
+Migration แอดมินใช้ schema `auth` และ `storage` ของ Supabase โดยตรง หากสร้าง shadow database สำหรับ `migrate dev` ต้องใช้สภาพแวดล้อม Supabase ที่มี schema เหล่านี้ ห้าม reset ฐานข้อมูลใช้งานจริงเพื่อทดลอง migration
+
+## รูปสินค้า
+
+Bucket: `product-images` เปิด public read สำหรับรูปบนเว็บไซต์ จำกัด 5 MB และ MIME `image/jpeg`, `image/png`, `image/webp` การอัปโหลดใช้ JWT ของผู้ใช้และ RLS ไม่ใช้ service-role key ข้ามสิทธิ์
+
+- INSERT: ต้องเป็นแอดมินและ path เริ่มด้วย user id ของตัวเอง
+- SELECT/DELETE: ต้องเป็นแอดมิน
+- ไม่มี UPDATE policy; ใช้ชื่อไฟล์ UUID ใหม่ทุกครั้งเพื่อเลี่ยงการเขียนทับและปัญหา cache
+- Server Action ตรวจชนิดจาก bytes จริงด้วย `file-type` ปฏิเสธ SVG/ไฟล์ที่ปลอมชื่อเป็นภาพ
+- ฟอร์มยอมรับภาพเดิมใน `/images/products` หรือ URL ที่สร้างจาก bucket ของ project นี้เท่านั้น
+- เมื่อเปลี่ยนรูปหรือลบสินค้า จะพยายามลบรูปเดิมที่ไม่มีสินค้าอื่นอ้างอิง หลังบันทึกฐานข้อมูลสำเร็จแล้ว ความล้มเหลวของ Storage cleanup จะไม่ย้อนการบันทึกสินค้า
+- ปุ่มยกเลิก/กลับจากฟอร์มพยายามลบรูปที่เพิ่งอัปโหลดและยังไม่ได้ใช้ หากปิดแท็บทันทีหรือเน็ตหลุด อาจมีไฟล์ที่ไม่ถูกอ้างอิงเหลือใน bucket ต้องตรวจผ่านเครื่องมือ Storage ก่อนลบ ไม่ลบไฟล์จาก `storage.objects` ด้วย SQL
+- Public images may remain cached by a CDN/browser for their cache lifetime after deletion. Deleting a product removes it from the catalogue immediately; images are public marketing assets, not private documents.
+
+## ทดสอบ
+
+เปิด dev server แล้วรัน:
+
+```bash
+PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e -- tests/e2e/catalog.spec.ts
+PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:admin -- admin@example.com
+```
+
+หากใช้ Chrome ที่ติดตั้งในเครื่อง ให้เพิ่ม `PLAYWRIGHT_CHANNEL=chrome` คำสั่งทดสอบแอดมินถามรหัสผ่านแบบซ่อน ใช้ environment ใน process เท่านั้น ไม่มี trace/video ของการเข้าสู่ระบบ
+
+การทดสอบแอดมินใช้ Supabase จริง: สร้างสินค้าชั่วคราวที่มี slug `qa-<UUID>`, อัปโหลดรูป, บันทึกฉบับร่าง, เผยแพร่, แก้ไข และลบ พร้อมทดสอบบัญชี Auth ชั่วคราวที่ไม่มีสิทธิ์ ข้อมูลทดสอบและไฟล์จะถูกลบใน `finally` โดยไม่แก้สินค้าจริง ถ้ากระบวนการทดสอบถูก kill ควรตรวจเฉพาะ `qa-*` และไฟล์ที่เพิ่งอัปโหลดก่อนทำความสะอาด
+
+## เอกสารอ้างอิง
+
+- [Supabase SSR และ Next.js session refresh](https://supabase.com/docs/guides/auth/server-side/creating-a-client?framework=nextjs)
+- [Supabase Storage access policies](https://supabase.com/docs/guides/storage/security/access-control)
+- [Supabase Auth Admin createUser](https://supabase.com/docs/reference/javascript/auth-admin-createuser)

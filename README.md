@@ -4,6 +4,8 @@
 
 นำเข้าข้อมูลสาธารณะจาก sunford.co เมื่อ 26 ตุลาคม 2026: 392 หน้า รวมหน้าสินค้า 150 รายการ หมวดสินค้า 112 หน้า รูป 909 ไฟล์ และการอ้างอิงวิดีโอ 20 รายการ เก็บรายละเอียดสินค้า ซอฟต์แวร์ บทความ บริการ และนโยบายไว้ในโปรเจกต์ รูปที่ต้นฉบับไม่พร้อมใช้งานแสดงช่องภาพว่าง
 
+มีหน้าแอดมินเพิ่ม/แก้ไข/ลบสินค้า ล็อกอินด้วย Supabase Auth และอัปโหลดรูปผ่าน Supabase Storage โดยแยก layout จากหน้าเว็บสาธารณะ
+
 ## เริ่มต้น
 
 ใช้ Node.js 20.19+ หรือ 22.12+ (พัฒนาและตรวจด้วย Node.js 24)
@@ -20,7 +22,8 @@ npm run dev
 ```text
 src/
   app/                       # Route composition, metadata, error boundaries, API
-    products/[slug]/         # รายละเอียดสินค้า ใช้ Server Components
+    (site)/                  # หน้าเว็บสาธารณะ + products/[slug] (URL เดิม)
+    admin/                   # Login และ protected product management
     api/products/            # Read-only catalogue endpoint
   components/
     layout/                  # Header, Footer
@@ -33,8 +36,10 @@ src/
       server/                # Repository: จุดเดียวที่อ่านข้อมูลสินค้า
       types.ts               # Domain model และหมวดหมู่
     home/components/         # Hero, solutions, brand story, support
+    admin/                   # Admin UI, validation, auth guards, Server Actions
   stores/                    # Zustand: filter, search, comparison UI state
   lib/                       # Server-only Prisma / Supabase integrations
+  proxy.ts                   # Auth session refresh เฉพาะเส้นทางแอดมิน
   styles/                    # Design tokens และ CSS แยกตามส่วน
   generated/prisma/          # สร้างด้วย prisma generate ไม่ commit
 prisma/
@@ -69,9 +74,9 @@ Initial migration สร้างเฉพาะตาราง `products`, enum
 
 เมื่อมี `DATABASE_URL` จริง repository จะรวมสินค้าที่ `published = true` จาก PostgreSQL กับ snapshot ที่นำเข้า ข้อมูล Sunford ที่นำเข้ามีลำดับความสำคัญก่อนรายการรุ่นเดียวกันใน seed หากการเชื่อมต่อล้มเหลวจะแสดง error state โดยไม่แทนที่ข้อมูลจริงด้วยข้อมูลตัวอย่าง
 
-ข้อมูลสินค้าถูก cache 1 ชั่วโมงด้วย Next.js Cache Components หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่ หลังแก้ข้อมูลสินค้ารอ cache หมดอายุ หรือ deploy ใหม่
+ข้อมูลสินค้าสาธารณะถูก cache 1 ชั่วโมงด้วย Next.js Cache Components การแก้ผ่านหน้าแอดมิน invalidate tag และหน้าที่เกี่ยวข้องทันที หากแก้ฐานข้อมูลโดยตรงให้รอ cache หมดอายุหรือ deploy ใหม่ หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่
 
-`SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` เป็นตัวเลือกสำหรับต่อยอด Storage ผ่าน `src/lib/supabase.ts` ตอนนี้ภาพถูกเก็บใน `public/images` จึงยังไม่เรียก Supabase Storage หรือ Auth
+`SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` ใช้สำหรับ Supabase Auth และการอัปโหลด Storage แบบมีสิทธิ์ผู้ใช้ รูปสินค้าเดิมยังอยู่ใน `public/images` ส่วนรูปใหม่จากแอดมินเก็บใน bucket `product-images`
 
 **สถานะตรวจสอบล่าสุด:** เชื่อมต่อ Supabase จริงผ่านทั้ง `DATABASE_URL` และ `DIRECT_URL` สำเร็จแล้ว ตาราง `products` และ initial migration มีอยู่ครบ ไม่มี migration ค้าง รัน seed สำเร็จ และทดสอบอ่านสินค้าที่เผยแพร่ครบ 6 รุ่นผ่าน Prisma Client ของแอปโดยใช้ `DATABASE_URL` แล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
 
@@ -116,3 +121,25 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 แหล่งข้อมูลหลักคือเว็บไซต์ [Sunford](https://www.sunford.co) เก็บข้อมูลเต็มไว้ใน snapshot ส่วนภาพสินค้าแบบตัดพื้นหลังเดิมและภาพแบรนด์บางส่วนมาจาก [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) แสดงราคาเฉพาะรายการที่เว็บไซต์ต้นฉบับเปิดเผยราคา ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford
 
 ฟอนต์ Inter และ Noto Sans Thai ถูก self-host ด้วย `next/font/local` ดูใบอนุญาตใน `src/app/fonts` การติดตั้งและ build ไม่ต้องเรียก Google Fonts
+
+## หน้าแอดมิน
+
+เปิด `/admin/login` ด้วยบัญชี Supabase Auth ที่มี membership ใน `admin_users` ดูวิธีสร้าง/ถอนสิทธิ์แอดมิน การตั้งค่า Storage และการทดสอบใน [docs/admin.md](docs/admin.md)
+
+```bash
+npm run admin:create -- admin@example.com
+PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:admin -- admin@example.com
+```
+
+ทั้งสองคำสั่งถามรหัสผ่านแบบซ่อน ไม่ใส่รหัสผ่านลง command arguments หรือ source code คีย์ secret/service-role ใช้เฉพาะเครื่องมือ provisioning/การทดสอบและห้ามส่งไปเบราว์เซอร์ หน้าแอดมิน runtime ไม่จำเป็นต้องใช้คีย์นี้
+
+## UAT บน LAN ชั่วคราว
+
+เตรียม branch `uat` และ CI สำหรับรับงานของทีม โดยยังไม่สร้าง server/hosting ใช้เครื่องนี้เปิดเว็บให้ทีมใน Wi-Fi/LAN เดียวกันผ่าน nip.io ได้:
+
+```bash
+npm run uat:local -- --check
+npm run uat:local
+```
+
+หยุด `next dev` เดิมก่อนเปิดคำสั่งนี้ ใช้ URL และพอร์ตที่คำสั่งแสดง ดูขั้นตอน branch, การอัปเดตเครื่อง UAT และกรณีทดสอบใน [docs/uat.md](docs/uat.md) nip.io เป็น DNS ไม่ใช่ hosting และ private-IP URL นี้ไม่เปิดให้ทีมต่างเครือข่ายเข้าถึงโดยอัตโนมัติ

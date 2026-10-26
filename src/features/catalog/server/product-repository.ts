@@ -1,5 +1,5 @@
 import "server-only";
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { products } from "../data/products";
 import type { Product } from "../types";
 import { hasDatabase } from "@/lib/env";
@@ -9,6 +9,7 @@ import { getSnapshotProducts } from "@/features/content/server/content-repositor
 export async function getProducts(): Promise<Product[]> {
   "use cache";
   cacheLife("hours");
+  cacheTag("products");
   const snapshot = getSnapshotProducts();
   if (!hasDatabase()) return snapshot.length ? snapshot : products;
   const managed = await getPrisma().product.findMany({

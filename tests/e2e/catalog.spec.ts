@@ -118,7 +118,10 @@ test("mobile navigation works and page does not overflow", async ({ page }) => {
   }
 });
 
-test("catalogue API returns data and unknown product returns 404", async ({ request, page }) => {
+test("catalogue API returns data and unknown products render an unindexable 404 page", async ({
+  request,
+  page,
+}) => {
   const response = await request.get("/api/products");
   expect(response.ok()).toBe(true);
   const data = await response.json();
@@ -129,6 +132,11 @@ test("catalogue API returns data and unknown product returns 404", async ({ requ
   await page.getByRole("button", { name: /ดูเพิ่มเติม \(24/ }).click();
   await expect(page.locator(".product-card")).toHaveCount(48);
   const missing = await page.goto("/products/does-not-exist");
-  expect(missing?.status()).toBe(404);
   await expect(page.getByRole("heading", { name: "ยังไม่พบหน้าที่คุณกำลังมองหา" })).toBeVisible();
+  // Streaming production responses can send 200 before notFound() resolves.
+  // In that case Next.js must mark the rendered 404 page as non-indexable.
+  expect([200, 404]).toContain(missing?.status());
+  if (missing?.status() === 200) {
+    await expect(page.locator('meta[name="robots"][content*="noindex"]')).toHaveCount(1);
+  }
 });
