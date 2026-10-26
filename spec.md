@@ -1,5 +1,11 @@
 # Project state
 
+## Deployment state
+
+- The existing `sunford-uat` Render service at `https://sunford-uat.onrender.com` tracks `main` and uses `APP_ENV=production`, despite its UAT service name. Deploying this service requires merging into `main` and passing its CI checks.
+- On 2026-10-26, PR #2 merged the navigation and tooltip changes from `uat` into `main` as `264b7194200a2c8e671ae422415b3f296588269c`. PR and main CI passed, Render reported success, and `/api/health` returned `status: ok` with revision `264b7194200a`. No database schema or deployment configuration changed.
+- Eight browser checks passed against the deployed site, covering navigation, guides and tooltips. One initial check encountered a transient Render 502 on page load and passed when rerun.
+
 ## Navigation architecture
 
 - The public layout renders `SiteHeader`, which loads CMS navigation settings and passes them to the client `Header`.
@@ -35,5 +41,5 @@
 
 ## Out of scope
 
-- No mobile navigation redesign, new product filtering features, database content writes or deployment in this change.
+- No mobile navigation redesign, new product filtering features or database content writes in this change.
 - Guide pages are not added to the CMS page editor or search index in this change.
