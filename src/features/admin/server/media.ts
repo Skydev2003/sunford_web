@@ -26,6 +26,10 @@ export async function removeUnusedImage(supabase: SupabaseClient, image: string)
     (await getPrisma().homepageImage.count({ where: { image } }))
   )
     return;
+  // Rich content, galleries and site settings can share an uploaded image.
+  // Include archived documents so deleting content never destroys its original media.
+  const documents = await getPrisma().cmsDocument.findMany({ select: { data: true } });
+  if (documents.some((document) => JSON.stringify(document.data).includes(image))) return;
   // Never change database state when Storage cleanup fails; retained files can be cleaned later.
   const { error } = await supabase.storage.from(PRODUCT_IMAGE_BUCKET).remove([path]);
   if (error) throw new Error("Storage cleanup failed.");

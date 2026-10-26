@@ -10,7 +10,7 @@ export const categories = [
   { id: "lifestyle", label: "ไลฟ์สไตล์และสุขภาพ", english: "Lifestyle & health" },
 ] as const;
 
-export type CategoryId = (typeof categories)[number]["id"];
+export type CategoryId = string;
 export type Product = {
   id: string;
   slug: string;
@@ -29,4 +29,5 @@ export type Product = {
   sourceUrl?: string;
   price?: number | null;
   imageOverridden?: boolean;
+  media?: import("@/features/cms/types").ProductMedia;
 };

@@ -1,25 +1,33 @@
 "use client";
+import { useCategories } from "@/features/cms/components/categories-provider";
 import { useActionState, useId, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, ImagePlus, Save, Upload, X } from "lucide-react";
-import { categories } from "@/features/catalog/types";
+
 import { saveProductAction } from "../server/product-actions";
 import { discardProductImage, uploadProductImage } from "../server/media-actions";
 import type { AdminProduct } from "../types";
+import { ProductGalleryEditor } from "./product-gallery-editor";
 
 export function ProductForm({ product }: { product?: AdminProduct }) {
+  const categories = useCategories();
   const formId = useId();
   const [state, action, saving] = useActionState(saveProductAction, {});
   const [image, setImage] = useState(product?.image ?? "");
+  const [gallery, setGallery] = useState(
+    product?.gallery ?? (product?.image ? [product.image] : []),
+  );
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const uploadedImages = useRef(new Set<string>());
   const [uploadedImage, setUploadedImage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [imageError, setImageError] = useState("");
   const [cancelling, startCancel] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const busy = saving || uploading || cancelling;
+  const busy = saving || uploading || galleryUploading || cancelling;
   async function upload(file?: File) {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
@@ -34,16 +42,14 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
       const result = await uploadProductImage(data);
       if (result.error || !result.url) setImageError(result.error ?? "อัปโหลดรูปไม่สำเร็จ");
       else {
-        const previousUpload = uploadedImage;
+        uploadedImages.current.add(result.url);
+        setGallery((current) =>
+          current.includes(image)
+            ? current.map((entry) => (entry === image ? result.url! : entry))
+            : [result.url!, ...current],
+        );
         setImage(result.url);
         setUploadedImage(result.url);
-        if (previousUpload) {
-          try {
-            await discardProductImage(previousUpload);
-          } catch {
-            /* The new image has already uploaded successfully. */
-          }
-        }
       }
     } catch {
       setImageError("อัปโหลดรูปไม่สำเร็จ กรุณาลองอีกครั้ง");
@@ -55,7 +61,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
   function cancel() {
     startCancel(async () => {
       try {
-        if (uploadedImage) await discardProductImage(uploadedImage);
+        for (const uploaded of uploadedImages.current) await discardProductImage(uploaded);
       } finally {
         router.push("/admin/products");
       }
@@ -80,6 +86,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
       </button>
       <form action={action} className="admin-product-form">
         <input type="hidden" name="image" value={image} />
+        <input type="hidden" name="gallery" value={JSON.stringify(gallery)} />
         {product && (
           <>
             <input type="hidden" name="id" value={product.id} />
@@ -231,6 +238,15 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                 ))}
               </div>
             </section>
+            <ProductGalleryEditor
+              images={gallery}
+              primaryImage={image}
+              disabled={busy}
+              onChange={setGallery}
+              onPrimary={setImage}
+              onBusy={setGalleryUploading}
+              onUploaded={(image) => uploadedImages.current.add(image)}
+            />
           </div>
           <aside className="admin-editor-aside">
             <section className="admin-form-card">
@@ -297,6 +313,9 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                   <br />
                   รูปจะจัดเก็บใน Supabase Storage
                 </p>
+                <a className="admin-preview-link" href="#product-gallery">
+                  จัดการรูปทั้งหมด ({gallery.length} รูป) <ArrowUpRight size={14} />
+                </a>
               </div>
             </section>
             <section className="admin-form-card">
@@ -363,6 +382,14 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                     target="_blank"
                   >
                     ดูสินค้าบนเว็บไซต์ <ArrowUpRight size={14} />
+                  </Link>
+                )}
+                {product && (
+                  <Link
+                    className="admin-preview-link"
+                    href={`/admin/content/product-media:${product.id}`}
+                  >
+                    จัดการแกลเลอรี ราคา วิดีโอ และเนื้อหาเพิ่มเติม <ArrowUpRight size={14} />
                   </Link>
                 )}
               </div>

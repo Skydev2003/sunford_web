@@ -1,7 +1,11 @@
 import type { Product } from "@/features/catalog/types";
 import type { HomeImageSlot } from "./image-slots";
 
-export type HomeLinkTarget = { productId?: string | null; pagePath?: string | null };
+export type HomeLinkTarget = {
+  productId?: string | null;
+  pagePath?: string | null;
+  disabled?: boolean;
+};
 export type HomeLinkTargets = Partial<Record<HomeImageSlot, HomeLinkTarget>>;
 export type HomeProductOption = { id: string; name: string; href: string };
 export type HomePageOption = { path: string; title: string };
@@ -18,6 +22,7 @@ export function resolveHomeLink(
   target: HomeLinkTarget | undefined,
   products: Product[],
 ): string | undefined {
+  if (target?.disabled) return undefined;
   if (target?.productId) {
     const product = products.find((item) => item.id === target.productId);
     // Never redirect a hidden/deleted target to a different product.

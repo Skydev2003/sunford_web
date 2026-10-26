@@ -1,10 +1,12 @@
 "use client";
+import { useCategories } from "@/features/cms/components/categories-provider";
 import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
-import { categories, type Product } from "../types";
+import { type Product } from "../types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { ProductCard } from "./product-card";
 import { useState } from "react";
+import { catalogDefaults } from "@/features/cms/data/settings";
 
 export function ProductCatalog({
   products,
@@ -12,13 +14,16 @@ export function ProductCatalog({
   heading,
   scoped = false,
   headingLevel,
+  copy = catalogDefaults,
 }: {
   products: Product[];
   full?: boolean;
   heading?: string;
   scoped?: boolean;
   headingLevel?: "h1" | "h2";
+  copy?: typeof catalogDefaults;
 }) {
+  const categories = useCategories();
   const category = useCatalogStore((s) => s.category);
   const query = useCatalogStore((s) => s.query);
   const setCategory = useCatalogStore((s) => s.setCategory);
@@ -41,20 +46,21 @@ export function ProductCatalog({
     <section id="products" className={`catalog-section container ${full ? "full-catalog" : ""}`}>
       <div className="section-heading">
         <div>
-          <p className="eyebrow">THE SUNFORD COLLECTION</p>
+          <p className="eyebrow">{copy.eyebrow}</p>
           <Heading>
             {full ? (
               (heading ?? "ผลิตภัณฑ์ทั้งหมด")
             ) : (
               <>
-                เลือกความแม่นยำ<span className="muted">ในแบบของคุณ.</span>
+                {copy.title}
+                <span className="muted">{copy.accent}</span>
               </>
             )}
           </Heading>
         </div>
         {!full && (
-          <Link href="/products" className="text-link">
-            สำรวจผลิตภัณฑ์ทั้งหมด <ArrowRight size={17} />
+          <Link href={copy.href} className="text-link">
+            {copy.linkLabel} <ArrowRight size={17} />
           </Link>
         )}
       </div>
@@ -122,7 +128,7 @@ export function ProductCatalog({
         </div>
       )}
       <p className="catalog-note">
-        เลือกสิ่งที่ใช่ได้ง่ายขึ้น <span>กด + บนสินค้าเพื่อเปรียบเทียบได้สูงสุด 3 รุ่น</span>
+        {copy.note} <span>{copy.noteDetail}</span>
       </p>
     </section>
   );

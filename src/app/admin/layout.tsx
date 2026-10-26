@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/admin.css";
+import "@/styles/cms-admin.css";
 export const metadata: Metadata = {
   title: "จัดการสินค้า",
   robots: { index: false, follow: false },

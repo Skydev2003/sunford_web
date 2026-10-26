@@ -4,6 +4,8 @@ import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
+import { defaultHero } from "@/features/cms/data/settings";
+import type { HeroSettings } from "@/features/cms/types";
 
 const heroImages: Record<string, string> = {
   "acs30-jc21": "/images/products/acs30-jc21-cutout.png",
@@ -12,54 +14,70 @@ const heroImages: Record<string, string> = {
   rls1100: "/images/products/rls1100.png",
 };
 
-export function Hero({ products }: { products: Product[] }) {
+export function Hero({
+  products,
+  settings = defaultHero,
+}: {
+  products: Product[];
+  settings?: HeroSettings;
+}) {
   const [active, setActive] = useState(0);
-  const preferred = ["acs30-jc21", "feh5ks", "rls1100"].flatMap((id) =>
-    products.filter((product) => product.id === id),
-  );
-  const slides = preferred.length ? preferred : products.slice(0, 3);
+  const slides = settings.slides.flatMap((slide, index) => {
+    const product = products.find((product) => product.id === slide.productId);
+    if (slide.productId && !product) return [];
+    return [
+      {
+        id: `${index}:${slide.productId}`,
+        name: slide.title || product?.name || "SUNFORD",
+        title: slide.title || `SUNFORD ${product?.name ?? "PRECISION"}`,
+        description:
+          slide.description || product?.subtitle || "เครื่องชั่งและโซลูชัน เพื่อทุกความเป็นไปได้",
+        image:
+          slide.image ||
+          (product
+            ? product.imageOverridden
+              ? product.image
+              : (heroImages[product.id] ?? product.image)
+            : ""),
+        href: slide.href || (product ? `/products/${product.slug}` : "/products"),
+      },
+    ];
+  });
   const product = slides.length ? slides[active % slides.length] : undefined;
   return (
     <>
       <div className="announcement">
-        <span>เทคโนโลยีการชั่งและระบบจัดการข้อมูล เพื่อธุรกิจของคุณ</span>
-        <a href="#support">
-          ให้เราช่วยเลือก <ChevronRight size={14} />
+        <span>{settings.announcement}</span>
+        <a href={settings.announcementHref}>
+          {settings.announcementLabel} <ChevronRight size={14} />
         </a>
       </div>
       <section className="hero" aria-label="Sunford ความแม่นยำที่เรียบง่ายกว่า">
         <div className="container hero-main">
           <div className="hero-copy">
-            <h1 className="hero-model">SUNFORD {product?.name ?? "PRECISION"}</h1>
-            <p className="hero-tagline">ความแม่นยำ ที่เรียบง่ายกว่า.</p>
+            <h1 className="hero-model">{product?.title ?? "SUNFORD PRECISION"}</h1>
+            <p className="hero-tagline">{settings.tagline}</p>
             <p className="hero-description">
-              {product?.subtitle ?? "เครื่องชั่งและโซลูชัน เพื่อทุกความเป็นไปได้"}
+              {product?.description ?? "เครื่องชั่งและโซลูชัน เพื่อทุกความเป็นไปได้"}
             </p>
             <div className="hero-buttons">
-              <Link
-                className="button button-red"
-                href={product ? `/products/${product.slug}` : "/products"}
-              >
-                ดูเพิ่มเติม
+              <Link className="button button-red" href={product?.href ?? "/products"}>
+                {settings.primaryLabel}
               </Link>
-              <a className="button button-outline" href="#products">
-                ค้นพบผลิตภัณฑ์
+              <a className="button button-outline" href={settings.secondaryHref}>
+                {settings.secondaryLabel}
               </a>
             </div>
           </div>
           {product && (
             <Link
               className="hero-visual"
-              href={`/products/${product.slug}`}
+              href={product.href}
               aria-label={`ดูรายละเอียด ${product.name}`}
             >
               <ProductImage
                 key={product.id}
-                src={
-                  product.imageOverridden
-                    ? product.image
-                    : (heroImages[product.id] ?? product.image)
-                }
+                src={product.image}
                 alt={`เครื่องชั่ง SUNFORD ${product.name}`}
                 width={690}
                 height={440}

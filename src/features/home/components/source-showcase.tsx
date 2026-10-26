@@ -1,13 +1,15 @@
+import { getSettings } from "@/features/cms/server/documents";
+import { showcaseDefaults, storiesDefaults } from "@/features/cms/data/settings";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { importedPages, getContentPage } from "@/features/content/server/content-repository";
+import { getContentPages, getContentPage } from "@/features/content/server/content-repository";
 import type { Product } from "@/features/catalog/types";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { defaultHomeImages, type HomeImages } from "../data/image-slots";
 import { resolveHomeLink, type HomeLinkTargets } from "../data/link-targets";
 
-export function SourceShowcase({
+export async function SourceShowcase({
   products,
   images = {},
   targets = {},
@@ -16,37 +18,38 @@ export function SourceShowcase({
   images?: HomeImages;
   targets?: HomeLinkTargets;
 }) {
+  const copy = await getSettings("showcase", showcaseDefaults);
   const defaults = defaultHomeImages(
     products,
-    getContentPage("/applications-and-softwares")?.images[0],
+    (await getContentPage("/applications-and-softwares"))?.images[0],
   );
   const tiles = [
     {
       id: "digital",
-      name: "เครื่องชั่งดิจิทัล",
-      english: "DIGITAL SCALE",
-      description: "ความแม่นยำที่พร้อมสำหรับทุกงาน ตั้งแต่บ้าน ร้านค้า ไปจนถึงโรงงาน",
+      name: copy.digitalName,
+      english: copy.digitalEnglish,
+      description: copy.digitalDescription,
       image: images.digital ?? defaults.digital,
     },
     {
       id: "smart",
-      name: "เครื่องชั่งอัจฉริยะ",
-      english: "SMART SCALE",
-      description: "เชื่อมต่อข้อมูลและอุปกรณ์ ให้การทำงานในยุคดิจิทัลคล่องตัวยิ่งขึ้น",
+      name: copy.smartName,
+      english: copy.smartEnglish,
+      description: copy.smartDescription,
       image: images.smart ?? defaults.smart,
     },
     {
       id: "accessories",
-      name: "อุปกรณ์เสริม",
-      english: "ACCESSORIES",
-      description: "เครื่องพิมพ์ จอแสดงผล และระบบ POS ที่เติมเต็มงานชั่งของคุณ",
+      name: copy.accessoriesName,
+      english: copy.accessoriesEnglish,
+      description: copy.accessoriesDescription,
       image: images.accessories ?? defaults.accessories,
     },
     {
       id: "software",
-      name: "แอปพลิเคชันและซอฟต์แวร์",
-      english: "APPLICATIONS & SOFTWARE",
-      description: "ติดตาม วิเคราะห์ และจัดการข้อมูล เพื่อการตัดสินใจที่แม่นยำ",
+      name: copy.softwareName,
+      english: copy.softwareEnglish,
+      description: copy.softwareDescription,
       image: images.software ?? defaults.software,
     },
   ] as const;
@@ -70,7 +73,7 @@ export function SourceShowcase({
               <p>{tile.description}</p>
               {href && (
                 <Link className="text-link" href={href}>
-                  ดูเพิ่มเติม <ChevronRight size={16} />
+                  {copy.linkLabel} <ChevronRight size={16} />
                 </Link>
               )}
             </div>
@@ -88,8 +91,9 @@ export function SourceShowcase({
   );
 }
 
-export function SunfordStories() {
-  const articles = importedPages
+export async function SunfordStories() {
+  const copy = await getSettings("stories", storiesDefaults);
+  const articles = (await getContentPages())
     .filter((page) => page.kind === "article" && !page.path.startsWith("/business/"))
     .slice(0, 8);
   if (!articles.length) return null;
@@ -97,11 +101,11 @@ export function SunfordStories() {
     <section className="stories-section">
       <div className="container section-heading">
         <div>
-          <p className="eyebrow">SUNFORD STORIES</p>
-          <h2>เรื่องราวของคนทำธุรกิจ.</h2>
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <h2>{copy.title}</h2>
         </div>
-        <Link className="text-link" href="/news-and-activities">
-          ดูเรื่องราวทั้งหมด <ChevronRight size={17} />
+        <Link className="text-link" href={copy.href}>
+          {copy.linkLabel} <ChevronRight size={17} />
         </Link>
       </div>
       <div className="stories-track">
@@ -116,10 +120,10 @@ export function SunfordStories() {
               />
             </div>
             <div>
-              <span>SUNFORD BIZ TALK</span>
+              <span>{copy.cardLabel}</span>
               <h3>{article.title}</h3>
               <span className="text-link">
-                อ่านเพิ่มเติม <ChevronRight size={15} />
+                {copy.readLabel} <ChevronRight size={15} />
               </span>
             </div>
           </Link>
@@ -129,6 +133,10 @@ export function SunfordStories() {
   );
 }
 
-export function SunfordVideos() {
-  return <VideoGallery videos={getContentPage("/")?.videos ?? []} title="วิดีโอจาก Sunford" />;
+export async function SunfordVideos() {
+  const settings = await getSettings("videos", {
+    videos: (await getContentPage("/"))?.videos ?? [],
+  });
+  const copy = await getSettings("stories", storiesDefaults);
+  return <VideoGallery videos={settings.videos} title={copy.videoTitle} />;
 }

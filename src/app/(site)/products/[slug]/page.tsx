@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Check, Phone } from "lucide-react";
 import { getProduct, getProducts } from "@/features/catalog/server/product-repository";
-import { categories } from "@/features/catalog/types";
+import { getCategories } from "@/features/cms/server/categories";
+import { getSettings } from "@/features/cms/server/documents";
+import { defaultSite } from "@/features/cms/data/settings";
 import { ProductCard } from "@/features/catalog/components/product-card";
 import { productSources } from "@/features/catalog/data/product-sources";
 import { getSourceProduct } from "@/features/content/server/content-repository";
@@ -34,9 +36,12 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const product = await getProduct((await params).slug);
   if (!product) notFound();
+  const [categories, site] = await Promise.all([getCategories(), getSettings("site", defaultSite)]);
   const related = (await getProducts()).filter((p) => p.id !== product.id).slice(0, 3);
   const source = getSourceProduct(product.sourceId ?? product.slug);
-  const sourcePage = source && getContentPage(source.path);
+  const sourcePage = source && (await getContentPage(source.path));
+  const detailsHtml = product.media?.detailsHtml ?? source?.detailsHtml;
+  const videos = product.media?.videos ?? sourcePage?.videos ?? [];
   const snapshot = getSnapshotProducts().find((row) => row.id === product.id);
   const presentation = productPresentation(product, snapshot, source);
   return (
@@ -49,13 +54,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           key={`${product.id}:${product.image}`}
           images={presentation.images}
           primaryImage={product.image}
+          preferFirst={Boolean(product.media)}
           name={product.name}
         />
         <div className="detail-copy">
           <p className="eyebrow">{categories.find((c) => c.id === product.category)?.english}</p>
           <h1>{product.name}</h1>
           <h2>{product.subtitle}</h2>
-          {product.price ? (
+          {product.price != null ? (
             <p className="detail-price">
               {new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(
                 product.price,
@@ -95,16 +101,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </>
             )}
           </dl>
-          <a
-            href="https://line.me/R/ti/p/@sunford"
-            target="_blank"
-            rel="noreferrer"
-            className="button button-red"
-          >
+          <a href={site.line} target="_blank" rel="noreferrer" className="button button-red">
             สอบถามราคาและรายละเอียด <ArrowUpRight size={17} />
           </a>
-          <a className="detail-phone" href="tel:034276999">
-            <Phone size={16} /> 03-427-6999
+          <a className="detail-phone" href={site.phoneHref}>
+            <Phone size={16} /> {site.phone}
           </a>
           <p className="detail-note">
             <Check size={16} /> ให้คำปรึกษาและดูแลหลังการขายโดยทีม Sunford
@@ -122,16 +123,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           )}
         </div>
       </div>
-      {source?.detailsHtml && (
+      {detailsHtml && (
         <section className="product-specifications" aria-labelledby="specifications-title">
           <div className="section-heading">
             <h2 id="specifications-title">รู้จักทุกรายละเอียด.</h2>
           </div>
-          <div className="source-prose" dangerouslySetInnerHTML={{ __html: source.detailsHtml }} />
+          <div className="source-prose" dangerouslySetInnerHTML={{ __html: detailsHtml }} />
         </section>
       )}
-      {sourcePage?.videos?.length ? (
-        <VideoGallery videos={sourcePage.videos} title={`รู้จัก ${product.name} เพิ่มเติม`} />
+      {videos.length ? (
+        <VideoGallery videos={videos} title={`รู้จัก ${product.name} เพิ่มเติม`} />
       ) : null}
       <div className="related-products">
         <div className="section-heading">

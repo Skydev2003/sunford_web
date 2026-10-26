@@ -20,7 +20,7 @@ export default async function HomeImagesPage({
   const products = await getProducts();
   const defaults = defaultHomeImages(
     products,
-    getContentPage("/applications-and-softwares")?.images[0],
+    (await getContentPage("/applications-and-softwares"))?.images[0],
   );
   const savedSlot = (await searchParams).saved;
   const productOptions = products.map(({ id, name, slug }) => ({
@@ -28,7 +28,7 @@ export default async function HomeImagesPage({
     name,
     href: `/products/${slug}`,
   }));
-  const pageOptions = homePageOptions();
+  const pageOptions = await homePageOptions();
   return (
     <>
       <div className="admin-page-heading">

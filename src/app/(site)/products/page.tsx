@@ -7,8 +7,8 @@ export default async function ProductsPage() {
   return (
     <ProductStorefront
       products={await getProducts()}
-      contactImage={getContentPage("/contact-us")?.images[0]}
-      softwareImage={getContentPage("/applications-and-softwares")?.images[1]}
+      contactImage={(await getContentPage("/contact-us"))?.images[0]}
+      softwareImage={(await getContentPage("/applications-and-softwares"))?.images[1]}
     />
   );
 }

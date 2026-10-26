@@ -7,6 +7,8 @@ import { getPrisma } from "@/lib/prisma";
 import { getSnapshotProducts } from "@/features/content/server/content-repository";
 import { resolveManagedProduct } from "../data/managed-products";
 import { findCatalogProduct } from "../data/product-lookup";
+import { getDocuments } from "@/features/cms/server/documents";
+import type { ProductMedia } from "@/features/cms/types";
 
 export async function getProducts(): Promise<Product[]> {
   "use cache";
@@ -22,6 +24,7 @@ export async function getProducts(): Promise<Product[]> {
       slug: true,
       name: true,
       category: true,
+      categoryId: true,
       subtitle: true,
       description: true,
       image: true,
@@ -35,7 +38,16 @@ export async function getProducts(): Promise<Product[]> {
     },
   });
   // Never append the snapshot here: doing so would resurrect hidden/deleted rows.
-  return managed.map(resolveManagedProduct).sort((a, b) => a.sortOrder - b.sortOrder);
+  const media = await getDocuments("product-media");
+  return managed
+    .map((row) => {
+      const product = resolveManagedProduct(row);
+      const doc = media.find((doc) => doc.id === `product-media:${product.id}` && !doc.deletedAt);
+      if (!doc) return product;
+      const settings = doc.data as unknown as ProductMedia;
+      return { ...product, media: settings, price: settings.price };
+    })
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 }
 export async function getProduct(slug: string) {
   return findCatalogProduct(await getProducts(), slug);

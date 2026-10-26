@@ -1,4 +1,5 @@
 "use client";
+import { useCategories } from "@/features/cms/components/categories-provider";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -13,7 +14,7 @@ import {
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
-import { categories, type CategoryId, type Product } from "../types";
+import { categories as originalCategories, type CategoryId, type Product } from "../types";
 import { ProductCatalog } from "./product-catalog";
 import { StoreShelf } from "./store-shelf";
 
@@ -37,6 +38,7 @@ function StoreProductCard({
   compact?: boolean;
   dark?: boolean;
 }) {
+  const categories = useCategories();
   const ids = useCatalogStore((state) => state.compareIds);
   const toggleCompare = useCatalogStore((state) => state.toggleCompare);
   const selected = ids.includes(product.id);
@@ -93,6 +95,7 @@ export function ProductStorefront({
   contactImage?: string;
   softwareImage?: string;
 }) {
+  const categories = useCategories();
   const [showAll, setShowAll] = useState(false);
   const category = useCatalogStore((state) => state.category);
   const query = useCatalogStore((state) => state.query);
@@ -162,7 +165,9 @@ export function ProductStorefront({
       </header>
       <StoreShelf id="store-categories" className="store-category-shelf">
         {categories.slice(1).map((item) => {
-          const product = storeProducts.find((product) => product.id === representatives[item.id]);
+          const product =
+            storeProducts.find((product) => product.id === representatives[item.id]) ??
+            storeProducts.find((product) => product.category === item.id);
           return (
             <button
               key={item.id}
@@ -174,7 +179,12 @@ export function ProductStorefront({
               <div className="store-category-image">
                 <ProductImage src={product?.image} alt={item.label} fill sizes="120px" />
               </div>
-              <span>{labels[item.id] ?? item.label}</span>
+              <span>
+                {originalCategories.find((original) => original.id === item.id)?.label ===
+                item.label
+                  ? (labels[item.id] ?? item.label)
+                  : item.label}
+              </span>
             </button>
           );
         })}

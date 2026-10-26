@@ -6,13 +6,17 @@ export function ProductGallery({
   images,
   name,
   primaryImage,
+  preferFirst = false,
 }: {
   images: string[];
   name: string;
   primaryImage?: string;
+  preferFirst?: boolean;
 }) {
   const initial = primaryImage ? images.indexOf(primaryImage) : -1;
-  const [active, setActive] = useState(initial >= 0 ? initial : images.length > 1 ? 1 : 0);
+  const [active, setActive] = useState(
+    initial >= 0 ? initial : !preferFirst && images.length > 1 ? 1 : 0,
+  );
   return (
     <div className="product-gallery">
       <div className="detail-image">

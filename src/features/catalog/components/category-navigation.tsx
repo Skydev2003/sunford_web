@@ -1,42 +1,42 @@
 "use client";
 import { Monitor, Plug, Scale, ScanLine } from "lucide-react";
 import { useCatalogStore } from "@/stores/catalog-store";
-import { sunford } from "@/features/home/data/brand";
+import { catalogDefaults } from "@/features/cms/data/settings";
 
-export function CategoryNavigation() {
+export function CategoryNavigation({ copy = catalogDefaults }: { copy?: typeof catalogDefaults }) {
   const setCategory = useCatalogStore((state) => state.setCategory);
   return (
     <nav className="category-navigation container" aria-label="กลุ่มผลิตภัณฑ์ Sunford">
       <div className="category-intro">
-        <span>OUR PRODUCTS</span>
-        <strong>ครบทุกงานชั่ง</strong>
+        <span>{copy.navEyebrow}</span>
+        <strong>{copy.navTitle}</strong>
       </div>
       <a href="#products" onClick={() => setCategory("all")}>
         <Scale size={27} strokeWidth={1.3} />
         <div>
-          <strong>เครื่องชั่งดิจิทัล</strong>
-          <span>Digital scale</span>
+          <strong>{copy.navDigital}</strong>
+          <span>{copy.navDigitalEnglish}</span>
         </div>
       </a>
       <a href="#products" onClick={() => setCategory("smart")}>
         <ScanLine size={27} strokeWidth={1.3} />
         <div>
-          <strong>เครื่องชั่งอัจฉริยะ</strong>
-          <span>Smart scale</span>
+          <strong>{copy.navSmart}</strong>
+          <span>{copy.navSmartEnglish}</span>
         </div>
       </a>
-      <a href={sunford.accessories}>
+      <a href={copy.accessoriesHref}>
         <Plug size={27} strokeWidth={1.3} />
         <div>
-          <strong>อุปกรณ์เสริม</strong>
-          <span>Accessories</span>
+          <strong>{copy.navAccessories}</strong>
+          <span>{copy.navAccessoriesEnglish}</span>
         </div>
       </a>
-      <a href={sunford.software}>
+      <a href={copy.softwareHref}>
         <Monitor size={27} strokeWidth={1.3} />
         <div>
-          <strong>แอปพลิเคชันและซอฟต์แวร์</strong>
-          <span>Applications & software</span>
+          <strong>{copy.navSoftware}</strong>
+          <span>{copy.navSoftwareEnglish}</span>
         </div>
       </a>
     </nav>

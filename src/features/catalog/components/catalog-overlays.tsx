@@ -1,11 +1,12 @@
 "use client";
+import { useCategories } from "@/features/cms/components/categories-provider";
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ArrowRight, GitCompareArrows, Search, X } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { useCatalogStore } from "@/stores/catalog-store";
-import { categories, type Product } from "../types";
+import { type Product } from "../types";
 import type { SearchPage } from "@/features/content/types";
 
 export function CatalogOverlays({
@@ -15,6 +16,7 @@ export function CatalogOverlays({
   products: Product[];
   pages?: SearchPage[];
 }) {
+  const categories = useCategories();
   const searchOpen = useCatalogStore((s) => s.searchOpen);
   const compareOpen = useCatalogStore((s) => s.compareOpen);
   const ids = useCatalogStore((s) => s.compareIds);

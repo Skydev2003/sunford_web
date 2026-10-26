@@ -1,4 +1,5 @@
 import type { PrismaClient } from "../src/generated/prisma/client";
+import type { ProductCategory } from "../src/generated/prisma/client";
 import { getSnapshotProducts } from "../src/features/content/data/catalog-snapshot";
 
 export async function importCatalog(prisma: PrismaClient) {
@@ -15,7 +16,7 @@ export async function importCatalog(prisma: PrismaClient) {
         id: product.id,
         slug: product.slug,
         name: product.name,
-        category: product.category,
+        category: product.category as ProductCategory,
         subtitle: product.subtitle,
         description: product.description,
         image: product.image,

@@ -1,12 +1,14 @@
 "use client";
+import { useCategories } from "@/features/cms/components/categories-provider";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ArrowUpRight, Check, Plus } from "lucide-react";
 import type { Product } from "../types";
-import { categories } from "../types";
+
 import { useCatalogStore } from "@/stores/catalog-store";
 
 export function ProductCard({ product }: { product: Product }) {
+  const categories = useCategories();
   const ids = useCatalogStore((s) => s.compareIds);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
   const selected = ids.includes(product.id);
