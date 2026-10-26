@@ -185,6 +185,7 @@ export const navigationSchema = z.object({
     .array(
       z.object({
         label: text.min(1),
+        submenuLabel: text.optional(),
         href: linkSchema.refine(Boolean),
         links: z.array(z.object({ label: text.min(1), href: linkSchema.refine(Boolean) })).max(30),
       }),

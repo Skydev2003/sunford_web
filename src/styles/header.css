@@ -1,4 +1,5 @@
 .site-header {
+  --header-height: 54px;
   --nav-ease: cubic-bezier(0.4, 0, 0.6, 1);
   position: sticky;
   top: 0;
@@ -8,7 +9,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: rgba(245, 245, 247, 0.8);
+  background: #f7f7f9;
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
 }
@@ -28,12 +29,12 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
-  max-width: 1024px;
-  min-height: 44px;
-  padding-inline: 22px;
-  gap: 20px;
+  max-width: 1126px;
+  min-height: var(--header-height);
+  padding-inline: 56px 72px;
+  gap: 36px;
 }
 .brand {
   display: flex;
@@ -41,21 +42,21 @@
   flex-shrink: 0;
 }
 .brand img {
-  width: 104px;
+  width: 108px;
   height: auto;
 }
 .desktop-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 24px;
-  flex: 0 1 auto;
+  justify-content: space-between;
+  gap: 32px;
+  flex: 1;
 }
 .desktop-nav a {
   display: flex;
   align-items: center;
-  min-height: 44px;
-  font-size: 11px;
+  min-height: var(--header-height);
+  font-size: 14px;
   font-weight: 400;
   white-space: nowrap;
   color: rgba(0, 0, 0, 0.8);
@@ -67,10 +68,12 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  margin-inline-start: 32px;
+  flex-shrink: 0;
 }
 .header-actions .icon-button {
-  width: 28px;
+  width: 32px;
 }
 .header-compare {
   position: relative;
@@ -108,7 +111,7 @@
     visibility 0s linear calc(var(--nav-flyout-duration) + 120ms);
 }
 .desktop-submenu.is-open {
-  height: min(var(--desktop-menu-height), calc(100dvh - 44px));
+  height: min(var(--desktop-menu-height), calc(100dvh - var(--header-height)));
   visibility: visible;
   pointer-events: auto;
   overflow-y: auto;
@@ -119,12 +122,20 @@
 .submenu-stage {
   position: relative;
   width: 100%;
-  max-width: 1024px;
+  max-width: none;
   height: 100%;
 }
 .submenu-panel {
   position: absolute;
-  inset: 0 0 auto;
+  top: 0;
+  left: clamp(
+    calc(var(--desktop-menu-width) / 2 + 24px),
+    var(--desktop-menu-center),
+    calc(100% - var(--desktop-menu-width) / 2 - 24px)
+  );
+  translate: -50% 0;
+  width: max-content;
+  max-width: calc(100% - 48px);
   display: flex;
   align-items: flex-start;
   gap: 44px;
@@ -149,15 +160,15 @@
   --nav-group-index: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   flex: 0 0 auto;
-  max-width: 25%;
+  max-width: none;
+  text-align: center;
   color: #333336;
 }
 .submenu-group-primary {
   flex: 0 1 auto;
-  max-width: 50%;
-  margin-inline-end: 44px;
+  max-width: none;
 }
 .submenu-group p {
   font-size: 12px;
@@ -175,7 +186,7 @@
 .submenu-links {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
 }
 .submenu-links a {
@@ -186,6 +197,15 @@
 }
 .submenu-group a:hover {
   color: #000;
+}
+.submenu-group a > span {
+  display: inline-block;
+  transition: transform 180ms ease;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .submenu-group a:hover > span {
+    transform: scale(1.06);
+  }
 }
 .submenu-item {
   --nav-item-index: 0;
@@ -261,11 +281,17 @@
   border-bottom: 1px solid var(--line);
 }
 @media (max-width: 1100px) {
+  .site-header {
+    --header-height: 52px;
+  }
   .header-inner {
     justify-content: space-between;
     width: calc(100% - 64px);
     padding-inline: 0;
-    min-height: 52px;
+    min-height: var(--header-height);
+  }
+  .header-actions {
+    margin-inline-start: 0;
   }
   .desktop-nav,
   .desktop-submenu,
@@ -277,6 +303,9 @@
   }
 }
 @media (max-width: 720px) {
+  .site-header {
+    --header-height: 58px;
+  }
   .header-inner {
     width: calc(100% - 40px);
   }
@@ -286,6 +315,7 @@
   .desktop-submenu,
   .submenu-panel,
   .submenu-item,
+  .submenu-group a > span,
   .nav-backdrop {
     transition: none;
     transform: none;

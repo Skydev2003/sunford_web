@@ -2,7 +2,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, GitCompareArrows, Menu, Search, X } from "lucide-react";
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useCatalogStore } from "@/stores/catalog-store";
 
 import { defaultNavigation, defaultNavigationExtras } from "@/features/cms/data/navigation";
@@ -26,7 +33,11 @@ export function Header({
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [displayMenu, setDisplayMenu] = useState(0);
   const [menuHeight, setMenuHeight] = useState(374);
+  const [menuWidth, setMenuWidth] = useState(0);
+  const [menuCenter, setMenuCenter] = useState(0);
   const [switchingMenu, setSwitchingMenu] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const navigationRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -61,17 +72,31 @@ export function Header({
   const setSearchOpen = useCatalogStore((state) => state.setSearchOpen);
   const setCompareOpen = useCatalogStore((state) => state.setCompareOpen);
   const compareCount = useCatalogStore((state) => state.compareIds.length);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const panel = panelRef.current;
-    if (!panel) return;
-    const observer = new ResizeObserver(([entry]) => {
-      setMenuHeight(Math.ceil(entry.borderBoxSize[0].blockSize));
-    });
+    const header = headerRef.current;
+    if (!panel || !header) return;
+    const measureMenu = () => {
+      const trigger = navigationRef.current?.children[displayMenu];
+      if (!trigger) return;
+      const triggerBounds = trigger.getBoundingClientRect();
+      const panelBounds = panel.getBoundingClientRect();
+      setMenuHeight(Math.ceil(panelBounds.height));
+      setMenuWidth(panelBounds.width);
+      setMenuCenter(
+        triggerBounds.left + triggerBounds.width / 2 - header.getBoundingClientRect().left,
+      );
+    };
+    measureMenu();
+    const observer = new ResizeObserver(measureMenu);
     observer.observe(panel);
+    observer.observe(header);
     return () => observer.disconnect();
   }, [displayMenu]);
   const menuStyle = {
     "--desktop-menu-height": `${menuHeight}px`,
+    "--desktop-menu-width": `${menuWidth}px`,
+    "--desktop-menu-center": `${menuCenter}px`,
     // Apple's flyout expands at 0.5 ms per pixel of content height.
     "--nav-flyout-duration": `${Math.round(menuHeight * 0.5)}ms`,
   } as CSSProperties;
@@ -91,6 +116,7 @@ export function Header({
   return (
     <>
       <header
+        ref={headerRef}
         className={`site-header ${activeMenu !== null ? "is-menu-open" : ""} ${switchingMenu ? "is-menu-switching" : ""}`}
         style={menuStyle}
         onMouseEnter={() => {
@@ -110,7 +136,7 @@ export function Header({
           <Link href="/" aria-label="Sunford หน้าหลัก" className="brand" onFocus={closeDesktopMenu}>
             <Image src={site.logo} alt={site.name} width={138} height={28} preload />
           </Link>
-          <nav className="desktop-nav" aria-label="เมนูหลัก">
+          <nav ref={navigationRef} className="desktop-nav" aria-label="เมนูหลัก">
             {navigation.map((item, index) => (
               <Link
                 key={`${index}:${item.href}`}
@@ -134,7 +160,7 @@ export function Header({
                 closeDesktopMenu();
               }}
             >
-              <Search size={18} strokeWidth={1.5} />
+              <Search size={22} strokeWidth={1.5} />
             </button>
             <button
               className="icon-button header-compare"
@@ -144,7 +170,7 @@ export function Header({
                 closeDesktopMenu();
               }}
             >
-              <GitCompareArrows size={18} strokeWidth={1.5} />
+              <GitCompareArrows size={22} strokeWidth={1.5} />
               {compareCount > 0 && <span>{compareCount}</span>}
             </button>
             <button
@@ -178,7 +204,7 @@ export function Header({
                 inert={activeMenu === null || displayMenu !== index}
               >
                 <div className="submenu-group submenu-group-primary">
-                  <p className="submenu-item">สำรวจ {item.label}</p>
+                  <p className="submenu-item">สำรวจ {item.submenuLabel || item.label}</p>
                   <div className="submenu-links">
                     {item.links.map(([label, href], linkIndex) => (
                       <Link
@@ -189,39 +215,49 @@ export function Header({
                         prefetch={false}
                         onClick={closeDesktopMenu}
                       >
-                        {label}
+                        <span>{label}</span>
                       </Link>
                     ))}
                   </div>
                 </div>
-                <div className="submenu-group" style={{ "--nav-group-index": 1 } as CSSProperties}>
-                  <p className="submenu-item">{extras.exploreLabel}</p>
-                  {extras.exploreLinks.map((link, index) => (
-                    <Link
-                      key={index}
-                      className="submenu-item"
-                      href={link.href}
-                      prefetch={false}
-                      onClick={closeDesktopMenu}
+                {item.href === "/#support" && (
+                  <>
+                    <div
+                      className="submenu-group"
+                      style={{ "--nav-group-index": 1 } as CSSProperties}
                     >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-                <div className="submenu-group" style={{ "--nav-group-index": 2 } as CSSProperties}>
-                  <p className="submenu-item">{extras.helpLabel}</p>
-                  {extras.helpLinks.map((link, index) => (
-                    <Link
-                      key={index}
-                      className="submenu-item"
-                      href={link.href}
-                      prefetch={false}
-                      onClick={closeDesktopMenu}
+                      <p className="submenu-item">{extras.exploreLabel}</p>
+                      {extras.exploreLinks.map((link, index) => (
+                        <Link
+                          key={index}
+                          className="submenu-item"
+                          href={link.href}
+                          prefetch={false}
+                          onClick={closeDesktopMenu}
+                        >
+                          <span>{link.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                    <div
+                      className="submenu-group"
+                      style={{ "--nav-group-index": 2 } as CSSProperties}
                     >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
+                      <p className="submenu-item">{extras.helpLabel}</p>
+                      {extras.helpLinks.map((link, index) => (
+                        <Link
+                          key={index}
+                          className="submenu-item"
+                          href={link.href}
+                          prefetch={false}
+                          onClick={closeDesktopMenu}
+                        >
+                          <span>{link.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
