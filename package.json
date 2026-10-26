@@ -30,6 +30,7 @@
     "render:build": "bun run deploy"
   },
   "dependencies": {
+    "@google/model-viewer": "^4.4.0",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "@supabase/ssr": "^0.12.7",

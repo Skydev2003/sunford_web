@@ -56,6 +56,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           primaryImage={product.image}
           preferFirst={Boolean(product.media)}
           name={product.name}
+          model={
+            product.id === "acs30-jc21" || product.sourceId === "10609"
+              ? {
+                  src: "/models/acs30-jc21.glb",
+                  poster: "/images/products/acs30-jc21-cutout.png",
+                }
+              : undefined
+          }
         />
         <div className="detail-copy">
           <p className="eyebrow">{categories.find((c) => c.id === product.category)?.english}</p>
