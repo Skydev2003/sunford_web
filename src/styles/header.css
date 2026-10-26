@@ -126,16 +126,12 @@
   height: 100%;
 }
 .submenu-panel {
+  --submenu-left: max(24px, calc(var(--desktop-menu-start) - 22px));
   position: absolute;
   top: 0;
-  left: clamp(
-    calc(var(--desktop-menu-width) / 2 + 24px),
-    var(--desktop-menu-center),
-    calc(100% - var(--desktop-menu-width) / 2 - 24px)
-  );
-  translate: -50% 0;
+  left: var(--submenu-left);
   width: max-content;
-  max-width: calc(100% - 48px);
+  max-width: calc(100% - var(--submenu-left) - 24px);
   display: flex;
   align-items: flex-start;
   gap: 44px;
@@ -151,7 +147,7 @@
 .submenu-panel.is-active {
   height: auto;
   overflow: visible;
-  padding-block: 40px 84px;
+  padding-block: 32px 48px;
   opacity: 1;
   visibility: visible;
   transition-delay: 0s;
@@ -160,10 +156,10 @@
   --nav-group-index: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   flex: 0 0 auto;
   max-width: none;
-  text-align: center;
+  text-align: left;
   color: #333336;
 }
 .submenu-group-primary {
@@ -183,10 +179,19 @@
   line-height: 1.3334;
   padding-block: 6px;
 }
+.submenu-group-secondary {
+  max-width: 240px;
+}
+.submenu-group-secondary > a {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  padding-block: 5px;
+}
 .submenu-links {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
 }
 .submenu-links a {
@@ -200,6 +205,7 @@
 }
 .submenu-group a > span {
   display: inline-block;
+  transform-origin: left center;
   transition: transform 180ms ease;
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {

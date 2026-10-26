@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -61,24 +62,28 @@ export function StoreShelf({
         {children}
       </div>
       <div className="store-shelf-controls">
-        <button
-          className="store-arrow"
-          aria-label={`ก่อนหน้า - ${title ?? "หมวดสินค้า"}`}
-          aria-controls={id}
-          disabled={!canPrevious}
-          onClick={() => move(-1)}
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <button
-          className="store-arrow"
-          aria-label={`ถัดไป - ${title ?? "หมวดสินค้า"}`}
-          aria-controls={id}
-          disabled={!canNext}
-          onClick={() => move(1)}
-        >
-          <ChevronRight size={24} />
-        </button>
+        <Tooltip>
+          <button
+            className="store-arrow"
+            aria-label={`ก่อนหน้า - ${title ?? "หมวดสินค้า"}`}
+            aria-controls={id}
+            disabled={!canPrevious}
+            onClick={() => move(-1)}
+          >
+            <ChevronLeft size={24} />
+          </button>
+        </Tooltip>
+        <Tooltip>
+          <button
+            className="store-arrow"
+            aria-label={`ถัดไป - ${title ?? "หมวดสินค้า"}`}
+            aria-controls={id}
+            disabled={!canNext}
+            onClick={() => move(1)}
+          >
+            <ChevronRight size={24} />
+          </button>
+        </Tooltip>
       </div>
     </section>
   );

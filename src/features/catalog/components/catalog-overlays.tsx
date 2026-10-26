@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
@@ -55,9 +56,15 @@ export function CatalogOverlays({
             aria-label="ค้นหาสินค้า Sunford"
           />
           {search && (
-            <button aria-label="ล้างการค้นหา" className="icon-button" onClick={() => setSearch("")}>
-              <X size={16} />
-            </button>
+            <Tooltip>
+              <button
+                aria-label="ล้างการค้นหา"
+                className="icon-button"
+                onClick={() => setSearch("")}
+              >
+                <X size={16} />
+              </button>
+            </Tooltip>
           )}
         </label>
         <p className="search-caption">
@@ -99,9 +106,15 @@ export function CatalogOverlays({
           <button onClick={() => setCompareOpen(true)} className="button button-red">
             ดูการเปรียบเทียบ <ArrowRight size={15} />
           </button>
-          <button className="icon-button" aria-label="ล้างรายการเปรียบเทียบ" onClick={clearCompare}>
-            <X size={18} />
-          </button>
+          <Tooltip>
+            <button
+              className="icon-button"
+              aria-label="ล้างรายการเปรียบเทียบ"
+              onClick={clearCompare}
+            >
+              <X size={18} />
+            </button>
+          </Tooltip>
         </div>
       )}
       <Modal
@@ -122,13 +135,15 @@ export function CatalogOverlays({
                     <th scope="col">รายละเอียด</th>
                     {selected.map((p) => (
                       <th key={p.id} scope="col">
-                        <button
-                          className="remove-compare icon-button"
-                          aria-label={`นำ ${p.name} ออกจากการเปรียบเทียบ`}
-                          onClick={() => toggleCompare(p.id)}
-                        >
-                          <X size={15} />
-                        </button>
+                        <Tooltip>
+                          <button
+                            className="remove-compare icon-button"
+                            aria-label={`นำ ${p.name} ออกจากการเปรียบเทียบ`}
+                            onClick={() => toggleCompare(p.id)}
+                          >
+                            <X size={15} />
+                          </button>
+                        </Tooltip>
                         <ProductImage src={p.image} alt={p.name} width={145} height={130} />
                         <Link href={`/products/${p.slug}`} onClick={() => setCompareOpen(false)}>
                           {p.name} <ArrowRight size={13} />

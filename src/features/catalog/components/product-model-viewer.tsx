@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 
 import { createElement, useEffect, useRef, useState } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
@@ -93,15 +94,21 @@ export function ProductModelViewer({
         <div className="model-toolbar">
           <p id="model-interaction-hint">ลากเพื่อหมุน · เลื่อนหรือกางนิ้วเพื่อซูม</p>
           <div className="model-buttons" aria-label="ควบคุมโมเดลสินค้า">
-            <button type="button" onClick={() => viewer.current?.zoom(2)} aria-label="ซูมเข้า">
-              <ZoomIn size={18} />
-            </button>
-            <button type="button" onClick={() => viewer.current?.zoom(-2)} aria-label="ซูมออก">
-              <ZoomOut size={18} />
-            </button>
-            <button type="button" onClick={reset} aria-label="กลับมุมเริ่มต้น">
-              <RotateCcw size={17} />
-            </button>
+            <Tooltip>
+              <button type="button" onClick={() => viewer.current?.zoom(2)} aria-label="ซูมเข้า">
+                <ZoomIn size={18} />
+              </button>
+            </Tooltip>
+            <Tooltip>
+              <button type="button" onClick={() => viewer.current?.zoom(-2)} aria-label="ซูมออก">
+                <ZoomOut size={18} />
+              </button>
+            </Tooltip>
+            <Tooltip>
+              <button type="button" onClick={reset} aria-label="กลับมุมเริ่มต้น">
+                <RotateCcw size={17} />
+              </button>
+            </Tooltip>
           </div>
         </div>
       )}

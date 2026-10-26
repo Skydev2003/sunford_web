@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
@@ -109,18 +110,20 @@ export function HeroProductVideo({
             onPause={() => setPlaying(false)}
             onError={() => setFailed(true)}
           />
-          <button
-            type="button"
-            className="hero-motion-toggle"
-            onClick={togglePlayback}
-            aria-label={playing ? "หยุดแอนิเมชันสินค้า" : "เล่นแอนิเมชันสินค้า"}
-          >
-            {playing ? (
-              <Pause size={17} fill="currentColor" />
-            ) : (
-              <Play size={17} fill="currentColor" />
-            )}
-          </button>
+          <Tooltip>
+            <button
+              type="button"
+              className="hero-motion-toggle"
+              onClick={togglePlayback}
+              aria-label={playing ? "หยุดแอนิเมชันสินค้า" : "เล่นแอนิเมชันสินค้า"}
+            >
+              {playing ? (
+                <Pause size={17} fill="currentColor" />
+              ) : (
+                <Play size={17} fill="currentColor" />
+              )}
+            </button>
+          </Tooltip>
         </>
       )}
     </div>

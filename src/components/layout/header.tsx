@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "@/components/ui/tooltip";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, GitCompareArrows, Menu, Search, X } from "lucide-react";
@@ -12,7 +13,11 @@ import {
 } from "react";
 import { useCatalogStore } from "@/stores/catalog-store";
 
-import { defaultNavigation, defaultNavigationExtras } from "@/features/cms/data/navigation";
+import {
+  defaultNavigation,
+  defaultNavigationExtras,
+  defaultNavigationGroups,
+} from "@/features/cms/data/navigation";
 import { defaultSite } from "@/features/cms/data/settings";
 import type { NavigationItem, SiteSettings } from "@/features/cms/types";
 
@@ -28,16 +33,22 @@ export function Header({
   const navigation = items.map((item) => ({
     ...item,
     links: item.links.map((link) => [link.label, link.href]),
+    groups:
+      item.href === "/#support"
+        ? [
+            { label: extras.exploreLabel, links: extras.exploreLinks },
+            { label: extras.helpLabel, links: extras.helpLinks },
+          ]
+        : (item.groups ?? defaultNavigationGroups[item.href] ?? []),
   }));
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [displayMenu, setDisplayMenu] = useState(0);
   const [menuHeight, setMenuHeight] = useState(374);
-  const [menuWidth, setMenuWidth] = useState(0);
-  const [menuCenter, setMenuCenter] = useState(0);
+  const [menuStart, setMenuStart] = useState(0);
   const [switchingMenu, setSwitchingMenu] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
-  const navigationRef = useRef<HTMLElement>(null);
+  const brandRef = useRef<HTMLAnchorElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -77,15 +88,11 @@ export function Header({
     const header = headerRef.current;
     if (!panel || !header) return;
     const measureMenu = () => {
-      const trigger = navigationRef.current?.children[displayMenu];
-      if (!trigger) return;
-      const triggerBounds = trigger.getBoundingClientRect();
       const panelBounds = panel.getBoundingClientRect();
+      const headerBounds = header.getBoundingClientRect();
+      const brandBounds = brandRef.current?.getBoundingClientRect();
       setMenuHeight(Math.ceil(panelBounds.height));
-      setMenuWidth(panelBounds.width);
-      setMenuCenter(
-        triggerBounds.left + triggerBounds.width / 2 - header.getBoundingClientRect().left,
-      );
+      setMenuStart((brandBounds?.left ?? headerBounds.left) - headerBounds.left);
     };
     measureMenu();
     const observer = new ResizeObserver(measureMenu);
@@ -95,8 +102,7 @@ export function Header({
   }, [displayMenu]);
   const menuStyle = {
     "--desktop-menu-height": `${menuHeight}px`,
-    "--desktop-menu-width": `${menuWidth}px`,
-    "--desktop-menu-center": `${menuCenter}px`,
+    "--desktop-menu-start": `${menuStart}px`,
     // Apple's flyout expands at 0.5 ms per pixel of content height.
     "--nav-flyout-duration": `${Math.round(menuHeight * 0.5)}ms`,
   } as CSSProperties;
@@ -133,10 +139,16 @@ export function Header({
       >
         <div className="nav-glass" aria-hidden="true" />
         <div className="container header-inner">
-          <Link href="/" aria-label="Sunford หน้าหลัก" className="brand" onFocus={closeDesktopMenu}>
+          <Link
+            ref={brandRef}
+            href="/"
+            aria-label="Sunford หน้าหลัก"
+            className="brand"
+            onFocus={closeDesktopMenu}
+          >
             <Image src={site.logo} alt={site.name} width={138} height={28} preload />
           </Link>
-          <nav ref={navigationRef} className="desktop-nav" aria-label="เมนูหลัก">
+          <nav className="desktop-nav" aria-label="เมนูหลัก">
             {navigation.map((item, index) => (
               <Link
                 key={`${index}:${item.href}`}
@@ -152,39 +164,45 @@ export function Header({
             ))}
           </nav>
           <div className="header-actions" onMouseEnter={scheduleClose}>
-            <button
-              className="icon-button"
-              aria-label="ค้นหาสินค้า"
-              onClick={() => {
-                setSearchOpen(true);
-                closeDesktopMenu();
-              }}
-            >
-              <Search size={22} strokeWidth={1.5} />
-            </button>
-            <button
-              className="icon-button header-compare"
-              aria-label="เปรียบเทียบสินค้า"
-              onClick={() => {
-                setCompareOpen(true);
-                closeDesktopMenu();
-              }}
-            >
-              <GitCompareArrows size={22} strokeWidth={1.5} />
-              {compareCount > 0 && <span>{compareCount}</span>}
-            </button>
-            <button
-              className="icon-button menu-toggle"
-              aria-label={menuOpen ? "ปิดเมนู" : "เปิดเมนู"}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation"
-              onClick={() => {
-                setMenuOpen(!menuOpen);
-                closeDesktopMenu();
-              }}
-            >
-              {menuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
+            <Tooltip>
+              <button
+                className="icon-button"
+                aria-label="ค้นหาสินค้า"
+                onClick={() => {
+                  setSearchOpen(true);
+                  closeDesktopMenu();
+                }}
+              >
+                <Search size={22} strokeWidth={1.5} />
+              </button>
+            </Tooltip>
+            <Tooltip>
+              <button
+                className="icon-button header-compare"
+                aria-label="เปรียบเทียบสินค้า"
+                onClick={() => {
+                  setCompareOpen(true);
+                  closeDesktopMenu();
+                }}
+              >
+                <GitCompareArrows size={22} strokeWidth={1.5} />
+                {compareCount > 0 && <span>{compareCount}</span>}
+              </button>
+            </Tooltip>
+            <Tooltip>
+              <button
+                className="icon-button menu-toggle"
+                aria-label={menuOpen ? "ปิดเมนู" : "เปิดเมนู"}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-navigation"
+                onClick={() => {
+                  setMenuOpen(!menuOpen);
+                  closeDesktopMenu();
+                }}
+              >
+                {menuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </Tooltip>
           </div>
         </div>
         <nav
@@ -220,44 +238,26 @@ export function Header({
                     ))}
                   </div>
                 </div>
-                {item.href === "/#support" && (
-                  <>
-                    <div
-                      className="submenu-group"
-                      style={{ "--nav-group-index": 1 } as CSSProperties}
-                    >
-                      <p className="submenu-item">{extras.exploreLabel}</p>
-                      {extras.exploreLinks.map((link, index) => (
-                        <Link
-                          key={index}
-                          className="submenu-item"
-                          href={link.href}
-                          prefetch={false}
-                          onClick={closeDesktopMenu}
-                        >
-                          <span>{link.label}</span>
-                        </Link>
-                      ))}
-                    </div>
-                    <div
-                      className="submenu-group"
-                      style={{ "--nav-group-index": 2 } as CSSProperties}
-                    >
-                      <p className="submenu-item">{extras.helpLabel}</p>
-                      {extras.helpLinks.map((link, index) => (
-                        <Link
-                          key={index}
-                          className="submenu-item"
-                          href={link.href}
-                          prefetch={false}
-                          onClick={closeDesktopMenu}
-                        >
-                          <span>{link.label}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  </>
-                )}
+                {item.groups.map((group, groupIndex) => (
+                  <div
+                    key={group.label}
+                    className={`submenu-group ${item.href === "/#support" ? "" : "submenu-group-secondary"}`}
+                    style={{ "--nav-group-index": groupIndex + 1 } as CSSProperties}
+                  >
+                    <p className="submenu-item">{group.label}</p>
+                    {group.links.map((link) => (
+                      <Link
+                        key={link.href}
+                        className="submenu-item"
+                        href={link.href}
+                        prefetch={false}
+                        onClick={closeDesktopMenu}
+                      >
+                        <span>{link.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                ))}
               </div>
             ))}
           </div>
