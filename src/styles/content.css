@@ -365,11 +365,8 @@
 }
 .product-introduction.source-prose {
   padding: 0;
-  max-height: 320px;
-  overflow-y: auto;
   font-size: 14px;
   margin-bottom: 24px;
-  padding-right: 8px;
 }
 .product-introduction.source-prose h5 {
   font-size: 16px;

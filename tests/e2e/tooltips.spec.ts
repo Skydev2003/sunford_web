@@ -1,5 +1,39 @@
 import { expect, test } from "@playwright/test";
 
+test("product readability help explains display increments without changing the specification", async ({
+  page,
+}) => {
+  await page.goto("/products/10639");
+  const help = page.getByRole("button", { name: "ค่าละเอียดคืออะไร", exact: true });
+  const value = page.locator(".spec-list > div").filter({ has: help }).locator("dd");
+  const original = await value.textContent();
+  await help.hover();
+  const tooltip = page.getByRole("tooltip");
+  await expect(tooltip).toContainText("หน่วยย่อยที่สุดที่หน้าจอเครื่องชั่งแสดงได้");
+  await expect(tooltip).toContainText("เพิ่มหรือลดทีละ 1 กรัม");
+  await expect(help).toHaveAttribute("aria-describedby", (await tooltip.getAttribute("id"))!);
+  await expect(value).toHaveText(original!);
+  await page.screenshot({ path: test.info().outputPath("readability-tooltip.png") });
+  await page.keyboard.press("Escape");
+  await expect(tooltip).toHaveCount(0);
+  await page.mouse.move(0, 0);
+  await help.focus();
+  await expect(tooltip).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(tooltip).toHaveCount(0);
+  await page.keyboard.press("Tab");
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await help.hover();
+    await expect(tooltip).toBeVisible();
+    const bounds = (await tooltip.boundingBox())!;
+    expect(bounds.x).toBeGreaterThanOrEqual(7);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width - 7);
+    await page.mouse.move(0, 0);
+    await expect(tooltip).toHaveCount(0);
+  }
+});
+
 test("tooltip explains a header icon, remains hoverable and does not move the button", async ({
   page,
 }) => {
