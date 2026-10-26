@@ -37,3 +37,11 @@ model Product {
   @@index([category])
   @@map("products")
 }
+
+// Foreign key to auth.users is maintained in the SQL migration, outside Prisma's public schema.
+model AdminUser {
+  userId    String   @id @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("admin_users")
+}
