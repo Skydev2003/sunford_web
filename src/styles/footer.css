@@ -1,68 +1,83 @@
+footer {
+  background: #f5f5f7;
+}
 .contact-banner {
   background: var(--red);
   color: white;
 }
 .contact-inner {
-  padding-block: 48px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  text-align: center;
+  gap: 25px;
+  padding-block: 62px;
 }
 .contact-inner .eyebrow {
-  font-size: 8px;
-  color: #f1b2b4;
-  margin-bottom: 16px;
+  color: #fff;
+  font-size: 10px;
+  margin-bottom: 17px;
 }
 .contact-inner h2 {
-  font-size: 33px;
+  font-size: clamp(30px, 3vw, 42px);
   font-weight: 600;
   line-height: 1.5;
-  letter-spacing: -0.7px;
+  letter-spacing: -0.5px;
 }
 .contact-inner .button {
-  gap: 35px;
+  gap: 18px;
 }
 .footer-main {
   display: grid;
-  grid-template-columns: 1.55fr 1fr 1fr 1fr;
-  gap: 45px;
-  padding-block: 53px 44px;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 36px;
+  padding-block: 50px 40px;
+}
+.footer-brand img {
+  width: 130px;
+  height: auto;
 }
 .footer-brand p {
-  color: #9a9f91;
-  font-size: 11px;
-  margin: 19px 0 15px;
+  font-size: 13px;
+  color: var(--muted);
   line-height: 1.8;
+  margin: 18px 0;
+}
+.footer-brand .footer-hours {
+  font-size: 11px;
+  margin-top: 14px;
 }
 .footer-main h3 {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  margin-bottom: 19px;
+  margin-bottom: 20px;
 }
 .footer-main a:not(.footer-brand > a:first-child) {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
-  color: #8d9583;
-  margin-top: 11px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #646469;
+  margin-top: 12px;
 }
 .footer-main a:hover {
   color: var(--red);
 }
 .footer-address {
-  color: #9a9f91;
-  font-size: 9px;
+  font-size: 12px;
+  color: var(--muted);
   line-height: 1.9;
   margin-top: 15px;
 }
 .footer-bottom {
-  border-top: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  color: #969e8a;
-  font-size: 8px;
-  padding-block: 21px;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 10px;
+  color: var(--muted);
+  padding-block: 22px;
+  border-top: 1px solid #d9d9de;
 }

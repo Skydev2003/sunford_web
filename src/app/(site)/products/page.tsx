@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { ProductCatalog } from "@/features/catalog/components/product-catalog";
+import { ProductStorefront } from "@/features/catalog/components/product-storefront";
 import { getProducts } from "@/features/catalog/server/product-repository";
+import { getContentPage } from "@/features/content/server/content-repository";
 export const metadata: Metadata = { title: "ผลิตภัณฑ์ทั้งหมด" };
 export default async function ProductsPage() {
   return (
-    <main id="main-content">
-      <ProductCatalog products={await getProducts()} full />
-    </main>
+    <ProductStorefront
+      products={await getProducts()}
+      contactImage={getContentPage("/contact-us")?.images[0]}
+      softwareImage={getContentPage("/applications-and-softwares")?.images[1]}
+    />
   );
 }

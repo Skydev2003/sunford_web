@@ -2,12 +2,7 @@ import { test, expect } from "@playwright/test";
 
 async function loadPageImages(page: import("@playwright/test").Page) {
   for (const image of await page.locator("main img").all()) {
-    await image.evaluate((element) => {
-      window.scrollTo({
-        top: window.scrollY + element.getBoundingClientRect().top - 200,
-        behavior: "instant",
-      });
-    });
+    await image.scrollIntoViewIfNeeded();
     await expect
       .poll(() =>
         image.evaluate(
@@ -18,6 +13,11 @@ async function loadPageImages(page: import("@playwright/test").Page) {
       )
       .toBe(true);
   }
+  await page
+    .locator(".stories-track, .video-track")
+    .evaluateAll((elements) =>
+      elements.forEach((element) => element.scrollTo({ left: 0, behavior: "instant" })),
+    );
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
 }
 
@@ -25,7 +25,7 @@ test("homepage renders product imagery and cycles featured products", async ({ p
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("ความแม่นยำ");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("SUNFORD WPS10KS");
   await expect(page.locator(".hero-model")).toContainText("WPS10KS");
   await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
   await expect(page.locator(".hero-model")).toContainText("FEH5KS");
@@ -47,8 +47,8 @@ test("category filters show matching products and restore the catalogue", async 
   await page.goto("/");
   await expect(page.locator(".product-card")).toHaveCount(3);
   await page.getByRole("button", { name: "เครื่องชั่งอุตสาหกรรม", exact: true }).click();
-  await expect(page.locator(".product-card")).toHaveCount(1);
-  await expect(page.locator(".product-card h3")).toHaveText("TIS-150-JC62Z");
+  await expect(page.locator(".product-card").first()).toBeVisible();
+  await expect(page.locator(".product-card h3").filter({ hasText: "TIS-150-JC62Z" })).toBeVisible();
   await page.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
   await expect(page.locator(".product-card")).toHaveCount(3);
 });
@@ -61,8 +61,8 @@ test("search opens product details, supports empty results and Escape", async ({
   await dialog.getByRole("textbox").fill("does-not-exist");
   await expect(dialog.getByText("ไม่พบสินค้า ลองค้นหา WPS, FEH หรือเครื่องชั่ง")).toBeVisible();
   await dialog.getByRole("textbox").fill("FEH5KS");
-  await expect(dialog.locator(".search-results a")).toHaveCount(1);
-  await dialog.locator(".search-results a").click();
+  await expect(dialog.locator(".search-results a").first()).toBeVisible();
+  await dialog.locator(".search-results a").first().click();
   await expect(page).toHaveURL(/\/products\/feh5ks$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("FEH5KS");
   await expect(dialog).not.toBeVisible();
@@ -125,9 +125,12 @@ test("catalogue API returns data and unknown products render an unindexable 404 
   const response = await request.get("/api/products");
   expect(response.ok()).toBe(true);
   const data = await response.json();
-  expect(data.products).toHaveLength(6);
+  expect(data.products.length).toBeGreaterThanOrEqual(150);
   await page.goto("/products");
-  await expect(page.locator(".product-card")).toHaveCount(6);
+  await page.getByRole("button", { name: "สำรวจผลิตภัณฑ์ทั้งหมด", exact: true }).click();
+  await expect(page.locator(".product-card")).toHaveCount(24);
+  await page.getByRole("button", { name: /ดูเพิ่มเติม \(24/ }).click();
+  await expect(page.locator(".product-card")).toHaveCount(48);
   const missing = await page.goto("/products/does-not-exist");
   await expect(page.getByRole("heading", { name: "ยังไม่พบหน้าที่คุณกำลังมองหา" })).toBeVisible();
   // Streaming production responses can send 200 before notFound() resolves.
