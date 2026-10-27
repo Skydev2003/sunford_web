@@ -15,7 +15,13 @@
       "/images/imported/20b607f48a3f664d0141.jpeg",
       "/images/imported/d328db104938fed7fbd3.jpeg"
     ],
-    "imageAlt": ["", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -53,112 +59,112 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Industrial scale",
-        "title": "Industrial Scale"
-      },
-      {
-        "path": "/collections/Laboratory balance",
-        "title": "Laboratory Balance"
-      },
-      {
-        "path": "/collections/Commercial scale",
-        "title": "Commercial scale"
-      },
-      {
-        "path": "/collections/Household scale",
-        "title": "Household scale"
-      },
-      {
-        "path": "/collections/QC and Inspection",
-        "title": "QC and Inspection"
-      },
-      {
         "path": "/collections/Analytical works",
         "title": "Analytical works"
       },
       {
-        "path": "/collections/Moisture analyzer",
-        "title": "Moisture analyzer"
-      },
-      {
-        "path": "/collections/Washdown weighing",
-        "title": "Washdown weighing"
-      },
-      {
-        "path": "/collections/Industrial scale weighing",
-        "title": "Industrial scale weighing"
-      },
-      {
-        "path": "/collections/Counting and Checking",
-        "title": "Counting and Checking"
-      },
-      {
-        "path": "/collections/Weigh checker",
-        "title": "Weigh checker"
-      },
-      {
-        "path": "/collections/Weight-filling controller",
-        "title": "Weight-filling controller"
-      },
-      {
-        "path": "/collections/POS Related",
-        "title": "POS Related"
-      },
-      {
-        "path": "/collections/Weighing and Price computing",
-        "title": "Weighing and Price computing"
-      },
-      {
-        "path": "/collections/Home kitchen",
-        "title": "Home kitchen"
-      },
-      {
-        "path": "/collections/Health care",
-        "title": "Health care"
-      },
-      {
-        "path": "/collections/Coffee bar",
-        "title": "Coffee bar"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
-      },
-      {
-        "path": "/collections/Group of smart scale",
-        "title": "Group of smart scale"
+        "path": "/collections/BT Long-range device",
+        "title": "BT Long-range device"
       },
       {
         "path": "/collections/BT-connected",
         "title": "BT-connected"
       },
       {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
+      },
+      {
+        "path": "/collections/Coffee bar",
+        "title": "Coffee bar"
+      },
+      {
+        "path": "/collections/Commercial scale",
+        "title": "Commercial scale"
+      },
+      {
+        "path": "/collections/Counting and Checking",
+        "title": "Counting and Checking"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
       },
       {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
+        "path": "/collections/Group of smart scale",
+        "title": "Group of smart scale"
+      },
+      {
+        "path": "/collections/Health care",
+        "title": "Health care"
+      },
+      {
+        "path": "/collections/Home kitchen",
+        "title": "Home kitchen"
+      },
+      {
+        "path": "/collections/Household scale",
+        "title": "Household scale"
+      },
+      {
+        "path": "/collections/Industrial scale",
+        "title": "Industrial Scale"
+      },
+      {
+        "path": "/collections/Industrial scale weighing",
+        "title": "Industrial scale weighing"
+      },
+      {
+        "path": "/collections/Laboratory balance",
+        "title": "Laboratory Balance"
+      },
+      {
+        "path": "/collections/Moisture analyzer",
+        "title": "Moisture analyzer"
+      },
+      {
         "path": "/collections/Non data transfer",
         "title": "Non data transfer"
       },
       {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
+        "path": "/collections/POS Related",
+        "title": "POS Related"
       },
       {
-        "path": "/collections/BT Long-range device",
-        "title": "BT Long-range device"
+        "path": "/collections/QC and Inspection",
+        "title": "QC and Inspection"
+      },
+      {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Washdown weighing",
+        "title": "Washdown weighing"
+      },
+      {
+        "path": "/collections/Weigh checker",
+        "title": "Weigh checker"
+      },
+      {
+        "path": "/collections/Weighing and Price computing",
+        "title": "Weighing and Price computing"
+      },
+      {
+        "path": "/collections/Weight-filling controller",
+        "title": "Weight-filling controller"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
       }
     ]
   },
@@ -177,7 +183,12 @@
       "/images/imported/bafe6c4c5edcf9d46ec9.jpeg",
       "/images/imported/ba030010baa9a9ef692d.jpeg"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -244,112 +255,112 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Industrial scale",
-        "title": "Industrial Scale"
-      },
-      {
-        "path": "/collections/Laboratory balance",
-        "title": "Laboratory Balance"
-      },
-      {
-        "path": "/collections/Commercial scale",
-        "title": "Commercial scale"
-      },
-      {
-        "path": "/collections/Household scale",
-        "title": "Household scale"
-      },
-      {
-        "path": "/collections/QC and Inspection",
-        "title": "QC and Inspection"
-      },
-      {
         "path": "/collections/Analytical works",
         "title": "Analytical works"
       },
       {
-        "path": "/collections/Moisture analyzer",
-        "title": "Moisture analyzer"
-      },
-      {
-        "path": "/collections/Washdown weighing",
-        "title": "Washdown weighing"
-      },
-      {
-        "path": "/collections/Industrial scale weighing",
-        "title": "Industrial scale weighing"
-      },
-      {
-        "path": "/collections/Counting and Checking",
-        "title": "Counting and Checking"
-      },
-      {
-        "path": "/collections/Weigh checker",
-        "title": "Weigh checker"
-      },
-      {
-        "path": "/collections/Weight-filling controller",
-        "title": "Weight-filling controller"
-      },
-      {
-        "path": "/collections/POS Related",
-        "title": "POS Related"
-      },
-      {
-        "path": "/collections/Weighing and Price computing",
-        "title": "Weighing and Price computing"
-      },
-      {
-        "path": "/collections/Home kitchen",
-        "title": "Home kitchen"
-      },
-      {
-        "path": "/collections/Health care",
-        "title": "Health care"
-      },
-      {
-        "path": "/collections/Coffee bar",
-        "title": "Coffee bar"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
-      },
-      {
-        "path": "/collections/Group of smart scale",
-        "title": "Group of smart scale"
+        "path": "/collections/BT Long-range device",
+        "title": "BT Long-range device"
       },
       {
         "path": "/collections/BT-connected",
         "title": "BT-connected"
       },
       {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
+      },
+      {
+        "path": "/collections/Coffee bar",
+        "title": "Coffee bar"
+      },
+      {
+        "path": "/collections/Commercial scale",
+        "title": "Commercial scale"
+      },
+      {
+        "path": "/collections/Counting and Checking",
+        "title": "Counting and Checking"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
       },
       {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
+        "path": "/collections/Group of smart scale",
+        "title": "Group of smart scale"
+      },
+      {
+        "path": "/collections/Health care",
+        "title": "Health care"
+      },
+      {
+        "path": "/collections/Home kitchen",
+        "title": "Home kitchen"
+      },
+      {
+        "path": "/collections/Household scale",
+        "title": "Household scale"
+      },
+      {
+        "path": "/collections/Industrial scale",
+        "title": "Industrial Scale"
+      },
+      {
+        "path": "/collections/Industrial scale weighing",
+        "title": "Industrial scale weighing"
+      },
+      {
+        "path": "/collections/Laboratory balance",
+        "title": "Laboratory Balance"
+      },
+      {
+        "path": "/collections/Moisture analyzer",
+        "title": "Moisture analyzer"
+      },
+      {
         "path": "/collections/Non data transfer",
         "title": "Non data transfer"
       },
       {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
+        "path": "/collections/POS Related",
+        "title": "POS Related"
       },
       {
-        "path": "/collections/BT Long-range device",
-        "title": "BT Long-range device"
+        "path": "/collections/QC and Inspection",
+        "title": "QC and Inspection"
+      },
+      {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Washdown weighing",
+        "title": "Washdown weighing"
+      },
+      {
+        "path": "/collections/Weigh checker",
+        "title": "Weigh checker"
+      },
+      {
+        "path": "/collections/Weighing and Price computing",
+        "title": "Weighing and Price computing"
+      },
+      {
+        "path": "/collections/Weight-filling controller",
+        "title": "Weight-filling controller"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
       }
     ]
   },
@@ -370,7 +381,14 @@
       "/images/imported/c2145fab31f08832d80b.jpeg",
       "/images/imported/57e44e63920824d794ef.jpeg"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -438,116 +456,116 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Industrial scale",
-        "title": "Industrial Scale"
-      },
-      {
-        "path": "/collections/Laboratory balance",
-        "title": "Laboratory Balance"
-      },
-      {
-        "path": "/collections/Commercial scale",
-        "title": "Commercial scale"
-      },
-      {
-        "path": "/collections/Household scale",
-        "title": "Household scale"
-      },
-      {
-        "path": "/collections/QC and Inspection",
-        "title": "QC and Inspection"
-      },
-      {
         "path": "/collections/Analytical works",
         "title": "Analytical works"
-      },
-      {
-        "path": "/collections/Moisture analyzer",
-        "title": "Moisture analyzer"
-      },
-      {
-        "path": "/collections/Washdown weighing",
-        "title": "Washdown weighing"
-      },
-      {
-        "path": "/collections/Industrial scale weighing",
-        "title": "Industrial scale weighing"
-      },
-      {
-        "path": "/collections/Counting and Checking",
-        "title": "Counting and Checking"
-      },
-      {
-        "path": "/collections/Weigh checker",
-        "title": "Weigh checker"
-      },
-      {
-        "path": "/collections/Weight-filling controller",
-        "title": "Weight-filling controller"
-      },
-      {
-        "path": "/collections/POS Related",
-        "title": "POS Related"
-      },
-      {
-        "path": "/collections/Weighing and Price computing",
-        "title": "Weighing and Price computing"
-      },
-      {
-        "path": "/collections/Home kitchen",
-        "title": "Home kitchen"
-      },
-      {
-        "path": "/collections/Health care",
-        "title": "Health care"
-      },
-      {
-        "path": "/collections/Coffee bar",
-        "title": "Coffee bar"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
-      },
-      {
-        "path": "/collections/Group of smart scale",
-        "title": "Group of smart scale"
-      },
-      {
-        "path": "/collections/BT-connected",
-        "title": "BT-connected"
-      },
-      {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
-      },
-      {
-        "path": "/collections/Data transferable",
-        "title": "Data transferable"
-      },
-      {
-        "path": "/collections/Non data transfer",
-        "title": "Non data transfer"
-      },
-      {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
       },
       {
         "path": "/collections/BT Long-range device",
         "title": "BT Long-range device"
       },
       {
+        "path": "/collections/BT-connected",
+        "title": "BT-connected"
+      },
+      {
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
+      },
+      {
+        "path": "/collections/Coffee bar",
+        "title": "Coffee bar"
+      },
+      {
+        "path": "/collections/Commercial scale",
+        "title": "Commercial scale"
+      },
+      {
         "path": "/collections/Commercial scale weighting",
         "title": "Commercial scale weighting"
+      },
+      {
+        "path": "/collections/Counting and Checking",
+        "title": "Counting and Checking"
+      },
+      {
+        "path": "/collections/Data transferable",
+        "title": "Data transferable"
+      },
+      {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
+        "path": "/collections/Group of smart scale",
+        "title": "Group of smart scale"
+      },
+      {
+        "path": "/collections/Health care",
+        "title": "Health care"
+      },
+      {
+        "path": "/collections/Home kitchen",
+        "title": "Home kitchen"
+      },
+      {
+        "path": "/collections/Household scale",
+        "title": "Household scale"
+      },
+      {
+        "path": "/collections/Industrial scale",
+        "title": "Industrial Scale"
+      },
+      {
+        "path": "/collections/Industrial scale weighing",
+        "title": "Industrial scale weighing"
+      },
+      {
+        "path": "/collections/Laboratory balance",
+        "title": "Laboratory Balance"
+      },
+      {
+        "path": "/collections/Moisture analyzer",
+        "title": "Moisture analyzer"
+      },
+      {
+        "path": "/collections/Non data transfer",
+        "title": "Non data transfer"
+      },
+      {
+        "path": "/collections/POS Related",
+        "title": "POS Related"
+      },
+      {
+        "path": "/collections/QC and Inspection",
+        "title": "QC and Inspection"
+      },
+      {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Washdown weighing",
+        "title": "Washdown weighing"
+      },
+      {
+        "path": "/collections/Weigh checker",
+        "title": "Weigh checker"
+      },
+      {
+        "path": "/collections/Weighing and Price computing",
+        "title": "Weighing and Price computing"
+      },
+      {
+        "path": "/collections/Weight-filling controller",
+        "title": "Weight-filling controller"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
       }
     ]
   },
@@ -568,7 +586,14 @@
       "/images/imported/66a92029162715627e32.jpeg",
       "/images/imported/bad39fba26154c481cc0.jpeg"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -614,12 +639,20 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/Commercial scale",
+        "title": "Commercial scale"
+      },
+      {
+        "path": "/collections/Commercial scale weighting",
+        "title": "Commercial scale weighting"
       },
       {
         "path": "/collections/Digital weighing",
         "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Household scale",
+        "title": "Household scale"
       },
       {
         "path": "/collections/Industrial scale",
@@ -630,16 +663,8 @@
         "title": "Laboratory Balance"
       },
       {
-        "path": "/collections/Commercial scale",
-        "title": "Commercial scale"
-      },
-      {
-        "path": "/collections/Household scale",
-        "title": "Household scale"
-      },
-      {
-        "path": "/collections/Commercial scale weighting",
-        "title": "Commercial scale weighting"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -660,7 +685,14 @@
       "/images/imported/d3144951837ece3b2fd3.jpeg",
       "/images/imported/64e89cde87b76a842792.jpeg"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -694,24 +726,24 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/Commercial scale weighting",
+        "title": "Commercial scale weighting"
       },
       {
         "path": "/collections/Digital weighing",
         "title": "Digital weighing"
       },
       {
-        "path": "/collections/Wired smart scale",
-        "title": "Wired smart scale"
-      },
-      {
         "path": "/collections/Household scale",
         "title": "Household scale"
       },
       {
-        "path": "/collections/Commercial scale weighting",
-        "title": "Commercial scale weighting"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Wired smart scale",
+        "title": "Wired smart scale"
       }
     ]
   },
@@ -729,7 +761,11 @@
       "/images/imported/dbaf70a65c8dccfe491e.png",
       "/images/imported/9e8d7f1c3f3c8a954636.jpeg"
     ],
-    "imageAlt": ["", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -756,80 +792,80 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Wired smart scale",
-        "title": "Wired smart scale"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
+        "path": "/collections/BT Long-range device",
+        "title": "BT Long-range device"
       },
       {
         "path": "/collections/BT-connected",
         "title": "BT-connected"
       },
       {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
+      },
+      {
+        "path": "/collections/Commercial scale weighting",
+        "title": "Commercial scale weighting"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
       },
       {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
         "path": "/collections/Non data transfer",
         "title": "Non data transfer"
-      },
-      {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
-      },
-      {
-        "path": "/collections/BT Long-range device",
-        "title": "BT Long-range device"
-      },
-      {
-        "path": "/collections/Wireless smart scale",
-        "title": "Wireless smart scale"
-      },
-      {
-        "path": "/collections/Wired smart scale group",
-        "title": "Wired smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group",
-        "title": "Wireless smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group Wifi-connected",
-        "title": "Wireless smart scale group Wifi-connected"
-      },
-      {
-        "path": "/collections/Wireless smart scale group BT-connected",
-        "title": "Wireless smart scale group BT-connected"
-      },
-      {
-        "path": "/collections/Wireless centralized smart platform group",
-        "title": "Wireless centralized smart platform group"
       },
       {
         "path": "/collections/Semi-Smart scale",
         "title": "Semi-Smart scale"
       },
       {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
+      },
+      {
+        "path": "/collections/Wired smart scale",
+        "title": "Wired smart scale"
+      },
+      {
+        "path": "/collections/Wired smart scale group",
+        "title": "Wired smart scale group"
+      },
+      {
+        "path": "/collections/Wireless centralized smart platform group",
+        "title": "Wireless centralized smart platform group"
+      },
+      {
         "path": "/collections/Wireless smart devices for non-smart scale",
         "title": "Wireless smart devices for non-smart scale"
       },
       {
-        "path": "/collections/Commercial scale weighting",
-        "title": "Commercial scale weighting"
+        "path": "/collections/Wireless smart scale",
+        "title": "Wireless smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale group",
+        "title": "Wireless smart scale group"
+      },
+      {
+        "path": "/collections/Wireless smart scale group BT-connected",
+        "title": "Wireless smart scale group BT-connected"
+      },
+      {
+        "path": "/collections/Wireless smart scale group Wifi-connected",
+        "title": "Wireless smart scale group Wifi-connected"
       }
     ]
   },
@@ -850,7 +886,14 @@
       "/images/imported/cd3def16f7cde0b60e67.jpeg",
       "/images/imported/aec8e0b1b527efac7827.jpeg"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -898,80 +941,80 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Wired smart scale",
-        "title": "Wired smart scale"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
+        "path": "/collections/BT Long-range device",
+        "title": "BT Long-range device"
       },
       {
         "path": "/collections/BT-connected",
         "title": "BT-connected"
       },
       {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
+      },
+      {
+        "path": "/collections/Commercial scale weighting",
+        "title": "Commercial scale weighting"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
       },
       {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
         "path": "/collections/Non data transfer",
         "title": "Non data transfer"
-      },
-      {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
-      },
-      {
-        "path": "/collections/BT Long-range device",
-        "title": "BT Long-range device"
-      },
-      {
-        "path": "/collections/Wireless smart scale",
-        "title": "Wireless smart scale"
-      },
-      {
-        "path": "/collections/Wired smart scale group",
-        "title": "Wired smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group",
-        "title": "Wireless smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group Wifi-connected",
-        "title": "Wireless smart scale group Wifi-connected"
-      },
-      {
-        "path": "/collections/Wireless smart scale group BT-connected",
-        "title": "Wireless smart scale group BT-connected"
-      },
-      {
-        "path": "/collections/Wireless centralized smart platform group",
-        "title": "Wireless centralized smart platform group"
       },
       {
         "path": "/collections/Semi-Smart scale",
         "title": "Semi-Smart scale"
       },
       {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
+      },
+      {
+        "path": "/collections/Wired smart scale",
+        "title": "Wired smart scale"
+      },
+      {
+        "path": "/collections/Wired smart scale group",
+        "title": "Wired smart scale group"
+      },
+      {
+        "path": "/collections/Wireless centralized smart platform group",
+        "title": "Wireless centralized smart platform group"
+      },
+      {
         "path": "/collections/Wireless smart devices for non-smart scale",
         "title": "Wireless smart devices for non-smart scale"
       },
       {
-        "path": "/collections/Commercial scale weighting",
-        "title": "Commercial scale weighting"
+        "path": "/collections/Wireless smart scale",
+        "title": "Wireless smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale group",
+        "title": "Wireless smart scale group"
+      },
+      {
+        "path": "/collections/Wireless smart scale group BT-connected",
+        "title": "Wireless smart scale group BT-connected"
+      },
+      {
+        "path": "/collections/Wireless smart scale group Wifi-connected",
+        "title": "Wireless smart scale group Wifi-connected"
       }
     ]
   },
@@ -991,7 +1034,13 @@
       "/images/imported/4ff0ecda104d15badefe.jpeg",
       "/images/imported/5aa4368132214ca2ebd9.jpeg"
     ],
-    "imageAlt": ["", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1038,76 +1087,76 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Wired smart scale",
-        "title": "Wired smart scale"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
+        "path": "/collections/BT Long-range device",
+        "title": "BT Long-range device"
       },
       {
         "path": "/collections/BT-connected",
         "title": "BT-connected"
       },
       {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
       },
       {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
         "path": "/collections/Non data transfer",
         "title": "Non data transfer"
-      },
-      {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
-      },
-      {
-        "path": "/collections/BT Long-range device",
-        "title": "BT Long-range device"
-      },
-      {
-        "path": "/collections/Wireless smart scale",
-        "title": "Wireless smart scale"
-      },
-      {
-        "path": "/collections/Wired smart scale group",
-        "title": "Wired smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group",
-        "title": "Wireless smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group Wifi-connected",
-        "title": "Wireless smart scale group Wifi-connected"
-      },
-      {
-        "path": "/collections/Wireless smart scale group BT-connected",
-        "title": "Wireless smart scale group BT-connected"
-      },
-      {
-        "path": "/collections/Wireless centralized smart platform group",
-        "title": "Wireless centralized smart platform group"
       },
       {
         "path": "/collections/Semi-Smart scale",
         "title": "Semi-Smart scale"
       },
       {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
+      },
+      {
+        "path": "/collections/Wired smart scale",
+        "title": "Wired smart scale"
+      },
+      {
+        "path": "/collections/Wired smart scale group",
+        "title": "Wired smart scale group"
+      },
+      {
+        "path": "/collections/Wireless centralized smart platform group",
+        "title": "Wireless centralized smart platform group"
+      },
+      {
         "path": "/collections/Wireless smart devices for non-smart scale",
         "title": "Wireless smart devices for non-smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale",
+        "title": "Wireless smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale group",
+        "title": "Wireless smart scale group"
+      },
+      {
+        "path": "/collections/Wireless smart scale group BT-connected",
+        "title": "Wireless smart scale group BT-connected"
+      },
+      {
+        "path": "/collections/Wireless smart scale group Wifi-connected",
+        "title": "Wireless smart scale group Wifi-connected"
       }
     ]
   },
@@ -1128,7 +1177,14 @@
       "/images/imported/0415e15c794ff88b8e05.jpeg",
       "/images/imported/ed3844f9dfeb84a75aea.jpeg"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1175,76 +1231,76 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Wired smart scale",
-        "title": "Wired smart scale"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
+        "path": "/collections/BT Long-range device",
+        "title": "BT Long-range device"
       },
       {
         "path": "/collections/BT-connected",
         "title": "BT-connected"
       },
       {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
       },
       {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
         "path": "/collections/Non data transfer",
         "title": "Non data transfer"
-      },
-      {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
-      },
-      {
-        "path": "/collections/BT Long-range device",
-        "title": "BT Long-range device"
-      },
-      {
-        "path": "/collections/Wireless smart scale",
-        "title": "Wireless smart scale"
-      },
-      {
-        "path": "/collections/Wired smart scale group",
-        "title": "Wired smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group",
-        "title": "Wireless smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group Wifi-connected",
-        "title": "Wireless smart scale group Wifi-connected"
-      },
-      {
-        "path": "/collections/Wireless smart scale group BT-connected",
-        "title": "Wireless smart scale group BT-connected"
-      },
-      {
-        "path": "/collections/Wireless centralized smart platform group",
-        "title": "Wireless centralized smart platform group"
       },
       {
         "path": "/collections/Semi-Smart scale",
         "title": "Semi-Smart scale"
       },
       {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
+      },
+      {
+        "path": "/collections/Wired smart scale",
+        "title": "Wired smart scale"
+      },
+      {
+        "path": "/collections/Wired smart scale group",
+        "title": "Wired smart scale group"
+      },
+      {
+        "path": "/collections/Wireless centralized smart platform group",
+        "title": "Wireless centralized smart platform group"
+      },
+      {
         "path": "/collections/Wireless smart devices for non-smart scale",
         "title": "Wireless smart devices for non-smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale",
+        "title": "Wireless smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale group",
+        "title": "Wireless smart scale group"
+      },
+      {
+        "path": "/collections/Wireless smart scale group BT-connected",
+        "title": "Wireless smart scale group BT-connected"
+      },
+      {
+        "path": "/collections/Wireless smart scale group Wifi-connected",
+        "title": "Wireless smart scale group Wifi-connected"
       }
     ]
   },
@@ -1262,7 +1318,11 @@
       "/images/imported/7d9f74e39a350fa08703.jpeg",
       "/images/imported/21ffe1ae96adc988d7b5.jpeg"
     ],
-    "imageAlt": ["", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1309,76 +1369,76 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
-      },
-      {
-        "path": "/collections/Wired smart scale",
-        "title": "Wired smart scale"
-      },
-      {
-        "path": "/collections/Wifi-connected",
-        "title": "Wifi-connected"
+        "path": "/collections/BT Long-range device",
+        "title": "BT Long-range device"
       },
       {
         "path": "/collections/BT-connected",
         "title": "BT-connected"
       },
       {
-        "path": "/collections/Group of Smart platform",
-        "title": "Group of Smart platform"
+        "path": "/collections/BT Short-length device",
+        "title": "BT Short-length device"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
       },
       {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
+      },
+      {
+        "path": "/collections/Group of Smart platform",
+        "title": "Group of Smart platform"
+      },
+      {
         "path": "/collections/Non data transfer",
         "title": "Non data transfer"
-      },
-      {
-        "path": "/collections/BT Short-length device",
-        "title": "BT Short-length device"
-      },
-      {
-        "path": "/collections/BT Long-range device",
-        "title": "BT Long-range device"
-      },
-      {
-        "path": "/collections/Wireless smart scale",
-        "title": "Wireless smart scale"
-      },
-      {
-        "path": "/collections/Wired smart scale group",
-        "title": "Wired smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group",
-        "title": "Wireless smart scale group"
-      },
-      {
-        "path": "/collections/Wireless smart scale group Wifi-connected",
-        "title": "Wireless smart scale group Wifi-connected"
-      },
-      {
-        "path": "/collections/Wireless smart scale group BT-connected",
-        "title": "Wireless smart scale group BT-connected"
-      },
-      {
-        "path": "/collections/Wireless centralized smart platform group",
-        "title": "Wireless centralized smart platform group"
       },
       {
         "path": "/collections/Semi-Smart scale",
         "title": "Semi-Smart scale"
       },
       {
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
+      },
+      {
+        "path": "/collections/Wifi-connected",
+        "title": "Wifi-connected"
+      },
+      {
+        "path": "/collections/Wired smart scale",
+        "title": "Wired smart scale"
+      },
+      {
+        "path": "/collections/Wired smart scale group",
+        "title": "Wired smart scale group"
+      },
+      {
+        "path": "/collections/Wireless centralized smart platform group",
+        "title": "Wireless centralized smart platform group"
+      },
+      {
         "path": "/collections/Wireless smart devices for non-smart scale",
         "title": "Wireless smart devices for non-smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale",
+        "title": "Wireless smart scale"
+      },
+      {
+        "path": "/collections/Wireless smart scale group",
+        "title": "Wireless smart scale group"
+      },
+      {
+        "path": "/collections/Wireless smart scale group BT-connected",
+        "title": "Wireless smart scale group BT-connected"
+      },
+      {
+        "path": "/collections/Wireless smart scale group Wifi-connected",
+        "title": "Wireless smart scale group Wifi-connected"
       }
     ]
   },
@@ -1396,7 +1456,11 @@
       "/images/imported/844df416a8142242f229.jpeg",
       "/images/imported/9b8f0f368d9f3c1c824d.jpeg"
     ],
-    "imageAlt": ["", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1431,16 +1495,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
-      },
-      {
-        "path": "/collections/Digital weighing",
-        "title": "Digital weighing"
+        "path": "/collections/ชิ้นส่วน-part-จอ",
+        "title": "ชิ้นส่วน Part จอ"
       },
       {
         "path": "/collections/Data transferable",
         "title": "Data transferable"
+      },
+      {
+        "path": "/collections/Digital weighing",
+        "title": "Digital weighing"
       },
       {
         "path": "/collections/Non data transfer",
@@ -1451,8 +1515,8 @@
         "title": "Semi-Smart scale"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-จอ",
-        "title": "ชิ้นส่วน Part จอ"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -1469,7 +1533,10 @@
       "/images/imported/69f97e84df273a1d0037.jpeg",
       "/images/imported/10e384ae6dcfce8cbfe3.jpeg"
     ],
-    "imageAlt": ["", ""],
+    "imageAlt": [
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1503,8 +1570,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-จอ",
+        "title": "ชิ้นส่วน Part จอ"
       },
       {
         "path": "/collections/Add-on",
@@ -1519,8 +1586,8 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-จอ",
-        "title": "ชิ้นส่วน Part จอ"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -1537,7 +1604,10 @@
       "/images/imported/43aff4fc472c2967714c.jpeg",
       "/images/imported/d01836d4416b292da768.jpeg"
     ],
-    "imageAlt": ["", ""],
+    "imageAlt": [
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1571,8 +1641,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-จอ",
+        "title": "ชิ้นส่วน Part จอ"
       },
       {
         "path": "/collections/Add-on",
@@ -1587,8 +1657,8 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-จอ",
-        "title": "ชิ้นส่วน Part จอ"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -1605,7 +1675,10 @@
       "/images/imported/c5422c029f38b4762f3e.jpeg",
       "/images/imported/08c410ee2e058c1adf24.jpeg"
     ],
-    "imageAlt": ["", ""],
+    "imageAlt": [
+      "",
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1618,8 +1691,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-เสาสแตนเลส",
+        "title": "ชิ้นส่วน Part เสาสแตนเลส"
       },
       {
         "path": "/collections/Add-on",
@@ -1634,8 +1707,8 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-เสาสแตนเลส",
-        "title": "ชิ้นส่วน Part เสาสแตนเลส"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -1648,8 +1721,12 @@
     "detailsHtml": "",
     "description": "สติกเกอร์เลเบล กระดาษสลิป สำหรับเครื่องพิมพ์ Polypropylene กันน้ำ (สูตรน้ำ) ขนาด 4x6 เซนติเมตร\n\nวัสดุ: Polypropylene ขาวเงา (สูตรน้ำ)\nขนาดฉลาก กว้างxสูง: 4x6 เซ็นติเมตร\nจํานวนฉลากต่อม้วน: 700 ดวง\nเส้นผ่านศูนย์กลาง ม้วนฉลาก: 8.5 เซ็นติเมตร\nความสูง ม้วนฉลาก: 6.3 เซ็นติเมตร\nเส้นผ่านศูนย์กลาง แกนในฉลาก: 40 มิลลิเมตร (1.57 นิ้ว)\nเครื่องพิมพ์แนะนำ: RLS1100/RLS1800 Built-in\nเครื่องพิมพ์แนะนำ: RLS1100/RLS1800\nขนาดจำหน่าย ปลีก: 2ม้วน x 700ดวง\nขนาดจำหน่าย ส่ง: ลังละ50ม้วน x 700ดวง",
     "details": "",
-    "images": ["/images/imported/31d4b839d36c5f2d7687.jpeg"],
-    "imageAlt": [""],
+    "images": [
+      "/images/imported/31d4b839d36c5f2d7687.jpeg"
+    ],
+    "imageAlt": [
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1662,8 +1739,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
         "path": "/collections/Add-on",
@@ -1678,8 +1755,8 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
-        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -1692,8 +1769,12 @@
     "detailsHtml": "",
     "description": "สติกเกอร์เลเบล กระดาษสลิป สำหรับเครื่องพิมพ์ กระดาษ ใม่กันน้ำ (สูตรเคมี) ขนาด 3x5.3 เซนติเมตร\n\nวัสดุ: กระดาษ ไม่กันน้ำ (สูตรเคมี)\n\nขนาดฉลาก กว้างxสูง: 3x5.3 เซ็นติเมตร\n\nจํานวนฉลากต่อม้วน: 700 ดวง\n\nเส้นผ่านศูนย์กลาง ม้วนฉลาก: 7.6 เซ็นติเมตร\n\nความสูง ม้วนฉลาก: 5.8 เซ็นติเมตร\n\nเส้นผ่านศูนย์กลาง แกนในฉลาก: 38 มิลลิเมตร (1.5 นิ้ว)\n\nเครื่องพิมพ์แนะนำ: LPS50/LPS51\n\nเครื่องพิมพ์แนะนำ: AW31/AC31/SW31/WP31/JCS62/JE62\n\nขนาดจำหน่าย ปลีก: 5ม้วน x 700ดวง\n\nขนาดจำหน่าย ส่ง: -",
     "details": "",
-    "images": ["/images/imported/aa8d120a8c0e80fd954e.jpeg"],
-    "imageAlt": [""],
+    "images": [
+      "/images/imported/aa8d120a8c0e80fd954e.jpeg"
+    ],
+    "imageAlt": [
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1706,8 +1787,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
         "path": "/collections/Add-on",
@@ -1722,8 +1803,8 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
-        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -1736,8 +1817,12 @@
     "detailsHtml": "",
     "description": "สติกเกอร์เลเบล กระดาษสลิป สำหรับเครื่องพิมพ์ กระดาษ ใม่กันน้ำ (สูตรเคมี) ขนาด 2x5.3 เซนติเมตร\n\nวัสดุ: กระดาษ ไม่กันน้ำ (สูตรเคมี)\n\nขนาดฉลาก กว้างxสูง: 2x5.3 เซ็นติเมตร\n\nจํานวนฉลากต่อม้วน: 1000 ดวง\n\nเส้นผ่านศูนย์กลาง ม้วนฉลาก: 7.4 เซ็นติเมตร\n\nความสูง ม้วนฉลาก: 5.8 เซ็นติเมตร\n\nเส้นผ่านศูนย์กลาง แกนในฉลาก: 38 มิลลิเมตร (1.5 นิ้ว)\n\nเครื่องพิมพ์แนะนำ: LPS50/LPS51\n\nเครื่องพิมพ์แนะนำ: AW31/AC31/SW31/WP31/JCS62/JE62\n\nขนาดจำหน่าย ปลีก: 5ม้วน x 1000ดวง\n\nขนาดจำหน่าย ส่ง: -",
     "details": "",
-    "images": ["/images/imported/f47bb67103ebeb75b088.jpeg"],
-    "imageAlt": [""],
+    "images": [
+      "/images/imported/f47bb67103ebeb75b088.jpeg"
+    ],
+    "imageAlt": [
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1751,8 +1836,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
         "path": "/collections/Add-on",
@@ -1767,12 +1852,12 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/Wireless Smart device for non-smart platform",
-        "title": "Wireless Smart device for non-smart platform"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
-        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
+        "path": "/collections/Wireless Smart device for non-smart platform",
+        "title": "Wireless Smart device for non-smart platform"
       }
     ]
   },
@@ -1785,8 +1870,12 @@
     "detailsHtml": "",
     "description": "สติกเกอร์เลเบล กระดาษพิมพ์ความร้อน (ไม่ใช้หมึก) หน้าแคบ 2 นิ้ว ความกว้างกระดาษ 5.7 เซนติเมตร\n\nคุณสมบัติ: หน้าแคบ 2 นิ้ว\n\nวัสดุ: กระดาษพิมพ์ความร้อน (ไม่ใช่หมึก)\n\nความกว้างกระดาษ: 5.7 เซ็นติเมตร\n\nเส้นผ่านศูนย์กลาง ม้วนฉลาก: 5 เซ็นติเมตร\n\nความสูง ม้วนฉลาก: 5.7 เซ็นติเมตร\n\nความยาวต่อม้วน: 28 เมตร\n\nความหนากระดาษ: 58GSM\n\nเครื่องพิมพ์แนะนำ: TRP58B\n\nเครื่องชั่งแนะนำ: RLS1100/RLS1800\n\nขนาดจำหน่าย ปลีก: 10 ม้วน\n\nขนาดจำหน่าย ปลีก: 20 ม้วน\n\nขนาดจำหน่าย ส่ง: ลังละ 50 ม้วน",
     "details": "",
-    "images": ["/images/imported/6f6d38a8a3745e130877.jpeg"],
-    "imageAlt": [""],
+    "images": [
+      "/images/imported/6f6d38a8a3745e130877.jpeg"
+    ],
+    "imageAlt": [
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1800,8 +1889,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
         "path": "/collections/Add-on",
@@ -1816,12 +1905,12 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/Wireless Smart device for non-smart platform",
-        "title": "Wireless Smart device for non-smart platform"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
-        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
+        "path": "/collections/Wireless Smart device for non-smart platform",
+        "title": "Wireless Smart device for non-smart platform"
       }
     ]
   },
@@ -1834,8 +1923,12 @@
     "detailsHtml": "",
     "description": "สติกเกอร์เลเบล กระดาษพิมพ์ความร้อน (ไม่ใช้หมึก) หน้ากว้าง 3.15 นิ้ว ความกว้างกระดาษ 8 เซนติเมตร\n\nคุณสมบัติ: หน้ากว้าง 3.15 นิ้ว\n\nวัสดุ: กระดาษพิมพ์ความร้อน (ไม่ใช่หมึก)\n\nความกว้างกระดาษ: 8 เซ็นติเมตร\n\nเส้นผ่านศูนย์กลาง ม้วนฉลาก: 8 เซ็นติเมตร\n\nความสูง ม้วนฉลาก: 6.3 เซ็นติเมตร\n\nความยาวต่อม้วน: 47 เมตร\n\nความหนากระดาษ: 72GSM\n\nเครื่องพิมพ์แนะนำ: SUNFORD POS P1 Built-in\n\nเครื่องชั่งแนะนำ: SUNFORD POS P1\n\nขนาดจำหน่าย ปลีก: 10 ม้วน\n\nขนาดจำหน่าย ปลีก: 20 ม้วน\n\nขนาดจำหน่าย ส่ง: ลังละ 50 ม้วน",
     "details": "",
-    "images": ["/images/imported/66ab8f570b7347b1624f.jpeg"],
-    "imageAlt": [""],
+    "images": [
+      "/images/imported/66ab8f570b7347b1624f.jpeg"
+    ],
+    "imageAlt": [
+      ""
+    ],
     "collectionIds": [
       "68f6fdd1f47d0b885cb5fd2e",
       "68f0b98cf47d0b885cb5fd0d",
@@ -1848,8 +1941,8 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/Smart weighing",
-        "title": "Smart weighing"
+        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
         "path": "/collections/Add-on",
@@ -1864,8 +1957,8 @@
         "title": "Peripherals"
       },
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
-        "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
+        "path": "/collections/Smart weighing",
+        "title": "Smart weighing"
       }
     ]
   },
@@ -1902,16 +1995,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งประกอบอาหาร",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
         "path": "/collections/ไลฟ์สไตล์",
         "title": "ไลฟ์สไตล์"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -1948,16 +2041,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งประกอบอาหาร",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
         "path": "/collections/ไลฟ์สไตล์",
         "title": "ไลฟ์สไตล์"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -1996,16 +2089,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งประกอบอาหาร",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
         "path": "/collections/ไลฟ์สไตล์",
         "title": "ไลฟ์สไตล์"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2068,16 +2161,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/สุขภาพส่วนบุคคล",
-        "title": "เครื่องชั่งสุขภาพส่วนบุคคล"
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
       },
       {
         "path": "/collections/ไลฟ์สไตล์",
         "title": "ไลฟ์สไตล์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
+        "path": "/collections/สุขภาพส่วนบุคคล",
+        "title": "เครื่องชั่งสุขภาพส่วนบุคคล"
       }
     ]
   },
@@ -2110,16 +2203,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งประกอบอาหาร",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
         "path": "/collections/ไลฟ์สไตล์",
         "title": "ไลฟ์สไตล์"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2168,12 +2261,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -2218,16 +2311,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งประกอบอาหาร",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
         "path": "/collections/ไลฟ์สไตล์",
         "title": "ไลฟ์สไตล์"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2268,16 +2361,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งกาแฟ",
         "title": "เครื่องชั่งกาแฟ"
       },
       {
         "path": "/collections/ไลฟ์สไตล์",
         "title": "ไลฟ์สไตล์"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2346,16 +2439,16 @@
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
         "path": "/collections/ห้องปฏิบัติการ",
         "title": "ห้องปฏิบัติการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2422,16 +2515,16 @@
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
         "path": "/collections/ห้องปฏิบัติการ",
         "title": "ห้องปฏิบัติการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2494,16 +2587,16 @@
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
         "path": "/collections/ห้องปฏิบัติการ",
         "title": "ห้องปฏิบัติการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2566,16 +2659,16 @@
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
         "path": "/collections/ห้องปฏิบัติการ",
         "title": "ห้องปฏิบัติการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2635,16 +2728,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
         "path": "/collections/ห้องปฏิบัติการ",
         "title": "ห้องปฏิบัติการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2704,16 +2797,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
         "path": "/collections/ห้องปฏิบัติการ",
         "title": "ห้องปฏิบัติการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2769,16 +2862,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
         "path": "/collections/ห้องปฏิบัติการ",
         "title": "ห้องปฏิบัติการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -2832,12 +2925,12 @@
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -2889,12 +2982,12 @@
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -2956,12 +3049,12 @@
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3088,20 +3181,20 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์สลิปขาย",
-        "title": "เครื่องชั่งคำนวณราคา พิมพ์สลิปขาย"
-      },
-      {
         "path": "/collections/เครื่องชั่งคำนวณราคา",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
+        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์สลิปขาย",
+        "title": "เครื่องชั่งคำนวณราคา พิมพ์สลิปขาย"
       },
       {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3175,12 +3268,12 @@
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3251,12 +3344,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
-        "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       }
     ]
   },
@@ -3485,7 +3578,16 @@
       "/images/imported/f380d755f182ebfecc4e.png",
       "/images/imported/36982bdca83eda833024.png"
     ],
-    "imageAlt": ["", "", "", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436aa01fafb3ea84fced07",
@@ -3520,12 +3622,12 @@
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3548,7 +3650,16 @@
       "/images/imported/0530d5734f0362249c3f.png",
       "/images/imported/99a03ec7539362e3c04c.png"
     ],
-    "imageAlt": ["", "", "", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436aa01fafb3ea84fced07",
@@ -3583,12 +3694,12 @@
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3616,7 +3727,21 @@
       "/images/imported/7347be965d7f782b079e.png",
       "/images/imported/43890ce7416b48730a9e.png"
     ],
-    "imageAlt": ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436aa01fafb3ea84fced07",
@@ -3651,12 +3776,12 @@
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3679,7 +3804,16 @@
       "/images/imported/edc63695ce48a9e6ac9e.png",
       "/images/imported/beea3c15ead60b1df5ed.png"
     ],
-    "imageAlt": ["", "", "", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436aa01fafb3ea84fced07",
@@ -3714,12 +3848,12 @@
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3737,19 +3871,26 @@
       "/images/imported/08bdf8eecf9d96f3e1e8.jpg",
       "/images/imported/e0f3ee51802afb3d1182.png"
     ],
-    "imageAlt": ["", "", ""],
-    "collectionIds": ["694e063d85c94bdccbf384f5", "69436b651fafb3ea84fced0b"],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
+    "collectionIds": [
+      "694e063d85c94bdccbf384f5",
+      "69436b651fafb3ea84fced0b"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>เครื่องบันทึกเงินสด P1W</p>\n\n<div>\n<p><span><span>เครื่อง</span><span>บั</span><span>นทึกเงินสดระบวินโด</span><span>วส์</span><span>รุ่น&nbsp;</span></span><span><span>SUNFORD P</span><span>1</span><span>W</span></span><span>&nbsp;</span></p>\n</div>\n<div>\n<p><span><span>SUNFORD P</span><span>1</span><span>W - Pro Windows POS</span></span></p>\n</div></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div><div><hr><div><h2>สินค้าที่คุณอาจสนใจ</h2><div><div><div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
     "collections": [
       {
-        "path": "/collections/POS ระบบ Windows",
-        "title": "POS/Windows"
-      },
-      {
         "path": "/collections/POS เชื่อมต่อเครื่องชั่ง",
         "title": "POS เชื่อมต่อเครื่องชั่ง"
+      },
+      {
+        "path": "/collections/POS ระบบ Windows",
+        "title": "POS/Windows"
       }
     ]
   },
@@ -3766,7 +3907,10 @@
       "/images/imported/1922fe23f7b7934954aa.jpg",
       "/images/imported/f8338c7de2c9f2a74faf.png"
     ],
-    "imageAlt": ["", ""],
+    "imageAlt": [
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436aa01fafb3ea84fced07",
@@ -3801,12 +3945,12 @@
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3827,7 +3971,14 @@
       "/images/imported/7fcce96fb8bb35d5ed8f.png",
       "/images/imported/9894929d6c36b5012f29.png"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436aa01fafb3ea84fced07",
@@ -3862,12 +4013,12 @@
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3941,12 +4092,12 @@
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
-        "title": "พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/พาณิชยกรรมและบริการ",
+        "title": "พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -3964,19 +4115,26 @@
       "/images/imported/ce9ace37073f1b44f080.jpg",
       "/images/imported/5ae108dd82a1d1002087.png"
     ],
-    "imageAlt": ["", "", ""],
-    "collectionIds": ["694e063d85c94bdccbf384f5", "69436b7b1fafb3ea84fced0d"],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
+    "collectionIds": [
+      "694e063d85c94bdccbf384f5",
+      "69436b7b1fafb3ea84fced0d"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>เครื่องบันทึกเงินสด P1</p>\n\n<div>\n<p><span><span>เคร</span><span>ื่องบั</span><span>นท</span><span>ึกเงินสดระบบแอนดร</span><span>อยด์</span><span>รุ่น&nbsp;</span></span><span><span>SUNFORD P</span><span>1</span></span><span>&nbsp;</span></p>\n</div>\n<div>\n<p><span><span>SUNFORD P</span><span>1 -&nbsp;</span><span>Pro Android POS</span></span><span>&nbsp;</span></p>\n</div></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div><div><hr><div><h2>สินค้าที่คุณอาจสนใจ</h2><div><div><div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
     "collections": [
       {
-        "path": "/collections/POS ระบบ Android",
-        "title": "POS/Android"
-      },
-      {
         "path": "/collections/POS เชื่อมต่อเครื่องชั่ง",
         "title": "POS เชื่อมต่อเครื่องชั่ง"
+      },
+      {
+        "path": "/collections/POS ระบบ Android",
+        "title": "POS/Android"
       }
     ]
   },
@@ -3994,19 +4152,26 @@
       "/images/imported/721a1ef940f06285d0eb.png",
       "/images/imported/87ed11285c42d35bf69a.png"
     ],
-    "imageAlt": ["", "", ""],
-    "collectionIds": ["694e063d85c94bdccbf384f5", "69436b7b1fafb3ea84fced0d"],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
+    "collectionIds": [
+      "694e063d85c94bdccbf384f5",
+      "69436b7b1fafb3ea84fced0d"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>เครื่องบันทึกเงินสด P4</p>\n\n<div>\n<p><span><span>เคร</span><span>ื่</span><span>อง</span><span>บั</span><span>นทึกเงินสดระบบแอนดร</span><span>อยด์</span><span>รุ่น&nbsp;</span></span><span><span>SUNFORD P</span><span>4</span></span><span>&nbsp;</span></p>\n</div>\n<div>\n<p><span><span>SUNFORD P</span><span>4 -&nbsp;</span><span>Compact Android POS</span></span></p>\n</div></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div><div><hr><div><h2>สินค้าที่คุณอาจสนใจ</h2><div><div><div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
     "collections": [
       {
-        "path": "/collections/POS ระบบ Android",
-        "title": "POS/Android"
-      },
-      {
         "path": "/collections/POS เชื่อมต่อเครื่องชั่ง",
         "title": "POS เชื่อมต่อเครื่องชั่ง"
+      },
+      {
+        "path": "/collections/POS ระบบ Android",
+        "title": "POS/Android"
       }
     ]
   },
@@ -4039,12 +4204,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน",
-        "title": "ชิ้นส่วน"
-      },
-      {
         "path": "/collections/ขาตั้งอินดิเคเตอร์",
         "title": "ขาตั้งอินดิเคเตอร์"
+      },
+      {
+        "path": "/collections/ชิ้นส่วน",
+        "title": "ชิ้นส่วน"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4066,7 +4231,11 @@
       "/images/imported/1e30da2d8000b23580cf.jpg",
       "/images/imported/fb0ff6e25acca639bf3b.png"
     ],
-    "imageAlt": ["", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0f21fafb3ea84fc95aa",
@@ -4109,7 +4278,10 @@
       "ทางลาดเหล็กเคลือบกันสนิม",
       "ทางลาดเหล็กเคลือบกันสนิม"
     ],
-    "collectionIds": ["6933f2bc1fafb3ea84fc95ca", "69f821cffadca187c970f0d5"],
+    "collectionIds": [
+      "6933f2bc1fafb3ea84fc95ca",
+      "69f821cffadca187c970f0d5"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>RAMP FCR100100</p>\n<p>คุณสมบัติของสินค้า</p>\n\n<ul>\n<li>ทางลาด</li>\n<li>วัสดุโครงสร้าง เหล็กอบเคลือบกันสนิม</li>\n<li>ขนาดทางลาด 100x50x11 ซม.</li>\n</ul></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -4139,7 +4311,10 @@
       "ทางลาดเหล็กเคลือบกันสนิม",
       "ทางลาดเหล็กเคลือบกันสนิม"
     ],
-    "collectionIds": ["6933f2bc1fafb3ea84fc95ca", "69f821cffadca187c970f0d5"],
+    "collectionIds": [
+      "6933f2bc1fafb3ea84fc95ca",
+      "69f821cffadca187c970f0d5"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>RAMP FCR120120</p>\n<p>คุณสมบัติของสินค้า</p>\n\n<p>&gt;ทางลาด</p>\n<p>&gt;วัสดุโครงสร้าง เหล็กอบเคลือบกันสนิม</p>\n<p>&gt;ขนาดทางลาด 120x50x11 ซม.</p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -4179,12 +4354,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
-        "title": "วัสดุสิ้นเปลือง"
-      },
-      {
         "path": "/collections/ม้วนสติ๊กเกอร์",
         "title": "ม้วนสติ๊กเกอร์"
+      },
+      {
+        "path": "/collections/วัสดุสิ้นเปลือง",
+        "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4201,8 +4376,12 @@
     "detailsHtml": "<p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker) </span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง </span></p>\n<p><span>คุณสมบัติกันน้ำ&nbsp;</span><span>ชนิดไม่ต้องใช้หมึกพิมพ์ </span></p>\n<p><span>บรรจุ 2,000 ดวงต่อ 1 ม้วน</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าทั่วไป</span></p>",
     "description": "สติกเกอร์ความร้อนกันน้ำสำหรับพิมพ์ลาเบลบาร์โค้ด (Thermal Label Sticker) SUNFORD\n\nชนิดม้วน กันน้ำ มีหยดน้ำเกาะรอบม้วน\n\nบรรจุ 2,000 ดวงต่อม้วน",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker) \n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง \n\nคุณสมบัติกันน้ำ ชนิดไม่ต้องใช้หมึกพิมพ์ \n\nบรรจุ 2,000 ดวงต่อ 1 ม้วน\n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าทั่วไป",
-    "images": ["/images/imported/77c770b584d1a32fd8b7.png"],
-    "imageAlt": ["สติกเกอร์ความร้อนกันน้ำ SUNFORD 2060 พิมพ์บาร์โค้ด 2,000 ดวง/ม้วน"],
+    "images": [
+      "/images/imported/77c770b584d1a32fd8b7.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อนกันน้ำ SUNFORD 2060 พิมพ์บาร์โค้ด 2,000 ดวง/ม้วน"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4213,16 +4392,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
+        "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
+      },
+      {
         "path": "/collections/วัสดุสิ้นเปลือง",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
-      },
-      {
-        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
-        "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
       }
     ]
   },
@@ -4235,8 +4414,12 @@
     "detailsHtml": "<p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์</span></p>\n<p><span>จำนวน 5 ม้วนต่อแพ็ค โดยแต่ละม้วนบรรจุ 700 ดวง</span><span></span> </p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าทั่วไป</span><span></span></p>",
     "description": "สติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลบาร์โค้ด (Thermal Label Sticker) \n\nชนิดม้วน บรรจุ 700 ดวงต่อม้วน แพ็คละ 5 ม้วน",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)\n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์\n\nจำนวน 5 ม้วนต่อแพ็ค โดยแต่ละม้วนบรรจุ 700 ดวง \n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าทั่วไป",
-    "images": ["/images/imported/6da843cd3d77334c5abc.png"],
-    "imageAlt": ["สติกเกอร์ความร้อน 700 ดวง/ม้วน"],
+    "images": [
+      "/images/imported/6da843cd3d77334c5abc.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อน 700 ดวง/ม้วน"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4247,12 +4430,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
-        "title": "วัสดุสิ้นเปลือง"
-      },
-      {
         "path": "/collections/ม้วนสติ๊กเกอร์",
         "title": "ม้วนสติ๊กเกอร์"
+      },
+      {
+        "path": "/collections/วัสดุสิ้นเปลือง",
+        "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4269,8 +4452,12 @@
     "detailsHtml": "<p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์&nbsp;</span></p>\n<p><span>โดยบรรจุ 700 ดวง</span></p>\n<p><span>ขนาด 40*60 มม 700 ดวง (แพ็ค 5 ม้วน)</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าทั่วไป</span></p>\n",
     "description": "สติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลบาร์โค้ด\n\nชนิดม้วน บรรจุ 700 ดวงต่อม้วน แพ็คละ 5 ม้วน",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)\n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์ \n\nโดยบรรจุ 700 ดวง\n\nขนาด 40*60 มม 700 ดวง (แพ็ค 5 ม้วน)\n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าทั่วไป",
-    "images": ["/images/imported/62df16502973578af4e7.png"],
-    "imageAlt": ["สติกเกอร์ความร้อน 700 ดวง/ม้วน"],
+    "images": [
+      "/images/imported/62df16502973578af4e7.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อน 700 ดวง/ม้วน"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4281,12 +4468,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
-        "title": "วัสดุสิ้นเปลือง"
-      },
-      {
         "path": "/collections/ม้วนสติ๊กเกอร์",
         "title": "ม้วนสติ๊กเกอร์"
+      },
+      {
+        "path": "/collections/วัสดุสิ้นเปลือง",
+        "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4303,8 +4490,12 @@
     "detailsHtml": "<p><span> ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง คุณสมบัติกันน้ำ&nbsp;</span><span>ชนิดไม่ต้องใช้หมึกพิมพ์</span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span></p>\n<p><span>ขนาด 40*60 มม&nbsp;</span></p>\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมากในสภาพแวดล้อมที่อาจโดนความชื้น</span></p>\n",
     "description": "สติกเกอร์ความร้อนกันน้ำสำหรับพิมพ์ลาเบลบาร์โค้ด\n\nชนิดม้วน กันน้ำ\n\nบรรจุกล่องลังแพ็คละ 50 ม้วน (ม้วนละ 700 ดวง)",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)\n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง คุณสมบัติกันน้ำ ชนิดไม่ต้องใช้หมึกพิมพ์\n\nบรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)\n\nขนาด 40*60 มม \n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมากในสภาพแวดล้อมที่อาจโดนความชื้น",
-    "images": ["/images/imported/5aecd6a0cf58b5ee5ee2.png"],
-    "imageAlt": ["สติกเกอร์ความร้อนกันน้ำ 700 ดวง/ม้วน"],
+    "images": [
+      "/images/imported/5aecd6a0cf58b5ee5ee2.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อนกันน้ำ 700 ดวง/ม้วน"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4315,16 +4506,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
+        "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
+      },
+      {
         "path": "/collections/วัสดุสิ้นเปลือง",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
-      },
-      {
-        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
-        "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
       }
     ]
   },
@@ -4337,8 +4528,12 @@
     "detailsHtml": "<p><span> ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง คุณสมบัติกันน้ำ ช</span><span>นิดไม่ต้องใช้หมึกพิมพ์</span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span><span></span> </p>\n<p><span>ขนาด &nbsp;40*60 มม.</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมากในสภาพแวดล้อมที่อาจโดนความชื้น</span></p>\n",
     "description": "สติกเกอร์ความร้อนกันน้ำสำหรับพิมพ์ลาเบลบาร์โค้ด (Thermal Label Sticker)\n\nชนิดม้วน กันน้ำ\n\nขนาด 40*60 มม. (แพ็ค 2 ม้วน)",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)\n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง คุณสมบัติกันน้ำ ชนิดไม่ต้องใช้หมึกพิมพ์\n\nบรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง) \n\nขนาด 40*60 มม.\n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมากในสภาพแวดล้อมที่อาจโดนความชื้น",
-    "images": ["/images/imported/1123f4db3b65ebac16f1.png"],
-    "imageAlt": ["สติกเกอร์ความร้อนกันน้ำ 700 ดวง/ม้วน"],
+    "images": [
+      "/images/imported/1123f4db3b65ebac16f1.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อนกันน้ำ 700 ดวง/ม้วน"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4349,16 +4544,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
+        "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
+      },
+      {
         "path": "/collections/วัสดุสิ้นเปลือง",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
-      },
-      {
-        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
-        "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
       }
     ]
   },
@@ -4371,8 +4566,12 @@
     "detailsHtml": "<p><span>กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) </span></p>\n<p><span>ขนาดหน้ากว้าง 80 มม. เส้นผ่านศูนย์กลาง 80 มม.</span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อแพ็ค/ลัง</span><span></span> </p>\n\n<p><span>เหมาะสำหรับเครื่องพิมพ์ใบเสร็จความร้อนขนาดมาตรฐานในระบบ POS และเครื่องชั่งดิจิทัลพิมพ์ใบเสร็จ</span><span></span>กระดาษความร้อน 80x80 บรรจุ 10 ม้วน</p>",
     "description": "กระดาษความร้อนสำหรับเครื่องพิมพ์สลิปและใบเสร็จ (Thermal Paper Roll)\n\nขนาด 80x80 มม. \n\nบรรจุกล่องลังกระดาษแพ็คละ 50 ม้วน",
     "details": "กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) \n\nขนาดหน้ากว้าง 80 มม. เส้นผ่านศูนย์กลาง 80 มม.\n\nบรรจุในกล่อง 50 ม้วนต่อแพ็ค/ลัง \n\nเหมาะสำหรับเครื่องพิมพ์ใบเสร็จความร้อนขนาดมาตรฐานในระบบ POS และเครื่องชั่งดิจิทัลพิมพ์ใบเสร็จกระดาษความร้อน 80x80 บรรจุ 10 ม้วน",
-    "images": ["/images/imported/b75fc9d2b3417192cc3c.png"],
-    "imageAlt": ["กระดาษความร้อนใบเสร็จ"],
+    "images": [
+      "/images/imported/b75fc9d2b3417192cc3c.png"
+    ],
+    "imageAlt": [
+      "กระดาษความร้อนใบเสร็จ"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4383,12 +4582,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
-        "title": "วัสดุสิ้นเปลือง"
-      },
-      {
         "path": "/collections/ม้วนกระดาษ",
         "title": "ม้วนกระดาษ"
+      },
+      {
+        "path": "/collections/วัสดุสิ้นเปลือง",
+        "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4405,8 +4604,12 @@
     "detailsHtml": "<p><span>กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) ยี่ห้อ SUNFORD </span></p>\n<p><span>กระดาษสีขาวเรียบมัน คุณภาพสูง ชนิดใช้ความร้อนโดยไม่ต้องใช้หมึกพิมพ์</span><span></span> </p>\n<p><span>จำนวน 10 ม้วนต่อแพ็ค</span><span></span> </p>\n\n<p><span>เหมาะสำหรับ</span></p>\n\n<p><span>ใช้งานร่วมกับเครื่องพิมพ์สลิป เครื่องพิมพ์ใบเสร็จดิจิทัล และเครื่องคิดเงิน POS</span></p>",
     "description": "กระดาษความร้อนสำหรับเครื่องพิมพ์สลิปและใบเสร็จ\n\nขนาดหน้ากว้าง 57 มม. เส้นผ่านศูนย์กลาง 50 มม.\n\nบรรจุแพ็คละ 10 ม้วน",
     "details": "กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) ยี่ห้อ SUNFORD \n\nกระดาษสีขาวเรียบมัน คุณภาพสูง ชนิดใช้ความร้อนโดยไม่ต้องใช้หมึกพิมพ์ \n\nจำนวน 10 ม้วนต่อแพ็ค \n\nเหมาะสำหรับ\n\nใช้งานร่วมกับเครื่องพิมพ์สลิป เครื่องพิมพ์ใบเสร็จดิจิทัล และเครื่องคิดเงิน POS",
-    "images": ["/images/imported/c9c1ec0e229d603d96ea.png"],
-    "imageAlt": [""],
+    "images": [
+      "/images/imported/c9c1ec0e229d603d96ea.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4417,12 +4620,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
-        "title": "วัสดุสิ้นเปลือง"
-      },
-      {
         "path": "/collections/ม้วนกระดาษ",
         "title": "ม้วนกระดาษ"
+      },
+      {
+        "path": "/collections/วัสดุสิ้นเปลือง",
+        "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4439,8 +4642,12 @@
     "detailsHtml": "<p><span>กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) </span></p>\n<p><span>ขนาดหน้ากว้าง 80 มม. เส้นผ่านศูนย์กลาง 80 มม.</span><span></span> </p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อแพ็ค/ลัง</span><span></span> </p>\n\n<p><span>เหมาะสำหรับเครื่องพิมพ์ใบเสร็จความร้อนขนาดมาตรฐานในระบบ POS และเครื่องชั่งดิจิทัลพิมพ์ใบเสร็จ</span><span></span></p>",
     "description": "กระดาษความร้อนสำหรับเครื่องพิมพ์สลิปและใบเสร็จ (Thermal Paper Roll) \n\nขนาด 80x80 มม. \n\nบรรจุกล่องลังกระดาษแพ็คละ 50 ม้วน",
     "details": "กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) \n\nขนาดหน้ากว้าง 80 มม. เส้นผ่านศูนย์กลาง 80 มม. \n\nบรรจุในกล่อง 50 ม้วนต่อแพ็ค/ลัง \n\nเหมาะสำหรับเครื่องพิมพ์ใบเสร็จความร้อนขนาดมาตรฐานในระบบ POS และเครื่องชั่งดิจิทัลพิมพ์ใบเสร็จ",
-    "images": ["/images/imported/d6fa62cc4c363b913a8c.png"],
-    "imageAlt": ["กระดาษความร้อนใบเสร็จ"],
+    "images": [
+      "/images/imported/d6fa62cc4c363b913a8c.png"
+    ],
+    "imageAlt": [
+      "กระดาษความร้อนใบเสร็จ"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4451,12 +4658,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
-        "title": "วัสดุสิ้นเปลือง"
-      },
-      {
         "path": "/collections/ม้วนกระดาษ",
         "title": "ม้วนกระดาษ"
+      },
+      {
+        "path": "/collections/วัสดุสิ้นเปลือง",
+        "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4473,8 +4680,12 @@
     "detailsHtml": "<p><span>กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) </span></p>\n<p><span>กระดาษสีขาวเรียบมัน คุณภาพสูง ชนิดใช้ความร้อนโดยไม่ต้องใช้หมึกพิมพ์</span><span>&nbsp;</span></p>\n<p><span>จำนวน 20 ม้วนต่อแพ็ค</span></p>\n\n<p><span>เหมาะสำหรับใ</span><span>ช้งานร่วมกับเครื่องพิมพ์สลิป เครื่องพิมพ์ใบเสร็จดิจิทัล และเครื่องคิดเงิน PO</span></p>",
     "description": "กระดาษความร้อนสำหรับเครื่องพิมพ์สลิปและใบเสร็จ (Thermal Paper Roll)\n\nขนาดหน้ากว้าง 57 มม. เส้นผ่านศูนย์กลาง 50 มม.\n\nบรรจุแพ็คละ 20 ม้วน",
     "details": "กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) \n\nกระดาษสีขาวเรียบมัน คุณภาพสูง ชนิดใช้ความร้อนโดยไม่ต้องใช้หมึกพิมพ์ \n\nจำนวน 20 ม้วนต่อแพ็ค\n\nเหมาะสำหรับใช้งานร่วมกับเครื่องพิมพ์สลิป เครื่องพิมพ์ใบเสร็จดิจิทัล และเครื่องคิดเงิน PO",
-    "images": ["/images/imported/7f1036685b1b57f503e5.png"],
-    "imageAlt": ["กระดาษความร้อนใบเสร็จ"],
+    "images": [
+      "/images/imported/7f1036685b1b57f503e5.png"
+    ],
+    "imageAlt": [
+      "กระดาษความร้อนใบเสร็จ"
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f1101fafb3ea84fc95ac",
@@ -4485,12 +4696,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
-        "title": "วัสดุสิ้นเปลือง"
-      },
-      {
         "path": "/collections/ม้วนกระดาษ",
         "title": "ม้วนกระดาษ"
+      },
+      {
+        "path": "/collections/วัสดุสิ้นเปลือง",
+        "title": "วัสดุสิ้นเปลือง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4507,9 +4718,15 @@
     "detailsHtml": "<p>&gt;Gift Voucher มูลค่า 3,000</p>",
     "description": ">Gift Voucher มูลค่า 3,000",
     "details": ">Gift Voucher มูลค่า 3,000",
-    "images": ["/images/imported/7ef364614b0fa529ecc9.jpg"],
-    "imageAlt": [""],
-    "collectionIds": ["6933f12a1fafb3ea84fc95ae"],
+    "images": [
+      "/images/imported/7ef364614b0fa529ecc9.jpg"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6933f12a1fafb3ea84fc95ae"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>&gt;Gift Voucher มูลค่า 3,000</p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -4529,9 +4746,15 @@
     "detailsHtml": "<p>SUNFORD Hygienic Face Mask</p>\n<p>สูดหายใจให้เต็มปอด แล้วออกล่าความฝัน</p>\n\n<p>ผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สีแดงสดใส สะท้อนความเป็นคุณได้อย่างชัดเจน</p>\n\n<p>ผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ</p>\n<p>เพิ่มความมั่นใจด้วยการป้องกัน 2 ชั้น หายใจสบายไม่อึดอัด</p>\n<p>พร้อมตัวล็อกเข้าทุกรูปทรงจมูก</p>\n<p>พร้อมสายคล้อง ปรับระดับ กระชับ เข้าทุกสรีระ</p>\n\n<p>พิเศษ! แลกซื้อเพียง 600 COINS เท่านั้น</p>",
     "description": "สูดหายใจให้เต็มปอด แล้วออกล่าความฝัน\n\nผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สีแดงสดใส สะท้อนความเป็นคุณได้อย่างชัดเจน\n\nผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ\n\nเพิ่มความมั่นใจด้วยการป้องกัน 2 ชั้น หายใจสบายไม่อึดอัด\n\nพร้อมตัวล็อกเข้าทุกรูปทรงจมูก\n\nพร้อมสายคล้อง ปรับระดับ กระชับ เข้าทุกสรีระ\n\nพิเศษ! แลกซื้อเพียง 600 COINS เท่านั้น",
     "details": "SUNFORD Hygienic Face Mask\n\nสูดหายใจให้เต็มปอด แล้วออกล่าความฝัน\n\nผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สีแดงสดใส สะท้อนความเป็นคุณได้อย่างชัดเจน\n\nผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ\n\nเพิ่มความมั่นใจด้วยการป้องกัน 2 ชั้น หายใจสบายไม่อึดอัด\n\nพร้อมตัวล็อกเข้าทุกรูปทรงจมูก\n\nพร้อมสายคล้อง ปรับระดับ กระชับ เข้าทุกสรีระ\n\nพิเศษ! แลกซื้อเพียง 600 COINS เท่านั้น",
-    "images": ["/images/imported/5bb2d00d6c7fc48f9cb2.png"],
-    "imageAlt": [""],
-    "collectionIds": ["6933f12a1fafb3ea84fc95ae"],
+    "images": [
+      "/images/imported/5bb2d00d6c7fc48f9cb2.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6933f12a1fafb3ea84fc95ae"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>SUNFORD Hygienic Face Mask</p>\n<p>สูดหายใจให้เต็มปอด แล้วออกล่าความฝัน</p>\n\n<p>ผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สีแดงสดใส สะท้อนความเป็นคุณได้อย่างชัดเจน</p>\n\n<p>ผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ</p>\n<p>เพิ่มความมั่นใจด้วยการป้องกัน 2 ชั้น หายใจสบายไม่อึดอัด</p>\n<p>พร้อมตัวล็อกเข้าทุกรูปทรงจมูก</p>\n<p>พร้อมสายคล้อง ปรับระดับ กระชับ เข้าทุกสรีระ</p>\n\n<p>พิเศษ! แลกซื้อเพียง 600 COINS เท่านั้น</p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -4551,9 +4774,15 @@
     "detailsHtml": "<p>SUNFORD Professional Barista Apron</p>\n<p>บ่งบอกความเป็นคุณ ให้คุณก้าวตามฝันอย่างมั่นใจ</p>\n\n<p>ผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สะท้อนความเป็นคุณได้อย่างชัดเจน</p>\n\n<p>ผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ</p>\n<p>พร้อมสายหนัง ปรับระดับ กระชับ เข้าทุกสรีระ</p>\n<p>เพิ่มความมีสไตล์ด้วยการคล้องสายหนังเล่นลายได้ตามใจคุณ</p>\n\n<p>พิเศษ! แลกซื้อเพียง 3000 COINS เท่านั้น</p>",
     "description": "บ่งบอกความเป็นคุณ ให้คุณก้าวตามฝันอย่างมั่นใจ\n\nผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สะท้อนความเป็นคุณได้อย่างชัดเจน\n\nผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ\n\nพร้อมสายหนัง ปรับระดับ กระชับ เข้าทุกสรีระ\n\nเพิ่มความมีสไตล์ด้วยการคล้องสายหนังเล่นลายได้ตามใจคุณ\n\nพิเศษ! แลกซื้อเพียง 3000 COINS เท่านั้น",
     "details": "SUNFORD Professional Barista Apron\n\nบ่งบอกความเป็นคุณ ให้คุณก้าวตามฝันอย่างมั่นใจ\n\nผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สะท้อนความเป็นคุณได้อย่างชัดเจน\n\nผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ\n\nพร้อมสายหนัง ปรับระดับ กระชับ เข้าทุกสรีระ\n\nเพิ่มความมีสไตล์ด้วยการคล้องสายหนังเล่นลายได้ตามใจคุณ\n\nพิเศษ! แลกซื้อเพียง 3000 COINS เท่านั้น",
-    "images": ["/images/imported/540b87986d6357b75c59.jpg"],
-    "imageAlt": [""],
-    "collectionIds": ["6933f12a1fafb3ea84fc95ae"],
+    "images": [
+      "/images/imported/540b87986d6357b75c59.jpg"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6933f12a1fafb3ea84fc95ae"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p>SUNFORD Professional Barista Apron</p>\n<p>บ่งบอกความเป็นคุณ ให้คุณก้าวตามฝันอย่างมั่นใจ</p>\n\n<p>ผ้ากันเปื้อนบาริสต้า SUNFORD ออกแบบและตัดเย็บโดยดีไซเนอร์ ตามแบบฉบับของ DAVIE JONES DENIM ให้อารมณ์ยีนส์ เรียบแต่เท่ห์ น้อยแต่มาก สะท้อนความเป็นคุณได้อย่างชัดเจน</p>\n\n<p>ผลิตจากผ้าคอตตอน 100% สวมใส่สบาย แข็งแรง ทนทาน ซักได้บ่อยเท่าที่ต้องการ</p>\n<p>พร้อมสายหนัง ปรับระดับ กระชับ เข้าทุกสรีระ</p>\n<p>เพิ่มความมีสไตล์ด้วยการคล้องสายหนังเล่นลายได้ตามใจคุณ</p>\n\n<p>พิเศษ! แลกซื้อเพียง 3000 COINS เท่านั้น</p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -4578,7 +4807,11 @@
       "/images/imported/fb96c5100f4f8fbcdac8.png",
       "/images/imported/a1561b269878375bd486.png"
     ],
-    "imageAlt": ["", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4589,12 +4822,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/เครื่องพิมพ์",
         "title": "Direct Thermal"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4629,16 +4862,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/คีย์บอร์ดและเม้าส์",
+        "title": "คีย์บอร์ดและเม้าส์"
+      },
+      {
         "path": "/collections/อุปกรณ์ต่อพ่วง",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
-      },
-      {
-        "path": "/collections/คีย์บอร์ดและเม้าส์",
-        "title": "คีย์บอร์ดและเม้าส์"
       }
     ]
   },
@@ -4659,7 +4892,14 @@
       "/images/imported/14490a671f7c4eb1ddaf.jpeg",
       "/images/imported/0a3cdd119aa26f5790f0.png"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4670,12 +4910,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/เครื่องพิมพ์",
         "title": "Direct Thermal"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4700,7 +4940,14 @@
       "/images/imported/2e35e3c48109fb7faa2b.jpeg",
       "/images/imported/d6183c490ab391c06e4c.png"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4711,12 +4958,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/เครื่องพิมพ์",
         "title": "Direct Thermal"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4739,7 +4986,12 @@
       "/images/imported/e7b21ce4732262841360.png",
       "/images/imported/61008d324058459cfa3d.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4750,12 +5002,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/จอแสดงผล",
         "title": "จอแสดงผล"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4778,7 +5030,12 @@
       "/images/imported/6375193b639f7175c753.png",
       "/images/imported/655abf975783595b2caf.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4789,12 +5046,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/จอแสดงผล",
         "title": "จอแสดงผล"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4819,7 +5076,14 @@
       "/images/imported/b4e31d4ea81dc541e1e8.png",
       "/images/imported/c27f313e853d955f09fd.png"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4830,12 +5094,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/จอแสดงผล",
         "title": "จอแสดงผล"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4857,7 +5121,11 @@
       "/images/imported/f959286bbbb9ca81bcc2.png",
       "/images/imported/6e9b30d85dde66d2ce43.png"
     ],
-    "imageAlt": ["", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4868,12 +5136,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/ไฟสัญญาณเตือน",
         "title": "ไฟสัญญาณเตือน"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4895,7 +5163,11 @@
       "/images/imported/378e4a2557bc7e977763.avif",
       "/images/imported/7a760de4c2e6d36da9eb.png"
     ],
-    "imageAlt": ["", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4906,12 +5178,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/ไฟสัญญาณเตือน",
         "title": "ไฟสัญญาณเตือน"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4934,7 +5206,12 @@
       "/images/imported/3efec4df6e30e43f117f.png",
       "/images/imported/2492e08e4b2b5a32b91c.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4945,12 +5222,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/ลิ้นชักไฟฟ้า",
         "title": "ลิ้นชักไฟฟ้า"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -4971,7 +5248,10 @@
       "/images/imported/248819a8e9b4eb847978.png",
       "/images/imported/4ea945f9eda86dc38d89.jpg"
     ],
-    "imageAlt": ["", ""],
+    "imageAlt": [
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -4982,12 +5262,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/สแกนเนอร์บาร์โค้ด",
         "title": "สแกนเนอร์บาร์โค้ด"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -5008,7 +5288,10 @@
       "/images/imported/36ca2fcc4e551301f9f7.png",
       "/images/imported/dd2c26d64ee9de32f2b6.jpg"
     ],
-    "imageAlt": ["", ""],
+    "imageAlt": [
+      "",
+      ""
+    ],
     "collectionIds": [
       "694e524c85c94bdccbf38514",
       "6933f0da1fafb3ea84fc95a8",
@@ -5019,12 +5302,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
-        "title": "อุปกรณ์ต่อพ่วง"
-      },
-      {
         "path": "/collections/สแกนเนอร์บาร์โค้ด",
         "title": "สแกนเนอร์บาร์โค้ด"
+      },
+      {
+        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "title": "อุปกรณ์ต่อพ่วง"
       },
       {
         "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
@@ -5098,12 +5381,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5159,12 +5442,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5224,12 +5507,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5254,7 +5537,18 @@
       "/images/imported/df6b3571cf1712ea790b.png",
       "/images/imported/b71b3d01ad2dc4cabf82.png"
     ],
-    "imageAlt": ["", "", "", "", "", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436a891fafb3ea84fced05",
@@ -5290,12 +5584,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5364,16 +5658,16 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
         "path": "/collections/อุตสาหกรรม",
         "title": "อุตสาหกรรม"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -5439,12 +5733,12 @@
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5512,12 +5806,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5584,16 +5878,16 @@
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
         "path": "/collections/อุตสาหกรรม",
         "title": "อุตสาหกรรม"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -5614,7 +5908,14 @@
       "/images/imported/17c3fec9e97bc89e05d4.png",
       "/images/imported/e16f822b2337beed9274.png"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436a891fafb3ea84fced05",
@@ -5650,12 +5951,12 @@
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5715,12 +6016,12 @@
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5782,12 +6083,12 @@
         "title": "เครื่องชั่งนับจำนวน"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5849,12 +6150,12 @@
         "title": "เครื่องชั่งนับจำนวน"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5913,12 +6214,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -5982,12 +6283,12 @@
         "title": "เครื่องชั่งนับจำนวน"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -6006,7 +6307,12 @@
       "/images/imported/9f0881c73a6f2a528a6b.png",
       "/images/imported/0686dbb89f3f133b182e.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436a891fafb3ea84fced05",
@@ -6039,12 +6345,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -6066,7 +6372,15 @@
       "/images/imported/e04c39dcd954e0293a6d.jpeg",
       "/images/imported/c03711dd5b4b6a1058da.jpeg"
     ],
-    "imageAlt": ["", "", "", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436a891fafb3ea84fced05",
@@ -6099,12 +6413,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -6123,7 +6437,12 @@
       "/images/imported/dc4910a91af71323972c.png",
       "/images/imported/0dcd4bf79b034e32db7d.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436a891fafb3ea84fced05",
@@ -6156,12 +6475,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -6181,7 +6500,13 @@
       "/images/imported/43e671fa637cde0935e9.png",
       "/images/imported/be2617bb1ff2aeba8451.png"
     ],
-    "imageAlt": ["", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436a891fafb3ea84fced05",
@@ -6214,12 +6539,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -6239,7 +6564,13 @@
       "/images/imported/b854f766f99c558e2e37.png",
       "/images/imported/24f7a46746962ef937ab.png"
     ],
-    "imageAlt": ["", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69f81f87fadca187c970f0d0",
@@ -6291,7 +6622,12 @@
       "/images/imported/e4012ea2ec5d748b7b0a.png",
       "/images/imported/8cb162416544ab838590.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69436a891fafb3ea84fced05",
@@ -6324,12 +6660,12 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อุตสาหกรรม",
-        "title": "อุตสาหกรรม"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/อุตสาหกรรม",
+        "title": "อุตสาหกรรม"
       }
     ]
   },
@@ -6349,7 +6685,13 @@
       "/images/imported/e6246c5f07c76578e819.png",
       "/images/imported/fe5027fddb4cec5324af.png"
     ],
-    "imageAlt": ["", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69f81f87fadca187c970f0d0",
@@ -6401,7 +6743,12 @@
       "/images/imported/da18a868965e596d1508.png",
       "/images/imported/b5771eb7cbd4a5b6c8f1.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69f81f87fadca187c970f0d0",
@@ -6451,7 +6798,10 @@
       "/images/imported/35b355d30cfab3f8f7ba.jpg",
       "/images/imported/4463bb9b80a653eaa4c0.png"
     ],
-    "imageAlt": ["", ""],
+    "imageAlt": [
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69f81f87fadca187c970f0d0",
@@ -6503,7 +6853,12 @@
       "/images/imported/23af9a26f8ee3f157e16.png",
       "/images/imported/06f8cf272b0acfde11b9.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6944f2bb72d7f9dc5d2aa34b",
       "69f81f87fadca187c970f0d0",
@@ -6557,8 +6912,18 @@
       "/images/imported/35c96dcc340e7dcc3aa8.png",
       "/images/imported/875ad8079a2d23e20d26.png"
     ],
-    "imageAlt": ["", "", "", "", "", ""],
-    "collectionIds": ["6944f2bb72d7f9dc5d2aa34b", "6933e5681fafb3ea84fc9582"],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "collectionIds": [
+      "6944f2bb72d7f9dc5d2aa34b",
+      "6933e5681fafb3ea84fc9582"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span>FLS60KS</span></p>\n<p><span>รูปแบบ ชั่งน้ำหนักพกพา</span></p>\n<p><span>ระดับชั้นความละเอียด </span><span>Class III</span></p>\n\n<p><span>พิกัดน้ำหนักสูงสุด </span><span>60</span><span>kg</span></p>\n<p><span>ค่าน้ำหนัก </span><span>0.000 - 60.000 kg</span></p>\n<p><span>ค่าอ่านละเอียด </span><span>10/20</span><span>g</span></p>\n<p><span>น้ำหนักชั่งขั้นต่ำ </span><span>20</span><span> เท่าของค่าละเอียด</span></p>\n<p><span>จอแสดงผล </span><span>LCD Reverse Backlight <span>ตัวเลขสว่างสีขาวบนพื้น</span></span></p>\n\n<p><span>เป็นเครื่องชั่งสำหรับใช้เฉพาะในครัวเรือน ห้ามใช้ชั่งซื้อขาย</span></p>\n<p><span>รับประกันคุณภาพ </span><span>3</span><span> ปี (ตามเงื่อนไขบริษัท)</span></p>\n<p><span>บริการหลังการขายตลอดอายุการใช้งาน </span></p>\n\n<p><span>แสดงหน่วยน้ำหนัก (</span><span>Kg)</span></p>\n<p><span>ปรับน้ำหนักเป็นศูนย์/หักน้ำหนักภาชนะ</span></p>\n<p><span>ชั่งน้ำหนักเป็นร้อยละ</span></p>\n<p><span>Bluetooth</span></p>\n\n<p><span>วัสดุโครงสร้าง พลาสติก </span><span>ABS&nbsp;</span></p>\n<p><span>วัสดุจานชั่ง </span><span>Carbon Steel</span></p>\n\n<p><span>ขนาดเครื่องชั่ง<span>&nbsp; </span></span><span>19x50x5 <span>ซม. </span></span></p>\n<p><span>ขนาดบรรจุภัณฑ์ </span><span>55x23.5x7 <span>ซม.</span></span></p>\n\n<p><span>น้ำหนักสุทธิ </span><span>3.55 <span>กก.</span></span></p>\n<p><span>น้ำหนักรวมบรรจุภัณฑ์ </span><span>3.89 <span>กก.</span></span></p>\n<p><span>บาร์โค้ดผลิตภัณฑ์ </span><span>8858847108616</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div><div><hr><div><h2>สินค้าที่คุณอาจสนใจ</h2><div><div><div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -6591,8 +6956,19 @@
       "/images/imported/8d2b33db5680e7d2eddb.png",
       "/images/imported/1ca2b40723c23b3e4b91.png"
     ],
-    "imageAlt": ["", "", "", "", "", "", ""],
-    "collectionIds": ["6944f2bb72d7f9dc5d2aa34b", "6933e5681fafb3ea84fc9582"],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "collectionIds": [
+      "6944f2bb72d7f9dc5d2aa34b",
+      "6933e5681fafb3ea84fc9582"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span>FLS150KS</span></p>\n<p><span>รูปแบบ ชั่งน้ำหนักพกพา</span></p>\n<p><span>ระดับชั้นความละเอียด </span><span>Class III</span></p>\n\n<p><span>พิกัดน้ำหนักสูงสุด </span><span>150</span><span>kg</span></p>\n<p><span>ค่าน้ำหนัก </span><span>0.000 - 150.000 kg</span></p>\n<p><span>ค่าอ่านละเอียด </span><span>20/50</span><span>g</span></p>\n<p><span>น้ำหนักชั่งขั้นต่ำ </span><span>20</span><span> เท่าของค่าละเอียด</span></p>\n<p><span>จอแสดงผล </span><span>LCD Reverse Backlight <span>ตัวเลขสว่างสีขาวบนพื้น</span></span></p>\n\n<p><span>เป็นเครื่องชั่งสำหรับใช้เฉพาะในครัวเรือน ห้ามใช้ชั่งซื้อขาย</span></p>\n<p><span>รับประกันคุณภาพ </span><span>3</span><span> ปี (ตามเงื่อนไขบริษัท)</span></p>\n<p><span>บริการหลังการขายตลอดอายุการใช้งาน </span></p>\n\n<p><span>แสดงหน่วยน้ำหนัก (</span><span>Kg)</span></p>\n<p><span>ปรับน้ำหนักเป็นศูนย์/หักน้ำหนักภาชนะ</span></p>\n<p><span>ชั่งน้ำหนักเป็นร้อยละ</span></p>\n<p><span>Bluetooth</span></p>\n\n<p><span>วัสดุโครงสร้าง พลาสติก </span><span>ABS&nbsp;</span></p>\n<p><span>วัสดุจานชั่ง </span><span>Carbon Steel</span></p>\n\n<p><span>ขนาดเครื่องชั่ง<span>&nbsp; </span></span><span>19x50x5 <span>ซม. </span></span></p>\n<p><span>ขนาดบรรจุภัณฑ์ </span><span>55x23.5x7 <span>ซม.</span></span></p>\n\n<p><span>น้ำหนักสุทธิ </span><span>3.55 <span>กก.</span></span></p>\n<p><span>น้ำหนักรวมบรรจุภัณฑ์ </span><span>3.89 <span>กก.</span></span></p>\n<p><span>บาร์โค้ดผลิตภัณฑ์ </span><span>8858847108623</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div><div><hr><div><h2>สินค้าที่คุณอาจสนใจ</h2><div><div><div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -6668,12 +7044,12 @@
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
-        "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
+      },
+      {
+        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       }
     ]
   },
@@ -6722,16 +7098,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
-        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
       },
       {
         "path": "/collections/อินดิเคเตอร์ชั่งน้ำหนัก",
         "title": "อินดิเคเตอร์ชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
+        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
         "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
@@ -6784,16 +7160,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
-        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
       },
       {
         "path": "/collections/อินดิเคเตอร์ชั่งน้ำหนัก",
         "title": "อินดิเคเตอร์ชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
+        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
         "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
@@ -6840,20 +7216,20 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
-        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
-      },
-      {
         "path": "/collections/เครื่องชั่ง",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์พาณิชยกรรมและบริการ",
-        "title": "อินดิเคเตอร์พาณิชยกรรมและบริการ"
-      },
-      {
         "path": "/collections/อินดิเคเตอร์ชั่งน้ำหนัก-พาณิชยกรรมและบริการ",
         "title": "อินดิเคเตอร์ชั่งน้ำหนัก-พาณิชยกรรมและบริการ"
+      },
+      {
+        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
+      },
+      {
+        "path": "/collections/อินดิเคเตอร์พาณิชยกรรมและบริการ",
+        "title": "อินดิเคเตอร์พาณิชยกรรมและบริการ"
       }
     ]
   },
@@ -6898,16 +7274,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
-        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
       },
       {
         "path": "/collections/อินดิเคเตอร์นับจำนวน",
         "title": "อินดิเคเตอร์นับจำนวน"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
+        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
         "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
@@ -6954,16 +7330,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
-        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
       },
       {
         "path": "/collections/อินดิเคเตอร์นับจำนวน",
         "title": "อินดิเคเตอร์นับจำนวน"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
+        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
         "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
@@ -7010,16 +7386,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ",
-        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ"
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
       },
       {
         "path": "/collections/อินดิเคเตอร์กันน้ำ",
         "title": "อินดิเคเตอร์กันน้ำ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
+        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ",
+        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ"
       },
       {
         "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
@@ -7066,16 +7442,16 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ",
-        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ"
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
       },
       {
         "path": "/collections/อินดิเคเตอร์กันน้ำ",
         "title": "อินดิเคเตอร์กันน้ำ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
+        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ",
+        "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ"
       },
       {
         "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
@@ -7120,12 +7496,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งโต๊ะ",
         "title": "แท่นชั่งตั้งโต๊ะ"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7170,12 +7546,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7216,12 +7592,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7262,12 +7638,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7308,12 +7684,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7354,12 +7730,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7400,12 +7776,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7424,7 +7800,12 @@
       "/images/imported/5a8c450d126a23152282.png",
       "/images/imported/02ce2a488c962cdeab43.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1511fafb3ea84fc95b0",
@@ -7442,16 +7823,16 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7492,12 +7873,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7516,7 +7897,12 @@
       "/images/imported/5922ef5e5d2c1fc27eea.png",
       "/images/imported/df11bdfe94328a4943a2.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1511fafb3ea84fc95b0",
@@ -7533,12 +7919,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7557,7 +7943,12 @@
       "/images/imported/612b35e7737a02b05731.png",
       "/images/imported/b9d645b3bc33607cedc0.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1511fafb3ea84fc95b0",
@@ -7574,12 +7965,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7598,7 +7989,12 @@
       "/images/imported/7557c79447a8a5f71165.png",
       "/images/imported/2ebe27a2ed638d31ce98.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1511fafb3ea84fc95b0",
@@ -7616,16 +8012,16 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7644,7 +8040,12 @@
       "/images/imported/70ccb27b4aab09b1d298.png",
       "/images/imported/b3699b9432c4e3b886ae.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1511fafb3ea84fc95b0",
@@ -7661,12 +8062,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7685,7 +8086,12 @@
       "/images/imported/73e68501627a43fb96b6.png",
       "/images/imported/793819a4590ac440da46.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1511fafb3ea84fc95b0",
@@ -7702,12 +8108,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
-        "title": "แท่นเหล็กคาร์บอนสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
   },
@@ -7749,16 +8155,16 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งโต๊ะ",
         "title": "แท่นชั่งตั้งโต๊ะ"
       },
       {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -7803,12 +8209,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -7853,12 +8259,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -7899,12 +8305,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -7924,7 +8330,13 @@
       "/images/imported/0d721cb1dd5bfa56455d.png",
       "/images/imported/4d7afe3ec95e6cc234eb.png"
     ],
-    "imageAlt": ["", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1801fafb3ea84fc95b2",
@@ -7941,12 +8353,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -7966,7 +8378,13 @@
       "/images/imported/f614583505eadf8bf2e1.png",
       "/images/imported/07dc6f010341c7f1b7fe.png"
     ],
-    "imageAlt": ["", "", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1801fafb3ea84fc95b2",
@@ -7983,12 +8401,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -8007,7 +8425,12 @@
       "/images/imported/8cf490c131013fe252da.png",
       "/images/imported/f2c05fb11fe59e484918.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1801fafb3ea84fc95b2",
@@ -8024,12 +8447,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -8048,7 +8471,12 @@
       "/images/imported/0c3c5319f731ebfe7065.png",
       "/images/imported/27dba662c940d088c4a0.png"
     ],
-    "imageAlt": ["", "", "", ""],
+    "imageAlt": [
+      "",
+      "",
+      "",
+      ""
+    ],
     "collectionIds": [
       "6933e9581fafb3ea84fc95a1",
       "6933f1801fafb3ea84fc95b2",
@@ -8065,12 +8493,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -8118,12 +8546,12 @@
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
-        "title": "แท่นชั่งสแตนเลสสตีล"
-      },
-      {
         "path": "/collections/แท่นชั่งตั้งพืั้น",
         "title": "แท่นชั่งตั้งพืั้น"
+      },
+      {
+        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
   },
@@ -8174,16 +8602,16 @@
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
         "path": "/collections/พาณิชยกรรมและบริการ",
         "title": "พาณิชยกรรมและบริการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -8237,16 +8665,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
         "path": "/collections/พาณิชยกรรมและบริการ",
         "title": "พาณิชยกรรมและบริการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -8300,16 +8728,16 @@
     "price": null,
     "collections": [
       {
+        "path": "/collections/เครื่องชั่ง",
+        "title": "เครื่องชั่ง"
+      },
+      {
         "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
         "path": "/collections/พาณิชยกรรมและบริการ",
         "title": "พาณิชยกรรมและบริการ"
-      },
-      {
-        "path": "/collections/เครื่องชั่ง",
-        "title": "เครื่องชั่ง"
       }
     ]
   },
@@ -8326,8 +8754,14 @@
       "/images/imported/7a6b39ca568d3b618713.png",
       "/images/imported/f44b4cc14b09c3302edc.png"
     ],
-    "imageAlt": ["", ""],
-    "collectionIds": ["6944f2bb72d7f9dc5d2aa34b", "6933e6771fafb3ea84fc958d"],
+    "imageAlt": [
+      "",
+      ""
+    ],
+    "collectionIds": [
+      "6944f2bb72d7f9dc5d2aa34b",
+      "6933e6771fafb3ea84fc958d"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span>รูปแบบ ชั่งน้ำหนัก คำนวณราคา</span></p>\n<p><span>ระดับชั้นความละเอียด </span><span>Class III</span></p>\n\n<p><span>พิกัดน้ำหนักสูงสุด </span><span>150kg</span></p>\n<p><span>ค่าน้ำหนัก </span><span>0.000-150.000 kg</span></p>\n<p><span>ค่าอ่านละเอียด </span><span>20/50g</span></p>\n<p><span>น้ำหนักชั่งขั้นต่ำ </span><span>20<span> เท่าของค่าละเอียด</span></span></p>\n<p><span>จอแสดงผล </span><span>2<span> ด้าน</span></span></p>\n<p><span>จอแสดงผล </span><span>LCD<span>&nbsp; </span><span>อ่านคมชัดในร่มได้ไกลถึง </span>5<span> เมตร</span></span></p>\n\n<p><span>คุณสมบัติเทียบเท่ามาตรฐาน </span><span>International Organization of Legal Metrology (OIML) </span></p>\n<p><span>ผ่านการตรวจรับรองจาก สำนักงานชั่งตวงวัด กรมการค้าภายใน</span></p>\n<p><span>รับประกันคุณภาพ </span><span>3<span> ปี (ตามเงื่อนไขบริษัท)</span></span></p>\n\n<p><span>ปรับน้ำหนักเป็นศูนย์/หักน้ำหนักภาชนะ</span></p>\n<p><span>แสดงหน่วยน้ำหนัก (</span><span>Kg)</span></p>\n\n<p><span>แสดงน้ำหนัก/ราคาต่อกิโลกรัม/จำนวนเงิน (แบบไม่แสดงหน่วยสตางค์)</span></p>\n<p><span>แสดงราคา </span><span>0-99999<span> บาทต่อกิโลกรัม</span></span></p>\n<p><span>แสดงจำนวนเงิน </span><span>0-999999<span> บาท</span></span></p>\n\n<p><span>แสดงน้ำหนัก/ราคาต่อกิโลกรัม/จำนวนเงิน (แบบแสดงหน่วยสตางค์)</span></p>\n<p><span>แสดงราคา </span><span>0.00-9999.99<span> และถึง </span>99999<span> บาทต่อกิโลกรัม</span></span></p>\n<p><span>แสดงจำนวนเงิน </span><span>0.00-9999.00<span> บาท</span></span></p>\n\n<p><span>คำนวณราคาสินค้าตามน้ำหนัก</span></p>\n<p><span>รวมจำนวนเงินค่าสินค้าสะสม</span></p>\n<p><span>เลิกรวมเงินสะสม</span></p>\n<p><span>คำนวณเงินรับ-เงินทอน</span></p>\n\n<p><span>ใช้อะแด๊ปเตอร์จ่ายไฟตรง </span><span>Input200-240V/50Hz, Output6V/500mA</span></p>\n<p><span>แบตเตอรี่ </span><span>Lead-acid 4V4Ah</span></p>\n<p><span>ระยะเวลาชาร์จรอบละ </span><span>4<span> ชั่วโมง ใช้งานได้ต่อเนื่องนานสูงสุด </span>200<span> ชั่วโมงต่อรอบ</span></span></p>\n<p><span>แจ้งเตือนเมื่อพลังงานแบตเตอรี่ต่ำ </span></p>\n<p><span>ประหยัดพลังงานอัตโนมัติ</span></p>\n\n<p><span>วัสดุโครงสร้าง </span><span>Carbon Steel</span></p>\n<p><span>วัสดุจานชั่ง </span><span>SUS304 Stainless Steel</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -8356,8 +8790,14 @@
       "/images/imported/260e1f00e6e775a6d969.jpeg",
       "/images/imported/b09947f54e9d20151c37.jpeg"
     ],
-    "imageAlt": ["", "", ""],
-    "collectionIds": ["6944f2bb72d7f9dc5d2aa34b"],
+    "imageAlt": [
+      "",
+      "",
+      ""
+    ],
+    "collectionIds": [
+      "6944f2bb72d7f9dc5d2aa34b"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><strong><span>TCS-150-SW31F<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></strong></p>\n<p><span>รูปแบบ ชั่งน้ำหนัก</span></p>\n<p><span>ระดับชั้นความละเอียด </span><span>Class III</span></p>\n\n<p><span>พิกัดน้ำหนักสูงสุด </span><span>150kg</span></p>\n<p><span>ค่าน้ำหนัก </span><span>0.000 - 150.000 kg</span></p>\n<p><span>ค่าอ่านละเอียด </span><span>20/50g</span></p>\n<p><span>น้ำหนักชั่งขั้นต่ำ </span><span>20<span> เท่าของค่าละเอียด</span></span></p>\n<p><span>จอแสดงผล </span><span>LCD<span>&nbsp; </span></span></p>\n\n<p><span>คุณสมบัติเทียบเท่ามาตรฐาน </span><span>International Organization of Legal Metrology (OIML) </span></p>\n<p><span>ผ่านการตรวจรับรองจาก สำนักงานชั่งตวงวัด กรมการค้าภายใน</span></p>\n<p><span>รับประกันคุณภาพ </span><span>3<span> ปี (ตามเงื่อนไขบริษัท)</span></span></p>\n\n<p><span>ปรับน้ำหนักเป็นศูนย์/หักน้ำหนักภาชนะ</span></p>\n<p><span>แสดงหน่วยน้ำหนัก (</span><span>Kg, lb, oz)</span></p>\n\n<p><span>ใช้อะแด๊ปเตอร์จ่ายไฟตรง </span><span>Input200-240V/50Hz, Output6V/500mA</span></p>\n<p><span>แบตเตอรี่ </span><span>Lead-acid 4V4Ah</span></p>\n<p><span>ระยะเวลาชาร์จรอบละ </span><span>4<span> ชั่วโมง ใช้งานได้ต่อเนื่องนานสูงสุด </span>200<span> ชั่วโมงต่อรอบ</span></span></p>\n<p><span>แจ้งเตือนเมื่อพลังงานแบตเตอรี่ต่ำ </span></p>\n<p><span>ประหยัดพลังงานอัตโนมัติ</span></p>\n\n<p><span>วัสดุโครงสร้าง </span><span>SUS304 Stainless Steel</span></p>\n<p><span>วัสดุจานชั่ง </span><span>Carbon Stainless Steel</span></p>\n\n<p><span>ขนาดเครื่องชั่งพร้อมใช้งาน<span>&nbsp; </span></span><span>40x67x79<span> ซม. </span></span></p>\n<p><span>ขนาดเครื่องชั่งขณะพับเก็บ<span>&nbsp; </span></span><span>40x74x23<span> ซม. </span></span></p>\n<p><span>ขนาดจานชั่ง </span><span>40x50x5.5<span> ซม. ทรงสี่เหลี่ยม </span></span></p>\n\n<p><span>น้ำหนักสุทธิ </span><span>11.25<span> กก.</span></span></p>\n<p><span>น้ำหนักรวมบรรจุภัณฑ์ </span><span>13.15<span> กก.</span></span></p>\n<p><span>บาร์โค้ดผลิตภัณฑ์ </span><span>8858847108654</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div><div><hr><div><h2>สินค้าที่คุณอาจสนใจ</h2><div><div><div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -8377,9 +8817,15 @@
     "detailsHtml": "<p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker) </span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์</span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 1,000 ดวง)</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก</span><span></span></p>",
     "description": "สติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลบาร์โค้ด (Thermal Label Sticker)\n\nชนิดม้วน บรรจุกล่องลังแพ็คละ 50 ม้วน (ม้วนละ 1,000 ดวง)",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker) \n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์\n\nบรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 1,000 ดวง)\n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก",
-    "images": ["/images/imported/0e52f349482a5c1f64c9.png"],
-    "imageAlt": ["สติกเกอร์ความร้อน 1,000 ดวง/ม้วน"],
-    "collectionIds": ["6933f2d31fafb3ea84fc95cc"],
+    "images": [
+      "/images/imported/0e52f349482a5c1f64c9.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อน 1,000 ดวง/ม้วน"
+    ],
+    "collectionIds": [
+      "6933f2d31fafb3ea84fc95cc"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker) </span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์</span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 1,000 ดวง)</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก</span><span></span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -8399,9 +8845,15 @@
     "detailsHtml": "<p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์ </span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span><span>&nbsp;</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก</span></p>",
     "description": "สติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลบาร์โค้ด (Thermal Label Sticker)\n\nชนิดม้วน บรรจุกล่องลังแพ็คละ 50 ม้วน (ม้วนละ 700 ดวง)",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)\n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์ \n\nบรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง) \n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก",
-    "images": ["/images/imported/265dbad9e9ee3a857a9d.png"],
-    "imageAlt": ["สติกเกอร์ความร้อน 700 ดวง/ม้วน"],
-    "collectionIds": ["6933f2d31fafb3ea84fc95cc"],
+    "images": [
+      "/images/imported/265dbad9e9ee3a857a9d.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อน 700 ดวง/ม้วน"
+    ],
+    "collectionIds": [
+      "6933f2d31fafb3ea84fc95cc"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์ </span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span><span>&nbsp;</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -8421,9 +8873,15 @@
     "detailsHtml": "<p><span> ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด </span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง คุณสมบัติกันน้ำ&nbsp;</span><span>ชนิดไม่ต้องใช้หมึกพิมพ์ </span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมากในสภาพแวดล้อมที่อาจโดนความชื้น</span></p>",
     "description": "สติกเกอร์ความร้อนกันน้ำสำหรับพิมพ์ลาเบลบาร์โค้ด \n\nชนิดม้วน บรรจุกล่องลังแพ็คละ 50 ม้วน (ม้วนละ 700 ดวง)",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด \n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง คุณสมบัติกันน้ำ ชนิดไม่ต้องใช้หมึกพิมพ์ \n\nบรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)\n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมากในสภาพแวดล้อมที่อาจโดนความชื้น",
-    "images": ["/images/imported/4303a06df1938d070359.png"],
-    "imageAlt": ["สติกเกอร์ความร้อนกันน้ำ 700 ดวง/ม้วน"],
-    "collectionIds": ["6ad5b7dbaff4a0b8ce3629ba"],
+    "images": [
+      "/images/imported/4303a06df1938d070359.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อนกันน้ำ 700 ดวง/ม้วน"
+    ],
+    "collectionIds": [
+      "6ad5b7dbaff4a0b8ce3629ba"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span> ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด </span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง คุณสมบัติกันน้ำ&nbsp;</span><span>ชนิดไม่ต้องใช้หมึกพิมพ์ </span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมากในสภาพแวดล้อมที่อาจโดนความชื้น</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -8443,9 +8901,15 @@
     "detailsHtml": "<p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)&nbsp;</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์&nbsp;</span></p>\n<p><span><span>ขนาด 40*60 มม </span></span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก</span></p>",
     "description": "สติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลบาร์โค้ด (Thermal Label Sticker)\n\nชนิดม้วน บรรจุกล่องลังแพ็คละ 50 ม้วน (ม้วนละ 700 ดวง)",
     "details": "ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker) \n\nกระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์ \n\nขนาด 40*60 มม \n\nบรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)\n\nเหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก",
-    "images": ["/images/imported/2a3c7ada98f7ac11667b.png"],
-    "imageAlt": ["สติกเกอร์ความร้อน 700 ดวง/ม้วน"],
-    "collectionIds": ["6933f2d31fafb3ea84fc95cc"],
+    "images": [
+      "/images/imported/2a3c7ada98f7ac11667b.png"
+    ],
+    "imageAlt": [
+      "สติกเกอร์ความร้อน 700 ดวง/ม้วน"
+    ],
+    "collectionIds": [
+      "6933f2d31fafb3ea84fc95cc"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span>ม้วนสติกเกอร์ความร้อนสำหรับพิมพ์ลาเบลและบาร์โค้ด (Thermal Label Sticker)&nbsp;</span></p>\n<p><span>กระดาษสติกเกอร์สีขาวคุณภาพสูง ชนิดไม่ต้องใช้หมึกพิมพ์&nbsp;</span></p>\n<p><span><span>ขนาด 40*60 มม </span></span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อลัง (ม้วนละ 700 ดวง)</span></p>\n\n<p><span>เหมาะสำหรับใช้ร่วมกับเครื่องพิมพ์สติกเกอร์บาร์โค้ด เครื่องชั่งดิจิทัลพิมพ์ลาเบล และงานติดฉลากสินค้าปริมาณมาก</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
@@ -8465,9 +8929,15 @@
     "detailsHtml": "<p><span>กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) </span></p>\n<p><span>ขนาดหน้ากว้าง 80 มม. เส้นผ่านศูนย์กลาง 80 มม.</span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อแพ็ค/ลัง</span></p>\n\n<p><span>เหมาะสำหรับเครื่องพิมพ์ใบเสร็จความร้อนขนาดมาตรฐานในระบบ POS และเครื่องชั่งดิจิทัลพิมพ์ใบเสร็จ</span></p>",
     "description": "กระดาษความร้อนสำหรับเครื่องพิมพ์สลิปและใบเสร็จ (Thermal Paper Roll)\n\nขนาด 80x80 มม. \n\nบรรจุกล่องลังกระดาษแพ็คละ 50 ม้วน",
     "details": "กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) \n\nขนาดหน้ากว้าง 80 มม. เส้นผ่านศูนย์กลาง 80 มม.\n\nบรรจุในกล่อง 50 ม้วนต่อแพ็ค/ลัง\n\nเหมาะสำหรับเครื่องพิมพ์ใบเสร็จความร้อนขนาดมาตรฐานในระบบ POS และเครื่องชั่งดิจิทัลพิมพ์ใบเสร็จ",
-    "images": ["/images/imported/6b7a6007336d4adfadb3.png"],
-    "imageAlt": ["กระดาษความร้อนใบเสร็จ"],
-    "collectionIds": ["6933f2e31fafb3ea84fc95ce"],
+    "images": [
+      "/images/imported/6b7a6007336d4adfadb3.png"
+    ],
+    "imageAlt": [
+      "กระดาษความร้อนใบเสร็จ"
+    ],
+    "collectionIds": [
+      "6933f2e31fafb3ea84fc95ce"
+    ],
     "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><div><div><div><h2>รายละเอียดสินค้า</h2><div><p><span>กระดาษความร้อนสำหรับพิมพ์สลิปใบเสร็จ (Thermal Paper Roll) </span></p>\n<p><span>ขนาดหน้ากว้าง 80 มม. เส้นผ่านศูนย์กลาง 80 มม.</span></p>\n<p><span>บรรจุในกล่อง 50 ม้วนต่อแพ็ค/ลัง</span></p>\n\n<p><span>เหมาะสำหรับเครื่องพิมพ์ใบเสร็จความร้อนขนาดมาตรฐานในระบบ POS และเครื่องชั่งดิจิทัลพิมพ์ใบเสร็จ</span></p></div></div></div></div></div><div><div><div><div><div><div><div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
