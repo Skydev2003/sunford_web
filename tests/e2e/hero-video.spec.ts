@@ -5,6 +5,7 @@ test("homepage animation plays silently, pauses on request and stops outside the
 }) => {
   await page.setViewportSize({ width: 1440, height: 1050 });
   await page.goto("/");
+  await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
   const video = page.locator(".hero-product-video");
   await expect
     .poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime))
@@ -29,7 +30,7 @@ test("homepage animation plays silently, pauses on request and stops outside the
     .toBe(false);
   await page.locator("#solutions").scrollIntoViewIfNeeded();
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true);
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.locator(".hero-motion").scrollIntoViewIfNeeded();
   await expect
     .poll(() => video.evaluate((element: HTMLVideoElement) => element.paused))
     .toBe(false);
@@ -52,6 +53,7 @@ test("homepage animation plays silently, pauses on request and stops outside the
 test("animation stays proportional on mobile and the page does not overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
   const video = page.locator(".hero-product-video");
   await expect
     .poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime))
@@ -86,6 +88,7 @@ test("the full-height scene keeps text stationary as the video timeline changes"
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
+  await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
   const video = page.locator(".hero-product-video");
   await expect
     .poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime))
@@ -93,7 +96,7 @@ test("the full-height scene keeps text stationary as the video timeline changes"
   await page.getByRole("button", { name: "หยุดแอนิเมชันสินค้า", exact: true }).click();
   const scene = page.locator(".hero-cinematic");
   const box = (await scene.boundingBox())!;
-  expect(Math.abs(box.y + box.height - 900)).toBeLessThan(3);
+  expect(Math.abs(box.height - (900 - 104))).toBeLessThan(3);
   await video.evaluate((element: HTMLVideoElement) => {
     element.currentTime = 0;
   });
@@ -128,6 +131,7 @@ test("the full-height scene keeps text stationary as the video timeline changes"
 test("reduced motion shows a still frame until the visitor chooses to play", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
   const video = page.locator(".hero-product-video");
   await expect(
     page.getByRole("button", { name: "เล่นแอนิเมชันสินค้า", exact: true }),

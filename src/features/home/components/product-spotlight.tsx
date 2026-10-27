@@ -4,16 +4,24 @@ import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTarget } from "../data/link-targets";
 import { getSettings } from "@/features/cms/server/documents";
 import { spotlightDefaults } from "@/features/cms/data/settings";
-import { defaultSpotlightImage, defaultSpotlightProductId } from "../data/image-slots";
+import {
+  defaultSpotlightImage,
+  defaultSpotlightProductId,
+  defaultSpotlightVideo,
+  defaultSpotlightPoster,
+} from "../data/image-slots";
+import { SpotlightProductVideo } from "./spotlight-product-video";
 
 export async function ProductSpotlight({
   products,
   image,
   target,
+  leading = false,
 }: {
   products: Product[];
   image?: string;
   target?: HomeLinkTarget;
+  leading?: boolean;
 }) {
   const copy = await getSettings("spotlight", spotlightDefaults);
   const defaultProduct = products.find((item) => item.id === defaultSpotlightProductId);
@@ -22,6 +30,8 @@ export async function ProductSpotlight({
     : defaultProduct;
   if (!product && !target?.pagePath) return null;
   const href = resolveHomeLink("spotlight", target, products);
+  const showVideo =
+    product?.id === defaultSpotlightProductId && (!image || image === defaultSpotlightImage);
   const visual = (
     <Image
       src={image ?? defaultSpotlightImage}
@@ -31,7 +41,10 @@ export async function ProductSpotlight({
     />
   );
   return (
-    <section className="product-spotlight" aria-labelledby="spotlight-title">
+    <section
+      className={leading ? "product-spotlight spotlight-leading" : "product-spotlight"}
+      aria-labelledby="spotlight-title"
+    >
       <div className="container spotlight-inner">
         <div className="spotlight-copy">
           <h2 id="spotlight-title">{copy.title}</h2>
@@ -52,7 +65,14 @@ export async function ProductSpotlight({
             </a>
           </div>
         </div>
-        {href ? (
+        {showVideo ? (
+          <SpotlightProductVideo
+            src={defaultSpotlightVideo}
+            poster={defaultSpotlightPoster}
+            name={product.name}
+            href={href}
+          />
+        ) : href ? (
           <Link
             href={href}
             className="spotlight-visual"

@@ -2,6 +2,8 @@ import type { Product } from "@/features/catalog/types";
 
 export const defaultSpotlightProductId = "acs30-jc21";
 export const defaultSpotlightImage = "/images/products/acs30-jc21-cutout.png";
+export const defaultSpotlightVideo = "/videos/jc21-panel-aligned-1080p.mp4";
+export const defaultSpotlightPoster = "/images/products/jc21-panel-aligned-poster.png";
 
 export const homeImageSlots = [
   {

@@ -16,12 +16,25 @@ const heroImages: Record<string, string> = {
   rls1100: "/images/products/rls1100.png",
 };
 
+export function HeroAnnouncement({ settings = defaultHero }: { settings?: HeroSettings }) {
+  return (
+    <div className="announcement">
+      <span>{settings.announcement}</span>
+      <a href={settings.announcementHref}>
+        {settings.announcementLabel} <ChevronRight size={14} />
+      </a>
+    </div>
+  );
+}
+
 export function Hero({
   products,
   settings = defaultHero,
+  showAnnouncement = true,
 }: {
   products: Product[];
   settings?: HeroSettings;
+  showAnnouncement?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const sceneRef = useRef<HTMLElement>(null);
@@ -55,12 +68,7 @@ export function Hero({
   const brandedTitle = product?.title.startsWith("SUNFORD ");
   return (
     <>
-      <div className="announcement">
-        <span>{settings.announcement}</span>
-        <a href={settings.announcementHref}>
-          {settings.announcementLabel} <ChevronRight size={14} />
-        </a>
-      </div>
+      {showAnnouncement && <HeroAnnouncement settings={settings} />}
       <section
         ref={sceneRef}
         className={`hero hero-cinematic ${product?.video ? "hero-has-motion" : ""}`}

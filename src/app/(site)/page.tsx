@@ -1,4 +1,4 @@
-import { Hero } from "@/features/home/components/hero";
+import { Hero, HeroAnnouncement } from "@/features/home/components/hero";
 import { ProductSpotlight } from "@/features/home/components/product-spotlight";
 import {
   SourceShowcase,
@@ -27,8 +27,18 @@ export default async function Home() {
   ]);
   return (
     <main id="main-content">
+      <div className="homepage-lead">
+        <HeroAnnouncement settings={hero} />
+        <ProductSpotlight
+          products={products}
+          image={images.spotlight}
+          target={targets.spotlight}
+          leading
+        />
+      </div>
       <Hero
         products={products}
+        showAnnouncement={false}
         settings={{
           ...hero,
           secondaryHref:
@@ -37,7 +47,6 @@ export default async function Home() {
               : hero.secondaryHref,
         }}
       />
-      <ProductSpotlight products={products} image={images.spotlight} target={targets.spotlight} />
       <SourceShowcase products={products} images={images} targets={targets} />
       <CategoryNavigation
         copy={catalog}
