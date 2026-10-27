@@ -337,6 +337,11 @@
 @media (max-width: 720px) {
   .homepage-lead {
     --lead-header-height: 58px;
+    height: auto;
+  }
+  .spotlight-leading .spotlight-visual-motion {
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
   .spotlight-motion {
     margin-top: 20px;
