@@ -45,3 +45,8 @@ next-env.d.ts
 /src/generated/prisma/
 /test-results/
 /playwright-report/
+
+# Local media experiments, render frames, previews, and logs.
+/output/
+/outputs/
+/work/

@@ -47,9 +47,15 @@ prisma/
   migrations/                # Initial migration + RLS
   seed.ts                    # Idempotent upsert catalogue
 tests/e2e/                  # Playwright user journeys
+public/
+  images/                   # รูปที่เว็บใช้งาน
+  models/                   # โมเดล GLB และไฟล์ต้นฉบับประกอบโมเดล
+  videos/                   # วิดีโอ WebM ของหน้าแรก
 ```
 
 หลักการ: `app → features → repository → Prisma → Supabase PostgreSQL` โดย Client Components รับเฉพาะข้อมูลสินค้าสาธารณะ ส่วน credentials และ database client อยู่ฝั่งเซิร์ฟเวอร์ Zustand เก็บเฉพาะสถานะ UI; ข้อมูลสินค้าอยู่ใน Server Components ไม่เก็บสำเนาใน global store
+
+หน้าแรกเล่นวิดีโอต้นฉบับ `public/videos/sunford-homepage-16x9.webm` โดยตรง ไม่สร้างรูปทีละเฟรมขณะใช้งานเว็บ ข้อความอยู่นิ่ง และวิดีโอหยุดเมื่อเลื่อนพ้นจอหรือซ่อนแท็บ ไฟล์ใน `output/`, `outputs/` และ `work/` เป็นงานทดลอง ภาพเรนเดอร์ และ log เฉพาะเครื่อง จึงไม่นำเข้า Git หรือใช้ในการ build เว็บไซต์
 
 ## เชื่อม Supabase PostgreSQL
 

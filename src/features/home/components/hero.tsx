@@ -1,9 +1,9 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
 import { defaultHero } from "@/features/cms/data/settings";
 import type { HeroSettings } from "@/features/cms/types";
@@ -24,6 +24,7 @@ export function Hero({
   settings?: HeroSettings;
 }) {
   const [active, setActive] = useState(0);
+  const sceneRef = useRef<HTMLElement>(null);
   const slides = settings.slides.flatMap((slide, index) => {
     const product = products.find((product) => product.id === slide.productId);
     if (slide.productId && !product) return [];
@@ -49,7 +50,9 @@ export function Hero({
       },
     ];
   });
-  const product = slides.length ? slides[active % slides.length] : undefined;
+  const activeIndex = slides.length ? active % slides.length : 0;
+  const product = slides[activeIndex];
+  const brandedTitle = product?.title.startsWith("SUNFORD ");
   return (
     <>
       <div className="announcement">
@@ -59,24 +62,44 @@ export function Hero({
         </a>
       </div>
       <section
-        className={`hero ${product?.video ? "hero-has-motion" : ""}`}
+        ref={sceneRef}
+        className={`hero hero-cinematic ${product?.video ? "hero-has-motion" : ""}`}
         aria-label="Sunford ความแม่นยำที่เรียบง่ายกว่า"
       >
+        <div className="hero-scene-glow" aria-hidden="true" />
+        <span className="hero-scene-wordmark" aria-hidden="true">
+          PRECISION
+        </span>
         <div className="container hero-main">
           <div className="hero-copy">
-            <h1 className="hero-model">{product?.title ?? "SUNFORD PRECISION"}</h1>
+            <p className="hero-scene-eyebrow">
+              <span /> PRECISION, IN EVERY DETAIL
+            </p>
+            <h1 className="hero-model">
+              {brandedTitle ? (
+                <>
+                  <span className="hero-scene-brand">SUNFORD</span> {product.title.slice(8)}
+                </>
+              ) : (
+                (product?.title ?? "SUNFORD PRECISION")
+              )}
+            </h1>
             <p className="hero-tagline">{settings.tagline}</p>
             <p className="hero-description">
               {product?.description ?? "เครื่องชั่งและโซลูชัน เพื่อทุกความเป็นไปได้"}
             </p>
             <div className="hero-buttons">
               <Link className="button button-red" href={product?.href ?? "/products"}>
-                {settings.primaryLabel}
+                {settings.primaryLabel} <ArrowUpRight size={17} />
               </Link>
               <a className="button button-outline" href={settings.secondaryHref}>
-                {settings.secondaryLabel}
+                {settings.secondaryLabel} <ChevronRight size={16} />
               </a>
             </div>
+          </div>
+          <div className="hero-scene-caption" aria-hidden="true">
+            <span>DESIGNED FOR YOUR EVERYDAY</span>
+            <span>ทุกรายละเอียด เพื่อทุกวันของคุณ</span>
           </div>
           {product?.video ? (
             <HeroProductVideo
@@ -84,6 +107,7 @@ export function Hero({
               src={product.video}
               poster={product.image}
               name={product.name}
+              sceneRef={sceneRef}
             />
           ) : (
             product && (
@@ -107,6 +131,10 @@ export function Hero({
           )}
           {slides.length > 1 && (
             <div className="slide-controls" aria-label="เลือกสินค้าแนะนำ">
+              <span className="hero-scene-counter">
+                {String(activeIndex + 1).padStart(2, "0")}
+                <span> / {String(slides.length).padStart(2, "0")}</span>
+              </span>
               <Tooltip>
                 <button
                   className="icon-button"
@@ -120,9 +148,9 @@ export function Hero({
                 {slides.map((slide, index) => (
                   <button
                     key={slide.id}
-                    className={active === index ? "active" : ""}
+                    className={activeIndex === index ? "active" : ""}
                     aria-label={`แสดง ${slide.name}`}
-                    aria-pressed={active === index}
+                    aria-pressed={activeIndex === index}
                     onClick={() => setActive(index)}
                   />
                 ))}
@@ -138,7 +166,27 @@ export function Hero({
               </Tooltip>
             </div>
           )}
+          <button
+            className="hero-scene-scroll"
+            type="button"
+            onClick={() => {
+              sceneRef.current?.nextElementSibling?.scrollIntoView({
+                behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                  ? "instant"
+                  : "smooth",
+                block: "start",
+              });
+            }}
+          >
+            <ArrowDown size={15} />
+            <span>เลื่อนเพื่อค้นพบ</span>
+          </button>
         </div>
+        {product?.video && (
+          <div className="hero-scene-progress" aria-hidden="true">
+            <span />
+          </div>
+        )}
       </section>
     </>
   );

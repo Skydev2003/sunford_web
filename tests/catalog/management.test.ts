@@ -288,7 +288,7 @@ test("homepage image defaults preserve the current artwork in five independent p
   assert.equal(new Set(homeImageSlots.map((slot) => slot.id)).size, 5);
   assert.equal(defaults.spotlight, "/images/products/acs30-jc21-cutout.png");
   assert.equal(defaults.smart, products.find((p) => p.id === "rls1100")?.image);
-  assert.equal(defaults.digital, products.find((p) => p.id === "feh5ks")?.image);
+  assert.equal(defaults.digital, "/images/pd/WPS10KS.png");
   assert.equal(defaults.software, "/images/software.png");
   assert.deepEqual(products, before);
 });
