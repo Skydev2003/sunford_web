@@ -1,5 +1,11 @@
 # Project Memory
 
+## Read full specification fields before splitting labels and values
+
+- Observed: Technical rows split parentheses, numeric ranges, dimensions and Thai words between the label and value cells.
+- Root cause: Imported HTML span boundaries and the first space were treated as complete field boundaries, although the source often splits a word or number across spans.
+- Correct behavior: Read the full paragraph and separate a recognized complete field prefix, removing only that prefix across DOM text nodes. Keep unfamiliar statements intact rather than guessing a boundary. Preserve inline links and media, and audit all current source records and published product URLs after changes.
+
 ## Regenerate Prisma Client after schema changes
 
 - Observed: Admin product queries failed with `Unknown argument deletedAt`.

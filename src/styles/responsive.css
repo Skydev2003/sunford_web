@@ -499,7 +499,6 @@
     margin-top: 28px;
   }
   .spec-list > div {
-    grid-template-columns: minmax(0, 0.35fr) minmax(0, 0.65fr);
     gap: 14px;
     font-size: 12px;
   }
@@ -513,6 +512,11 @@
   .detail-phone {
     margin-left: 0;
     display: flex;
+  }
+  .detail-service {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 20px;
   }
   .related-products {
     padding-top: 55px;

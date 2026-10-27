@@ -11,6 +11,12 @@ import { categories } from "../../src/features/catalog/types";
 import { findCatalogProduct } from "../../src/features/catalog/data/product-lookup";
 import sourceProducts from "../../src/features/content/data/products.json";
 import type { SourceProduct } from "../../src/features/content/types";
+import {
+  formatProductContent,
+  mergeProductContentRows,
+  productContentRows,
+} from "../../src/features/catalog/data/product-content";
+import { load } from "cheerio";
 import { defaultHomeImages, homeImageSlots } from "../../src/features/home/data/image-slots";
 import { resolveHomeLink } from "../../src/features/home/data/link-targets";
 import {
@@ -50,6 +56,194 @@ test("static content params reserve filename space for Vercel's prerender sideca
   // Bound encoded bytes for runtime caches as well as raw UTF-8 at build time.
   assert.match(contentRoutePath(`/${"ก".repeat(23)}/short`), /^\/_content\/[a-f0-9]{64}$/);
   assert.equal(contentRoutePath(`/${"ก".repeat(22)}/short`), `/${"ก".repeat(22)}/short`);
+});
+
+test("all imported technical labels avoid split numbers and retain complete values from real products", () => {
+  const rowsFor = (id: string) =>
+    productContentRows(
+      (sourceProducts as SourceProduct[]).find((product) => product.sourceId === id)!.detailsHtml,
+      true,
+    );
+  const valueFor = (id: string, label: string) =>
+    load(rowsFor(id).find((row) => row.label === label)!.html)
+      .text()
+      .replace(/\s+/g, "");
+  assert.equal(valueFor("10617", "ค่าน้ำหนัก"), "0.000-5.000kg");
+  assert.equal(valueFor("10681", "พิกัดน้ำหนักสูงสุด"), "6kg");
+  assert.equal(valueFor("10672", "ขนาดเครื่องชั่ง"), "17.0x21.4x6.8ซม.");
+  assert.ok(valueFor("10672", "ขนาดจานชั่ง").startsWith("17.0x14.0"));
+  assert.equal(valueFor("10756", "ขนาดเครื่องชั่งพร้อมใช้งาน"), "45x87x89ซม.");
+  assert.equal(valueFor("10756", "ขนาดเครื่องชั่งขณะพับเก็บ"), "45x84x23ซม.");
+  assert.ok(valueFor("10756", "ขนาดจานชั่ง").startsWith("45x60"));
+  for (const id of ["10614", "10632", "10618", "10656"]) {
+    assert.ok(valueFor(id, "รับประกันคุณภาพ").startsWith("3ปี"));
+  }
+  assert.ok(valueFor("10641", "ผ่านการตรวจรับรองจาก").includes("สำนักงานชั่งตวงวัด"));
+  assert.ok(valueFor("10746", "เหมาะสำหรับ").startsWith("ใช้งานร่วมกับ"));
+  for (const product of sourceProducts as SourceProduct[]) {
+    for (const row of productContentRows(product.detailsHtml, true)) {
+      assert.ok(!/\d/.test(row.label), `${product.sourceId}: ${row.label}`);
+      assert.equal(
+        (row.label.match(/\(/g) ?? []).length,
+        (row.label.match(/\)/g) ?? []).length,
+        `${product.sourceId}: ${row.label}`,
+      );
+      assert.ok(
+        !["ร", "รับ", "ผ", "รับประกันคุณ", "รับประกัน", "เหมาะสำหรับใ"].includes(row.label),
+        `${product.sourceId}: ${row.label}`,
+      );
+    }
+  }
+});
+
+test("technical parsing preserves unfamiliar statements and inline links instead of guessing at span boundaries", () => {
+  const rows = productContentRows(
+    '<p><span>กระดาษสีขาว คุณสมบัติกันน้ำ ช</span><span>นิดไม่ต้องใช้หมึกพิมพ์</span></p><p><span>การเชื่อม</span><span>ต่อ</span> <a href="https://example.com/usb">USB</a></p>',
+    true,
+  );
+  assert.equal(rows[0].label, "คุณสมบัติ");
+  assert.equal(load(rows[0].html).text(), "กระดาษสีขาว คุณสมบัติกันน้ำ ชนิดไม่ต้องใช้หมึกพิมพ์");
+  assert.equal(rows[1].label, "การเชื่อมต่อ");
+  assert.equal(load(rows[1].html)("a").attr("href"), "https://example.com/usb");
+});
+
+test("technical units remain together when a source span splits a parenthesized value", () => {
+  const rows = productContentRows(
+    "<p><span>แสดงหน่วยน้ำหนัก (</span><span>g, Kg)</span></p><p><span>แสดงหน่วยปริมาตร (ml-</span><span>water, ml-milk)</span></p><p><span>โหมด (ตัวเลือก)</span><span>อัตโนมัติ</span></p>",
+    true,
+  );
+  assert.deepEqual(
+    rows.map((row) => [row.label, load(row.html).text()]),
+    [
+      ["แสดงหน่วยน้ำหนัก", "(g, Kg)"],
+      ["แสดงหน่วยปริมาตร", "(ml-water, ml-milk)"],
+      ["โหมด (ตัวเลือก)", "อัตโนมัติ"],
+    ],
+  );
+});
+
+test("detail rows combine repeated labels and remove repeated statements without losing distinct values", () => {
+  const rows = mergeProductContentRows([
+    {
+      label: "รายละเอียด",
+      html: "<p>ข้อมูลสินค้า</p><ul><li>ชั่งน้ำหนัก</li><li>นับจำนวน</li></ul>",
+    },
+    { label: "รายละเอียดสินค้า", html: "<p><strong>ข้อมูลสินค้า</strong></p>" },
+    { label: "รายละเอียด", html: "<ul><li>ชั่งน้ำหนัก</li><li>พิมพ์ฉลาก</li></ul>" },
+    { label: "จอแสดงผล", value: "LCD" },
+    { label: "จอแสดงผล:", html: "<p>LCD</p>" },
+    { label: "จอแสดงผล", value: "2 ด้าน" },
+    { label: "หน่วยความจำ", value: "-" },
+    { label: "หน่วยความจำ", value: "100 รายการ" },
+  ]);
+  assert.deepEqual(
+    rows.map((row) => row.label),
+    ["รายละเอียดสินค้า", "จอแสดงผล", "หน่วยความจำ"],
+  );
+  const description = load(rows[0].html);
+  assert.equal(description("p").length, 1);
+  assert.deepEqual(
+    description("li")
+      .map((_, node) => description(node).text())
+      .get(),
+    ["ชั่งน้ำหนัก", "นับจำนวน", "พิมพ์ฉลาก"],
+  );
+  assert.equal((load(rows[1].html).text().match(/LCD/g) ?? []).length, 1);
+  assert.ok(load(rows[1].html).text().includes("2 ด้าน"));
+  assert.equal(load(rows[2].html).text(), "100 รายการ");
+  const distinct = mergeProductContentRows([
+    { label: "กำลังไฟ", value: "1 mW" },
+    { label: "กำลังไฟ", value: "1 MW" },
+  ]);
+  assert.equal(load(distinct[0].html)(".product-value").length, 2);
+});
+
+test("merging details preserves nested text, separate link targets and images while escaping plain values", () => {
+  const rows = mergeProductContentRows([
+    { label: "รายละเอียด", html: "<ul><li><ul><li>ข้อความซ้อน</li></ul></li></ul>" },
+    { label: "รายละเอียด", html: '<p><a href="https://example.com/a">คู่มือ</a></p>' },
+    { label: "รายละเอียด", html: '<p><a href="https://example.com/b">คู่มือ</a></p>' },
+    { label: "รายละเอียด", html: '<img src="/images/a.png" alt="มุมหน้า">' },
+    { label: "รายละเอียด", html: '<img src="/images/b.png" alt="มุมหลัง">' },
+    { label: "รายละเอียด", value: '<script>alert("test")</script>\nบรรทัดใหม่' },
+  ]);
+  const $ = load(rows[0].html);
+  assert.ok($.text().includes("ข้อความซ้อน"));
+  assert.equal($("a").length, 2);
+  assert.equal($("img").length, 2);
+  assert.equal($("script").length, 0);
+  assert.ok($(".product-plain-value").text().includes("\nบรรทัดใหม่"));
+  assert.deepEqual(
+    mergeProductContentRows([
+      { label: "วัสดุ", value: "" },
+      { label: "วัสดุ", value: "—" },
+    ]),
+    [{ label: "วัสดุ", html: "-" }],
+  );
+});
+
+test("detail table rows preserve imported text and split technical labels from their values", () => {
+  const normalize = (text: string) => text.replace(/\s+/g, "");
+  for (const product of sourceProducts as SourceProduct[]) {
+    for (const [html, splitLabels] of [
+      [product.descriptionHtml, false],
+      [product.detailsHtml, true],
+    ] as const) {
+      const rows = productContentRows(html, splitLabels);
+      const result = normalize(rows.map((row) => row.label + load(row.html).text()).join(""));
+      const $ = load(html);
+      $("p, h1, h2, h3, h4, h5, h6, li").each((_, node) => {
+        const original = normalize($(node).text());
+        if (original) assert.ok(result.includes(original), `${product.sourceId}: ${original}`);
+      });
+    }
+  }
+  const rows = productContentRows(
+    "<div><p><span>หน่วยความจำ</span><span>10,000 รายการ</span></p><p>แบตเตอรี่ 4V4Ah</p></div>",
+    true,
+  );
+  assert.deepEqual(
+    rows.map((row) => [row.label, load(row.html).text()]),
+    [
+      ["หน่วยความจำ", "10,000 รายการ"],
+      ["แบตเตอรี่", "4V4Ah"],
+    ],
+  );
+  const media = productContentRows(
+    '<p><a href="https://example.com">คู่มือ</a></p><p><img src="/images/test.png" alt="สินค้า"></p>',
+    true,
+  );
+  assert.ok(media.some((row) => row.html.includes('href="https://example.com"')));
+  assert.ok(media.some((row) => row.html.includes('src="/images/test.png"')));
+});
+
+test("product content formatting keeps every imported description and technical fact", () => {
+  const text = (html: string) => load(html).text().replace(/\s+/g, "");
+  for (const product of sourceProducts as SourceProduct[]) {
+    for (const [html, listParagraphs] of [
+      [product.descriptionHtml, false],
+      [product.detailsHtml, true],
+    ] as const) {
+      assert.equal(text(formatProductContent(html, listParagraphs)), text(html), product.sourceId);
+    }
+  }
+});
+
+test("product content separates line breaks, headings and lists while retaining links and media", () => {
+  const html =
+    '<p>เหมาะสำหรับ</p><p><strong>ร้านค้า<br>งานอาหาร</strong><br>&nbsp;</p><ul><li>รายการเดิม</li></ul><p>ข้อแรก</p><p><a href="https://example.com">ข้อมูลเพิ่มเติม</a></p><p><img src="/images/example.png" alt="สินค้า"></p>';
+  const $ = load(formatProductContent(html, true));
+  assert.equal($("h3").text(), "เหมาะสำหรับ");
+  assert.equal($(".product-points").length, 3);
+  assert.deepEqual(
+    $(".product-points li")
+      .map((_, element) => $(element).text())
+      .get(),
+    ["ร้านค้า", "งานอาหาร", "ข้อแรก", "ข้อมูลเพิ่มเติม"],
+  );
+  assert.equal($("ul:not(.product-points) li").text(), "รายการเดิม");
+  assert.equal($("a").attr("href"), "https://example.com");
+  assert.equal($("img").attr("src"), "/images/example.png");
 });
 
 test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {

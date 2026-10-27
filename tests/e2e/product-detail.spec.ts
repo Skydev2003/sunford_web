@@ -1,6 +1,70 @@
 import { expect, test } from "@playwright/test";
 import type { Product } from "@/features/catalog/types";
 
+test("detail rows combine repeated labels and use dark text", async ({ page }) => {
+  for (const slug of ["10639", "feh5ks"]) {
+    await page.goto(`/products/${slug}`);
+    const table = page.locator(".product-attributes > table");
+    await expect(
+      table.getByRole("rowheader", { name: "รายละเอียดสินค้า", exact: true }),
+    ).toHaveCount(1);
+    await expect(table.getByRole("rowheader", { name: "รายละเอียด", exact: true })).toHaveCount(0);
+    const labels = await table.getByRole("rowheader").allTextContents();
+    expect(new Set(labels.map((label) => label.trim())).size).toBe(labels.length);
+    await expect(table.getByRole("cell").first()).toHaveCSS("color", "rgb(29, 29, 31)");
+    await expect(table.getByRole("rowheader").first()).toHaveCSS("font-weight", "600");
+    if (slug === "10639") {
+      const display = table
+        .getByRole("row")
+        .filter({ has: page.getByRole("rowheader", { name: "จอแสดงผล", exact: true }) });
+      await expect(display).toHaveCount(1);
+      await expect(display).toContainText("2 ด้าน");
+      await expect(display).toContainText("LCD");
+    }
+    if (slug === "feh5ks") {
+      const units = table
+        .getByRole("row")
+        .filter({ has: page.getByRole("rowheader", { name: "แสดงหน่วยน้ำหนัก", exact: true }) });
+      await expect(units).toHaveCount(1);
+      for (const width of [1440, 390, 320]) {
+        await page.setViewportSize({ width, height: 900 });
+        await expect(units.getByRole("cell")).toHaveText(/^\(g,\s*Kg\)\s*$/);
+        await expect(units.getByRole("rowheader")).not.toContainText("(");
+        await units.screenshot({ path: test.info().outputPath(`weight-units-${width}.png`) });
+      }
+    }
+  }
+});
+
+test("product content uses one detail heading and a two-column attribute table", async ({
+  page,
+}) => {
+  await page.goto("/products/10639");
+  const details = page.locator(".product-information");
+  await expect(details.getByRole("heading")).toHaveText(["รายละเอียดสินค้า"]);
+  await expect(page.getByRole("heading", { name: "ข้อมูลทางเทคนิค", exact: true })).toHaveCount(0);
+  const table = details.getByRole("table", { name: "รายละเอียดสินค้า", exact: true });
+  expect(await table.locator(":scope > tbody > tr").count()).toBeGreaterThan(20);
+  await expect(table.getByRole("rowheader", { name: "เหมาะสำหรับ", exact: true })).toBeVisible();
+  await expect(table.getByRole("row").filter({ hasText: "พิกัดน้ำหนักสูงสุด" })).toContainText(
+    "30kg",
+  );
+  await expect(table).toContainText("10,000");
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const label = (await table.getByRole("rowheader").first().boundingBox())!;
+    const value = (await table.getByRole("cell").first().boundingBox())!;
+    expect(label.x + label.width).toBeLessThanOrEqual(value.x + 1);
+    expect(value.width).toBeGreaterThan(label.width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+    if (width !== 320) {
+      await details.screenshot({ path: test.info().outputPath(`details-table-${width}.png`) });
+    }
+  }
+});
+
 test("each product category uses its own content in the shared detail layout", async ({
   page,
   request,
@@ -36,6 +100,12 @@ test("each product category uses its own content in the shared detail layout", a
     const inquiry = page.getByRole("link", { name: "สอบถามราคาและรายละเอียด", exact: true });
     await expect(inquiry).toBeVisible();
     expect(await inquiry.getAttribute("href")).toMatch(/^https:\/\//);
+    const website = page.locator(".detail-service .source-link");
+    await expect(website).toHaveAttribute(
+      "href",
+      "https://sunfordshop.com/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81",
+    );
+    await expect(website).toHaveAttribute("target", "_blank");
     await expect(page.locator(".detail-copy .product-introduction")).toHaveCount(0);
     await expect(
       page.getByRole("heading", { name: "รายละเอียดสินค้า", exact: true }),
@@ -75,6 +145,13 @@ test("the reference product and long product names fit desktop, tablet and mobil
       const inquiry = (await page.locator(".detail-inquiry").boundingBox())!;
       expect(inquiry.x).toBeGreaterThanOrEqual(0);
       expect(inquiry.x + inquiry.width).toBeLessThanOrEqual(width);
+      if (slug === "10639" && [390, 1440].includes(width)) {
+        await page.locator(".detail-service").screenshot({
+          path: test.info().outputPath(`product-contact-${width}.png`),
+          animations: "disabled",
+        });
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      }
       if (slug === "10639" && [390, 932].includes(width)) {
         const main = (await page.locator(".product-detail").boundingBox())!;
         const grid = (await page.locator(".detail-grid").boundingBox())!;
