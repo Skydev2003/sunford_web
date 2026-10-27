@@ -1,5 +1,17 @@
 # Project Memory
 
+## Resolve tooltip children before reading props
+
+- Observed: The product readability tooltip crashed while reading `aria-label` from an undefined `children.props`.
+- Root cause: The shared client tooltip assumed its child was already a resolved React element; delayed children from server rendering can lack directly accessible element props. Promise-backed children reproduce the same error in the original implementation.
+- Correct behavior: Normalize children through React's `Children.toArray`, validate the single trigger with `isValidElement`, and only then access its props. Keep trigger props, refs and handlers intact. Test delayed children as well as direct page loads, client navigation and reloads.
+
+## Read full specification fields before splitting labels and values
+
+- Observed: Technical rows split parentheses, numeric ranges, dimensions and Thai words between the label and value cells.
+- Root cause: Imported HTML span boundaries and the first space were treated as complete field boundaries, although the source often splits a word or number across spans.
+- Correct behavior: Read the full paragraph and separate a recognized complete field prefix, removing only that prefix across DOM text nodes. Keep unfamiliar statements intact rather than guessing a boundary. Preserve inline links and media, and audit all current source records and published product URLs after changes.
+
 ## Regenerate Prisma Client after schema changes
 
 - Observed: Admin product queries failed with `Unknown argument deletedAt`.
