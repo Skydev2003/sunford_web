@@ -210,9 +210,23 @@
   }
   .spotlight-inner {
     grid-template-columns: 1fr;
-    gap: 30px;
-    padding-block: 44px;
+    gap: 0;
+    padding-block: 44px 0;
+    min-height: 0;
     text-align: center;
+  }
+  .product-spotlight {
+    min-height: 0;
+  }
+  .spotlight-backdrop {
+    top: auto;
+    height: 360px;
+  }
+  .spotlight-backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, #151516, transparent 38%);
   }
   .spotlight-copy h2 {
     font-size: 36px;
@@ -233,7 +247,9 @@
     font-size: 13px;
   }
   .spotlight-visual {
-    width: min(100%, 370px);
+    width: 100%;
+    height: 330px;
+    min-height: 0;
     margin-inline: auto;
   }
   .category-navigation {

@@ -1,12 +1,12 @@
 import type { Product } from "@/features/catalog/types";
 
-export const defaultSpotlightImage = "/images/products/rls1100-spotlight.png";
+export const defaultSpotlightImage = "/images/products/sunford-showroom-banner.png";
 
 export const homeImageSlots = [
   {
     id: "spotlight",
-    title: "สินค้าเด่นบนพื้นดำ",
-    description: "รูปเครื่องชั่งในส่วน ชั่ง. พิมพ์. จัดการ.",
+    title: "ภาพพื้นหลังสินค้าเด่น",
+    description: "ภาพแนวนอนสำหรับพื้นหลังส่วน ชั่ง. พิมพ์. จัดการ. แนะนำสัดส่วนประมาณ 2.6:1",
   },
   { id: "digital", title: "เครื่องชั่งดิจิทัล", description: "การ์ดหมวดเครื่องชั่งดิจิทัล" },
   { id: "smart", title: "เครื่องชั่งอัจฉริยะ", description: "การ์ดหมวดเครื่องชั่งอัจฉริยะ" },

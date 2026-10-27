@@ -185,17 +185,34 @@
   background: var(--red);
 }
 .product-spotlight {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(520px, 38.5vw, 800px);
+  overflow: hidden;
   margin-top: 12px;
   background: #151516;
   color: #fff;
 }
+.spotlight-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.spotlight-backdrop img {
+  object-fit: cover;
+  object-position: right top;
+}
 .spotlight-inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   align-items: center;
   gap: 65px;
   max-width: 1060px;
   padding-block: 72px;
+  min-height: inherit;
 }
 .spotlight-copy .eyebrow {
   color: #ff777e;
@@ -209,11 +226,11 @@
   letter-spacing: -1.4px;
 }
 .spotlight-copy h2 span {
-  color: #aaaab0;
+  color: #c1c1c7;
 }
 .spotlight-copy > p:not(.eyebrow) {
   margin-top: 21px;
-  color: #bdbdc2;
+  color: #dedee3;
   font-size: 16px;
   line-height: 1.9;
 }
@@ -231,17 +248,12 @@
   position: relative;
   display: block;
   min-width: 0;
+  min-height: 340px;
+  align-self: stretch;
   background: transparent;
-  border-radius: clamp(20px, 2vw, 24px);
+  border-radius: 0;
   padding: 0;
-  overflow: hidden;
-}
-.spotlight-visual img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1;
-  object-fit: contain;
+  overflow: visible;
 }
 .spotlight-image-caption {
   position: absolute;
