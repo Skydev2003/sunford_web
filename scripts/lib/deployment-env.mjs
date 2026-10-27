@@ -1,17 +1,24 @@
 // Errors name variables only: deployment logs must never include credentials.
-export function validateRenderEnvironment(env) {
+export function validateDeploymentEnvironment(env) {
   const errors = [];
+  const preview = env.VERCEL === "1" && env.VERCEL_ENV === "preview";
+  if (env.VERCEL === "1" && !["production", "preview"].includes(env.VERCEL_ENV))
+    errors.push("VERCEL_ENV must be production or preview for a deployment build.");
   const expectedBranch =
     env.APP_ENV === "production" ? "main" : env.APP_ENV === "uat" ? "uat" : undefined;
   if (!expectedBranch) errors.push("APP_ENV must be uat or production.");
-  if (!["main", "uat"].includes(env.RENDER_GIT_BRANCH))
+  if (!env.DEPLOY_BRANCH || (!preview && !["main", "uat"].includes(env.DEPLOY_BRANCH)))
     errors.push("Deployment branch must be main or uat; detached HEAD is not allowed.");
-  if (expectedBranch && env.RENDER_GIT_BRANCH && env.RENDER_GIT_BRANCH !== expectedBranch)
+  if (!preview && expectedBranch && env.DEPLOY_BRANCH && env.DEPLOY_BRANCH !== expectedBranch)
     errors.push(`Deploy the ${expectedBranch} branch for this environment.`);
+  if (env.VERCEL === "1" && env.APP_ENV !== (preview ? "uat" : "production"))
+    errors.push("APP_ENV must match the Vercel target: production or uat for preview.");
 
-  for (const name of ["DATABASE_URL", "DIRECT_URL", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"]) {
+  const required = ["DATABASE_URL", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"];
+  if (!preview) required.push("DIRECT_URL");
+  for (const name of required) {
     if (!env[name]?.trim() || env[name].includes("YOUR-PASSWORD"))
-      errors.push(`Configure ${name} in Render Environment.`);
+      errors.push(`Configure ${name} in the deployment environment variables.`);
   }
   for (const name of ["DATABASE_URL", "DIRECT_URL"]) {
     if (!env[name]) continue;

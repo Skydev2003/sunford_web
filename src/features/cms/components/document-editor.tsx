@@ -1,5 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- The admin previews local and uploaded CMS images directly. */
+import { imageSizeError } from "@/features/admin/media-limits";
 import { useActionState, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowDown, ArrowUp, Plus, Save, Trash2, Upload } from "lucide-react";
@@ -193,6 +194,11 @@ function FieldInput({
   const [error, setError] = useState("");
   async function upload(file?: File) {
     if (!file) return;
+    const sizeError = imageSizeError(file);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
     onUpload(true);
     setError("");
     try {
@@ -330,7 +336,7 @@ function FieldInput({
               นำรูปออก
             </button>
           )}
-          <small>JPG, PNG หรือ WebP ไม่เกิน 5 MB</small>
+          <small>JPG, PNG หรือ WebP ไม่เกิน 4 MB</small>
           {error && (
             <p role="alert" className="admin-field-error">
               {error}
@@ -386,6 +392,11 @@ function RichText({
   }
   async function upload(file?: File) {
     if (!file) return;
+    const sizeError = imageSizeError(file);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
     onUpload(true);
     setError("");
     try {

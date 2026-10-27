@@ -1,4 +1,5 @@
 "use client";
+import { imageSizeError } from "@/features/admin/media-limits";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { useActionState, useId, useRef, useState, useTransition } from "react";
 import Image from "next/image";
@@ -30,8 +31,9 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
   const busy = saving || uploading || galleryUploading || cancelling;
   async function upload(file?: File) {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setImageError("รูปภาพต้องมีขนาดไม่เกิน 5 MB");
+    const sizeError = imageSizeError(file);
+    if (sizeError) {
+      setImageError(sizeError);
       return;
     }
     setUploading(true);
@@ -281,7 +283,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                   >
                     <ImagePlus size={34} strokeWidth={1.2} />
                     <strong>เลือกรูปผลิตภัณฑ์</strong>
-                    <span>JPG, PNG หรือ WebP · ไม่เกิน 5 MB</span>
+                    <span>JPG, PNG หรือ WebP · ไม่เกิน 4 MB</span>
                   </button>
                 )}
                 <input

@@ -13,6 +13,44 @@ import sourceProducts from "../../src/features/content/data/products.json";
 import type { SourceProduct } from "../../src/features/content/types";
 import { defaultHomeImages, homeImageSlots } from "../../src/features/home/data/image-slots";
 import { resolveHomeLink } from "../../src/features/home/data/link-targets";
+import {
+  contentRoutePath,
+  contentRewrites,
+  resolveContentPath,
+  staticContentParams,
+} from "../../src/features/content/data/static-content-params";
+import sourcePages from "../../src/features/content/data/pages.json";
+
+test("static content params reserve filename space for Vercel's prerender sidecars", () => {
+  const params = staticContentParams(sourcePages);
+  assert.ok(params.some(({ path }) => path.join("/") === "about-us"));
+  const longPage = sourcePages.find((page) => page.path.startsWith("/การพิมพ์สติ๊กเกอร์"));
+  assert.ok(longPage);
+  assert.ok(!params.some(({ path }) => `/${path.join("/")}` === longPage.path));
+  assert.equal(resolveContentPath(contentRoutePath(longPage.path)), longPage.path);
+  assert.equal(
+    params.length,
+    sourcePages.filter((page) => page.path !== "/" && page.kind !== "product").length,
+  );
+  assert.equal(
+    new Set(contentRewrites.map((rewrite) => rewrite.destination)).size,
+    contentRewrites.length,
+  );
+  for (const { path } of params) {
+    for (const segment of path) {
+      for (const suffix of [
+        ".prerender-config.json",
+        ".prerender-fallback.html",
+        ".rsc.prerender-config.json",
+      ]) {
+        assert.ok(Buffer.byteLength(encodeURIComponent(segment) + suffix, "utf8") <= 255);
+      }
+    }
+  }
+  // Bound encoded bytes for runtime caches as well as raw UTF-8 at build time.
+  assert.match(contentRoutePath(`/${"ก".repeat(23)}/short`), /^\/_content\/[a-f0-9]{64}$/);
+  assert.equal(contentRoutePath(`/${"ก".repeat(22)}/short`), `/${"ก".repeat(22)}/short`);
+});
 
 test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {
   const products = getSnapshotProducts();
@@ -196,4 +234,19 @@ test("overview aliases preserve saved specifications and do not mistake minimum 
     productOverview(product, [{ label: "การเชื่อมต่อ", value: "-" }]).specifications[6].value,
     "-",
   );
+});
+
+test("image uploads leave request overhead below Vercel's payload limit", async () => {
+  const { imageSizeError, MAX_IMAGE_BYTES } = await import("../../src/features/admin/media-limits");
+  assert.equal(imageSizeError({ size: 1 }), undefined);
+  assert.equal(imageSizeError({ size: MAX_IMAGE_BYTES }), undefined);
+  assert.match(imageSizeError({ size: MAX_IMAGE_BYTES + 1 })!, /4 MB/);
+  assert.ok(imageSizeError({ size: 0 }));
+  const form = new FormData();
+  form.set(
+    "file",
+    new File([new Uint8Array(MAX_IMAGE_BYTES)], "product.png", { type: "image/png" }),
+  );
+  const body = await new Response(form).arrayBuffer();
+  assert.ok(body.byteLength < 4_500_000);
 });
