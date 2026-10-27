@@ -94,7 +94,7 @@ test("reduced motion shows a still frame until the visitor chooses to play", asy
 });
 
 test("an unavailable clip falls back to the product photograph", async ({ page }) => {
-  await page.route("**/videos/sunford-homepage-16x9.webm", (route) => route.abort());
+  await page.route("**/videos/sunford-homepage-16x9.webm*", (route) => route.abort());
   await page.goto("/");
   await expect(page.locator(".hero-motion-fallback")).toBeVisible();
   await expect(page.locator(".hero-product-video")).toHaveCount(0);

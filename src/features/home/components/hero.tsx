@@ -44,7 +44,7 @@ export function Hero({
         href: slide.href || (product ? `/products/${product.slug}` : "/products"),
         video:
           product?.id === "acs30-jc21" && !slide.image
-            ? "/videos/sunford-homepage-16x9.webm"
+            ? "/videos/sunford-homepage-16x9.webm?v=8fa57b120757"
             : undefined,
       },
     ];
