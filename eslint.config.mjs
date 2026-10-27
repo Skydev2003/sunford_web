@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Media render output and local experiments are not application source.
+    "output/**",
+    "outputs/**",
+    "work/**",
   ]),
 ]);
 

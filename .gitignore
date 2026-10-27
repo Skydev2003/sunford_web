@@ -46,5 +46,7 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 
-# Keep the original oversized model locally.
-/assets/models/wetous.glb
+# Local media experiments, render frames, previews, and logs.
+/output/
+/outputs/
+/work/
