@@ -4,7 +4,6 @@
   gap: 15px;
   min-height: 158px;
   align-items: center;
-  border-bottom: 1px solid var(--line);
 }
 .category-intro {
   display: flex;

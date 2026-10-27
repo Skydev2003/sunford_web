@@ -1,0 +1,99 @@
+import { expect, test } from "@playwright/test";
+
+test("four category panels change the shared background and reveal working Sunford links", async ({
+  page,
+  request,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  const section = page.locator("#product-experience");
+  await section.scrollIntoViewIfNeeded();
+  const panels = section.locator(".category-feature-panel");
+  await expect(panels).toHaveCount(4);
+  await expect(page.locator("main #products")).toHaveCount(0);
+  for (let index = 0; index < 4; index++) {
+    const panel = panels.nth(index);
+    const trigger = panel.locator(".category-feature-trigger");
+    await trigger.hover();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await expect(section.locator('.category-feature-trigger[aria-expanded="true"]')).toHaveCount(1);
+    const link = panel.getByRole("link");
+    await expect(link).toBeVisible();
+    const href = (await link.getAttribute("href"))!;
+    expect(href.startsWith("/")).toBe(true);
+    expect((await request.get(href)).ok(), href).toBe(true);
+    const background = section.locator(".category-feature-image.is-active");
+    await expect(background).toHaveCSS("opacity", "1");
+    await expect
+      .poll(() =>
+        background.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth),
+      )
+      .toBeGreaterThan(0);
+  }
+  await panels.first().locator(".category-feature-trigger").hover();
+  await page.evaluate(() => document.fonts.ready);
+  await expect(panels.first().getByRole("link")).toBeInViewport();
+  await section.screenshot({
+    path: "C:/tmp/sunford-category-feature-desktop.png",
+    animations: "disabled",
+  });
+  await page.mouse.move(5, 65);
+  await expect(section.locator('.category-feature-trigger[aria-expanded="true"]')).toHaveCount(0);
+  await section.screenshot({
+    path: "C:/tmp/sunford-category-feature-default.png",
+    animations: "disabled",
+  });
+  expect(errors).toEqual([]);
+});
+
+test("keyboard users can reveal a category, close it and follow its link", async ({ page }) => {
+  await page.goto("/");
+  const panel = page.locator("#product-experience .category-feature-panel").first();
+  const trigger = panel.locator(".category-feature-trigger");
+  await trigger.focus();
+  await trigger.press("Enter");
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await trigger.press("Escape");
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await trigger.press("Enter");
+  const link = panel.getByRole("link");
+  const href = (await link.getAttribute("href"))!;
+  await link.focus();
+  await link.press("Enter");
+  await expect(page).toHaveURL(new URL(href, "http://localhost:3000").href);
+  await expect(page.locator("main.source-content-page")).toBeVisible();
+});
+
+test.describe("touch category panels", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test("touch opens details, changes selection and closes without page overflow", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const section = page.locator("#product-experience");
+    await section.scrollIntoViewIfNeeded();
+    const triggers = section.locator(".category-feature-trigger");
+    await triggers.first().tap();
+    await expect(triggers.first()).toHaveAttribute("aria-expanded", "true");
+    await triggers.nth(1).tap();
+    await expect(triggers.first()).toHaveAttribute("aria-expanded", "false");
+    await expect(triggers.nth(1)).toHaveAttribute("aria-expanded", "true");
+    const panel = section.locator(".category-feature-panel").nth(1);
+    await expect(panel.getByRole("link")).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    await section.screenshot({
+      path: "C:/tmp/sunford-category-feature-mobile.png",
+      animations: "disabled",
+    });
+    await panel.getByRole("button", { name: /ปิดรายละเอียด/ }).tap();
+    await expect(triggers.nth(1)).toHaveAttribute("aria-expanded", "false");
+    for (const width of [320, 390, 768, 1280, 1800]) {
+      await page.setViewportSize({ width, height: 900 });
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      ).toBe(true);
+    }
+  });
+});

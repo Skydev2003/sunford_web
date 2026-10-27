@@ -2,8 +2,15 @@
 import { Monitor, Plug, Scale, ScanLine } from "lucide-react";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { catalogDefaults } from "@/features/cms/data/settings";
+import Link from "next/link";
 
-export function CategoryNavigation({ copy = catalogDefaults }: { copy?: typeof catalogDefaults }) {
+export function CategoryNavigation({
+  copy = catalogDefaults,
+  catalogHref = "#products",
+}: {
+  copy?: typeof catalogDefaults;
+  catalogHref?: string;
+}) {
   const setCategory = useCatalogStore((state) => state.setCategory);
   return (
     <nav className="category-navigation container" aria-label="กลุ่มผลิตภัณฑ์ Sunford">
@@ -11,20 +18,20 @@ export function CategoryNavigation({ copy = catalogDefaults }: { copy?: typeof c
         <span>{copy.navEyebrow}</span>
         <strong>{copy.navTitle}</strong>
       </div>
-      <a href="#products" onClick={() => setCategory("all")}>
+      <Link href={catalogHref} onClick={() => setCategory("all")}>
         <Scale size={27} strokeWidth={1.3} />
         <div>
           <strong>{copy.navDigital}</strong>
           <span>{copy.navDigitalEnglish}</span>
         </div>
-      </a>
-      <a href="#products" onClick={() => setCategory("smart")}>
+      </Link>
+      <Link href={catalogHref} onClick={() => setCategory("smart")}>
         <ScanLine size={27} strokeWidth={1.3} />
         <div>
           <strong>{copy.navSmart}</strong>
           <span>{copy.navSmartEnglish}</span>
         </div>
-      </a>
+      </Link>
       <a href={copy.accessoriesHref}>
         <Plug size={27} strokeWidth={1.3} />
         <div>

@@ -510,7 +510,27 @@
   gap: 18px;
   padding: 5px max(32px, calc((100vw - 1180px) / 2)) 25px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
+}
+.drag-scroll-track {
+  scrollbar-width: none;
+}
+.drag-scroll-track::-webkit-scrollbar {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .drag-scroll-track,
+  .drag-scroll-track a,
+  .drag-scroll-track button {
+    cursor: grab;
+    user-select: none;
+  }
+  .drag-scroll-track.is-dragging,
+  .drag-scroll-track.is-dragging * {
+    cursor: grabbing;
+  }
+}
+.drag-scroll-track.is-dragging {
+  scroll-behavior: auto;
 }
 .story-card {
   background: var(--paper);
@@ -674,7 +694,6 @@
   gap: 18px;
   overflow-x: auto;
   padding: 3px 2px 18px;
-  scroll-snap-type: x mandatory;
 }
 .video-card {
   position: relative;

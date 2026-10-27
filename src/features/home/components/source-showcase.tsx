@@ -3,6 +3,7 @@ import { showcaseDefaults, storiesDefaults } from "@/features/cms/data/settings"
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
+import { DragScroll } from "@/components/ui/drag-scroll";
 import { getContentPages, getContentPage } from "@/features/content/server/content-repository";
 import type { Product } from "@/features/catalog/types";
 import { VideoGallery } from "@/features/content/components/video-gallery";
@@ -108,7 +109,7 @@ export async function SunfordStories() {
           {copy.linkLabel} <ChevronRight size={17} />
         </Link>
       </div>
-      <div className="stories-track">
+      <DragScroll className="stories-track" label={copy.title}>
         {articles.map((article) => (
           <Link href={article.path} key={article.path} className="story-card">
             <div className="story-card-image">
@@ -128,7 +129,7 @@ export async function SunfordStories() {
             </div>
           </Link>
         ))}
-      </div>
+      </DragScroll>
     </section>
   );
 }

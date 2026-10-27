@@ -18,7 +18,7 @@ test("homepage animation plays silently, pauses on request and stops outside the
   ).toEqual({ muted: true, loop: true, inline: true });
   await page.getByRole("button", { name: "หยุดแอนิเมชันสินค้า", exact: true }).click();
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true);
-  await page.locator("#products").scrollIntoViewIfNeeded();
+  await page.locator("#solutions").scrollIntoViewIfNeeded();
   await page.locator(".hero-motion").scrollIntoViewIfNeeded();
   await expect(
     page.getByRole("button", { name: "เล่นแอนิเมชันสินค้า", exact: true }),
@@ -27,7 +27,7 @@ test("homepage animation plays silently, pauses on request and stops outside the
   await expect
     .poll(() => video.evaluate((element: HTMLVideoElement) => element.paused))
     .toBe(false);
-  await page.locator("#products").scrollIntoViewIfNeeded();
+  await page.locator("#solutions").scrollIntoViewIfNeeded();
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await expect
