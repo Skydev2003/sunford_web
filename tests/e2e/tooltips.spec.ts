@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 test("product readability help explains display increments without changing the specification", async ({
   page,
 }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/products/10639");
   const help = page.getByRole("button", { name: "ค่าละเอียดคืออะไร", exact: true });
   const value = page.locator(".spec-list > div").filter({ has: help }).locator("dd");
@@ -32,6 +34,28 @@ test("product readability help explains display increments without changing the 
     await page.mouse.move(0, 0);
     await expect(tooltip).toHaveCount(0);
   }
+  expect(errors).toEqual([]);
+});
+
+test("product help remains available after client navigation and reload", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
+  await dialog.getByRole("textbox").fill("FEH5KS");
+  await dialog.locator(".search-results a").first().click();
+  await expect(page).toHaveURL(/\/products\/feh5ks$/);
+
+  for (const reload of [false, true]) {
+    if (reload) await page.reload();
+    const help = page.getByRole("button", { name: "ค่าละเอียดคืออะไร", exact: true });
+    await help.hover();
+    await expect(page.getByRole("tooltip")).toContainText("หน่วยย่อยที่สุด");
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("tooltip")).toHaveCount(0);
+  }
+  expect(errors).toEqual([]);
 });
 
 test("tooltip explains a header icon, remains hoverable and does not move the button", async ({

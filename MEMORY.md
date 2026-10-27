@@ -1,5 +1,11 @@
 # Project Memory
 
+## Resolve tooltip children before reading props
+
+- Observed: The product readability tooltip crashed while reading `aria-label` from an undefined `children.props`.
+- Root cause: The shared client tooltip assumed its child was already a resolved React element; delayed children from server rendering can lack directly accessible element props. Promise-backed children reproduce the same error in the original implementation.
+- Correct behavior: Normalize children through React's `Children.toArray`, validate the single trigger with `isValidElement`, and only then access its props. Keep trigger props, refs and handlers intact. Test delayed children as well as direct page loads, client navigation and reloads.
+
 ## Read full specification fields before splitting labels and values
 
 - Observed: Technical rows split parentheses, numeric ranges, dimensions and Thai words between the label and value cells.
