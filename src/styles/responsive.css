@@ -154,15 +154,6 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 32px;
   }
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-  .detail-image {
-    height: 420px;
-  }
-  .detail-copy {
-    max-width: 650px;
-  }
 }
 @media (max-width: 720px) {
   html {
@@ -486,26 +477,46 @@
     width: 100%;
   }
   .detail-image {
-    height: 340px;
+    height: auto;
+    max-width: 480px;
+    margin-inline: auto;
   }
   .detail-image img {
     padding: 30px;
   }
   .detail-grid {
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .detail-copy h1 {
-    font-size: 37px;
+    font-size: 32px;
+    margin-top: 0;
   }
-  .detail-copy h2 {
-    font-size: 21px;
+  .detail-copy .detail-subtitle {
+    font-size: 16px;
   }
-  .detail-copy > p {
-    font-size: 14px;
+  .spec-list {
+    margin-top: 28px;
+  }
+  .spec-list > div {
+    gap: 14px;
+    font-size: 12px;
+  }
+  .detail-inquiry {
+    width: 100%;
+    min-width: 0;
+  }
+  .product-information {
+    padding-top: 50px;
   }
   .detail-phone {
     margin-left: 0;
     display: flex;
+  }
+  .detail-service {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 20px;
   }
   .related-products {
     padding-top: 55px;

@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, Check, Phone } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, CircleHelp, Phone } from "lucide-react";
+import { Tooltip } from "@/components/ui/tooltip";
 import { getProduct, getProducts } from "@/features/catalog/server/product-repository";
-import { getCategories } from "@/features/cms/server/categories";
 import { getSettings } from "@/features/cms/server/documents";
 import { defaultSite } from "@/features/cms/data/settings";
 import { ProductCard } from "@/features/catalog/components/product-card";
-import { productSources } from "@/features/catalog/data/product-sources";
 import { getSourceProduct } from "@/features/content/server/content-repository";
 import { ProductGallery } from "@/features/catalog/components/product-gallery";
 import { getContentPage } from "@/features/content/server/content-repository";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { getSnapshotProducts } from "@/features/content/data/catalog-snapshot";
-import { productPresentation } from "@/features/catalog/data/product-presentation";
+import { productOverview, productPresentation } from "@/features/catalog/data/product-presentation";
+import {
+  mergeProductContentRows,
+  productContentRows,
+} from "@/features/catalog/data/product-content";
 
 // Resolve the product before streaming so unknown URLs retain an HTTP 404.
 // Catalogue reads remain cached; this route deliberately allows URL resolution.
@@ -36,7 +39,7 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const product = await getProduct((await params).slug);
   if (!product) notFound();
-  const [categories, site] = await Promise.all([getCategories(), getSettings("site", defaultSite)]);
+  const site = await getSettings("site", defaultSite);
   const related = (await getProducts()).filter((p) => p.id !== product.id).slice(0, 3);
   const source = getSourceProduct(product.sourceId ?? product.slug);
   const sourcePage = source && (await getContentPage(source.path));
@@ -44,6 +47,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const videos = product.media?.videos ?? sourcePage?.videos ?? [];
   const snapshot = getSnapshotProducts().find((row) => row.id === product.id);
   const presentation = productPresentation(product, snapshot, source);
+  const overview = productOverview(product, presentation.specifications);
+  const descriptionRows = presentation.descriptionHtml
+    ? productContentRows(presentation.descriptionHtml)
+    : [];
+  const technicalRows = detailsHtml ? productContentRows(detailsHtml, true) : [];
+  const contentRows = mergeProductContentRows([
+    ...(descriptionRows.length
+      ? descriptionRows
+      : [{ label: "รายละเอียดสินค้า", value: product.description || "-" }]),
+    ...overview.additionalSpecifications,
+    ...technicalRows,
+  ]);
   return (
     <main id="main-content" className="product-detail container">
       <Link href="/products" className="text-link back-link">
@@ -66,9 +81,25 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           }
         />
         <div className="detail-copy">
-          <p className="eyebrow">{categories.find((c) => c.id === product.category)?.english}</p>
           <h1>{product.name}</h1>
-          <h2>{product.subtitle}</h2>
+          <p className="detail-subtitle">{product.subtitle}</p>
+          <dl className="spec-list">
+            {overview.specifications.map((spec) => (
+              <div key={spec.label}>
+                <dt>
+                  {spec.label}
+                  {spec.label === "ค่าละเอียด" && (
+                    <Tooltip content="ค่าละเอียด คือหน่วยย่อยที่สุดที่หน้าจอเครื่องชั่งแสดงได้ เช่น ค่าละเอียด 1 กรัม จะแสดงน้ำหนักเพิ่มหรือลดทีละ 1 กรัม">
+                      <button type="button" className="spec-help" aria-label="ค่าละเอียดคืออะไร">
+                        <CircleHelp size={16} aria-hidden="true" />
+                      </button>
+                    </Tooltip>
+                  )}
+                </dt>
+                <dd>{spec.value}</dd>
+              </div>
+            ))}
+          </dl>
           {product.price != null ? (
             <p className="detail-price">
               {new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(
@@ -76,69 +107,55 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               )}
             </p>
           ) : null}
-          {presentation.descriptionHtml ? (
-            <div
-              className="product-introduction source-prose"
-              dangerouslySetInnerHTML={{ __html: presentation.descriptionHtml }}
-            />
-          ) : (
-            <p>{product.description}</p>
-          )}
-          <dl className="spec-list">
-            {presentation.specifications.length ? (
-              presentation.specifications.map((spec, index) => (
-                <div key={`${spec.label}-${index}`}>
-                  <dt>{spec.label}</dt>
-                  <dd>{spec.value}</dd>
-                </div>
-              ))
-            ) : (
-              <>
-                <div>
-                  <dt>พิกัดน้ำหนัก</dt>
-                  <dd>{product.capacity}</dd>
-                </div>
-                <div>
-                  <dt>ความละเอียด</dt>
-                  <dd>{product.readability}</dd>
-                </div>
-                <div>
-                  <dt>การเชื่อมต่อ</dt>
-                  <dd>{product.connection}</dd>
-                </div>
-              </>
-            )}
-          </dl>
-          <a href={site.line} target="_blank" rel="noreferrer" className="button button-red">
-            สอบถามราคาและรายละเอียด <ArrowUpRight size={17} />
+          <a
+            href={site.line}
+            target="_blank"
+            rel="noreferrer"
+            className="button button-red detail-inquiry"
+          >
+            สอบถามราคาและรายละเอียด
           </a>
-          <a className="detail-phone" href={site.phoneHref}>
-            <Phone size={16} /> {site.phone}
-          </a>
-          <p className="detail-note">
-            <Check size={16} /> ให้คำปรึกษาและดูแลหลังการขายโดยทีม Sunford
-          </p>
-          <small>รายละเอียดอาจเปลี่ยนแปลง กรุณายืนยันสเปกและราคาล่าสุดกับทีมงาน</small>
-          {(source?.sourceUrl || productSources[product.id]) && (
-            <a
-              className="text-link source-link"
-              href={source?.sourceUrl || productSources[product.id]}
-              target="_blank"
-              rel="noreferrer"
-            >
-              ข้อมูลผลิตภัณฑ์จาก Sunford <ArrowUpRight size={15} />
-            </a>
-          )}
         </div>
       </div>
-      {detailsHtml && (
-        <section className="product-specifications" aria-labelledby="specifications-title">
-          <div className="section-heading">
-            <h2 id="specifications-title">รู้จักทุกรายละเอียด.</h2>
+      <section className="product-information" aria-labelledby="product-information-title">
+        <div className="section-heading">
+          <h2 id="product-information-title">รายละเอียดสินค้า</h2>
+        </div>
+        <div className="product-attributes">
+          <table aria-labelledby="product-information-title">
+            <tbody>
+              {contentRows.map((row) => (
+                <tr key={row.label}>
+                  <th scope="row">{row.label}</th>
+                  <td
+                    className="product-attribute-content"
+                    dangerouslySetInnerHTML={{ __html: row.html }}
+                  />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="detail-service">
+          <div className="detail-service-copy">
+            <a className="detail-phone" href={site.phoneHref}>
+              <Phone size={18} aria-hidden="true" /> {site.phone}
+            </a>
+            <p className="detail-note">
+              <Check size={16} aria-hidden="true" /> ให้คำปรึกษาและดูแลหลังการขายโดยทีม Sunford
+            </p>
+            <small>รายละเอียดอาจเปลี่ยนแปลง กรุณายืนยันสเปกและราคาล่าสุดกับทีมงาน</small>
           </div>
-          <div className="source-prose" dangerouslySetInnerHTML={{ __html: detailsHtml }} />
-        </section>
-      )}
+          <a
+            className="text-link source-link"
+            href="https://sunfordshop.com/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            เยี่ยมชมเว็บไซต์ Sunford Shop <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+        </div>
+      </section>
       {videos.length ? (
         <VideoGallery videos={videos} title={`รู้จัก ${product.name} เพิ่มเติม`} />
       ) : null}
