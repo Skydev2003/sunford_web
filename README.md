@@ -50,7 +50,7 @@ tests/e2e/                  # Playwright user journeys
 public/
   images/                   # รูปที่เว็บใช้งาน
   models/                   # โมเดล GLB และไฟล์ต้นฉบับประกอบโมเดล
-  videos/                   # วิดีโอ WebM และไฟล์ต้นฉบับแอนิเมชัน
+  videos/                   # วิดีโอ WebM ของหน้าแรก
 ```
 
 หลักการ: `app → features → repository → Prisma → Supabase PostgreSQL` โดย Client Components รับเฉพาะข้อมูลสินค้าสาธารณะ ส่วน credentials และ database client อยู่ฝั่งเซิร์ฟเวอร์ Zustand เก็บเฉพาะสถานะ UI; ข้อมูลสินค้าอยู่ใน Server Components ไม่เก็บสำเนาใน global store

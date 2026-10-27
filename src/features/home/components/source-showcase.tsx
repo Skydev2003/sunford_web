@@ -20,6 +20,7 @@ export async function SourceShowcase({
   targets?: HomeLinkTargets;
 }) {
   const copy = await getSettings("showcase", showcaseDefaults);
+  const digitalProduct = products.find((product) => product.id === "wps10ks");
   const defaults = defaultHomeImages(
     products,
     (await getContentPage("/applications-and-softwares"))?.images[0],
@@ -61,22 +62,32 @@ export async function SourceShowcase({
         const visual = (
           <ProductImage
             src={tile.image}
-            alt={tile.name}
+            alt={tile.id === "digital" ? "เครื่องชั่งดิจิทัล SUNFORD WPS10KS" : tile.name}
             fill
             sizes="(max-width: 720px) 90vw, 45vw"
           />
         );
         return (
-          <article className="showcase-tile" key={tile.id}>
+          <article
+            className={`showcase-tile${tile.id === "digital" ? " showcase-tile-dark" : ""}`}
+            key={tile.id}
+          >
             <div className="showcase-tile-copy">
               <p className="eyebrow">{tile.english}</p>
               <h2>{tile.name}</h2>
               <p>{tile.description}</p>
-              {href && (
-                <Link className="text-link" href={href}>
-                  {copy.linkLabel} <ChevronRight size={16} />
-                </Link>
-              )}
+              <div className="showcase-tile-actions">
+                {href && (
+                  <Link className="button button-red" href={href}>
+                    {copy.linkLabel}
+                  </Link>
+                )}
+                {tile.id === "digital" && digitalProduct && (
+                  <Link className="button button-outline" href={`/products/${digitalProduct.slug}`}>
+                    ดูรุ่น {digitalProduct.name}
+                  </Link>
+                )}
+              </div>
             </div>
             {href ? (
               <Link className="showcase-tile-image" href={href} aria-label={tile.name}>

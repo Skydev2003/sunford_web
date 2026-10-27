@@ -16,8 +16,6 @@ const eslintConfig = defineConfig([
     "output/**",
     "outputs/**",
     "work/**",
-    // Bundled third-party player; lint the authored animation modules instead.
-    "public/animations/**/model-viewer.min.js",
   ]),
 ]);
 
