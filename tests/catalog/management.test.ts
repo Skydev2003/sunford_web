@@ -283,13 +283,14 @@ test("homepage destinations follow product IDs through slug changes and disable 
 test("homepage image defaults preserve the current artwork in five independent positions", () => {
   const products = getSnapshotProducts();
   const before = structuredClone(products);
-  const defaults = defaultHomeImages(products, "/images/software.png");
+  const defaults = defaultHomeImages(products);
   assert.equal(homeImageSlots.length, 5);
   assert.equal(new Set(homeImageSlots.map((slot) => slot.id)).size, 5);
   assert.equal(defaults.spotlight, "/images/products/rls1100.png");
-  assert.equal(defaults.smart, products.find((p) => p.id === "rls1100")?.image);
-  assert.equal(defaults.digital, products.find((p) => p.id === "feh5ks")?.image);
-  assert.equal(defaults.software, "/images/software.png");
+  assert.equal(defaults.smart, "/images/pd/RLS1100.png");
+  assert.equal(defaults.digital, "/images/pd/WPS10KS.png");
+  assert.equal(defaults.accessories, "/images/pd/TRP-58B.png");
+  assert.equal(defaults.software, "/images/pd/app.png");
   assert.deepEqual(products, before);
 });
 

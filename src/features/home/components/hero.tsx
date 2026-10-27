@@ -3,17 +3,28 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useRef, useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
 import { defaultHero } from "@/features/cms/data/settings";
 import type { HeroSettings } from "@/features/cms/types";
 import { HeroProductVideo } from "./hero-product-video";
 
+const HeroProductModel = dynamic(
+  () => import("./hero-product-model").then((module) => module.HeroProductModel),
+  { ssr: false },
+);
+
 const heroImages: Record<string, string> = {
   "acs30-jc21": "/images/products/acs30-jc21-cutout.png",
   wps10ks: "/images/products/wps10ks.png",
   feh5ks: "/images/products/feh5ks.png",
   rls1100: "/images/products/rls1100.png",
+};
+
+const heroModels: Record<string, string> = {
+  wps10ks: "/models/wps10ks.glb",
+  feh5ks: "/models/feh5ks.glb",
 };
 
 export function Hero({
@@ -43,6 +54,7 @@ export function Hero({
               : (heroImages[product.id] ?? product.image)
             : ""),
         href: slide.href || (product ? `/products/${product.slug}` : "/products"),
+        model: product && !slide.image ? heroModels[product.id] : undefined,
         video:
           product?.id === "acs30-jc21" && !slide.image
             ? "/videos/sunford-homepage-16x9.webm?v=8fa57b120757"
@@ -101,7 +113,14 @@ export function Hero({
             <span>DESIGNED FOR YOUR EVERYDAY</span>
             <span>ทุกรายละเอียด เพื่อทุกวันของคุณ</span>
           </div>
-          {product?.video ? (
+          {product?.model ? (
+            <HeroProductModel
+              key={product.id}
+              src={product.model}
+              poster={product.image}
+              name={product.name}
+            />
+          ) : product?.video ? (
             <HeroProductVideo
               key={product.id}
               src={product.video}

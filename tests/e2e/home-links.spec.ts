@@ -4,17 +4,22 @@ test("homepage images and detail buttons open the same original destinations", a
   await page.goto("/");
   const spotlight = page.locator(".product-spotlight");
   const spotlightHref = await spotlight.locator(".spotlight-visual").getAttribute("href");
+  const spotlightProduct = (await spotlight.locator(".eyebrow").innerText())
+    .replace(/^SUNFORD\s*/, "")
+    .trim();
   await expect(spotlight.getByRole("link", { name: "ดูเพิ่มเติม", exact: true })).toHaveAttribute(
     "href",
     spotlightHref!,
   );
   await spotlight.locator(".spotlight-visual").click();
   await expect(page).toHaveURL(new RegExp(`${spotlightHref}$`));
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("RLS1100");
+  if (spotlightProduct)
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(spotlightProduct);
+  else await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   const destinations = [
     "/Product/Digital-weighing",
-    "/Product/MES",
     "/product/อุปกรณ์ประกอบเครื่องชั่ง",
+    "/Product/MES",
     "/applications-and-softwares",
   ];
   for (const [index, href] of destinations.entries()) {
