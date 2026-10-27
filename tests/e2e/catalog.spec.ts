@@ -54,13 +54,14 @@ test("homepage renders product imagery and cycles featured products", async ({ p
 });
 
 test("category filters show matching products and restore the catalogue", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.locator(".product-card")).toHaveCount(3);
+  await page.goto("/products");
+  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
+  await expect(page.locator(".product-card")).toHaveCount(24);
   await page.getByRole("button", { name: "เครื่องชั่งอุตสาหกรรม", exact: true }).click();
   await expect(page.locator(".product-card").first()).toBeVisible();
   await expect(page.locator(".product-card h3").filter({ hasText: "TIS-150-JC62Z" })).toBeVisible();
   await page.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
-  await expect(page.locator(".product-card")).toHaveCount(3);
+  await expect(page.locator(".product-card")).toHaveCount(24);
 });
 
 test("search opens product details, supports empty results and Escape", async ({ page }) => {
@@ -83,7 +84,8 @@ test("search opens product details, supports empty results and Escape", async ({
 });
 
 test("comparison uses selected product data and clears selections", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/products");
+  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
   await page.getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ WPS10KS", exact: true }).click();
   await page
     .getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ ACS-30-JC21", exact: true })

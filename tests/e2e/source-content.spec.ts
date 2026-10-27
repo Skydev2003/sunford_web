@@ -2,12 +2,14 @@ import { test, expect } from "@playwright/test";
 
 test("desktop menu expands over a uniform curtain and closes with Escape", async ({ page }) => {
   await page.goto("/");
-  await page.locator("#products").scrollIntoViewIfNeeded();
-  await page
-    .getByRole("navigation", { name: "เมนูหลัก", exact: true })
-    .getByRole("link", { name: "ผลิตภัณฑ์", exact: true })
-    .hover();
-  await expect(page.getByRole("navigation", { name: "สำรวจผลิตภัณฑ์", exact: true })).toBeVisible();
+  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  const links = page.getByRole("navigation", { name: "เมนูหลัก", exact: true }).getByRole("link");
+  const firstLabel = (await links.nth(0).innerText()).trim();
+  const secondLabel = (await links.nth(1).innerText()).trim();
+  await links.nth(0).hover();
+  await expect(
+    page.getByRole("navigation", { name: `สำรวจ${firstLabel}`, exact: true }),
+  ).toBeVisible();
   const backdrop = page.locator(".nav-backdrop");
   await expect(backdrop).toHaveCSS("opacity", "1");
   await expect(backdrop).toHaveCSS("backdrop-filter", "blur(20px)");
@@ -24,30 +26,23 @@ test("desktop menu expands over a uniform curtain and closes with Escape", async
       );
     });
   await expect.poll(menuFitsContent).toBe(true);
-  await page
-    .getByRole("navigation", { name: "เมนูหลัก", exact: true })
-    .getByRole("link", { name: "เครื่องชั่งอัจฉริยะ", exact: true })
-    .hover();
+  await links.nth(1).hover();
   await expect(
-    page.getByRole("navigation", { name: "สำรวจเครื่องชั่งอัจฉริยะ", exact: true }),
+    page.getByRole("navigation", { name: `สำรวจ${secondLabel}`, exact: true }),
   ).toBeVisible();
   await expect(backdrop).toHaveCSS("opacity", "1");
   await expect.poll(menuFitsContent).toBe(true);
   // A brief excursion beyond the menu should not flash the backdrop off and on.
   await page.mouse.move(20, 450);
-  await page
-    .getByRole("navigation", { name: "เมนูหลัก", exact: true })
-    .getByRole("link", { name: "ผลิตภัณฑ์", exact: true })
-    .hover();
-  await expect(page.getByRole("navigation", { name: "สำรวจผลิตภัณฑ์", exact: true })).toBeVisible();
+  await links.nth(0).hover();
+  await expect(
+    page.getByRole("navigation", { name: `สำรวจ${firstLabel}`, exact: true }),
+  ).toBeVisible();
   await expect(backdrop).toHaveCSS("opacity", "1");
   await page.screenshot({ path: "C:/tmp/sunford-menu-blur.png", animations: "disabled" });
   await page.keyboard.press("Escape");
   // Escape closes keyboard-opened menus as well as pointer-opened menus.
-  await page
-    .getByRole("navigation", { name: "เมนูหลัก", exact: true })
-    .getByRole("link", { name: "ผลิตภัณฑ์", exact: true })
-    .focus();
+  await links.nth(0).focus();
   await page.keyboard.press("Escape");
   await expect(page.locator("#desktop-submenu")).toBeHidden();
   await expect(backdrop).toHaveCSS("opacity", "0");
