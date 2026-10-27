@@ -283,6 +283,32 @@ function FieldInput({
         {field.hint && <small>{field.hint}</small>}
       </div>
     );
+  if (field.type === "switch")
+    return (
+      <div className="admin-field cms-wide">
+        <label id={`${id}-label`} htmlFor={id}>
+          {field.label}
+        </label>
+        <button
+          id={id}
+          type="button"
+          role="switch"
+          aria-checked={Boolean(value)}
+          aria-labelledby={`${id}-label`}
+          aria-describedby={field.hint ? `${id}-hint` : undefined}
+          className="cms-switch"
+          onClick={() => onChange(!value)}
+        >
+          <span className="cms-switch-track" aria-hidden="true" />
+          <span aria-hidden="true">{value ? "เปิด" : "ปิด"}</span>
+        </button>
+        {field.hint && (
+          <small id={`${id}-hint`} className="admin-field-hint">
+            {field.hint}
+          </small>
+        )}
+      </div>
+    );
   return (
     <div className={`admin-field ${field.type === "textarea" ? "cms-wide" : ""}`}>
       <label htmlFor={id}>{field.label}</label>

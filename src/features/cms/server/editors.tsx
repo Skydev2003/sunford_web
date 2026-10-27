@@ -82,7 +82,7 @@ export const settingCards = [
   {
     id: "section:footer",
     title: "ส่วนท้ายเว็บไซต์",
-    description: "ข้อความ เวลาบริการ ที่อยู่ และลิงก์ส่วนท้าย",
+    description: "เปิด–ปิดแผนที่ลูกค้า ข้อความ เวลาบริการ ที่อยู่ และลิงก์ส่วนท้าย",
   },
 ];
 const textLabels: Record<string, string> = {
@@ -245,6 +245,15 @@ export async function getEditor(id: string) {
     }[id];
     if (!template) return null;
     ({ data, fields } = sectionFields(template()));
+    if (id === "section:footer") {
+      data.customerMapEnabled = true;
+      fields.unshift({
+        key: "customerMapEnabled",
+        label: "เปิดให้ดูแผนที่ลูกค้า — ครอบคลุมทั่วประเทศ",
+        type: "switch",
+        hint: "เปิด: กดดูแผนที่ลูกค้าได้ · ปิด: แสดงรูปและข้อความ แต่กดดูแผนที่ไม่ได้ · กดบันทึกเพื่อใช้งาน",
+      });
+    }
   } else if (id.startsWith("category:")) {
     kind = "category";
     const original = categories.find((category) => `category:${category.id}` === id);

@@ -83,10 +83,9 @@ test.describe("content editor interface", () => {
     try {
       models = Object.fromEntries(
         await Promise.all(
-          ["hero", "product-media:feh5ks", "navigation", "section:solutions"].map(async (id) => [
-            id,
-            await server.getEditor(id),
-          ]),
+          ["hero", "product-media:feh5ks", "navigation", "section:solutions", "section:footer"].map(
+            async (id) => [id, await server.getEditor(id)],
+          ),
         ),
       );
       const product = await server.getAdminProduct("feh5ks");
@@ -186,6 +185,29 @@ test.describe("content editor interface", () => {
       path: test.info().outputPath("cms-hero-mobile.png"),
       animations: "disabled",
     });
+  });
+  test("footer map switch saves both states while retaining footer content", async ({ page }) => {
+    await open(page, "section:footer");
+    const toggle = page.getByRole("switch", {
+      name: "เปิดให้ดูแผนที่ลูกค้า — ครอบคลุมทั่วประเทศ",
+    });
+    for (const enabled of [false, true]) {
+      if ((await toggle.getAttribute("aria-checked")) !== String(enabled)) {
+        await toggle.focus();
+        await page.keyboard.press("Space");
+      }
+      await expect(toggle).toHaveAttribute("aria-checked", String(enabled));
+      await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).first().click();
+      await expect
+        .poll(() => page.evaluate(() => (window as unknown as { __cmsSaved: CmsData }).__cmsSaved))
+        .toEqual({ ...models["section:footer"].data, customerMapEnabled: enabled });
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+    await toggle.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({ path: test.info().outputPath("cms-footer-switch-mobile.png") });
   });
   test("product gallery, price, rich content and video fields submit edits", async ({ page }) => {
     await open(page, "product-media:feh5ks");

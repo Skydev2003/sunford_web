@@ -12,7 +12,7 @@ import { ArrowUp, ArrowUpRight, Globe, Mail, MapPin, Phone } from "lucide-react"
 
 import { sunford } from "@/features/home/data/brand";
 
-export function FooterTemplate(site: SiteSettings = defaultSite) {
+export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnabled = true) {
   return (
     <footer id="contact" className="site-footer">
       <ContactBannerVisibility>
@@ -155,7 +155,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
               </a>
             </div>
           </div>
-          <CustomerCoverage>
+          <CustomerCoverage enabled={customerMapEnabled}>
             <Image
               src="/images/footer/thailand.svg"
               alt="แผนที่ประเทศไทย"
@@ -175,7 +175,11 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
                 <br />
                 และให้คำปรึกษา
               </p>
-              <span className="footer-map-hint">ดูแผนที่ลูกค้า <ArrowUpRight size={12} /></span>
+              {customerMapEnabled && (
+                <span className="footer-map-hint">
+                  ดูแผนที่ลูกค้า <ArrowUpRight size={12} />
+                </span>
+              )}
             </div>
           </CustomerCoverage>
         </div>
@@ -198,10 +202,10 @@ export async function Footer() {
   cacheLife("hours");
   cacheTag("cms");
   const site = await getSettings("site", defaultSite);
-  const edits = await getSettings("section:footer", {});
+  const edits = await getSettings("section:footer", { customerMapEnabled: true });
   return (
     <>
-      {patchSection(FooterTemplate(site), edits)}
+      {patchSection(FooterTemplate(site, edits.customerMapEnabled), edits)}
       <FloatingContact
         site={site}
         expertLabel={sectionValue(edits, "text", "คุยกับผู้เชี่ยวชาญ ").trim()}
