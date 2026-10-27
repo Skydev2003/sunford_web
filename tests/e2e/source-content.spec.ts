@@ -75,7 +75,7 @@ test("imported company, collection, software and warranty pages are available", 
 test("full product details keep original specifications and gallery images", async ({ page }) => {
   await page.goto("/products/wps10ks");
   await expect(page.locator(".spec-list")).toContainText("10 กิโลกรัม");
-  await expect(page.locator(".product-specifications")).toContainText("IP67");
+  await expect(page.locator(".product-information")).toContainText("IP67");
   const thumbnails = page.getByRole("button", { name: /ดูรูป WPS10KS มุมที่/ });
   expect(await thumbnails.count()).toBeGreaterThan(1);
   await thumbnails.first().click();
