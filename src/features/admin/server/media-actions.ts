@@ -1,7 +1,8 @@
 "use server";
 import { fileTypeFromBuffer } from "file-type";
 import { getAdminSession } from "./auth";
-import { MAX_IMAGE_BYTES, PRODUCT_IMAGE_BUCKET, removeUnusedImage } from "./media";
+import { PRODUCT_IMAGE_BUCKET, removeUnusedImage } from "./media";
+import { imageSizeError } from "../media-limits";
 
 export async function uploadProductImage(
   formData: FormData,
@@ -9,8 +10,9 @@ export async function uploadProductImage(
   const session = await getAdminSession();
   if (!session) return { error: "กรุณาเข้าสู่ระบบด้วยบัญชีแอดมิน" };
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0 || file.size > MAX_IMAGE_BYTES)
-    return { error: "เลือกรูป JPG, PNG หรือ WebP ขนาดไม่เกิน 5 MB" };
+  if (!(file instanceof File)) return { error: "กรุณาเลือกรูปภาพ" };
+  const sizeError = imageSizeError(file);
+  if (sizeError) return { error: sizeError };
   try {
     const buffer = new Uint8Array(await file.arrayBuffer());
     const type = await fileTypeFromBuffer(buffer);

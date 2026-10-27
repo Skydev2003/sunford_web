@@ -133,11 +133,15 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:admin -- admin@example.co
 
 ทั้งสองคำสั่งถามรหัสผ่านแบบซ่อน ไม่ใส่รหัสผ่านลง command arguments หรือ source code คีย์ secret/service-role ใช้เฉพาะเครื่องมือ provisioning/การทดสอบและห้ามส่งไปเบราว์เซอร์ หน้าแอดมิน runtime ไม่จำเป็นต้องใช้คีย์นี้
 
-## Deploy บน Render Free
+## Deploy บน Vercel
 
-ใช้ `bun run deploy` สำหรับ migration → เติมสินค้าที่ขาด → production build อนุญาตเฉพาะ branch `main` (`APP_ENV=production`) และ `uat` (`APP_ENV=uat`) ตรวจค่าก่อนทำงานได้ด้วย `bun run deploy --check` คำสั่งนี้ไม่ push Git หรือสั่ง Render deploy จากเครื่องโดยตรง
+ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Supabase เดิมสำหรับฐานข้อมูล Auth และ Storage ฟังก์ชันรันที่ Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1`
 
-`render.yaml` กำหนด Next.js Node server บน Free instance ที่ Singapore ใช้ Supabase เดิม และ deploy จาก branch `main` หลัง GitHub Actions ผ่าน หากต้องการ service UAT ให้เลือก branch `uat` และ `APP_ENV=uat` ใช้ build command เดียวกัน ดูขั้นตอนใน [docs/render.md](docs/render.md)
+Production จาก branch `main` รัน migration → เติมสินค้าที่ขาด → build ส่วน Preview ของ `uat` และ branch อื่นรันเฉพาะ build ไม่ migrate หรือ seed อัตโนมัติ ตั้ง Environment Variables แยก Production/Preview และใช้ Supabase สำหรับทดสอบแยกจาก production ดูขั้นตอน import repo, ตั้งค่า และย้าย URL ใน [docs/vercel.md](docs/vercel.md)
+
+ปล่อย Production จาก branch `uat` ด้วย `bun run deploy`: commit งานให้ครบก่อน แล้วสคริปต์จะ fetch, sync `uat`, rebase บน `origin/main`, ตรวจ lint/format/tests/build ด้วยข้อมูลจำลอง แล้ว push revision ที่ตรวจแล้วเข้า `main` ให้ Vercel deploy อัตโนมัติ ไม่ force-push และไม่รัน migration/seed ในเครื่อง ใช้ `bun run deploy --check` เพื่อตรวจความพร้อมโดยไม่เปลี่ยน Git หรือ push
+
+ขั้นตอน migration/seed/build บน Vercel แยกอยู่ใน `bun run vercel-build` อย่าตั้ง Vercel Build Command เป็น `bun run deploy`
 
 ## UAT บน LAN ชั่วคราว
 

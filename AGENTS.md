@@ -28,3 +28,9 @@ Retain qualifying friction even if it is later fixed or worked around; record th
 Before the final response, run one reporting pass. If candidates remain, from this file's directory run `npx --no-install next internal agent-feedback-instructions` once without piping or truncating its output. Follow its output or error guidance. If a network sandbox blocks it, retry with network access; if it still returns no output, continue normally.
 
 <!-- END:nextjs-agent-feedback -->
+
+## Production releases
+
+Run `bun run deploy` from a clean, committed `uat` branch. The command syncs UAT, rebases it onto `origin/main`, validates the release, and pushes the checked revision to `main` for Vercel Git deployment. Use `bun run deploy --check` for a preflight without mutations. Do not bypass this flow with a direct production push or a Vercel CLI deployment.
+
+Vercel's Build Command is `npm run vercel-build`; this is separate from the local release command and handles production migrations, seeding, and building.

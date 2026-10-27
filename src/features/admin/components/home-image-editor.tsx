@@ -1,4 +1,5 @@
 "use client";
+import { imageSizeError } from "@/features/admin/media-limits";
 import { useActionState, useId, useRef, useState } from "react";
 import { Save, RotateCcw, Upload } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
@@ -54,8 +55,9 @@ export function HomeImageEditor({
 
   async function upload(file?: File) {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setError("รูปภาพต้องมีขนาดไม่เกิน 5 MB");
+    const sizeError = imageSizeError(file);
+    if (sizeError) {
+      setError(sizeError);
       return;
     }
     setUploading(true);
@@ -125,7 +127,7 @@ export function HomeImageEditor({
       </div>
       <p className="admin-field-hint" aria-live="polite">
         {image ? "ใช้รูปที่เลือกสำหรับตำแหน่งนี้" : "ใช้รูปเดิมของเว็บไซต์"} · JPG, PNG หรือ WebP
-        ไม่เกิน 5 MB
+        ไม่เกิน 4 MB
       </p>
       <label className="admin-file-input" htmlFor={id}>
         อัปโหลดรูป {title}

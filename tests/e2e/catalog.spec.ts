@@ -150,3 +150,15 @@ test("catalogue API returns data and unknown products render an unindexable 404 
     await expect(page.locator('meta[name="robots"][content*="noindex"]')).toHaveCount(1);
   }
 });
+
+test("long Thai article URLs use bounded internal paths and preserve the public URL", async ({
+  page,
+}) => {
+  const path =
+    "/การพิมพ์สติ๊กเกอร์น้ำหนัก-วันที่-เวลา-ภาพพื้นหลัง-บาร์โค้ด-คิวอาร์โค้ดจากเครื่องชั่ง";
+  const response = await page.goto(path);
+  expect(response?.status()).toBe(200);
+  await expect(page.locator(".content-heading h1")).toBeVisible();
+  await expect(page.locator(".source-prose").first()).toBeVisible();
+  expect(decodeURI(new URL(page.url()).pathname)).toBe(path);
+});

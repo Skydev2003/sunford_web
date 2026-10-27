@@ -1,4 +1,5 @@
 "use client";
+import { imageSizeError } from "@/features/admin/media-limits";
 import { useId, useState } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowUp, Images, Star, Trash2, Upload } from "lucide-react";
@@ -24,6 +25,11 @@ export function ProductGalleryEditor({
   const [error, setError] = useState("");
   async function upload(file?: File, index?: number) {
     if (!file) return;
+    const sizeError = imageSizeError(file);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
     onBusy(true);
     setError("");
     try {
@@ -68,7 +74,7 @@ export function ProductGalleryEditor({
       </div>
       <div className="admin-fields">
         <p className="admin-field-hint">
-          การเปลี่ยนแปลงจะมีผลเมื่อกด “บันทึกสินค้า” เท่านั้น · JPG, PNG หรือ WebP ไม่เกินรูปละ 5 MB
+          การเปลี่ยนแปลงจะมีผลเมื่อกด “บันทึกสินค้า” เท่านั้น · JPG, PNG หรือ WebP ไม่เกินรูปละ 4 MB
         </p>
         {error && (
           <p role="alert" className="admin-field-error">
