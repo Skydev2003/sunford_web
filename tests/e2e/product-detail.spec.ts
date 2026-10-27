@@ -7,8 +7,16 @@ test("detail rows combine repeated labels and use dark text", async ({ page }) =
     const table = page.locator(".product-attributes > table");
     await expect(
       table.getByRole("rowheader", { name: "รายละเอียดสินค้า", exact: true }),
-    ).toHaveCount(1);
+    ).toHaveCount(0);
     await expect(table.getByRole("rowheader", { name: "รายละเอียด", exact: true })).toHaveCount(0);
+    const introduction = page.locator(".product-introduction");
+    await expect(introduction).toBeVisible();
+    await expect(introduction).toHaveCSS("color", "rgb(29, 29, 31)");
+    if (slug === "feh5ks") {
+      await expect(introduction).toContainText("เบสเซลเลอร์สำหรับครัวร้านอาหารและเบเกอรี่!");
+      await expect(introduction).toContainText("SUNFORD CONNECT");
+      await expect(introduction).toContainText("จอแสดงผล LCD ขนาดใหญ่ อ่านง่าย");
+    }
     const labels = await table.getByRole("rowheader").allTextContents();
     expect(new Set(labels.map((label) => label.trim())).size).toBe(labels.length);
     await expect(table.getByRole("cell").first()).toHaveCSS("color", "rgb(29, 29, 31)");
@@ -55,7 +63,11 @@ test("product content uses one detail heading and a two-column attribute table",
     const label = (await table.getByRole("rowheader").first().boundingBox())!;
     const value = (await table.getByRole("cell").first().boundingBox())!;
     expect(label.x + label.width).toBeLessThanOrEqual(value.x + 1);
-    expect(value.width).toBeGreaterThan(label.width);
+    expect(label.width / (label.width + value.width)).toBeCloseTo(0.5, 2);
+    const introduction = (await details.locator(".product-introduction").boundingBox())!;
+    const tableBounds = (await table.boundingBox())!;
+    expect(introduction.y + introduction.height).toBeLessThan(tableBounds.y);
+    expect(introduction.width).toBeGreaterThanOrEqual(tableBounds.width);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );

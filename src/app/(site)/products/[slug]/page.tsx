@@ -59,6 +59,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     ...overview.additionalSpecifications,
     ...technicalRows,
   ]);
+  const introduction = contentRows.find((row) => row.label === "รายละเอียดสินค้า");
+  const attributeRows = contentRows.filter((row) => row.label !== "รายละเอียดสินค้า");
   return (
     <main id="main-content" className="product-detail container">
       <Link href="/products" className="text-link back-link">
@@ -121,21 +123,29 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="section-heading">
           <h2 id="product-information-title">รายละเอียดสินค้า</h2>
         </div>
-        <div className="product-attributes">
-          <table aria-labelledby="product-information-title">
-            <tbody>
-              {contentRows.map((row) => (
-                <tr key={row.label}>
-                  <th scope="row">{row.label}</th>
-                  <td
-                    className="product-attribute-content"
-                    dangerouslySetInnerHTML={{ __html: row.html }}
-                  />
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {introduction && (
+          <div
+            className="product-introduction product-attribute-content"
+            dangerouslySetInnerHTML={{ __html: introduction.html }}
+          />
+        )}
+        {attributeRows.length > 0 && (
+          <div className="product-attributes">
+            <table aria-labelledby="product-information-title">
+              <tbody>
+                {attributeRows.map((row) => (
+                  <tr key={row.label}>
+                    <th scope="row">{row.label}</th>
+                    <td
+                      className="product-attribute-content"
+                      dangerouslySetInnerHTML={{ __html: row.html }}
+                    />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         <div className="detail-service">
           <div className="detail-service-copy">
             <a className="detail-phone" href={site.phoneHref}>
