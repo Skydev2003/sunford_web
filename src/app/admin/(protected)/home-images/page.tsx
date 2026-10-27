@@ -3,7 +3,6 @@ import { ArrowUpRight } from "lucide-react";
 import { HomeImageEditor } from "@/features/admin/components/home-image-editor";
 import { listHomeImages } from "@/features/admin/server/home-images";
 import { getProducts } from "@/features/catalog/server/product-repository";
-import { getContentPage } from "@/features/content/server/content-repository";
 import { defaultHomeImages, homeImageSlots } from "@/features/home/data/image-slots";
 import { resolveHomeLink } from "@/features/home/data/link-targets";
 import { homePageOptions } from "@/features/home/server/home-link-options";
@@ -18,10 +17,7 @@ export default async function HomeImagesPage({
   // Require admin before reading settings; layout guards alone are not an authorization boundary.
   const images = await listHomeImages();
   const products = await getProducts();
-  const defaults = defaultHomeImages(
-    products,
-    (await getContentPage("/applications-and-softwares"))?.images[0],
-  );
+  const defaults = defaultHomeImages(products);
   const savedSlot = (await searchParams).saved;
   const productOptions = products.map(({ id, name, slug }) => ({
     id,

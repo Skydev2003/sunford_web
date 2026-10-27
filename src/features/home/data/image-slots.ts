@@ -15,13 +15,13 @@ export const homeImageSlots = [
 export type HomeImageSlot = (typeof homeImageSlots)[number]["id"];
 export type HomeImages = Partial<Record<HomeImageSlot, string>>;
 
-export function defaultHomeImages(products: Product[], softwareImage?: string): HomeImages {
+export function defaultHomeImages(products: Product[]): HomeImages {
   const smart = products.find((p) => p.id === "rls1100");
   return {
     spotlight: smart?.imageOverridden ? smart.image : "/images/products/rls1100.png",
     digital: "/images/pd/WPS10KS.png",
-    smart: smart?.image,
-    accessories: products.find((p) => /^LP50|^LP51/i.test(p.name))?.image,
-    software: softwareImage,
+    smart: "/images/pd/RLS1100.png",
+    accessories: "/images/pd/TRP-58B.png",
+    software: "/images/pd/app.png",
   };
 }

@@ -21,10 +21,8 @@ export async function SourceShowcase({
 }) {
   const copy = await getSettings("showcase", showcaseDefaults);
   const digitalProduct = products.find((product) => product.id === "wps10ks");
-  const defaults = defaultHomeImages(
-    products,
-    (await getContentPage("/applications-and-softwares"))?.images[0],
-  );
+  const smartProduct = products.find((product) => product.id === "rls1100");
+  const defaults = defaultHomeImages(products);
   const tiles = [
     {
       id: "digital",
@@ -34,18 +32,18 @@ export async function SourceShowcase({
       image: images.digital ?? defaults.digital,
     },
     {
-      id: "smart",
-      name: copy.smartName,
-      english: copy.smartEnglish,
-      description: copy.smartDescription,
-      image: images.smart ?? defaults.smart,
-    },
-    {
       id: "accessories",
       name: copy.accessoriesName,
       english: copy.accessoriesEnglish,
       description: copy.accessoriesDescription,
       image: images.accessories ?? defaults.accessories,
+    },
+    {
+      id: "smart",
+      name: copy.smartName,
+      english: copy.smartEnglish,
+      description: copy.smartDescription,
+      image: images.smart ?? defaults.smart,
     },
     {
       id: "software",
@@ -59,17 +57,39 @@ export async function SourceShowcase({
     <section className="source-showcase" aria-label="ผลิตภัณฑ์และเทคโนโลยี Sunford">
       {tiles.map((tile) => {
         const href = resolveHomeLink(tile.id, targets[tile.id], products);
-        const visual = (
-          <ProductImage
-            src={tile.image}
-            alt={tile.id === "digital" ? "เครื่องชั่งดิจิทัล SUNFORD WPS10KS" : tile.name}
-            fill
-            sizes="(max-width: 720px) 90vw, 45vw"
-          />
-        );
+        const featuredProduct =
+          tile.id === "digital" ? digitalProduct : tile.id === "smart" ? smartProduct : undefined;
+        const visual =
+          tile.id === "accessories" && !images.accessories ? (
+            <div className="showcase-accessory-pair">
+              <div className="showcase-accessory-pole">
+                <ProductImage
+                  src="/images/pd/RYG-POLE.png"
+                  alt="ไฟสัญญาณสามสี SUNFORD RYG-POLE"
+                  fill
+                  sizes="(max-width: 720px) 38vw, 18vw"
+                />
+              </div>
+              <div className="showcase-accessory-printer">
+                <ProductImage
+                  src={tile.image}
+                  alt="เครื่องพิมพ์ใบเสร็จ SUNFORD TRP-58B"
+                  fill
+                  sizes="(max-width: 720px) 65vw, 32vw"
+                />
+              </div>
+            </div>
+          ) : (
+            <ProductImage
+              src={tile.image}
+              alt={featuredProduct ? `${tile.name} SUNFORD ${featuredProduct.name}` : tile.name}
+              fill
+              sizes="(max-width: 720px) 90vw, 45vw"
+            />
+          );
         return (
           <article
-            className={`showcase-tile${tile.id === "digital" ? " showcase-tile-dark" : ""}`}
+            className={`showcase-tile showcase-tile-${tile.id} showcase-tile-dark`}
             key={tile.id}
           >
             <div className="showcase-tile-copy">
@@ -82,9 +102,12 @@ export async function SourceShowcase({
                     {copy.linkLabel}
                   </Link>
                 )}
-                {tile.id === "digital" && digitalProduct && (
-                  <Link className="button button-outline" href={`/products/${digitalProduct.slug}`}>
-                    ดูรุ่น {digitalProduct.name}
+                {featuredProduct && (
+                  <Link
+                    className="button button-outline"
+                    href={`/products/${featuredProduct.slug}`}
+                  >
+                    ดูรุ่น {featuredProduct.name}
                   </Link>
                 )}
               </div>
