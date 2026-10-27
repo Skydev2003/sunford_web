@@ -5,6 +5,7 @@ import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTarget } from "../data/link-targets";
 import { getSettings } from "@/features/cms/server/documents";
 import { spotlightDefaults } from "@/features/cms/data/settings";
+import { defaultSpotlightImage } from "../data/image-slots";
 
 export async function ProductSpotlight({
   products,
@@ -25,14 +26,11 @@ export async function ProductSpotlight({
   const visual = (
     <>
       <ProductImage
-        src={
-          image ??
-          (defaultProduct?.imageOverridden ? defaultProduct.image : "/images/products/rls1100.png")
-        }
+        src={image ?? defaultSpotlightImage}
         alt={product ? `SUNFORD ${product.name}` : "ผลิตภัณฑ์ Sunford"}
-        width={614}
-        height={614}
-        sizes="(max-width: 720px) 85vw, 440px"
+        width={1254}
+        height={1254}
+        sizes="(max-width: 760px) 370px, (max-width: 1000px) 45vw, 474px"
       />
       <span>{product?.connection ?? "ดูรายละเอียดเพิ่มเติม"}</span>
     </>

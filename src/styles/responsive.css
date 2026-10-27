@@ -104,9 +104,6 @@
   .spotlight-actions .text-link {
     font-size: 12px;
   }
-  .spotlight-visual {
-    padding: 15px 15px 23px;
-  }
   .spotlight-visual span {
     font-size: 10px;
   }
@@ -241,7 +238,6 @@
   .spotlight-visual {
     width: min(100%, 370px);
     margin-inline: auto;
-    border-radius: 22px;
   }
   .spotlight-visual span {
     font-size: 11px;

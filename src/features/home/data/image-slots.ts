@@ -1,5 +1,7 @@
 import type { Product } from "@/features/catalog/types";
 
+export const defaultSpotlightImage = "/images/products/rls1100-spotlight.png";
+
 export const homeImageSlots = [
   {
     id: "spotlight",
@@ -18,7 +20,7 @@ export type HomeImages = Partial<Record<HomeImageSlot, string>>;
 export function defaultHomeImages(products: Product[], softwareImage?: string): HomeImages {
   const smart = products.find((p) => p.id === "rls1100");
   return {
-    spotlight: smart?.imageOverridden ? smart.image : "/images/products/rls1100.png",
+    spotlight: defaultSpotlightImage,
     digital: products.find((p) => p.id === "feh5ks")?.image,
     smart: smart?.image,
     accessories: products.find((p) => /^LP50|^LP51/i.test(p.name))?.image,
