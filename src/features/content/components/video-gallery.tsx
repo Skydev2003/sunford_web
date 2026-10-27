@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Play } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { ProductImage } from "@/components/ui/product-image";
+import { DragScroll } from "@/components/ui/drag-scroll";
 
 export function VideoGallery({
   videos,
@@ -21,7 +22,7 @@ export function VideoGallery({
           <h2>{title}</h2>
         </div>
       </div>
-      <div className="video-track">
+      <DragScroll className="video-track" label={title}>
         {videos.map((video, index) => (
           <button
             className="video-card"
@@ -40,7 +41,7 @@ export function VideoGallery({
             </span>
           </button>
         ))}
-      </div>
+      </DragScroll>
       <Modal open={active !== null} onClose={() => setActive(null)} title={title} wide>
         {active && (
           <iframe
