@@ -19,7 +19,7 @@ export function defaultHomeImages(products: Product[], softwareImage?: string): 
   const smart = products.find((p) => p.id === "rls1100");
   return {
     spotlight: smart?.imageOverridden ? smart.image : "/images/products/rls1100.png",
-    digital: products.find((p) => p.id === "feh5ks")?.image,
+    digital: "/images/pd/WPS10KS.png",
     smart: smart?.image,
     accessories: products.find((p) => /^LP50|^LP51/i.test(p.name))?.image,
     software: softwareImage,

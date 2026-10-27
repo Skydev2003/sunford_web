@@ -6,3 +6,6 @@ public
 src/app/fonts
 test-results
 playwright-report
+output
+outputs
+work

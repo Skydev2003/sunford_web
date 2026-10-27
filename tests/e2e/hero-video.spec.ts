@@ -43,7 +43,10 @@ test("homepage animation plays silently, pauses on request and stops outside the
     )
     .toBe(true);
   await page.evaluate(() => document.fonts.ready);
-  await page.screenshot({ path: "C:/tmp/sunford-home-video-desktop.png", animations: "disabled" });
+  await page.screenshot({
+    path: test.info().outputPath("hero-desktop.png"),
+    animations: "disabled",
+  });
 });
 
 test("animation stays proportional on mobile and the page does not overflow", async ({ page }) => {
@@ -72,7 +75,54 @@ test("animation stays proportional on mobile and the page does not overflow", as
     )
     .toBe(true);
   await page.evaluate(() => document.fonts.ready);
-  await page.screenshot({ path: "C:/tmp/sunford-home-video-mobile.png", animations: "disabled" });
+  await page.screenshot({
+    path: test.info().outputPath("hero-mobile.png"),
+    animations: "disabled",
+  });
+});
+
+test("the full-height scene keeps text stationary as the video timeline changes", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const video = page.locator(".hero-product-video");
+  await expect
+    .poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime))
+    .toBeGreaterThan(0.2);
+  await page.getByRole("button", { name: "หยุดแอนิเมชันสินค้า", exact: true }).click();
+  const scene = page.locator(".hero-cinematic");
+  const box = (await scene.boundingBox())!;
+  expect(Math.abs(box.y + box.height - 900)).toBeLessThan(3);
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = 0;
+  });
+  await expect
+    .poll(() => video.evaluate((element: HTMLVideoElement) => !element.seeking))
+    .toBe(true);
+  await expect
+    .poll(() =>
+      scene.evaluate((element) =>
+        parseFloat((element as HTMLElement).style.getPropertyValue("--hero-progress")),
+      ),
+    )
+    .toBeLessThan(0.01);
+  await page.waitForTimeout(220);
+  const initial = (await page.locator(".hero-copy").boundingBox())!;
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = element.duration / 4;
+  });
+  await expect
+    .poll(() =>
+      scene.evaluate((element) =>
+        parseFloat((element as HTMLElement).style.getPropertyValue("--hero-progress")),
+      ),
+    )
+    .toBeCloseTo(0.25, 2);
+  const after = (await page.locator(".hero-copy").boundingBox())!;
+  expect(after.x).toBeCloseTo(initial.x, 1);
+  expect(after.y).toBeCloseTo(initial.y, 1);
+  expect(await video.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true);
 });
 
 test("reduced motion shows a still frame until the visitor chooses to play", async ({ page }) => {

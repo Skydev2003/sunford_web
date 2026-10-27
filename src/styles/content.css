@@ -530,6 +530,53 @@
   mix-blend-mode: multiply;
   padding: 12px;
 }
+.showcase-tile-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+.showcase-tile-actions .button {
+  min-height: 38px;
+  padding: 9px 20px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.showcase-tile.showcase-tile-dark {
+  background: #000;
+  color: #f5f5f7;
+  padding-inline: 0;
+  padding-bottom: 0;
+}
+.showcase-tile-dark .showcase-tile-copy {
+  padding-inline: 24px;
+}
+.showcase-tile-dark .eyebrow {
+  color: #c8c8cd;
+  letter-spacing: 2.5px;
+}
+.showcase-tile-dark .showcase-tile-copy > p:not(.eyebrow) {
+  color: #a1a1a6;
+}
+.showcase-tile-dark .button-outline {
+  border-color: #86868b;
+  color: #f5f5f7;
+}
+.showcase-tile-dark .button-outline:hover {
+  background: #f5f5f7;
+  border-color: #f5f5f7;
+  color: #1d1d1f;
+}
+.showcase-tile-dark .showcase-tile-image {
+  max-width: none;
+  min-height: 280px;
+  margin-top: 16px;
+}
+.showcase-tile-dark .showcase-tile-image img {
+  mix-blend-mode: normal;
+  padding: 0;
+}
 .stories-section {
   padding-block: 75px;
   overflow: hidden;

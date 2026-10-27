@@ -34,3 +34,10 @@ Before the final response, run one reporting pass. If candidates remain, from th
 Run `bun run deploy` from a clean, committed `uat` branch. The command syncs UAT, rebases it onto `origin/main`, validates the release, and pushes the checked revision to `main` for Vercel Git deployment. Use `bun run deploy --check` for a preflight without mutations. Do not bypass this flow with a direct production push or a Vercel CLI deployment.
 
 Vercel's Build Command is `npm run vercel-build`; this is separate from the local release command and handles production migrations, seeding, and building.
+
+## Product promotional imagery
+
+- Use a straight-on front view for every product, following its supplied product photo.
+- Deliver product imagery without added headlines, promotional text, buttons, or interface elements. Text and calls to action are added separately on the website.
+- Preserve the real product's shape, colors, logo, and physically printed markings. Do not invent product features.
+- Default to a minimal black studio background with directional highlights and a smooth falloff into deep shadow. Let the lower body and base fade softly into black while keeping the display readable, following the current premium campaign direction.

@@ -1,7 +1,5 @@
 "use client";
-import { Tooltip } from "@/components/ui/tooltip";
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Pause, Play } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 
@@ -9,10 +7,12 @@ export function HeroProductVideo({
   src,
   poster,
   name,
+  sceneRef,
 }: {
   src: string;
   poster: string;
   name: string;
+  sceneRef?: RefObject<HTMLElement | null>;
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const userPaused = useRef(false);
@@ -66,6 +66,30 @@ export function HeroProductVideo({
     };
   }, [src, failed]);
 
+  useEffect(() => {
+    const element = video.current;
+    const scene = sceneRef?.current;
+    if (!element || !scene || failed) return;
+    const updateProgress = () => {
+      const progress =
+        Number.isFinite(element.duration) && element.duration > 0
+          ? (element.currentTime % element.duration) / element.duration
+          : 0;
+      scene.style.setProperty("--hero-progress", String(progress));
+    };
+    // Only the small progress rail follows playback; the text stays stationary.
+    element.addEventListener("timeupdate", updateProgress);
+    element.addEventListener("seeked", updateProgress);
+    element.addEventListener("loadedmetadata", updateProgress);
+    updateProgress();
+    return () => {
+      element.removeEventListener("timeupdate", updateProgress);
+      element.removeEventListener("seeked", updateProgress);
+      element.removeEventListener("loadedmetadata", updateProgress);
+      scene.style.removeProperty("--hero-progress");
+    };
+  }, [src, failed, sceneRef]);
+
   const togglePlayback = () => {
     const element = video.current;
     if (!element) return;
@@ -82,18 +106,18 @@ export function HeroProductVideo({
   };
 
   return (
-    <div className="hero-motion">
-      {failed ? (
-        <ProductImage
-          src={poster}
-          alt={`เครื่องชั่ง SUNFORD ${name}`}
-          width={1280}
-          height={720}
-          className="hero-motion-fallback"
-          preload
-        />
-      ) : (
-        <>
+    <>
+      <div className="hero-motion">
+        {failed ? (
+          <ProductImage
+            src={poster}
+            alt={`เครื่องชั่ง SUNFORD ${name}`}
+            width={1280}
+            height={720}
+            className="hero-motion-fallback"
+            preload
+          />
+        ) : (
           <video
             ref={video}
             className="hero-product-video"
@@ -110,22 +134,22 @@ export function HeroProductVideo({
             onPause={() => setPlaying(false)}
             onError={() => setFailed(true)}
           />
-          <Tooltip>
-            <button
-              type="button"
-              className="hero-motion-toggle"
-              onClick={togglePlayback}
-              aria-label={playing ? "หยุดแอนิเมชันสินค้า" : "เล่นแอนิเมชันสินค้า"}
-            >
-              {playing ? (
-                <Pause size={17} fill="currentColor" />
-              ) : (
-                <Play size={17} fill="currentColor" />
-              )}
-            </button>
-          </Tooltip>
-        </>
+        )}
+      </div>
+      {!failed && (
+        <button
+          type="button"
+          className="hero-motion-toggle"
+          onClick={togglePlayback}
+          aria-label={playing ? "หยุดแอนิเมชันสินค้า" : "เล่นแอนิเมชันสินค้า"}
+        >
+          {playing ? (
+            <Pause size={12} fill="currentColor" />
+          ) : (
+            <Play size={12} fill="currentColor" />
+          )}
+        </button>
       )}
-    </div>
+    </>
   );
 }
