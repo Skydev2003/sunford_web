@@ -45,3 +45,45 @@ export function countColor(count: number | null): string {
   if (count < 5000) return "#d7192d";
   return "#841427";
 }
+
+const percentageFormatter = new Intl.NumberFormat("th-TH", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** All areas use the same register total, including unlocated and foreign records. */
+export function customerShare(
+  count: number | null,
+  total: number | null = customerCounts.summary?.total ?? null,
+): number | null {
+  if (count === null || total === null || total <= 0 || count < 0) return null;
+  if (!Number.isFinite(count) || !Number.isFinite(total) || count > total) return null;
+  return (count / total) * 100;
+}
+
+export function customerShareLabel(count: number | null, total?: number | null): string {
+  const share = customerShare(count, total);
+  if (share === null) return "ยังไม่มีข้อมูล";
+  if (share > 0 && share < 0.01) return "<0.01%";
+  return `${percentageFormatter.format(share)}%`;
+}
+
+export function percentageColor(share: number | null): string {
+  if (share === null) return "#e4e7ec";
+  if (share === 0) return "#f1f2f5";
+  if (share < 0.1) return "#ffdce0";
+  if (share < 0.5) return "#ffa2ae";
+  if (share < 1) return "#f55c72";
+  if (share < 5) return "#d7192d";
+  return "#841427";
+}
+
+export const customerShareLegend = [
+  { value: null, label: "ยังไม่มีข้อมูล" },
+  { value: 0, label: "0%" },
+  { value: 0.05, label: "<0.1%" },
+  { value: 0.1, label: "0.1–<0.5%" },
+  { value: 0.5, label: "0.5–<1%" },
+  { value: 1, label: "1–<5%" },
+  { value: 5, label: "5% ขึ้นไป" },
+] as const;

@@ -5,7 +5,10 @@ import {
   areaCustomerCount,
   countLabel,
   customerCounts,
+  customerShare,
+  customerShareLabel,
   nationwideCustomerCount,
+  percentageColor,
 } from "../../src/features/customer-map/data/customer-counts";
 import type { MapArea, MapLayer } from "../../src/features/customer-map/types";
 
@@ -96,4 +99,22 @@ test("a partial lower-level import cannot appear to be a complete total", () => 
   const subdistrict = { id: "730505" } as MapArea;
   assert.equal(areaCustomerCount(subdistrict, { updatedAt: null, areas: { "730505": -1 } }), null);
   assert.equal(areaCustomerCount(subdistrict, { updatedAt: null, areas: { "730505": 1.5 } }), null);
+});
+
+test("percentage display uses the complete register and preserves small, zero and unknown values", () => {
+  assert.equal(customerShare(25, 200), 12.5);
+  assert.equal(customerShareLabel(customerCounts.summary!.total), "100.00%");
+  assert.equal(customerShareLabel(customerCounts.summary!.located), "77.71%");
+  assert.equal(customerShareLabel(customerCounts.summary!.unknownProvince), "22.26%");
+  assert.equal(customerShareLabel(customerCounts.summary!.foreign), "0.03%");
+  assert.equal(customerShareLabel(20462), "16.26%");
+  assert.equal(customerShareLabel(0), "0.00%");
+  assert.equal(customerShareLabel(1), "<0.01%");
+  assert.equal(customerShareLabel(null), "ยังไม่มีข้อมูล");
+  assert.equal(customerShareLabel(1, 0), "ยังไม่มีข้อมูล");
+  assert.equal(customerShareLabel(1, null), "ยังไม่มีข้อมูล");
+  assert.equal(customerShareLabel(2, 1), "ยังไม่มีข้อมูล");
+  assert.notEqual(percentageColor(null), percentageColor(0));
+  assert.notEqual(percentageColor(0), percentageColor(customerShare(1)));
+  assert.equal(percentageColor(customerShare(20462)), "#841427");
 });
