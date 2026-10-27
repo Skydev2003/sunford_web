@@ -13,3 +13,8 @@ export const categoryImages = {
   accessories: accessories.src,
   software: software.src,
 } as const;
+
+export type CategoryImageId = Exclude<keyof typeof categoryImages, "overview">;
+
+// Only remount this interactive section when its artwork changes during refresh.
+export const categoryImageVersion = Object.values(categoryImages).join("|");

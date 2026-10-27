@@ -4,22 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Plus, X } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
+import { categoryImages, type CategoryImageId } from "../data/category-images";
 
 export type CategoryFeatureItem = {
-  id: string;
+  id: CategoryImageId;
   label: string;
   title: string;
   description: string;
-  image: string;
   href?: string;
 };
 
 export function CategoryFeaturePanels({
-  overviewImage,
   items,
   linkLabel,
 }: {
-  overviewImage: string;
   items: CategoryFeatureItem[];
   linkLabel: string;
 }) {
@@ -42,14 +40,14 @@ export function CategoryFeaturePanels({
     >
       <div className="category-feature-backdrops" aria-hidden="true">
         <div className="category-feature-image is-base">
-          <ProductImage src={overviewImage} alt="" fill sizes="100vw" />
+          <ProductImage src={categoryImages.overview} alt="" fill sizes="100vw" />
         </div>
         {items.map((item, index) => (
           <div
             key={item.id}
             className={`category-feature-image ${active === index ? "is-active" : ""}`}
           >
-            <ProductImage src={item.image} alt="" fill sizes="100vw" />
+            <ProductImage src={categoryImages[item.id]} alt="" fill sizes="100vw" />
           </div>
         ))}
       </div>

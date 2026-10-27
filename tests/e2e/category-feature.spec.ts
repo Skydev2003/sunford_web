@@ -8,6 +8,10 @@ test("four category panels change the shared background and reveal working Sunfo
   await page.setViewportSize({ width: 1440, height: 1000 });
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error" && /hydrat|didn't match|server rendered/i.test(message.text()))
+      errors.push(message.text());
+  });
   await page.goto("/");
   const section = page.locator("#product-experience");
   await section.scrollIntoViewIfNeeded();
@@ -61,6 +65,56 @@ test("four category panels change the shared background and reveal working Sunfo
     animations: "disabled",
   });
   expect(errors).toEqual([]);
+});
+
+test("category image URLs stay identical from server HTML through hydration and return navigation", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error" && /hydrat|didn't match|server rendered/i.test(message.text()))
+      errors.push(message.text());
+  });
+  page.on("pageerror", (error) => errors.push(error.message));
+  let releaseScripts!: () => void;
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve;
+  });
+  await page.route("**/_next/**/*.js*", async (route) => {
+    await scriptsReady;
+    await route.continue();
+  });
+  try {
+    await page.goto("/", { waitUntil: "commit" });
+    const images = page.locator("#product-experience .category-feature-backdrops img");
+    await expect(images).toHaveCount(5);
+    const snapshot = () =>
+      images.evaluateAll((elements) =>
+        elements.map((element) => ({
+          src: new URL(element.getAttribute("src")!, location.href).href,
+          srcset: element.getAttribute("srcset"),
+          sizes: element.getAttribute("sizes"),
+        })),
+      );
+    const serverImages = await snapshot();
+    for (const image of serverImages)
+      expect(new URL(image.src).searchParams.get("url")).toMatch(/^\/_next\/static\/media\//);
+    releaseScripts();
+    await page.waitForLoadState("load");
+    const section = page.locator("#product-experience");
+    const trigger = section.locator(".category-feature-trigger").first();
+    await trigger.click();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(await snapshot()).toEqual(serverImages);
+    await section.locator(".category-feature-panel").first().getByRole("link").click();
+    await expect(page.locator("main.source-content-page")).toBeVisible();
+    await page.goBack();
+    await expect(page.locator("#product-experience")).toBeVisible();
+    expect(await snapshot()).toEqual(serverImages);
+    expect(errors).toEqual([]);
+  } finally {
+    releaseScripts();
+  }
 });
 
 test("keyboard users can reveal a category, close it and follow its link", async ({ page }) => {

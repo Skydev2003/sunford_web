@@ -3,7 +3,7 @@ import { showcaseDefaults } from "@/features/cms/data/settings";
 import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTargets } from "../data/link-targets";
 import { CategoryFeaturePanels } from "./category-feature-panels";
-import { categoryImages } from "../data/category-images";
+import { categoryImageVersion } from "../data/category-images";
 
 export async function CategoryFeature({
   products,
@@ -51,11 +51,10 @@ export async function CategoryFeature({
   ] as const;
   return (
     <CategoryFeaturePanels
-      overviewImage={categoryImages.overview}
+      key={categoryImageVersion}
       linkLabel={copy.linkLabel}
       items={cards.map((card) => ({
         ...card,
-        image: categoryImages[card.id],
         href: resolveHomeLink(card.id, targets[card.id], products),
       }))}
     />
