@@ -12,6 +12,7 @@ import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { ContentDirectory } from "@/features/content/components/content-directory";
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
+import { SoftwareCatalog } from "@/features/content/components/software-catalog";
 import { getProductSection } from "@/features/content/data/product-sections";
 import {
   resolveContentPath,
@@ -78,8 +79,18 @@ export default async function SourceContentPage({
   const newsIndex = /news-and-activities|\/blogs\/editorial$|^\/business$/.test(page.path);
   const softwareIndex =
     page.path === "/software/download" || page.path === "/applications-and-softwares";
+  const softwareDetail = page.path.startsWith("/software/download/");
+  const softwarePage =
+    softwareIndex || softwareDetail
+      ? page.path === "/software/download"
+        ? page
+        : await getContentPage("/software/download")
+      : undefined;
+  const softwareCatalog = softwarePage?.softwareCatalog;
+  const softwareEntry = softwareCatalog?.items.find((item) => item.path === page.path);
   const linkedPages = (await getContentPages()).filter(
     (item) =>
+      !(softwareIndex && softwareCatalog) &&
       item.path !== page.path &&
       item.kind !== "product" &&
       (newsIndex
@@ -89,7 +100,10 @@ export default async function SourceContentPage({
           : item.path.startsWith(`${page.path}/`)),
   );
   const formPage = /warranty\/register|service\//.test(pathname);
-  const hasContent = page.text.trim().length > 40 && !page.hasSourcePlaceholder;
+  const hasContent =
+    (page.text.trim().length > 40 || (softwareDetail && Boolean(page.html.trim()))) &&
+    !page.hasSourcePlaceholder;
+  const proseHtml = softwareDetail ? page.html.replace(/<(\/?)h1(?=[\s>])/g, "<$1h2") : page.html;
   const introduction = section
     ? page.text
         .split(/สินค้าต่อหน้า|แท็กสินค้า|ขออภัย ไม่มีสินค้า/)[0]
@@ -127,6 +141,33 @@ export default async function SourceContentPage({
           </a>
         )}
       </header>
+      {softwareIndex && softwareCatalog && <SoftwareCatalog catalog={softwareCatalog} />}
+      {/^\/software\/download\/sunford-rls(1100|1800)$/.test(page.path) && (
+        <nav
+          className="container source-section-links"
+          aria-label="เลือกซอฟต์แวร์ตามรุ่นเครื่องชั่ง RLS"
+        >
+          {["1100", "1800"].map((model) => (
+            <Link
+              key={model}
+              href={`/software/download/sunford-rls${model}`}
+              aria-current={page.path.endsWith(model) ? "page" : undefined}
+            >
+              SUNFORD RLS{model}
+            </Link>
+          ))}
+        </nav>
+      )}
+      {softwareDetail && !page.images.length && softwareEntry?.image && (
+        <div className="container software-detail-image">
+          <ProductImage
+            src={softwareEntry.image}
+            alt={softwareEntry.title}
+            width={480}
+            height={360}
+          />
+        </div>
+      )}
       {section && section.links.length > 0 && (
         <nav className="container source-section-links" aria-label={`เลือกหมวด${title}`}>
           {section.links.map((link) => (
@@ -175,7 +216,7 @@ export default async function SourceContentPage({
         </>
       ) : (
         <>
-          {!section && !page.images.length && (
+          {!section && !softwareIndex && !softwareDetail && !page.images.length && (
             <div className="container source-image-slot">
               <ProductImage alt={page.title} width={1180} height={340} />
             </div>
@@ -183,7 +224,7 @@ export default async function SourceContentPage({
           {!section && hasContent && (page.managed || (!newsIndex && !softwareIndex)) && (
             <article
               className={`source-prose container ${page.kind === "article" ? "source-article" : ""}`}
-              dangerouslySetInnerHTML={{ __html: page.html }}
+              dangerouslySetInnerHTML={{ __html: proseHtml }}
             />
           )}
           {newsIndex && !page.managed && (
