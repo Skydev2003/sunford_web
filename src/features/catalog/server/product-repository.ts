@@ -35,6 +35,8 @@ export async function getProducts(): Promise<Product[]> {
       featured: true,
       sortOrder: true,
       catalogManaged: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
   // Never append the snapshot here: doing so would resurrect hidden/deleted rows.
