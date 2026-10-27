@@ -10,8 +10,11 @@ export async function GET() {
       {
         status: "ok",
         service: "sunford-web",
-        environment: process.env.APP_ENV ?? "development",
-        revision: process.env.RENDER_GIT_COMMIT?.slice(0, 12) ?? null,
+        environment:
+          process.env.APP_ENV ??
+          (process.env.VERCEL_ENV === "preview" ? "uat" : process.env.VERCEL_ENV) ??
+          "development",
+        revision: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) ?? null,
       },
       { headers },
     );

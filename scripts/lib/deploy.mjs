@@ -1,24 +1,38 @@
-import { validateRenderEnvironment } from "./render-env.mjs";
+import { validateDeploymentEnvironment } from "./deployment-env.mjs";
 
 export function deploymentEnvironment(env, localBranch) {
-  // Render checks out a commit with a detached HEAD and supplies its linked branch.
-  // Locally, always inspect Git rather than trusting a leftover Render variable.
-  const branch = env.RENDER === "true" ? env.RENDER_GIT_BRANCH : localBranch;
-  const appEnv = branch === "main" ? "production" : branch === "uat" ? "uat" : undefined;
+  // Git deployments use provider metadata because their checkout can be detached.
+  // Local releases continue to inspect Git rather than trusting cloud metadata.
+  const branch = env.VERCEL === "1" ? env.VERCEL_GIT_COMMIT_REF : localBranch;
+  const appEnv =
+    env.VERCEL === "1"
+      ? env.VERCEL_ENV === "preview"
+        ? "uat"
+        : "production"
+      : branch === "main"
+        ? "production"
+        : branch === "uat"
+          ? "uat"
+          : undefined;
   const deploymentEnv = {
     ...env,
-    RENDER_GIT_BRANCH: branch,
+    DEPLOY_BRANCH: branch,
     APP_ENV: env.APP_ENV || appEnv,
     NODE_ENV: "production",
   };
-  const errors = validateRenderEnvironment(deploymentEnv);
+  const errors = validateDeploymentEnvironment(deploymentEnv);
   if (errors.length) throw new Error(errors.join("\n"));
   return deploymentEnv;
 }
 
-export function runDeployment(runScript) {
+export function runDeployment(runScript, env) {
   // Prerendering reads the database, so apply migrations before seeding/building.
-  for (const script of ["db:deploy", "db:seed", "build"]) {
+  // Preview builds never migrate or seed a database on branch/PR pushes.
+  const scripts =
+    env?.VERCEL === "1" && env.VERCEL_ENV === "preview"
+      ? ["build"]
+      : ["db:deploy", "db:seed", "build"];
+  for (const script of scripts) {
     const result = runScript(script);
     if (result.error || result.status !== 0) return result.status || 1;
   }

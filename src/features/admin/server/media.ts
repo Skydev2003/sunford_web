@@ -3,7 +3,6 @@ import { getPrisma } from "@/lib/prisma";
 import { getSupabaseConfig } from "@/lib/supabase/config";
 import type { SupabaseClient } from "@supabase/supabase-js";
 export const PRODUCT_IMAGE_BUCKET = "product-images";
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 export function storageImagePath(image: string): string | null {
   const prefix = `${getSupabaseConfig().url.replace(/\/$/, "")}/storage/v1/object/public/${PRODUCT_IMAGE_BUCKET}/`;

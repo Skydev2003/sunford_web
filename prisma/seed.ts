@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { importCatalog } from "./catalog-import";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { homedir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 
 async function main() {
   const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
@@ -13,7 +13,9 @@ async function main() {
   }
   const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
   try {
-    const backupDirectory = join(process.env.LOCALAPPDATA ?? homedir(), "Sunford", "backups");
+    const backupRoot =
+      process.env.VERCEL === "1" ? tmpdir() : (process.env.LOCALAPPDATA ?? homedir());
+    const backupDirectory = join(backupRoot, "Sunford", "backups");
     await mkdir(backupDirectory, { recursive: true });
     const backupPath = join(backupDirectory, `products-${Date.now()}.json`);
     await writeFile(backupPath, JSON.stringify(await prisma.product.findMany(), null, 2), {

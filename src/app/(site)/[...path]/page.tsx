@@ -13,12 +13,14 @@ import { ContentDirectory } from "@/features/content/components/content-director
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import type { Product } from "@/features/catalog/types";
+import {
+  resolveContentPath,
+  staticContentParams,
+} from "@/features/content/data/static-content-params";
 
 export const instant = false;
 export function generateStaticParams() {
-  return importedPages
-    .filter((page) => page.path !== "/" && page.kind !== "product")
-    .map((page) => ({ path: page.path.slice(1).split("/") }));
+  return staticContentParams(importedPages);
 }
 export async function generateMetadata({
   params,
@@ -26,7 +28,7 @@ export async function generateMetadata({
   params: Promise<{ path: string[] }>;
 }): Promise<Metadata> {
   const { path } = await params;
-  const page = await getContentPage(`/${path.join("/")}`);
+  const page = await getContentPage(resolveContentPath(`/${path.join("/")}`));
   return {
     title: page?.title ?? "ไม่พบข้อมูล",
     description: page?.text.replace(/\s+/g, " ").slice(0, 160),
@@ -38,7 +40,7 @@ export default async function SourceContentPage({
   params: Promise<{ path: string[] }>;
 }) {
   const { path } = await params;
-  const pathname = `/${path.join("/")}`;
+  const pathname = resolveContentPath(`/${path.join("/")}`);
   if (path.includes("products")) {
     const product = await getProduct(path.at(-1)!);
     if (product) redirect(`/products/${product.slug}`);

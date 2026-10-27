@@ -27,7 +27,7 @@
     "test:catalog": "tsx --test tests/catalog/management.test.ts",
     "test:catalog:integration": "tsx --test tests/catalog/integration.test.ts",
     "deploy": "bun scripts/deploy.mjs",
-    "render:build": "bun run deploy"
+    "vercel-build": "node scripts/vercel-build.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.4.0",
