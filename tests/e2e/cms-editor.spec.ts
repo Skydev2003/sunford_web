@@ -26,6 +26,7 @@ test("all content management routes require an administrator session", async ({ 
     "/admin/content/hero",
     "/admin/content/site",
     "/admin/content/product-media:feh5ks",
+    "/admin/content/section%3Afooter",
   ]) {
     await page.goto(route);
     await expect(page).toHaveURL(/\/admin\/login$/);
@@ -84,10 +85,15 @@ test.describe("content editor interface", () => {
       models = Object.fromEntries(
         await Promise.all(
           ["hero", "product-media:feh5ks", "navigation", "section:solutions", "section:footer"].map(
-            async (id) => [id, await server.getEditor(id)],
+            async (id) => {
+              const editor = await server.getEditor(encodeURIComponent(id));
+              expect(editor?.id).toBe(id);
+              return [id, editor];
+            },
           ),
         ),
       );
+      expect(await server.getEditor("section%ZZfooter")).toBeNull();
       const product = await server.getAdminProduct("feh5ks");
       models.gallery = {
         id: "gallery",

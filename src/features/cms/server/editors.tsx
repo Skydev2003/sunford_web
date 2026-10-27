@@ -123,8 +123,15 @@ for (const [id, label] of [
   textLabels[`${id}English`] = `${label}: ข้อความเหนือหัวข้อ`;
   textLabels[`${id}Description`] = `${label}: คำอธิบาย`;
 }
-export async function getEditor(id: string) {
+export async function getEditor(routeId: string) {
   await requireAdmin();
+  // Dynamic route params can retain percent escapes in the current Next runtime.
+  let id: string;
+  try {
+    id = decodeURIComponent(routeId);
+  } catch {
+    return null;
+  }
   const row = await getPrisma().cmsDocument.findUnique({ where: { id } });
   if (row?.deletedAt) return null;
   const products = await getPrisma().product.findMany({
