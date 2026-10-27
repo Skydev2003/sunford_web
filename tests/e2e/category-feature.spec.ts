@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 test("four category panels change the shared background and reveal working Sunford links", async ({
   page,
@@ -10,6 +11,20 @@ test("four category panels change the shared background and reveal working Sunfo
   await page.goto("/");
   const section = page.locator("#product-experience");
   await section.scrollIntoViewIfNeeded();
+  // Category artwork must use content-hashed URLs, so replacing the public file
+  // cannot reuse an optimized variant of the old image at the same URL.
+  const baseSource = new URL(
+    (await section.locator(".is-base img").getAttribute("src"))!,
+    page.url(),
+  ).searchParams.get("url");
+  expect(baseSource).toMatch(/^\/_next\/static\/media\/overview\.[a-z0-9_-]+\.webp$/i);
+  const imageResponse = await request.get(baseSource!);
+  expect(imageResponse.ok()).toBe(true);
+  expect(
+    (await imageResponse.body()).equals(
+      await readFile("public/images/home-categories/overview.webp"),
+    ),
+  ).toBe(true);
   const panels = section.locator(".category-feature-panel");
   await expect(panels).toHaveCount(4);
   await expect(page.locator("main #products")).toHaveCount(0);
@@ -36,13 +51,13 @@ test("four category panels change the shared background and reveal working Sunfo
   await page.evaluate(() => document.fonts.ready);
   await expect(panels.first().getByRole("link")).toBeInViewport();
   await section.screenshot({
-    path: "C:/tmp/sunford-category-feature-desktop.png",
+    path: test.info().outputPath("category-feature-desktop.png"),
     animations: "disabled",
   });
   await page.mouse.move(5, 65);
   await expect(section.locator('.category-feature-trigger[aria-expanded="true"]')).toHaveCount(0);
   await section.screenshot({
-    path: "C:/tmp/sunford-category-feature-default.png",
+    path: test.info().outputPath("category-feature-default.png"),
     animations: "disabled",
   });
   expect(errors).toEqual([]);
@@ -84,7 +99,7 @@ test.describe("touch category panels", () => {
     await expect(panel.getByRole("link")).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     await section.screenshot({
-      path: "C:/tmp/sunford-category-feature-mobile.png",
+      path: test.info().outputPath("category-feature-mobile.png"),
       animations: "disabled",
     });
     await panel.getByRole("button", { name: /ปิดรายละเอียด/ }).tap();

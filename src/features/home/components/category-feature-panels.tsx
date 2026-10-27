@@ -15,9 +15,11 @@ export type CategoryFeatureItem = {
 };
 
 export function CategoryFeaturePanels({
+  overviewImage,
   items,
   linkLabel,
 }: {
+  overviewImage: string;
   items: CategoryFeatureItem[];
   linkLabel: string;
 }) {
@@ -40,7 +42,7 @@ export function CategoryFeaturePanels({
     >
       <div className="category-feature-backdrops" aria-hidden="true">
         <div className="category-feature-image is-base">
-          <ProductImage src="/images/home-categories/overview.webp" alt="" fill sizes="100vw" />
+          <ProductImage src={overviewImage} alt="" fill sizes="100vw" />
         </div>
         {items.map((item, index) => (
           <div
