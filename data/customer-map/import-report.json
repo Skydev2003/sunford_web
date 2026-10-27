@@ -1,0 +1,198 @@
+{
+  "sourceFile": "สัดส่วนลูกค้ารายจังหวัดและตำบล_2569-10-27.xlsx",
+  "sourceSha256": "6dc29e3224f18867aff21112f63c09e795cc572e1d4cc9683ee2eeb89d17514f",
+  "updatedAt": "2026-10-27T11:21:00+07:00",
+  "unit": "รายชื่อในทะเบียน อาจซ้ำบุคคลได้",
+  "total": 125804,
+  "located": 97758,
+  "unknownProvince": 28003,
+  "foreign": 43,
+  "unknownSubdistrict": 12758,
+  "allocatedToDistrictAndSubdistrict": 85000,
+  "provinces": 77,
+  "districts": 928,
+  "subdistricts": 7440,
+  "sourceRowsConsumed": 7440,
+  "geometryMatched": 7424,
+  "withoutGeometry": 16,
+  "withoutGeometryCount": 844,
+  "missingGeometry": [
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "ดินแดง",
+      "subdistrict": "รัชดาภิเษก",
+      "count": 57,
+      "sourceRow": 173,
+      "id": "102602"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "บางนา",
+      "subdistrict": "บางนาใต้",
+      "count": 117,
+      "sourceRow": 126,
+      "id": "104703"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "บางนา",
+      "subdistrict": "บางนาเหนือ",
+      "count": 95,
+      "sourceRow": 138,
+      "id": "104702"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "บางบอน",
+      "subdistrict": "คลองบางพราน",
+      "count": 81,
+      "sourceRow": 146,
+      "id": "105004"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "บางบอน",
+      "subdistrict": "บางบอนเหนือ",
+      "count": 53,
+      "sourceRow": 176,
+      "id": "105002"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "บางบอน",
+      "subdistrict": "คลองบางบอน",
+      "count": 43,
+      "sourceRow": 191,
+      "id": "105005"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "บางบอน",
+      "subdistrict": "บางบอนใต้",
+      "count": 26,
+      "sourceRow": 209,
+      "id": "105003"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "พญาไท",
+      "subdistrict": "พญาไท",
+      "count": 109,
+      "sourceRow": 129,
+      "id": "101406"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "พระโขนง",
+      "subdistrict": "พระโขนงใต้",
+      "count": 43,
+      "sourceRow": 192,
+      "id": "100910"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "วัฒนา",
+      "subdistrict": "คลองตัน",
+      "count": 0,
+      "sourceRow": 246,
+      "id": "source-1039-db8aa165eb"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "สวนหลวง",
+      "subdistrict": "พัฒนาการ",
+      "count": 62,
+      "sourceRow": 171,
+      "id": "103403"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "สวนหลวง",
+      "subdistrict": "อ่อนนุช",
+      "count": 40,
+      "sourceRow": 193,
+      "id": "103402"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "สะพานสูง",
+      "subdistrict": "ทับช้าง",
+      "count": 70,
+      "sourceRow": 161,
+      "id": "104403"
+    },
+    {
+      "province": "กรุงเทพมหานคร",
+      "district": "สะพานสูง",
+      "subdistrict": "ราษฎร์พัฒนา",
+      "count": 48,
+      "sourceRow": 183,
+      "id": "104402"
+    },
+    {
+      "province": "กาฬสินธุ์",
+      "district": "ยางตลาด",
+      "subdistrict": "โคกศรี",
+      "count": 0,
+      "sourceRow": 449,
+      "id": "source-4607-221a692128"
+    },
+    {
+      "province": "อุตรดิตถ์",
+      "district": "น้ำปาด",
+      "subdistrict": "ท่าแฝก",
+      "count": 0,
+      "sourceRow": 7221,
+      "id": "530407"
+    }
+  ],
+  "renamed": [
+    {
+      "id": "620112",
+      "original": "นิคมทุ่งโพธิ์ทะเ",
+      "sourceName": "นิคมทุ่งโพธิ์ทะเล"
+    },
+    {
+      "id": "801214",
+      "original": "ปากพนังฝั่งตะวัน",
+      "sourceName": "ปากพนังฝั่งตะวันออก"
+    },
+    {
+      "id": "801210",
+      "original": "ปากพนังฝั่งตะวัน",
+      "sourceName": "ปากพนังฝั่งตะวันตก"
+    },
+    {
+      "id": "650905",
+      "original": "บ้านน้อยซุ้มขี้เ",
+      "sourceName": "บ้านน้อยซุ้มขี้เหล็ก"
+    },
+    {
+      "id": "910303",
+      "original": "อุไดเจริญ",
+      "sourceName": "อุใดเจริญ"
+    },
+    {
+      "id": "640905",
+      "original": "เขาแก้วศรีสมบูรณ",
+      "sourceName": "เขาแก้วศรีสมบูรณ์"
+    },
+    {
+      "id": "150601",
+      "original": "ไผ่จำศิล",
+      "sourceName": "ไผ่จำศีล"
+    },
+    {
+      "id": "610612",
+      "original": "บ้านใหม่คลองเคีย",
+      "sourceName": "บ้านใหม่คลองเคียน"
+    },
+    {
+      "id": "342504",
+      "original": "นิคมสร้างตนเองลำ",
+      "sourceName": "นิคมสร้างตนเองลำโดมน้อย"
+    }
+  ],
+  "namesReference": "https://github.com/kongvut/thai-province-data/tree/3dddbb03345635206c96f7089297d3d6faf9057b",
+  "reconciliation": "PASS"
+}

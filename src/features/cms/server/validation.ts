@@ -215,6 +215,18 @@ export const patchesSchema = z
         ctx.addIssue({ code: "custom", message: "รูปภาพหรือลิงก์ไม่ถูกต้อง", path: [key] });
     }
   });
+export const footerSettingsSchema = z
+  .object({ customerMapEnabled: z.boolean().default(true) })
+  .catchall(text)
+  .superRefine((data, ctx) => {
+    const patches = Object.fromEntries(
+      Object.entries(data).filter(([key]) => key !== "customerMapEnabled"),
+    );
+    const result = patchesSchema.safeParse(patches);
+    if (!result.success)
+      for (const issue of result.error.issues)
+        ctx.addIssue({ code: "custom", message: issue.message, path: issue.path });
+  });
 export const textSettingsSchema = z.record(z.string().max(100), text).superRefine((data, ctx) => {
   for (const [key, value] of Object.entries(data))
     if (/href$/i.test(key) && !safeLink(value))

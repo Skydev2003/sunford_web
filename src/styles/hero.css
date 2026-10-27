@@ -185,66 +185,85 @@
   background: var(--red);
 }
 .product-spotlight {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   margin-top: 12px;
-  background: #151516;
-  color: #fff;
+  background: #000;
+  color: #f5f5f7;
 }
 .spotlight-inner {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 65px;
-  max-width: 1060px;
-  padding-block: 72px;
+  max-width: 1180px;
+  padding-block: 48px 16px;
+  text-align: center;
 }
-.spotlight-copy .eyebrow {
-  color: #ff777e;
-  font-size: 12px;
+.spotlight-copy {
+  width: 100%;
 }
 .spotlight-copy h2 {
-  margin-top: 20px;
-  font-size: clamp(36px, 3.5vw, 50px);
-  line-height: 1.4;
+  font-size: clamp(40px, 4vw, 56px);
+  line-height: 1.12;
   font-weight: 600;
   letter-spacing: -1.4px;
 }
-.spotlight-copy h2 span {
-  color: #aaaab0;
+.spotlight-tagline {
+  max-width: 800px;
+  margin: 8px auto 0;
+  font-size: clamp(20px, 2.1vw, 28px);
+  line-height: 1.5;
+  font-weight: 400;
 }
-.spotlight-copy > p:not(.eyebrow) {
-  margin-top: 21px;
-  color: #bdbdc2;
+.spotlight-description {
+  max-width: 660px;
+  margin: 12px auto 0;
+  color: #a1a1a6;
   font-size: 16px;
-  line-height: 1.9;
+  line-height: 1.6;
 }
 .spotlight-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 22px;
-  margin-top: 28px;
+  gap: 14px;
+  margin-top: 20px;
 }
-.spotlight-actions .text-link {
-  font-size: 14px;
+.spotlight-actions .button {
+  min-height: 44px;
+  padding: 10px 22px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.spotlight-secondary-button {
+  color: #ff4c60;
+  border: 1px solid #ed273d;
+  background: transparent;
+}
+.spotlight-secondary-button:is(:hover, :focus-visible) {
+  color: #fff;
+  background: var(--red);
+  border-color: var(--red);
 }
 .spotlight-visual {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
+  display: block;
   min-width: 0;
-  background: #f5f5f7;
-  border-radius: 28px;
-  padding: 22px 22px 26px;
+  width: min(100%, 1000px);
+  height: clamp(260px, 28vw, 410px);
+  margin-top: 28px;
+  flex-shrink: 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  overflow: hidden;
 }
 .spotlight-visual img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1;
   object-fit: contain;
-  mix-blend-mode: multiply;
-}
-.spotlight-visual span {
-  color: #626267;
-  font-size: 12px;
-  text-align: center;
+  transform: scale(1.24);
 }

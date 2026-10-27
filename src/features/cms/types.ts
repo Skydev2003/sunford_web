@@ -3,7 +3,8 @@ export type CmsData = { [key: string]: CmsValue };
 export type Field = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "html" | "image" | "number" | "boolean" | "select" | "array";
+  type?:
+    "text" | "textarea" | "html" | "image" | "number" | "boolean" | "switch" | "select" | "array";
   options?: { value: string; label: string }[];
   fields?: Field[];
   initial?: CmsData;

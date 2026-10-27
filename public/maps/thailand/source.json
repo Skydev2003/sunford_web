@@ -1,0 +1,39 @@
+{
+  "source": "https://github.com/DevelopedbyWill/thailand-canonical-admin-names/tree/5c611f8cd92691bdc62d7492983480516b00500d",
+  "attribution": "Thailand Canonical Administrative-Names Reference / William J. Reynolds; bundled COD-AB reference polygons, RTSD / OCHA / HDX",
+  "licenses": [
+    "https://creativecommons.org/licenses/by/4.0/",
+    "https://creativecommons.org/licenses/by/3.0/igo/"
+  ],
+  "changes": "Converted WGS84 polygons to Mercator SVG paths; rounded to 0.01 SVG units, calculated label centroids of largest polygon, retained Thai names and administrative parent/child IDs, split by province. Thai reference index exported separately. No customer data included.",
+  "boundaryValidOn": "2019-02-21",
+  "provinces": 77,
+  "districts": 928,
+  "subdistricts": 7425,
+  "coverageNote": "Versioned reference geometry, not a live administrative register. Reconcile unmatched Excel rows; do not silently drop or guess their locations.",
+  "originals": [
+    {
+      "level": "province",
+      "url": "https://raw.githubusercontent.com/DevelopedbyWill/thailand-canonical-admin-names/5c611f8cd92691bdc62d7492983480516b00500d/data/v1.0.0/thailand-adm1-polygons-v1.0.0.geojson",
+      "sha256": "34abbc739f8d3c92bfe68ee43c51313d89ae26643806f2e7daf5c68423bbaf9e"
+    },
+    {
+      "level": "district",
+      "url": "https://raw.githubusercontent.com/DevelopedbyWill/thailand-canonical-admin-names/5c611f8cd92691bdc62d7492983480516b00500d/data/v1.0.0/thailand-adm2-polygons-v1.0.0.geojson",
+      "sha256": "1a1d85b08ff32f57da9cdb42f6a3283ec70bdbaf7d76735298962457cad7beef"
+    },
+    {
+      "level": "subdistrict",
+      "url": "https://raw.githubusercontent.com/DevelopedbyWill/thailand-canonical-admin-names/5c611f8cd92691bdc62d7492983480516b00500d/data/v1.0.0/thailand-adm3-polygons-v1.0.0.geojson",
+      "sha256": "bcaa7af449c894513b8ed119e10afc19c9a589d0f00ec06c609c41d0f3eef659"
+    }
+  ],
+  "customerDataOverlay": {
+    "updatedAt": "2026-10-27T11:21:00+07:00",
+    "subdistricts": 7440,
+    "geometryMatched": 7424,
+    "withoutGeometry": 16,
+    "namesReference": "https://github.com/kongvut/thai-province-data/tree/3dddbb03345635206c96f7089297d3d6faf9057b",
+    "namesLicense": "/maps/thailand/NAME-REFERENCE-LICENSE.txt"
+  }
+}

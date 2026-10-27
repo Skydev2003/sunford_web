@@ -22,7 +22,7 @@ export async function SourceShowcase({
   const copy = await getSettings("showcase", showcaseDefaults);
   const digitalProduct = products.find((product) => product.id === "wps10ks");
   const smartProduct = products.find((product) => product.id === "rls1100");
-  const defaults = defaultHomeImages(products);
+  const defaults = defaultHomeImages();
   const tiles = [
     {
       id: "digital",

@@ -17,7 +17,7 @@ export default async function HomeImagesPage({
   // Require admin before reading settings; layout guards alone are not an authorization boundary.
   const images = await listHomeImages();
   const products = await getProducts();
-  const defaults = defaultHomeImages(products);
+  const defaults = defaultHomeImages();
   const savedSlot = (await searchParams).saved;
   const productOptions = products.map(({ id, name, slug }) => ({
     id,

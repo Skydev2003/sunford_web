@@ -248,7 +248,7 @@ test("product content separates line breaks, headings and lists while retaining 
 
 test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {
   const products = getSnapshotProducts();
-  assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/rls1100");
+  assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/acs30-jc21");
   assert.equal(resolveHomeLink("digital", undefined, products), "/Product/Digital-weighing");
   const target = { productId: "wps10ks" };
   assert.equal(resolveHomeLink("digital", target, products), "/products/wps10ks");
@@ -281,17 +281,14 @@ test("homepage destinations follow product IDs through slug changes and disable 
 });
 
 test("homepage image defaults preserve the current artwork in five independent positions", () => {
-  const products = getSnapshotProducts();
-  const before = structuredClone(products);
-  const defaults = defaultHomeImages(products);
+  const defaults = defaultHomeImages();
   assert.equal(homeImageSlots.length, 5);
   assert.equal(new Set(homeImageSlots.map((slot) => slot.id)).size, 5);
-  assert.equal(defaults.spotlight, "/images/products/rls1100.png");
+  assert.equal(defaults.spotlight, "/images/products/acs30-jc21-cutout.png");
   assert.equal(defaults.smart, "/images/pd/RLS1100.png");
   assert.equal(defaults.digital, "/images/pd/WPS10KS.png");
   assert.equal(defaults.accessories, "/images/pd/TRP-58B.png");
   assert.equal(defaults.software, "/images/pd/app.png");
-  assert.deepEqual(products, before);
 });
 
 test("all 150 existing products can be saved without changing their slugs or categories", () => {

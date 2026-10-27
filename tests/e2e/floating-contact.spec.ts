@@ -4,6 +4,7 @@ test("homepage contact banner moves into a fixed contact launcher with real dest
   page,
   context,
 }) => {
+  await page.setViewportSize({ width: 1600, height: 1000 });
   await page.goto("/");
   await expect(page.locator(".contact-banner")).toHaveCount(0);
   const widget = page.locator(".floating-contact");
@@ -62,6 +63,16 @@ test("homepage contact banner moves into a fixed contact launcher with real dest
   await expect(panel).toHaveCount(0);
   await expect(launcher).toBeFocused();
   await expect(launcher).toHaveAttribute("aria-expanded", "false");
+  await page.evaluate(() => document.fonts.ready);
+  await page.mouse.click(0, 0);
+  await page.getByRole("contentinfo").locator(".footer-address").hover();
+  await page
+    .getByRole("contentinfo")
+    .screenshot({ path: test.info().outputPath("footer-desktop.png"), animations: "disabled" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page
+    .getByRole("contentinfo")
+    .screenshot({ path: test.info().outputPath("footer-mobile.png"), animations: "disabled" });
 });
 
 test("contact launcher stays inside the mobile viewport on product pages", async ({ page }) => {
