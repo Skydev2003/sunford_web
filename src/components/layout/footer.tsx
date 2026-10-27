@@ -5,6 +5,7 @@ import { getSettings } from "@/features/cms/server/documents";
 import { patchSection, sectionValue } from "@/features/cms/server/section-tree";
 import { FloatingContact } from "@/components/contact/floating-contact";
 import { ContactBannerVisibility } from "@/components/contact/contact-banner-visibility";
+import { CustomerCoverage } from "@/features/customer-map/components/customer-coverage";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUp, ArrowUpRight, Globe, Mail, MapPin, Phone } from "lucide-react";
@@ -154,7 +155,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
               </a>
             </div>
           </div>
-          <div className="footer-coverage">
+          <CustomerCoverage>
             <Image
               src="/images/footer/thailand.svg"
               alt="แผนที่ประเทศไทย"
@@ -174,8 +175,9 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
                 <br />
                 และให้คำปรึกษา
               </p>
+              <span className="footer-map-hint">ดูแผนที่ลูกค้า <ArrowUpRight size={12} /></span>
             </div>
-          </div>
+          </CustomerCoverage>
         </div>
       </div>
       <div className="footer-bottom-bar">
