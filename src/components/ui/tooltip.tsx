@@ -1,8 +1,11 @@
 "use client";
 
 import {
+  Children,
   type HTMLAttributes,
   type ReactElement,
+  type ReactNode,
+  isValidElement,
   useCallback,
   useEffect,
   useId,
@@ -14,9 +17,19 @@ import { createPortal } from "react-dom";
 
 type TooltipTriggerProps = HTMLAttributes<HTMLElement> & { disabled?: boolean };
 
-export function Tooltip({
+export function Tooltip({ children, content }: { children: ReactNode; content?: string }) {
+  const triggers = Children.toArray(children);
+  const trigger = triggers[0];
+  if (triggers.length !== 1 || !isValidElement<TooltipTriggerProps>(trigger)) return children;
+
+  return (
+    <TooltipTrigger content={content ?? trigger.props["aria-label"]}>{trigger}</TooltipTrigger>
+  );
+}
+
+function TooltipTrigger({
   children,
-  content = children.props["aria-label"],
+  content,
 }: {
   children: ReactElement<TooltipTriggerProps>;
   content?: string;

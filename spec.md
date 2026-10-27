@@ -31,6 +31,8 @@
 ## Shared UI components
 
 - `Tooltip` in `src/components/ui/tooltip.tsx` accepts one trigger element and optional `content`. The description defaults to the trigger's `aria-label`; existing props, refs and event handlers are preserved without adding a layout wrapper.
+- Normalize tooltip children with `Children.toArray` and validate the single trigger before reading its props, including delayed children received from Server Components. Regression tests exercise delayed children with explicit/default descriptions and product client navigation/reloads.
+- Verified this input handling with three render tests, seven tooltip browser checks, the existing 3D controls check, TypeScript, scoped ESLint and a production build.
 - Tooltips appear after a short pointer hover or immediately on keyboard focus, remain hoverable, and dismiss on pointer exit, blur, click or Escape. Touch taps perform the original action without opening a tooltip. Disabled controls retain their native behavior.
 - A visible tooltip uses `role="tooltip"` and adds its ID to the trigger's `aria-describedby`. Escape dismisses the tooltip before dismissing an underlying dialog.
 - Tooltips are positioned within the viewport and follow resizing and scrolling. They render inside the nearest open native dialog, or in the document body, to avoid clipping and modal stacking issues.
