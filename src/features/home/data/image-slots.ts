@@ -1,12 +1,13 @@
 import type { Product } from "@/features/catalog/types";
 
-export const defaultSpotlightImage = "/images/products/sunford-showroom-banner.png";
+export const defaultSpotlightProductId = "acs30-jc21";
+export const defaultSpotlightImage = "/images/products/acs30-jc21-cutout.png";
 
 export const homeImageSlots = [
   {
     id: "spotlight",
-    title: "ภาพพื้นหลังสินค้าเด่น",
-    description: "ภาพแนวนอนสำหรับพื้นหลังส่วน ชั่ง. พิมพ์. จัดการ. แนะนำสัดส่วนประมาณ 2.6:1",
+    title: "รูปสินค้าเด่นบนพื้นดำ",
+    description: "รูปสินค้า JC21 แบบพื้นหลังโปร่งใส สำหรับแบนเนอร์สินค้าเด่นกึ่งกลางหน้า",
   },
   { id: "digital", title: "เครื่องชั่งดิจิทัล", description: "การ์ดหมวดเครื่องชั่งดิจิทัล" },
   { id: "smart", title: "เครื่องชั่งอัจฉริยะ", description: "การ์ดหมวดเครื่องชั่งอัจฉริยะ" },

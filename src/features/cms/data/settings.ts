@@ -82,9 +82,9 @@ export const siteFields: Field[] = [
   },
 ];
 export const spotlightDefaults = {
-  title: "ชั่ง. พิมพ์. จัดการ.",
-  accent: "ง่ายในเครื่องเดียว.",
-  description: "เครื่องชั่งพิมพ์ฉลากบาร์โค้ด\nให้ทุกร้านค้า ทำงานได้เป็นระบบยิ่งขึ้น",
+  title: "SUNFORD JC21",
+  accent: "ชั่งน้ำหนัก คำนวณราคา อ่านชัดทั้งสองด้าน",
+  description: "",
   primaryLabel: "ดูเพิ่มเติม",
   secondaryLabel: "ปรึกษาผู้เชี่ยวชาญ",
   secondaryHref: "#contact",

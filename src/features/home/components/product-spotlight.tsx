@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTarget } from "../data/link-targets";
 import { getSettings } from "@/features/cms/server/documents";
 import { spotlightDefaults } from "@/features/cms/data/settings";
-import { defaultSpotlightImage } from "../data/image-slots";
+import { defaultSpotlightImage, defaultSpotlightProductId } from "../data/image-slots";
 
 export async function ProductSpotlight({
   products,
@@ -17,44 +16,39 @@ export async function ProductSpotlight({
   target?: HomeLinkTarget;
 }) {
   const copy = await getSettings("spotlight", spotlightDefaults);
-  const defaultProduct = products.find((item) => item.id === "rls1100");
+  const defaultProduct = products.find((item) => item.id === defaultSpotlightProductId);
   const product = target?.productId
     ? products.find((item) => item.id === target.productId)
     : defaultProduct;
   if (!product && !target?.pagePath) return null;
   const href = resolveHomeLink("spotlight", target, products);
   const visual = (
-    <span className="spotlight-image-caption">
-      <strong>{product?.name ?? "SUNFORD"}</strong>
-      <span>
-        {product?.id === "rls1100"
-          ? "Barcode Label Printing Scale"
-          : (product?.subtitle ?? copy.title)}
-      </span>
-    </span>
+    <Image
+      src={image ?? defaultSpotlightImage}
+      alt={product ? `SUNFORD ${product.name}` : "เครื่องชั่ง Sunford JC21"}
+      fill
+      sizes="(max-width: 760px) 100vw, 1000px"
+    />
   );
   return (
     <section className="product-spotlight" aria-labelledby="spotlight-title">
-      <div className="spotlight-backdrop" aria-hidden="true">
-        <Image src={image ?? defaultSpotlightImage} alt="" fill sizes="100vw" />
-      </div>
       <div className="container spotlight-inner">
         <div className="spotlight-copy">
-          <p className="eyebrow">SUNFORD {product?.name}</p>
-          <h2 id="spotlight-title">
-            {copy.title}
-            <br />
-            <span>{copy.accent}</span>
-          </h2>
-          <p style={{ whiteSpace: "pre-line" }}>{copy.description}</p>
+          <h2 id="spotlight-title">{copy.title}</h2>
+          <p className="spotlight-tagline">{copy.accent}</p>
+          {copy.description && (
+            <p className="spotlight-description" style={{ whiteSpace: "pre-line" }}>
+              {copy.description}
+            </p>
+          )}
           <div className="spotlight-actions">
             {href && (
               <Link href={href} className="button button-red">
                 {copy.primaryLabel}
               </Link>
             )}
-            <a href={copy.secondaryHref} className="text-link">
-              {copy.secondaryLabel} <ChevronRight size={17} />
+            <a href={copy.secondaryHref} className="button spotlight-secondary-button">
+              {copy.secondaryLabel}
             </a>
           </div>
         </div>
