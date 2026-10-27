@@ -4,13 +4,14 @@
 .back-link {
   color: var(--muted);
   font-size: 13px;
-  margin-bottom: 35px;
+  margin-bottom: 55px;
+  font-weight: 400;
 }
 .detail-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 75px;
-  align-items: center;
+  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+  gap: clamp(32px, 4.6vw, 56px);
+  align-items: start;
 }
 .detail-grid > *,
 .product-gallery,
@@ -19,14 +20,14 @@
 }
 .detail-image {
   position: relative;
-  height: 520px;
+  aspect-ratio: 0.925;
   background: var(--paper);
   border-radius: 20px;
 }
 .detail-image img {
   object-fit: contain;
   mix-blend-mode: multiply;
-  padding: 50px;
+  padding: clamp(28px, 4.3vw, 56px);
 }
 .product-model {
   position: relative;
@@ -174,59 +175,93 @@
     animation: none;
   }
 }
-.detail-copy .eyebrow {
-  color: var(--red);
-}
 .detail-copy h1 {
   overflow-wrap: anywhere;
-  font-size: 49px;
+  font-size: clamp(32px, 3.5vw, 44px);
   font-weight: 600;
-  margin: 13px 0;
+  margin: -8px 0 12px;
   letter-spacing: -1px;
+  line-height: 1.25;
 }
-.detail-copy h2 {
-  font-size: 21px;
+.detail-copy .detail-subtitle {
+  color: var(--ink);
+  font-size: clamp(14px, 1.35vw, 18px);
   font-weight: 600;
-  margin-bottom: 20px;
-}
-.detail-copy > p {
-  font-size: 15px;
-  color: var(--muted);
-  line-height: 1.95;
+  line-height: 1.7;
 }
 .spec-list {
-  margin-block: 25px;
+  margin: 36px 0 30px;
 }
 .spec-list > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 25px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.3fr) minmax(0, 0.7fr);
+  gap: 20px;
   padding-block: 13px;
   border-bottom: 1px solid var(--line);
   font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 .spec-list dt {
   color: var(--muted);
+}
+.spec-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+}
+.spec-help:hover,
+.spec-help:focus-visible {
+  color: var(--ink);
+  background: var(--paper);
 }
 .spec-list dd {
   text-align: right;
   margin: 0;
 }
+.detail-inquiry {
+  min-width: 250px;
+  max-width: 100%;
+  min-height: 48px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.product-information {
+  padding-top: 70px;
+  max-width: 900px;
+  margin-inline: auto;
+}
+.product-description {
+  color: var(--muted);
+  line-height: 1.95;
+  white-space: pre-line;
+}
+.detail-service {
+  margin-top: 25px;
+}
 .detail-phone {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 15px;
+  margin-block: 15px;
   font-size: 12px;
 }
-.detail-copy .detail-note {
+.detail-service .detail-note {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 20px 0 10px;
   font-size: 12px;
 }
-.detail-copy small {
+.detail-service small {
   color: var(--muted);
   font-size: 11px;
 }

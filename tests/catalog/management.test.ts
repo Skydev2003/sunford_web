@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { getSnapshotProducts } from "../../src/features/content/data/catalog-snapshot";
 import { resolveManagedProduct } from "../../src/features/catalog/data/managed-products";
-import { productPresentation } from "../../src/features/catalog/data/product-presentation";
+import {
+  productOverview,
+  productPresentation,
+} from "../../src/features/catalog/data/product-presentation";
 import { productInputSchema } from "../../src/features/admin/validation";
 import { categories } from "../../src/features/catalog/types";
 import { findCatalogProduct } from "../../src/features/catalog/data/product-lookup";
@@ -144,4 +147,53 @@ test("details retain the original gallery and rich specifications; edited fields
   assert.equal(after.descriptionHtml, undefined);
   assert.ok(after.specifications.some((spec) => spec.value === "25 kg"));
   assert.equal(source.descriptionHtml, before.descriptionHtml);
+});
+
+test("product overviews keep eight fields and use a dash for missing data", () => {
+  const product = { ...getSnapshotProducts()[0], capacity: "", readability: "—", connection: " " };
+  const overview = productOverview(product, []);
+  assert.deepEqual(
+    overview.specifications.map((spec) => spec.label),
+    [
+      "น้ำหนัก",
+      "ค่าละเอียด",
+      "เหมาะสำหรับ",
+      "หน้าจอแสดงผล",
+      "หน่วยความจำ",
+      "การพิมพ์ฉลาก",
+      "การเชื่อมต่อระบบ",
+      "วัสดุและความทนทาน",
+    ],
+  );
+  assert.ok(overview.specifications.every((spec) => spec.value === "-"));
+  assert.deepEqual(overview.additionalSpecifications, []);
+});
+
+test("overview aliases preserve saved specifications and do not mistake minimum weight for capacity", () => {
+  const product = getSnapshotProducts()[0];
+  const specifications = [
+    { label: "น้ำหนักต่ำสุด", value: "2 กรัม" },
+    { label: "พิกัดน้ำหนัก", value: "25 กิโลกรัม" },
+    { label: "ความละเอียด", value: "1 กรัม" },
+    { label: "เหมาะสำหรับ", value: "งานอาหาร" },
+    { label: "จอแสดงผล", value: "LCD" },
+    { label: "หน่วยความจำ", value: "100 รายการ" },
+    { label: "การพิมพ์ฉลาก", value: "ไม่มี" },
+    { label: "การเชื่อมต่อ", value: "RS232" },
+    { label: "วัสดุ", value: "สแตนเลส" },
+  ];
+  const overview = productOverview(product, specifications);
+  assert.deepEqual(
+    overview.specifications.map((spec) => spec.value),
+    ["25 กิโลกรัม", "1 กรัม", "งานอาหาร", "LCD", "100 รายการ", "ไม่มี", "RS232", "สแตนเลส"],
+  );
+  assert.deepEqual(overview.additionalSpecifications, [specifications[0]]);
+  assert.equal(
+    productOverview(product, [{ label: "หน่วยความจำ", value: " " }]).specifications[4].value,
+    "-",
+  );
+  assert.equal(
+    productOverview(product, [{ label: "การเชื่อมต่อ", value: "-" }]).specifications[6].value,
+    "-",
+  );
 });
