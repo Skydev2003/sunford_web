@@ -1,5 +1,3 @@
-import type { Product } from "@/features/catalog/types";
-
 export const defaultSpotlightProductId = "acs30-jc21";
 export const defaultSpotlightImage = "/images/products/acs30-jc21-cutout.png";
 export const defaultSpotlightVideo = "/videos/jc21-panel-aligned-1080p.mp4";
@@ -20,13 +18,12 @@ export const homeImageSlots = [
 export type HomeImageSlot = (typeof homeImageSlots)[number]["id"];
 export type HomeImages = Partial<Record<HomeImageSlot, string>>;
 
-export function defaultHomeImages(products: Product[], softwareImage?: string): HomeImages {
-  const smart = products.find((p) => p.id === "rls1100");
+export function defaultHomeImages(): HomeImages {
   return {
     spotlight: defaultSpotlightImage,
     digital: "/images/pd/WPS10KS.png",
-    smart: smart?.image,
-    accessories: products.find((p) => /^LP50|^LP51/i.test(p.name))?.image,
-    software: softwareImage,
+    smart: "/images/pd/RLS1100.png",
+    accessories: "/images/pd/TRP-58B.png",
+    software: "/images/pd/app.png",
   };
 }

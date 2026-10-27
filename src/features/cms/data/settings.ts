@@ -8,7 +8,7 @@ export const defaultHero: HeroSettings = {
   primaryLabel: "ดูเพิ่มเติม",
   secondaryLabel: "ค้นพบผลิตภัณฑ์",
   secondaryHref: "#products",
-  slides: ["acs30-jc21", "feh5ks", "rls1100"].map((productId) => ({
+  slides: ["acs30-jc21", "feh5ks", "wps10ks"].map((productId) => ({
     productId,
     title: "",
     description: "",

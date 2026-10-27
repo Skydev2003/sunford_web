@@ -37,7 +37,7 @@ test("homepage renders product imagery and cycles featured products", async ({ p
   );
   await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
   await expect(page.locator(".hero-model")).toContainText("FEH5KS");
-  await expect(page.locator(".hero-product-image")).toBeVisible();
+  await expect(page.locator(".hero-model-stage")).toBeVisible();
   await expect(page.locator(".hero-product-video")).toHaveCount(0);
   await page.getByRole("button", { name: "สินค้าก่อนหน้า" }).click();
   await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
