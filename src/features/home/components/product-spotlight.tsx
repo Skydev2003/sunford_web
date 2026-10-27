@@ -32,7 +32,14 @@ export async function ProductSpotlight({
         height={1254}
         sizes="(max-width: 760px) 370px, (max-width: 1000px) 45vw, 474px"
       />
-      <span>{product?.connection ?? "ดูรายละเอียดเพิ่มเติม"}</span>
+      <span className="spotlight-image-caption">
+        <strong>{product?.name ?? "SUNFORD"}</strong>
+        <span>
+          {product?.id === "rls1100"
+            ? "Barcode Label Printing Scale"
+            : (product?.subtitle ?? copy.title)}
+        </span>
+      </span>
     </>
   );
   return (
