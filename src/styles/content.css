@@ -79,6 +79,31 @@
 .content-heading .button {
   margin-top: 30px;
 }
+.source-section-intro {
+  max-width: 800px;
+  margin-inline: auto;
+  white-space: pre-line;
+}
+.source-section-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding-bottom: 20px;
+}
+.source-section-links a {
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 14px;
+  text-align: center;
+}
+.source-section-links a:hover,
+.source-section-links a[aria-current="page"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: white;
+}
 .explore-page {
   padding-bottom: 90px;
 }

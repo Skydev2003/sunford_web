@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { load } from "cheerio";
 import type { Product } from "@/features/catalog/types";
+import sourceProducts from "../../src/features/content/data/products.json";
 
 test("every published product renders complete specification labels and values", async ({
   request,
@@ -23,7 +24,20 @@ test("every published product renders complete specification labels and values",
         }
         const $ = load(await page.text());
         const table = $(".product-attributes > table");
-        if (table.length !== 1) failures.push(`${path}: expected one details table`);
+        if (table.length > 1) failures.push(`${path}: expected at most one details table`);
+        if (!table.length) {
+          // Some original products supply prose only. Verify those facts in full
+          // rather than requiring a fabricated technical specification table.
+          const source = sourceProducts.find((item) => item.sourceId === product.sourceId);
+          const expected = load(
+            product.media?.descriptionHtml ?? source?.descriptionHtml ?? product.description,
+          )
+            .text()
+            .replace(/\s+/g, "");
+          const actual = $(".product-information .product-introduction").text().replace(/\s+/g, "");
+          if (!expected || !actual.includes(expected))
+            failures.push(`${path}: incomplete source description`);
+        }
         if ($(".product-information h2").text().trim() !== "รายละเอียดสินค้า")
           failures.push(`${path}: missing details heading`);
         table.find("> tbody > tr").each((_, row) => {

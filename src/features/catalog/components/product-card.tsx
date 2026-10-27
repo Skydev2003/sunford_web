@@ -8,7 +8,13 @@ import type { Product } from "../types";
 
 import { useCatalogStore } from "@/stores/catalog-store";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  categoryLabel,
+}: {
+  product: Product;
+  categoryLabel?: string;
+}) {
   const categories = useCategories();
   const ids = useCatalogStore((s) => s.compareIds);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
@@ -17,7 +23,9 @@ export function ProductCard({ product }: { product: Product }) {
     <article className="product-card">
       <div className="product-card-top">
         <span className={product.badge ? "product-badge" : "category-tag"}>
-          {product.badge ?? categories.find((c) => c.id === product.category)?.english}
+          {product.badge ??
+            categoryLabel ??
+            categories.find((c) => c.id === product.category)?.english}
         </span>
         <Tooltip>
           <button
@@ -34,14 +42,14 @@ export function ProductCard({ product }: { product: Product }) {
       <Link href={`/products/${product.slug}`} className="product-card-image">
         <ProductImage
           src={product.image}
-          alt={`เครื่องชั่ง Sunford ${product.name}`}
+          alt={`SUNFORD ${product.name}`}
           fill
           sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 30vw"
         />
       </Link>
       <div className="product-card-copy">
         <span className="product-category">
-          {categories.find((c) => c.id === product.category)?.label}
+          {categoryLabel ?? categories.find((c) => c.id === product.category)?.label}
         </span>
         <Link href={`/products/${product.slug}`}>
           <h3>{product.name}</h3>

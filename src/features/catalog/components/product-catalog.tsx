@@ -14,6 +14,7 @@ export function ProductCatalog({
   heading,
   scoped = false,
   headingLevel,
+  categoryLabel,
   copy = catalogDefaults,
 }: {
   products: Product[];
@@ -21,13 +22,17 @@ export function ProductCatalog({
   heading?: string;
   scoped?: boolean;
   headingLevel?: "h1" | "h2";
+  categoryLabel?: string;
   copy?: typeof catalogDefaults;
 }) {
   const categories = useCategories();
   const category = useCatalogStore((s) => s.category);
-  const query = useCatalogStore((s) => s.query);
+  const catalogueQuery = useCatalogStore((s) => s.query);
   const setCategory = useCatalogStore((s) => s.setCategory);
-  const setQuery = useCatalogStore((s) => s.setQuery);
+  const setCatalogueQuery = useCatalogStore((s) => s.setQuery);
+  const [scopedQuery, setScopedQuery] = useState("");
+  const query = scoped ? scopedQuery : catalogueQuery;
+  const setQuery = scoped ? setScopedQuery : setCatalogueQuery;
   const filtered = products.filter(
     (p) =>
       (scoped || category === "all" || p.category === category) &&
@@ -98,7 +103,7 @@ export function ProductCatalog({
       )}
       <div className="product-grid" aria-live="polite">
         {visible.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} categoryLabel={categoryLabel} />
         ))}
       </div>
       {matching.length > visible.length && (

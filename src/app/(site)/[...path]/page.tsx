@@ -12,7 +12,7 @@ import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { ContentDirectory } from "@/features/content/components/content-directory";
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
-import type { Product } from "@/features/catalog/types";
+import { getProductSection } from "@/features/content/data/product-sections";
 import {
   resolveContentPath,
   staticContentParams,
@@ -29,8 +29,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { path } = await params;
   const page = await getContentPage(resolveContentPath(`/${path.join("/")}`));
+  const section = page && !page.managed ? getProductSection(page.path) : undefined;
   return {
-    title: page?.title ?? "ไม่พบข้อมูล",
+    title: section?.title ?? page?.title ?? "ไม่พบข้อมูล",
     description: page?.text.replace(/\s+/g, " ").slice(0, 160),
   };
 }
@@ -48,44 +49,32 @@ export default async function SourceContentPage({
   const page = await getContentPage(pathname);
   if (!page) notFound();
   if (page.path !== pathname && page.managed) redirect(page.path);
+  const section = !page.managed ? getProductSection(page.path) : undefined;
+  const collections = section ? await Promise.all(section.collectionPaths.map(getContentPage)) : [];
+  const productHandles = section?.collectionPaths.length
+    ? [...new Set(collections.flatMap((collection) => collection?.productHandles ?? []))]
+    : page.productHandles;
   const allProducts = await getProducts();
   let products = allProducts.filter((product) =>
     page.managed
       ? page.productIds?.includes(product.id)
-      : page.productHandles.includes(product.sourceId || ""),
+      : productHandles.includes(product.sourceId || ""),
   );
-  const categoryPaths: Record<string, Product["category"] | "all"> = {
-    "/product/digital-weighing": "all",
-    "/product/mes": "smart",
-    "/product/pos": "pos",
-    "/product/ห้องปฏิบัติการ": "laboratory",
-    "/product/laboratory-balance": "laboratory",
-    "/product/อุตสาหกรรม": "industrial",
-    "/product/industrial-scale": "industrial",
-    "/product/พาณิชยกรรมและบริการ": "commercial",
-    "/product/commercial-scale": "commercial",
-    "/product/ไลฟ์สไตล์": "lifestyle",
-    "/product/household-scale": "lifestyle",
-    "/product/อุปกรณ์ประกอบเครื่องชั่ง": "accessories",
-  };
-  const catalogCategory = categoryPaths[page.path.toLowerCase()];
-  if (catalogCategory && !products.length && !page.managed)
-    products = allProducts.filter((product) =>
-      catalogCategory === "all"
-        ? product.category !== "accessories"
-        : product.category === catalogCategory,
-    );
-  const title = page.managed
-    ? page.title
-    : page.path === "/about-us"
-      ? "รู้จัก Sunford"
-      : page.path === "/applications-and-softwares"
-        ? "แอปพลิเคชันและซอฟต์แวร์"
-        : page.path === "/software/download"
-          ? "ดาวน์โหลดซอฟต์แวร์"
-          : catalogCategory === "all"
-            ? "เครื่องชั่งดิจิทัล"
-            : page.title.replace(/\s*\|\s*Sunford$/i, "");
+  if (section?.category) {
+    const category = section.category;
+    products = products.map((product) => ({ ...product, category }));
+  }
+  const title =
+    section?.title ??
+    (page.managed
+      ? page.title
+      : page.path === "/about-us"
+        ? "รู้จัก Sunford"
+        : page.path === "/applications-and-softwares"
+          ? "แอปพลิเคชันและซอฟต์แวร์"
+          : page.path === "/software/download"
+            ? "ดาวน์โหลดซอฟต์แวร์"
+            : page.title.replace(/\s*\|\s*Sunford$/i, ""));
   const newsIndex = /news-and-activities|\/blogs\/editorial$|^\/business$/.test(page.path);
   const softwareIndex =
     page.path === "/software/download" || page.path === "/applications-and-softwares";
@@ -101,6 +90,16 @@ export default async function SourceContentPage({
   );
   const formPage = /warranty\/register|service\//.test(pathname);
   const hasContent = page.text.trim().length > 40 && !page.hasSourcePlaceholder;
+  const introduction = section
+    ? page.text
+        .split(/สินค้าต่อหน้า|แท็กสินค้า|ขออภัย ไม่มีสินค้า/)[0]
+        .trim()
+        .split("\n")
+        .slice(1)
+        .join("\n")
+        .trim()
+    : "";
+  const sectionIntro = introduction.length > 80 ? introduction : "";
   return (
     <main id="main-content" className="source-content-page">
       <div className="source-local-nav">
@@ -121,12 +120,28 @@ export default async function SourceContentPage({
               : "SUNFORD"}
         </p>
         <h1>{title}</h1>
+        {sectionIntro && <p className="source-section-intro">{sectionIntro}</p>}
         {formPage && (
           <a className="button button-red" href={page.sourceUrl} target="_blank" rel="noreferrer">
             เปิดแบบฟอร์ม Sunford <ArrowUpRight size={17} />
           </a>
         )}
       </header>
+      {section && section.links.length > 0 && (
+        <nav className="container source-section-links" aria-label={`เลือกหมวด${title}`}>
+          {section.links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={
+                link.href.toLowerCase() === page.path.toLowerCase() ? "page" : undefined
+              }
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      )}
       {page.managed && page.images[0] && (
         <div className="container source-image-slot">
           <ProductImage src={page.images[0]} alt={page.title} width={1180} height={340} />
@@ -141,11 +156,17 @@ export default async function SourceContentPage({
       {page.kind === "collection" ? (
         <>
           {products.length ? (
-            <ProductCatalog products={products} full heading={page.title} scoped />
+            <ProductCatalog
+              key={page.path}
+              products={products}
+              full
+              heading={title}
+              scoped
+              categoryLabel={section?.title}
+            />
           ) : (
             <div className="container source-empty">
-              <ProductImage alt={page.title} width={1180} height={380} />
-              <p>สำรวจหมวดสินค้าอื่นเพิ่มเติม</p>
+              <p>ยังไม่มีสินค้าในหมวดหมู่นี้</p>
               <Link className="button button-outline" href="/products">
                 ดูผลิตภัณฑ์ทั้งหมด
               </Link>
@@ -154,12 +175,12 @@ export default async function SourceContentPage({
         </>
       ) : (
         <>
-          {!page.images.length && (
+          {!section && !page.images.length && (
             <div className="container source-image-slot">
               <ProductImage alt={page.title} width={1180} height={340} />
             </div>
           )}
-          {hasContent && (page.managed || (!newsIndex && !softwareIndex)) && (
+          {!section && hasContent && (page.managed || (!newsIndex && !softwareIndex)) && (
             <article
               className={`source-prose container ${page.kind === "article" ? "source-article" : ""}`}
               dangerouslySetInnerHTML={{ __html: page.html }}
@@ -175,7 +196,7 @@ export default async function SourceContentPage({
               </p>
             </div>
           )}
-          {!hasContent && (
+          {!section && !hasContent && (
             <div className="container source-empty">
               <p>สอบถามรายละเอียดเพิ่มเติมจากทีม Sunford</p>
               <Link className="button button-red" href="/contact-us">
@@ -185,9 +206,25 @@ export default async function SourceContentPage({
           )}
         </>
       )}
-      {catalogCategory && page.kind !== "collection" && products.length > 0 && (
-        <ProductCatalog products={products} full heading={title} scoped />
-      )}
+      {section &&
+        page.kind !== "collection" &&
+        (products.length > 0 ? (
+          <ProductCatalog
+            key={page.path}
+            products={products}
+            full
+            heading={title}
+            scoped
+            categoryLabel={title}
+          />
+        ) : (
+          <div className="container source-empty">
+            <p>ยังไม่มีสินค้าในหมวดหมู่นี้</p>
+            <Link className="button button-outline" href="/products">
+              ดูผลิตภัณฑ์ทั้งหมด
+            </Link>
+          </div>
+        ))}
       {page.videos?.length ? <VideoGallery videos={page.videos} /> : null}
       {linkedPages.length > 0 && (
         <section className="container source-related">
