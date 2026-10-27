@@ -7,13 +7,13 @@ import { FloatingContact } from "@/components/contact/floating-contact";
 import { ContactBannerVisibility } from "@/components/contact/contact-banner-visibility";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Phone } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { sunford } from "@/features/home/data/brand";
 
 export function FooterTemplate(site: SiteSettings = defaultSite) {
   return (
-    <footer id="contact">
+    <footer id="contact" className="site-footer">
       <ContactBannerVisibility>
         <div className="contact-banner">
           <div className="container contact-inner">
@@ -31,76 +31,161 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
           </div>
         </div>
       </ContactBannerVisibility>
-      <div className="container footer-main">
-        <div className="footer-brand">
-          <Link href="/">
-            <Image src={site.logo} alt={site.name} width={151} height={31} />
-          </Link>
-          <p>
-            ความเที่ยงตรง ที่คุณวางใจ
-            <br />
-            Precision you can trust.
-          </p>
-          <a href={site.phoneHref}>
-            <Phone size={15} /> {site.phone}
-          </a>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
-          <p className="footer-hours">
-            {sunford.hours}
-            <br />
-            หยุดวันอาทิตย์และวันหยุดราชการ
-          </p>
+      <div className="footer-surface">
+        <div className="footer-scene" aria-hidden="true">
+          <Image
+            src="/images/home-categories/digital.webp"
+            alt=""
+            fill
+            sizes="(max-width: 800px) 100vw, 25vw"
+          />
         </div>
-        <div>
-          <h3>ผลิตภัณฑ์</h3>
-          <Link href="/products">เครื่องชั่งดิจิทัล</Link>
-          <a href={sunford.accessories} target="_blank" rel="noreferrer">
-            อุปกรณ์เสริม
-          </a>
-          <Link href="/products">ระบบ POS และอุปกรณ์</Link>
-          <a href={sunford.software} target="_blank" rel="noreferrer">
-            แอปพลิเคชันและซอฟต์แวร์
-          </a>
-        </div>
-        <div>
-          <h3>รู้จักซันฟอร์ด</h3>
-          <Link href="/#story">เรื่องราวของเรา</Link>
-          <Link href="/#solutions">โซลูชันธุรกิจ</Link>
-          <a href={sunford.erp} target="_blank" rel="noreferrer">
-            ERP
-          </a>
-          <a href={sunford.mes} target="_blank" rel="noreferrer">
-            MES
-          </a>
-          <a href="https://www.sunford.co" target="_blank" rel="noreferrer">
-            เว็บไซต์ Sunford <ArrowUpRight size={12} />
-          </a>
-        </div>
-        <div>
-          <h3>พร้อมดูแลคุณ</h3>
-          <Link href="/#support">บริการหลังการขาย</Link>
-          <a href={sunford.warranty} target="_blank" rel="noreferrer">
-            ลงทะเบียนรับประกัน
-          </a>
-          <a href={sunford.downloads} target="_blank" rel="noreferrer">
-            ดาวน์โหลดซอฟต์แวร์
-          </a>
-          <a href={site.line} target="_blank" rel="noreferrer">
-            LINE @sunford <ArrowUpRight size={12} />
-          </a>
-          <p className="footer-address">
-            ศูนย์บริการลูกค้าซันฟอร์ด
-            <br />
-            99 หมู่ 9 ต.บางระกำ อ.บางเลน
-            <br />
-            จ.นครปฐม 73130
-          </p>
+        <div className="container footer-main">
+          <div className="footer-brand">
+            <Link href="/" className="footer-logo">
+              <Image src={site.logo} alt={site.name} width={210} height={43} />
+            </Link>
+            <p className="footer-tagline">
+              <strong>ความเที่ยงตรง ที่คุณวางใจ</strong>
+              <span>Precision you can trust.</span>
+            </p>
+            <div className="footer-contact-list">
+              <a href={site.phoneHref} className="footer-contact-row">
+                <span className="footer-contact-icon">
+                  <Phone size={17} />
+                </span>
+                <span className="footer-contact-text">{site.phone}</span>
+              </a>
+              <a href={`mailto:${site.email}`} className="footer-contact-row">
+                <span className="footer-contact-icon">
+                  <Mail size={17} />
+                </span>
+                <span className="footer-contact-text">{site.email}</span>
+              </a>
+              <Link href={sunford.contact} className="footer-contact-row footer-address">
+                <span className="footer-contact-icon">
+                  <MapPin size={17} strokeWidth={1.8} />
+                </span>
+                <span className="footer-contact-text">
+                  <strong>ศูนย์บริการลูกค้าซันฟอร์ด</strong>
+                  <span>
+                    99 หมู่ 9 ต.บางระกำ อ.บางเลน
+                    <br />
+                    จ.นครปฐม 73130
+                  </span>
+                </span>
+              </Link>
+            </div>
+          </div>
+          <nav className="footer-links" aria-label="ผลิตภัณฑ์ Sunford">
+            <h3>ผลิตภัณฑ์</h3>
+            <Link href="/products">เครื่องชั่งดิจิทัล</Link>
+            <Link href={sunford.accessories}>อุปกรณ์เสริม</Link>
+            <Link href="/products">ระบบ POS และอุปกรณ์</Link>
+            <Link href={sunford.software}>แอปพลิเคชันและซอฟต์แวร์</Link>
+          </nav>
+          <nav className="footer-links" aria-label="เกี่ยวกับ Sunford">
+            <h3>รู้จักซันฟอร์ด</h3>
+            <Link href="/#story">เรื่องราวของเรา</Link>
+            <Link href="/#solutions">โซลูชันธุรกิจ</Link>
+            <Link href={sunford.erp}>ERP</Link>
+            <Link href={sunford.mes}>MES</Link>
+            <a href="https://www.sunford.co" target="_blank" rel="noreferrer">
+              เว็บไซต์ Sunford <ArrowUpRight size={15} />
+            </a>
+          </nav>
+          <div className="footer-links footer-care">
+            <h3>พร้อมดูแลคุณ</h3>
+            <Link href="/#support">บริการหลังการขาย</Link>
+            <Link href={sunford.warranty}>ลงทะเบียนรับประกัน</Link>
+            <Link href={sunford.downloads}>ดาวน์โหลดซอฟต์แวร์</Link>
+            <a href={site.line} target="_blank" rel="noreferrer">
+              LINE @sunford <ArrowUpRight size={15} />
+            </a>
+            <div className="footer-socials" aria-label="ติดตาม Sunford">
+              {site.messenger && (
+                <a
+                  href={site.messenger}
+                  className="footer-social-facebook"
+                  aria-label="Facebook Messenger Sunford"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M14 22v-9h3l.5-3.5H14V7.3c0-1 .3-1.8 1.8-1.8h1.9V2.4a25 25 0 0 0-2.8-.2c-2.8 0-4.7 1.7-4.7 4.8v2.5H7V13h3.2v9Z"
+                    />
+                  </svg>
+                </a>
+              )}
+              <a
+                href={site.line}
+                className="footer-social-line"
+                aria-label="LINE Sunford"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Image src="/images/brands/line-brand-icon.png" alt="" width={25} height={25} />
+              </a>
+              <a
+                href="https://www.youtube.com/@sunfordthai1215"
+                className="footer-social-youtube"
+                aria-label="YouTube Sunford"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    d="M21.6 6.5a2.7 2.7 0 0 0-1.9-1.9C18 4.2 12 4.2 12 4.2s-6 0-7.7.4a2.7 2.7 0 0 0-1.9 1.9A28 28 0 0 0 2 12a28 28 0 0 0 .4 5.5 2.7 2.7 0 0 0 1.9 1.9c1.7.4 7.7.4 7.7.4s6 0 7.7-.4a2.7 2.7 0 0 0 1.9-1.9A28 28 0 0 0 22 12a28 28 0 0 0-.4-5.5ZM10 15.4l5.7-3.4L10 8.6v6.8Z"
+                  />
+                </svg>
+              </a>
+              <a
+                href={sunford.website}
+                className="footer-social-website"
+                aria-label="เว็บไซต์ Sunford"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Globe size={20} />
+              </a>
+            </div>
+          </div>
+          <div className="footer-coverage">
+            <Image
+              src="/images/footer/thailand.svg"
+              alt="แผนที่ประเทศไทย"
+              width={160}
+              height={300}
+            />
+            <div>
+              <h3>
+                ครอบคลุม
+                <br />
+                ทั่วประเทศ
+              </h3>
+              <p>
+                จัดส่งทั่วประเทศไทย
+                <br />
+                พร้อมทีมดูแล
+                <br />
+                และให้คำปรึกษา
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} SUNFORD. All rights reserved.</span>
-        <span>Designed for precision. Built for possibility.</span>
-        <a href="#main-content">กลับด้านบน ↑</a>
+      <div className="footer-bottom-bar">
+        <div className="container footer-bottom">
+          <span>© {new Date().getFullYear()} SUNFORD. All rights reserved.</span>
+          <span>Designed for precision. Built for possibility.</span>
+          <a href="#main-content">
+            กลับด้านบน <ArrowUp size={15} />
+          </a>
+        </div>
       </div>
     </footer>
   );
