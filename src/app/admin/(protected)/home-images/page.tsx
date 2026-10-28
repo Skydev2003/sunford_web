@@ -7,6 +7,8 @@ import { getContentPage } from "@/features/content/server/content-repository";
 import { defaultHomeImages, homeImageSlots } from "@/features/home/data/image-slots";
 import { resolveHomeLink } from "@/features/home/data/link-targets";
 import { homePageOptions } from "@/features/home/server/home-link-options";
+import { homeSettingCards } from "@/features/cms/data/admin-sections";
+import { AdminDetailLink } from "@/features/admin/components/admin-detail-link";
 
 export const instant = false;
 
@@ -33,11 +35,11 @@ export default async function HomeImagesPage({
     <>
       <div className="admin-page-heading">
         <div>
-          <span className="admin-eyebrow">YOUR HOMEPAGE IMAGES</span>
+          <span className="admin-eyebrow">HOMEPAGE CONTENT</span>
           <h1>
-            รูปภาพหน้าแรก<span>.</span>
+            จัดการหน้าแรก<span>.</span>
           </h1>
-          <p>เลือกรูปและหน้าปลายทางที่ต้องการให้เปิดเมื่อคลิก แล้วกดบันทึกในช่องนั้น</p>
+          <p>จัดการข้อความ รูปภาพ และลิงก์ เรียงตามส่วนที่แสดงบนหน้าเว็บไซต์</p>
         </div>
         <Link href="/" target="_blank" className="admin-button-secondary">
           ดูหน้าแรก <ArrowUpRight size={15} />
@@ -48,30 +50,69 @@ export default async function HomeImagesPage({
           บันทึกรูปภาพและปลายทางเรียบร้อยแล้ว
         </div>
       )}
-      <p className="admin-list-note">
-        ปุ่ม “ใช้รูปเดิม” จะนำรูปเดิมของเว็บไซต์กลับมาแสดงเมื่อกดบันทึก
-        ข้อมูลและรูปสินค้าจะยังเหมือนเดิม
-      </p>
-      <div className="admin-home-images-grid">
-        {homeImageSlots.map((slot) => {
-          const current = images.find((image) => image.slot === slot.id);
-          return (
-            <HomeImageEditor
-              key={`${slot.id}:${current?.updatedAt ?? "default"}`}
-              slot={slot.id}
-              title={slot.title}
-              description={slot.description}
-              currentImage={current?.image}
-              updatedAt={current?.updatedAt}
-              defaultImage={defaults[slot.id]}
-              currentProductId={current?.targetProductId}
-              currentPagePath={current?.targetPagePath}
-              defaultHref={resolveHomeLink(slot.id, undefined, products)}
-              products={productOptions}
-              pages={pageOptions}
-            />
-          );
-        })}
+      <nav className="admin-home-section-nav" aria-label="ส่วนต่าง ๆ ของหน้าแรก">
+        {homeSettingCards.map((card) => (
+          <a key={card.id} href={`#home-${card.id}`}>
+            {card.title}
+          </a>
+        ))}
+      </nav>
+      <div className="admin-home-sections">
+        {homeSettingCards.map((card, index) => (
+          <section
+            className="admin-home-section"
+            id={`home-${card.id}`}
+            key={card.id}
+            aria-labelledby={`heading-${card.id}`}
+          >
+            <div className="admin-home-section-heading">
+              <div>
+                <span className="admin-eyebrow">ส่วนที่ {index + 1}</span>
+                <h2 id={`heading-${card.id}`}>{card.title}</h2>
+                <p>{card.description}</p>
+              </div>
+              <AdminDetailLink
+                href={`/admin/content/${encodeURIComponent(card.id)}`}
+                className="admin-button-secondary"
+                kind="content"
+                recordId={card.id}
+                detailTitle={card.title}
+              >
+                แก้ไข{card.title}
+              </AdminDetailLink>
+            </div>
+            {card.imageSlots.length > 0 && (
+              <>
+                <p className="admin-list-note">
+                  บันทึกรูปภาพและปลายทางแยกแต่ละช่อง ปุ่ม “ใช้รูปเดิม” จะคืนรูปเดิมเมื่อบันทึก
+                </p>
+                <div className="admin-home-images-grid">
+                  {homeImageSlots
+                    .filter((slot) => card.imageSlots.includes(slot.id))
+                    .map((slot) => {
+                      const current = images.find((image) => image.slot === slot.id);
+                      return (
+                        <HomeImageEditor
+                          key={`${slot.id}:${current?.updatedAt ?? "default"}`}
+                          slot={slot.id}
+                          title={slot.title}
+                          description={slot.description}
+                          currentImage={current?.image}
+                          updatedAt={current?.updatedAt}
+                          defaultImage={defaults[slot.id]}
+                          currentProductId={current?.targetProductId}
+                          currentPagePath={current?.targetPagePath}
+                          defaultHref={resolveHomeLink(slot.id, undefined, products)}
+                          products={productOptions}
+                          pages={pageOptions}
+                        />
+                      );
+                    })}
+                </div>
+              </>
+            )}
+          </section>
+        ))}
       </div>
     </>
   );

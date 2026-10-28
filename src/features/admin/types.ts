@@ -1,6 +1,10 @@
 import type { Product } from "@/features/catalog/types";
 
-export type ActionState = { error?: string; fieldErrors?: Record<string, string[]> };
+export type ActionState = {
+  error?: string;
+  fieldErrors?: Record<string, string[]>;
+  success?: boolean;
+};
 export type AdminProduct = {
   id: string;
   slug: string;
@@ -19,3 +23,16 @@ export type AdminProduct = {
   updatedAt: string;
   gallery?: string[];
 };
+
+export type AdminProductSummary = Pick<
+  AdminProduct,
+  | "id"
+  | "slug"
+  | "name"
+  | "category"
+  | "image"
+  | "featured"
+  | "published"
+  | "sortOrder"
+  | "updatedAt"
+>;

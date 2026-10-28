@@ -8,6 +8,7 @@ import { isAllowedProductImage, removeUnusedImage } from "./media";
 import { homeImageSlots } from "@/features/home/data/image-slots";
 import type { ActionState } from "../types";
 import { homePageOptions } from "@/features/home/server/home-link-options";
+import { auditEntry, changedFields } from "./audit";
 
 const imageInput = z.object({
   slot: z.enum(homeImageSlots.map((slot) => slot.id)),
@@ -31,40 +32,57 @@ export async function saveHomeImageAction(
   const { slot, image, updatedAt, targetType } = parsed.data;
   let previousImage: string | undefined;
   try {
-    const previous = await getPrisma().homepageImage.findUnique({ where: { slot } });
-    if ((previous?.updatedAt.toISOString() ?? "") !== updatedAt) return stale;
-    let targetProductId = previous?.targetProductId ?? null;
-    let targetPagePath = previous?.targetPagePath ?? null;
-    if (targetType !== undefined) {
-      targetProductId = null;
-      targetPagePath = null;
-      if (targetType === "product") {
-        const product =
-          parsed.data.targetProductId &&
-          (await getPrisma().product.findFirst({
-            where: { id: parsed.data.targetProductId, published: true, deletedAt: null },
-            select: { id: true },
-          }));
-        if (!product) return { error: "กรุณาเลือกสินค้าที่เผยแพร่และยังไม่ถูกลบเป็นปลายทาง" };
-        targetProductId = product.id;
-      } else if (targetType === "page") {
-        if (!(await homePageOptions()).some((page) => page.path === parsed.data.targetPagePath))
-          return { error: "กรุณาเลือกหน้าข้อมูลจากรายการในเว็บไซต์" };
-        targetPagePath = parsed.data.targetPagePath!;
-      }
-    }
-    const data = { image, targetProductId, targetPagePath };
-    const hasSetting = Boolean(image || targetProductId || targetPagePath);
-    if (previous) {
-      const where = { slot, updatedAt: new Date(updatedAt) };
-      const result = hasSetting
-        ? await getPrisma().homepageImage.updateMany({ where, data })
-        : await getPrisma().homepageImage.deleteMany({ where });
-      if (!result.count) return stale;
-      previousImage = previous.image;
-    } else if (hasSetting) {
-      await getPrisma().homepageImage.create({ data: { slot, ...data } });
-    }
+    const problem = await getPrisma().$transaction(
+      async (db) => {
+        const previous = await db.homepageImage.findUnique({ where: { slot } });
+        if ((previous?.updatedAt.toISOString() ?? "") !== updatedAt) return stale;
+        let targetProductId = previous?.targetProductId ?? null;
+        let targetPagePath = previous?.targetPagePath ?? null;
+        if (targetType !== undefined) {
+          targetProductId = null;
+          targetPagePath = null;
+          if (targetType === "product") {
+            const product =
+              parsed.data.targetProductId &&
+              (await db.product.findFirst({
+                where: { id: parsed.data.targetProductId, published: true, deletedAt: null },
+                select: { id: true },
+              }));
+            if (!product) return { error: "กรุณาเลือกสินค้าที่เผยแพร่และยังไม่ถูกลบเป็นปลายทาง" };
+            targetProductId = product.id;
+          } else if (targetType === "page") {
+            if (!(await homePageOptions()).some((page) => page.path === parsed.data.targetPagePath))
+              return { error: "กรุณาเลือกหน้าข้อมูลจากรายการในเว็บไซต์" };
+            targetPagePath = parsed.data.targetPagePath!;
+          }
+        }
+        const data = { image, targetProductId, targetPagePath };
+        const hasSetting = Boolean(image || targetProductId || targetPagePath);
+        if (previous) {
+          const where = { slot, updatedAt: new Date(updatedAt) };
+          const result = hasSetting
+            ? await db.homepageImage.updateMany({ where, data })
+            : await db.homepageImage.deleteMany({ where });
+          if (!result.count) return stale;
+          previousImage = previous.image;
+        } else if (hasSetting) {
+          await db.homepageImage.create({ data: { slot, ...data } });
+        }
+        if (previous || hasSetting)
+          await db.auditLog.create({
+            data: auditEntry(
+              session,
+              "home-image",
+              slot,
+              homeImageSlots.find((item) => item.id === slot)!.title,
+              hasSetting ? (previous ? "update" : "create") : "reset",
+              changedFields(previous ?? undefined, data),
+            ),
+          });
+      },
+      { timeout: 15000 },
+    );
+    if (problem) return problem;
   } catch (error) {
     if (typeof error === "object" && error && "code" in error && error.code === "P2002")
       return stale;

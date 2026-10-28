@@ -1,7 +1,15 @@
 "use client";
 import { imageSizeError } from "@/features/admin/media-limits";
 import { useCategories } from "@/features/cms/components/categories-provider";
-import { useActionState, useId, useRef, useState, useTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type Ref,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,8 +19,31 @@ import { saveProductAction } from "../server/product-actions";
 import { discardProductImage, uploadProductImage } from "../server/media-actions";
 import type { AdminProduct } from "../types";
 import { ProductGalleryEditor } from "./product-gallery-editor";
+import type { AdminDetailHandle } from "../detail-types";
+import { AdminDetailLink } from "./admin-detail-link";
+import { CharacterCount } from "./character-count";
+import { ProductDraftPreview } from "./draft-preview";
+import { useImageCropper } from "./image-cropper";
+import { imageGuidelines, imageHint } from "../image-guidelines";
+import { useUnsavedForm } from "./unsaved-changes";
 
-export function ProductForm({ product }: { product?: AdminProduct }) {
+export function ProductForm({
+  product,
+  detailRef,
+  onClose,
+  onSaved,
+  onBusyChange,
+  onDirty,
+  compact = false,
+}: {
+  product?: AdminProduct;
+  detailRef?: Ref<AdminDetailHandle>;
+  onClose?: () => void;
+  onSaved?: () => void;
+  onBusyChange?: (busy: boolean) => void;
+  onDirty?: (dirty: boolean) => void;
+  compact?: boolean;
+}) {
   const categories = useCategories();
   const formId = useId();
   const [state, action, saving] = useActionState(saveProductAction, {});
@@ -25,10 +56,27 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
   const [uploadedImage, setUploadedImage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [imageError, setImageError] = useState("");
-  const [cancelling, startCancel] = useTransition();
+  const { crop, cropper } = useImageCropper();
+  const [draft, setDraft] = useState<Record<string, string>>({
+    name: product?.name ?? "",
+    subtitle: product?.subtitle ?? "",
+    description: product?.description ?? "",
+    slug: product?.slug ?? "",
+    capacity: product?.capacity ?? "",
+    readability: product?.readability ?? "",
+    connection: product?.connection ?? "",
+  });
+  const [cancelling, setCancelling] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const busy = saving || uploading || galleryUploading || cancelling;
+  const { discard, bindings: unsaved } = useUnsavedForm({
+    title: product?.name ?? "สินค้าใหม่",
+    busy,
+    saving,
+    success: state.success && state,
+    onDirty,
+  });
   async function upload(file?: File) {
     if (!file) return;
     const sizeError = imageSizeError(file);
@@ -39,8 +87,10 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
     setUploading(true);
     setImageError("");
     try {
+      const prepared = await crop(file, imageGuidelines.product);
+      if (!prepared) return;
       const data = new FormData();
-      data.set("file", file);
+      data.set("file", prepared);
       const result = await uploadProductImage(data);
       if (result.error || !result.url) setImageError(result.error ?? "อัปโหลดรูปไม่สำเร็จ");
       else {
@@ -60,15 +110,26 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
       if (inputRef.current) inputRef.current.value = "";
     }
   }
-  function cancel() {
-    startCancel(async () => {
-      try {
-        for (const uploaded of uploadedImages.current) await discardProductImage(uploaded);
-      } finally {
-        router.push("/admin/products");
-      }
-    });
+  async function cancel() {
+    if (!(await discard())) return false;
+    setCancelling(true);
+    try {
+      for (const uploaded of uploadedImages.current) await discardProductImage(uploaded);
+    } finally {
+      if (onClose) onClose();
+      else router.push("/admin/products");
+      setCancelling(false);
+    }
+    return true;
   }
+  useImperativeHandle(detailRef, () => ({ cancel }));
+  useEffect(() => {
+    onBusyChange?.(busy);
+    return () => onBusyChange?.(false);
+  }, [busy, onBusyChange]);
+  useEffect(() => {
+    if (state.success) onSaved?.();
+  }, [state.success, onSaved]);
   const fields: Array<{
     name: "capacity" | "readability" | "connection";
     label: string;
@@ -86,7 +147,24 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
       <button type="button" className="admin-back" disabled={busy} onClick={cancel}>
         <ArrowLeft size={15} /> กลับไปผลิตภัณฑ์
       </button>
-      <form action={action} className="admin-product-form">
+      <form
+        {...unsaved}
+        action={action}
+        className={`admin-product-form${compact ? " admin-product-card-form" : ""}`}
+        onInput={(event) => {
+          unsaved.onInput();
+          const target = event.target;
+          if (
+            (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) &&
+            target.name in draft
+          )
+            setDraft((current) => ({ ...current, [target.name]: target.value }));
+        }}
+        onReset={(event) => {
+          event.preventDefault();
+        }}
+      >
+        {onSaved && <input type="hidden" name="detail" value="1" />}
         <input type="hidden" name="image" value={image} />
         <input type="hidden" name="gallery" value={JSON.stringify(gallery)} />
         {product && (
@@ -111,6 +189,14 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
             </p>
           </div>
           <div className="admin-form-actions">
+            {compact && product && (
+              <Link
+                className="admin-button-secondary"
+                href={`/admin/products/${encodeURIComponent(product.id)}/edit`}
+              >
+                แก้ไขรายละเอียดทั้งหมด <ArrowUpRight size={15} />
+              </Link>
+            )}
             <button
               type="button"
               className="admin-button-secondary"
@@ -130,6 +216,18 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
             {state.error}
           </div>
         )}
+        {product && (
+          <p className="admin-field-hint">
+            <Link
+              href={`/admin/audit?type=product&id=${encodeURIComponent(product.id)}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              ดูประวัติการแก้ไขและผู้ทำรายการ ↗
+            </Link>
+          </p>
+        )}
+        <ProductDraftPreview data={draft} image={image} />
         <div className="admin-editor-grid">
           <div className="admin-editor-main">
             <section className="admin-form-card">
@@ -149,12 +247,15 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                     placeholder="เช่น WPS10KS"
                     error={fieldError("name")}
                     maxLength={300}
+                    hint="หัวข้อบนการ์ดและหน้ารายละเอียด และชื่อ SEO ของหน้าสินค้า"
+                    recommendedLength={60}
                     required
                     disabled={busy}
                   />
                   <FormField
                     label="URL สินค้า"
                     name="slug"
+                    type={compact ? "hidden" : undefined}
                     defaultValue={product?.slug}
                     placeholder="เช่น wps10ks"
                     error={fieldError("slug")}
@@ -190,6 +291,8 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                   error={fieldError("subtitle")}
                   required
                   maxLength={200}
+                  hint="แสดงใต้ชื่อสินค้าในหน้ารายละเอียด และในสไลด์ที่อ้างอิงสินค้านี้"
+                  recommendedLength={160}
                   disabled={busy}
                 />
                 <div className="admin-field">
@@ -206,9 +309,17 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                     disabled={busy}
                     placeholder="แนะนำสินค้า การใช้งาน และสิ่งที่ทำให้สินค้ารุ่นนี้แตกต่าง"
                     aria-invalid={Boolean(fieldError("description"))}
-                    aria-describedby={
-                      fieldError("description") ? `${formId}-description-error` : undefined
-                    }
+                    aria-describedby={`${formId}-description-hint ${formId}-description-count${fieldError("description") ? ` ${formId}-description-error` : ""}`}
+                  />
+                  <small id={`${formId}-description-hint`} className="admin-field-hint">
+                    ใช้เป็นรายละเอียดพื้นฐานและคำอธิบาย SEO ·
+                    หน้าเนื้อหาที่มีรายละเอียดเพิ่มเติมจะใช้เนื้อหาจาก CMS ด้วย
+                  </small>
+                  <CharacterCount
+                    id={`${formId}-description-count`}
+                    value={draft.description}
+                    max={5000}
+                    recommended={160}
                   />
                   {fieldError("description") && (
                     <small id={`${formId}-description-error`} className="admin-field-error">
@@ -218,7 +329,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                 </div>
               </div>
             </section>
-            <section className="admin-form-card">
+            <section className="admin-form-card" hidden={compact}>
               <div className="admin-card-heading">
                 <span>02</span>
                 <div>
@@ -231,24 +342,28 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                   <FormField
                     key={field.name}
                     {...field}
+                    type={compact ? "hidden" : undefined}
                     defaultValue={product?.[field.name]}
                     error={fieldError(field.name)}
                     required
                     maxLength={200}
+                    hint="แสดงในตารางภาพรวมหน้ารายละเอียดและข้อมูลเปรียบเทียบสินค้า"
                     disabled={busy}
                   />
                 ))}
               </div>
             </section>
-            <ProductGalleryEditor
-              images={gallery}
-              primaryImage={image}
-              disabled={busy}
-              onChange={setGallery}
-              onPrimary={setImage}
-              onBusy={setGalleryUploading}
-              onUploaded={(image) => uploadedImages.current.add(image)}
-            />
+            {!compact && (
+              <ProductGalleryEditor
+                images={gallery}
+                primaryImage={image}
+                disabled={busy}
+                onChange={setGallery}
+                onPrimary={setImage}
+                onBusy={setGalleryUploading}
+                onUploaded={(image) => uploadedImages.current.add(image)}
+              />
+            )}
           </div>
           <aside className="admin-editor-aside">
             <section className="admin-form-card">
@@ -311,11 +426,17 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                   </p>
                 )}
                 <p className="admin-field-hint">
-                  แนะนำภาพพื้นหลังเรียบ เห็นสินค้าครบทั้งชิ้น
-                  <br />
-                  รูปจะจัดเก็บใน Supabase Storage
+                  แสดงบนการ์ดสินค้าและเป็นรูปหลักหน้ารายละเอียด · แนะนำภาพพื้นหลังเรียบ
+                  เห็นสินค้าครบทั้งชิ้น · {imageHint(imageGuidelines.product)}
                 </p>
-                <a className="admin-preview-link" href="#product-gallery">
+                <a
+                  className="admin-preview-link"
+                  href={
+                    compact && product
+                      ? `/admin/products/${encodeURIComponent(product.id)}/edit#product-gallery`
+                      : "#product-gallery"
+                  }
+                >
                   จัดการรูปทั้งหมด ({gallery.length} รูป) <ArrowUpRight size={14} />
                 </a>
               </div>
@@ -365,7 +486,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                   <FormField
                     label="ลำดับแสดงผล"
                     name="sortOrder"
-                    type="number"
+                    type={compact ? "hidden" : "number"}
                     min={0}
                     max={99999}
                     defaultValue={product?.sortOrder ?? 0}
@@ -387,12 +508,15 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
                   </Link>
                 )}
                 {product && (
-                  <Link
+                  <AdminDetailLink
                     className="admin-preview-link"
                     href={`/admin/content/product-media:${product.id}`}
+                    kind="content"
+                    recordId={`product-media:${product.id}`}
+                    detailTitle={`รูปและเนื้อหา: ${product.name}`}
                   >
                     จัดการแกลเลอรี ราคา วิดีโอ และเนื้อหาเพิ่มเติม <ArrowUpRight size={14} />
-                  </Link>
+                  </AdminDetailLink>
                 )}
               </div>
             </section>
@@ -416,6 +540,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
           </div>
         </div>
       </form>
+      {cropper}
     </>
   );
 }
@@ -424,9 +549,19 @@ function FormField({
   name,
   error,
   required,
+  hint,
+  recommendedLength,
   ...props
-}: { label: string; name: string; error?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+}: {
+  label: string;
+  name: string;
+  error?: string;
+  hint?: string;
+  recommendedLength?: number;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
   const id = useId();
+  const [value, setValue] = useState(String(props.defaultValue ?? ""));
+  if (props.type === "hidden") return <input {...props} name={name} />;
   return (
     <div className="admin-field">
       <label htmlFor={id}>
@@ -439,7 +574,19 @@ function FormField({
         name={name}
         required={required}
         aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : undefined}
+        aria-describedby={
+          [
+            error ? `${id}-error` : "",
+            hint || name === "slug" ? `${id}-hint` : "",
+            props.maxLength ? `${id}-count` : "",
+          ]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
+        onChange={(event) => {
+          setValue(event.target.value);
+          props.onChange?.(event);
+        }}
       />
       {error && (
         <small className="admin-field-error" id={`${id}-error`}>
@@ -447,9 +594,22 @@ function FormField({
         </small>
       )}
       {name === "slug" && !error && (
-        <small className="admin-field-hint">
+        <small id={`${id}-hint`} className="admin-field-hint">
           /products/your-product · ใช้ A-Z, a-z, 0-9 ขีดกลางหรือขีดล่าง
         </small>
+      )}
+      {hint && (
+        <small id={`${id}-hint`} className="admin-field-hint">
+          {hint}
+        </small>
+      )}
+      {props.maxLength && (
+        <CharacterCount
+          id={`${id}-count`}
+          value={value}
+          max={props.maxLength}
+          recommended={recommendedLength}
+        />
       )}
     </div>
   );

@@ -78,6 +78,7 @@ test("admin login, private routes, and logout use a verified server session", as
     fullPage: true,
     animations: "disabled",
   });
+  await page.getByRole("button", { name: "เปิดเมนูแอดมิน", exact: true }).click();
   await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/login$/);
   await page.goto("/admin/products/new");
@@ -118,11 +119,13 @@ test("create draft, validate upload, publish, edit, and delete a temporary produ
         mimeType: "image/png",
         buffer: Buffer.from("<svg onload='alert(1)'></svg>"),
       });
-    await expect(page.locator("main").getByRole("alert")).toContainText("ไฟล์นี้ไม่ใช่รูป");
+    await expect(page.getByRole("dialog").getByRole("alert")).toContainText("ไฟล์นี้ไม่ใช่รูป");
+    await page.getByRole("button", { name: "ยกเลิกการเลือกรูป", exact: true }).click();
     await page
       .getByRole("main")
       .getByLabel("อัปโหลดรูปสินค้า", { exact: true })
       .setInputFiles(path.resolve("public/images/products/wps10ks.png"));
+    await page.getByRole("button", { name: "ใช้รูปต้นฉบับ", exact: true }).click();
     await expect(page.getByText("อัปโหลดแล้ว", { exact: true })).toBeVisible();
     const publicImage = await page.locator('input[name="image"]').inputValue();
     imagePath = publicImage.split("/product-images/")[1];

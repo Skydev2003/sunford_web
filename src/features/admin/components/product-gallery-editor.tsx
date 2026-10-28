@@ -4,6 +4,9 @@ import { useId, useState } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowUp, Images, Star, Trash2, Upload } from "lucide-react";
 import { uploadProductImage } from "../server/media-actions";
+import { useImageCropper } from "./image-cropper";
+import { imageGuidelines, imageHint } from "../image-guidelines";
+import { SafetyDialog } from "./safety-dialog";
 export function ProductGalleryEditor({
   images,
   primaryImage,
@@ -23,6 +26,8 @@ export function ProductGalleryEditor({
 }) {
   const id = useId();
   const [error, setError] = useState("");
+  const [removing, setRemoving] = useState<number | null>(null);
+  const { crop, cropper } = useImageCropper();
   async function upload(file?: File, index?: number) {
     if (!file) return;
     const sizeError = imageSizeError(file);
@@ -33,8 +38,10 @@ export function ProductGalleryEditor({
     onBusy(true);
     setError("");
     try {
+      const prepared = await crop(file, imageGuidelines.product);
+      if (!prepared) return;
       const form = new FormData();
-      form.set("file", file);
+      form.set("file", prepared);
       const result = await uploadProductImage(form);
       if (!result.url || result.error) {
         setError(result.error ?? "อัปโหลดรูปไม่สำเร็จ");
@@ -74,7 +81,8 @@ export function ProductGalleryEditor({
       </div>
       <div className="admin-fields">
         <p className="admin-field-hint">
-          การเปลี่ยนแปลงจะมีผลเมื่อกด “บันทึกสินค้า” เท่านั้น · JPG, PNG หรือ WebP ไม่เกินรูปละ 4 MB
+          แสดงในแกลเลอรีหน้ารายละเอียดสินค้า · การเปลี่ยนแปลงจะมีผลเมื่อกด “บันทึกสินค้า” เท่านั้น ·{" "}
+          {imageHint(imageGuidelines.product)}
         </p>
         {error && (
           <p role="alert" className="admin-field-error">
@@ -144,8 +152,9 @@ export function ProductGalleryEditor({
                 </button>
                 <button
                   type="button"
+                  className="admin-danger"
                   disabled={disabled}
-                  onClick={() => remove(index)}
+                  onClick={() => setRemoving(index)}
                   aria-label={`นำรูปที่ ${index + 1} ออก`}
                 >
                   <Trash2 size={15} />
@@ -172,6 +181,42 @@ export function ProductGalleryEditor({
           />
         </label>
       </div>
+      {cropper}
+      <SafetyDialog
+        open={removing !== null}
+        busy={disabled}
+        title="ยืนยันนำรูปออกจากแกลเลอรี"
+        onClose={() => setRemoving(null)}
+      >
+        <p>
+          นำรูปที่ {removing === null ? "" : removing + 1} ออกจากรายการ
+          รูปจะเปลี่ยนบนเว็บไซต์เมื่อกดบันทึกสินค้า
+        </p>
+        {removing !== null && images[removing] === primaryImage && (
+          <p>รูปหลักจะเปลี่ยนเป็นรูปที่เหลือในแกลเลอรี</p>
+        )}
+        <div className="admin-modal-actions">
+          <button
+            type="button"
+            className="admin-button-secondary"
+            disabled={disabled}
+            onClick={() => setRemoving(null)}
+          >
+            ยกเลิก
+          </button>
+          <button
+            type="button"
+            className="admin-button-danger"
+            disabled={disabled}
+            onClick={() => {
+              if (removing !== null) remove(removing);
+              setRemoving(null);
+            }}
+          >
+            ยืนยันนำรูปออก
+          </button>
+        </div>
+      </SafetyDialog>
     </section>
   );
 }

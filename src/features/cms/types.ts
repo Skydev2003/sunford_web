@@ -8,6 +8,9 @@ export type Field = {
   fields?: Field[];
   initial?: CmsData;
   hint?: string;
+  maxLength?: number;
+  recommendedLength?: number;
+  imageSize?: { width: number; height: number; label: string };
 };
 export type Category = { id: string; label: string; english: string };
 export type ProductMedia = {
