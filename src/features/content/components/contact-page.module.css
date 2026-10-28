@@ -1,4 +1,5 @@
 .page {
+  --contact-content-width: 1180px;
   background: #fff;
 }
 .contactIntro {
@@ -23,7 +24,7 @@
 }
 .heroContainer {
   width: calc(100% - 96px);
-  max-width: 1240px;
+  max-width: var(--contact-content-width);
   margin-inline: auto;
 }
 .breadcrumb {
@@ -42,9 +43,9 @@
 }
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  gap: 20px;
+  gap: clamp(24px, 4vw, 64px);
   min-height: 320px;
   padding-block: 24px;
 }
@@ -303,7 +304,7 @@ a.channel:not(.lineChannel):hover {
     linear-gradient(180deg, #fafbfd, #f2f5f9);
 }
 .locations > div {
-  max-width: 1100px;
+  max-width: var(--contact-content-width);
 }
 .locations::before {
   position: absolute;
@@ -650,10 +651,12 @@ a.channel:not(.lineChannel):hover {
     display: none;
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 720px) {
   .heroContainer {
     width: calc(100% - 40px);
   }
+}
+@media (max-width: 600px) {
   .breadcrumb {
     padding-top: 22px;
   }
