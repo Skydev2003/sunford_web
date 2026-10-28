@@ -3,5 +3,8 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 export function ContactBannerVisibility({ children }: { children: ReactNode }) {
-  return usePathname() === "/" ? null : children;
+  const pathname = usePathname();
+  return pathname === "/" || pathname === "/contact-us" || pathname === "/about-us"
+    ? null
+    : children;
 }

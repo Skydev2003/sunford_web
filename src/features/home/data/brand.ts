@@ -3,6 +3,7 @@ export const sunford = {
   website: "https://www.sunford.co/",
   about: "/about-us",
   contact: "/contact-us",
+  service: "/service",
   accessories: "/product/อุปกรณ์ประกอบเครื่องชั่ง",
   software: "/applications-and-softwares",
   downloads: "/software/download",

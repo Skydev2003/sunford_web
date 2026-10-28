@@ -1,7 +1,7 @@
 import "server-only";
 import { sourcePageId } from "./identity";
 import { getPrisma } from "@/lib/prisma";
-import { requireAdmin } from "@/features/admin/server/auth";
+import { requireAdmin, type AdminSession } from "@/features/admin/server/auth";
 import { getAdminProduct } from "@/features/admin/server/products";
 import { importedPages, getSourceProduct } from "@/features/content/server/content-repository";
 import { getSnapshotProducts } from "@/features/content/data/catalog-snapshot";
@@ -14,6 +14,7 @@ import {
 } from "@/features/home/components/sections";
 import { FooterTemplate } from "@/components/layout/footer";
 import { sectionFields } from "./section-tree";
+import { solutionImages } from "@/features/home/data/business-solutions";
 import {
   catalogDefaults,
   defaultHero,
@@ -34,57 +35,14 @@ import {
 } from "../data/navigation";
 import { getCategories } from "./categories";
 import type { CmsData, Field } from "../types";
+import {
+  contactLocationImageFields,
+  defaultContactLocationImages,
+} from "@/features/content/data/contact-locations";
 
-export const settingCards = [
-  {
-    id: "hero",
-    title: "แบนเนอร์หลักและสไลด์",
-    description: "เลือกสินค้า เรียงสไลด์ รูป คำโฆษณา และปุ่ม",
-  },
-  { id: "spotlight", title: "สินค้าเด่นบนพื้นดำ", description: "หัวข้อ คำโปรย และข้อความปุ่ม" },
-  {
-    id: "showcase",
-    title: "การ์ดผลิตภัณฑ์หน้าแรก",
-    description: "ชื่อ คำโปรย และข้อความปุ่มของการ์ดทั้ง 4",
-  },
-  {
-    id: "catalog",
-    title: "หัวข้อสินค้าและแถบนำทางหน้าแรก",
-    description: "หัวข้อแนะนำสินค้า ข้อความเปรียบเทียบ และแถบลิงก์สินค้า",
-  },
-  {
-    id: "section:solutions",
-    title: "โซลูชันธุรกิจ",
-    description: "ข้อความ รูปภาพ และปลายทางลิงก์",
-  },
-  {
-    id: "section:story",
-    title: "เรื่องราวแบรนด์",
-    description: "เนื้อหา รูปภาพ และลิงก์รู้จักเรา",
-  },
-  {
-    id: "section:support",
-    title: "บริการและการสนับสนุน",
-    description: "หัวข้อ รายละเอียดบริการ และลิงก์",
-  },
-  {
-    id: "stories",
-    title: "หัวข้อข่าวและวิดีโอหน้าแรก",
-    description: "หัวข้อ ข้อความปุ่ม และลิงก์อ่านต่อ",
-  },
-  { id: "videos", title: "วิดีโอหน้าแรก", description: "เพิ่ม ลบ เรียงวิดีโอ และเปลี่ยนภาพปก" },
-  {
-    id: "site",
-    title: "โลโก้และข้อมูลติดต่อ",
-    description: "โลโก้ ชื่อแบรนด์ เบอร์โทร อีเมล และ LINE",
-  },
-  { id: "navigation", title: "เมนูเว็บไซต์", description: "เพิ่ม แก้ไข เรียงเมนู และลิงก์ย่อย" },
-  {
-    id: "section:footer",
-    title: "ส่วนท้ายเว็บไซต์",
-    description: "เปิด–ปิดแผนที่ลูกค้า ข้อความ เวลาบริการ ที่อยู่ และลิงก์ส่วนท้าย",
-  },
-];
+import { homeSettingCards, siteSettingCards } from "../data/admin-sections";
+import { guidedFields } from "../data/editor-guidance";
+
 const textLabels: Record<string, string> = {
   title: "หัวข้อ",
   accent: "หัวข้อเน้น",
@@ -123,8 +81,8 @@ for (const [id, label] of [
   textLabels[`${id}English`] = `${label}: ข้อความเหนือหัวข้อ`;
   textLabels[`${id}Description`] = `${label}: คำอธิบาย`;
 }
-export async function getEditor(routeId: string) {
-  await requireAdmin();
+export async function getEditor(routeId: string, session?: AdminSession) {
+  const admin = session ?? (await requireAdmin());
   // Dynamic route params can retain percent escapes in the current Next runtime.
   let id: string;
   try {
@@ -134,16 +92,20 @@ export async function getEditor(routeId: string) {
   }
   const row = await getPrisma().cmsDocument.findUnique({ where: { id } });
   if (row?.deletedAt) return null;
-  const products = await getPrisma().product.findMany({
-    where: { deletedAt: null },
-    orderBy: { name: "asc" },
-  });
+  const products =
+    id === "hero" || id.startsWith("page:")
+      ? await getPrisma().product.findMany({
+          where: { deletedAt: null },
+          select: { id: true, name: true, published: true },
+          orderBy: { name: "asc" },
+        })
+      : [];
   const productOptions = [
     { value: "", label: "เลือกสินค้า" },
     ...products.map((product) => ({ value: product.id, label: product.name })),
   ];
   let kind = "settings",
-    title = settingCards.find((card) => card.id === id)?.title ?? "";
+    title = [...homeSettingCards, ...siteSettingCards].find((card) => card.id === id)?.title ?? "";
   let data: CmsData = {};
   let fields: Field[] = [];
   let productVersion: string | undefined;
@@ -153,6 +115,9 @@ export async function getEditor(routeId: string) {
   } else if (id === "site") {
     data = { ...defaultSite };
     fields = siteFields;
+  } else if (id === "contact-locations") {
+    data = { ...defaultContactLocationImages };
+    fields = contactLocationImageFields;
   } else if (id === "navigation") {
     data = { items: defaultNavigation, ...defaultNavigationExtras };
     fields = [
@@ -252,6 +217,30 @@ export async function getEditor(routeId: string) {
     }[id];
     if (!template) return null;
     ({ data, fields } = sectionFields(template()));
+    if (id === "section:solutions") {
+      const labels: Record<string, { label: string; hint: string }> = {
+        [solutionImages.feature]: {
+          label: "รูปการ์ดหลัก · SUNFORD POS",
+          hint: "ภาพแนวสี่เหลี่ยมจัตุรัส วางสินค้าไว้ช่วงล่าง และเว้นพื้นที่ด้านบนสำหรับข้อความ",
+        },
+        [solutionImages.accessories]: {
+          label: "รูปการ์ดอุปกรณ์เสริม",
+          hint: "แนะนำภาพสินค้าพื้นหลังโปร่งใส รูปจะแสดงด้านขวาของการ์ด",
+        },
+        [solutionImages.software]: {
+          label: "รูปการ์ดแอปพลิเคชันและซอฟต์แวร์",
+          hint: "แนะนำภาพพื้นหลังโปร่งใส รูปจะแสดงด้านขวาของการ์ด",
+        },
+        [solutionImages.connections]: {
+          label: "รูปชุดไอคอนเชื่อมต่อบนการ์ดหลัก",
+          hint: "ภาพเดียวรวมรถเข็น กราฟ และคลาวด์ แนะนำ PNG พื้นหลังโปร่งใสแนวตั้ง",
+        },
+      };
+      fields = fields.map((field) => {
+        const image = field.type === "image" && labels[String(data[field.key])];
+        return image ? { ...field, ...image } : field;
+      });
+    }
     if (id === "section:footer") {
       data.customerMapEnabled = true;
       fields.unshift({
@@ -277,7 +266,7 @@ export async function getEditor(routeId: string) {
     ];
   } else if (id.startsWith("product-media:")) {
     kind = "product-media";
-    const product = await getAdminProduct(id.slice(14));
+    const product = await getAdminProduct(id.slice(14), admin);
     if (!product) return null;
     const snapshot = getSnapshotProducts().find((p) => p.id === product.id);
     const source = getSourceProduct(snapshot?.sourceId ?? product.slug);
@@ -409,10 +398,10 @@ export async function getEditor(routeId: string) {
     kind,
     title,
     data: editorData,
-    fields,
+    fields: guidedFields(id, kind, fields),
     version: row?.updatedAt.toISOString() ?? "",
     productVersion,
-    categories: await getCategories(),
+    categories: kind === "category" ? await getCategories() : [],
   };
 }
 function escapeHtml(value: string) {

@@ -107,6 +107,7 @@ export const showcaseDefaults = {
 export const storiesDefaults = {
   eyebrow: "SUNFORD STORIES",
   title: "เรื่องราวของคนทำธุรกิจ.",
+  description: "แรงบันดาลใจ ความรู้ และเทคนิคดี ๆ เพื่อให้ธุรกิจของคุณเติบโตไปด้วยกัน",
   linkLabel: "ดูเรื่องราวทั้งหมด",
   href: "/news-and-activities",
   cardLabel: "SUNFORD BIZ TALK",

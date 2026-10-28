@@ -1,14 +1,18 @@
 import { getSettings } from "@/features/cms/server/documents";
 import { showcaseDefaults, storiesDefaults } from "@/features/cms/data/settings";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { DragScroll } from "@/components/ui/drag-scroll";
 import { getContentPages, getContentPage } from "@/features/content/server/content-repository";
 import type { Product } from "@/features/catalog/types";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { defaultHomeImages, type HomeImages } from "../data/image-slots";
 import { resolveHomeLink, type HomeLinkTargets } from "../data/link-targets";
+import { ShowcaseTile } from "./showcase-tile";
+import { storyCardContent } from "../data/story-cards";
+import storyStyles from "./stories-section.module.css";
+import { FocusDragScroll } from "@/components/ui/focus-drag-scroll";
 
 export async function SourceShowcase({
   products,
@@ -88,7 +92,7 @@ export async function SourceShowcase({
             />
           );
         return (
-          <article
+          <ShowcaseTile
             className={`showcase-tile showcase-tile-${tile.id} showcase-tile-dark`}
             key={tile.id}
           >
@@ -119,7 +123,7 @@ export async function SourceShowcase({
             ) : (
               <div className="showcase-tile-image">{visual}</div>
             )}
-          </article>
+          </ShowcaseTile>
         );
       })}
     </section>
@@ -133,37 +137,88 @@ export async function SunfordStories() {
     .slice(0, 8);
   if (!articles.length) return null;
   return (
-    <section className="stories-section">
-      <div className="container section-heading">
+    <section id="stories" className={storyStyles.section} aria-labelledby="stories-heading">
+      <div className={storyStyles.heading}>
         <div>
-          <p className="eyebrow">{copy.eyebrow}</p>
-          <h2>{copy.title}</h2>
+          <p className={storyStyles.eyebrow}>{copy.eyebrow}</p>
+          <h2 id="stories-heading">
+            {copy.title === storiesDefaults.title ? (
+              <>
+                เรื่องราวของ<span>คนทำธุรกิจ.</span>
+              </>
+            ) : (
+              copy.title
+            )}
+          </h2>
+          <p className={storyStyles.intro}>{copy.description}</p>
         </div>
-        <Link className="text-link" href={copy.href}>
-          {copy.linkLabel} <ChevronRight size={17} />
+        <Link className={storyStyles.allStories} href={copy.href}>
+          {copy.linkLabel} <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </div>
-      <DragScroll className="stories-track" label={copy.title}>
-        {articles.map((article) => (
-          <Link href={article.path} key={article.path} className="story-card">
-            <div className="story-card-image">
-              <ProductImage
-                src={article.images[0]}
-                alt={article.title}
-                fill
-                sizes="(max-width: 720px) 85vw, 450px"
-              />
-            </div>
-            <div>
-              <span>{copy.cardLabel}</span>
-              <h3>{article.title}</h3>
-              <span className="text-link">
-                {copy.readLabel} <ChevronRight size={15} />
-              </span>
-            </div>
-          </Link>
-        ))}
-      </DragScroll>
+      <FocusDragScroll label={copy.title} className={`stories-track ${storyStyles.track}`}>
+        {articles.map((article, index) => {
+          const content = storyCardContent(article);
+          const crop = [
+            { x: 30, y: 180, width: 314, height: 206 },
+            { x: 360, y: 180, width: 304, height: 206 },
+          ][index];
+          return (
+            <Link href={article.path} key={article.path} className={storyStyles.card}>
+              <div className={storyStyles.photo}>
+                {crop ? (
+                  <span
+                    className={storyStyles.referenceCrop}
+                    style={{ aspectRatio: `${crop.width}/${crop.height}` }}
+                  >
+                    <Image
+                      src="/images/stories/reference-stories.png"
+                      alt={
+                        index === 0
+                          ? "ภาพประกอบการชั่งส่วนผสมอาหารจากภาพที่แนบ"
+                          : "ภาพประกอบเครื่องชั่งกับผักสดจากภาพที่แนบ"
+                      }
+                      width={1339}
+                      height={568}
+                      sizes="1400px"
+                      style={{
+                        width: `${(1339 / crop.width) * 100}%`,
+                        left: `${(-crop.x / crop.width) * 100}%`,
+                        top: `${(-crop.y / crop.height) * 100}%`,
+                      }}
+                    />
+                  </span>
+                ) : (
+                  <ProductImage
+                    src={article.images[0]}
+                    alt={article.title}
+                    fill
+                    sizes="(max-width: 720px) 82vw, 300px"
+                  />
+                )}
+                <span className={storyStyles.badge}>{content.category}</span>
+              </div>
+              <div className={storyStyles.body}>
+                {content.date ? (
+                  <time className={storyStyles.date} dateTime={content.date.iso}>
+                    {content.date.label}
+                  </time>
+                ) : (
+                  <span className={storyStyles.date}>Sunford Stories</span>
+                )}
+                <h3>{article.title}</h3>
+                <p className={storyStyles.description}>{content.description}</p>
+                <span className={storyStyles.readMore}>
+                  {copy.readLabel}{" "}
+                  <span>
+                    <ChevronRight size={14} aria-hidden="true" />
+                  </span>
+                </span>
+              </div>
+            </Link>
+          );
+        })}
+      </FocusDragScroll>
     </section>
   );
 }
@@ -173,5 +228,5 @@ export async function SunfordVideos() {
     videos: (await getContentPage("/"))?.videos ?? [],
   });
   const copy = await getSettings("stories", storiesDefaults);
-  return <VideoGallery videos={settings.videos} title={copy.videoTitle} />;
+  return <VideoGallery videos={settings.videos} title={copy.videoTitle} focusCarousel />;
 }

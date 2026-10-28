@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
+import { AdminDetailLink } from "@/features/admin/components/admin-detail-link";
 export function ContentList({
   pages,
 }: {
@@ -24,14 +24,19 @@ export function ContentList({
           )
           .map((page) => (
             <li key={page.id}>
-              <Link href={`/admin/content/${encodeURIComponent(page.id)}`}>
+              <AdminDetailLink
+                href={`/admin/content/${encodeURIComponent(page.id)}`}
+                kind="content"
+                recordId={page.id}
+                detailTitle={page.title}
+              >
                 <span>
                   {page.title} {!page.published && "(ซ่อน)"}
                 </span>
                 <small>
-                  {page.kind} · {page.path} →
+                  {page.kind} · {page.path}
                 </small>
-              </Link>
+              </AdminDetailLink>
             </li>
           ))}
       </ul>

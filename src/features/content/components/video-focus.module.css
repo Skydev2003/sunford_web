@@ -1,0 +1,45 @@
+.section {
+  --video-window-width: min(1120px, calc(100vw - 96px));
+  --video-card-width: calc((var(--video-window-width) - 32px) / 3);
+  width: 100%;
+  overflow: hidden;
+}
+.section .heading {
+  width: calc(100% - 96px);
+  max-width: 1240px;
+  margin-inline: auto;
+}
+.section .track {
+  position: relative;
+  gap: 16px;
+  padding: 4px calc((100% - var(--video-card-width)) / 2) 18px;
+}
+.section .card {
+  flex: 0 0 var(--video-card-width);
+  filter: blur(var(--focus-blur, 0px));
+  opacity: var(--focus-opacity, 1);
+  transform: scale(var(--focus-scale, 1));
+}
+.section .card:focus-visible {
+  outline: 3px solid #e71843;
+  outline-offset: 3px;
+  filter: none;
+  opacity: 1;
+  transform: none;
+}
+@media (max-width: 1100px) {
+  .section {
+    --video-window-width: calc(100vw - 64px);
+  }
+  .section .heading {
+    width: calc(100% - 64px);
+  }
+}
+@media (max-width: 720px) {
+  .section {
+    --video-card-width: min(82vw, 320px);
+  }
+  .section .heading {
+    width: calc(100% - 40px);
+  }
+}

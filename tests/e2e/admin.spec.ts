@@ -56,7 +56,7 @@ test("admin login, private routes, and logout use a verified server session", as
   await expect(page.getByRole("heading", { name: "เข้าสู่พื้นที่แอดมิน" })).toBeVisible();
   await page.screenshot({ path: "/tmp/sunford-admin-login.png", animations: "disabled" });
   await login(page);
-  await expect(page.getByRole("heading", { name: "จัดการผลิตภัณฑ์." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "จัดการผลิตภัณฑ์" })).toBeVisible();
   await expect(page.locator(".site-header")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator(".admin-product-table")).toContainText("WPS10KS");
@@ -78,6 +78,7 @@ test("admin login, private routes, and logout use a verified server session", as
     fullPage: true,
     animations: "disabled",
   });
+  await page.getByRole("button", { name: "เปิดเมนูแอดมิน", exact: true }).click();
   await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/login$/);
   await page.goto("/admin/products/new");
@@ -109,7 +110,7 @@ test("create draft, validate upload, publish, edit, and delete a temporary produ
   try {
     await login(page);
     await page.getByRole("link", { name: "เพิ่มสินค้าใหม่", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "เพิ่มผลิตภัณฑ์ใหม่." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "เพิ่มผลิตภัณฑ์ใหม่" })).toBeVisible();
     await page
       .getByRole("main")
       .getByLabel("อัปโหลดรูปสินค้า", { exact: true })
@@ -118,11 +119,13 @@ test("create draft, validate upload, publish, edit, and delete a temporary produ
         mimeType: "image/png",
         buffer: Buffer.from("<svg onload='alert(1)'></svg>"),
       });
-    await expect(page.locator("main").getByRole("alert")).toContainText("ไฟล์นี้ไม่ใช่รูป");
+    await expect(page.getByRole("dialog").getByRole("alert")).toContainText("ไฟล์นี้ไม่ใช่รูป");
+    await page.getByRole("button", { name: "ยกเลิกการเลือกรูป", exact: true }).click();
     await page
       .getByRole("main")
       .getByLabel("อัปโหลดรูปสินค้า", { exact: true })
       .setInputFiles(path.resolve("public/images/products/wps10ks.png"));
+    await page.getByRole("button", { name: "ใช้รูปต้นฉบับ", exact: true }).click();
     await expect(page.getByText("อัปโหลดแล้ว", { exact: true })).toBeVisible();
     const publicImage = await page.locator('input[name="image"]').inputValue();
     imagePath = publicImage.split("/product-images/")[1];
@@ -169,10 +172,10 @@ test("create draft, validate upload, publish, edit, and delete a temporary produ
     expect(catalogue.products.some((p: { slug: string }) => p.slug === slug)).toBe(false);
     await row.getByRole("link", { name: `แก้ไข ${name}`, exact: true }).click();
     await expect(page).toHaveURL(/\/admin\/products\/[^/]+\/edit$/);
-    await expect(page.getByRole("heading", { name: "แก้ไขผลิตภัณฑ์." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "แก้ไขผลิตภัณฑ์" })).toBeVisible();
     const stalePage = await page.context().newPage();
     await stalePage.goto(page.url());
-    await expect(stalePage.getByRole("heading", { name: "แก้ไขผลิตภัณฑ์." })).toBeVisible();
+    await expect(stalePage.getByRole("heading", { name: "แก้ไขผลิตภัณฑ์" })).toBeVisible();
     await page
       .getByRole("checkbox", { name: "เผยแพร่บนเว็บไซต์ ปิดเพื่อบันทึกเป็นฉบับร่าง" })
       .check();

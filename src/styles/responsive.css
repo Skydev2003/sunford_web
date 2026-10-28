@@ -39,12 +39,6 @@
   .story-image {
     height: 460px;
   }
-  .solution-small {
-    padding: 27px;
-  }
-  .solution-small h3 {
-    font-size: 21px;
-  }
   .support-grid {
     gap: 12px;
   }
@@ -101,27 +95,6 @@
     margin-top: 30px;
     white-space: nowrap;
   }
-  .solutions-grid {
-    grid-template-columns: 1.15fr 1fr;
-  }
-  .solution-feature h3 {
-    font-size: 29px;
-  }
-  .solution-feature h3 span {
-    font-size: 19px;
-  }
-  .solution-small {
-    padding: 24px;
-  }
-  .solution-small h3 {
-    font-size: 19px;
-  }
-  .solution-small p {
-    font-size: 12px;
-  }
-  .solution-small p br {
-    display: none;
-  }
   .story-grid {
     gap: 30px;
   }
@@ -147,7 +120,7 @@
     min-height: 58px;
   }
   .brand img {
-    width: 110px;
+    width: 118px;
   }
   .header-actions {
     gap: 9px;
@@ -299,48 +272,6 @@
   .catalog-note span {
     display: block;
     margin-left: 0;
-  }
-  .solutions-section {
-    padding-block: 16px 48px;
-  }
-  .heading-description {
-    font-size: 13px;
-  }
-  .solutions-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .solution-feature {
-    min-height: 530px;
-  }
-  .solution-feature-copy {
-    padding: 30px 20px;
-  }
-  .solution-feature h3 {
-    font-size: 32px;
-  }
-  .solution-feature h3 span {
-    font-size: 22px;
-  }
-  .solution-image {
-    bottom: 10px;
-  }
-  .solution-small-cards {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    gap: 14px;
-  }
-  .solution-small {
-    padding: 24px 20px;
-  }
-  .solution-small > span {
-    font-size: 8px;
-  }
-  .solution-small h3 {
-    font-size: 20px;
-  }
-  .solution-small p {
-    font-size: 13px;
   }
   .story-grid {
     grid-template-columns: 1fr;
@@ -516,9 +447,6 @@
   }
   .product-card-bottom {
     flex-wrap: nowrap;
-  }
-  .solution-small-cards {
-    grid-template-columns: 1fr;
   }
   .hero-visual {
     height: 230px;

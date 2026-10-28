@@ -528,6 +528,67 @@ test(
                 .error!,
               /ลิงก์/,
             );
+            const locationImages = {
+              serviceImage: "/images/imported/b3f1a968f46a304db6a0.png",
+              officeImage: "/images/imported/f076c187be0c0d2e2ec8.png",
+              warehouseImage: "/images/imported/a3481641e6a46741b43f.png",
+            };
+            const locationId = "contact-locations";
+            const locationVersion =
+              (
+                await tx.cmsDocument.findUnique({ where: { id: locationId } })
+              )?.updatedAt.toISOString() ?? "";
+            context.authenticated = false;
+            assert.match(
+              (
+                await actions.saveDocumentAction(
+                  {},
+                  documentForm(locationId, "settings", locationImages, locationVersion),
+                )
+              ).error!,
+              /เซสชัน/,
+            );
+            context.authenticated = true;
+            await savedDocument(locationId, "settings", locationImages, locationVersion);
+            assert.deepEqual(await actions.getSettings(locationId, {}), locationImages);
+            assert.ok(context.invalidated.includes("cms"));
+            const locationDoc = await tx.cmsDocument.findUniqueOrThrow({
+              where: { id: locationId },
+            });
+            const clearedImages = { ...locationImages, officeImage: "" };
+            await savedDocument(
+              locationId,
+              "settings",
+              clearedImages,
+              locationDoc.updatedAt.toISOString(),
+            );
+            assert.deepEqual(await actions.getSettings(locationId, {}), clearedImages);
+            assert.match(
+              (
+                await actions.saveDocumentAction(
+                  {},
+                  documentForm(
+                    locationId,
+                    "settings",
+                    locationImages,
+                    locationDoc.updatedAt.toISOString(),
+                  ),
+                )
+              ).error!,
+              /ถูกแก้ไข/,
+            );
+            assert.match(
+              (
+                await actions.saveDocumentAction(
+                  {},
+                  documentForm(locationId, "settings", {
+                    ...locationImages,
+                    serviceImage: "https://evil.test/photo.png",
+                  }),
+                )
+              ).error!,
+              /รูปภาพ/,
+            );
             for (const value of [
               "javascript:alert(1)",
               "//evil.test",

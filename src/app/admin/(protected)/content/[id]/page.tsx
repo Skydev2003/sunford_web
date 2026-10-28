@@ -15,7 +15,13 @@ export default function ContentEditorPage(props: EditorPageProps) {
   );
 }
 async function EditorContent({ params, searchParams }: EditorPageProps) {
-  const editor = await getEditor((await params).id);
+  let id: string;
+  try {
+    id = decodeURIComponent((await params).id);
+  } catch {
+    notFound();
+  }
+  const editor = await getEditor(id);
   if (!editor) notFound();
   return (
     <DocumentEditor

@@ -1,0 +1,485 @@
+.section {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background:
+    radial-gradient(ellipse at 15% 80%, #ffe3ea96, transparent 45%),
+    linear-gradient(125deg, #f8fafc, #fff 60%);
+}
+.section::before {
+  position: absolute;
+  z-index: -1;
+  bottom: -330px;
+  left: -210px;
+  width: 1100px;
+  height: 480px;
+  border: 60px solid #fff7fa;
+  border-radius: 50%;
+  transform: rotate(20deg);
+  content: "";
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(32px, 4vw, 60px);
+  max-width: 1240px;
+  padding-block: 64px 48px;
+}
+.gallery {
+  min-width: 0;
+  width: 100%;
+  max-width: 520px;
+  justify-self: center;
+  padding-inline: 36px 42px;
+}
+.deck {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1;
+}
+.backCard {
+  position: absolute;
+  z-index: -1;
+  overflow: hidden;
+  inset: -8px 0 5px;
+  border: 1px solid #ffffffb3;
+  border-radius: 28px;
+  background: #e8e5e5;
+  transform: rotate(-7deg) translate(16px, -9px);
+  transition: transform 0.6s ease;
+}
+.dragLayer {
+  position: absolute;
+  inset: 0;
+}
+.photoCard {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 1px solid #ffffff80;
+  border-radius: 26px;
+  background: #e8e5e5;
+  box-shadow: 0 24px 46px -18px #ab3f5a36;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  transform: rotate(3deg);
+  transition:
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s;
+}
+.photoCard[data-dragging="true"] {
+  cursor: grabbing;
+}
+.gallery[data-tilt="left"] .photoCard {
+  transform: rotate(-3deg);
+}
+.gallery[data-tilt="left"] .backCard {
+  transform: rotate(7deg) translate(-14px, -9px);
+}
+.photoCard::after {
+  position: absolute;
+  inset: 65% 0 0;
+  background: linear-gradient(transparent, #0008);
+  pointer-events: none;
+  content: "";
+}
+.slide {
+  position: absolute;
+  inset: 0;
+}
+.slide[hidden] {
+  display: none;
+}
+.slide img {
+  object-fit: cover;
+  pointer-events: none;
+}
+.photoContent {
+  position: absolute;
+  inset: 0;
+}
+.slide .sceneBackdrop {
+  filter: blur(18px) brightness(0.8);
+  transform: scale(1.15);
+}
+.slide .scenePhoto {
+  object-fit: contain;
+}
+.backCard .sceneBackdrop {
+  display: none;
+}
+.backCard .slide img {
+  object-fit: cover;
+}
+.photoLabel {
+  position: absolute;
+  z-index: 1;
+  bottom: 24px;
+  left: 24px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.quoteCard,
+.noteCard {
+  border: 1px solid #fff;
+  background: linear-gradient(145deg, #fff9fbf5, #ffeef4f5);
+  box-shadow:
+    0 12px 35px #d54b6920,
+    inset 0 1px 0 #fff;
+  color: #27334b;
+  pointer-events: none;
+}
+.quoteCard {
+  position: absolute;
+  z-index: 2;
+  top: 7%;
+  left: -34px;
+  width: 136px;
+  padding: 13px 12px;
+  border-radius: 22px;
+  transform: rotate(-8deg);
+  transition: transform 0.6s ease;
+}
+.quoteCard > svg {
+  width: 26px;
+  height: 26px;
+  color: #cc2445;
+}
+.quoteCard p {
+  margin-top: -3px;
+  color: #182138;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  white-space: nowrap;
+}
+.quoteCard p > span,
+.noteCard p > span {
+  display: block;
+}
+.quoteCard > span {
+  display: block;
+  width: 75px;
+  height: 3px;
+  margin: 7px auto 0;
+  border-radius: 50%;
+  background: #f3284e;
+  transform: rotate(-7deg);
+}
+.sideCards {
+  position: absolute;
+  z-index: 2;
+  top: 23%;
+  right: -36px;
+  display: grid;
+  gap: 12px;
+  transform: rotate(3deg);
+  transition: transform 0.6s ease;
+}
+.noteCard {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  width: 96px;
+  padding: 14px 8px 12px;
+  border-radius: 21px;
+  text-align: center;
+}
+.noteCard > svg {
+  width: 28px;
+  height: 28px;
+  color: #ff3d66;
+  filter: drop-shadow(0 3px 3px #ff46661a);
+}
+.noteCard p {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.noteCard > span {
+  justify-self: start;
+  width: 30px;
+  height: 2px;
+  margin-left: 9px;
+  background: #ff3d66;
+}
+.gallery[data-tilt="left"] .quoteCard {
+  transform: rotate(6deg);
+}
+.gallery[data-tilt="left"] .sideCards {
+  transform: rotate(-4deg);
+}
+.gallery button:focus-visible {
+  outline: 3px solid #e7193c;
+  outline-offset: 5px;
+}
+.currentPhoto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.copy {
+  min-width: 0;
+  color: #10182a;
+}
+.copy > :global(.eyebrow) {
+  color: #ff1745;
+  font-size: 10px;
+  letter-spacing: 2.6px;
+}
+.copy h2 {
+  margin-block: 12px 14px;
+  font-size: clamp(28px, 2.7vw, 40px);
+  font-weight: 600;
+  line-height: 1.32;
+  letter-spacing: -1px;
+}
+.copy h2 span {
+  color: #f71943;
+}
+.copy > p:not(:global(.eyebrow)) {
+  margin-top: 12px;
+  color: #667184;
+  font-size: 14px;
+  line-height: 1.75;
+}
+.values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
+}
+.value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: 9px;
+  text-align: center;
+}
+.value + .value {
+  border-left: 1px solid #e0e4ec;
+}
+.value > span {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffe5ed, #fff3f6);
+  color: #fa1d49;
+}
+.value strong {
+  color: #39465c;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.value p {
+  color: #6d788b;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 22px;
+}
+.storyLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #ff123e;
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 10px 25px #ff15451a;
+}
+.storyLink:hover {
+  background: #db0f35;
+}
+.signature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.signature strong {
+  color: #fb1642;
+  font-size: 22px;
+  font-style: italic;
+  letter-spacing: -1px;
+}
+.signature span {
+  padding-left: 12px;
+  border-left: 1px solid #edbcc6;
+  color: #758095;
+  font-size: 9px;
+}
+@media (max-width: 1100px) {
+  .layout {
+    gap: 38px;
+    padding-block: 64px 48px;
+  }
+  .gallery {
+    max-width: 440px;
+    padding-inline: 24px 32px;
+  }
+  .quoteCard {
+    left: -24px;
+    width: 122px;
+    padding: 12px;
+  }
+  .quoteCard p {
+    font-size: 15px;
+  }
+  .sideCards {
+    right: -32px;
+    gap: 12px;
+  }
+  .noteCard {
+    width: 94px;
+    gap: 5px;
+    padding: 12px 8px;
+    border-radius: 20px;
+  }
+  .noteCard p {
+    font-size: 11px;
+  }
+  .noteCard > svg {
+    width: 28px;
+    height: 28px;
+  }
+  .copy h2 {
+    font-size: 31px;
+  }
+  .copy > p:not(:global(.eyebrow)) {
+    font-size: 13px;
+  }
+  .value {
+    padding-inline: 6px;
+  }
+  .value strong {
+    font-size: 11px;
+  }
+  .value p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-block: 52px 44px;
+  }
+  .gallery {
+    width: 100%;
+    max-width: 440px;
+    margin-inline: auto;
+    padding-inline: 38px 44px;
+  }
+  .copy {
+    max-width: 600px;
+    margin-inline: auto;
+  }
+  .copy h2 {
+    font-size: clamp(28px, 5.6vw, 38px);
+  }
+  .copy > p:not(:global(.eyebrow)) {
+    font-size: 14px;
+  }
+  .value strong,
+  .value p {
+    font-size: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .gallery {
+    padding-inline: 20px 25px;
+  }
+  .quoteCard {
+    left: -16px;
+    top: 5%;
+    width: 99px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+  .quoteCard > svg {
+    width: 24px;
+    height: 24px;
+  }
+  .quoteCard p {
+    font-size: 12px;
+  }
+  .quoteCard > span {
+    width: 66px;
+  }
+  .sideCards {
+    top: 26%;
+    right: -23px;
+    gap: 10px;
+  }
+  .noteCard {
+    width: 78px;
+    padding: 10px 6px;
+    border-radius: 18px;
+  }
+  .noteCard p {
+    font-size: 10px;
+  }
+  .noteCard > svg {
+    width: 25px;
+    height: 25px;
+  }
+  .photoLabel {
+    left: 15px;
+    bottom: 18px;
+    font-size: 7px;
+    letter-spacing: 0.7px;
+  }
+  .copy > :global(.eyebrow) {
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+  .copy h2 {
+    font-size: 28px;
+  }
+  .value > span {
+    width: 44px;
+    height: 44px;
+  }
+  .value strong,
+  .value p {
+    font-size: 10px;
+  }
+  .actions {
+    justify-content: center;
+    gap: 18px;
+    margin-top: 22px;
+  }
+  .storyLink {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery *,
+  .gallery *::after,
+  .gallery *::before {
+    transition: none;
+  }
+}

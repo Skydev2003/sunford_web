@@ -1,6 +1,5 @@
 "use server";
 import { redirect } from "next/navigation";
-import { revalidatePath, updateTag } from "next/cache";
 import { getPrisma } from "@/lib/prisma";
 import { getAdminSession } from "./auth";
 import { isAllowedProductImage, removeUnusedImage } from "./media";
@@ -14,18 +13,9 @@ import { resolveManagedProduct } from "@/features/catalog/data/managed-products"
 import type { Prisma } from "@/generated/prisma/client";
 import type { ProductMedia } from "@/features/cms/types";
 import { productMediaDefaults } from "@/features/cms/server/product-media";
+import { invalidateProducts } from "./product-cache";
+import { auditEntry, changedFields } from "./audit";
 
-function invalidateProducts(...slugs: string[]) {
-  updateTag("products");
-  updateTag("cms");
-  revalidatePath("/", "page");
-  revalidatePath("/products");
-  revalidatePath("/api/products");
-  revalidatePath("/(site)/[...path]", "page");
-  revalidatePath("/admin/products");
-  revalidatePath("/admin/products/new");
-  slugs.forEach((slug) => revalidatePath(`/products/${slug}`));
-}
 export async function saveProductAction(
   _previous: ActionState,
   formData: FormData,
@@ -173,9 +163,25 @@ export async function saveProductAction(
         }
         oldImage = previous.image;
         oldSlug = previous.slug;
+        await db.auditLog.create({
+          data: auditEntry(session, "product", previous.id, data.name, "update", [
+            ...changedFields(resolveManagedProduct(previous), data),
+            ...(gallery !== undefined ? ["gallery"] : []),
+          ]),
+        });
       } else {
         const created = await db.product.create({
           data: { ...data, id: crypto.randomUUID(), catalogManaged: true },
+        });
+        await db.auditLog.create({
+          data: auditEntry(
+            session,
+            "product",
+            created.id,
+            created.name,
+            "create",
+            Object.keys(data),
+          ),
         });
         if (gallery?.length) {
           const metadata = productMediaDefaults(resolveManagedProduct(created));
@@ -209,6 +215,7 @@ export async function saveProductAction(
       /* Saved product remains valid. */
     }
   }
+  if (formData.get("detail") === "1") return { success: true };
   redirect("/admin/products?saved=1");
 }
 export async function deleteProductAction(formData: FormData): Promise<ActionState> {
@@ -217,16 +224,30 @@ export async function deleteProductAction(formData: FormData): Promise<ActionSta
   const parsed = versionSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "ข้อมูลสินค้าไม่ถูกต้อง" };
   try {
-    const previous = await getPrisma().product.findFirst({
-      where: { id: parsed.data.id, deletedAt: null },
+    const problem = await getPrisma().$transaction(async (db) => {
+      const previous = await db.product.findFirst({
+        where: { id: parsed.data.id, deletedAt: null },
+      });
+      if (!previous) return { error: "ไม่พบสินค้านี้ อาจถูกลบไปแล้ว" };
+      const result = await db.product.updateMany({
+        where: { id: parsed.data.id, updatedAt: new Date(parsed.data.updatedAt), deletedAt: null },
+        data: { deletedAt: new Date(), published: false },
+      });
+      if (!result.count) return { error: "สินค้าถูกแก้ไขจากอีกหน้าแล้ว กรุณาโหลดใหม่ก่อนลบ" };
+      await db.auditLog.create({
+        data: auditEntry(
+          session,
+          "product",
+          previous.id,
+          resolveManagedProduct(previous).name,
+          "delete",
+          ["deletedAt", "published"],
+        ),
+      });
+      return { slug: previous.slug };
     });
-    if (!previous) return { error: "ไม่พบสินค้านี้ อาจถูกลบไปแล้ว" };
-    const result = await getPrisma().product.updateMany({
-      where: { id: parsed.data.id, updatedAt: new Date(parsed.data.updatedAt), deletedAt: null },
-      data: { deletedAt: new Date(), published: false },
-    });
-    if (!result.count) return { error: "สินค้าถูกแก้ไขจากอีกหน้าแล้ว กรุณาโหลดใหม่ก่อนลบ" };
-    invalidateProducts(previous.slug);
+    if ("error" in problem) return { error: problem.error };
+    invalidateProducts(problem.slug);
   } catch {
     return { error: "ลบสินค้าไม่สำเร็จ กรุณาลองอีกครั้ง" };
   }

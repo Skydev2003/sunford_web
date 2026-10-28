@@ -50,3 +50,12 @@ next-env.d.ts
 /output/
 /outputs/
 /work/
+
+# Keep the original oversized model locally.
+/assets/models/wetous.glb
+
+# Keep locally installed Prisma AI skills out of application commits.
+/.agents/skills/prisma-*/
+/.claude/skills/prisma-*/
+/.windsurf/skills/prisma-*/
+/skills-lock.json

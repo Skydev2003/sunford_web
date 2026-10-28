@@ -26,6 +26,21 @@ import {
   staticContentParams,
 } from "../../src/features/content/data/static-content-params";
 import sourcePages from "../../src/features/content/data/pages.json";
+import { contactLocations } from "../../src/features/content/data/contact-locations";
+
+test("contact location facts and map destinations match the imported company contact page", () => {
+  const source = sourcePages.find((page) => page.path === "/contact-us")!;
+  const $ = load(source.html);
+  const text = $.text().replace(/\s+/g, " ");
+  const links = $("a")
+    .map((_, element) => $(element).attr("href"))
+    .get();
+  for (const location of contactLocations) {
+    assert.ok(text.includes(location.address));
+    assert.ok(links.includes(location.map));
+    if (location.id !== "service") assert.ok(text.includes(location.company));
+  }
+});
 
 test("static content params reserve filename space for Vercel's prerender sidecars", () => {
   const params = staticContentParams(sourcePages);

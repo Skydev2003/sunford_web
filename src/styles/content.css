@@ -724,13 +724,8 @@
     transform: translate(-50%, 50%);
   }
 }
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .source-showcase .showcase-tile-dark:hover::after {
-    animation: showcase-product-light 5s linear both;
-  }
-}
 @media (prefers-reduced-motion: no-preference) {
-  .source-showcase .showcase-tile-dark:focus-within::after {
+  .source-showcase .showcase-tile-dark[data-light-sweeping="true"]::after {
     animation: showcase-product-light 5s linear both;
   }
 }
