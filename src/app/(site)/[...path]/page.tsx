@@ -13,6 +13,7 @@ import { ContentDirectory } from "@/features/content/components/content-director
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { SoftwareCatalog } from "@/features/content/components/software-catalog";
+import { ContactPage } from "@/features/content/components/contact-page";
 import { getProductSection } from "@/features/content/data/product-sections";
 import {
   resolveContentPath,
@@ -50,6 +51,7 @@ export default async function SourceContentPage({
   const page = await getContentPage(pathname);
   if (!page) notFound();
   if (page.path !== pathname && page.managed) redirect(page.path);
+  if (page.path === "/contact-us" && !page.managed) return <ContactPage />;
   const section = !page.managed ? getProductSection(page.path) : undefined;
   const collections = section ? await Promise.all(section.collectionPaths.map(getContentPage)) : [];
   const productHandles = section?.collectionPaths.length
