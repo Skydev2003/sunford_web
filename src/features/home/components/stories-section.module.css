@@ -197,7 +197,8 @@
 @media (max-width: 720px) {
   .section {
     --story-window-width: 100%;
-    --story-card-width: min(82vw, 320px);
+    --story-card-width: min(74vw, 320px);
+    --story-gap: 12px;
     padding-block: 32px 24px;
   }
   .heading {

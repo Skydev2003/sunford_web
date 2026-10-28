@@ -2,3 +2,12 @@
   width: 100%;
   overflow: hidden;
 }
+@media (max-width: 720px) {
+  .viewport > :global(.drag-scroll-track) {
+    scroll-snap-type: x mandatory;
+  }
+  .viewport > :global(.drag-scroll-track) > * {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+}

@@ -1,11 +1,11 @@
 "use client";
 
-import { Children, useEffect, useRef, type ReactNode } from "react";
+import { Children, useEffect, useRef, type MouseEvent, type ReactNode } from "react";
 import { DragScroll } from "./drag-scroll";
 import styles from "./focus-drag-scroll.module.css";
 
-// Observe scroll position without changing DragScroll's pointer, click or touch
-// handling. The same continuous focus effect is used by stories and videos.
+// Stories and videos share the continuous focus effect. On phones, tapping a
+// side preview centers it before allowing its link or play action.
 export function FocusDragScroll({
   children,
   label,
@@ -17,6 +17,36 @@ export function FocusDragScroll({
 }) {
   const host = useRef<HTMLDivElement>(null);
   const count = Children.count(children);
+
+  function focusMobilePreview(event: MouseEvent<HTMLDivElement>) {
+    if (
+      !window.matchMedia("(max-width: 720px)").matches ||
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+    const track = event.currentTarget;
+    const card = Array.from(track.children).find((child) =>
+      child.contains(event.target as Node),
+    ) as HTMLElement | undefined;
+    if (!card) return;
+    const left = card.offsetLeft + card.offsetWidth / 2 - track.clientWidth / 2;
+    if (Math.abs(left - track.scrollLeft) < 2) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    track.scrollTo({
+      left,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
+  }
 
   useEffect(() => {
     const track = host.current?.firstElementChild as HTMLDivElement | undefined;
@@ -72,7 +102,7 @@ export function FocusDragScroll({
 
   return (
     <div ref={host} className={styles.viewport}>
-      <DragScroll className={className} label={label}>
+      <DragScroll className={className} label={label} onClickCapture={focusMobilePreview}>
         {children}
       </DragScroll>
     </div>
