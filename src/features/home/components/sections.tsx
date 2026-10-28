@@ -2,32 +2,52 @@ import { getSettings } from "@/features/cms/server/documents";
 import { patchSection } from "@/features/cms/server/section-tree";
 import Image from "next/image";
 import {
-  ArrowUpRight,
+  ArrowRight,
   BookOpen,
   CircleCheck,
   PackageCheck,
   ShieldCheck,
+  UsersRound,
+  Settings2,
   Wrench,
 } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";
 import { BusinessSolutionsTemplate } from "./business-solutions";
+import { CustomerStoryGallery } from "./customer-story-gallery";
+import { customerStoryPhotos } from "../data/customer-story-photos";
+import storyStyles from "./brand-story.module.css";
 
 export { BusinessSolutionsTemplate } from "./business-solutions";
 
 export function BrandStoryTemplate() {
   return (
-    <section id="story" className="story-section">
-      <div className="container story-grid">
-        <div className="story-image">
-          <Image
-            src="/images/business-story.png"
-            alt="ผู้ประกอบการร้านค้ากับเครื่องชั่ง Sunford ในการทำงานจริง"
-            fill
-            sizes="(max-width: 800px) 100vw, 50vw"
-          />
-          <span className="story-image-label">REAL PEOPLE. REAL POSSIBILITIES.</span>
-        </div>
-        <div className="story-copy">
+    <section id="story" className={storyStyles.section}>
+      <div className={`container ${storyStyles.layout}`}>
+        <CustomerStoryGallery>
+          {customerStoryPhotos.map((photo) => (
+            <span key={photo.id} className={storyStyles.photoContent}>
+              {photo.id !== "market" && (
+                <Image
+                  src={photo.src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 480px) 80vw, (max-width: 800px) 440px, 40vw"
+                  className={storyStyles.sceneBackdrop}
+                  draggable={false}
+                />
+              )}
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                sizes="(max-width: 480px) 80vw, (max-width: 800px) 440px, 40vw"
+                className={photo.id === "market" ? undefined : storyStyles.scenePhoto}
+                draggable={false}
+              />
+            </span>
+          ))}
+        </CustomerStoryGallery>
+        <div className={storyStyles.copy}>
           <p className="eyebrow">BEHIND EVERY MEASUREMENT</p>
           <h2>
             เบื้องหลังทุกตัวเลข
@@ -42,11 +62,37 @@ export function BrandStoryTemplate() {
             เราให้ความสำคัญกับคุณภาพ ความทนทาน การใช้งานที่ไม่ซับซ้อน และบริการหลังการขาย
             เพื่อเป็นส่วนหนึ่งของโอกาสและการเติบโตของคุณ
           </p>
-          <a className="text-link" href={sunford.about}>
-            รู้จักเรื่องราวของ Sunford <ArrowUpRight size={17} />
-          </a>
-          <div className="story-signature">
-            SUNFORD<span>Precision you can trust.</span>
+          <div className={storyStyles.values}>
+            <div className={storyStyles.value}>
+              <span>
+                <ShieldCheck size={27} strokeWidth={1.6} aria-hidden="true" />
+              </span>
+              <strong>เชื่อถือได้</strong>
+              <p>ใช้ได้ทุกวัน</p>
+            </div>
+            <div className={storyStyles.value}>
+              <span>
+                <UsersRound size={27} strokeWidth={1.6} aria-hidden="true" />
+              </span>
+              <strong>ดูแลโดยทีมงาน</strong>
+              <p>มืออาชีพ</p>
+            </div>
+            <div className={storyStyles.value}>
+              <span>
+                <Settings2 size={27} strokeWidth={1.6} aria-hidden="true" />
+              </span>
+              <strong>พัฒนาอย่างต่อเนื่อง</strong>
+              <p>เพื่อธุรกิจของคุณ</p>
+            </div>
+          </div>
+          <div className={storyStyles.actions}>
+            <a className={storyStyles.storyLink} href={sunford.about}>
+              รู้จักเรื่องราวของ Sunford <ArrowRight size={18} aria-hidden="true" />
+            </a>
+            <div className={storyStyles.signature}>
+              <strong>SUNFORD</strong>
+              <span>Precision you can trust.</span>
+            </div>
           </div>
         </div>
       </div>
