@@ -11,7 +11,7 @@ async function openMap(page: import("@playwright/test").Page) {
   return { dialog, trigger };
 }
 
-test("real workbook counts across province, district, and subdistrict with zoom, pan, and focus restoration", async ({
+test("workbook percentages across province, district, and subdistrict with zoom, pan, and focus restoration", async ({
   page,
 }) => {
   test.slow(); // Full desktop navigation, gestures, and focus restoration in one session.
@@ -20,7 +20,10 @@ test("real workbook counts across province, district, and subdistrict with zoom,
   await expect(dialog.getByLabel("เลือกจังหวัด", { exact: true }).locator("option")).toHaveCount(
     78,
   );
-  await expect(dialog.locator(".customer-map-summary")).toContainText("125,804 รายชื่อ");
+  await expect(dialog.locator(".customer-map-summary strong")).toHaveText("100.00%");
+  await expect(dialog.locator(".customer-map-totals dd")).toHaveText(["77.71%", "22.26%", "0.03%"]);
+  await expect(dialog.locator(".customer-map-area-list > button").first()).toContainText("16.26%");
+  await expect(dialog).not.toContainText(/\d[\d,]* รายชื่อ/);
   await dialog.getByLabel("ค้นหาจังหวัด", { exact: true }).fill("ระยอง");
   await dialog.getByRole("button", { name: "เลือกจังหวัดระยอง", exact: true }).click();
   await expect(dialog.locator(".customer-map-area-list > button")).toHaveCount(8);
@@ -29,9 +32,9 @@ test("real workbook counts across province, district, and subdistrict with zoom,
   ).toBeVisible();
   await dialog.getByRole("button", { name: "เลือกอำเภอบ้านค่าย", exact: true }).click();
   await expect(dialog.locator(".customer-map-summary h3")).toHaveText("บ้านค่าย");
-  await expect(dialog.locator(".customer-map-summary")).toContainText("122 รายชื่อ");
+  await expect(dialog.locator(".customer-map-summary strong")).toHaveText("0.10%");
   await dialog.getByRole("button", { name: "เลือกตำบลบ้านค่าย", exact: true }).click();
-  await expect(dialog.locator(".customer-map-summary")).toContainText("21 รายชื่อ");
+  await expect(dialog.locator(".customer-map-summary strong")).toHaveText("0.02%");
   await page.waitForTimeout(700);
   const geography = dialog.locator(".customer-map-geography");
   const initial = await geography.getAttribute("style");
@@ -55,9 +58,9 @@ test("real workbook counts across province, district, and subdistrict with zoom,
   await dialog.getByRole("button", { name: "เลือกอำเภอบางเลน", exact: true }).click();
   await expect(dialog.locator(".customer-map-summary h3")).toHaveText("บางเลน");
   await expect(dialog.locator(".customer-map-area-list > button")).toHaveCount(15);
-  await expect(dialog.locator(".customer-map-summary")).toContainText("285 รายชื่อ");
+  await expect(dialog.locator(".customer-map-summary strong")).toHaveText("0.23%");
   await dialog.getByRole("button", { name: "เลือกตำบลบางระกำ", exact: true }).click();
-  await expect(dialog.locator(".customer-map-summary")).toContainText("40 รายชื่อ");
+  await expect(dialog.locator(".customer-map-summary strong")).toHaveText("0.03%");
   await page.waitForTimeout(700);
   await page.screenshot({
     path: test.info().outputPath("customer-map-desktop.png"),
@@ -115,7 +118,7 @@ test("map loads lazily, supports geometry clicks and Bangkok khet on mobile", as
   await dialog.getByRole("button", { name: "เลือกเขตพระนคร", exact: true }).click();
   await expect(dialog.locator(".customer-map-summary h3")).toHaveText("พระนคร");
   await dialog.getByRole("button", { name: "เลือกแขวงพระบรมมหาราชวัง", exact: true }).click();
-  await expect(dialog.locator(".customer-map-summary")).toContainText("23 รายชื่อ");
+  await expect(dialog.locator(".customer-map-summary strong")).toHaveText("0.02%");
   expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
   await dialog.locator(".customer-map-layout").evaluate((element) => {
     element.scrollTop = 0;
@@ -129,14 +132,14 @@ test("map loads lazily, supports geometry clicks and Bangkok khet on mobile", as
   await expect(dialog).toHaveCount(0);
 });
 
-test("source counts remain visible when a modern subdistrict has no reference polygon", async ({
+test("source percentages remain visible when a modern subdistrict has no reference polygon", async ({
   page,
 }) => {
   const { dialog } = await openMap(page);
   await dialog.getByLabel("เลือกจังหวัด", { exact: true }).selectOption("10");
   await dialog.getByLabel("เลือกเขต", { exact: true }).selectOption("1047");
   await dialog.getByRole("button", { name: "เลือกแขวงบางนาเหนือ", exact: true }).click();
-  await expect(dialog.locator(".customer-map-summary")).toContainText("95 รายชื่อ");
+  await expect(dialog.locator(".customer-map-summary strong")).toHaveText("0.08%");
   await expect(dialog.locator(".customer-map-boundary-notice")).toContainText(
     "ยังไม่มีขอบเขตพื้นที่นี้",
   );

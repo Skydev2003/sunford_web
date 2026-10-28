@@ -28,6 +28,25 @@ let videoCount = 0;
 for (const entry of [...pages, ...products]) {
   assert(entry.sourceUrl.startsWith("https://www.sunford.co/"), "Unexpected content source");
   for (const image of entry.images ?? []) media.add(image);
+  if (entry.softwareCatalog) {
+    const { categories, items } = entry.softwareCatalog;
+    const categoryIds = new Set(categories.map((category) => category.id));
+    assert(categoryIds.has("all"), "Software catalogue requires an all category");
+    assert.equal(categoryIds.size, categories.length, "Duplicate software categories");
+    assert.equal(new Set(items.map((item) => item.path)).size, items.length);
+    for (const item of items) {
+      assert(
+        item.title && item.description && item.image,
+        `Incomplete software card: ${item.path}`,
+      );
+      assert(categoryIds.has(item.category), `Unknown software category: ${item.category}`);
+      assert(
+        pages.some((page) => page.path === item.path),
+        `Missing software page: ${item.path}`,
+      );
+      media.add(item.image);
+    }
+  }
   for (const video of entry.videos ?? []) {
     assert(/^[A-Za-z0-9_-]{11}$/.test(video.id));
     if (video.image) media.add(video.image);

@@ -28,8 +28,15 @@ export function safeLink(value: string) {
     return false;
   }
 }
+// Trusted assets shipped with the footer, including its fixed SVG map.
+const bundledLayoutImages = new Set([
+  "/images/home-categories/digital.webp",
+  "/images/brands/line-brand-icon.png",
+  "/images/footer/thailand.svg",
+]);
 export function safeImage(value: string) {
   return (
+    bundledLayoutImages.has(value) ||
     isAllowedProductImage(value) ||
     /^\/images\/[a-z0-9][a-z0-9._-]*\.(png|jpe?g|webp|avif)$/i.test(value)
   );

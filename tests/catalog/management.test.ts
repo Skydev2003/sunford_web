@@ -343,6 +343,41 @@ test("legacy display is preserved until saved; explicit edits win while original
   assert.deepEqual(legacy, original);
 });
 
+test("source collections classify POS terminals and accessories before description keywords", () => {
+  const snapshot = getSnapshotProducts();
+  for (const sourceId of ["10801", "10802", "10805"])
+    assert.equal(snapshot.find((product) => product.sourceId === sourceId)?.category, "pos");
+  const accessories = sourcePages.find(
+    (page) => page.path === "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+  )!;
+  for (const sourceId of accessories.productHandles)
+    assert.equal(
+      snapshot.find((product) => product.sourceId === sourceId)?.category,
+      "accessories",
+      sourceId,
+    );
+});
+
+test("category corrections apply only to untouched imports and preserve administrator overrides", () => {
+  const snapshot = getSnapshotProducts().find((product) => product.sourceId === "10801")!;
+  const seeded = {
+    ...snapshot,
+    category: "industrial",
+    catalogManaged: true,
+    createdAt: new Date("2026-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-01T00:00:00Z"),
+  };
+  assert.equal(resolveManagedProduct(seeded).category, "pos");
+  assert.equal(
+    resolveManagedProduct({ ...seeded, updatedAt: new Date("2026-01-02T00:00:00Z") }).category,
+    "industrial",
+  );
+  assert.equal(
+    resolveManagedProduct({ ...seeded, categoryId: "custom-category" }).category,
+    "custom-category",
+  );
+});
+
 test("case-distinct original URLs stay separate and hidden records never fall back to a different product", () => {
   const snapshot = getSnapshotProducts();
   assert.equal(findCatalogProduct(snapshot, "rls1100")?.id, "rls1100");

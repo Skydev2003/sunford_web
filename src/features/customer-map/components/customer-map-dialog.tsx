@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowUpRight, ChevronRight, MapPin, Search, X } from "lucide-react";
 import {
   areaCustomerCount,
-  countLabel,
+  customerShareLabel,
   customerCounts,
   nationwideCustomerCount,
 } from "../data/customer-counts";
@@ -82,9 +82,9 @@ export default function CustomerMapDialog({ onClose }: { onClose: () => void }) 
         a.name.localeCompare(b.name, "th"),
     );
   const selected = subdistrict ?? district ?? province;
-  const selectedCount = selected
-    ? areaCustomerCount(selected)
-    : nationwideCustomerCount(national.layer?.areas ?? EMPTY_AREAS);
+  const totalCount = nationwideCustomerCount(national.layer?.areas ?? EMPTY_AREAS);
+  const shareLabel = (count: number | null) => customerShareLabel(count, totalCount);
+  const selectedCount = selected ? areaCustomerCount(selected) : totalCount;
 
   return (
     <dialog
@@ -215,28 +215,28 @@ export default function CustomerMapDialog({ onClose }: { onClose: () => void }) 
                       : "ทั่วประเทศ"}
               </span>
               <h3>{selected?.name ?? "ประเทศไทย"}</h3>
-              <p>{selected ? "จำนวนลูกค้า" : "ลูกค้าทั้งทะเบียน"}</p>
-              <strong>{countLabel(selectedCount)}</strong>
+              <p>สัดส่วนจากทะเบียนทั้งหมด</p>
+              <strong>{shareLabel(selectedCount)}</strong>
               <small>
                 {district
-                  ? "รวมเฉพาะรายชื่อที่ระบุตำบลได้"
+                  ? "เฉพาะข้อมูลที่ระบุตำบลได้ · เทียบทะเบียนทั้งหมด"
                   : province
-                    ? `ยังไม่ระบุตำบล ${(customerCounts.unallocatedByProvince?.[province.id] ?? 0).toLocaleString("th-TH")} รายชื่อ`
-                    : "รายชื่อในทะเบียน อาจซ้ำบุคคลได้"}
+                    ? `ยังไม่ระบุตำบล ${shareLabel(customerCounts.unallocatedByProvince?.[province.id] ?? null)} ของทะเบียนทั้งหมด`
+                    : "คิดจากรายการในทะเบียนทั้งหมด อาจมีรายการซ้ำ"}
               </small>
               {!province && customerCounts.summary && (
                 <dl className="customer-map-totals">
                   <div>
                     <dt>ระบุจังหวัดได้</dt>
-                    <dd>{customerCounts.summary.located.toLocaleString("th-TH")}</dd>
+                    <dd>{shareLabel(customerCounts.summary.located)}</dd>
                   </div>
                   <div>
                     <dt>ยังไม่ทราบจังหวัด</dt>
-                    <dd>{customerCounts.summary.unknownProvince.toLocaleString("th-TH")}</dd>
+                    <dd>{shareLabel(customerCounts.summary.unknownProvince)}</dd>
                   </div>
                   <div>
                     <dt>ต่างประเทศ</dt>
-                    <dd>{customerCounts.summary.foreign.toLocaleString("th-TH")}</dd>
+                    <dd>{shareLabel(customerCounts.summary.foreign)}</dd>
                   </div>
                 </dl>
               )}
@@ -283,7 +283,7 @@ export default function CustomerMapDialog({ onClose }: { onClose: () => void }) 
                   onClick={() => selectArea(area)}
                 >
                   <span>{area.name}</span>
-                  <small>{countLabel(areaCustomerCount(area))}</small>
+                  <small>{shareLabel(areaCustomerCount(area))}</small>
                   <ChevronRight size={13} />
                 </button>
               ))}
@@ -320,7 +320,7 @@ export default function CustomerMapDialog({ onClose }: { onClose: () => void }) 
             {customerCounts.updatedAt
               ? `ข้อมูล ณ ${new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Bangkok" }).format(new Date(customerCounts.updatedAt))}`
               : "รอข้อมูลลูกค้า"}{" "}
-            · หน่วย: รายชื่อ
+            · หน่วย: % ของทะเบียนทั้งหมด
           </span>
         </footer>
       </div>

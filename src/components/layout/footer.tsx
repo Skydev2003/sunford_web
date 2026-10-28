@@ -175,11 +175,6 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
                 <br />
                 และให้คำปรึกษา
               </p>
-              {customerMapEnabled && (
-                <span className="footer-map-hint">
-                  ดูแผนที่ลูกค้า <ArrowUpRight size={12} />
-                </span>
-              )}
             </div>
           </CustomerCoverage>
         </div>

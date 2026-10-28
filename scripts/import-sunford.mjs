@@ -1,10 +1,28 @@
+import { walk, collectionGrid, flight } from "./lib/sunford-source.mjs";
 import { load } from "cheerio";
 import sanitizeHtml from "sanitize-html";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
 import path from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 
 const origin = "https://www.sunford.co";
+// A targeted refresh merges these pages and their products into the snapshot.
+const requestedPaths = process.argv.includes("--paths")
+  ? process.argv.slice(process.argv.indexOf("--paths") + 1)
+  : null;
+const usePageCache = process.argv.includes("--use-page-cache");
+if (requestedPaths && !requestedPaths.length) throw new Error("--paths requires source paths");
+const previous = requestedPaths
+  ? Object.fromEntries(
+      await Promise.all(
+        ["pages", "products", "import-report"].map(async (name) => [
+          name,
+          JSON.parse(await readFile(`src/features/content/data/${name}.json`, "utf8")),
+        ]),
+      ),
+    )
+  : null;
 const cacheDir = path.resolve("node_modules/.cache/sunford-import");
 const outputDir = path.resolve("src/features/content/data");
 const assetDir = path.resolve("public/images/imported");
@@ -41,72 +59,6 @@ const pages = [];
 const products = [];
 const rawCollections = new Map();
 const gridProducts = new Map();
-function walk(value, visitor) {
-  if (!value || typeof value !== "object") return;
-  visitor(value);
-  for (const child of Object.values(value)) walk(child, visitor);
-}
-function collectionGrid(records, resolve) {
-  const result = [];
-  walk(Object.values(records), (value) => {
-    if (!Array.isArray(value) && value.id === "collection-list-products-grid") {
-      walk(resolve(value), (node) => {
-        if (!Array.isArray(node) && node.handle && node.productDetail && node.attributes)
-          result.push(node);
-      });
-    }
-  });
-  return [...new Map(result.map((item) => [item.handle, item])).values()];
-}
-
-function flight($) {
-  let stream = "";
-  $("script").each((_, element) => {
-    const match = ($(element).html() || "").match(/^self\.__next_f\.push\((\[.*\])\)$/s);
-    if (match)
-      try {
-        const value = JSON.parse(match[1]);
-        if (value[0] === 1) stream += value[1];
-      } catch {}
-  });
-  const buffer = Buffer.from(stream);
-  const records = {};
-  let cursor = 0;
-  while (cursor < buffer.length) {
-    while (buffer[cursor] === 10) cursor++;
-    const colon = buffer.indexOf(58, cursor);
-    if (colon < 0) break;
-    const id = buffer.subarray(cursor, colon).toString();
-    if (!/^[\da-f]+$/.test(id)) break;
-    cursor = colon + 1;
-    if (buffer[cursor] === 84) {
-      const comma = buffer.indexOf(44, cursor);
-      const length = parseInt(buffer.subarray(cursor + 1, comma).toString(), 16);
-      if (!Number.isFinite(length)) break;
-      records[id] = buffer.subarray(comma + 1, comma + 1 + length).toString();
-      cursor = comma + 1 + length;
-    } else {
-      const newline = buffer.indexOf(10, cursor);
-      if (newline < 0) break;
-      try {
-        records[id] = JSON.parse(buffer.subarray(cursor, newline).toString());
-      } catch {}
-      cursor = newline + 1;
-    }
-  }
-  const resolve = (value, depth = 0) => {
-    if (depth > 22) return null;
-    if (typeof value === "string" && /^\$[\da-f]+$/.test(value))
-      return resolve(records[value.slice(1)], depth + 1);
-    if (Array.isArray(value)) return value.map((item) => resolve(item, depth + 1));
-    if (value && typeof value === "object")
-      return Object.fromEntries(
-        Object.entries(value).map(([key, item]) => [key, resolve(item, depth + 1)]),
-      );
-    return value;
-  };
-  return { records, resolve };
-}
 function localLink(href) {
   try {
     const url = new URL(href, origin);
@@ -231,9 +183,11 @@ const attrs = (value) =>
   Array.isArray(value) ? value.find((item) => item?.loc === "TH") || value[0] : value;
 async function getHtml(url) {
   const file = path.join(cacheDir, `${digest(url)}.html`);
-  try {
-    return await readFile(file, "utf8");
-  } catch {}
+  if (!requestedPaths || (usePageCache && !new URL(url).pathname.startsWith("/products/"))) {
+    try {
+      return await readFile(file, "utf8");
+    } catch {}
+  }
   let last;
   for (let retry = 0; retry < 3; retry++) {
     try {
@@ -262,13 +216,17 @@ function addUrl(href) {
     if (!sourceUrls.has(pathname)) sourceUrls.set(pathname, `${origin}${url.pathname}`);
   } catch {}
 }
-const xml = await (await fetch(`${origin}/sitemap.xml`)).text();
-for (const match of xml.matchAll(/<loc>(.*?)<\/loc>/g)) {
-  const pathname = normalize(match[1]);
-  if (excluded.test(pathname)) report.excludedPaths.push(pathname);
-  else addUrl(match[1]);
+if (requestedPaths) {
+  requestedPaths.forEach(addUrl);
+} else {
+  const xml = await (await fetch(`${origin}/sitemap.xml`)).text();
+  for (const match of xml.matchAll(/<loc>(.*?)<\/loc>/g)) {
+    const pathname = normalize(match[1]);
+    if (excluded.test(pathname)) report.excludedPaths.push(pathname);
+    else addUrl(match[1]);
+  }
+  addUrl(origin);
 }
-addUrl(origin);
 let processed = 0;
 async function processPage(sourcePath, url) {
   try {
@@ -286,7 +244,7 @@ async function processPage(sourcePath, url) {
     );
     const product = sourceProduct ? resolve(sourceProduct) : null;
     const root = $(".dynamic__layout__component").children().last();
-    $("a[href]").each((_, e) => addUrl($(e).attr("href")));
+    if (!requestedPaths) $("a[href]").each((_, e) => addUrl($(e).attr("href")));
     root
       .find(
         'script,style,noscript,svg,.sf-footer,[id^="nav-"],header,footer,.salesdesk_widget_button_group',
@@ -324,20 +282,25 @@ async function processPage(sourcePath, url) {
           .get(),
       ),
     ];
-    if (sourcePath.startsWith("/collections/")) {
+    // Product landing pages use the same streamed grid as collection pages.
+    if (collectionGrid(records, resolve).length || sourcePath.startsWith("/collections/")) {
       const collect = (items) =>
         items.forEach((item) => {
           localProductLinks.push(item.handle);
           gridProducts.set(item.handle, { product: item, sourceUrl: url });
+          if (requestedPaths) addUrl(`/products/${encodeURIComponent(item.handle)}`);
         });
       collect(collectionGrid(records, resolve));
       let maxPage = 1;
+      let pageParamKey = "page";
       walk(Object.values(records), (value) => {
-        if (value.pageParamKey === "page" && Number.isInteger(value.maxPage))
+        if (typeof value.pageParamKey === "string" && Number.isInteger(value.maxPage)) {
           maxPage = Math.max(maxPage, value.maxPage);
+          pageParamKey = value.pageParamKey;
+        }
       });
       for (let currentPage = 2; currentPage <= Math.min(maxPage, 50); currentPage++) {
-        const more = flight(load(await getHtml(`${url}?page=${currentPage}`)));
+        const more = flight(load(await getHtml(`${url}?${pageParamKey}=${currentPage}`)));
         collect(collectionGrid(more.records, more.resolve));
       }
     }
@@ -397,6 +360,32 @@ async function processPage(sourcePath, url) {
       collectionIds: [...new Set(collectionIds)],
       videos,
     };
+    if (sourcePath === "/software/download") {
+      const items = root
+        .find("a.product-card-link[data-category]")
+        .map((_, element) => {
+          const card = $(element);
+          return {
+            path: localLink(card.attr("href")),
+            title: card.find("h3").text().trim(),
+            description: card.find("p").text().trim(),
+            image: card.find("img").attr("src") || "",
+            category: card.attr("data-category"),
+          };
+        })
+        .get();
+      const categoryIds = [...new Set(items.map((item) => item.category))];
+      const categories = root
+        .find(".nav-tab")
+        .map((index, element) => ({
+          id: index === 0 ? "all" : categoryIds[index - 1],
+          label: $(element).text().trim(),
+        }))
+        .get();
+      if (!items.length || categories.some((category) => !category.id))
+        throw new Error("Software catalogue markup is incomplete");
+      page.softwareCatalog = { categories, items };
+    }
     if (/Lorem ipsum/i.test(page.text)) {
       report.placeholderPages.push(sourcePath);
       page.hasSourcePlaceholder = true;
@@ -523,9 +512,14 @@ for (const [handle, { product, sourceUrl }] of gridProducts) {
   });
 }
 for (const product of products) {
-  product.collections = pages
+  const collections = pages
     .filter((page) => page.kind === "collection" && page.productHandles.includes(product.sourceId))
     .map(({ path, title }) => ({ path, title }));
+  const prior = previous?.products.find((item) => item.sourceId === product.sourceId);
+  product.collections = [
+    ...(prior?.collections ?? []).filter((item) => !pages.some((page) => page.path === item.path)),
+    ...collections,
+  ];
 }
 for (const page of pages.filter((item) => item.kind === "collection")) {
   const ids = page.collectionIds;
@@ -602,25 +596,71 @@ for (const page of pages) {
   page.images = page.images.map((url) => assets.get(url) || "").filter(Boolean);
   page.html = rewriteMedia(page.html);
   page.videos = page.videos.map(({ id, image }) => ({ id, image: assets.get(image) || "" }));
+  if (page.softwareCatalog)
+    page.softwareCatalog.items = page.softwareCatalog.items.map((item) => ({
+      ...item,
+      image: assets.get(item.image) || "",
+    }));
 }
-report.pages = pages.length;
-report.products = products.length;
-report.collections = pages.filter((page) => page.kind === "collection").length;
+// Keep known unavailable source illustrations in the audit without blocking
+// a refresh of readable content. Newly missing assets still fail the import.
+const newlyMissingImages = report.missingImages.filter(
+  (url) => !previous?.["import-report"].missingImages.includes(url),
+);
+const newlyFailedPages = report.failedPages.filter(
+  (page) => !previous?.["import-report"].failedPages.some((prior) => prior.path === page.path),
+);
+if (requestedPaths && (newlyFailedPages.length || newlyMissingImages.length))
+  throw new Error(`Targeted import incomplete: ${JSON.stringify(report)}`);
+const merge = (existing, refreshed, key) => {
+  const index = new Map(refreshed.map((item) => [item[key], item]));
+  return [
+    ...existing.map((item) => index.get(item[key]) ?? item),
+    ...refreshed.filter((item) => !existing.some((old) => old[key] === item[key])),
+  ];
+};
+const outputPages = previous ? merge(previous.pages, pages, "path") : pages;
+const outputProducts = previous ? merge(previous.products, products, "sourceId") : products;
+const outputReport = previous
+  ? {
+      ...previous["import-report"],
+      lastTargetedRefresh: {
+        checkedAt: report.checkedAt,
+        paths: requestedPaths,
+        pages: pages.length,
+        products: products.length,
+        failedPages: report.failedPages,
+        missingImages: report.missingImages,
+      },
+    }
+  : report;
+outputReport.pages = outputPages.length;
+outputReport.products = outputProducts.length;
+outputReport.collections = outputPages.filter((page) => page.kind === "collection").length;
 for (const [name, data] of [
-  ["pages", pages],
-  ["products", products],
-  ["import-report", report],
+  ["pages", outputPages],
+  ["products", outputProducts],
+  ["import-report", outputReport],
 ]) {
   const filename = path.join(outputDir, `${name}.json`);
   await writeFile(`${filename}.tmp`, JSON.stringify(data, null, 2));
-  await rename(`${filename}.tmp`, filename);
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await rename(`${filename}.tmp`, filename);
+      break;
+    } catch (error) {
+      // Windows file watchers can briefly hold the destination open.
+      if (!["EPERM", "EBUSY"].includes(error.code) || attempt >= 5) throw error;
+      await delay(200 * (attempt + 1));
+    }
+  }
 }
 console.log(
   JSON.stringify(
     {
-      pages: report.pages,
-      products: report.products,
-      collections: report.collections,
+      pages: outputReport.pages,
+      products: outputReport.products,
+      collections: outputReport.collections,
       assets: report.assets,
       failedPages: report.failedPages,
       missingImageCount: report.missingImages.length,

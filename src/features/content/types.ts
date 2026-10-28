@@ -17,6 +17,16 @@ export type SourceProduct = {
 };
 
 export type SourcePage = {
+  softwareCatalog?: {
+    categories: { id: string; label: string }[];
+    items: {
+      path: string;
+      title: string;
+      description: string;
+      image: string;
+      category: string;
+    }[];
+  };
   managed?: boolean;
   productIds?: string[];
   path: string;

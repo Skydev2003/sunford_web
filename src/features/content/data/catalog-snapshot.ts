@@ -7,6 +7,21 @@ import { productSources } from "@/features/catalog/data/product-sources";
 const importedProducts = sourceProducts as SourceProduct[];
 
 function inferCategory(product: SourceProduct): Product["category"] {
+  // Exact source collections take precedence over words in descriptions, which
+  // can mention compatible POS systems or other types of equipment.
+  const sourceCategories = [
+    ["POS เชื่อมต่อเครื่องชั่ง", "pos"],
+    ["อุปกรณ์ประกอบเครื่องชั่ง", "accessories"],
+    ["วัสดุสิ้นเปลือง", "accessories"],
+    ["พรีเมี่ยม", "accessories"],
+    ["ห้องปฏิบัติการ", "laboratory"],
+    ["ไลฟ์สไตล์", "lifestyle"],
+    ["พาณิชยกรรมและบริการ", "commercial"],
+    ["อุตสาหกรรม", "industrial"],
+  ];
+  for (const [collection, category] of sourceCategories)
+    if (product.collections?.some((item) => item.path === `/collections/${collection}`))
+      return category;
   const text = `${product.name} ${product.description} ${product.collections?.map((item) => item.title).join(" ")}`;
   if (/POS|พอส/i.test(product.name)) return "pos";
   if (/RLS|smart|MES|อัจฉริยะ/i.test(text)) return "smart";

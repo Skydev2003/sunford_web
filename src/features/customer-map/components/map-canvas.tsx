@@ -1,6 +1,13 @@
 import { useId, useMemo, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
-import { areaCustomerCount, countColor, countLabel } from "../data/customer-counts";
+import {
+  areaCustomerCount,
+  customerShare,
+  customerShareLabel,
+  customerShareLegend,
+  nationwideCustomerCount,
+  percentageColor,
+} from "../data/customer-counts";
 import { useMapCamera } from "../hooks/use-map-camera";
 import { useVisibleLayers } from "../hooks/use-visible-layers";
 import type { MapArea } from "../types";
@@ -60,6 +67,10 @@ export function MapCanvas({
   const helpId = useId();
   const active =
     hovered && areas.some((area) => area.id === hovered.id) ? hovered : (selected ?? outline);
+  const totalCount = nationwideCustomerCount(provinces);
+  const shareLabel = (area: MapArea) => customerShareLabel(areaCustomerCount(area), totalCount);
+  const shareColor = (area: MapArea) =>
+    percentageColor(customerShare(areaCustomerCount(area), totalCount));
 
   const labelled = useMemo(() => {
     const occupied: [number, number, number, number][] = [];
@@ -141,7 +152,7 @@ export function MapCanvas({
         {active && (
           <div className="customer-map-tooltip" aria-hidden="true">
             <strong>{active.name}</strong>
-            <span>ลูกค้า · {countLabel(areaCustomerCount(active))}</span>
+            <span>สัดส่วนทะเบียน · {shareLabel(active)}</span>
           </div>
         )}
         {selected?.geometryAvailable === false && (
@@ -182,7 +193,7 @@ export function MapCanvas({
                   key={province.id}
                   className="customer-map-context"
                   d={province.path}
-                  fill={countColor(areaCustomerCount(province))}
+                  fill={shareColor(province)}
                   fillRule="evenodd"
                   vectorEffect="non-scaling-stroke"
                 />
@@ -202,7 +213,7 @@ export function MapCanvas({
                   key={district.id}
                   className="customer-map-context"
                   d={district.path}
-                  fill={countColor(areaCustomerCount(district))}
+                  fill={shareColor(district)}
                   fillRule="evenodd"
                   vectorEffect="non-scaling-stroke"
                 />
@@ -215,7 +226,7 @@ export function MapCanvas({
                 aria-label={`${areaWordByLevel[area.level]}${area.name}`}
                 className={`customer-map-area${selected?.id === area.id ? " is-selected" : ""}`}
                 d={area.path}
-                fill={countColor(areaCustomerCount(area))}
+                fill={shareColor(area)}
                 fillRule="evenodd"
                 vectorEffect="non-scaling-stroke"
                 onPointerEnter={() => {
@@ -223,7 +234,7 @@ export function MapCanvas({
                 }}
               >
                 <title>
-                  {area.name} · ลูกค้า {countLabel(areaCustomerCount(area))}
+                  {area.name} · {shareLabel(area)} ของทะเบียนทั้งหมด
                 </title>
               </path>
             ))}
@@ -244,7 +255,7 @@ export function MapCanvas({
                   dy={18 / (view.k * pixelScale)}
                   fontSize={11 / (view.k * pixelScale)}
                 >
-                  {countLabel(areaCustomerCount(area))}
+                  {shareLabel(area)}
                 </tspan>
               </text>
             ))}
@@ -293,17 +304,13 @@ export function MapCanvas({
         </p>
       </div>
       <div className="customer-map-legend">
-        <span>
-          <i style={{ background: countColor(null) }} />
-          ยังไม่มีข้อมูล
-        </span>
-        {[0, 1, 100, 500, 1000, 5000].map((count, index) => (
-          <span key={count}>
-            <i style={{ background: countColor(count) }} />
-            {["0", "1–99", "100–499", "500–999", "1,000–4,999", "5,000+"][index]}
+        {customerShareLegend.map(({ value, label }) => (
+          <span key={label}>
+            <i style={{ background: percentageColor(value) }} />
+            {label}
           </span>
         ))}
-        <span>รายชื่อ</span>
+        <span>ของทะเบียนทั้งหมด</span>
       </div>
     </>
   );
