@@ -19,7 +19,6 @@ const nextConfig: NextConfig = {
   ],
   experimental: {
     agentFeedback: true,
-    serverActions: { bodySizeLimit: 4_400_000 },
   },
   images: {
     remotePatterns: process.env.SUPABASE_URL

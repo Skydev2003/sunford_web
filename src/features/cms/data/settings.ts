@@ -1,4 +1,4 @@
-import type { Field, HeroSettings, SiteSettings } from "../types";
+import type { HeroSettings, SiteSettings } from "../types";
 import { sunford } from "@/features/home/data/brand";
 export const defaultHero: HeroSettings = {
   announcement: "เทคโนโลยีการชั่งและระบบจัดการข้อมูล เพื่อธุรกิจของคุณ",
@@ -25,62 +25,6 @@ export const defaultSite: SiteSettings = {
   line: sunford.line,
   messenger: sunford.messenger,
 };
-export const linkFields: Field[] = [
-  { key: "label", label: "ข้อความ" },
-  { key: "href", label: "ลิงก์", hint: "/path ภายในเว็บ หรือ https:// สำหรับภายนอก" },
-];
-export const videoFields: Field[] = [
-  {
-    key: "id",
-    label: "YouTube URL หรือรหัสวิดีโอ",
-    hint: "เช่น https://www.youtube.com/watch?v=abcdefghijk",
-  },
-  { key: "image", label: "ภาพปกวิดีโอ", type: "image" },
-];
-export const heroFields = (products: { id: string; name: string }[]): Field[] => [
-  { key: "announcement", label: "ข้อความแถบประกาศ" },
-  { key: "announcementLabel", label: "ข้อความปุ่มแถบประกาศ" },
-  { key: "announcementHref", label: "ลิงก์แถบประกาศ" },
-  { key: "tagline", label: "คำโฆษณาใต้ชื่อสินค้า" },
-  { key: "primaryLabel", label: "ข้อความปุ่มหลัก" },
-  { key: "secondaryLabel", label: "ข้อความปุ่มรอง" },
-  { key: "secondaryHref", label: "ลิงก์ปุ่มรอง" },
-  {
-    key: "slides",
-    label: "สไลด์ (เรียงตามลำดับที่แสดง)",
-    type: "array",
-    initial: { productId: "", title: "", description: "", image: "", href: "" },
-    fields: [
-      {
-        key: "productId",
-        label: "อ้างอิงสินค้า",
-        type: "select",
-        options: [
-          { value: "", label: "ไม่อ้างอิงสินค้า" },
-          ...products.map((p) => ({ value: p.id, label: p.name })),
-        ],
-        hint: "อ้างอิงด้วยรหัสสินค้า ลิงก์จะตาม URL ล่าสุด และไม่แสดงสไลด์หากสินค้าถูกซ่อนหรือลบ",
-      },
-      { key: "title", label: "หัวข้อ (เว้นว่างเพื่อใช้ชื่อสินค้า)" },
-      { key: "description", label: "คำโปรย (เว้นว่างเพื่อใช้คำโปรยสินค้า)", type: "textarea" },
-      { key: "image", label: "รูปสไลด์ (เว้นว่างเพื่อใช้รูปสินค้า)", type: "image" },
-      { key: "href", label: "ลิงก์ (เว้นว่างเพื่อใช้หน้าสินค้า)" },
-    ],
-  },
-];
-export const siteFields: Field[] = [
-  { key: "logo", label: "โลโก้", type: "image" },
-  { key: "name", label: "ชื่อแบรนด์" },
-  { key: "phone", label: "เบอร์โทรที่แสดง" },
-  { key: "phoneHref", label: "ลิงก์โทรศัพท์ เช่น tel:034276999" },
-  { key: "email", label: "อีเมล" },
-  { key: "line", label: "ลิงก์ LINE" },
-  {
-    key: "messenger",
-    label: "ลิงก์แชท Facebook Messenger",
-    hint: "เช่น https://m.me/sunfordthai · เว้นว่างเพื่อไม่แสดงช่องทางนี้",
-  },
-];
 export const spotlightDefaults = {
   title: "SUNFORD JC21",
   accent: "ชั่งน้ำหนัก คำนวณราคา อ่านชัดทั้งสองด้าน",
@@ -135,12 +79,3 @@ export const catalogDefaults = {
   accessoriesHref: sunford.accessories,
   softwareHref: sunford.software,
 };
-export const textFields = (
-  defaults: Record<string, string>,
-  labels: Record<string, string> = {},
-): Field[] =>
-  Object.keys(defaults).map((key) => ({
-    key,
-    label: labels[key] ?? key,
-    type: /description/i.test(key) ? "textarea" : "text",
-  }));
