@@ -6,6 +6,7 @@ import { ProductImage } from "@/components/ui/product-image";
 import { DragScroll } from "@/components/ui/drag-scroll";
 import { getContentPages, getContentPage } from "@/features/content/server/content-repository";
 import type { Product } from "@/features/catalog/types";
+import { ShowcaseTile } from "./showcase-tile";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { defaultHomeImages, type HomeImages } from "../data/image-slots";
 import { resolveHomeLink, type HomeLinkTargets } from "../data/link-targets";
@@ -88,7 +89,7 @@ export async function SourceShowcase({
             />
           );
         return (
-          <article
+          <ShowcaseTile
             className={`showcase-tile showcase-tile-${tile.id} showcase-tile-dark`}
             key={tile.id}
           >
@@ -119,7 +120,7 @@ export async function SourceShowcase({
             ) : (
               <div className="showcase-tile-image">{visual}</div>
             )}
-          </article>
+          </ShowcaseTile>
         );
       })}
     </section>
