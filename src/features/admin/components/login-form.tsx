@@ -2,7 +2,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, ShieldCheck } from "lucide-react";
 import { loginAction } from "../server/auth-actions";
 export function LoginForm() {
   const [state, action, pending] = useActionState(loginAction, {});
@@ -18,7 +18,7 @@ export function LoginForm() {
           <h1>
             ทุกความเป็นไปได้
             <br />
-            เริ่มต้นที่<span>การจัดการที่ดี.</span>
+            เริ่มต้นที่<span>การจัดการที่ดี</span>
           </h1>
           <p>
             พื้นที่ดูแลผลิตภัณฑ์และเรื่องราวของ Sunford
@@ -32,7 +32,7 @@ export function LoginForm() {
       </section>
       <section className="admin-login-panel">
         <Link className="admin-back" href="/">
-          <ArrowLeft size={15} /> กลับสู่เว็บไซต์
+          กลับสู่เว็บไซต์
         </Link>
         <form action={action} className="admin-login-form">
           <div className="admin-lock">
@@ -78,7 +78,6 @@ export function LoginForm() {
           )}
           <button className="button button-red" type="submit" disabled={pending}>
             {pending ? "กำลังเข้าสู่ระบบ…" : "เข้าสู่ระบบ"}
-            <ArrowRight size={17} />
           </button>
           <span className="admin-login-help">
             บัญชีที่ได้รับสิทธิ์จาก Sunford เท่านั้นที่เข้าถึงได้

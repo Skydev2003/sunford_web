@@ -2,14 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Link2, Monitor, PackageCheck } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";
+import { solutionImages } from "../data/business-solutions";
 import styles from "./business-solutions.module.css";
-
-export const solutionImages = {
-  feature: "/images/products/solutions-pos-scene.png",
-  accessories: "/images/products/solutions-accessories.png",
-  software: "/images/products/solutions-software.png",
-  connections: "/images/solutions-connections.svg",
-};
 
 // Keep copy, images and links as elements so sectionFields/patchSection can
 // expose them in the existing section:solutions editor without baking in text.

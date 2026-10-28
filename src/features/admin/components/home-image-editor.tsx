@@ -7,6 +7,9 @@ import { saveHomeImageAction } from "../server/home-image-actions";
 import { discardProductImage, uploadProductImage } from "../server/media-actions";
 import type { HomeImageSlot } from "@/features/home/data/image-slots";
 import type { HomePageOption, HomeProductOption } from "@/features/home/data/link-targets";
+import { useImageCropper } from "./image-cropper";
+import { imageGuidelines, imageHint } from "../image-guidelines";
+import { useUnsavedForm } from "./unsaved-changes";
 
 export function HomeImageEditor({
   slot,
@@ -39,6 +42,7 @@ export function HomeImageEditor({
   const [uploadedImage, setUploadedImage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const { crop, cropper } = useImageCropper();
   const [targetType, setTargetType] = useState(
     currentProductId ? "product" : currentPagePath ? "page" : "default",
   );
@@ -52,6 +56,12 @@ export function HomeImageEditor({
         : defaultHref;
   const input = useRef<HTMLInputElement>(null);
   const busy = saving || uploading;
+  const { bindings: unsaved } = useUnsavedForm({
+    title,
+    busy,
+    saving,
+    resetKey: updatedAt,
+  });
 
   async function upload(file?: File) {
     if (!file) return;
@@ -63,8 +73,10 @@ export function HomeImageEditor({
     setUploading(true);
     setError("");
     try {
+      const prepared = await crop(file, imageGuidelines.product);
+      if (!prepared) return;
       const form = new FormData();
-      form.set("file", file);
+      form.set("file", prepared);
       const result = await uploadProductImage(form);
       if (!result.url || result.error) {
         setError(result.error ?? "อัปโหลดรูปไม่สำเร็จ");
@@ -105,7 +117,9 @@ export function HomeImageEditor({
 
   return (
     <form
+      {...unsaved}
       action={action}
+      onReset={(event) => event.preventDefault()}
       className="admin-form-card admin-home-image-editor"
       aria-label={`เปลี่ยนรูป ${title}`}
     >
@@ -115,6 +129,14 @@ export function HomeImageEditor({
       <div className="admin-home-image-heading">
         <h2>{title}</h2>
         <p>{description}</p>
+        <a
+          className="admin-field-hint"
+          href={`/admin/audit?type=home-image&id=${encodeURIComponent(slot)}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ประวัติการแก้ไขและผู้ทำรายการ
+        </a>
       </div>
       <div className="admin-home-image-preview">
         <ProductImage
@@ -126,8 +148,8 @@ export function HomeImageEditor({
         />
       </div>
       <p className="admin-field-hint" aria-live="polite">
-        {image ? "ใช้รูปที่เลือกสำหรับตำแหน่งนี้" : "ใช้รูปเดิมของเว็บไซต์"} · JPG, PNG หรือ WebP
-        ไม่เกิน 4 MB
+        {image ? "ใช้รูปที่เลือกสำหรับตำแหน่งนี้" : "ใช้รูปเดิมของเว็บไซต์"} ·{" "}
+        {imageHint(imageGuidelines.product)}
       </p>
       <label className="admin-file-input" htmlFor={id}>
         อัปโหลดรูป {title}
@@ -213,13 +235,14 @@ export function HomeImageEditor({
           ปลายทาง:{" "}
           {href ? (
             <a href={href} target="_blank" rel="noreferrer" className="text-link">
-              {href} ↗
+              {href}
             </a>
           ) : (
             "ยังไม่มีปลายทางที่เปิดดูได้ กรุณาเลือกรายการ"
           )}
         </p>
       </div>
+      {cropper}
       <div className="admin-home-image-actions">
         <button
           className="admin-button-secondary"

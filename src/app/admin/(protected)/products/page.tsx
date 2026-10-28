@@ -1,15 +1,19 @@
 import { AdminProductList } from "@/features/admin/components/product-list";
-import { listAdminProducts } from "@/features/admin/server/products";
+import { listAdminProductSummaries } from "@/features/admin/server/products";
 export const instant = false;
 export default async function AdminProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; category?: string | string[] }>;
 }) {
+  const params = await searchParams;
+  const categoryId = typeof params.category === "string" ? params.category : undefined;
   return (
     <AdminProductList
-      products={await listAdminProducts()}
-      saved={(await searchParams).saved === "1"}
+      key={categoryId ?? "all"}
+      products={await listAdminProductSummaries()}
+      saved={params.saved === "1"}
+      categoryId={categoryId}
     />
   );
 }

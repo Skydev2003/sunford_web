@@ -22,6 +22,7 @@ import { z } from "zod";
 import type { ActionState } from "@/features/admin/types";
 import type { Prisma } from "@/generated/prisma/client";
 import { sourcePageId } from "./identity";
+import { auditEntry, changedFields, type AuditType } from "@/features/admin/server/audit";
 
 const settingsIds = [
   "hero",
@@ -71,7 +72,8 @@ export async function saveDocumentAction(
   _previous: ActionState,
   form: FormData,
 ): Promise<ActionState> {
-  if (!(await getAdminSession())) return { error: "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง" };
+  const session = await getAdminSession();
+  if (!session) return { error: "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง" };
   const kind = String(form.get("kind") ?? "");
   const id = String(form.get("id") ?? "");
   const version = String(form.get("version") ?? "");
@@ -211,6 +213,16 @@ export async function saveDocumentAction(
         });
         if (!result.count) throw new Error(stale);
       } else await db.cmsDocument.create({ data: { id, kind, data } });
+      await db.auditLog.create({
+        data: auditEntry(
+          session,
+          kind as AuditType,
+          id,
+          String(data.title ?? data.label ?? id),
+          previous ? "update" : "create",
+          changedFields(previous?.data as object | undefined, data),
+        ),
+      });
     });
   } catch (error) {
     if (
@@ -228,13 +240,15 @@ export async function saveDocumentAction(
     };
   }
   invalidate();
+  if (form.get("detail") === "1") return { success: true };
   redirect(`/admin/content/${encodeURIComponent(id)}?saved=1`);
 }
 export async function deleteDocumentAction(
   _previous: ActionState,
   form: FormData,
 ): Promise<ActionState> {
-  if (!(await getAdminSession())) return { error: "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง" };
+  const session = await getAdminSession();
+  if (!session) return { error: "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง" };
   const id = String(form.get("id"));
   const kind = String(form.get("kind"));
   const version = String(form.get("version") ?? "");
@@ -279,12 +293,21 @@ export async function deleteDocumentAction(
             throw new Error("เลือกหมวดหมู่ที่จะย้ายสินค้าทั้งหมดไปก่อนลบ");
           const legacy =
             categories.find((c) => c.id === replacement && c.id !== "all")?.id ?? "accessories";
+          const moved = await db.product.findMany({
+            where: used,
+            select: { id: true, name: true },
+          });
           await db.product.updateMany({
             where: used,
             data: {
               categoryId: replacement,
               category: legacy as Exclude<(typeof categories)[number]["id"], "all">,
             },
+          });
+          await db.auditLog.createMany({
+            data: moved.map((product) =>
+              auditEntry(session, "product", product.id, product.name, "move", ["categoryId"]),
+            ),
           });
         }
         const original = categories.find((c) => c.id === categoryId);
@@ -314,6 +337,21 @@ export async function deleteDocumentAction(
         });
         if (!result.count) throw new Error(stale);
       } else await db.cmsDocument.create({ data: { id, kind, data, deletedAt: new Date() } });
+      await db.auditLog.create({
+        data: auditEntry(
+          session,
+          kind as AuditType,
+          id,
+          String(
+            data.title ??
+              data.label ??
+              importedPages.find((page) => page.path === data.sourcePath)?.title ??
+              id,
+          ),
+          "delete",
+          ["deletedAt"],
+        ),
+      });
     });
   } catch (error) {
     return {
@@ -324,5 +362,6 @@ export async function deleteDocumentAction(
     };
   }
   invalidate();
+  if (form.get("detail") === "1") return { success: true };
   redirect(kind === "category" ? "/admin/categories?deleted=1" : "/admin/content?deleted=1");
 }
