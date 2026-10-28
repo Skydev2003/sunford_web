@@ -4,7 +4,7 @@ export const sunford = {
   about: "/about-us",
   contact: "/contact-us",
   service: "/service",
-  accessories: "/product/อุปกรณ์ประกอบเครื่องชั่ง",
+  accessories: "/product/scale-accessories",
   software: "/applications-and-softwares",
   downloads: "/software/download",
   warranty: "/warranty/register",

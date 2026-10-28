@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { hasDatabase } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
 import type { CmsData } from "../types";
+import { publicContent } from "@/features/content/data/public-paths.mjs";
 
 export async function getDocuments(kind: string) {
   "use cache";
@@ -12,7 +13,7 @@ export async function getDocuments(kind: string) {
   const rows = await getPrisma().cmsDocument.findMany({ where: { kind }, orderBy: { id: "asc" } });
   return rows.map((row) => ({
     ...row,
-    data: row.data as CmsData,
+    data: publicContent(row.data) as CmsData,
     updatedAt: row.updatedAt.toISOString(),
     deletedAt: row.deletedAt?.toISOString() ?? null,
   }));

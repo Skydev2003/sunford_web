@@ -1,5 +1,17 @@
 # Project state
 
+## English-only internal paths (2026-10-29)
+
+- All tracked file/folder names are free of Thai characters. Replaced 111 Thai public page paths with readable English paths, retaining all 392 imported page records and 150 products. Existing ASCII paths retain their spelling/case; translated names avoid collisions with existing ASCII destinations.
+- Navigation, homepage links, category/guide/story links, imported HTML, product collection references and software destinations use the English paths. Imported source URLs and import-report diagnostics retain original external paths as provenance; Thai display text is unchanged.
+- `publicPath` is the shared mapping for encoded/decoded paths. Proxy returns permanent 308 redirects for legacy Thai page requests before streaming, retaining query values. The removed admin namespace still returns 404. Unknown non-ASCII content segments receive bounded deterministic ASCII identifiers.
+- CMS documents and saved homepage destinations normalize on read without database writes. Section patches retain their original hash identities through legacy path lookup. Targeted/full content imports normalize before merging/output, so refreshes do not reintroduce Thai public paths or duplicate existing pages. Old bounded internal content URLs remain readable.
+- `npm run paths:check` audits repository filenames, source path literals, imported paths and HTML links; it also runs in the UAT test suite. Verified 1,353 filenames and 2,943 internal URL references with no Thai paths.
+- Verified a Node.js 24 production build (407 generated pages), TypeScript, ESLint, 26 UAT tests, 20 catalogue tests and 29 distinct browser checks. Runtime auditing covered all 399 public routes and their rendered internal link/media paths, plus 111 single-hop 308 redirects with preserved queries and unchanged category product memberships. The final three browser checks passed after consolidating the exhaustive audit assertions and updating two stale UI expectations; application presentation was not changed.
+- Deep comparison with the pre-change snapshots verified that only 491 scalar path references and URL attributes in 13 rich-content blocks changed; all other data, markup and Thai display text remain identical. Read-only inspection of five saved CMS documents found one legacy path; read normalization leaves zero Thai paths. Verified saved href patch hash compatibility.
+- Generated catalogue JSON keeps the importer’s existing output style to minimize changes. The pre-existing full-repository formatting differences in the three imported JSON files remain; scoped formatting excludes these generated files.
+- No commit, push, deployment, migration, seed or business-data write was run for this path change.
+
 ## Current decision: public website only (2026-10-28)
 
 - Removed all admin routes, login/session handling, editor UI, write Server Actions, upload/provisioning scripts and admin-only dependencies/tests. A stateless proxy returns HTTP 404 for the reserved admin prefix before rendering, including paths that could otherwise resolve to a public product. It performs no authentication, cookie refresh or database access.

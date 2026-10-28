@@ -6,6 +6,7 @@ import { homeImageSlots, type HomeImages } from "../data/image-slots";
 import type { HomeLinkTargets } from "../data/link-targets";
 import { defaultHomePagePaths } from "../data/link-targets";
 import { getContentPageIndex } from "@/features/content/server/content-repository";
+import { publicPath } from "@/features/content/data/public-paths.mjs";
 
 export async function getHomeImages(): Promise<HomeImages> {
   "use cache";
@@ -32,7 +33,13 @@ export async function getHomeLinkTargets(): Promise<HomeLinkTargets> {
           homeImageSlots.some((slot) => slot.id === row.slot) &&
           (row.targetProductId || row.targetPagePath),
       )
-      .map((row) => [row.slot, { productId: row.targetProductId, pagePath: row.targetPagePath }]),
+      .map((row) => [
+        row.slot,
+        {
+          productId: row.targetProductId,
+          pagePath: row.targetPagePath ? publicPath(row.targetPagePath) : null,
+        },
+      ]),
   );
   const pages = await getContentPageIndex();
   homeImageSlots.forEach(({ id }) => {

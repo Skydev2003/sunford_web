@@ -36,15 +36,15 @@ const introductions: Record<string, { category: string; description: string }> =
     category: "เคล็ดลับธุรกิจ",
     description: "รวมความรู้ เทคนิค และเรื่องราวการใช้งานเครื่องชั่งจาก Sunford เพื่อคนทำธุรกิจ",
   },
-  "/blogs/editorial/เครื่องชั่งในบ้าน_จำเป็นแค่ไหน": {
+  "/blogs/editorial/do-you-need-a-home-scale": {
     category: "แนะนำสินค้า",
     description: "รู้จักเครื่องชั่งในบ้าน กับบทบาทในการติดตามน้ำหนักและการดูแลตัวเอง",
   },
-  "/blogs/editorial/จอ_LCD_และจอ_LED_แบบไหน_จะดีกว่ากัน": {
+  "/blogs/editorial/lcd-vs-led-displays": {
     category: "คู่มือการเลือกซื้อ",
     description: "เปรียบเทียบจอ LCD และ LED ทั้งการแสดงผลและการใช้งาน เพื่อเลือกให้เหมาะกับคุณ",
   },
-  "/blogs/editorial/เลขน้ำหนักมาได้ไง_ทั้งที่ไม่ได้ชั่ง": {
+  "/blogs/editorial/why-scales-show-weight-without-a-load": {
     category: "ความรู้ผลิตภัณฑ์",
     description:
       "ทำความเข้าใจอาการลมกวนที่ทำให้ตัวเลขน้ำหนักเปลี่ยน และแนวทางลดผลกระทบต่อเครื่องชั่ง",

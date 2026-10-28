@@ -15,7 +15,7 @@ test("homepage images and detail buttons open the same original destinations", a
   await expect(page.getByRole("heading", { level: 1 })).toContainText("JC21");
   const destinations = [
     "/Product/Digital-weighing",
-    "/product/อุปกรณ์ประกอบเครื่องชั่ง",
+    "/product/scale-accessories",
     "/Product/MES",
     "/applications-and-softwares",
   ];

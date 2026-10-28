@@ -11,7 +11,7 @@ export type HomeLinkTargets = Partial<Record<HomeImageSlot, HomeLinkTarget>>;
 export const defaultHomePagePaths = {
   digital: "/Product/Digital-weighing",
   smart: "/Product/MES",
-  accessories: "/product/อุปกรณ์ประกอบเครื่องชั่ง",
+  accessories: "/product/scale-accessories",
   software: "/applications-and-softwares",
 } as const;
 

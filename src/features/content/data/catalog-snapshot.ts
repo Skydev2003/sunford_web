@@ -3,6 +3,7 @@ import type { SourceProduct } from "../types";
 import type { Product } from "@/features/catalog/types";
 import { products as curated } from "@/features/catalog/data/products";
 import { productSources } from "@/features/catalog/data/product-sources";
+import { publicPath } from "./public-paths.mjs";
 
 const importedProducts = sourceProducts as SourceProduct[];
 
@@ -20,7 +21,7 @@ function inferCategory(product: SourceProduct): Product["category"] {
     ["อุตสาหกรรม", "industrial"],
   ];
   for (const [collection, category] of sourceCategories)
-    if (product.collections?.some((item) => item.path === `/collections/${collection}`))
+    if (product.collections?.some((item) => item.path === publicPath(`/collections/${collection}`)))
       return category;
   const text = `${product.name} ${product.description} ${product.collections?.map((item) => item.title).join(" ")}`;
   if (/POS|พอส/i.test(product.name)) return "pos";

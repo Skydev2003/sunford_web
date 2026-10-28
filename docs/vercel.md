@@ -71,11 +71,11 @@ bun run deploy --check
 
 Build Command บน Vercel ยังคงเป็น `npm run vercel-build` ตาม `vercel.json` ซึ่งเรียก `scripts/vercel-build.mjs` เพื่อ validate environment, migrate/seed เฉพาะ Production และ build อย่าเปลี่ยนเป็น `bun run deploy` เพราะคำสั่งนั้นใช้จัดการ Git ในเครื่อง
 
-## URL ภาษาไทยยาวและ ENAMETOOLONG
+## URL ภาษาอังกฤษและขนาดชื่อไฟล์
 
-Vercel adapter สร้างไฟล์ `.prerender-config.json` และ `.prerender-fallback.*` โดยใช้ URL เป็นชื่อไฟล์ด้วย และ runtime cache ของ Next.js ใช้ชื่อแบบ URL-encoded โค้ดจึงตรวจขนาดแต่ละ segment หลัง encode หากเกิน 200 bytes จะ rewrite ภายในไป `/_content/<sha256>` เพื่อให้ชื่อไฟล์รวม suffix อยู่ใต้ขีดจำกัด 255 bytes
+URL ภายในใช้ path ภาษาอังกฤษ ลิงก์จาก URL ภาษาไทยเดิม redirect แบบ 308 ผ่าน Proxy ไปยัง URL อังกฤษ โดยรักษา query string ไว้ ข้อมูลและลิงก์ในเนื้อหาที่แสดงบนเว็บไซต์ใช้ชื่ออังกฤษโดยตรง
 
-หน้าเหล่านี้ยังเปิดผ่าน URL เดิมตามปกติ และสร้าง static params ด้วยเส้นทางภายในแบบสั้น หน้าเว็บอ่านข้อมูลจากเส้นทางต้นฉบับ จึงคงเนื้อหาและลิงก์เดิมไว้ ทั้งตอน build และตอนเก็บ runtime cache
+หาก segment ของ path ภาษาอังกฤษยาวเกิน 200 bytes ระบบยังใช้เส้นทางภายในแบบ `/_content/<sha256>` เพื่อเว้นที่สำหรับ prerender sidecars และ runtime cache เส้นทางภายในจาก URL เดิมยังอ่านเนื้อหาเดิมได้
 
 ## ย้าย URL จาก Render
 

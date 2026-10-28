@@ -9,6 +9,7 @@ import { resolveManagedProduct } from "../data/managed-products";
 import { findCatalogProduct } from "../data/product-lookup";
 import { getDocuments } from "@/features/cms/server/documents";
 import type { ProductMedia } from "@/features/cms/types";
+import { publicPath } from "@/features/content/data/public-paths.mjs";
 
 export async function getProducts(): Promise<Product[]> {
   "use cache";
@@ -43,7 +44,8 @@ export async function getProducts(): Promise<Product[]> {
   const media = await getDocuments("product-media");
   return managed
     .map((row) => {
-      const product = resolveManagedProduct(row);
+      const resolved = resolveManagedProduct(row);
+      const product = { ...resolved, slug: publicPath(`/${resolved.slug}`).slice(1) };
       const doc = media.find((doc) => doc.id === `product-media:${product.id}` && !doc.deletedAt);
       if (!doc) return product;
       const settings = doc.data as unknown as ProductMedia;

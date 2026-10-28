@@ -3,9 +3,9 @@ import { load } from "cheerio";
 import sourcePages from "../../src/features/content/data/pages.json";
 
 const sections = [
-  { path: "/product/โครงสร้างแท่นชั่ง", title: "โครงสร้างแท่นชั่ง", count: 23 },
-  { path: "/Product/แท่นชั่งตั้งโต๊ะ", title: "แท่นชั่งตั้งโต๊ะ", count: 2 },
-  { path: "/Product/แท่นชั่งตั้งพืั้น", title: "แท่นชั่งตั้งพื้น", count: 14 },
+  { path: "/product/scale-platforms", title: "โครงสร้างแท่นชั่ง", count: 23 },
+  { path: "/Product/benchtop-platforms", title: "แท่นชั่งตั้งโต๊ะ", count: 2 },
+  { path: "/Product/floor-platforms", title: "แท่นชั่งตั้งพื้น", count: 14 },
   { path: "/Product/POS", title: "ระบบ POS ชั่งน้ำหนักเพื่อการขาย", count: 3 },
   { path: "/Product/POS/Android", title: "POS ระบบ Android", count: 2 },
   { path: "/Product/POS/Windows", title: "POS ระบบ Windows", count: 1 },
@@ -45,10 +45,7 @@ test("all imported platform and POS products have working detail pages and local
   request,
 }) => {
   test.setTimeout(180000);
-  const collectionPaths = [
-    "/collections/โครงสร้างแท่นชั่ง",
-    "/collections/POS เชื่อมต่อเครื่องชั่ง",
-  ];
+  const collectionPaths = ["/collections/scale-platforms", "/collections/pos-scale-integration"];
   const handles = new Set(
     sourcePages.filter((p) => collectionPaths.includes(p.path)).flatMap((p) => p.productHandles),
   );
