@@ -1,21 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
-  ArrowDownLeft,
-  ArrowRight,
   ArrowUpRight,
   CalendarClock,
-  Check,
   ChevronRight,
-  Clock3,
-  Copy,
+  CircleHelp,
+  ExternalLink,
   Info,
-  MapPin,
-  MessageCircle,
+  Headset,
   PackageCheck,
   PackageOpen,
   Phone,
+  Smartphone,
   RotateCcw,
   ShieldCheck,
   Wrench,
@@ -26,10 +24,52 @@ import { afterSalesContact, afterSalesServices } from "../data/after-sales";
 import styles from "./after-sales-page.module.css";
 
 const serviceIcons = [Wrench, PackageOpen, ShieldCheck, RotateCcw, PackageCheck];
+const serviceDescriptions = [
+  "เตรียมเครื่องเข้ารับบริการ",
+  "ขั้นตอนการเปลี่ยนรุ่น",
+  "ขั้นตอนการส่งเคลม",
+  "เตรียมสินค้าและเอกสาร",
+  "นัดหมายก่อนเข้ารับสินค้า",
+];
+const stepHeadings: Record<string, string[]> = {
+  repair: [
+    "เตรียมตัวเครื่อง",
+    "ทำความสะอาดก่อนส่ง",
+    "ห่อหุ้มให้เรียบร้อย",
+    "ระบุข้อมูลผู้ส่ง",
+    "จัดส่งและแจ้งเจ้าหน้าที่",
+    "รับบริการซ่อมบำรุง",
+  ],
+  exchange: [
+    "ตรวจสอบสินค้าและเอกสาร",
+    "ห่อกล่องสินค้าอีกชั้น",
+    "ระบุรายการที่ต้องการ",
+    "จัดส่งสินค้า",
+    "รอเจ้าหน้าที่ติดต่อกลับ",
+  ],
+  claim: [
+    "เตรียมสินค้าสำหรับเคลม",
+    "ระบุข้อมูลให้ชัดเจน",
+    "จัดส่งและแจ้งสลิปค่าส่ง",
+    "รับบริการเคลมสินค้า",
+  ],
+  return: [
+    "ตรวจสอบสินค้าและเอกสาร",
+    "ห่อกล่องสินค้าอีกชั้น",
+    "ระบุรายการที่ต้องการ",
+    "จัดส่งสินค้า",
+    "รอเจ้าหน้าที่ติดต่อกลับ",
+  ],
+  pickup: [
+    "ทำคำสั่งซื้อให้เรียบร้อย",
+    "นัดหมายกับแอดมิน",
+    "แจ้งข้อมูลเมื่อมาถึง",
+    "ชำระเงินและรับสินค้า",
+  ],
+};
 
 export function AfterSalesPage() {
   const [selected, setSelected] = useState(0);
-  const [copyStatus, setCopyStatus] = useState("");
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const service = afterSalesServices[selected];
   const isPickup = service.id === "pickup";
@@ -37,7 +77,6 @@ export function AfterSalesPage() {
 
   function selectTab(index: number) {
     setSelected(index);
-    setCopyStatus("");
   }
 
   function handleTabKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
@@ -53,16 +92,6 @@ export function AfterSalesPage() {
     tabs.current[next]?.focus();
   }
 
-  async function copyAddress() {
-    const title = isPickup ? afterSalesContact.factoryTitle : afterSalesContact.title;
-    try {
-      await navigator.clipboard.writeText(`${title}\n${afterSalesContact.address.join("\n")}`);
-      setCopyStatus("คัดลอกที่อยู่แล้ว");
-    } catch {
-      setCopyStatus("คัดลอกไม่สำเร็จ กรุณาเลือกข้อความที่อยู่เพื่อคัดลอก");
-    }
-  }
-
   return (
     <main id="main-content" className={styles.page}>
       <div className="container">
@@ -74,34 +103,23 @@ export function AfterSalesPage() {
 
         <header className={styles.hero}>
           <div>
-            <p className={`eyebrow ${styles.eyebrow}`}>SUNFORD SERVICE & CARE</p>
-            <h1>บริการหลังการขาย</h1>
-            <p className={styles.subtitle}>ดูแลต่อเนื่อง เพื่อทุกการใช้งานของคุณ</p>
+            <h1>เลือกบริการที่คุณต้องการ</h1>
             <p className={styles.description}>
-              รวมขั้นตอนการส่งซ่อม เปลี่ยน เคลม คืนสินค้า และรับสินค้าที่โรงงาน
-              <br />
-              เลือกบริการที่ต้องการ แล้วเตรียมสินค้าได้ตามขั้นตอนด้านล่าง
+              ขั้นตอนการรับบริการ เพื่อให้เราดูแลคุณได้ตลอดการใช้งาน
             </p>
           </div>
-          <div className={styles.heroMark} aria-hidden="true">
-            <span className={styles.heroRing} />
-            <ShieldCheck size={58} strokeWidth={1.2} />
-            <span className={styles.heroBadge}>
-              <Check size={18} strokeWidth={2.5} />
-            </span>
-          </div>
+          <a className={styles.helpLink} href={sunford.line} target="_blank" rel="noreferrer">
+            <CircleHelp size={17} aria-hidden="true" />
+            มีคำถาม? ดูคำแนะนำการใช้งาน
+            <ArrowUpRight size={14} aria-hidden="true" />
+          </a>
         </header>
       </div>
 
       <section className={styles.workspace} aria-label="ขั้นตอนบริการหลังการขาย">
         <div className="container">
-          <div className={styles.sectionLabel}>
-            <h2>เลือกบริการที่คุณต้องการ</h2>
-            <span>5 บริการจากทีมซันฟอร์ด</span>
-          </div>
           <div className={styles.tabs} role="tablist" aria-label="ประเภทบริการหลังการขาย">
             {afterSalesServices.map((item, index) => {
-              const TabIcon = serviceIcons[index];
               return (
                 <button
                   key={item.id}
@@ -113,15 +131,17 @@ export function AfterSalesPage() {
                   id={`service-tab-${item.id}`}
                   aria-controls={`service-panel-${item.id}`}
                   aria-selected={selected === index}
+                  aria-label={`${index + 1}. ${item.name}`}
                   tabIndex={selected === index ? 0 : -1}
                   onClick={() => selectTab(index)}
                   onKeyDown={(event) => handleTabKey(event, index)}
                 >
-                  <TabIcon size={21} strokeWidth={1.6} aria-hidden="true" />
-                  <span>
-                    {index + 1}. {item.name}
+                  <span className={styles.tabCopy} aria-hidden="true">
+                    <strong>
+                      {index + 1}. {item.name}
+                    </strong>
+                    <span>{serviceDescriptions[index]}</span>
                   </span>
-                  <ArrowRight size={15} className={styles.tabArrow} aria-hidden="true" />
                 </button>
               );
             })}
@@ -141,21 +161,28 @@ export function AfterSalesPage() {
                   <article className={styles.instructions}>
                     <header className={styles.panelHeading}>
                       <span className={styles.panelIcon}>
-                        <Icon size={23} aria-hidden="true" />
+                        <Icon size={31} strokeWidth={1.6} aria-hidden="true" />
                       </span>
                       <div>
-                        <p className={styles.panelEyebrow}>เตรียมพร้อมก่อนรับบริการ</p>
+                        <p className={styles.panelEyebrow}>
+                          {service.name} · {service.steps.length} ขั้นตอน
+                        </p>
                         <h2>{service.title}</h2>
+                        <p className={styles.panelDescription}>
+                          ตรวจสอบรายละเอียดให้พร้อมก่อน{isPickup ? "เข้ารับสินค้า" : "จัดส่งสินค้า"}
+                        </p>
                       </div>
-                      <span className={styles.stepCount}>{service.steps.length} ขั้นตอน</span>
                     </header>
                     <ol className={styles.steps}>
                       {service.steps.map((step, stepIndex) => (
                         <li key={step}>
-                          <span className={styles.stepNumber} aria-hidden="true">
-                            {stepIndex + 1}
-                          </span>
-                          <p>{step}</p>
+                          <div className={styles.stepCopy}>
+                            <span className={styles.stepNumber} aria-hidden="true">
+                              {stepIndex + 1}
+                            </span>
+                            <h3>{stepHeadings[service.id][stepIndex]}</h3>
+                            <p>{step}</p>
+                          </div>
                         </li>
                       ))}
                     </ol>
@@ -184,48 +211,50 @@ export function AfterSalesPage() {
                       </aside>
                     )}
                     <div className={styles.instructionsFooter}>
-                      <MessageCircle size={17} aria-hidden="true" />
-                      <p>ต้องการคำแนะนำเพิ่มเติม?</p>
+                      <CircleHelp size={16} aria-hidden="true" />
+                      <p>ไม่แน่ใจว่าต้องเตรียมอะไรบ้าง?</p>
                       <a href={sunford.line} target="_blank" rel="noreferrer">
-                        คุยกับเจ้าหน้าที่ <ArrowUpRight size={14} aria-hidden="true" />
+                        ปรึกษาเจ้าหน้าที่ <ChevronRight size={15} aria-hidden="true" />
                       </a>
                     </div>
                   </article>
 
                   <aside className={styles.sidebar} aria-label="ที่อยู่และช่องทางติดต่อฝ่ายบริการ">
                     <div className={styles.contactCard}>
-                      <p className={styles.cardEyebrow}>
-                        {isPickup ? (
-                          <MapPin size={16} aria-hidden="true" />
-                        ) : (
-                          <ArrowDownLeft size={16} aria-hidden="true" />
-                        )}
-                        {isPickup ? "สถานที่รับสินค้า" : "ที่อยู่สำหรับส่งสินค้า"}
-                      </p>
-                      <h2>{isPickup ? afterSalesContact.factoryTitle : afterSalesContact.title}</h2>
-                      <address>
-                        {afterSalesContact.address.map((line) => (
-                          <span key={line}>{line}</span>
-                        ))}
-                      </address>
-                      <button className={styles.copyButton} type="button" onClick={copyAddress}>
-                        {copyStatus === "คัดลอกที่อยู่แล้ว" ? (
-                          <Check size={15} aria-hidden="true" />
-                        ) : (
-                          <Copy size={15} aria-hidden="true" />
-                        )}
-                        {copyStatus === "คัดลอกที่อยู่แล้ว" ? copyStatus : "คัดลอกที่อยู่"}
-                      </button>
-                      <p className={styles.copyStatus} role="status">
-                        {copyStatus}
+                      <header className={styles.contactHeading}>
+                        <span className={styles.contactIcon}>
+                          <Headset size={25} strokeWidth={2.3} aria-hidden="true" />
+                        </span>
+                        <div>
+                          <p className={styles.cardEyebrow}>CONTACT US</p>
+                          <h2>{afterSalesContact.title}</h2>
+                        </div>
+                      </header>
+                      <p className={styles.contactDescription}>
+                        เราพร้อมดูแล ให้คำแนะนำ
+                        <br />
+                        และช่วยเหลือคุณทุกวัน
                       </p>
                       <div className={styles.phoneList}>
-                        <p>ติดต่อฝ่ายบริการ</p>
-                        {afterSalesContact.phones.map((phone) => (
-                          <a href={phone.href} key={phone.href}>
-                            <Phone size={16} aria-hidden="true" />
-                            {phone.label}
-                            <ArrowUpRight size={14} aria-hidden="true" />
+                        {afterSalesContact.phones.map((phone, phoneIndex) => (
+                          <a href={phone.href} key={phone.href} aria-label={phone.label}>
+                            <span className={styles.phoneIcon}>
+                              {phoneIndex === 0 ? (
+                                <Phone
+                                  size={20}
+                                  fill="currentColor"
+                                  strokeWidth={1.5}
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <Smartphone size={22} strokeWidth={1.7} aria-hidden="true" />
+                              )}
+                            </span>
+                            <span className={styles.phoneCopy}>
+                              <strong>{phone.label}</strong>
+                              <span>{afterSalesContact.hours}</span>
+                            </span>
+                            <ChevronRight size={17} aria-hidden="true" />
                           </a>
                         ))}
                       </div>
@@ -235,23 +264,40 @@ export function AfterSalesPage() {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <MessageCircle size={19} aria-hidden="true" />
+                        <Image
+                          src="/images/brands/line-brand-icon.png"
+                          width={24}
+                          height={24}
+                          alt=""
+                        />
                         LINE @sunford
-                        <ArrowUpRight size={16} aria-hidden="true" />
+                        <ExternalLink size={17} aria-hidden="true" />
                       </a>
                     </div>
-                    <div className={styles.hours}>
-                      <Clock3 size={19} aria-hidden="true" />
-                      <div>
-                        <h3>เวลาทำการ</h3>
-                        <p>{afterSalesContact.hours}</p>
-                        {isPickup && <p className={styles.breakTime}>{afterSalesContact.break}</p>}
-                      </div>
+                    <div className={styles.addressCard}>
+                      <h3>{afterSalesContact.factoryTitle}</h3>
+                      <address>
+                        {afterSalesContact.address.map((line) => (
+                          <span key={line}>{line}</span>
+                        ))}
+                      </address>
+                      <p className={styles.addressPhones}>
+                        โทร{" "}
+                        {afterSalesContact.phones.map((phone, phoneIndex) => (
+                          <span key={phone.href}>
+                            {phoneIndex > 0 && " , "}
+                            <a href={phone.href}>{phone.label}</a>
+                          </span>
+                        ))}
+                      </p>
                     </div>
                     {isPickup && (
                       <div className={styles.appointment}>
                         <CalendarClock size={19} aria-hidden="true" />
-                        <p>กรุณานัดหมายกับแอดมินทาง LINE ก่อนเดินทางมารับสินค้า</p>
+                        <p>
+                          กรุณานัดหมายกับแอดมินทาง LINE ก่อนเดินทางมารับสินค้า
+                          <span className={styles.breakTime}>{afterSalesContact.break}</span>
+                        </p>
                       </div>
                     )}
                   </aside>
