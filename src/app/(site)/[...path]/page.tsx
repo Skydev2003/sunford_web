@@ -15,6 +15,7 @@ import { VideoGallery } from "@/features/content/components/video-gallery";
 import { SoftwareCatalog } from "@/features/content/components/software-catalog";
 import { ContactPage } from "@/features/content/components/contact-page";
 import { AfterSalesPage } from "@/features/content/components/after-sales-page";
+import { AboutPage } from "@/features/content/components/about-page";
 import { getProductSection } from "@/features/content/data/product-sections";
 import {
   resolveContentPath,
@@ -33,6 +34,13 @@ export async function generateMetadata({
   const { path } = await params;
   const page = await getContentPage(resolveContentPath(`/${path.join("/")}`));
   const section = page && !page.managed ? getProductSection(page.path) : undefined;
+  if (page?.path === "/about-us" && !page.managed) {
+    return {
+      title: "รู้จักซันฟอร์ด",
+      description:
+        "รู้จักซันฟอร์ด (SUNFORD) และความตั้งใจในการพัฒนาเครื่องชั่งดิจิทัลที่มีคุณภาพ แข็งแรงทนทาน ใช้งานง่าย พร้อมบริการหลังการขาย",
+    };
+  }
   if (page?.path === "/service" && !page.managed) {
     return {
       title: "บริการหลังการขาย",
@@ -61,6 +69,7 @@ export default async function SourceContentPage({
   if (page.path !== pathname && page.managed) redirect(page.path);
   if (page.path === "/contact-us" && !page.managed) return <ContactPage />;
   if (page.path === "/service" && !page.managed) return <AfterSalesPage />;
+  if (page.path === "/about-us" && !page.managed) return <AboutPage />;
   const section = !page.managed ? getProductSection(page.path) : undefined;
   const collections = section ? await Promise.all(section.collectionPaths.map(getContentPage)) : [];
   const productHandles = section?.collectionPaths.length
