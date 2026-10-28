@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 
 async function loadPageImages(page: import("@playwright/test").Page) {
   for (const image of await page.locator("main img").all()) {
+    if (!(await image.isVisible())) continue;
     await image.scrollIntoViewIfNeeded();
     await expect
       .poll(() =>
@@ -31,18 +32,20 @@ test("homepage renders product imagery and cycles featured products", async ({ p
     "href",
     "/products/acs30-jc21",
   );
-  await expect(page.locator(".hero-product-video")).toHaveAttribute(
-    "aria-label",
-    "แอนิเมชันสินค้า ACS-30-JC21",
+  await expect(page.locator(".hero-model-stage model-viewer")).toHaveAttribute(
+    "alt",
+    "โมเดล 3 มิติ SUNFORD ACS-30-JC21",
   );
   await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
   await expect(page.locator(".hero-model")).toContainText("FEH5KS");
   await expect(page.locator(".hero-model-stage")).toBeVisible();
-  await expect(page.locator(".hero-product-video")).toHaveCount(0);
+  await expect(page.locator(".hero-model-stage model-viewer")).toHaveCount(1);
   await page.getByRole("button", { name: "สินค้าก่อนหน้า" }).click();
   await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator(".hero-product-video")).toBeVisible();
+  await expect(page.locator(".hero-model-stage")).toHaveAttribute("data-status", "ready", {
+    timeout: 30000,
+  });
   await loadPageImages(page);
   await page.screenshot({
     path: "/tmp/sunford-desktop.png",

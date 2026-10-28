@@ -9,10 +9,12 @@ export function HeroProductModel({
   src,
   poster,
   name,
+  featured = false,
 }: {
   src: string;
   poster: string;
   name: string;
+  featured?: boolean;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const viewer = useRef<ModelViewerElement>(null);
@@ -56,7 +58,9 @@ export function HeroProductModel({
 
     // The viewer library and GLB are only loaded for the selected 3D slide.
     import("@google/model-viewer")
-      .then(() => {
+      .then(({ ModelViewerElement }) => {
+        // Keep fine labels readable while allowing a modest quality reduction on slower GPUs.
+        ModelViewerElement.minimumRenderScale = 0.75;
         if (element.loaded) loaded();
       })
       .catch(failed);
@@ -96,7 +100,7 @@ export function HeroProductModel({
   return (
     <>
       <div
-        className="hero-model-stage"
+        className={`hero-model-stage${featured ? " hero-model-stage--featured" : ""}`}
         ref={stage}
         data-status={status}
         data-moving={moving}
@@ -112,7 +116,7 @@ export function HeroProductModel({
             disable-zoom=""
             disable-tap=""
             touch-action="pan-y"
-            camera-orbit="-25deg 65deg 90%"
+            camera-orbit={featured ? "-25deg 58deg 85%" : "-25deg 65deg 90%"}
             min-camera-orbit="auto 20deg 85%"
             max-camera-orbit="auto 85deg 150%"
             field-of-view="30deg"
@@ -124,7 +128,7 @@ export function HeroProductModel({
             interaction-prompt="none"
             aria-describedby={hintId}
             loading="eager"
-            exposure="1.1"
+            exposure={featured ? "0.9" : "1.1"}
           >
             <span slot="pan-target" aria-hidden="true" style={{ display: "none" }} />
           </model-viewer>
@@ -135,6 +139,7 @@ export function HeroProductModel({
               src={poster}
               alt={`เครื่องชั่ง SUNFORD ${name}`}
               fill
+              preload={featured}
               sizes="(max-width: 800px) 90vw, 55vw"
             />
           </div>
