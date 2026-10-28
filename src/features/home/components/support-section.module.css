@@ -1,0 +1,169 @@
+.section {
+  padding: 44px 28px 48px;
+  background: #fff;
+  font-family: inherit;
+}
+
+.heading {
+  max-width: 800px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.heading :global(.eyebrow) {
+  color: var(--red);
+  font-size: 10px;
+  letter-spacing: 2.1px;
+}
+
+.heading h2 {
+  margin-top: 9px;
+  color: #101827;
+  font-size: clamp(22px, 2.3vw, 30px);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
+}
+
+.heading h2::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 2px;
+  margin: 12px auto 10px;
+  background: var(--red);
+}
+
+.intro {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 48px;
+  max-width: 1180px;
+  margin: 26px auto 0;
+}
+
+.card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-radius: 20px;
+}
+
+.artwork {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 176px;
+  aspect-ratio: 400 / 205;
+  overflow: hidden;
+  isolation: isolate;
+  mask-image:
+    linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
+  mask-composite: intersect;
+  transition: transform 220ms ease;
+}
+
+.artwork img {
+  position: absolute;
+  top: -121.95122%;
+  width: 543%;
+  max-width: none;
+  height: auto;
+  user-select: none;
+}
+
+.card h3 {
+  margin-top: 12px;
+  color: #101827;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.55;
+  transition: color 180ms ease;
+}
+
+.card p {
+  max-width: 225px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.card:hover h3 {
+  color: var(--red);
+}
+
+.card:hover .artwork {
+  transform: translateY(-3px) scale(1.025);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 7px;
+}
+
+@media (max-width: 900px) {
+  .section {
+    padding: 40px 24px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 620px;
+    gap: 30px 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .section {
+    padding: 34px 20px 38px;
+  }
+
+  .heading h2 {
+    font-size: 22px;
+  }
+
+  .intro {
+    font-size: 12px;
+  }
+
+  .grid {
+    gap: 28px 24px;
+    margin-top: 20px;
+  }
+
+  .artwork {
+    max-width: 116px;
+  }
+
+  .card h3 {
+    margin-top: 7px;
+    font-size: 14px;
+  }
+
+  .card p {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card h3,
+  .artwork {
+    transition: none;
+  }
+
+  .card:hover .artwork {
+    transform: none;
+  }
+}

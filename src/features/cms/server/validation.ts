@@ -34,6 +34,7 @@ const bundledLayoutImages = new Set([
   "/images/brands/line-brand-icon.png",
   "/images/footer/thailand.svg",
   "/images/solutions-connections.svg",
+  "/images/support/service-illustrations.png",
 ]);
 export function safeImage(value: string) {
   return (

@@ -1,21 +1,13 @@
 import { getSettings } from "@/features/cms/server/documents";
 import { patchSection } from "@/features/cms/server/section-tree";
 import Image from "next/image";
-import {
-  ArrowRight,
-  BookOpen,
-  CircleCheck,
-  PackageCheck,
-  ShieldCheck,
-  UsersRound,
-  Settings2,
-  Wrench,
-} from "lucide-react";
+import { ArrowRight, ShieldCheck, UsersRound, Settings2 } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";
 import { BusinessSolutionsTemplate } from "./business-solutions";
 import { CustomerStoryGallery } from "./customer-story-gallery";
 import { customerStoryPhotos } from "../data/customer-story-photos";
 import storyStyles from "./brand-story.module.css";
+import supportStyles from "./support-section.module.css";
 
 export { BusinessSolutionsTemplate } from "./business-solutions";
 
@@ -103,45 +95,51 @@ export function BrandStoryTemplate() {
 export function SupportSectionTemplate() {
   const services = [
     {
-      icon: BookOpen,
+      artworkX: 160,
       title: "E-Catalogue",
       description: "สำรวจรุ่นสินค้าและรายละเอียดจากแคตตาล็อก Sunford",
       href: sunford.catalogue,
     },
     {
-      icon: Wrench,
+      artworkX: 680,
       title: "ศูนย์บริการลูกค้า",
       description: "ติดต่อทีม Sunford สำหรับคำปรึกษาและบริการหลังการขาย",
       href: sunford.service,
     },
     {
-      icon: PackageCheck,
-      title: "ส่งถึงธุรกิจคุณ",
+      artworkX: 1140,
+      title: "สั่งซื้อและติดตาม",
       description: "บริการจัดส่งสินค้า ครอบคลุมทั่วประเทศไทย",
       href: sunford.contact,
     },
     {
-      icon: ShieldCheck,
+      artworkX: 1640,
       title: "ลงทะเบียนรับประกัน",
       description: "ลงทะเบียนผลิตภัณฑ์และตรวจเงื่อนไขการรับประกัน",
       href: sunford.warranty,
     },
   ];
   return (
-    <section id="support" className="support-section container">
-      <div className="support-heading">
+    <section id="support" className={supportStyles.section} aria-labelledby="support-title">
+      <div className={supportStyles.heading}>
         <p className="eyebrow">ALWAYS BY YOUR SIDE</p>
-        <h2>
-          <span>
-            มากกว่าสินค้า <span className="support-heading-tail">คือการดูแลที่วางใจได้</span>
-          </span>
-          <CircleCheck size={23} strokeWidth={1.4} />
-        </h2>
+        <h2 id="support-title">มากกว่าสินค้า คือการดูแลที่วางใจได้</h2>
       </div>
-      <div className="support-grid">
-        {services.map(({ icon: Icon, title, description, href }) => (
-          <a href={href} key={title}>
-            <Icon size={30} strokeWidth={1.2} />
+      <div className={supportStyles.grid}>
+        {services.map(({ artworkX, title, description, href }) => (
+          <a href={href} key={title} className={supportStyles.card}>
+            <span className={supportStyles.artwork} aria-hidden="true">
+              {/* Show only the illustration from the supplied reference, excluding its text and arrows. */}
+              <Image
+                src="/images/support/service-illustrations.png"
+                alt=""
+                width={2172}
+                height={724}
+                sizes="(max-width: 600px) 1000px, 1700px"
+                draggable={false}
+                style={{ left: `${(-artworkX / 400) * 100}%` }}
+              />
+            </span>
             <h3>{title}</h3>
             <p>{description}</p>
           </a>
