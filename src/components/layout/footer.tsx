@@ -97,7 +97,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
           </nav>
           <div className="footer-links footer-care">
             <h3>พร้อมดูแลคุณ</h3>
-            <Link href="/#support">บริการหลังการขาย</Link>
+            <Link href={sunford.service}>บริการหลังการขาย</Link>
             <Link href={sunford.warranty}>ลงทะเบียนรับประกัน</Link>
             <Link href={sunford.downloads}>ดาวน์โหลดซอฟต์แวร์</Link>
             <a href={site.line} target="_blank" rel="noreferrer">

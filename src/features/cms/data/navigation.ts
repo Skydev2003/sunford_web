@@ -149,6 +149,7 @@ const navigation = [
     href: "/#support",
     links: [
       ["บริการและการสนับสนุน", "/#support"],
+      ["บริการหลังการขาย", "/service"],
       ["ลงทะเบียนรับประกัน", "/warranty/register"],
       ["นโยบายการรับประกันสินค้า", "/warranty/policy"],
       ["การยกเลิกและคืนสินค้า", "/cancel-and-return/policy"],
@@ -178,6 +179,7 @@ export const defaultNavigationExtras = {
   ],
   mobileLinks: [
     { label: "สำรวจข้อมูลทั้งหมด", href: "/explore" },
+    { label: "บริการหลังการขาย", href: "/service" },
     { label: "ติดต่อเรา", href: "/contact-us" },
   ],
 };

@@ -158,7 +158,7 @@ export function SupportSectionTemplate() {
       icon: Wrench,
       title: "ศูนย์บริการลูกค้า",
       description: "ติดต่อทีม Sunford สำหรับคำปรึกษาและบริการหลังการขาย",
-      href: sunford.contact,
+      href: sunford.service,
     },
     {
       icon: PackageCheck,
