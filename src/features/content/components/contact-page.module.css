@@ -186,7 +186,7 @@
   transform: rotate(-15deg);
   content: "";
 }
-a.channel:hover {
+a.channel:not(.lineChannel):hover {
   border-color: #d7192d66;
   background: #fffafb;
 }
