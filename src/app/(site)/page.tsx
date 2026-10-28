@@ -28,6 +28,7 @@ export default async function Home() {
     <main id="main-content">
       <Hero
         products={products}
+        showAnnouncement={false}
         settings={{
           ...hero,
           secondaryHref:
