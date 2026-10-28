@@ -18,7 +18,7 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
     if (new URL(request.url()).pathname === "/models/wps10ks.glb") modelRequests++;
   });
   await page.goto("/");
-  await expect(page.locator(".hero-product-video")).toBeVisible();
+  await expect(page.locator(".hero-model-stage")).toBeVisible();
   expect(modelRequests).toBe(0);
   const stage = await selectModel(page);
   const viewer = stage.locator("model-viewer");
@@ -63,7 +63,8 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
   await expect(stage).toHaveAttribute("data-moving", "false");
   await expect.poll(async () => Math.abs((await theta()) - beforeDrag)).toBeGreaterThan(0.01);
   await page.getByRole("button", { name: "สินค้าถัดไป", exact: true }).click();
-  await expect(stage).toHaveCount(0);
+  await expect(stage).toHaveCount(1);
+  await expect(viewer).toHaveJSProperty("src", "/models/acs30-jc21.glb");
 });
 
 test("FEH5KS uses its own model and switching slides keeps only one viewer", async ({ page }) => {
@@ -90,8 +91,8 @@ test("FEH5KS uses its own model and switching slides keeps only one viewer", asy
   await expect(page.locator(".hero-model-stage model-viewer")).toHaveCount(1);
   await expect(viewer).toHaveJSProperty("src", "/models/wps10ks.glb");
   await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
-  await expect(stage).toHaveCount(0);
-  await expect(page.locator(".hero-product-video")).toBeVisible();
+  await expect(stage).toHaveAttribute("data-status", "ready", { timeout: 30000 });
+  await expect(viewer).toHaveJSProperty("src", "/models/acs30-jc21.glb");
 });
 
 test("WPS10KS respects reduced motion and fits mobile viewports", async ({ page }) => {

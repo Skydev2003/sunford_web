@@ -8,7 +8,6 @@ import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react
 import type { Product } from "@/features/catalog/types";
 import { defaultHero } from "@/features/cms/data/settings";
 import type { HeroSettings } from "@/features/cms/types";
-import { HeroProductVideo } from "./hero-product-video";
 
 const HeroProductModel = dynamic(
   () => import("./hero-product-model").then((module) => module.HeroProductModel),
@@ -34,6 +33,7 @@ export function HeroAnnouncement({ settings = defaultHero }: { settings?: HeroSe
 }
 
 const heroModels: Record<string, string> = {
+  "acs30-jc21": "/models/acs30-jc21.glb",
   wps10ks: "/models/wps10ks.glb",
   feh5ks: "/models/feh5ks.glb",
 };
@@ -68,10 +68,6 @@ export function Hero({
             : ""),
         href: slide.href || (product ? `/products/${product.slug}` : "/products"),
         model: product && !slide.image ? heroModels[product.id] : undefined,
-        video:
-          product?.id === "acs30-jc21" && !slide.image
-            ? "/videos/sunford-homepage-16x9.webm?v=8fa57b120757"
-            : undefined,
       },
     ];
   });
@@ -83,7 +79,7 @@ export function Hero({
       {showAnnouncement && <HeroAnnouncement settings={settings} />}
       <section
         ref={sceneRef}
-        className={`hero hero-cinematic ${product?.video ? "hero-has-motion" : ""}`}
+        className="hero hero-cinematic"
         aria-label="Sunford ความแม่นยำที่เรียบง่ายกว่า"
       >
         <div className="hero-scene-glow" aria-hidden="true" />
@@ -127,14 +123,7 @@ export function Hero({
               src={product.model}
               poster={product.image}
               name={product.name}
-            />
-          ) : product?.video ? (
-            <HeroProductVideo
-              key={product.id}
-              src={product.video}
-              poster={product.image}
-              name={product.name}
-              sceneRef={sceneRef}
+              featured={product.model === heroModels["acs30-jc21"]}
             />
           ) : (
             product && (
@@ -209,11 +198,6 @@ export function Hero({
             <span>เลื่อนเพื่อค้นพบ</span>
           </button>
         </div>
-        {product?.video && (
-          <div className="hero-scene-progress" aria-hidden="true">
-            <span />
-          </div>
-        )}
       </section>
     </>
   );
