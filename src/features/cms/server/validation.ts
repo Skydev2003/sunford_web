@@ -182,6 +182,11 @@ export const siteSchema = z.object({
   line: linkSchema,
   messenger: linkSchema.optional(),
 });
+export const contactLocationImagesSchema = z.object({
+  serviceImage: imageSchema,
+  officeImage: imageSchema,
+  warehouseImage: imageSchema,
+});
 export const navigationSchema = z.object({
   exploreLabel: text,
   exploreLinks: z.array(z.object({ label: text.min(1), href: linkSchema.refine(Boolean) })).max(30),

@@ -19,6 +19,7 @@ let models: Record<string, Model>;
 let bundle: string;
 let css: string;
 let validateFooter: (data: CmsData) => unknown;
+let validateLocationImages: (data: CmsData) => unknown;
 
 test("all content management routes require an administrator session", async ({ page }) => {
   for (const route of [
@@ -28,6 +29,7 @@ test("all content management routes require an administrator session", async ({ 
     "/admin/content/site",
     "/admin/content/product-media:feh5ks",
     "/admin/content/section%3Afooter",
+    "/admin/content/contact-locations",
   ]) {
     await page.goto(route);
     await expect(page).toHaveURL(/\/admin\/login$/);
@@ -45,7 +47,7 @@ test.describe("content editor interface", () => {
     await build({
       stdin: {
         contents:
-          'export {getEditor} from "./src/features/cms/server/editors"; export {getAdminProduct} from "./src/features/admin/server/products"; export {getPrisma} from "./src/lib/prisma"; export {footerSettingsSchema} from "./src/features/cms/server/validation";',
+          'export {getEditor} from "./src/features/cms/server/editors"; export {getAdminProduct} from "./src/features/admin/server/products"; export {getPrisma} from "./src/lib/prisma"; export {footerSettingsSchema,contactLocationImagesSchema} from "./src/features/cms/server/validation";',
         resolveDir: process.cwd(),
         loader: "ts",
       },
@@ -83,16 +85,22 @@ test.describe("content editor interface", () => {
     });
     const server = createRequire(resolve("package.json"))(output);
     validateFooter = (data) => server.footerSettingsSchema.parse(data);
+    validateLocationImages = (data) => server.contactLocationImagesSchema.parse(data);
     try {
       models = Object.fromEntries(
         await Promise.all(
-          ["hero", "product-media:feh5ks", "navigation", "section:solutions", "section:footer"].map(
-            async (id) => {
-              const editor = await server.getEditor(encodeURIComponent(id));
-              expect(editor?.id).toBe(id);
-              return [id, editor];
-            },
-          ),
+          [
+            "hero",
+            "product-media:feh5ks",
+            "navigation",
+            "section:solutions",
+            "section:footer",
+            "contact-locations",
+          ].map(async (id) => {
+            const editor = await server.getEditor(encodeURIComponent(id));
+            expect(editor?.id).toBe(id);
+            return [id, editor];
+          }),
         ),
       );
       expect(await server.getEditor("section%ZZfooter")).toBeNull();
@@ -207,6 +215,71 @@ test.describe("content editor interface", () => {
     ]) {
       expect(() => validateFooter({ ...data, [imageKey]: image })).toThrow();
     }
+  });
+  test("contact location images can be uploaded independently, saved and removed", async ({
+    page,
+  }) => {
+    await open(page, "contact-locations");
+    const fields = models["contact-locations"].fields;
+    await expect(page.locator('input[type="file"]')).toHaveCount(3);
+    await page.getByLabel(fields[0].label, { exact: true }).setInputFiles({
+      name: "service.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("ui-fixture"),
+    });
+    await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).first().click();
+    const readSaved = () =>
+      page.evaluate(() => (window as unknown as { __cmsSaved: CmsData }).__cmsSaved);
+    await expect.poll(readSaved).toEqual({
+      ...models["contact-locations"].data,
+      serviceImage: "/images/products/wps10ks.png",
+    });
+    for (const field of fields.slice(1)) {
+      await page.getByLabel(field.label, { exact: true }).setInputFiles({
+        name: `${field.key}.png`,
+        mimeType: "image/png",
+        buffer: Buffer.from("ui-fixture"),
+      });
+    }
+    await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).first().click();
+    await expect.poll(readSaved).toEqual({
+      serviceImage: "/images/products/wps10ks.png",
+      officeImage: "/images/products/wps10ks.png",
+      warehouseImage: "/images/products/wps10ks.png",
+    });
+    const uploaded = await readSaved();
+    expect(() => validateLocationImages(uploaded)).not.toThrow();
+    const office = page
+      .locator(".admin-field")
+      .filter({ has: page.getByLabel(fields[1].label, { exact: true }) });
+    await office.getByRole("button", { name: "นำรูปออก", exact: true }).click();
+    await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).first().click();
+    await expect.poll(readSaved).toEqual({
+      serviceImage: "/images/products/wps10ks.png",
+      officeImage: "",
+      warehouseImage: "/images/products/wps10ks.png",
+    });
+    const saved = await readSaved();
+    expect(() => validateLocationImages(saved)).not.toThrow();
+    for (const image of [
+      "https://untrusted.invalid/image.png",
+      "javascript:alert(1)",
+      "/images/../private.png",
+    ]) {
+      expect(() => validateLocationImages({ ...saved, serviceImage: image })).toThrow();
+    }
+    await page.screenshot({
+      path: test.info().outputPath("contact-images-editor-desktop.png"),
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({
+      path: test.info().outputPath("contact-images-editor-mobile.png"),
+      fullPage: true,
+    });
   });
   test("footer map switch saves both states while retaining footer content", async ({ page }) => {
     await open(page, "section:footer");

@@ -7,6 +7,7 @@ import { categories } from "@/features/catalog/types";
 import { importedPages } from "@/features/content/server/content-repository";
 import {
   categorySchema,
+  contactLocationImagesSchema,
   footerSettingsSchema,
   heroSchema,
   mediaSchema,
@@ -25,6 +26,7 @@ import { sourcePageId } from "./identity";
 const settingsIds = [
   "hero",
   "site",
+  "contact-locations",
   "navigation",
   "spotlight",
   "showcase",
@@ -49,6 +51,7 @@ function schema(kind: string, id: string) {
   if (kind === "product-media") return mediaSchema;
   if (id === "hero") return heroSchema;
   if (id === "site") return siteSchema;
+  if (id === "contact-locations") return contactLocationImagesSchema;
   if (id === "navigation") return navigationSchema;
   if (id === "videos") return z.object({ videos: z.array(videoSchema).max(30) });
   if (id === "section:footer") return footerSettingsSchema;

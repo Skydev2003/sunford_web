@@ -34,6 +34,10 @@ import {
 } from "../data/navigation";
 import { getCategories } from "./categories";
 import type { CmsData, Field } from "../types";
+import {
+  contactLocationImageFields,
+  defaultContactLocationImages,
+} from "@/features/content/data/contact-locations";
 
 export const settingCards = [
   {
@@ -73,6 +77,11 @@ export const settingCards = [
     description: "หัวข้อ ข้อความปุ่ม และลิงก์อ่านต่อ",
   },
   { id: "videos", title: "วิดีโอหน้าแรก", description: "เพิ่ม ลบ เรียงวิดีโอ และเปลี่ยนภาพปก" },
+  {
+    id: "contact-locations",
+    title: "ติดต่อเรา · รูปสถานที่",
+    description: "เปลี่ยนรูปศูนย์บริการ สำนักงานใหญ่ และโรงงานบนหน้า Contact Us",
+  },
   {
     id: "site",
     title: "โลโก้และข้อมูลติดต่อ",
@@ -153,6 +162,9 @@ export async function getEditor(routeId: string) {
   } else if (id === "site") {
     data = { ...defaultSite };
     fields = siteFields;
+  } else if (id === "contact-locations") {
+    data = { ...defaultContactLocationImages };
+    fields = contactLocationImageFields;
   } else if (id === "navigation") {
     data = { items: defaultNavigation, ...defaultNavigationExtras };
     fields = [
