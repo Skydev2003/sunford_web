@@ -4,28 +4,36 @@ import { Play } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { ProductImage } from "@/components/ui/product-image";
 import { DragScroll } from "@/components/ui/drag-scroll";
+import { FocusDragScroll } from "@/components/ui/focus-drag-scroll";
+import focusStyles from "./video-focus.module.css";
 
 export function VideoGallery({
   videos,
   title = "วิดีโอ Sunford",
+  focusCarousel = false,
 }: {
   videos: { id: string; image: string }[];
   title?: string;
+  focusCarousel?: boolean;
 }) {
   const [active, setActive] = useState<string | null>(null);
   if (!videos.length) return null;
+  const Track = focusCarousel ? FocusDragScroll : DragScroll;
   return (
-    <section className="video-gallery container" aria-label={title}>
-      <div className="section-heading">
+    <section
+      className={`video-gallery ${focusCarousel ? focusStyles.section : "container"}`}
+      aria-label={title}
+    >
+      <div className={`section-heading ${focusCarousel ? focusStyles.heading : ""}`}>
         <div>
           <p className="eyebrow">WATCH & DISCOVER</p>
           <h2>{title}</h2>
         </div>
       </div>
-      <DragScroll className="video-track" label={title}>
+      <Track className={`video-track ${focusCarousel ? focusStyles.track : ""}`} label={title}>
         {videos.map((video, index) => (
           <button
-            className="video-card"
+            className={`video-card ${focusCarousel ? focusStyles.card : ""}`}
             key={video.id}
             onClick={() => setActive(video.id)}
             aria-label={`เล่น${title} ${index + 1}`}
@@ -41,7 +49,7 @@ export function VideoGallery({
             </span>
           </button>
         ))}
-      </DragScroll>
+      </Track>
       <Modal open={active !== null} onClose={() => setActive(null)} title={title} wide>
         {active && (
           <iframe

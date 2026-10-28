@@ -228,5 +228,5 @@ export async function SunfordVideos() {
     videos: (await getContentPage("/"))?.videos ?? [],
   });
   const copy = await getSettings("stories", storiesDefaults);
-  return <VideoGallery videos={settings.videos} title={copy.videoTitle} />;
+  return <VideoGallery videos={settings.videos} title={copy.videoTitle} focusCarousel />;
 }

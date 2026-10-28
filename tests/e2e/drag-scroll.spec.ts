@@ -28,7 +28,7 @@ test("video strip drags without playing, hides its scrollbar and still opens on 
   const bounds = (await track.boundingBox())!;
   await page.mouse.move(bounds.x + 80, bounds.y + 100);
   await page.mouse.down();
-  await page.mouse.move(bounds.x + 650, bounds.y + 100, { steps: 20 });
+  await page.mouse.move(bounds.x + bounds.width - 40, bounds.y + 100, { steps: 20 });
   await page.mouse.up();
   await expect.poll(() => track.evaluate((element) => element.scrollLeft)).toBeLessThan(5);
   await expect(page.getByRole("dialog")).toBeHidden();
@@ -52,8 +52,10 @@ test("story strip drags without navigating and links remain keyboard accessible"
   const link = track.locator("a").nth(1);
   const href = await link.getAttribute("href");
   await link.focus();
+  await expect(link).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect.poll(() => new URL(page.url()).pathname).toBe(new URL(href!, page.url()).pathname);
+  // The development server may compile this article on the first navigation.
+  await expect(page).toHaveURL(new URL(href!, page.url()).href, { timeout: 15000 });
 });
 
 test("touch swipes still scroll both strips without opening cards or overflowing the page", async ({
