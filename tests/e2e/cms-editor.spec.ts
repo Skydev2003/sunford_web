@@ -20,6 +20,7 @@ let bundle: string;
 let css: string;
 let validateFooter: (data: CmsData) => unknown;
 let validateLocationImages: (data: CmsData) => unknown;
+let renderSolutions: (data: CmsData) => string;
 
 test("all content management routes require an administrator session", async ({ page }) => {
   for (const route of [
@@ -47,7 +48,7 @@ test.describe("content editor interface", () => {
     await build({
       stdin: {
         contents:
-          'export {getEditor} from "./src/features/cms/server/editors"; export {getAdminProduct} from "./src/features/admin/server/products"; export {getPrisma} from "./src/lib/prisma"; export {footerSettingsSchema,contactLocationImagesSchema} from "./src/features/cms/server/validation";',
+          'export {getEditor} from "./src/features/cms/server/editors"; export {getAdminProduct} from "./src/features/admin/server/products"; export {getPrisma} from "./src/lib/prisma"; export {footerSettingsSchema,contactLocationImagesSchema,patchesSchema} from "./src/features/cms/server/validation"; export {BusinessSolutionsTemplate} from "./src/features/home/components/sections"; export {patchSection} from "./src/features/cms/server/section-tree"; export {renderToStaticMarkup} from "react-dom/server";',
         resolveDir: process.cwd(),
         loader: "ts",
       },
@@ -86,6 +87,10 @@ test.describe("content editor interface", () => {
     const server = createRequire(resolve("package.json"))(output);
     validateFooter = (data) => server.footerSettingsSchema.parse(data);
     validateLocationImages = (data) => server.contactLocationImagesSchema.parse(data);
+    renderSolutions = (data) =>
+      server.renderToStaticMarkup(
+        server.patchSection(server.BusinessSolutionsTemplate(), server.patchesSchema.parse(data)),
+      );
     try {
       models = Object.fromEntries(
         await Promise.all(
@@ -338,6 +343,39 @@ test.describe("content editor interface", () => {
     expect(saved.price).toBe("2500");
     expect(saved.descriptionHtml).toContain("รายละเอียดที่แอดมินแก้ไข");
     expect((saved.gallery as CmsData[]).at(-1)?.image).toBe("/images/products/wps10ks.png");
+  });
+  test("solution images, copy and links can be edited and render through the real CMS patches", async ({
+    page,
+  }) => {
+    await open(page, "section:solutions");
+    const model = models["section:solutions"];
+    const images = model.fields.filter((field) => field.type === "image");
+    expect(images).toHaveLength(4);
+    await expect(page.locator('input[type="file"]')).toHaveCount(4);
+    await page
+      .getByLabel("เมื่อทุกอย่างเชื่อมถึงกัน", { exact: true })
+      .fill("เชื่อมต่อธุรกิจในแบบของคุณ");
+    await page.getByLabel("ลิงก์: /products/pos1100", { exact: true }).fill("/products/feh5ks");
+    await page.getByLabel(images[0].label, { exact: true }).setInputFiles({
+      name: "new-solution.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("ui-fixture"),
+    });
+    await expect(page.locator(".cms-image-preview img").first()).toHaveAttribute(
+      "src",
+      "/images/products/wps10ks.png",
+    );
+    await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).first().click();
+    const saved = await page.evaluate(
+      () => (window as unknown as { __cmsSaved: CmsData }).__cmsSaved,
+    );
+    expect(saved[images[0].key]).toBe("/images/products/wps10ks.png");
+    expect(saved[images[1].key]).toBe(model.data[images[1].key]);
+    expect(saved[images[2].key]).toBe(model.data[images[2].key]);
+    const html = renderSolutions(saved);
+    expect(html).toContain("เชื่อมต่อธุรกิจในแบบของคุณ");
+    expect(html).toContain('href="/products/feh5ks"');
+    expect(html).toContain(encodeURIComponent("/images/products/wps10ks.png"));
   });
   test("navigation and solution fields retain their existing content on mobile", async ({
     page,

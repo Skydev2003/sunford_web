@@ -1,110 +1,18 @@
 import { getSettings } from "@/features/cms/server/documents";
 import { patchSection } from "@/features/cms/server/section-tree";
 import Image from "next/image";
-import Link from "next/link";
 import {
-  ArrowRight,
   ArrowUpRight,
   BookOpen,
   CircleCheck,
-  Monitor,
   PackageCheck,
   ShieldCheck,
   Wrench,
 } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";
+import { BusinessSolutionsTemplate } from "./business-solutions";
 
-export function BusinessSolutionsTemplate() {
-  return (
-    <section id="solutions" className="solutions-section container">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">ONE CONNECTED ECOSYSTEM</p>
-          <h2>
-            เมื่อทุกอย่างเชื่อมถึงกัน
-            <br />
-            <span className="muted">ธุรกิจก็ไปได้ไกลขึ้น</span>
-          </h2>
-        </div>
-        <p className="heading-description">
-          เชื่อมต่อเครื่องชั่ง ข้อมูล และการทำงาน
-          <br />
-          ให้ทุกขั้นตอนของธุรกิจเป็นเรื่องง่าย
-        </p>
-      </div>
-      <div className="solutions-grid">
-        <div className="solution-feature">
-          <div className="solution-feature-copy">
-            <span className="mini-label">SUNFORD BUSINESS SOLUTIONS</span>
-            <h3>
-              จากหน้าร้าน
-              <br />
-              ถึงหลังบ้าน.
-              <br />
-              <span>ครบ จบ เชื่อมต่อกัน</span>
-            </h3>
-            <p>
-              เครื่องชั่งและระบบ POS ที่ทำงานร่วมกัน
-              <br />
-              เพื่อให้คุณมีเวลาโฟกัสกับสิ่งที่สำคัญกว่า
-            </p>
-            <Link href="/products/pos1100" className="text-link">
-              ค้นพบ SUNFORD POS <ArrowRight size={17} />
-            </Link>
-          </div>
-          <div className="solution-image">
-            <Image
-              src="/images/products/pos1100.png"
-              alt="ระบบขายหน้าร้านและเครื่องชั่ง SUNFORD POS"
-              fill
-              sizes="(max-width: 800px) 90vw, 50vw"
-            />
-          </div>
-        </div>
-        <div className="solution-small-cards">
-          <a href={sunford.accessories} className="solution-small">
-            <div className="solution-icon">
-              <PackageCheck size={24} strokeWidth={1.4} />
-              <ArrowUpRight size={19} />
-            </div>
-            <span>ACCESSORIES</span>
-            <h3>อุปกรณ์เสริม</h3>
-            <p>
-              เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS
-              <br />
-              เพื่อขยายการใช้งานให้เหมาะกับธุรกิจ
-            </p>
-          </a>
-          <a href={sunford.software} className="solution-small">
-            <div className="solution-icon">
-              <Monitor size={24} strokeWidth={1.4} />
-              <ArrowUpRight size={19} />
-            </div>
-            <span>SOFTWARE & APPLICATIONS</span>
-            <h3>แอปพลิเคชันและซอฟต์แวร์</h3>
-            <p>
-              สำหรับงานค้าปลีก การผลิตอุตสาหกรรม
-              <br />
-              และการดูแลครัวเรือนกับสุขภาพ
-            </p>
-          </a>
-        </div>
-      </div>
-      <div className="ecosystem-links">
-        <span>เชื่อมต่อกับ Sunford</span>
-        <a href={sunford.erp}>
-          โซลูชัน ERP <ArrowUpRight size={15} />
-        </a>
-        <a href={sunford.mes}>
-          โซลูชัน MES <ArrowUpRight size={15} />
-        </a>
-        <a href={sunford.downloads}>
-          ดาวน์โหลดซอฟต์แวร์ <ArrowUpRight size={15} />
-        </a>
-      </div>
-    </section>
-  );
-}
+export { BusinessSolutionsTemplate } from "./business-solutions";
 
 export function BrandStoryTemplate() {
   return (

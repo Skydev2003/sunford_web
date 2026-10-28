@@ -14,6 +14,7 @@ import {
 } from "@/features/home/components/sections";
 import { FooterTemplate } from "@/components/layout/footer";
 import { sectionFields } from "./section-tree";
+import { solutionImages } from "@/features/home/components/business-solutions";
 import {
   catalogDefaults,
   defaultHero,
@@ -264,6 +265,30 @@ export async function getEditor(routeId: string) {
     }[id];
     if (!template) return null;
     ({ data, fields } = sectionFields(template()));
+    if (id === "section:solutions") {
+      const labels: Record<string, { label: string; hint: string }> = {
+        [solutionImages.feature]: {
+          label: "รูปการ์ดหลัก · SUNFORD POS",
+          hint: "ภาพแนวสี่เหลี่ยมจัตุรัส วางสินค้าไว้ช่วงล่าง และเว้นพื้นที่ด้านบนสำหรับข้อความ",
+        },
+        [solutionImages.accessories]: {
+          label: "รูปการ์ดอุปกรณ์เสริม",
+          hint: "แนะนำภาพสินค้าพื้นหลังโปร่งใส รูปจะแสดงด้านขวาของการ์ด",
+        },
+        [solutionImages.software]: {
+          label: "รูปการ์ดแอปพลิเคชันและซอฟต์แวร์",
+          hint: "แนะนำภาพพื้นหลังโปร่งใส รูปจะแสดงด้านขวาของการ์ด",
+        },
+        [solutionImages.connections]: {
+          label: "รูปชุดไอคอนเชื่อมต่อบนการ์ดหลัก",
+          hint: "ภาพเดียวรวมรถเข็น กราฟ และคลาวด์ แนะนำ PNG พื้นหลังโปร่งใสแนวตั้ง",
+        },
+      };
+      fields = fields.map((field) => {
+        const image = field.type === "image" && labels[String(data[field.key])];
+        return image ? { ...field, ...image } : field;
+      });
+    }
     if (id === "section:footer") {
       data.customerMapEnabled = true;
       fields.unshift({

@@ -28,11 +28,12 @@ export function safeLink(value: string) {
     return false;
   }
 }
-// Trusted assets shipped with the footer, including its fixed SVG map.
+// Trusted decorative assets shipped with the site, including fixed SVG artwork.
 const bundledLayoutImages = new Set([
   "/images/home-categories/digital.webp",
   "/images/brands/line-brand-icon.png",
   "/images/footer/thailand.svg",
+  "/images/solutions-connections.svg",
 ]);
 export function safeImage(value: string) {
   return (
