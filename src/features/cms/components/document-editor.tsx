@@ -99,12 +99,12 @@ export function DocumentEditor({
       {!compact &&
         (onClose ? (
           <button type="button" className="admin-back" disabled={busy} onClick={cancel}>
-            ← กลับไปรายการ
+            กลับไปรายการ
           </button>
         ) : (
           parent && (
             <Link href={parent.href} className="admin-back">
-              ← กลับไป{parent.label}
+              กลับไป{parent.label}
             </Link>
           )
         ))}
@@ -124,10 +124,7 @@ export function DocumentEditor({
           <div className="admin-page-heading">
             <div>
               <span className="admin-eyebrow">{parent ? parent.label : "ตั้งค่าเว็บไซต์"}</span>
-              <h1>
-                {title}
-                <span>.</span>
-              </h1>
+              <h1>{title}</h1>
               <p>
                 บันทึกแล้วจะแสดงบนเว็บไซต์ทันที
                 รูปและปุ่มที่อ้างอิงสินค้าจะเชื่อมไปยังหน้าสินค้านั้น
@@ -156,7 +153,7 @@ export function DocumentEditor({
               target="_blank"
               rel="noreferrer"
             >
-              ดูประวัติการแก้ไขและผู้ทำรายการ ↗
+              ดูประวัติการแก้ไขและผู้ทำรายการ
             </Link>
           </p>
         )}

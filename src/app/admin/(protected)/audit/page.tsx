@@ -20,9 +20,7 @@ export default async function AuditPage({
       <div className="admin-page-heading">
         <div>
           <span className="admin-eyebrow">AUDIT LOG</span>
-          <h1>
-            ประวัติการแก้ไข<span>.</span>
-          </h1>
+          <h1>ประวัติการแก้ไข</h1>
           <p>บันทึกจากบัญชีผู้ทำรายการจริง เริ่มเก็บตั้งแต่เปิดใช้ระบบประวัตินี้</p>
         </div>
         <Link href="/admin/trash" className="admin-button-secondary">

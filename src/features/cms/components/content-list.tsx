@@ -34,7 +34,7 @@ export function ContentList({
                   {page.title} {!page.published && "(ซ่อน)"}
                 </span>
                 <small>
-                  {page.kind} · {page.path} →
+                  {page.kind} · {page.path}
                 </small>
               </AdminDetailLink>
             </li>

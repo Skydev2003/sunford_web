@@ -23,9 +23,7 @@ async function CategoriesContent() {
       <div className="admin-page-heading">
         <div>
           <span className="admin-eyebrow">PRODUCT CATEGORIES</span>
-          <h1>
-            หมวดหมู่สินค้า<span>.</span>
-          </h1>
+          <h1>หมวดหมู่สินค้า</h1>
           <p>เพิ่ม เปลี่ยนชื่อ หรือลบหมวดหมู่ โดยย้ายสินค้าไปหมวดที่เลือกก่อนลบ</p>
         </div>
         <NewCategoryLink />
@@ -43,7 +41,7 @@ async function CategoriesContent() {
                 href={`/admin/products?category=${encodeURIComponent(category.id)}`}
                 aria-label={`ดูสินค้าในหมวด${category.label}`}
               >
-                ดูสินค้า →
+                ดูสินค้า
               </Link>
               <AdminDetailLink
                 href={`/admin/content/${encodeURIComponent(`category:${category.id}`)}`}

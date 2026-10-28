@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { HomeImageEditor } from "@/features/admin/components/home-image-editor";
 import { listHomeImages } from "@/features/admin/server/home-images";
 import { getProducts } from "@/features/catalog/server/product-repository";
@@ -36,13 +35,11 @@ export default async function HomeImagesPage({
       <div className="admin-page-heading">
         <div>
           <span className="admin-eyebrow">HOMEPAGE CONTENT</span>
-          <h1>
-            จัดการหน้าแรก<span>.</span>
-          </h1>
+          <h1>จัดการหน้าแรก</h1>
           <p>จัดการข้อความ รูปภาพ และลิงก์ เรียงตามส่วนที่แสดงบนหน้าเว็บไซต์</p>
         </div>
         <Link href="/" target="_blank" className="admin-button-secondary">
-          ดูหน้าแรก <ArrowUpRight size={15} />
+          ดูหน้าแรก
         </Link>
       </div>
       {homeImageSlots.some((slot) => slot.id === savedSlot) && (

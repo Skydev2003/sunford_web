@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, LogOut, ShieldCheck } from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
 import { logoutAction } from "../server/auth-actions";
 import { AdminNavigation } from "./admin-navigation";
 import { AdminSidebar } from "./admin-sidebar";
@@ -33,7 +33,7 @@ export function AdminShell({ email, children }: { email: string; children: React
               Workspace <span>/</span> จัดการเว็บไซต์
             </span>
             <Link href="/" target="_blank">
-              ดูเว็บไซต์ <ArrowUpRight size={14} />
+              ดูเว็บไซต์
             </Link>
           </header>
           <main id="main-content" className="admin-main">

@@ -139,7 +139,7 @@
   overflow: hidden;
 }
 .admin-login-story::after {
-  content: "precision.";
+  content: "precision";
   position: absolute;
   bottom: 100px;
   left: 40px;

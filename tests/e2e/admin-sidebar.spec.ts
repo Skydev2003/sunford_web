@@ -126,8 +126,8 @@ test("groups stay visible and each editor selects only its owning menu", async (
   }
   await expect(page.locator("main .admin-back")).toHaveCount(0);
   await page.goto("/admin/content/hero");
-  await page.getByRole("link", { name: "← กลับไปจัดการหน้าแรก" }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("จัดการหน้าแรก.");
+  await page.getByRole("link", { name: "กลับไปจัดการหน้าแรก" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("จัดการหน้าแรก");
 });
 
 test("homepage combines all sections and five image editors in website order", async ({ page }) => {

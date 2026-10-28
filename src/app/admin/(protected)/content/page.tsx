@@ -22,9 +22,7 @@ async function ContentAdminContent() {
       <div className="admin-page-heading">
         <div>
           <span className="admin-eyebrow">WEBSITE CONTENT</span>
-          <h1>
-            หน้าข้อมูลและบทความ<span>.</span>
-          </h1>
+          <h1>หน้าข้อมูลและบทความ</h1>
           <p>เพิ่มและแก้ไขหน้าข้อมูล ข่าว บทความ และเนื้อหาซอฟต์แวร์</p>
         </div>
         <AdminDetailLink

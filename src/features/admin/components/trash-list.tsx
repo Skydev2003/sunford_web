@@ -53,9 +53,7 @@ export function TrashList({
       <div className="admin-page-heading">
         <div>
           <span className="admin-eyebrow">RECOVERY</span>
-          <h1>
-            ถังขยะ<span>.</span>
-          </h1>
+          <h1>ถังขยะ</h1>
           <p>ข้อมูลและรูปเดิมยังเก็บไว้ กู้คืนสินค้าและหน้าข้อมูลเป็นแบบร่างก่อนเผยแพร่</p>
         </div>
         <Link href="/admin/audit" className="admin-button-secondary">

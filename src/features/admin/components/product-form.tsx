@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ImagePlus, Save, Upload, X } from "lucide-react";
+import { ImagePlus, Save, Upload, X } from "lucide-react";
 
 import { saveProductAction } from "../server/product-actions";
 import { discardProductImage, uploadProductImage } from "../server/media-actions";
@@ -145,7 +145,7 @@ export function ProductForm({
   return (
     <>
       <button type="button" className="admin-back" disabled={busy} onClick={cancel}>
-        <ArrowLeft size={15} /> กลับไปผลิตภัณฑ์
+        กลับไปผลิตภัณฑ์
       </button>
       <form
         {...unsaved}
@@ -178,10 +178,7 @@ export function ProductForm({
             <span className="admin-eyebrow">
               {product ? "REFINE THE DETAILS" : "BUILD YOUR COLLECTION"}
             </span>
-            <h1>
-              {product ? "แก้ไขผลิตภัณฑ์" : "เพิ่มผลิตภัณฑ์ใหม่"}
-              <span>.</span>
-            </h1>
+            <h1>{product ? "แก้ไขผลิตภัณฑ์" : "เพิ่มผลิตภัณฑ์ใหม่"}</h1>
             <p>
               {product
                 ? `ปรับปรุงข้อมูล ${product.name} ให้พร้อมสำหรับลูกค้า`
@@ -194,7 +191,7 @@ export function ProductForm({
                 className="admin-button-secondary"
                 href={`/admin/products/${encodeURIComponent(product.id)}/edit`}
               >
-                แก้ไขรายละเอียดทั้งหมด <ArrowUpRight size={15} />
+                แก้ไขรายละเอียดทั้งหมด
               </Link>
             )}
             <button
@@ -223,7 +220,7 @@ export function ProductForm({
               target="_blank"
               rel="noreferrer"
             >
-              ดูประวัติการแก้ไขและผู้ทำรายการ ↗
+              ดูประวัติการแก้ไขและผู้ทำรายการ
             </Link>
           </p>
         )}
@@ -437,7 +434,7 @@ export function ProductForm({
                       : "#product-gallery"
                   }
                 >
-                  จัดการรูปทั้งหมด ({gallery.length} รูป) <ArrowUpRight size={14} />
+                  จัดการรูปทั้งหมด ({gallery.length} รูป)
                 </a>
               </div>
             </section>
@@ -504,7 +501,7 @@ export function ProductForm({
                     href={`/products/${product.slug}`}
                     target="_blank"
                   >
-                    ดูสินค้าบนเว็บไซต์ <ArrowUpRight size={14} />
+                    ดูสินค้าบนเว็บไซต์
                   </Link>
                 )}
                 {product && (
@@ -515,7 +512,7 @@ export function ProductForm({
                     recordId={`product-media:${product.id}`}
                     detailTitle={`รูปและเนื้อหา: ${product.name}`}
                   >
-                    จัดการแกลเลอรี ราคา วิดีโอ และเนื้อหาเพิ่มเติม <ArrowUpRight size={14} />
+                    จัดการแกลเลอรี ราคา วิดีโอ และเนื้อหาเพิ่มเติม
                   </AdminDetailLink>
                 )}
               </div>

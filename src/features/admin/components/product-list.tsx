@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  ArrowUpRight,
+  Eye,
   Check,
   FileText,
   GripVertical,
@@ -181,9 +181,7 @@ export function AdminProductList({
       <div className="admin-page-heading">
         <div>
           <span className="admin-eyebrow">YOUR PRODUCT COLLECTION</span>
-          <h1>
-            จัดการผลิตภัณฑ์<span>.</span>
-          </h1>
+          <h1>จัดการผลิตภัณฑ์</h1>
           <p>ดูแลทุกรายละเอียดของสินค้า ให้พร้อมสำหรับลูกค้าของคุณ</p>
         </div>
         <AdminDetailLink
@@ -549,7 +547,7 @@ export function AdminProductList({
                           target="_blank"
                           aria-label={`ดู ${product.name} บนเว็บไซต์`}
                         >
-                          <ArrowUpRight size={17} />
+                          <Eye size={17} />
                         </Link>
                       )}
                       <AdminDetailLink

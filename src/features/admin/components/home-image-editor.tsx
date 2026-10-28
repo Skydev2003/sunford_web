@@ -135,7 +135,7 @@ export function HomeImageEditor({
           target="_blank"
           rel="noreferrer"
         >
-          ประวัติการแก้ไขและผู้ทำรายการ ↗
+          ประวัติการแก้ไขและผู้ทำรายการ
         </a>
       </div>
       <div className="admin-home-image-preview">
@@ -235,7 +235,7 @@ export function HomeImageEditor({
           ปลายทาง:{" "}
           {href ? (
             <a href={href} target="_blank" rel="noreferrer" className="text-link">
-              {href} ↗
+              {href}
             </a>
           ) : (
             "ยังไม่มีปลายทางที่เปิดดูได้ กรุณาเลือกรายการ"

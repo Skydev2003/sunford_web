@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ArrowUpRight,
   House,
   LayoutGrid,
   Package,
@@ -87,7 +86,6 @@ export function AdminNavigation() {
       <Link href="/" target="_blank" rel="noopener noreferrer" className="admin-view-site">
         <LayoutGrid size={18} />
         ดูหน้าเว็บไซต์
-        <ArrowUpRight size={13} />
       </Link>
     </nav>
   );

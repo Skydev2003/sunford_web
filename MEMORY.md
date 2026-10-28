@@ -77,3 +77,9 @@
 - Observed: Browser checks failed before running their assertions because the bundled Chromium headless executable was not installed.
 - Root cause: The local runner used its default browser despite an installed Chrome channel being available.
 - Correct behavior: Check browser availability before running a large suite. If bundled Chromium is absent and Chrome is installed, set `PLAYWRIGHT_CHANNEL=chrome` for the local run using the existing configuration. Stop repeated launch failures and rerun the affected suite; do not change application code to resolve a missing test executable.
+
+## Audit shared components for admin-wide visual changes
+
+- Observed: A decorative-arrow/dot cleanup covered list headings and links but left login branding, back links, the product-view icon and generated editor guidance unchanged.
+- Root cause: The initial review followed the screenshot examples without inventorying every admin route and shared presentation component.
+- Correct behavior: For admin-wide presentation requests, inventory route files, shared editors, generated helper text and CSS pseudo-elements before editing. Inspect every primary module and editor type, including login and auxiliary views, and preserve controls whose icons perform reordering or expansion. Update text selectors and verify the affected workflows before claiming complete coverage.

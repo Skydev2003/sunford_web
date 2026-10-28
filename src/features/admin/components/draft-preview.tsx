@@ -127,7 +127,7 @@ export function ProductDraftPreview({
   return (
     <PreviewFrame
       title="ข้อมูลสินค้า"
-      placement="การ์ดสินค้าและหน้ารายละเอียด → รูปหลัก → ชื่อและคำโปรย → ข้อมูลทางเทคนิค · ชื่อและรายละเอียดใช้ใน SEO ด้วย"
+      placement="การ์ดสินค้าและหน้ารายละเอียด / รูปหลัก / ชื่อและคำโปรย / ข้อมูลทางเทคนิค · ชื่อและรายละเอียดใช้ใน SEO ด้วย"
       body={() =>
         `<div class="columns"><div>${picture(image)}</div><div><h1>${escape(data.name)}</h1><p>${escape(data.subtitle)}</p><table><tbody>${[
           ["น้ำหนัก", data.capacity],
