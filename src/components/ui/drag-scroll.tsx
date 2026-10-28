@@ -1,15 +1,17 @@
 "use client";
 
-import { useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { useRef, useState, type MouseEventHandler, type PointerEvent, type ReactNode } from "react";
 
 export function DragScroll({
   children,
   className,
   label,
+  onClickCapture,
 }: {
   children: ReactNode;
   className: string;
   label: string;
+  onClickCapture?: MouseEventHandler<HTMLDivElement>;
 }) {
   const gesture = useRef<{ id: number; x: number; scrollLeft: number; dragging: boolean } | null>(
     null,
@@ -73,7 +75,9 @@ export function DragScroll({
           event.preventDefault();
           event.stopPropagation();
           suppressClick.current = false;
+          return;
         }
+        onClickCapture?.(event);
       }}
     >
       {children}

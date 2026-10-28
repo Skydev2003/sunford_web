@@ -37,9 +37,12 @@
 }
 @media (max-width: 720px) {
   .section {
-    --video-card-width: min(82vw, 320px);
+    --video-card-width: min(74vw, 320px);
   }
   .section .heading {
     width: calc(100% - 40px);
+  }
+  .section .track {
+    gap: 12px;
   }
 }
