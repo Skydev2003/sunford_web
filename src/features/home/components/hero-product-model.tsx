@@ -10,40 +10,84 @@ export function HeroProductModel({
   poster,
   name,
   featured = false,
+  active = true,
+  enabled = true,
+  slot = 0,
+  onSelect,
+  onSettled,
+  spinning = true,
+  onInspect,
+  motionSession = 0,
 }: {
   src: string;
   poster: string;
   name: string;
   featured?: boolean;
+  active?: boolean;
+  enabled?: boolean;
+  slot?: number;
+  onSelect?: (keyboard?: boolean) => void;
+  onSettled?: () => void;
+  spinning?: boolean;
+  onInspect?: () => void;
+  motionSession?: number;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const viewer = useRef<ModelViewerElement>(null);
+  const cameraFrame = useRef(0);
+  const settledCallback = useRef(onSettled);
+  const inspectCallback = useRef(onInspect);
   const hintId = useId();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [visible, setVisible] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [allowMotion, setAllowMotion] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const moving = status === "ready" && visible && !hidden && allowMotion && !paused;
+  const [manualMotion, setManualMotion] = useState<number | null>(null);
+  const moving =
+    (spinning || (active && manualMotion === motionSession)) &&
+    status === "ready" &&
+    visible &&
+    !hidden &&
+    allowMotion;
+
+  useEffect(() => {
+    settledCallback.current = onSettled;
+    inspectCallback.current = onInspect;
+  }, [onSettled, onInspect]);
 
   useEffect(() => {
     const element = viewer.current;
     const container = stage.current;
-    if (!element || !container) return;
+    if (!element || !container || !enabled) return;
     let disposed = false;
+    let notified = false;
+    const settled = () => {
+      if (notified) return;
+      notified = true;
+      settledCallback.current?.();
+    };
     const loaded = () => {
-      if (!disposed) setStatus("ready");
+      if (!disposed) {
+        setStatus("ready");
+        settled();
+      }
     };
     const failed = () => {
-      if (!disposed) setStatus("error");
+      if (!disposed) {
+        setStatus("error");
+        settled();
+      }
     };
     const interaction = (event: Event) => {
-      if ((event as CustomEvent<{ source: string }>).detail.source === "user-interaction")
-        setPaused(true);
+      if ((event as CustomEvent<{ source: string }>).detail.source === "user-interaction") {
+        setManualMotion(null);
+        inspectCallback.current?.();
+      }
     };
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const preferenceChanged = () => setAllowMotion(!preference.matches);
     const visibilityChanged = () => setHidden(document.hidden);
+    const blur = () => setHidden(true);
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
       threshold: 0.15,
     });
@@ -52,15 +96,18 @@ export function HeroProductModel({
     visibilityChanged();
     preference.addEventListener("change", preferenceChanged);
     document.addEventListener("visibilitychange", visibilityChanged);
+    window.addEventListener("blur", blur);
+    window.addEventListener("focus", visibilityChanged);
     element.addEventListener("load", loaded);
     element.addEventListener("error", failed);
     element.addEventListener("camera-change", interaction);
 
-    // The viewer library and GLB are only loaded for the selected 3D slide.
+    // All viewers share the renderer and parsed-model cache.
     import("@google/model-viewer")
       .then(({ ModelViewerElement }) => {
         // Keep fine labels readable while allowing a modest quality reduction on slower GPUs.
         ModelViewerElement.minimumRenderScale = 0.75;
+        ModelViewerElement.modelCacheSize = 3;
         if (element.loaded) loaded();
       })
       .catch(failed);
@@ -69,64 +116,72 @@ export function HeroProductModel({
       observer.disconnect();
       preference.removeEventListener("change", preferenceChanged);
       document.removeEventListener("visibilitychange", visibilityChanged);
+      window.removeEventListener("blur", blur);
+      window.removeEventListener("focus", visibilityChanged);
       element.removeEventListener("load", loaded);
       element.removeEventListener("error", failed);
       element.removeEventListener("camera-change", interaction);
     };
-  }, [src]);
+  }, [src, enabled]);
 
   useEffect(() => {
     const element = viewer.current;
     if (!element || !moving) return;
     const start = element.getCameraOrbit();
-    let frame = 0;
     let previous = performance.now();
     let elapsed = 0;
     const animate = (now: number) => {
-      frame = requestAnimationFrame(animate);
-      if (now - previous < 1000 / 30) return;
+      cameraFrame.current = requestAnimationFrame(animate);
+      if (now - previous < 1000 / (active ? 30 : 10)) return;
       elapsed += Math.min((now - previous) / 1000, 0.1);
       previous = now;
-      const theta = start.theta + Math.sin(elapsed * 0.18) * 0.6;
-      const phi = Math.max(0.35, Math.min(1.45, start.phi + Math.sin(elapsed * 0.15) * 0.075));
-      const radius = start.radius * (1 + (1 - Math.cos(elapsed * 0.2)) * 0.035);
+      const theta = start.theta + elapsed * ((Math.PI * 2) / 28);
       // Move the camera without React renders, timers, or animated text.
-      element.cameraOrbit = `${theta}rad ${phi}rad ${radius}m`;
+      element.cameraOrbit = `${theta}rad ${start.phi}rad ${start.radius}m`;
     };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [moving]);
+    cameraFrame.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(cameraFrame.current);
+  }, [moving, active]);
 
   return (
     <>
       <div
-        className={`hero-model-stage${featured ? " hero-model-stage--featured" : ""}`}
+        className={`hero-model-card ${active ? `hero-model-stage${featured ? " hero-model-stage--featured" : ""}` : "hero-model-preview"}`}
         ref={stage}
+        data-hero-model={src}
+        data-slot={slot}
         data-status={status}
         data-moving={moving}
-        onPointerDownCapture={() => setPaused(true)}
+        onPointerDownCapture={() => {
+          if (!active) return;
+          cancelAnimationFrame(cameraFrame.current);
+          setManualMotion(null);
+          onInspect?.();
+        }}
       >
-        {status !== "error" && (
+        {enabled && status !== "error" && (
           <model-viewer
             ref={viewer}
             src={src}
             alt={`โมเดล 3 มิติ SUNFORD ${name}`}
-            camera-controls=""
+            aria-hidden={!active}
+            tabIndex={active ? 0 : -1}
+            camera-controls={active ? "" : undefined}
             disable-pan=""
             disable-zoom=""
             disable-tap=""
             touch-action="pan-y"
-            camera-orbit={featured ? "-25deg 58deg 85%" : "-25deg 65deg 90%"}
+            camera-orbit={featured ? "-10deg 66deg 85%" : "-25deg 65deg 90%"}
             min-camera-orbit="auto 20deg 85%"
             max-camera-orbit="auto 85deg 150%"
             field-of-view="30deg"
-            interpolation-decay="100"
+            interpolation-decay="40"
             environment-image="neutral"
             tone-mapping="neutral"
-            shadow-intensity="0.6"
+            shadow-intensity={active ? "0.6" : "0"}
             shadow-softness="1"
             interaction-prompt="none"
-            aria-describedby={hintId}
+            aria-describedby={active ? hintId : undefined}
             loading="eager"
             exposure={featured ? "0.9" : "1.1"}
           >
@@ -144,20 +199,30 @@ export function HeroProductModel({
             />
           </div>
         )}
-        <span className="hero-model-hint" id={hintId}>
-          {status === "ready" ? "3D · ลากเพื่อหมุน" : status === "loading" ? "กำลังโหลด 3D…" : ""}
-        </span>
+        {active ? (
+          <span className="hero-model-hint" id={hintId}>
+            {status === "ready" ? "3D · ลากเพื่อหมุน" : status === "loading" ? "กำลังโหลด 3D…" : ""}
+          </span>
+        ) : (
+          <button
+            className="hero-model-preview-select"
+            type="button"
+            aria-label={`แสดงโมเดล ${name} เป็นตัวหลัก`}
+            onClick={(event) => onSelect?.(event.detail === 0)}
+          />
+        )}
       </div>
-      {status === "ready" && (
+      {active && status === "ready" && (
         <button
           type="button"
           className="hero-motion-toggle"
           aria-label={moving ? "หยุดมุมกล้องอัตโนมัติ" : "เล่นมุมกล้องอัตโนมัติ"}
           onClick={() => {
-            if (moving) setPaused(true);
+            onInspect?.();
+            if (moving) setManualMotion(null);
             else {
               setAllowMotion(true);
-              setPaused(false);
+              setManualMotion(motionSession);
             }
           }}
         >

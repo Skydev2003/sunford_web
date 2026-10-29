@@ -21,6 +21,15 @@
   opacity: 0;
   transition: opacity var(--nav-flyout-duration) var(--nav-ease) 80ms;
 }
+/* The homepage studio is one surface behind the navigation and hero. */
+.site-header[data-hero-backdrop]:not(.is-menu-open) .nav-glass,
+body:has(.hero-no-announcement)
+  .site-header:not([data-hero-backdrop-tracked]):not(.is-menu-open)
+  .nav-glass {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 .site-header.is-menu-open .nav-glass::after {
   opacity: 1;
 }

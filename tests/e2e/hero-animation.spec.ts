@@ -19,6 +19,7 @@ test("ACS renders a large Retina scene with transparent corners and no legacy vi
       if (request.url().includes("sunford-homepage-16x9")) legacyRequests.push(request.url());
     });
     await page.goto("/");
+    await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
     const stage = page.locator(".hero-model-stage--featured");
     await expect(stage).toHaveAttribute("data-status", "ready", { timeout: 30000 });
     await expect(stage.locator("model-viewer")).toHaveJSProperty("src", "/models/acs30-jc21.glb");
