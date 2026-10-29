@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
 import { Pause, Play } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
@@ -13,7 +13,6 @@ export function HeroProductModel({
   active = true,
   enabled = true,
   slot = 0,
-  onSelect,
   onSettled,
   spinning = true,
   onInspect,
@@ -26,7 +25,6 @@ export function HeroProductModel({
   active?: boolean;
   enabled?: boolean;
   slot?: number;
-  onSelect?: (keyboard?: boolean) => void;
   onSettled?: () => void;
   spinning?: boolean;
   onInspect?: () => void;
@@ -34,16 +32,15 @@ export function HeroProductModel({
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const viewer = useRef<ModelViewerElement>(null);
-  const cameraFrame = useRef(0);
   const settledCallback = useRef(onSettled);
   const inspectCallback = useRef(onInspect);
-  const hintId = useId();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [visible, setVisible] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [allowMotion, setAllowMotion] = useState(false);
   const [manualMotion, setManualMotion] = useState<number | null>(null);
   const moving =
+    active &&
     (spinning || (active && manualMotion === motionSession)) &&
     status === "ready" &&
     visible &&
@@ -105,8 +102,9 @@ export function HeroProductModel({
     // All viewers share the renderer and parsed-model cache.
     import("@google/model-viewer")
       .then(({ ModelViewerElement }) => {
-        // Keep fine labels readable while allowing a modest quality reduction on slower GPUs.
-        ModelViewerElement.minimumRenderScale = 0.75;
+        // Let the renderer adapt during motion on slower GPUs; it restores full
+        // resolution when motion stops, so product labels remain readable.
+        ModelViewerElement.minimumRenderScale = 0.5;
         ModelViewerElement.modelCacheSize = 3;
         if (element.loaded) loaded();
       })
@@ -124,37 +122,19 @@ export function HeroProductModel({
     };
   }, [src, enabled]);
 
-  useEffect(() => {
-    const element = viewer.current;
-    if (!element || !moving) return;
-    const start = element.getCameraOrbit();
-    let previous = performance.now();
-    let elapsed = 0;
-    const animate = (now: number) => {
-      cameraFrame.current = requestAnimationFrame(animate);
-      if (now - previous < 1000 / (active ? 30 : 10)) return;
-      elapsed += Math.min((now - previous) / 1000, 0.1);
-      previous = now;
-      const theta = start.theta + elapsed * ((Math.PI * 2) / 28);
-      // Move the camera without React renders, timers, or animated text.
-      element.cameraOrbit = `${theta}rad ${start.phi}rad ${start.radius}m`;
-    };
-    cameraFrame.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(cameraFrame.current);
-  }, [moving, active]);
-
   return (
     <>
       <div
-        className={`hero-model-card ${active ? `hero-model-stage${featured ? " hero-model-stage--featured" : ""}` : "hero-model-preview"}`}
+        className={`hero-model-card ${active ? `hero-model-stage${featured ? " hero-model-stage--featured" : ""}` : "hero-model-standby"}`}
         ref={stage}
         data-hero-model={src}
         data-slot={slot}
         data-status={status}
         data-moving={moving}
+        aria-hidden={!active}
         onPointerDownCapture={() => {
           if (!active) return;
-          cancelAnimationFrame(cameraFrame.current);
+          if (viewer.current) viewer.current.autoRotate = false;
           setManualMotion(null);
           onInspect?.();
         }}
@@ -167,23 +147,25 @@ export function HeroProductModel({
             aria-hidden={!active}
             tabIndex={active ? 0 : -1}
             camera-controls={active ? "" : undefined}
+            auto-rotate={moving ? "" : undefined}
+            auto-rotate-delay="0"
+            rotation-per-second="-6.428571deg"
             disable-pan=""
             disable-zoom=""
             disable-tap=""
             touch-action="pan-y"
-            camera-orbit={featured ? "-10deg 66deg 85%" : "-25deg 65deg 90%"}
+            camera-orbit={featured ? "0deg 66deg 85%" : "0deg 66deg 90%"}
             min-camera-orbit="auto 20deg 85%"
             max-camera-orbit="auto 85deg 150%"
             field-of-view="30deg"
             interpolation-decay="40"
             environment-image="neutral"
             tone-mapping="neutral"
-            shadow-intensity={active ? "0.6" : "0"}
-            shadow-softness="1"
+            shadow-intensity={active ? "0.85" : "0"}
+            shadow-softness="0.8"
             interaction-prompt="none"
-            aria-describedby={active ? hintId : undefined}
             loading="eager"
-            exposure={featured ? "0.9" : "1.1"}
+            exposure={featured ? "0.9" : "1"}
           >
             <span slot="pan-target" aria-hidden="true" style={{ display: "none" }} />
           </model-viewer>
@@ -198,18 +180,6 @@ export function HeroProductModel({
               sizes="(max-width: 800px) 90vw, 55vw"
             />
           </div>
-        )}
-        {active ? (
-          <span className="hero-model-hint" id={hintId}>
-            {status === "ready" ? "3D · ลากเพื่อหมุน" : status === "loading" ? "กำลังโหลด 3D…" : ""}
-          </span>
-        ) : (
-          <button
-            className="hero-model-preview-select"
-            type="button"
-            aria-label={`แสดงโมเดล ${name} เป็นตัวหลัก`}
-            onClick={(event) => onSelect?.(event.detail === 0)}
-          />
         )}
       </div>
       {active && status === "ready" && (

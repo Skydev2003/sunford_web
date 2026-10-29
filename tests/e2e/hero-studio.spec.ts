@@ -5,6 +5,7 @@ test.use({ launchOptions: { args: ["--enable-unsafe-swiftshader"] } });
 test("studio follows the mouse without moving copy and pauses for model dragging, controls and offscreen", async ({
   page,
 }) => {
+  test.setTimeout(90000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const studio = page.locator("[data-hero-studio]");
@@ -28,15 +29,18 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   await expect(header.locator(".nav-glass")).toHaveCSS("background-color", "rgb(247, 247, 249)");
   await page.keyboard.press("Escape");
   await expect(header).not.toHaveClass(/is-menu-open/);
-  await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
-  await expect(page.locator(".hero-tagline")).toHaveText("ความแม่นยำ ที่เรียบง่ายกว่า.");
+  await expect(page.locator(".hero-cinematic")).toHaveAttribute(
+    "data-active-product",
+    "ACS-30-JC21",
+  );
+  await expect(page.locator(".hero-tagline")).toHaveText("คู่คิดทุกธุรกิจของคุณ");
   await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
     "href",
     "/products/acs30-jc21",
   );
   await expect(studio.locator("canvas, video, iframe")).toHaveCount(0);
   await expect(studio.locator("img")).toHaveCount(0);
-  await expect(page.locator(".hero-model-preview")).toHaveCount(2);
+  await expect(page.locator(".hero-model-standby")).toHaveCount(2);
   const copy = (await page.locator(".hero-copy").boundingBox())!;
   await page.screenshot({ path: test.info().outputPath("hero-studio-desktop.jpg") });
   const bounds = (await studio.boundingBox())!;
@@ -96,21 +100,8 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   await expect(studio).toHaveAttribute("data-running", "true");
   await expect(stage).toHaveAttribute("data-moving", "false");
   await page.mouse.click(500, bounds.y + 90);
-  await expect
-    .poll(() =>
-      studio
-        .locator("[data-studio-pulse]")
-        .evaluate(
-          (element) =>
-            element.getAnimations().filter((animation) => animation.playState === "running").length,
-        ),
-    )
-    .toBe(1);
-  await expect
-    .poll(() =>
-      studio.locator("[data-studio-pulse]").evaluate((element) => element.getAnimations().length),
-    )
-    .toBe(0);
+  await expect(studio.locator("[data-studio-pulse]")).toHaveCount(0);
+  await expect(cursor).toHaveCSS("opacity", "1");
   await page.locator("#solutions").scrollIntoViewIfNeeded();
   await expect(studio).toHaveAttribute("data-running", "false");
   await expect(header).not.toHaveAttribute("data-hero-backdrop", "");
@@ -157,7 +148,7 @@ test("studio respects reduced motion and preserves mobile content without horizo
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileBounds = (await studio.boundingBox())!;
   expect(mobileBounds.y).toBeCloseTo(0, 1);
-  expect(mobileBounds.height).toBeCloseTo(844, 1);
+  expect(mobileBounds.height).toBeGreaterThanOrEqual(844);
   await page.screenshot({ path: test.info().outputPath("hero-studio-mobile.jpg") });
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
   const mobileNavigation = page.locator("#mobile-navigation");

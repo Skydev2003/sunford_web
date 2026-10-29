@@ -1,8 +1,34 @@
 import { expect, test } from "@playwright/test";
+import type { ModelViewerElement } from "@google/model-viewer";
 
 test.use({ launchOptions: { args: ["--enable-unsafe-swiftshader"] } });
 
-test("products turn continuously, cycle automatically, stay selected on click, and resume only on request", async ({
+test("products rotate in the renderer without rewriting the camera and stop on request", async ({
+  page,
+}) => {
+  test.setTimeout(60000);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expect(page.locator(".hero-model-stage")).toHaveAttribute("data-status", "ready", {
+    timeout: 30000,
+  });
+  await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
+  const viewer = page.locator(".hero-model-stage model-viewer");
+  const angle = () => viewer.evaluate((e) => -(e as ModelViewerElement).turntableRotation);
+  const camera = await viewer.evaluate((e) => (e as ModelViewerElement).cameraOrbit);
+  const start = await angle();
+  // Use real render frames: the WebGL renderer's animation loop isn't driven by
+  // Playwright's fake timer used below to fast-forward product cycling.
+  await expect.poll(angle, { timeout: 10000 }).toBeGreaterThan(start + 0.03);
+  expect(await viewer.evaluate((e) => (e as ModelViewerElement).cameraOrbit)).toBe(camera);
+  await page.getByRole("button", { name: "หยุดมุมกล้องอัตโนมัติ", exact: true }).click();
+  const held = await angle();
+  await page.waitForTimeout(400);
+  expect(await angle()).toBe(held);
+});
+
+test("products cycle automatically, stay selected on click, and resume only on request", async ({
   page,
 }) => {
   test.setTimeout(90000);
@@ -12,56 +38,45 @@ test("products turn continuously, cycle automatically, stay selected on click, a
   const scene = page.locator(".hero-cinematic");
   const models = page.locator(".hero-model-card");
   await expect(scene).toHaveAttribute("data-cycling", "true", { timeout: 30000 });
-  await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(3);
-  const acs = page.locator('[data-hero-model="/models/acs30-jc21.glb"]');
-  const angle = () =>
-    acs
-      .locator("model-viewer")
-      .evaluate((element) =>
-        parseFloat((element as HTMLElement & { cameraOrbit: string }).cameraOrbit),
-      );
-  const start = await angle();
-  // A continuous turn travels beyond the former small oscillation.
-  await page.clock.runFor(2500);
-  expect((await angle()) - start).toBeGreaterThan(0.3);
+  await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(1);
   await page.clock.fastForward(7100);
-  await expect(page.locator(".hero-model")).toContainText("FEH5KS");
+  await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "FEH5KS");
   await expect(page.locator(".hero-buttons a").first()).toHaveAttribute("href", "/products/feh5ks");
   const wps = page.locator('[data-hero-model="/models/wps10ks.glb"]');
-  await wps.getByRole("button").click();
+  await page.getByRole("button", { name: "แสดง WPS10KS", exact: true }).click();
   await expect(scene).toHaveAttribute("data-cycle-mode", "pinned");
   await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(0);
   const held = await wps
     .locator("model-viewer")
-    .evaluate((element) => (element as HTMLElement & { cameraOrbit: string }).cameraOrbit);
+    .evaluate((element) => (element as ModelViewerElement).turntableRotation);
   await page.clock.fastForward(21000);
-  await expect(page.locator(".hero-model")).toContainText("WPS10KS");
+  await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "WPS10KS");
   expect(
     await wps
       .locator("model-viewer")
-      .evaluate((element) => (element as HTMLElement & { cameraOrbit: string }).cameraOrbit),
+      .evaluate((element) => (element as ModelViewerElement).turntableRotation),
   ).toBe(held);
   await expect(models).toHaveCount(3);
   await page.screenshot({
     path: test.info().outputPath("hero-pinned-borderless.jpg"),
     animations: "disabled",
   });
-  await expect(page.locator(".hero-model-preview button").first()).toHaveText("");
-  await expect(page.locator(".hero-model-preview button").first()).toHaveCSS(
-    "border-top-width",
-    "0px",
-  );
-
   await page.getByRole("button", { name: "เล่นวนสินค้าอัตโนมัติ", exact: true }).click();
   await expect(scene).toHaveAttribute("data-cycling", "true");
-  await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(3);
+  await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(1);
   await page.clock.fastForward(7100);
-  await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
+  await expect(page.locator(".hero-cinematic")).toHaveAttribute(
+    "data-active-product",
+    "ACS-30-JC21",
+  );
   await page.locator("#solutions").scrollIntoViewIfNeeded();
   await expect(scene).toHaveAttribute("data-cycling", "false");
   await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(0);
   await page.clock.fastForward(21000);
-  await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
+  await expect(page.locator(".hero-cinematic")).toHaveAttribute(
+    "data-active-product",
+    "ACS-30-JC21",
+  );
   await scene.scrollIntoViewIfNeeded();
   await expect(scene).toHaveAttribute("data-cycling", "true");
 });

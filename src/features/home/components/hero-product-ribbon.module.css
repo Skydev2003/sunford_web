@@ -1,0 +1,285 @@
+.ribbon {
+  position: absolute;
+  inset: auto 0 clamp(24px, 4svh, 48px);
+  height: 40%;
+  pointer-events: none;
+}
+.viewport {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--ribbon-card-width, 160px);
+  height: calc(var(--ribbon-card-width, 160px) * 0.78);
+  border: 1px solid #fff9fb;
+  border-top-color: #ffbdc7;
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at 10% 0%, #ffbac566, transparent 48%),
+    linear-gradient(108deg, #ffffff00 12%, #ffffff73 30%, #ffffff00 49%),
+    linear-gradient(160deg, #d6d1d8 0%, #e7e3e9 36%, #f2f1f4 68%, #ebdfe5 100%);
+  box-shadow:
+    0 5px 14px #ff27471f,
+    inset 0 2px 8px #ffffff80,
+    inset 0 -3px 10px #ffdce533;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(0 round 14px);
+  isolation: isolate;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  pointer-events: auto;
+}
+.card[hidden] {
+  display: none;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 39% 6% at 50% 77%, #13121b52, #13121b00 100%),
+    linear-gradient(103deg, transparent 10%, #ffffff4d 27%, #ffffff08 40%, transparent 55%);
+  pointer-events: none;
+}
+.photo {
+  position: absolute;
+  z-index: 1;
+  inset: 4% 7% 27%;
+  pointer-events: none;
+}
+.photo img {
+  object-fit: contain;
+  filter: drop-shadow(0 4px 3px #1d25352b);
+}
+.caption {
+  position: absolute;
+  z-index: 2;
+  inset: auto 5% 7%;
+  display: grid;
+  gap: 3px;
+  text-align: center;
+  line-height: 1.1;
+  pointer-events: none;
+}
+.brand {
+  color: #d90016;
+  font-size: clamp(10px, calc(var(--ribbon-card-width, 160px) * 0.075), 18px);
+  font-weight: 900;
+  font-style: italic;
+}
+.model {
+  color: #454952;
+  font-size: clamp(8px, calc(var(--ribbon-card-width, 160px) * 0.055), 12px);
+  font-weight: 400;
+}
+.glint {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(
+    108deg,
+    transparent 25%,
+    #ffffff08 38%,
+    #ffffffa3 46%,
+    #ffffff12 53%,
+    transparent 64%
+  );
+  opacity: 0.16;
+  animation: ribbon-pearl-shimmer 18s ease-in-out infinite paused;
+  pointer-events: none;
+}
+.viewport[data-running="true"] .glint {
+  animation-play-state: running;
+}
+@keyframes ribbon-pearl-shimmer {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: translateX(-45%);
+  }
+  50% {
+    opacity: 0.32;
+    transform: translateX(45%);
+  }
+}
+.card[data-selected="true"] {
+  border-color: #fff;
+}
+.card:hover {
+  border-color: #f07a91;
+}
+.card:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -4px;
+}
+.rail,
+.rearRail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.rail {
+  z-index: 3;
+}
+.rail .rimTop {
+  /* The studio image already supplies the upper red edge. */
+  display: none;
+}
+.rearRail {
+  z-index: 0;
+  mask-image: linear-gradient(to right, transparent 35%, #000 52%);
+}
+.rimTop,
+.rimBottom {
+  fill: none;
+  stroke: #ff122f;
+  stroke-width: 2;
+  filter: drop-shadow(0 3px 4px #ff173e80);
+}
+.rimBottom {
+  stroke: #ffffff;
+  stroke-width: 3;
+  filter: drop-shadow(0 4px 6px #f3376580);
+}
+.reflection {
+  position: absolute;
+  inset: 64% 7% auto;
+  height: 69%;
+  opacity: 0.06;
+  transform: scaleY(-1);
+  pointer-events: none;
+  mask-image: linear-gradient(transparent 68%, #000 100%);
+}
+.reflection img {
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.card {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.card img {
+  -webkit-user-drag: none;
+}
+.card[data-model-src] {
+  touch-action: none;
+}
+.ghost {
+  position: fixed;
+  z-index: 20;
+  left: 0;
+  top: 0;
+  width: 140px;
+  height: 130px;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+.instruction {
+  position: absolute;
+  left: 6.5%;
+  bottom: 0;
+  margin: 0;
+  font-size: 9px;
+  color: #89919e;
+  pointer-events: none;
+  opacity: 0;
+}
+.ribbon:hover .instruction {
+  opacity: 1;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.toggle {
+  position: absolute;
+  z-index: 6;
+  pointer-events: auto;
+  right: 22px;
+  bottom: -12px;
+  opacity: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d5dbe6;
+  border-radius: 50%;
+  background: #fffffff0;
+  color: #677180;
+}
+.toggle::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+}
+.toggle:hover {
+  opacity: 1;
+  color: var(--red);
+}
+.toggle:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+.viewport[data-static="true"] {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px max(24px, calc((100% - 620px) / 2));
+  scrollbar-width: thin;
+}
+.viewport[data-static="true"] .card {
+  position: relative;
+  flex: 0 0 var(--ribbon-card-width);
+  will-change: auto;
+}
+@media (max-width: 800px) {
+  .rearRail {
+    mask-image: none;
+  }
+  .ribbon {
+    height: 175px;
+    bottom: 48px;
+  }
+  .toggle {
+    bottom: -10px;
+    right: 18px;
+    width: 28px;
+    height: 28px;
+  }
+  .instruction {
+    left: 20px;
+    font-size: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glint {
+    animation: none;
+  }
+  .toggle {
+    display: none;
+  }
+  .card {
+    will-change: auto;
+  }
+}

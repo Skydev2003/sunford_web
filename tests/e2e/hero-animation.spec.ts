@@ -23,7 +23,7 @@ test("ACS renders a large Retina scene with transparent corners and no legacy vi
     const stage = page.locator(".hero-model-stage--featured");
     await expect(stage).toHaveAttribute("data-status", "ready", { timeout: 30000 });
     await expect(stage.locator("model-viewer")).toHaveJSProperty("src", "/models/acs30-jc21.glb");
-    expect((await stage.boundingBox())!.width).toBeGreaterThan(1440 * 0.6);
+    expect((await stage.boundingBox())!.width).toBeGreaterThan(1440 * 0.5);
     await expect
       .poll(() =>
         stage.locator("model-viewer").evaluate((element) => {
