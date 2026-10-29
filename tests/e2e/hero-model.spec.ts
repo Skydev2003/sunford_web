@@ -31,7 +31,7 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
   await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
   await expect(stage).toHaveAttribute("data-moving", "true");
   expect(modelRequests).toBe(1);
-  await expect(page.locator(".hero-model")).toContainText("WPS10KS");
+  await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "WPS10KS");
   await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
     "href",
     "/products/wps10ks",

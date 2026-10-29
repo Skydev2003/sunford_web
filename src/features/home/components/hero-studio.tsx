@@ -25,7 +25,6 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
     const flow = field.querySelector<HTMLElement>("[data-studio-flow]")!;
     const cursor = field.querySelector<HTMLElement>("[data-studio-cursor]")!;
     const echo = field.querySelector<HTMLElement>("[data-studio-echo]")!;
-    const pulse = field.querySelector<HTMLElement>("[data-studio-pulse]")!;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const fine = matchMedia("(hover: hover) and (pointer: fine)");
     let visible = false;
@@ -45,7 +44,6 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
     let echoY = cursorY;
     let intensity = 0;
     let targetIntensity = 0;
-    let pulseAnimation: Animation | undefined;
 
     const paint = () => {
       rings.style.transform = `translate3d(${x * 22}px, ${y * 14}px, 0)`;
@@ -66,7 +64,6 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
       field.dataset.running = String(canMove() && !dragging);
       if (!canMove() || dragging) {
         stop();
-        pulseAnimation?.cancel();
       }
       if (reduced.matches) {
         x = y = targetX = targetY = 0;
@@ -77,7 +74,8 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
     syncRef.current = sync;
 
     const animate = (now: number) => {
-      const delta = Math.min(now - previous, 64);
+      // Exponential easing remains stable across long frames and must settle in wall time.
+      const delta = Math.max(now - previous, 0);
       const ease = 1 - Math.exp(-delta / 85);
       previous = now;
       x += (targetX - x) * ease;
@@ -141,30 +139,16 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
       dragging = true;
       sync();
     };
-    const click = (event: MouseEvent) => {
-      if (
-        !canMove() ||
-        dragging ||
-        !fine.matches ||
-        (event.target as Element).closest("a, button, .hero-model-stage")
-      )
-        return;
-      pulseAnimation?.cancel();
-      const position = `translate3d(${event.clientX - bounds.left}px, ${event.clientY - bounds.top}px, 0)`;
-      pulseAnimation = pulse.animate(
-        [
-          { transform: `${position} scale(0.2)`, opacity: 0.45 },
-          { transform: `${position} scale(2.2)`, opacity: 0 },
-        ],
-        { duration: 850, easing: "cubic-bezier(.16,1,.3,1)" },
-      );
-    };
     const up = () => {
       if (!dragging) return;
       dragging = false;
       // Keep the lighting still after dragging until the next mouse movement.
       targetX = x;
       targetY = y;
+      sync();
+    };
+    const productDrag = (event: Event) => {
+      dragging = Boolean((event as CustomEvent<boolean>).detail);
       sync();
     };
     const measure = () => {
@@ -178,7 +162,6 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
     const blur = () => {
       dragging = false;
       stop();
-      pulseAnimation?.cancel();
       field.dataset.running = "false";
     };
     const observer = new IntersectionObserver(
@@ -201,7 +184,7 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
     window.addEventListener("pointermove", move, { passive: true });
     window.addEventListener("pointerout", leaveWindow);
     scene.addEventListener("pointerdown", down, true);
-    scene.addEventListener("click", click);
+    scene.addEventListener("hero-product-drag", productDrag);
     window.addEventListener("pointerup", up, true);
     window.addEventListener("pointercancel", up, true);
     window.addEventListener("scroll", measure, { passive: true });
@@ -212,7 +195,6 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
     fine.addEventListener("change", sync);
     return () => {
       stop();
-      pulseAnimation?.cancel();
       syncRef.current = null;
       observer.disconnect();
       resize.disconnect();
@@ -225,7 +207,7 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerout", leaveWindow);
       scene.removeEventListener("pointerdown", down, true);
-      scene.removeEventListener("click", click);
+      scene.removeEventListener("hero-product-drag", productDrag);
       window.removeEventListener("pointerup", up, true);
       window.removeEventListener("pointercancel", up, true);
       window.removeEventListener("scroll", measure);
@@ -247,9 +229,6 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
         data-pointer="idle"
         aria-hidden="true"
       >
-        <div className={styles.architecture} />
-        <div className={styles.floor} />
-        <div className={styles.mesh} />
         <div className={styles.rings} data-studio-rings="">
           <div className={styles.halo}>
             <i />
@@ -260,15 +239,9 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
           <div className={styles.ribbon} />
           <div className={styles.filament} />
         </div>
-        <div className={styles.podium}>
-          <div className={styles.podiumTop} />
-          <div className={styles.podiumEdge} />
-          <div className={styles.podiumSweep} />
-        </div>
-        <div className={styles.readability} />
         <div className={styles.cursor} data-studio-cursor="" />
         <div className={styles.echo} data-studio-echo="" />
-        <div className={styles.pulse} data-studio-pulse="" />
+        <div className={styles.backdrop} data-studio-backdrop="" />
       </div>
       <Tooltip>
         <button

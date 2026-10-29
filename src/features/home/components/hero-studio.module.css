@@ -4,178 +4,96 @@
   inset: calc(-1 * var(--hero-header-height, 0px)) 0 0;
   overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 75% 32%, #fff 5%, #e8ecf3 55%, transparent 78%),
-    linear-gradient(135deg, #fcfcfd, #f4f5f8);
   contain: layout paint;
 }
-.architecture {
+.backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: #f6f6f8 url("/images/hero/showroom-studio-v2.webp") center / 100% 100% no-repeat;
+  filter: saturate(1.2) contrast(1.02) brightness(0.94);
+}
+.backdrop::before {
+  content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.12;
-  background:
-    linear-gradient(
-      90deg,
-      #fff9,
-      transparent 15%,
-      #fff 16%,
-      transparent 19%,
-      #b6c0cb40 20%,
-      transparent 23%,
-      #fff9 35%,
-      transparent 39%
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 7.5%,
-      #a1adbd25 8%,
-      #fff9 8.5%,
-      transparent 9% 17%
-    ),
-    linear-gradient(
-      0deg,
-      transparent 20%,
-      #bdc6d740 21%,
-      transparent 22% 68%,
-      #fff 69%,
-      transparent 70%
-    );
-  mask-image: linear-gradient(#000, transparent 85%);
-}
-.floor {
-  position: absolute;
-  inset: 62% -20% -35%;
-  transform: perspective(450px) rotateX(55deg);
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 180px,
-      #aeb8c51c 181px,
-      #fff8 183px,
-      transparent 185px 360px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 85px,
-      #b9c1cc14 86px,
-      #fff9 88px,
-      transparent 89px 170px
-    );
-  mask-image: linear-gradient(transparent, #000 65%);
-}
-.mesh {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, #71809840 0.7px, transparent 0.9px) 0 0 / 24px 24px;
-  mask-image: radial-gradient(ellipse at 87% 70%, #0009, transparent 62%);
+  background: inherit;
+  /* Grade the existing silver podium in place, preserving its perspective. */
+  filter: contrast(1.28) brightness(0.92) saturate(1.25);
+  mask-image: radial-gradient(ellipse 30% 12% at 68% 55%, #000 65%, transparent 100%);
 }
 .rings {
   position: absolute;
-  width: 73%;
+  width: 65%;
   aspect-ratio: 1;
-  left: 44%;
-  top: -26%;
+  left: 46%;
+  top: -14%;
+  opacity: 0.15;
   will-change: transform;
 }
 .halo {
   position: absolute;
   inset: 0;
-  border: 1px solid #ffffffd9;
   border-radius: 50%;
-  background: linear-gradient(125deg, #fff9, #b7c1d238 25%, #fff6 40%, transparent 65%);
-  box-shadow:
-    inset 8px 4px 20px #fff9,
-    inset -10px -2px 26px #a7b2c31c,
-    0 0 0 18px #ffffff24;
-  animation: studio-breathe 16s ease-in-out infinite;
-  animation-play-state: paused;
+  animation: studio-breathe 16s ease-in-out infinite paused;
 }
 .halo i {
-  position: absolute;
-  inset: 13%;
-  border: 1px solid #ffffffe0;
-  border-radius: 50%;
-  box-shadow:
-    0 8px 20px #9aa8c014,
-    inset 0 1px 12px #fff9;
+  display: none;
 }
-.halo::before,
 .halo::after {
   content: "";
   position: absolute;
-  inset: 5%;
-  padding: 1px;
+  inset: 0;
+  padding: 2px;
   border-radius: 50%;
+  background: conic-gradient(transparent 65%, #ffb1b9 76%, #fff 79%, transparent 83%);
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   mask-composite: exclude;
-}
-.halo::before {
-  padding: 4px;
-  opacity: 0.2;
-  background: repeating-conic-gradient(#8998af 0deg 0.25deg, transparent 0.25deg 5deg);
-}
-.halo::after {
-  inset: 13%;
-  background: conic-gradient(
-    from 20deg,
-    transparent 45%,
-    #ef234812 65%,
-    #ed2c4d8c 76%,
-    #ffb5c9 79%,
-    #fff 81%,
-    transparent 83%
-  );
-  animation: studio-scan 24s linear infinite;
-  animation-play-state: paused;
+  animation: studio-scan 24s linear infinite paused;
 }
 .light {
   position: absolute;
-  left: 40%;
-  top: 18%;
-  width: 57%;
-  height: 75%;
+  left: 45%;
+  top: 15%;
+  width: 55%;
+  height: 60%;
   border-radius: 50%;
-  background: radial-gradient(ellipse, #fff9, #fff2 45%, transparent 72%);
+  background: radial-gradient(ellipse, #fff1, transparent 68%);
   will-change: transform;
 }
 .flow {
   position: absolute;
-  inset: 9% -15% -20%;
+  inset: 0 -15% -15%;
+  opacity: 0.2;
   will-change: transform;
 }
 .ribbon,
 .filament {
   position: absolute;
   inset: 0;
-  transform-origin: 60% 55%;
-  animation: studio-flow 20s ease-in-out infinite;
-  animation-play-state: paused;
+  transform-origin: 65% 50%;
+  animation: studio-flow 20s ease-in-out infinite paused;
 }
 .ribbon {
   background: radial-gradient(
     ellipse 66% 95% at 54% -8%,
-    transparent 69%,
-    #e66d8005 71%,
-    #fa385a13 75%,
-    #fa657f38 79%,
-    #ff9caa42 82%,
-    #ee315338 85%,
-    #e8284612 90%,
-    transparent 98%
+    transparent 75%,
+    #fa657f26 79%,
+    #ff9caa24 82%,
+    transparent 90%
   );
 }
 .filament {
   background: radial-gradient(
     ellipse 66% 95% at 54% -8%,
     transparent 79.2%,
-    #fff9 79.4%,
-    #f7839970 79.55%,
+    #fff8 79.4%,
+    #f7839950 79.55%,
     transparent 79.8%
   );
   animation-delay: -4s;
-  opacity: 0.8;
 }
 .cursor {
   position: absolute;
@@ -197,142 +115,29 @@
   height: 300px;
   border-radius: 50%;
   opacity: 0;
-  background: radial-gradient(circle, #fa6d9238, #ffc7d424 35%, transparent 70%);
+  background: radial-gradient(circle, #fa6d9228, #ffc7d424 35%, transparent 70%);
   mix-blend-mode: multiply;
   will-change: transform, opacity;
 }
-.pulse::after {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  border: 1px solid #ef719142;
-  border-radius: inherit;
-}
-.pulse {
-  position: absolute;
-  left: -55px;
-  top: -55px;
-  width: 110px;
-  height: 110px;
-  border: 1px solid #e92e5270;
-  box-shadow: inset 0 0 18px #fa718514;
-  border-radius: 50%;
-  opacity: 0;
-}
-.podium {
-  position: absolute;
-  left: 45%;
-  top: 67%;
-  width: 59%;
-  height: 20%;
-  border-radius: 50%;
-  background: linear-gradient(
-    90deg,
-    #c3cbd560,
-    #fff 10%,
-    #dbe0e8 28%,
-    #fff 53%,
-    #dce2eb 75%,
-    #fcfdff
-  );
-  box-shadow:
-    0 22px 30px #8290a024,
-    inset 0 -2px 1px #fff;
-}
-.podiumTop {
-  position: absolute;
-  inset: 0 0 18%;
-  border: 1px solid #fff;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    #f8fafdee,
-    #d7dee94d 55%,
-    #fff 73%,
-    #ccd4e2 77%,
-    #fff 80%
-  );
-  box-shadow:
-    inset 0 5px 18px #fff,
-    0 1px 0 #b3bece50;
-}
-.podium::after {
-  content: "";
-  position: absolute;
-  inset: -35% -10%;
-  background: radial-gradient(ellipse, #ff496925, transparent 65%);
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 350ms ease;
-}
-.studio[data-focus="model"] .podium::after {
-  opacity: 1;
-}
-.podiumEdge {
-  position: absolute;
-  inset: 9% 3% 26%;
-  border: 1px solid #ffb4be;
-  border-radius: 50%;
-  box-shadow:
-    0 0 8px #ec17361a,
-    inset 0 -2px 5px #f7183620;
-}
-.podiumSweep {
-  position: absolute;
-  inset: 9% 3% 26%;
-  padding: 2px;
-  border-radius: 50%;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  overflow: hidden;
-}
-.podiumSweep::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  aspect-ratio: 1;
-  background: conic-gradient(
-    from 0deg,
-    transparent 12%,
-    #ffb1bb 23%,
-    #ef1637 30%,
-    #ffb1bb 37%,
-    transparent 50% 80%,
-    #fff 95%
-  );
-  transform: translateY(-50%);
-  animation: studio-orbit 18s linear infinite;
-  animation-play-state: paused;
-}
-.readability {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #fafbfce6, #fafbfccc 30%, #fafbfc24 48%, transparent 59%);
-}
 .studio[data-running="true"] .halo,
 .studio[data-running="true"] .halo::after,
-.studio[data-running="true"] .podiumSweep::before,
 .studio[data-running="true"] .ribbon,
 .studio[data-running="true"] .filament {
   animation-play-state: running;
 }
 .toggle {
   position: absolute;
-  z-index: 4;
-  right: 67px;
-  bottom: 104px;
+  z-index: 6;
+  right: 64px;
+  bottom: 37%;
   display: grid;
   place-items: center;
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid #d9d9df66;
+  border: 1px solid #d9d9df99;
   border-radius: 50%;
-  background: #ffffffa6;
+  background: #ffffffc9;
   color: #737884;
 }
 .toggle::before {
@@ -359,11 +164,6 @@
     opacity: 1;
   }
 }
-@keyframes studio-orbit {
-  to {
-    transform: translateY(-50%) rotate(360deg);
-  }
-}
 @keyframes studio-scan {
   to {
     transform: rotate(360deg);
@@ -382,19 +182,23 @@
   }
 }
 @media (max-width: 800px) {
+  .backdrop {
+    background-size: auto 100%;
+    background-position: 64% 50%;
+  }
+  .backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(#fafbfce6, #fafbfccc 30%, transparent 54%);
+  }
+  .backdrop::before {
+    mask-image: linear-gradient(transparent 44%, #000 50% 62%, transparent 68%);
+  }
   .rings {
     width: 135%;
     left: 12%;
-    top: 22%;
-  }
-  .podium {
-    left: -15%;
-    top: 77%;
-    width: 135%;
-    height: 14%;
-  }
-  .readability {
-    background: linear-gradient(#fafbfce6, #fafbfcc9 30%, transparent 56%);
+    top: 28%;
   }
   .light {
     left: 8%;
@@ -404,12 +208,10 @@
   }
   .toggle {
     right: 61px;
+    bottom: 212px;
   }
   .flow {
     inset: 25% -75% -10%;
-  }
-  .mesh {
-    opacity: 0.5;
   }
   .cursor,
   .echo {
@@ -420,8 +222,7 @@
   .halo,
   .halo::after,
   .ribbon,
-  .filament,
-  .podiumSweep::before {
+  .filament {
     animation: none;
   }
   .rings,
@@ -430,12 +231,9 @@
   .cursor {
     will-change: auto;
   }
-  .toggle {
-    display: none;
-  }
+  .toggle,
   .cursor,
-  .echo,
-  .pulse {
+  .echo {
     display: none;
   }
 }

@@ -1,4 +1,16 @@
 // Public information checked against sunford.co on 26 October 2026.
+// Short introduction follows the company's existing About page.
+export const companyIntro = {
+  brand: "ABOUT SUNFORD",
+  title: "SUNFORD",
+  tagline: "คู่คิดทุกธุรกิจของคุณ",
+  description: "เครื่องชั่งดิจิทัลและโซลูชันธุรกิจ พร้อมบริการหลังการขาย",
+  benefits: [
+    { title: "คุณภาพที่วางใจ", description: "แข็งแรง ทนทาน" },
+    { title: "ใช้งานง่าย", description: "เพื่อทุกธุรกิจ" },
+    { title: "บริการหลังการขาย", description: "ดูแลอย่างต่อเนื่อง" },
+  ],
+};
 export const sunford = {
   website: "https://www.sunford.co/",
   about: "/about-us",
