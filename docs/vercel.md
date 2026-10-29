@@ -1,6 +1,6 @@
 # Deploy บน Vercel
 
-ใช้ Vercel สำหรับ Next.js และใช้ Supabase เดิมสำหรับ PostgreSQL, Auth และ Storage ไม่ต้องย้ายข้อมูลหรือรูปสินค้า ไฟล์ `vercel.json` กำหนด npm, build pipeline และ Function Region เป็น Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1` หากเปลี่ยน region ของ Supabase ให้ปรับ region นี้ตาม
+ใช้ Vercel สำหรับ Next.js และใช้ Supabase เดิมสำหรับ PostgreSQL และรูป Storage เดิม ไม่ต้องย้ายข้อมูลหรือรูปสินค้า ไฟล์ `vercel.json` กำหนด npm, build pipeline และ Function Region เป็น Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1` หากเปลี่ยน region ของ Supabase ให้ปรับ region นี้ตาม
 
 ## ตั้งค่าครั้งแรก
 
@@ -11,20 +11,19 @@
 5. เปิด **Enable access to System Environment Variables** เพื่อให้สคริปต์อ่าน `VERCEL`, `VERCEL_ENV`, `VERCEL_GIT_COMMIT_REF` และ health check อ่าน `VERCEL_GIT_COMMIT_SHA` อย่าตั้งตัวแปรเหล่านี้เอง
 6. กด Deploy แล้วตรวจ Production Branch เป็น **main** ใน Settings ของ environment Production ถ้า import จาก branch อื่นให้ตั้ง `main` และ redeploy จาก commit บน `main`
 7. เปิด HTTPS URL ที่ Vercel แสดงจริง ตรวจ `/api/health` ต้องได้ `status: ok`, `environment: production` และ `revision` ตรงกับ commit 12 ตัวแรก
-8. ทดสอบ `/admin/login` ด้วยบัญชีแอดมินเดิม รวมถึงแก้ข้อมูล อัปโหลดรูป และออกจากระบบตาม [UAT](uat.md)
+8. ทดสอบหน้าเว็บ แคตตาล็อก รายละเอียดสินค้า และตรวจว่า URL แอดมินเดิมตอบ 404 ตาม [UAT](uat.md)
 
 ## Environment Variables
 
-| Variable                   | Production                                                           | Preview                              |
-| -------------------------- | -------------------------------------------------------------------- | ------------------------------------ |
-| `DATABASE_URL`             | Supabase ปัจจุบัน: transaction pooler พอร์ต 6543                     | transaction pooler ของ project ทดสอบ |
-| `DIRECT_URL`               | session pooler พอร์ต 5432 หรือ direct endpoint สำหรับ migration/seed | ไม่จำเป็นสำหรับ build                |
-| `SUPABASE_URL`             | URL ของ project ปัจจุบัน                                             | URL ของ project ทดสอบ                |
-| `SUPABASE_PUBLISHABLE_KEY` | publishable key ของ project ปัจจุบัน                                 | publishable key ของ project ทดสอบ    |
-| `APP_ENV`                  | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `production`                             | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `uat`    |
-| `NEXT_TELEMETRY_DISABLED`  | `1` (เลือกตั้งได้)                                                   | `1` (เลือกตั้งได้)                   |
+| Variable                  | Production                                                           | Preview                              |
+| ------------------------- | -------------------------------------------------------------------- | ------------------------------------ |
+| `DATABASE_URL`            | Supabase ปัจจุบัน: transaction pooler พอร์ต 6543                     | transaction pooler ของ project ทดสอบ |
+| `DIRECT_URL`              | session pooler พอร์ต 5432 หรือ direct endpoint สำหรับ migration/seed | ไม่จำเป็นสำหรับ build                |
+| `SUPABASE_URL`            | ตัวเลือกสำหรับรูปเดิมจาก Storage                                     | ตัวเลือกสำหรับรูปจาก Storage ทดสอบ   |
+| `APP_ENV`                 | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `production`                             | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `uat`    |
+| `NEXT_TELEMETRY_DISABLED` | `1` (เลือกตั้งได้)                                                   | `1` (เลือกตั้งได้)                   |
 
-คัดลอกเฉพาะ value จาก `.env` ไม่ใส่ชื่อ key ซ้ำหรือเครื่องหมายคำพูดครอบ ไม่ต้องเพิ่ม `SUPABASE_SECRET_KEY` หรือ service-role key เพราะแอดมินใช้ user session และ Storage RLS ให้ `SUPABASE_URL`, key และฐานข้อมูลเป็น project เดียวกันเสมอ การเปลี่ยน environment ต้อง redeploy เพราะ config รูปอ่าน URL ตอน build ด้วย
+คัดลอกเฉพาะ value จาก `.env` ไม่ใส่ชื่อ key ซ้ำหรือเครื่องหมายคำพูดครอบ แอปไม่ใช้ Supabase Auth หรือคีย์สำหรับอัปโหลดแล้ว หากมีรูปเดิมใน Storage ให้ตั้ง `SUPABASE_URL` ให้ตรงกับ project ของรูป การเปลี่ยน environment ต้อง redeploy เพราะ config รูปอ่าน URL ตอน build ด้วย
 
 `APP_ENV` ที่สคริปต์อนุมานมีผลกับ process ที่ build เท่านั้น health check จึงอ่าน `VERCEL_ENV` ที่ runtime ด้วย Production จะแสดง `production` และ Preview จะแสดง `uat`
 
@@ -37,9 +36,9 @@
 
 Production ปฏิเสธ branch อื่นและ Environment ที่ไม่ตรงกันก่อนแตะฐานข้อมูล Seed เพิ่มเฉพาะสินค้านำเข้าที่ยังขาด ไม่เขียนทับข้อมูลเดิม สำรอง JSON ชั่วคราวไว้ใน build directory ใต้ `/tmp` บน Vercel ไฟล์นี้หายได้หลัง build; ใช้ backup ของ Supabase สำหรับการกู้คืนถาวร การ rollback deployment ไม่ rollback migration ที่รันสำเร็จแล้ว
 
-Preview ไม่รัน migration หรือ seed อัตโนมัติ ก่อนใช้ project ทดสอบครั้งแรก ต้องเตรียม schema, catalogue, Auth users/admin roles และ Storage policies ให้ครบ โดยชี้ `.env` ในเครื่องไป project ทดสอบ แล้วรัน `npm run db:deploy` และ `npm run db:seed` การเพิ่ม migration ใหม่ต้อง apply ที่ project ทดสอบก่อน build Preview เช่นกัน ดู [admin.md](admin.md) สำหรับสิทธิ์แอดมิน
+Preview ไม่รัน migration หรือ seed อัตโนมัติ ก่อนใช้ project ทดสอบครั้งแรก ต้องเตรียม schema และ catalogue ให้ครบ โดยชี้ `.env` ในเครื่องไป project ทดสอบ แล้วรัน `npm run db:deploy` และ `npm run db:seed` การเพิ่ม migration ใหม่ต้อง apply ที่ project ทดสอบก่อน build Preview เช่นกัน
 
-หากตั้ง Preview ให้ใช้ Supabase เดียวกับ Production การแก้ข้อมูลผ่านแอดมิน Preview จะเปลี่ยนข้อมูลจริงด้วย แม้ build ไม่ migrate/seed ก็ตาม
+เก็บ project ทดสอบแยกจาก Production สำหรับการเตรียม schema และข้อมูล ไม่มีการแก้ข้อมูลผ่านหน้าแอดมินบนเว็บไซต์แล้ว
 
 Vercel Git integration สร้าง deployment เมื่อ push ตามการตั้งค่า project โดย CI เดิมยังทำงานอยู่ แต่ไม่ได้รอ GitHub Actions ผ่านเหมือน Render โดยอัตโนมัติ หากต้องการ gate ก่อน promote ให้ตั้ง [Deployment Checks](https://vercel.com/docs/deployment-checks) ที่บัญชีรองรับ และคง branch protection ให้ PR ผ่าน CI ก่อน merge เข้า `main`
 
@@ -72,24 +71,24 @@ bun run deploy --check
 
 Build Command บน Vercel ยังคงเป็น `npm run vercel-build` ตาม `vercel.json` ซึ่งเรียก `scripts/vercel-build.mjs` เพื่อ validate environment, migrate/seed เฉพาะ Production และ build อย่าเปลี่ยนเป็น `bun run deploy` เพราะคำสั่งนั้นใช้จัดการ Git ในเครื่อง
 
-## URL ภาษาไทยยาวและ ENAMETOOLONG
+## URL ภาษาอังกฤษและขนาดชื่อไฟล์
 
-Vercel adapter สร้างไฟล์ `.prerender-config.json` และ `.prerender-fallback.*` โดยใช้ URL เป็นชื่อไฟล์ด้วย และ runtime cache ของ Next.js ใช้ชื่อแบบ URL-encoded โค้ดจึงตรวจขนาดแต่ละ segment หลัง encode หากเกิน 200 bytes จะ rewrite ภายในไป `/_content/<sha256>` เพื่อให้ชื่อไฟล์รวม suffix อยู่ใต้ขีดจำกัด 255 bytes
+URL ภายในใช้ path ภาษาอังกฤษ ลิงก์จาก URL ภาษาไทยเดิม redirect แบบ 308 ผ่าน Proxy ไปยัง URL อังกฤษ โดยรักษา query string ไว้ ข้อมูลและลิงก์ในเนื้อหาที่แสดงบนเว็บไซต์ใช้ชื่ออังกฤษโดยตรง
 
-หน้าเหล่านี้ยังเปิดผ่าน URL เดิมตามปกติ และสร้าง static params ด้วยเส้นทางภายในแบบสั้น หน้าเว็บอ่านข้อมูลจากเส้นทางต้นฉบับ จึงคงเนื้อหาและลิงก์เดิมไว้ ทั้งตอน build และตอนเก็บ runtime cache
+หาก segment ของ path ภาษาอังกฤษยาวเกิน 200 bytes ระบบยังใช้เส้นทางภายในแบบ `/_content/<sha256>` เพื่อเว้นที่สำหรับ prerender sidecars และ runtime cache เส้นทางภายในจาก URL เดิมยังอ่านเนื้อหาเดิมได้
 
 ## ย้าย URL จาก Render
 
-1. รอ Vercel deployment พร้อมและทดสอบหน้าเว็บ/แอดมิน/อัปโหลดรูปก่อน
+1. รอ Vercel deployment พร้อมและทดสอบหน้าเว็บ/แคตตาล็อก/รูปเดิมก่อน
 2. ถ้ามี custom domain ให้เพิ่มใน Vercel → Settings → Domains แล้วเปลี่ยน DNS ตามค่าที่ Vercel แสดง ตรวจ HTTPS และ `/api/health` ที่ domain จริง
-3. อีเมล/รหัสผ่านปัจจุบันยังใช้ได้ หากใช้ OAuth, invite หรือ password reset ให้ปรับ Supabase Auth Site URL และ Redirect URLs ให้ตรงกับ domain ใหม่และ Preview ที่ต้องใช้
+3. ตรวจรูปเดิมจาก Supabase Storage ที่ domain ใหม่
 4. เมื่อยืนยันว่า traffic ใช้งาน Vercel แล้ว ให้ปิด auto-deploy และหยุด service เดิมบน Render ด้วยตนเอง เพื่อไม่ให้ deploy สองระบบเขียน migration ไปฐานข้อมูลพร้อมกัน URL `onrender.com` เป็นของ Render ต้องแจก URL Vercel ใหม่หากไม่ได้ใช้ custom domain
 
 การปรับ repo นี้ยังไม่ได้สร้าง Vercel project, เปลี่ยน DNS หรือหยุด service Render จริง
 
-## อัปโหลดรูปและแก้ปัญหา
+## รูปเดิมและการแก้ปัญหา
 
-- แอปรับ JPG/PNG/WebP สูงสุด **4 MB ต่อรูป** ตรวจทั้งก่อนส่งและที่ server เพื่อเว้นที่ให้ multipart metadata ภายใต้ request limit 4.5 MB ของ Vercel Server Actions ตั้ง body limit `4_400_000` bytes รูปเดิมใน Storage ที่ใหญ่กว่านี้ยังเปิดได้ Bucket เดิมจำกัด 5 MB ได้ต่อโดยไม่ต้องเปลี่ยน migration
+- รูปเดิมใน `public/images` และ Supabase Storage ยังเปิดได้ ไม่มีหน้าหรือคำสั่งอัปโหลดรูปจากเว็บไซต์แล้ว
 - Migration ต่อไม่ได้: ตรวจ `DIRECT_URL` เป็น session pooler พอร์ต 5432 หรือ direct endpoint ไม่ใช้ transaction pooler 6543 และตรวจว่า Supabase ไม่พักอยู่
 - Build Preview แจ้งตาราง/คอลัมน์ไม่มี: apply migration ของ branch นี้ที่ฐานข้อมูล Preview ก่อน redeploy
 - Build แจ้ง branch/config: ตรวจ Production Branch, scope ของ `APP_ENV` และ System Environment Variables อย่าใส่ `APP_ENV=production` ครอบทุก target

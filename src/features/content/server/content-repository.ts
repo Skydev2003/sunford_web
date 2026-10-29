@@ -5,12 +5,13 @@ import type { SourcePage, SourceProduct } from "../types";
 import { products as curated } from "@/features/catalog/data/products";
 import { productSources } from "@/features/catalog/data/product-sources";
 import { getDocuments } from "@/features/cms/server/documents";
+import { publicPath } from "../data/public-paths.mjs";
 
 export { getSnapshotProducts } from "../data/catalog-snapshot";
 
 export const importedProducts = sourceProducts as SourceProduct[];
 export const importedPages = sourcePages as SourcePage[];
-const normalize = (value: string) => decodeURIComponent(value).replace(/\/$/, "").toLowerCase();
+const normalize = (value: string) => publicPath(value).replace(/\/$/, "").toLowerCase();
 
 function mergePages(documents: Awaited<ReturnType<typeof getDocuments>>): SourcePage[] {
   const visible = documents.filter((row) => !row.deletedAt && row.data.published !== false);
@@ -73,9 +74,9 @@ export async function getContentPageIndex(): Promise<Record<string, SourcePage>>
       if (alias) index[normalize(alias)] = page;
   }
   const aliases: Record<string, string> = {
-    "/product/เครื่องชั่ง": "/Product/Digital-weighing",
-    "/product/ระบบชั่งควบคุมการผลิต": "/Product/MES",
-    "/product/pos-เชื่อมต่อเครื่องชั่ง": "/Product/POS",
+    "/product/scales": "/Product/Digital-weighing",
+    "/product/production-weighing-systems": "/Product/MES",
+    "/product/pos-scale-integration": "/Product/POS",
   };
   for (const [alias, target] of Object.entries(aliases))
     if (index[normalize(target)]) index[normalize(alias)] = index[normalize(target)];

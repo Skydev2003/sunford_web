@@ -1,12 +1,13 @@
 import sourcePages from "./pages.json";
+import { publicPath } from "./public-paths.mjs";
 
 // Landing pages in the source site can point at the wrong embedded collection.
 // Use the dedicated collection as the authority for each section's membership.
 const platformLinks = [
-  { label: "โครงสร้างแท่นชั่งทั้งหมด", href: "/product/โครงสร้างแท่นชั่ง" },
-  { label: "แท่นชั่งตั้งโต๊ะ", href: "/Product/แท่นชั่งตั้งโต๊ะ" },
-  { label: "แท่นชั่งตั้งพื้น", href: "/Product/แท่นชั่งตั้งพืั้น" },
-  { label: "แท่นชั่งขนาดใหญ่", href: "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่" },
+  { label: "โครงสร้างแท่นชั่งทั้งหมด", href: "/product/scale-platforms" },
+  { label: "แท่นชั่งตั้งโต๊ะ", href: "/Product/benchtop-platforms" },
+  { label: "แท่นชั่งตั้งพื้น", href: "/Product/floor-platforms" },
+  { label: "แท่นชั่งขนาดใหญ่", href: "/collections/large-floor-platforms" },
 ];
 const posLinks = [
   { label: "ระบบ POS ทั้งหมด", href: "/Product/POS" },
@@ -22,22 +23,22 @@ type ProductSection = {
 };
 
 const scaleLinks = [
-  { label: "ห้องปฏิบัติการ", href: "/product/ห้องปฏิบัติการ" },
-  { label: "อุตสาหกรรม", href: "/product/อุตสาหกรรม" },
-  { label: "พาณิชยกรรมและบริการ", href: "/product/พาณิชยกรรมและบริการ" },
-  { label: "ไลฟ์สไตล์", href: "/product/ไลฟ์สไตล์" },
+  { label: "ห้องปฏิบัติการ", href: "/product/laboratory" },
+  { label: "อุตสาหกรรม", href: "/product/industrial" },
+  { label: "พาณิชยกรรมและบริการ", href: "/product/commercial" },
+  { label: "ไลฟ์สไตล์", href: "/product/lifestyle-scales" },
 ];
 const indicatorLinks = [
   { label: "อินดิเคเตอร์ทั้งหมด", href: "/Indicator" },
-  { label: "ห้องปฏิบัติการ", href: "/Indicator/ห้องปฏิบัติการ" },
-  { label: "อุตสาหกรรม", href: "/Indicator/อุตสาหกรรม" },
-  { label: "พาณิชยกรรมและบริการ", href: "/Indicator/พาณิชยกรรมและบริการ" },
+  { label: "ห้องปฏิบัติการ", href: "/Indicator/laboratory" },
+  { label: "อุตสาหกรรม", href: "/Indicator/industrial" },
+  { label: "พาณิชยกรรมและบริการ", href: "/Indicator/commercial" },
 ];
 const accessoryLinks = [
-  { label: "อุปกรณ์เสริมทั้งหมด", href: "/product/อุปกรณ์ประกอบเครื่องชั่ง" },
-  { label: "อุปกรณ์ส่งข้อมูล", href: "/product/อุปกรณ์ส่งข้อมูล" },
-  { label: "อุปกรณ์ต่อพ่วง", href: "/product/อุปกรณ์ต่อพ่วง" },
-  { label: "เครื่องพิมพ์", href: "/collections/เครื่องพิมพ์" },
+  { label: "อุปกรณ์เสริมทั้งหมด", href: "/product/scale-accessories" },
+  { label: "อุปกรณ์ส่งข้อมูล", href: "/product/data-interfaces" },
+  { label: "อุปกรณ์ต่อพ่วง", href: "/product/scale-peripherals" },
+  { label: "เครื่องพิมพ์", href: "/collections/printers" },
   { label: "ชิ้นส่วนเสริม", href: "/product/Scale-parts" },
   { label: "วัสดุสิ้นเปลือง", href: "/product/Consumables" },
 ];
@@ -50,7 +51,7 @@ function section(
 ): ProductSection {
   return {
     title,
-    collectionPaths: collections.map((name) => `/collections/${name}`),
+    collectionPaths: collections.map((name) => publicPath(`/collections/${name}`)),
     links,
     category,
   };
@@ -58,20 +59,20 @@ function section(
 
 const sections: Record<string, ProductSection> = {
   "/product/digital-weighing": section("เครื่องชั่งดิจิทัล", ["เครื่องชั่ง"], scaleLinks),
-  "/product/ห้องปฏิบัติการ": section(
+  "/product/laboratory": section(
     "เครื่องชั่งห้องปฏิบัติการ",
     ["ห้องปฏิบัติการ"],
     scaleLinks,
     "laboratory",
   ),
-  "/product/อุตสาหกรรม": section("เครื่องชั่งอุตสาหกรรม", ["อุตสาหกรรม"], scaleLinks, "industrial"),
-  "/product/พาณิชยกรรมและบริการ": section(
+  "/product/industrial": section("เครื่องชั่งอุตสาหกรรม", ["อุตสาหกรรม"], scaleLinks, "industrial"),
+  "/product/commercial": section(
     "เครื่องชั่งพาณิชยกรรมและบริการ",
     ["พาณิชยกรรมและบริการ"],
     scaleLinks,
     "commercial",
   ),
-  "/product/ไลฟ์สไตล์": section(
+  "/product/lifestyle-scales": section(
     "เครื่องชั่งไลฟ์สไตล์และสุขภาพ",
     ["ไลฟ์สไตล์"],
     scaleLinks,
@@ -82,34 +83,34 @@ const sections: Record<string, ProductSection> = {
     ["อินดิเคเตอร์ห้องปฏิบัติการ", "อินดิเคเตอร์อุตสาหกรรม", "อินดิเคเตอร์พาณิชยกรรมและบริการ"],
     indicatorLinks,
   ),
-  "/indicator/ห้องปฏิบัติการ": section(
+  "/indicator/laboratory": section(
     "อินดิเคเตอร์ห้องปฏิบัติการ",
     ["อินดิเคเตอร์ห้องปฏิบัติการ"],
     indicatorLinks,
   ),
-  "/indicator/อุตสาหกรรม": section(
+  "/indicator/industrial": section(
     "อินดิเคเตอร์อุตสาหกรรม",
     ["อินดิเคเตอร์อุตสาหกรรม"],
     indicatorLinks,
   ),
-  "/indicator/พาณิชยกรรมและบริการ": section(
+  "/indicator/commercial": section(
     "อินดิเคเตอร์พาณิชยกรรมและบริการ",
     ["อินดิเคเตอร์พาณิชยกรรมและบริการ"],
     indicatorLinks,
   ),
-  "/product/อุปกรณ์ประกอบเครื่องชั่ง": section(
+  "/product/scale-accessories": section(
     "อุปกรณ์ประกอบเครื่องชั่ง",
     ["อุปกรณ์ประกอบเครื่องชั่ง"],
     accessoryLinks,
     "accessories",
   ),
-  "/product/อุปกรณ์ส่งข้อมูล": section(
+  "/product/data-interfaces": section(
     "อุปกรณ์ส่งข้อมูล",
     ["อุปกรณ์ส่งข้อมูล"],
     accessoryLinks,
     "accessories",
   ),
-  "/product/อุปกรณ์ต่อพ่วง": section(
+  "/product/scale-peripherals": section(
     "อุปกรณ์ต่อพ่วง",
     ["อุปกรณ์ต่อพ่วง"],
     accessoryLinks,
@@ -134,55 +135,55 @@ const sections: Record<string, ProductSection> = {
   ),
   "/product/mes/batch": section("MES ควบคุมชุดการผลิต", ["MES ควบคุมชุดการผลิต"], [], "smart"),
   "/product/mes/formula": section("MES ควบคุมสูตรการผลิต", ["MES ควบคุมสูตรการผลิต"], [], "smart"),
-  "/product/แท่นชั่งจัดการข้อมูล": section(
+  "/product/data-management-platforms": section(
     "แท่นชั่งจัดการข้อมูล",
     ["โครงสร้างแท่นชั่งอัจฉริยะ"],
     [],
     "smart",
   ),
-  "/product/โครงสร้างแท่นชั่ง": {
+  "/product/scale-platforms": {
     title: "โครงสร้างแท่นชั่ง",
-    collectionPaths: ["/collections/โครงสร้างแท่นชั่ง"],
+    collectionPaths: ["/collections/scale-platforms"],
     links: platformLinks,
   },
-  "/product/แท่นชั่งตั้งโต๊ะ": {
+  "/product/benchtop-platforms": {
     title: "แท่นชั่งตั้งโต๊ะ",
-    collectionPaths: ["/collections/แท่นชั่งตั้งโต๊ะ"],
+    collectionPaths: ["/collections/benchtop-platforms"],
     links: platformLinks,
   },
-  "/product/แท่นชั่งตั้งพืั้น": {
+  "/product/floor-platforms": {
     title: "แท่นชั่งตั้งพื้น",
-    collectionPaths: ["/collections/แท่นชั่งตั้งพืั้น"],
+    collectionPaths: ["/collections/floor-platforms"],
     links: platformLinks,
   },
   "/product/pos": {
     title: "ระบบ POS ชั่งน้ำหนักเพื่อการขาย",
-    collectionPaths: ["/collections/POS เชื่อมต่อเครื่องชั่ง"],
+    collectionPaths: ["/collections/pos-scale-integration"],
     links: posLinks,
     category: "pos",
   },
   "/product/pos/android": {
     title: "POS ระบบ Android",
-    collectionPaths: ["/collections/POS ระบบ Android"],
+    collectionPaths: ["/collections/pos-android"],
     links: posLinks,
     category: "pos",
   },
   "/product/pos/windows": {
     title: "POS ระบบ Windows",
-    collectionPaths: ["/collections/POS ระบบ Windows"],
+    collectionPaths: ["/collections/pos-windows"],
     links: posLinks,
     category: "pos",
   },
 };
 
 const aliases: Record<string, string> = {
-  "/product/lifestyle": "/product/ไลฟ์สไตล์",
-  "/product/ชิ้นส่วน": "/product/scale-parts",
-  "/product/pos-ระบบ-windows": "/product/pos/windows",
-  "/product/ควบคุมชุดการผลิต": "/product/mes/batch",
-  "/product/ควบคุมสูตรการผลิต": "/product/mes/formula",
+  "/product/lifestyle": "/product/lifestyle-scales",
+  "/product/parts": "/product/scale-parts",
+  "/product/pos-windows": "/product/pos/windows",
+  "/product/batch-control": "/product/mes/batch",
+  "/product/formula-control": "/product/mes/formula",
 };
-const normalize = (path: string) => decodeURIComponent(path).replace(/\/$/, "").toLowerCase();
+const normalize = (path: string) => publicPath(path).replace(/\/$/, "").toLowerCase();
 const collectionKey = (value: string) =>
   normalize(value)
     .split("/")

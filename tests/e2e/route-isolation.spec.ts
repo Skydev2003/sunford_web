@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { expect, test } from "@playwright/test";
 
 test("public routes keep one shared header, footer and content search", async ({ page }) => {
@@ -27,23 +26,32 @@ test("missing public pages keep a single site layout", async ({ page }) => {
   }
 });
 
-test("anonymous admin routes stay protected and separate from the public layout", async ({
+test("removed admin routes return 404 without authentication or product redirects", async ({
   page,
+  request,
 }) => {
-  test.skip(
-    !process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY,
-    "Supabase Auth configuration is required to check the anonymous login flow.",
-  );
-  for (const route of ["/admin/products", "/admin/home-images"]) {
-    await page.goto(route);
-    await expect(page).toHaveURL(/\/admin\/login$/);
-    await expect(page.getByRole("heading", { name: "เข้าสู่พื้นที่แอดมิน" })).toBeVisible();
+  for (const route of [
+    "/admin",
+    "/admin/login",
+    "/admin/products",
+    "/admin/products/new",
+    "/admin/products/sunford-10643/edit",
+    "/admin/products/10643",
+    "/admin/categories",
+    "/admin/content",
+    "/admin/content/navigation",
+    "/admin/home-images",
+    "/admin/trash",
+    "/admin/audit",
+  ]) {
+    const response = await page.goto(route);
+    expect(response?.status(), route).toBe(404);
+    await expect(page.locator("body")).toHaveText("Not Found");
+    await expect(page.locator(".admin-app")).toHaveCount(0);
+    expect(new URL(page.url()).pathname).toBe(route);
   }
-  await expect(page.locator(".admin-app")).toHaveCount(1);
-  await expect(page.locator(".site-header")).toHaveCount(0);
-  await expect(page.getByRole("contentinfo")).toHaveCount(0);
-
-  await page.goto("/about-us");
-  await expect(page.locator(".site-header")).toHaveCount(1);
-  await expect(page.locator(".admin-app")).toHaveCount(0);
+  const response = await request.post("/admin/products", { form: { name: "Removed admin route" } });
+  expect(response.status()).toBe(404);
+  await page.goto("/products/10643");
+  await expect(page.getByRole("heading", { name: "ACS-30-JC21EL", exact: true })).toBeVisible();
 });

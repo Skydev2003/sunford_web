@@ -5,8 +5,6 @@ import { sunford } from "@/features/home/data/brand";
 import { solutionImages } from "../data/business-solutions";
 import styles from "./business-solutions.module.css";
 
-// Keep copy, images and links as elements so sectionFields/patchSection can
-// expose them in the existing section:solutions editor without baking in text.
 export function BusinessSolutionsTemplate() {
   return (
     <section

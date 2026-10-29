@@ -75,9 +75,6 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
       DATABASE_URL: "",
       DIRECT_URL: "",
       SUPABASE_URL: "",
-      SUPABASE_PUBLISHABLE_KEY: "",
-      SUPABASE_SECRET_KEY: "",
-      SUPABASE_SERVICE_ROLE_KEY: "",
       APP_ENV: "ci",
       NEXT_TELEMETRY_DISABLED: "1",
     };

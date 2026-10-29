@@ -6,7 +6,6 @@ import {
   productOverview,
   productPresentation,
 } from "../../src/features/catalog/data/product-presentation";
-import { productInputSchema } from "../../src/features/admin/validation";
 import { categories } from "../../src/features/catalog/types";
 import { findCatalogProduct } from "../../src/features/catalog/data/product-lookup";
 import sourceProducts from "../../src/features/content/data/products.json";
@@ -45,9 +44,9 @@ test("contact location facts and map destinations match the imported company con
 test("static content params reserve filename space for Vercel's prerender sidecars", () => {
   const params = staticContentParams(sourcePages);
   assert.ok(params.some(({ path }) => path.join("/") === "about-us"));
-  const longPage = sourcePages.find((page) => page.path.startsWith("/การพิมพ์สติ๊กเกอร์"));
+  const longPage = sourcePages.find((page) => page.path.startsWith("/scale-label-printing"));
   assert.ok(longPage);
-  assert.ok(!params.some(({ path }) => `/${path.join("/")}` === longPage.path));
+  assert.ok(params.some(({ path }) => `/${path.join("/")}` === longPage.path));
   assert.equal(resolveContentPath(contentRoutePath(longPage.path)), longPage.path);
   assert.equal(
     params.length,
@@ -69,8 +68,8 @@ test("static content params reserve filename space for Vercel's prerender sideca
     }
   }
   // Bound encoded bytes for runtime caches as well as raw UTF-8 at build time.
-  assert.match(contentRoutePath(`/${"ก".repeat(23)}/short`), /^\/_content\/[a-f0-9]{64}$/);
-  assert.equal(contentRoutePath(`/${"ก".repeat(22)}/short`), `/${"ก".repeat(22)}/short`);
+  assert.match(contentRoutePath(`/${"a".repeat(201)}/short`), /^\/_content\/[a-f0-9]{64}$/);
+  assert.equal(contentRoutePath(`/${"a".repeat(200)}/short`), `/${"a".repeat(200)}/short`);
 });
 
 test("all imported technical labels avoid split numbers and retain complete values from real products", () => {
@@ -306,28 +305,15 @@ test("homepage image defaults preserve the current artwork in five independent p
   assert.equal(defaults.software, "/images/pd/app.png");
 });
 
-test("all 150 existing products can be saved without changing their slugs or categories", () => {
+test("all 150 imported products retain unique slugs and supported categories", () => {
   const snapshot = getSnapshotProducts();
   assert.equal(snapshot.length, 150);
-  assert.equal(new Set(snapshot.map((p) => p.slug)).size, snapshot.length);
-  for (const product of snapshot) {
-    const result = productInputSchema.safeParse({
-      ...product,
-      badge: product.badge ?? "",
-      published: true,
-    });
-    assert.ok(result.success, `${product.id}: ${JSON.stringify(result.error?.flatten())}`);
-  }
-  for (const category of categories.filter((c) => c.id !== "all")) {
+  assert.equal(new Set(snapshot.map((product) => product.slug)).size, snapshot.length);
+  for (const product of snapshot)
     assert.ok(
-      productInputSchema.safeParse({
-        ...snapshot[0],
-        category: category.id,
-        badge: "",
-        published: true,
-      }).success,
+      categories.some((category) => category.id === product.category),
+      product.id,
     );
-  }
 });
 
 test("legacy display is preserved until saved; explicit edits win while original metadata survives", () => {
@@ -362,9 +348,7 @@ test("source collections classify POS terminals and accessories before descripti
   const snapshot = getSnapshotProducts();
   for (const sourceId of ["10801", "10802", "10805"])
     assert.equal(snapshot.find((product) => product.sourceId === sourceId)?.category, "pos");
-  const accessories = sourcePages.find(
-    (page) => page.path === "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
-  )!;
+  const accessories = sourcePages.find((page) => page.path === "/collections/scale-accessories")!;
   for (const sourceId of accessories.productHandles)
     assert.equal(
       snapshot.find((product) => product.sourceId === sourceId)?.category,
@@ -411,6 +395,14 @@ test("details retain the original gallery and rich specifications; edited fields
   const before = productPresentation(snapshot, snapshot, source);
   assert.deepEqual(before.images, source.images);
   assert.equal(before.descriptionHtml, source.descriptionHtml);
+  assert.equal(
+    productPresentation(
+      { ...snapshot, description: snapshot.description.replace(/\n/g, "\r\n") },
+      snapshot,
+      source,
+    ).descriptionHtml,
+    source.descriptionHtml,
+  );
   assert.deepEqual(before.specifications, source.specifications);
   const after = productPresentation(
     {
@@ -476,19 +468,4 @@ test("overview aliases preserve saved specifications and do not mistake minimum 
     productOverview(product, [{ label: "การเชื่อมต่อ", value: "-" }]).specifications[6].value,
     "-",
   );
-});
-
-test("image uploads leave request overhead below Vercel's payload limit", async () => {
-  const { imageSizeError, MAX_IMAGE_BYTES } = await import("../../src/features/admin/media-limits");
-  assert.equal(imageSizeError({ size: 1 }), undefined);
-  assert.equal(imageSizeError({ size: MAX_IMAGE_BYTES }), undefined);
-  assert.match(imageSizeError({ size: MAX_IMAGE_BYTES + 1 })!, /4 MB/);
-  assert.ok(imageSizeError({ size: 0 }));
-  const form = new FormData();
-  form.set(
-    "file",
-    new File([new Uint8Array(MAX_IMAGE_BYTES)], "product.png", { type: "image/png" }),
-  );
-  const body = await new Response(form).arrayBuffer();
-  assert.ok(body.byteLength < 4_500_000);
 });

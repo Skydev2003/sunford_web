@@ -7,8 +7,6 @@ import { deploymentEnvironment, runDeployment } from "../../scripts/lib/deploy.m
 const valid = {
   DATABASE_URL: "postgresql://user:password@pool.example.com:6543/postgres",
   DIRECT_URL: "postgresql://user:password@pool.example.com:5432/postgres",
-  SUPABASE_URL: "https://example.supabase.co",
-  SUPABASE_PUBLISHABLE_KEY: "test-publishable-key",
 };
 
 test("local deployments infer the environment only from main or uat", () => {

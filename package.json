@@ -20,12 +20,10 @@
     "format:check": "prettier --check .",
     "content:import": "node scripts/import-sunford.mjs",
     "content:validate": "node scripts/validate-import.mjs",
-    "admin:create": "node scripts/admin-create.mjs",
-    "test:admin": "node scripts/test-admin.mjs",
+    "paths:check": "node scripts/audit-paths.mjs",
     "uat:local": "node scripts/uat-local.mjs",
     "test:uat": "node --test tests/uat/*.test.mjs",
     "test:catalog": "tsx --test tests/catalog/management.test.ts",
-    "test:catalog:integration": "tsx --test tests/catalog/integration.test.ts",
     "deploy": "bun scripts/deploy.mjs",
     "vercel-build": "node scripts/vercel-build.mjs"
   },
@@ -33,10 +31,7 @@
     "@google/model-viewer": "^4.4.0",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
-    "@supabase/ssr": "^0.12.7",
-    "@supabase/supabase-js": "^2.118.0",
     "cheerio": "^1.2.0",
-    "file-type": "^22.2.0",
     "lucide-react": "^1.61.0",
     "next": "16.4.3",
     "pg": "^8.23.1",
@@ -44,7 +39,6 @@
     "react-dom": "19.3.0",
     "sanitize-html": "^2.18.1",
     "server-only": "^0.0.1",
-    "zod": "^4.6.7",
     "zustand": "^5.0.16"
   },
   "devDependencies": {

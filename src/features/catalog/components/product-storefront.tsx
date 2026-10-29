@@ -222,7 +222,7 @@ export function ProductStorefront({
             subtitle="เติมเต็มทุกการใช้งานให้ลงตัว"
           >
             <Link
-              href="/product/อุปกรณ์ประกอบเครื่องชั่ง"
+              href="/product/scale-accessories"
               className="store-editorial-card store-accessory-intro"
             >
               <p className="store-card-eyebrow">SUNFORD ACCESSORIES</p>

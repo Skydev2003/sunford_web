@@ -1,18 +1,5 @@
 export type CmsValue = string | number | boolean | null | CmsValue[] | { [key: string]: CmsValue };
 export type CmsData = { [key: string]: CmsValue };
-export type Field = {
-  key: string;
-  label: string;
-  type?:
-    "text" | "textarea" | "html" | "image" | "number" | "boolean" | "switch" | "select" | "array";
-  options?: { value: string; label: string }[];
-  fields?: Field[];
-  initial?: CmsData;
-  hint?: string;
-  maxLength?: number;
-  recommendedLength?: number;
-  imageSize?: { width: number; height: number; label: string };
-};
 export type Category = { id: string; label: string; english: string };
 export type ProductMedia = {
   price: number | null;

@@ -99,12 +99,6 @@ test("contact launcher stays inside the mobile viewport on product pages", async
   await expect(page.locator(".contact-banner")).toBeVisible();
 });
 
-test("public contact widget is absent from the admin login", async ({ page }) => {
-  await page.goto("/admin/login");
-  await expect(page.getByRole("heading", { name: "เข้าสู่พื้นที่แอดมิน" })).toBeVisible();
-  await expect(page.locator(".floating-contact")).toHaveCount(0);
-});
-
 test("labels slide away after five seconds while the contact buttons stay usable", async ({
   page,
   context,

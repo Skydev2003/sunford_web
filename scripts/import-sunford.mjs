@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
+import { publicContent, publicPath } from "../src/features/content/data/public-paths.mjs";
 
 const origin = "https://www.sunford.co";
 // A targeted refresh merges these pages and their products into the snapshot.
@@ -517,7 +518,9 @@ for (const product of products) {
     .map(({ path, title }) => ({ path, title }));
   const prior = previous?.products.find((item) => item.sourceId === product.sourceId);
   product.collections = [
-    ...(prior?.collections ?? []).filter((item) => !pages.some((page) => page.path === item.path)),
+    ...(prior?.collections ?? []).filter(
+      (item) => !pages.some((page) => publicPath(page.path) === publicPath(item.path)),
+    ),
     ...collections,
   ];
 }
@@ -619,8 +622,14 @@ const merge = (existing, refreshed, key) => {
     ...refreshed.filter((item) => !existing.some((old) => old[key] === item[key])),
   ];
 };
-const outputPages = previous ? merge(previous.pages, pages, "path") : pages;
-const outputProducts = previous ? merge(previous.products, products, "sourceId") : products;
+const canonicalPages = publicContent(pages);
+const canonicalProducts = publicContent(products);
+const outputPages = previous
+  ? merge(publicContent(previous.pages), canonicalPages, "path")
+  : canonicalPages;
+const outputProducts = previous
+  ? merge(publicContent(previous.products), canonicalProducts, "sourceId")
+  : canonicalProducts;
 const outputReport = previous
   ? {
       ...previous["import-report"],

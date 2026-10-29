@@ -1,8 +1,12 @@
 import { test, expect } from "@playwright/test";
 
 async function loadPageImages(page: import("@playwright/test").Page) {
+<<<<<<< HEAD
   for (const image of await page.locator("main img").all()) {
     if (!(await image.isVisible())) continue;
+=======
+  for (const image of await page.locator("main img:visible").all()) {
+>>>>>>> origin/safe
     await image.scrollIntoViewIfNeeded();
     await expect
       .poll(() =>
@@ -156,11 +160,8 @@ test("catalogue API returns data and unknown products render an unindexable 404 
   }
 });
 
-test("long Thai article URLs use bounded internal paths and preserve the public URL", async ({
-  page,
-}) => {
-  const path =
-    "/การพิมพ์สติ๊กเกอร์น้ำหนัก-วันที่-เวลา-ภาพพื้นหลัง-บาร์โค้ด-คิวอาร์โค้ดจากเครื่องชั่ง";
+test("articles use readable English paths and retain their content", async ({ page }) => {
+  const path = "/scale-label-printing";
   const response = await page.goto(path);
   expect(response?.status()).toBe(200);
   await expect(page.locator(".content-heading h1")).toBeVisible();

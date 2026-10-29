@@ -5,10 +5,10 @@ export const defaultNavigationGroups: Record<string, NavigationGroup[]> = {
     {
       label: "เลือกตามการใช้งาน",
       links: [
-        { label: "ชั่งน้ำหนัก", href: "/collections/เครื่องชั่งน้ำหนัก" },
-        { label: "นับจำนวน", href: "/collections/เครื่องชั่งนับจำนวน" },
-        { label: "คำนวณราคา", href: "/collections/เครื่องชั่งคำนวณราคา" },
-        { label: "พิมพ์ฉลาก", href: "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์" },
+        { label: "ชั่งน้ำหนัก", href: "/collections/weighing-scales" },
+        { label: "นับจำนวน", href: "/collections/counting-scales" },
+        { label: "คำนวณราคา", href: "/collections/price-computing-scales" },
+        { label: "พิมพ์ฉลาก", href: "/collections/label-printing-price-scales" },
       ],
     },
     {
@@ -24,10 +24,10 @@ export const defaultNavigationGroups: Record<string, NavigationGroup[]> = {
     {
       label: "เลือกตามคุณสมบัติ",
       links: [
-        { label: "ชั่งน้ำหนัก", href: "/collections/อินดิเคเตอร์ชั่งน้ำหนัก" },
-        { label: "นับจำนวน", href: "/collections/อินดิเคเตอร์นับจำนวน" },
-        { label: "กันน้ำ", href: "/collections/อินดิเคเตอร์กันน้ำ" },
-        { label: "เชื่อมต่อข้อมูล", href: "/product/อุปกรณ์ส่งข้อมูล" },
+        { label: "ชั่งน้ำหนัก", href: "/collections/weighing-indicators" },
+        { label: "นับจำนวน", href: "/collections/counting-indicators" },
+        { label: "กันน้ำ", href: "/collections/waterproof-indicators" },
+        { label: "เชื่อมต่อข้อมูล", href: "/product/data-interfaces" },
       ],
     },
     {
@@ -39,13 +39,13 @@ export const defaultNavigationGroups: Record<string, NavigationGroup[]> = {
       ],
     },
   ],
-  "/product/โครงสร้างแท่นชั่ง": [
+  "/product/scale-platforms": [
     {
       label: "เลือกตามลักษณะงาน",
       links: [
-        { label: "งานทั่วไป", href: "/product/โครงสร้างแท่นชั่ง" },
+        { label: "งานทั่วไป", href: "/product/scale-platforms" },
         { label: "งานเปียก", href: "/guides/platforms#environment" },
-        { label: "งานน้ำหนักมาก", href: "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่" },
+        { label: "งานน้ำหนักมาก", href: "/collections/large-floor-platforms" },
       ],
     },
     {
@@ -62,8 +62,8 @@ export const defaultNavigationGroups: Record<string, NavigationGroup[]> = {
       label: "ซอฟต์แวร์และอุปกรณ์",
       links: [
         { label: "ซอฟต์แวร์ POS", href: "/software/download" },
-        { label: "เครื่องพิมพ์", href: "/collections/เครื่องพิมพ์" },
-        { label: "อุปกรณ์ต่อพ่วง", href: "/product/อุปกรณ์ต่อพ่วง" },
+        { label: "เครื่องพิมพ์", href: "/collections/printers" },
+        { label: "อุปกรณ์ต่อพ่วง", href: "/product/scale-peripherals" },
       ],
     },
     {
@@ -75,13 +75,13 @@ export const defaultNavigationGroups: Record<string, NavigationGroup[]> = {
       ],
     },
   ],
-  "/product/อุปกรณ์ประกอบเครื่องชั่ง": [
+  "/product/scale-accessories": [
     {
       label: "เลือกอุปกรณ์ให้ตรงงาน",
       links: [
-        { label: "สำหรับเครื่องชั่ง", href: "/product/อุปกรณ์ประกอบเครื่องชั่ง" },
+        { label: "สำหรับเครื่องชั่ง", href: "/product/scale-accessories" },
         { label: "สำหรับระบบ POS", href: "/collections/POS Related" },
-        { label: "สำหรับงานพิมพ์", href: "/collections/เครื่องพิมพ์" },
+        { label: "สำหรับงานพิมพ์", href: "/collections/printers" },
       ],
     },
     {
@@ -100,27 +100,27 @@ const navigation = [
     label: "เครื่องชั่ง",
     href: "/products",
     links: [
-      ["ห้องปฏิบัติการ", "/product/ห้องปฏิบัติการ"],
-      ["อุตสาหกรรม", "/product/อุตสาหกรรม"],
-      ["พาณิชยกรรมและบริการ", "/product/พาณิชยกรรมและบริการ"],
-      ["ไลฟ์สไตล์", "/product/ไลฟ์สไตล์"],
+      ["ห้องปฏิบัติการ", "/product/laboratory"],
+      ["อุตสาหกรรม", "/product/industrial"],
+      ["พาณิชยกรรมและบริการ", "/product/commercial"],
+      ["ไลฟ์สไตล์", "/product/lifestyle-scales"],
     ],
   },
   {
     label: "อินดิเคเตอร์แท่นชั่ง",
     href: "/Indicator",
     links: [
-      ["ห้องปฏิบัติการ", "/Indicator/ห้องปฏิบัติการ"],
-      ["อุตสาหกรรม", "/Indicator/อุตสาหกรรม"],
-      ["พาณิชยกรรมและบริการ", "/Indicator/พาณิชยกรรมและบริการ"],
+      ["ห้องปฏิบัติการ", "/Indicator/laboratory"],
+      ["อุตสาหกรรม", "/Indicator/industrial"],
+      ["พาณิชยกรรมและบริการ", "/Indicator/commercial"],
     ],
   },
   {
     label: "โครงสร้างแท่นชั่ง",
-    href: "/product/โครงสร้างแท่นชั่ง",
+    href: "/product/scale-platforms",
     links: [
-      ["แท่นชั่งตั้งโต๊ะ", "/Product/แท่นชั่งตั้งโต๊ะ"],
-      ["แท่นชั่งตั้งพื้น", "/Product/แท่นชั่งตั้งพืั้น"],
+      ["แท่นชั่งตั้งโต๊ะ", "/Product/benchtop-platforms"],
+      ["แท่นชั่งตั้งพื้น", "/Product/floor-platforms"],
     ],
   },
   {
@@ -135,11 +135,11 @@ const navigation = [
   {
     label: "อุปกรณ์เสริม",
     submenuLabel: "อุปกรณ์และวัสดุเสริม",
-    href: "/product/อุปกรณ์ประกอบเครื่องชั่ง",
+    href: "/product/scale-accessories",
     links: [
-      ["อุปกรณ์ส่งข้อมูล", "/product/อุปกรณ์ส่งข้อมูล"],
-      ["อุปกรณ์ต่อพ่วง", "/product/อุปกรณ์ต่อพ่วง"],
-      ["Thermal Printer", "/collections/เครื่องพิมพ์"],
+      ["อุปกรณ์ส่งข้อมูล", "/product/data-interfaces"],
+      ["อุปกรณ์ต่อพ่วง", "/product/scale-peripherals"],
+      ["Thermal Printer", "/collections/printers"],
       ["ชิ้นส่วนเสริม", "/product/Scale-parts"],
       ["วัสดุสิ้นเปลือง", "/product/Consumables"],
     ],

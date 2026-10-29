@@ -14,7 +14,7 @@ export function validateDeploymentEnvironment(env) {
   if (env.VERCEL === "1" && env.APP_ENV !== (preview ? "uat" : "production"))
     errors.push("APP_ENV must match the Vercel target: production or uat for preview.");
 
-  const required = ["DATABASE_URL", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"];
+  const required = ["DATABASE_URL"];
   if (!preview) required.push("DIRECT_URL");
   for (const name of required) {
     if (!env[name]?.trim() || env[name].includes("YOUR-PASSWORD"))
