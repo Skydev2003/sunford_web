@@ -4,7 +4,7 @@
 
 นำเข้าข้อมูลสาธารณะจาก sunford.co เมื่อ 26 ตุลาคม 2026: 392 หน้า รวมหน้าสินค้า 150 รายการ หมวดสินค้า 112 หน้า รูป 909 ไฟล์ และการอ้างอิงวิดีโอ 20 รายการ เก็บรายละเอียดสินค้า ซอฟต์แวร์ บทความ บริการ และนโยบายไว้ในโปรเจกต์ รูปที่ต้นฉบับไม่พร้อมใช้งานแสดงช่องภาพว่าง
 
-มีหน้าแอดมินเพิ่ม/แก้ไข/ลบสินค้า ล็อกอินด้วย Supabase Auth และอัปโหลดรูปผ่าน Supabase Storage โดยแยก layout จากหน้าเว็บสาธารณะ
+เว็บไซต์มีเฉพาะหน้าสาธารณะ นำระบบแอดมิน ล็อกอิน การแก้ไขข้อมูลและอัปโหลดรูปออกแล้ว เส้นทาง `/admin` และเส้นทางย่อยตอบ 404 ข้อมูลและรูปเดิมยังอ่านได้ตามปกติ
 
 ## เริ่มต้น
 
@@ -23,7 +23,6 @@ npm run dev
 src/
   app/                       # Route composition, metadata, error boundaries, API
     (site)/                  # หน้าเว็บสาธารณะ + products/[slug] (URL เดิม)
-    admin/                   # Login และ protected product management
     api/products/            # Read-only catalogue endpoint
   components/
     layout/                  # Header, Footer
@@ -36,10 +35,8 @@ src/
       server/                # Repository: จุดเดียวที่อ่านข้อมูลสินค้า
       types.ts               # Domain model และหมวดหมู่
     home/components/         # Hero, solutions, brand story, support
-    admin/                   # Admin UI, validation, auth guards, Server Actions
   stores/                    # Zustand: filter, search, comparison UI state
-  lib/                       # Server-only Prisma / Supabase integrations
-  proxy.ts                   # Auth session refresh เฉพาะเส้นทางแอดมิน
+  lib/                       # Server-only Prisma integration
   styles/                    # Design tokens และ CSS แยกตามส่วน
   generated/prisma/          # สร้างด้วย prisma generate ไม่ commit
 prisma/
@@ -82,11 +79,11 @@ public/
 
 Initial migration สร้างตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม คำสั่ง `npm run db:seed` สำรองตารางสินค้าและเพิ่มเฉพาะสินค้านำเข้าที่ยังขาดให้ครบ 150 รายการ ไม่เขียนทับข้อมูลเดิม การแก้ไข ฉบับร่าง หรือสินค้าที่ลบแล้ว
 
-เมื่อมี `DATABASE_URL` จริง repository ใช้ PostgreSQL เป็นรายการสินค้าหลัก อ่านเฉพาะ `published=true` และ `deletedAt=null` โดยแอดมินเพิ่ม แก้ไข ซ่อน และลบสินค้าได้ครบทั้ง 8 หมวด ข้อมูลนำเข้าใช้รักษารายละเอียด รูป และ URL เดิม ไม่เพิ่มสินค้าที่ถูกซ่อนหรือลบกลับมา หากไม่มีฐานข้อมูลยังดู snapshot ได้ หากตั้งค่าฐานข้อมูลแล้วเชื่อมต่อล้มเหลวจะแสดง error state
+เมื่อมี `DATABASE_URL` จริง repository ใช้ PostgreSQL เป็นรายการสินค้าหลัก อ่านเฉพาะ `published=true` และ `deletedAt=null` โดยคงสถานะเผยแพร่และการลบเดิมไว้ครบทั้ง 8 หมวด ข้อมูลนำเข้าใช้รักษารายละเอียด รูป และ URL เดิม ไม่เพิ่มสินค้าที่ถูกซ่อนหรือลบกลับมา หากไม่มีฐานข้อมูลยังดู snapshot ได้ หากตั้งค่าฐานข้อมูลแล้วเชื่อมต่อล้มเหลวจะแสดง error state
 
-ข้อมูลสินค้าสาธารณะถูก cache 1 ชั่วโมงด้วย Next.js Cache Components การแก้ผ่านหน้าแอดมิน invalidate tag และหน้าที่เกี่ยวข้องทันที หากแก้ฐานข้อมูลโดยตรงให้รอ cache หมดอายุหรือ deploy ใหม่ หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่
+ข้อมูลสินค้าสาธารณะถูก cache 1 ชั่วโมงด้วย Next.js Cache Components การแก้ข้อมูลทำผ่านไฟล์ต้นฉบับหรือกระบวนการฐานข้อมูลที่ทีมดูแล จากนั้นรอ cache หมดอายุหรือ deploy ใหม่ หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่
 
-`SUPABASE_URL` และ `SUPABASE_PUBLISHABLE_KEY` ใช้สำหรับ Supabase Auth และการอัปโหลด Storage แบบมีสิทธิ์ผู้ใช้ รูปสินค้าเดิมยังอยู่ใน `public/images` ส่วนรูปใหม่จากแอดมินเก็บใน bucket `product-images`
+`SUPABASE_URL` เป็นตัวเลือกสำหรับแสดงรูปเดิมจาก bucket `product-images` เท่านั้น ไม่ต้องใช้ publishable key หรือ secret key ในแอป รูปใน `public/images` ยังใช้งานตามเดิม
 
 **สถานะตรวจสอบล่าสุด:** รัน migration และนำเข้าสินค้าครบ 150 รายการแล้ว ตรวจว่าข้อมูลทุกช่องและ timestamps ของ 6 รายการเดิมไม่เปลี่ยน และข้อมูลสาธารณะของทั้ง 150 รายการยังตรงกับต้นฉบับ ทดสอบ CRUD ครบ 8 หมวดใน transaction ที่ rollback ทั้งหมดแล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
 
@@ -132,20 +129,13 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 
 ฟอนต์ Inter และ Noto Sans Thai ถูก self-host ด้วย `next/font/local` ดูใบอนุญาตใน `src/app/fonts` การติดตั้งและ build ไม่ต้องเรียก Google Fonts
 
-## หน้าแอดมิน
+## การดูแลเนื้อหา
 
-เปิด `/admin/login` ด้วยบัญชี Supabase Auth ที่มี membership ใน `admin_users` ดูวิธีสร้าง/ถอนสิทธิ์แอดมิน การตั้งค่า Storage และการทดสอบใน [docs/admin.md](docs/admin.md)
-
-```bash
-npm run admin:create -- admin@example.com
-PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:admin -- admin@example.com
-```
-
-ทั้งสองคำสั่งถามรหัสผ่านแบบซ่อน ไม่ใส่รหัสผ่านลง command arguments หรือ source code คีย์ secret/service-role ใช้เฉพาะเครื่องมือ provisioning/การทดสอบและห้ามส่งไปเบราว์เซอร์ หน้าแอดมิน runtime ไม่จำเป็นต้องใช้คีย์นี้
+ดูแลเนื้อหาผ่านไฟล์ใน repository และกระบวนการฐานข้อมูลของทีม ไม่มีหน้าจัดการหรือ Server Actions สำหรับเขียนข้อมูลผ่านเว็บไซต์ ตารางบัญชีแอดมินและประวัติเดิมยังเก็บใน schema/migrations เพื่อรักษาข้อมูลและประวัติ migration; การเปลี่ยนแปลงนี้ไม่ลบข้อมูลจริงใน Supabase
 
 ## Deploy บน Vercel
 
-ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Supabase เดิมสำหรับฐานข้อมูล Auth และ Storage ฟังก์ชันรันที่ Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1`
+ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Supabase เดิมสำหรับฐานข้อมูลและรูป Storage เดิม ฟังก์ชันรันที่ Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1`
 
 Production จาก branch `main` รัน migration → เติมสินค้าที่ขาด → build ส่วน Preview ของ `uat` และ branch อื่นรันเฉพาะ build ไม่ migrate หรือ seed อัตโนมัติ ตั้ง Environment Variables แยก Production/Preview และใช้ Supabase สำหรับทดสอบแยกจาก production ดูขั้นตอน import repo, ตั้งค่า และย้าย URL ใน [docs/vercel.md](docs/vercel.md)
 

@@ -7,15 +7,12 @@ const valid = {
   DEPLOY_BRANCH: "uat",
   DATABASE_URL: "postgresql://postgres.example:test-password@pool.example.com:6543/postgres",
   DIRECT_URL: "postgresql://postgres.example:test-password@pool.example.com:5432/postgres",
-  SUPABASE_URL: "https://example.supabase.co",
-  SUPABASE_PUBLISHABLE_KEY: "test-publishable-key",
 };
 
 test("UAT requires real configuration instead of silently deploying catalogue fixtures", () => {
   assert.deepEqual(validateDeploymentEnvironment(valid), []);
-  assert.equal(validateDeploymentEnvironment({}).length, 6);
+  assert.equal(validateDeploymentEnvironment({}).length, 4);
   assert.ok(validateDeploymentEnvironment({ ...valid, DATABASE_URL: "YOUR-PASSWORD" }).length);
-  assert.ok(validateDeploymentEnvironment({ ...valid, SUPABASE_PUBLISHABLE_KEY: " " }).length);
 });
 
 test("deployment rejects the wrong branch and transaction pooler for migrations", () => {

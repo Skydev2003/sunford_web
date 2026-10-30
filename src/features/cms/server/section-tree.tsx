@@ -1,6 +1,6 @@
 import "server-only";
 import { Children, cloneElement, isValidElement, type ReactNode, type ReactElement } from "react";
-import type { CmsData, Field } from "../types";
+import type { CmsData } from "../types";
 
 // Keys depend on the original value, so adding another text node does not shift saved edits.
 function key(type: string, value: string) {
@@ -11,38 +11,6 @@ function key(type: string, value: string) {
 export function sectionValue(data: CmsData, type: "text" | "image" | "href", original: string) {
   const value = data[key(type, original)];
   return typeof value === "string" ? value : original;
-}
-export function sectionFields(tree: ReactNode) {
-  const fields = new Map<string, Field>();
-  const data: CmsData = {};
-  function field(type: "text" | "image" | "href", value: string) {
-    if (!value.trim()) return;
-    const id = key(type, value);
-    data[id] = value;
-    fields.set(id, {
-      key: id,
-      label:
-        type === "image"
-          ? `รูปภาพ: ${value.split("/").at(-1)}`
-          : type === "href"
-            ? `ลิงก์: ${value}`
-            : value.trim(),
-      type: type === "image" ? "image" : value.length > 90 ? "textarea" : "text",
-      hint: type === "href" ? "URL ภายในเว็บ หรือ https:// สำหรับลิงก์ภายนอก" : undefined,
-    });
-  }
-  function walk(node: ReactNode) {
-    Children.forEach(node, (child) => {
-      if (typeof child === "string") field("text", child);
-      if (!isValidElement(child)) return;
-      const props = child.props as Record<string, unknown>;
-      if (typeof props.href === "string") field("href", props.href);
-      if (typeof props.src === "string") field("image", props.src);
-      if (props.children) walk(props.children as ReactNode);
-    });
-  }
-  walk(tree);
-  return { fields: [...fields.values()], data };
 }
 export function patchSection(tree: ReactNode, data: CmsData): ReactNode {
   return Children.map(tree, (child) => {

@@ -83,3 +83,39 @@
 - Observed: A decorative-arrow/dot cleanup covered list headings and links but left login branding, back links, the product-view icon and generated editor guidance unchanged.
 - Root cause: The initial review followed the screenshot examples without inventorying every admin route and shared presentation component.
 - Correct behavior: For admin-wide presentation requests, inventory route files, shared editors, generated helper text and CSS pseudo-elements before editing. Inspect every primary module and editor type, including login and auxiliary views, and preserve controls whose icons perform reordering or expansion. Update text selectors and verify the affected workflows before claiming complete coverage.
+
+## Preserve rich product content across browser newline normalization
+
+- Observed: Saving an unchanged product description replaced its formatted introduction with one long paragraph. ACS-30-JC21EL retained its text but lost paragraph and soft-break markup.
+- Root cause: Browser form submission converted LF to CRLF. A raw string comparison treated that as an edit and overwrote rich HTML with a single paragraph containing literal newlines.
+- Correct behavior: Normalize CRLF and CR to LF at the product input boundary and before comparing existing descriptions or source snapshots. Preserve existing rich HTML when normalized descriptions match. For real plain-text edits, escape HTML, convert blank lines into paragraphs and single newlines into line breaks. Verify both newline directions and actual text edits through the save action. Restore damaged formatting only after comparing the current text with its source and backing up the current record.
+
+## Name product fields by their public-page location
+
+- Observed: A saved subtitle change appeared ineffective because the user checked the separate introduction beneath the product details heading.
+- Root cause: The form grouped subtitle/plain description together while the rich-content editor lived behind a distant secondary link; generic labels did not distinguish their visible destinations.
+- Correct behavior: Group and label product fields by their public-page location. Identify the subtitle beneath the model name and the separate lower introduction, keep the rich-content shortcut adjacent to the introduction, explain plain-text replacement before editing, and label preview limitations. Verify that editing the subtitle preserves the description and that switching editors protects unsaved values.
+
+## Edit the resolved overview values shown on the public product page
+
+- Observed: The public overview showed eight specification rows, but the product form exposed only three raw fields. Saved specification aliases can also make a displayed value differ from its raw product fallback.
+- Root cause: The admin form did not use the public overview resolver and treated the product row as the sole source for these values.
+- Correct behavior: Load and edit all eight rows through the shared overview definition/resolver. Match existing specification aliases when saving, preserve raw fallback fields when the resolved value is unchanged, and store explicit dashes when clearing values. Keep unrelated specifications and rich media unchanged, and verify create/update/clear/stale/error cases through the transactional save action.
+
+## Refresh generated development route types after removing routes
+
+- Observed: A production build compiled successfully but failed TypeScript validation because `.next/dev/types/validator.ts` still imported deleted admin routes.
+- Root cause: The project includes both production and development generated types, and the production build did not refresh the earlier development validator after route removal.
+- Correct behavior: Stop development servers before removing routes. Move or clear only the stale generated `.next/dev/types` directory, then run the production build and TypeScript again. Let the next development startup regenerate its route types; do not change application routes or suppress type errors to satisfy stale generated imports.
+
+## Skip hidden images in public screenshot preloading
+
+- Observed: Desktop and mobile homepage browser checks timed out trying to scroll hidden images into view.
+- Root cause: The preload helper iterated every image, including mounted images hidden by the current UI state.
+- Correct behavior: Select visible images when preloading a page for screenshots. Keep scrolling and natural-width checks for those displayed images; verify hidden images only through the interaction that reveals them.
+
+## Stop QA development servers before handing control back
+
+- Observed: The user could not run `bun dev` because the agent’s local verification server still held the development-server lock.
+- Root cause: A QA development server was left running after verification without coordinating who would own the local server.
+- Correct behavior: Stop agent-started QA development servers before handing the terminal back unless the user asks to keep them running. When resolving a conflict, verify the process command line and project directory before stopping it, then confirm the port is free. Do not start a replacement server when the user intends to run their own.

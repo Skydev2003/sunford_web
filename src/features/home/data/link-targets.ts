@@ -7,8 +7,6 @@ export type HomeLinkTarget = {
   disabled?: boolean;
 };
 export type HomeLinkTargets = Partial<Record<HomeImageSlot, HomeLinkTarget>>;
-export type HomeProductOption = { id: string; name: string; href: string };
-export type HomePageOption = { path: string; title: string };
 
 export const defaultHomePagePaths = {
   digital: "/Product/Digital-weighing",

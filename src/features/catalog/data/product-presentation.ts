@@ -1,47 +1,84 @@
 import type { Product } from "../types";
 import type { SourceProduct } from "@/features/content/types";
 
-const overviewFields: {
+export type ProductOverviewKey =
+  | "capacity"
+  | "readability"
+  | "suitableFor"
+  | "display"
+  | "memory"
+  | "labelPrinting"
+  | "connection"
+  | "material";
+
+export const productOverviewFields: {
+  key: ProductOverviewKey;
   label: string;
   pattern: RegExp;
   fallback?: "capacity" | "readability" | "connection";
 }[] = [
   {
+    key: "capacity",
     label: "น้ำหนัก",
     pattern: /^(น้ำหนัก|พิกัดน้ำหนัก|พิกัดน้ำหนักสูงสุด|น้ำหนักสูงสุด|capacity)$/i,
     fallback: "capacity",
   },
   {
+    key: "readability",
     label: "ค่าละเอียด",
     pattern: /^(ค่าละเอียด|ค่าอ่านละเอียด|ความละเอียด|readability|resolution)$/i,
     fallback: "readability",
   },
-  { label: "เหมาะสำหรับ", pattern: /^(เหมาะสำหรับ|การใช้งาน|เหมาะกับ|การใช้งานที่เหมาะสม)$/ },
-  { label: "หน้าจอแสดงผล", pattern: /^(หน้าจอแสดงผล|จอแสดงผล|หน้าจอ|จอLCD|จอLED|display)$/i },
-  { label: "หน่วยความจำ", pattern: /^(หน่วยความจำ|ความจุหน่วยความจำ|memory)$/i },
-  { label: "การพิมพ์ฉลาก", pattern: /^(การพิมพ์ฉลาก|พิมพ์ฉลาก|การพิมพ์|การพิมพ์สติกเกอร์)$/ },
   {
+    key: "suitableFor",
+    label: "เหมาะสำหรับ",
+    pattern: /^(เหมาะสำหรับ|การใช้งาน|เหมาะกับ|การใช้งานที่เหมาะสม)$/,
+  },
+  {
+    key: "display",
+    label: "หน้าจอแสดงผล",
+    pattern: /^(หน้าจอแสดงผล|จอแสดงผล|หน้าจอ|จอLCD|จอLED|display)$/i,
+  },
+  { key: "memory", label: "หน่วยความจำ", pattern: /^(หน่วยความจำ|ความจุหน่วยความจำ|memory)$/i },
+  {
+    key: "labelPrinting",
+    label: "การพิมพ์ฉลาก",
+    pattern: /^(การพิมพ์ฉลาก|พิมพ์ฉลาก|การพิมพ์|การพิมพ์สติกเกอร์)$/,
+  },
+  {
+    key: "connection",
     label: "การเชื่อมต่อระบบ",
     pattern: /^(การเชื่อมต่อระบบ|การเชื่อมต่อ|พอร์ต|พอร์ท|connection|interface)$/i,
     fallback: "connection",
   },
-  { label: "วัสดุและความทนทาน", pattern: /^(วัสดุและความทนทาน|วัสดุ|วัสดุตัวเครื่อง|material)$/i },
+  {
+    key: "material",
+    label: "วัสดุและความทนทาน",
+    pattern: /^(วัสดุและความทนทาน|วัสดุ|วัสดุตัวเครื่อง|material)$/i,
+  },
 ];
+
+export function normalizeOverviewValue(value: string) {
+  const text = value.replace(/\r\n?/g, "\n").trim();
+  return !text || /^[-–—]+$/.test(text) ? "-" : text;
+}
+
+function matchesOverviewField(field: (typeof productOverviewFields)[number], label: string) {
+  return field.pattern.test(label.replace(/[\s:：]/g, ""));
+}
 
 export function productOverview(
   product: Product,
   specifications: { label: string; value: string }[],
 ) {
-  const matches = (field: (typeof overviewFields)[number], label: string) =>
-    field.pattern.test(label.replace(/[\s:：]/g, ""));
   return {
-    specifications: overviewFields.map((field) => {
-      const entry = specifications.find((spec) => matches(field, spec.label));
-      const value = (entry ? entry.value : field.fallback ? product[field.fallback] : "").trim();
-      return { label: field.label, value: !value || /^[-–—]+$/.test(value) ? "-" : value };
+    specifications: productOverviewFields.map((field) => {
+      const entry = specifications.find((spec) => matchesOverviewField(field, spec.label));
+      const value = entry ? entry.value : field.fallback ? product[field.fallback] : "";
+      return { label: field.label, value: normalizeOverviewValue(value) };
     }),
     additionalSpecifications: specifications.filter(
-      (spec) => !overviewFields.some((field) => matches(field, spec.label)),
+      (spec) => !productOverviewFields.some((field) => matchesOverviewField(field, spec.label)),
     ),
   };
 }
@@ -80,7 +117,8 @@ export function productPresentation(product: Product, snapshot?: Product, source
           ? [product.image]
           : [],
     descriptionHtml:
-      snapshot && product.description === snapshot.description
+      snapshot &&
+      product.description.replace(/\r\n?/g, "\n") === snapshot.description.replace(/\r\n?/g, "\n")
         ? source?.descriptionHtml
         : undefined,
     specifications,
