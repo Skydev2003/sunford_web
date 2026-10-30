@@ -2,7 +2,7 @@
 import { useCategories } from "@/features/cms/components/categories-provider";
 import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
-import { type Product } from "../types";
+import { type CatalogProduct } from "../types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { ProductCard } from "./product-card";
 import { useState } from "react";
@@ -17,7 +17,7 @@ export function ProductCatalog({
   categoryLabel,
   copy = catalogDefaults,
 }: {
-  products: Product[];
+  products: CatalogProduct[];
   full?: boolean;
   heading?: string;
   scoped?: boolean;

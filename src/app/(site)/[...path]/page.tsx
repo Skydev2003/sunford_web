@@ -9,6 +9,7 @@ import {
 } from "@/features/content/server/content-repository";
 import { getProducts, getProduct } from "@/features/catalog/server/product-repository";
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
+import { getClientProducts } from "@/features/catalog/server/client-products";
 import { ContentDirectory } from "@/features/content/components/content-directory";
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
@@ -76,14 +77,21 @@ export default async function SourceContentPage({
     ? [...new Set(collections.flatMap((collection) => collection?.productHandles ?? []))]
     : page.productHandles;
   const allProducts = await getProducts();
-  let products = allProducts.filter((product) =>
-    page.managed
-      ? page.productIds?.includes(product.id)
-      : productHandles.includes(product.sourceId || ""),
+  const productIds = new Set(
+    allProducts
+      .filter((product) =>
+        page.managed
+          ? page.productIds?.includes(product.id)
+          : productHandles.includes(product.sourceId || ""),
+      )
+      .map((product) => product.id),
   );
+  let products = (await getClientProducts()).filter((product) => productIds.has(product.id));
   if (section?.category) {
     const category = section.category;
-    products = products.map((product) => ({ ...product, category }));
+    products = products.map((product) =>
+      product.category === category ? product : { ...product, category },
+    );
   }
   const title =
     section?.title ??

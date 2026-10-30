@@ -1,5 +1,17 @@
 # Project Memory
 
+## Preserve RSC object sharing when trimming client props
+
+- Observed: Individually projecting the same catalogue for a page and its layout increased serialized data despite removing fields. Projecting filtered category products separately also duplicated their descriptions.
+- Root cause: New object identities discarded RSC reference deduplication across Client Component boundaries. Cold/resumed and cache-hit responses also had different sizes.
+- Correct behavior: Create one request-cached public product projection, reuse its objects in the layout and page, and filter that shared array for category membership. Clone only when a displayed value actually changes. Measure every affected route under matched cache conditions before accepting a payload optimization.
+
+## Keep isolated baseline source out of TypeScript's source globs
+
+- Observed: A source snapshot under ignored `output/` was still typechecked against current aliases and failed the application build.
+- Root cause: Git ignore rules do not exclude files from `tsconfig.json`'s recursive includes.
+- Correct behavior: Put source-bearing benchmark snapshots outside the project or in an explicitly excluded directory before running checks. Keep temporary environment files out of deliverables and remove copied credentials after the isolated run.
+
 ## Read project text as UTF-8 on Windows
 
 - Observed: Python source reads failed repeatedly on files containing Thai text while CSS-only scripts succeeded.

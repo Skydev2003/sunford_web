@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import { SiteHeader } from "@/features/cms/components/site-header";
 import { Footer } from "@/components/layout/footer";
 import { CatalogOverlays } from "@/features/catalog/components/catalog-overlays";
-import { getProducts } from "@/features/catalog/server/product-repository";
+import { getClientProducts } from "@/features/catalog/server/client-products";
 import { getPageSearchIndex } from "@/features/content/server/content-repository";
 async function Overlays() {
-  return <CatalogOverlays products={await getProducts()} pages={await getPageSearchIndex()} />;
+  const [products, pages] = await Promise.all([getClientProducts(), getPageSearchIndex()]);
+  return <CatalogOverlays products={products} pages={pages} />;
 }
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (

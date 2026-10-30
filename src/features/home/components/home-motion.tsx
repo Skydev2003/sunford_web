@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { useAnimate } from "motion/react";
+import { useAnimate } from "motion/react-mini";
 import styles from "./home-motion.module.css";
 
 const motionTokens = {
@@ -47,7 +47,7 @@ export function HomeMotion({ children }: { children: ReactNode }) {
             entry.target,
             {
               opacity: [0.65, 1],
-              y: [motionTokens.distance, 0],
+              transform: [`translateY(${motionTokens.distance}px)`, "none"],
             },
             {
               duration: motionTokens.duration,

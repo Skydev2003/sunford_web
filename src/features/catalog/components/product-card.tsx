@@ -4,7 +4,7 @@ import { useCategories } from "@/features/cms/components/categories-provider";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ArrowUpRight, Check, Plus } from "lucide-react";
-import type { Product } from "../types";
+import type { ProductCardData } from "../types";
 
 import { useCatalogStore } from "@/stores/catalog-store";
 
@@ -12,7 +12,7 @@ export function ProductCard({
   product,
   categoryLabel,
 }: {
-  product: Product;
+  product: ProductCardData;
   categoryLabel?: string;
 }) {
   const categories = useCategories();
