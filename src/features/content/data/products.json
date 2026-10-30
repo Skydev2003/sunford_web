@@ -1495,7 +1495,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-จอ",
+        "path": "/collections/display-parts",
         "title": "ชิ้นส่วน Part จอ"
       },
       {
@@ -1570,7 +1570,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-จอ",
+        "path": "/collections/display-parts",
         "title": "ชิ้นส่วน Part จอ"
       },
       {
@@ -1641,7 +1641,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-จอ",
+        "path": "/collections/display-parts",
         "title": "ชิ้นส่วน Part จอ"
       },
       {
@@ -1691,7 +1691,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-เสาสแตนเลส",
+        "path": "/collections/stainless-steel-columns",
         "title": "ชิ้นส่วน Part เสาสแตนเลส"
       },
       {
@@ -1739,7 +1739,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "path": "/collections/label-sticker-parts",
         "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
@@ -1782,12 +1782,12 @@
       "69009ea987cf4c15ccb9b329",
       "690890a987cf4c15ccb9b65a"
     ],
-    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/battery-charging-guide\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/battery-charging-guide\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "path": "/collections/label-sticker-parts",
         "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
@@ -1831,12 +1831,12 @@
       "6901cb6e87cf4c15ccb9b45a",
       "690890a987cf4c15ccb9b65a"
     ],
-    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/battery-charging-guide\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/battery-charging-guide\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "path": "/collections/label-sticker-parts",
         "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
@@ -1884,12 +1884,12 @@
       "6901cb6e87cf4c15ccb9b45a",
       "690890a987cf4c15ccb9b65a"
     ],
-    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/battery-charging-guide\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/battery-charging-guide\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "path": "/collections/label-sticker-parts",
         "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
@@ -1936,12 +1936,12 @@
       "69009ea987cf4c15ccb9b329",
       "690890a987cf4c15ccb9b65a"
     ],
-    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%88%E0%B9%81%E0%B8%9A%E0%B8%95%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div><div><h1>บทความเกี่ยวข้อง</h1><div><div><div><div><a href=\"/blogs/editorial/battery-charging-guide\"><source type=\"image/avif\"><source type=\"image/webp\"><img src=\"/images/imported/ec4912b8635cd841375d.png\" alt=\"ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่\" width=\"388\" height=\"200\" loading=\"lazy\"></a><div><h2>ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่</h2><a href=\"/blogs/editorial/battery-charging-guide\">อ่านเพิ่มเติม</a></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
     "specifications": [],
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน-part-สติกเกอร์เลเบล",
+        "path": "/collections/label-sticker-parts",
         "title": "ชิ้นส่วน Part สติกเกอร์เลเบล"
       },
       {
@@ -1995,15 +1995,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งประกอบอาหาร",
+        "path": "/collections/kitchen-scales",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
-        "path": "/collections/ไลฟ์สไตล์",
+        "path": "/collections/lifestyle-scales",
         "title": "ไลฟ์สไตล์"
       }
     ]
@@ -2041,15 +2041,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งประกอบอาหาร",
+        "path": "/collections/kitchen-scales",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
-        "path": "/collections/ไลฟ์สไตล์",
+        "path": "/collections/lifestyle-scales",
         "title": "ไลฟ์สไตล์"
       }
     ]
@@ -2089,15 +2089,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งประกอบอาหาร",
+        "path": "/collections/kitchen-scales",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
-        "path": "/collections/ไลฟ์สไตล์",
+        "path": "/collections/lifestyle-scales",
         "title": "ไลฟ์สไตล์"
       }
     ]
@@ -2161,15 +2161,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ไลฟ์สไตล์",
+        "path": "/collections/lifestyle-scales",
         "title": "ไลฟ์สไตล์"
       },
       {
-        "path": "/collections/สุขภาพส่วนบุคคล",
+        "path": "/collections/personal-health-scales",
         "title": "เครื่องชั่งสุขภาพส่วนบุคคล"
       }
     ]
@@ -2203,15 +2203,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งประกอบอาหาร",
+        "path": "/collections/kitchen-scales",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
-        "path": "/collections/ไลฟ์สไตล์",
+        "path": "/collections/lifestyle-scales",
         "title": "ไลฟ์สไตล์"
       }
     ]
@@ -2257,15 +2257,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -2311,15 +2311,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งประกอบอาหาร",
+        "path": "/collections/kitchen-scales",
         "title": "เครื่องชั่งประกอบอาหาร"
       },
       {
-        "path": "/collections/ไลฟ์สไตล์",
+        "path": "/collections/lifestyle-scales",
         "title": "ไลฟ์สไตล์"
       }
     ]
@@ -2361,15 +2361,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งกาแฟ",
+        "path": "/collections/coffee-scales",
         "title": "เครื่องชั่งกาแฟ"
       },
       {
-        "path": "/collections/ไลฟ์สไตล์",
+        "path": "/collections/lifestyle-scales",
         "title": "ไลฟ์สไตล์"
       }
     ]
@@ -2435,19 +2435,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งควบคุมและตรวจสอบคุณภาพ",
+        "path": "/collections/quality-control-scales",
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
+        "path": "/collections/analytical-laboratory-scales",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
-        "path": "/collections/ห้องปฏิบัติการ",
+        "path": "/collections/laboratory",
         "title": "ห้องปฏิบัติการ"
       }
     ]
@@ -2511,19 +2511,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งควบคุมและตรวจสอบคุณภาพ",
+        "path": "/collections/quality-control-scales",
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
+        "path": "/collections/analytical-laboratory-scales",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
-        "path": "/collections/ห้องปฏิบัติการ",
+        "path": "/collections/laboratory",
         "title": "ห้องปฏิบัติการ"
       }
     ]
@@ -2583,19 +2583,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งควบคุมและตรวจสอบคุณภาพ",
+        "path": "/collections/quality-control-scales",
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
+        "path": "/collections/analytical-laboratory-scales",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
-        "path": "/collections/ห้องปฏิบัติการ",
+        "path": "/collections/laboratory",
         "title": "ห้องปฏิบัติการ"
       }
     ]
@@ -2655,19 +2655,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งควบคุมและตรวจสอบคุณภาพ",
+        "path": "/collections/quality-control-scales",
         "title": "เครื่องชั่งควบคุมและตรวจสอบคุณภาพ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
+        "path": "/collections/analytical-laboratory-scales",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
-        "path": "/collections/ห้องปฏิบัติการ",
+        "path": "/collections/laboratory",
         "title": "ห้องปฏิบัติการ"
       }
     ]
@@ -2728,15 +2728,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
+        "path": "/collections/analytical-laboratory-scales",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
-        "path": "/collections/ห้องปฏิบัติการ",
+        "path": "/collections/laboratory",
         "title": "ห้องปฏิบัติการ"
       }
     ]
@@ -2797,15 +2797,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
+        "path": "/collections/analytical-laboratory-scales",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
-        "path": "/collections/ห้องปฏิบัติการ",
+        "path": "/collections/laboratory",
         "title": "ห้องปฏิบัติการ"
       }
     ]
@@ -2862,15 +2862,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/วิเคราะห์ผลสำหรับห้องปฏิบัติการ",
+        "path": "/collections/analytical-laboratory-scales",
         "title": "เครื่องชั่งวิเคราะห์ผลสำหรับห้องปฏิบัติการ"
       },
       {
-        "path": "/collections/ห้องปฏิบัติการ",
+        "path": "/collections/laboratory",
         "title": "ห้องปฏิบัติการ"
       }
     ]
@@ -2921,15 +2921,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -2978,15 +2978,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3045,15 +3045,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3109,15 +3109,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่งน้ำหนักพัสดุและไปรษณีย์",
+        "path": "/collections/parcel-postal-scales",
         "title": "เครื่องชั่งน้ำหนักพัสดุและไปรษณีย์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -3181,19 +3181,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์สลิปขาย",
+        "path": "/collections/receipt-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์สลิปขาย"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3264,15 +3264,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3340,15 +3340,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "path": "/collections/pos-connected-weighing",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       }
     ]
@@ -3420,15 +3420,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่งน้ำหนักพัสดุและไปรษณีย์",
+        "path": "/collections/parcel-postal-scales",
         "title": "เครื่องชั่งน้ำหนักพัสดุและไปรษณีย์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -3489,11 +3489,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา ฉีดล้างได้",
+        "path": "/collections/washdown-price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา ฉีดล้างได้"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -3550,11 +3550,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา ฉีดล้างได้",
+        "path": "/collections/washdown-price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา ฉีดล้างได้"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -3614,19 +3614,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์",
+        "path": "/collections/label-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3686,19 +3686,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์",
+        "path": "/collections/label-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3768,19 +3768,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์",
+        "path": "/collections/label-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3840,19 +3840,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์",
+        "path": "/collections/label-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -3885,11 +3885,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/POS เชื่อมต่อเครื่องชั่ง",
+        "path": "/collections/pos-scale-integration",
         "title": "POS เชื่อมต่อเครื่องชั่ง"
       },
       {
-        "path": "/collections/POS ระบบ Windows",
+        "path": "/collections/pos-windows",
         "title": "POS/Windows"
       }
     ]
@@ -3937,19 +3937,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์",
+        "path": "/collections/label-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -4005,19 +4005,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์",
+        "path": "/collections/label-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -4088,15 +4088,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -4129,11 +4129,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/POS เชื่อมต่อเครื่องชั่ง",
+        "path": "/collections/pos-scale-integration",
         "title": "POS เชื่อมต่อเครื่องชั่ง"
       },
       {
-        "path": "/collections/POS ระบบ Android",
+        "path": "/collections/pos-android",
         "title": "POS/Android"
       }
     ]
@@ -4166,11 +4166,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/POS เชื่อมต่อเครื่องชั่ง",
+        "path": "/collections/pos-scale-integration",
         "title": "POS เชื่อมต่อเครื่องชั่ง"
       },
       {
-        "path": "/collections/POS ระบบ Android",
+        "path": "/collections/pos-android",
         "title": "POS/Android"
       }
     ]
@@ -4204,15 +4204,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ขาตั้งอินดิเคเตอร์",
+        "path": "/collections/indicator-stands",
         "title": "ขาตั้งอินดิเคเตอร์"
       },
       {
-        "path": "/collections/ชิ้นส่วน",
+        "path": "/collections/parts",
         "title": "ชิ้นส่วน"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4246,15 +4246,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ชิ้นส่วน",
+        "path": "/collections/parts",
         "title": "ชิ้นส่วน"
       },
       {
-        "path": "/collections/แป้นรองเครื่องพิมพ์",
+        "path": "/collections/printer-mounts",
         "title": "แป้นรองเครื่องพิมพ์"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4287,7 +4287,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ทางลาดแท่นชั่ง",
+        "path": "/collections/platform-ramps",
         "title": "ทางลาดแท่นชั่ง"
       }
     ]
@@ -4320,7 +4320,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ทางลาดแท่นชั่ง",
+        "path": "/collections/platform-ramps",
         "title": "ทางลาดแท่นชั่ง"
       }
     ]
@@ -4354,15 +4354,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์",
+        "path": "/collections/label-rolls",
         "title": "ม้วนสติ๊กเกอร์"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4392,15 +4392,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
+        "path": "/collections/waterproof-label-rolls",
         "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4430,15 +4430,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์",
+        "path": "/collections/label-rolls",
         "title": "ม้วนสติ๊กเกอร์"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4468,15 +4468,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์",
+        "path": "/collections/label-rolls",
         "title": "ม้วนสติ๊กเกอร์"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4506,15 +4506,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
+        "path": "/collections/waterproof-label-rolls",
         "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4544,15 +4544,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
+        "path": "/collections/waterproof-label-rolls",
         "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4582,15 +4582,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนกระดาษ",
+        "path": "/collections/paper-rolls",
         "title": "ม้วนกระดาษ"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4620,15 +4620,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนกระดาษ",
+        "path": "/collections/paper-rolls",
         "title": "ม้วนกระดาษ"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4658,15 +4658,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนกระดาษ",
+        "path": "/collections/paper-rolls",
         "title": "ม้วนกระดาษ"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4696,15 +4696,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนกระดาษ",
+        "path": "/collections/paper-rolls",
         "title": "ม้วนกระดาษ"
       },
       {
-        "path": "/collections/วัสดุสิ้นเปลือง",
+        "path": "/collections/consumables",
         "title": "วัสดุสิ้นเปลือง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4732,7 +4732,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/พรีเมี่ยม",
+        "path": "/collections/premium",
         "title": "พรีเมี่ยม"
       }
     ]
@@ -4760,7 +4760,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/พรีเมี่ยม",
+        "path": "/collections/premium",
         "title": "พรีเมี่ยม"
       }
     ]
@@ -4788,7 +4788,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/พรีเมี่ยม",
+        "path": "/collections/premium",
         "title": "พรีเมี่ยม"
       }
     ]
@@ -4822,15 +4822,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องพิมพ์",
+        "path": "/collections/printers",
         "title": "Direct Thermal"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4862,15 +4862,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/คีย์บอร์ดและเม้าส์",
+        "path": "/collections/keyboards-and-mice",
         "title": "คีย์บอร์ดและเม้าส์"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4910,15 +4910,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องพิมพ์",
+        "path": "/collections/printers",
         "title": "Direct Thermal"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -4958,15 +4958,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องพิมพ์",
+        "path": "/collections/printers",
         "title": "Direct Thermal"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5002,15 +5002,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/จอแสดงผล",
+        "path": "/collections/displays",
         "title": "จอแสดงผล"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5046,15 +5046,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/จอแสดงผล",
+        "path": "/collections/displays",
         "title": "จอแสดงผล"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5094,15 +5094,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/จอแสดงผล",
+        "path": "/collections/displays",
         "title": "จอแสดงผล"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5136,15 +5136,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ไฟสัญญาณเตือน",
+        "path": "/collections/signal-lights",
         "title": "ไฟสัญญาณเตือน"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5178,15 +5178,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ไฟสัญญาณเตือน",
+        "path": "/collections/signal-lights",
         "title": "ไฟสัญญาณเตือน"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5222,15 +5222,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ลิ้นชักไฟฟ้า",
+        "path": "/collections/cash-drawers",
         "title": "ลิ้นชักไฟฟ้า"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5262,15 +5262,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/สแกนเนอร์บาร์โค้ด",
+        "path": "/collections/barcode-scanners",
         "title": "สแกนเนอร์บาร์โค้ด"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5302,15 +5302,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/สแกนเนอร์บาร์โค้ด",
+        "path": "/collections/barcode-scanners",
         "title": "สแกนเนอร์บาร์โค้ด"
       },
       {
-        "path": "/collections/อุปกรณ์ต่อพ่วง",
+        "path": "/collections/scale-peripherals",
         "title": "อุปกรณ์ต่อพ่วง"
       },
       {
-        "path": "/collections/อุปกรณ์ประกอบเครื่องชั่ง",
+        "path": "/collections/scale-accessories",
         "title": "อุปกรณ์ประกอบเครื่องชั่ง"
       }
     ]
@@ -5377,15 +5377,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5438,15 +5438,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5503,15 +5503,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5580,15 +5580,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5654,19 +5654,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "path": "/collections/pos-connected-weighing",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5729,15 +5729,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก กันน้ำ",
+        "path": "/collections/waterproof-weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5802,15 +5802,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5874,19 +5874,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก กันน้ำ",
+        "path": "/collections/waterproof-weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "path": "/collections/pos-connected-weighing",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -5947,15 +5947,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก กันน้ำ",
+        "path": "/collections/waterproof-weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6012,15 +6012,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก กันน้ำ",
+        "path": "/collections/waterproof-weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6079,15 +6079,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งนับจำนวน",
+        "path": "/collections/counting-scales",
         "title": "เครื่องชั่งนับจำนวน"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6146,15 +6146,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งนับจำนวน",
+        "path": "/collections/counting-scales",
         "title": "เครื่องชั่งนับจำนวน"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6214,11 +6214,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6279,15 +6279,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งนับจำนวน",
+        "path": "/collections/counting-scales",
         "title": "เครื่องชั่งนับจำนวน"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6345,11 +6345,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6413,11 +6413,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6475,11 +6475,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6539,11 +6539,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6602,7 +6602,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -6660,11 +6660,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อุตสาหกรรม",
+        "path": "/collections/industrial",
         "title": "อุตสาหกรรม"
       }
     ]
@@ -6723,7 +6723,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -6780,7 +6780,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -6833,7 +6833,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -6890,7 +6890,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -6929,11 +6929,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -6974,11 +6974,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -7040,15 +7040,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งน้ำหนัก",
+        "path": "/collections/weighing-scales",
         "title": "เครื่องชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "path": "/collections/pos-connected-weighing",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       }
     ]
@@ -7098,19 +7098,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ชั่งน้ำหนัก",
+        "path": "/collections/weighing-indicators",
         "title": "อินดิเคเตอร์ชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "path": "/collections/platform-weighing-indicators",
         "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
+        "path": "/collections/industrial-indicators",
         "title": "อินดิเคเตอร์อุตสาหกรรม"
       }
     ]
@@ -7160,19 +7160,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ชั่งน้ำหนัก",
+        "path": "/collections/weighing-indicators",
         "title": "อินดิเคเตอร์ชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "path": "/collections/platform-weighing-indicators",
         "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
+        "path": "/collections/industrial-indicators",
         "title": "อินดิเคเตอร์อุตสาหกรรม"
       }
     ]
@@ -7216,19 +7216,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ชั่งน้ำหนัก-พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial-weighing-indicators",
         "title": "อินดิเคเตอร์ชั่งน้ำหนัก-พาณิชยกรรมและบริการ"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "path": "/collections/platform-weighing-indicators",
         "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อินดิเคเตอร์พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial-indicators",
         "title": "อินดิเคเตอร์พาณิชยกรรมและบริการ"
       }
     ]
@@ -7274,19 +7274,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์นับจำนวน",
+        "path": "/collections/counting-indicators",
         "title": "อินดิเคเตอร์นับจำนวน"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "path": "/collections/platform-weighing-indicators",
         "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
+        "path": "/collections/industrial-indicators",
         "title": "อินดิเคเตอร์อุตสาหกรรม"
       }
     ]
@@ -7330,19 +7330,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์นับจำนวน",
+        "path": "/collections/counting-indicators",
         "title": "อินดิเคเตอร์นับจำนวน"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก",
+        "path": "/collections/platform-weighing-indicators",
         "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก"
       },
       {
-        "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
+        "path": "/collections/industrial-indicators",
         "title": "อินดิเคเตอร์อุตสาหกรรม"
       }
     ]
@@ -7386,19 +7386,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์กันน้ำ",
+        "path": "/collections/waterproof-indicators",
         "title": "อินดิเคเตอร์กันน้ำ"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ",
+        "path": "/collections/waterproof-platform-indicators",
         "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
+        "path": "/collections/industrial-indicators",
         "title": "อินดิเคเตอร์อุตสาหกรรม"
       }
     ]
@@ -7442,19 +7442,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/อินดิเคเตอร์กันน้ำ",
+        "path": "/collections/waterproof-indicators",
         "title": "อินดิเคเตอร์กันน้ำ"
       },
       {
-        "path": "/collections/อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ",
+        "path": "/collections/waterproof-platform-indicators",
         "title": "อินดิเคเตอร์ประกอบแท่นชั่งน้ำหนัก กันน้ำ"
       },
       {
-        "path": "/collections/อินดิเคเตอร์อุตสาหกรรม",
+        "path": "/collections/industrial-indicators",
         "title": "อินดิเคเตอร์อุตสาหกรรม"
       }
     ]
@@ -7492,15 +7492,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งโต๊ะ",
+        "path": "/collections/benchtop-platforms",
         "title": "แท่นชั่งตั้งโต๊ะ"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7542,15 +7542,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7588,15 +7588,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7634,15 +7634,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7680,15 +7680,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7726,15 +7726,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7772,15 +7772,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7819,19 +7819,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7869,15 +7869,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7915,15 +7915,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -7961,15 +7961,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -8008,19 +8008,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -8058,15 +8058,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -8104,15 +8104,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นเหล็กคาร์บอนสตีล",
+        "path": "/collections/carbon-steel-platforms",
         "title": "แท่นเหล็กคาร์บอนสตีล"
       }
     ]
@@ -8151,19 +8151,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งโต๊ะ",
+        "path": "/collections/benchtop-platforms",
         "title": "แท่นชั่งตั้งโต๊ะ"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8205,15 +8205,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8255,15 +8255,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8301,15 +8301,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8349,15 +8349,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8397,15 +8397,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8443,15 +8443,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8489,15 +8489,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น ขนาดใหญ่",
+        "path": "/collections/large-floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น ขนาดใหญ่"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8542,15 +8542,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/โครงสร้างแท่นชั่ง",
+        "path": "/collections/scale-platforms",
         "title": "โครงสร้างแท่นชั่ง"
       },
       {
-        "path": "/collections/แท่นชั่งตั้งพืั้น",
+        "path": "/collections/floor-platforms",
         "title": "แท่นชั่งตั้งพืั้น"
       },
       {
-        "path": "/collections/แท่นชั่งสแตนเลสสตีล",
+        "path": "/collections/stainless-steel-platforms",
         "title": "แท่นชั่งสแตนเลสสตีล"
       }
     ]
@@ -8598,19 +8598,19 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์",
+        "path": "/collections/label-printing-price-scales",
         "title": "เครื่องชั่งคำนวณราคา พิมพ์ฉลากสติ๊กเกอร์"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "path": "/collections/pos-connected-weighing",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -8665,15 +8665,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "path": "/collections/pos-connected-weighing",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -8728,15 +8728,15 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       },
       {
-        "path": "/collections/ชั่งน้ำหนัก เชื่อมต่อ POS",
+        "path": "/collections/pos-connected-weighing",
         "title": "เครื่องชั่งน้ำหนัก เชื่อมต่อ POS"
       },
       {
-        "path": "/collections/พาณิชยกรรมและบริการ",
+        "path": "/collections/commercial",
         "title": "พาณิชยกรรมและบริการ"
       }
     ]
@@ -8767,11 +8767,11 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่งคำนวณราคา",
+        "path": "/collections/price-computing-scales",
         "title": "เครื่องชั่งคำนวณราคา"
       },
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -8803,7 +8803,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/เครื่องชั่ง",
+        "path": "/collections/scales",
         "title": "เครื่องชั่ง"
       }
     ]
@@ -8831,7 +8831,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์",
+        "path": "/collections/label-rolls",
         "title": "ม้วนสติ๊กเกอร์"
       }
     ]
@@ -8859,7 +8859,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์",
+        "path": "/collections/label-rolls",
         "title": "ม้วนสติ๊กเกอร์"
       }
     ]
@@ -8887,7 +8887,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์ กันน้ำ",
+        "path": "/collections/waterproof-label-rolls",
         "title": "ม้วนสติ๊กเกอร์ กันน้ำ"
       }
     ]
@@ -8915,7 +8915,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนสติ๊กเกอร์",
+        "path": "/collections/label-rolls",
         "title": "ม้วนสติ๊กเกอร์"
       }
     ]
@@ -8943,7 +8943,7 @@
     "price": null,
     "collections": [
       {
-        "path": "/collections/ม้วนกระดาษ",
+        "path": "/collections/paper-rolls",
         "title": "ม้วนกระดาษ"
       }
     ]

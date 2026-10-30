@@ -104,6 +104,7 @@ test("mobile navigation keeps the original list and closes after following an in
     ...menus.map((menu) => menu.label),
     "บริการและการสนับสนุน",
     "สำรวจข้อมูลทั้งหมด",
+    "บริการหลังการขาย",
     "ติดต่อเรา",
   ]);
   await expect(mobileNavigation.locator("ul")).toHaveCount(0);

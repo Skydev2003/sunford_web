@@ -22,7 +22,7 @@ test("home solutions show editable artwork, working destinations and a compact r
   );
   await expect(section.getByRole("link", { name: /ACCESSORIES/ })).toHaveAttribute(
     "href",
-    "/product/อุปกรณ์ประกอบเครื่องชั่ง",
+    "/product/scale-accessories",
   );
   await expect(section.getByRole("link", { name: /SOFTWARE & APPLICATIONS/ })).toHaveAttribute(
     "href",

@@ -53,10 +53,10 @@ test("imported company, collection, software and warranty pages are available", 
 }) => {
   await page.goto("/about-us");
   await expect(page.locator("main")).toContainText("จุดเริ่มต้นของเรา");
-  await page.goto("/collections/Smart%20weighing");
+  await page.goto("/collections/Smart weighing");
   await expect(page.locator(".product-card").first()).toBeVisible();
   await page.goto("/software/download");
-  await expect(page.locator(".directory-card").first()).toBeVisible();
+  await expect(page.locator(".software-card").first()).toBeVisible();
   await page.goto("/software/download/sunford-pos-android");
   await expect(page.locator("main")).toContainText("Android");
   await expect(page.locator(".video-card").first()).toBeVisible();

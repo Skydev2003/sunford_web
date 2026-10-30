@@ -2,25 +2,26 @@ import { expect, test } from "@playwright/test";
 import { load } from "cheerio";
 import sourcePages from "../../src/features/content/data/pages.json";
 import type { Product } from "../../src/features/catalog/types";
+import { publicPath } from "../../src/features/content/data/public-paths.mjs";
 
 // Dedicated source collections correct several misconfigured landing-page grids.
 const collectionSources: Record<string, string[]> = {
   "/product/digital-weighing": ["เครื่องชั่ง"],
-  "/product/ห้องปฏิบัติการ": ["ห้องปฏิบัติการ"],
-  "/product/อุตสาหกรรม": ["อุตสาหกรรม"],
-  "/product/พาณิชยกรรมและบริการ": ["พาณิชยกรรมและบริการ"],
-  "/product/ไลฟ์สไตล์": ["ไลฟ์สไตล์"],
+  "/product/laboratory": ["ห้องปฏิบัติการ"],
+  "/product/industrial": ["อุตสาหกรรม"],
+  "/product/commercial": ["พาณิชยกรรมและบริการ"],
+  "/product/lifestyle-scales": ["ไลฟ์สไตล์"],
   "/product/lifestyle": ["ไลฟ์สไตล์"],
   "/indicator": [
     "อินดิเคเตอร์ห้องปฏิบัติการ",
     "อินดิเคเตอร์อุตสาหกรรม",
     "อินดิเคเตอร์พาณิชยกรรมและบริการ",
   ],
-  "/indicator/อุตสาหกรรม": ["อินดิเคเตอร์อุตสาหกรรม"],
-  "/product/โครงสร้างแท่นชั่ง": ["โครงสร้างแท่นชั่ง"],
-  "/product/อุปกรณ์ต่อพ่วง": ["อุปกรณ์ต่อพ่วง"],
+  "/indicator/industrial": ["อินดิเคเตอร์อุตสาหกรรม"],
+  "/product/scale-platforms": ["โครงสร้างแท่นชั่ง"],
+  "/product/scale-peripherals": ["อุปกรณ์ต่อพ่วง"],
   "/product/scale-parts": ["ชิ้นส่วน"],
-  "/product/ชิ้นส่วน": ["ชิ้นส่วน"],
+  "/product/parts": ["ชิ้นส่วน"],
   "/product/consumables": ["วัสดุสิ้นเปลือง"],
   "/product/pos/windows": ["POS ระบบ Windows"],
 };
@@ -44,7 +45,8 @@ test("every source category renders its published products without cross-categor
           sourceCollections
             ? sourceCollections.flatMap(
                 (name) =>
-                  sourcePages.find((page) => page.path === `/collections/${name}`)!.productHandles,
+                  sourcePages.find((page) => page.path === publicPath(`/collections/${name}`))!
+                    .productHandles,
               )
             : source.productHandles,
         );
@@ -75,7 +77,7 @@ test("every source category renders its published products without cross-categor
 test("category search stays local and the complete scale catalogue can be expanded", async ({
   page,
 }) => {
-  await page.goto("/product/อุตสาหกรรม");
+  await page.goto("/product/industrial");
   await expect(page.locator(".product-card")).toHaveCount(20);
   await page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("no-matching-model");
   await expect(page.locator(".product-card")).toHaveCount(0);
@@ -88,7 +90,7 @@ test("category search stays local and the complete scale catalogue can be expand
     await page.locator(".catalog-load-more button").click();
   await expect(page.locator(".product-card")).toHaveCount(71);
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const path of ["/Indicator", "/product/อุปกรณ์ประกอบเครื่องชั่ง", "/product/Consumables"]) {
+  for (const path of ["/Indicator", "/product/scale-accessories", "/product/Consumables"]) {
     await page.goto(path);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),

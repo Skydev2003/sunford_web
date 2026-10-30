@@ -1,11 +1,13 @@
 import { createHash } from "node:crypto";
 import sourcePages from "./pages.json";
+import { publicPath } from "./public-paths.mjs";
 
-// Vercel appends prerender sidecars, and Next's runtime cache URL-encodes names.
-// Use bounded ASCII paths internally while rewrites preserve the public URL.
 export function contentRoutePath(path: string) {
-  const safe = path.split("/").every((segment) => encodeURIComponent(segment).length <= 200);
-  return safe ? path : `/_content/${createHash("sha256").update(path).digest("hex")}`;
+  const canonical = publicPath(path);
+  const safe = canonical
+    .split("/")
+    .every((segment: string) => encodeURIComponent(segment).length <= 200);
+  return safe ? canonical : `/_content/${createHash("sha256").update(canonical).digest("hex")}`;
 }
 
 export const contentRewrites = sourcePages
@@ -15,8 +17,16 @@ export const contentRewrites = sourcePages
 const originalPaths = new Map(
   contentRewrites.map(({ source, destination }) => [destination, source]),
 );
+for (const page of sourcePages) {
+  const original = decodeURIComponent(new URL(page.sourceUrl).pathname);
+  if (original.split("/").some((segment) => encodeURIComponent(segment).length > 200))
+    originalPaths.set(
+      `/_content/${createHash("sha256").update(original).digest("hex")}`,
+      page.path,
+    );
+}
 export function resolveContentPath(path: string) {
-  return originalPaths.get(path) ?? path;
+  return publicPath(originalPaths.get(path) ?? path);
 }
 
 export function staticContentParams(pages: { path: string; kind: string }[]) {

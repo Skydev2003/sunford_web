@@ -123,6 +123,12 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 
 ครอบคลุม hero, category filters, search + empty results, product navigation, comparison, mobile navigation / overflow, catalogue API และ 404 ภาพหน้าจอสำหรับตรวจ UI จะถูกบันทึกลง `/tmp/sunford-*.png`
 
+## Path ภายในเว็บไซต์
+
+ชื่อไฟล์ โฟลเดอร์ และ URL ภายในต้องไม่มีภาษาไทย URL เดิมที่เป็นไทย redirect แบบ 308 ไปยังชื่ออังกฤษ เมนูและลิงก์ในเนื้อหาใช้ชื่ออังกฤษโดยตรง ข้อความภาษาไทยบนหน้าเว็บยังแสดงตามเดิม ส่วน `sourceUrl` และรายงานนำเข้าเก็บ URL ของเว็บต้นทางไว้เพื่ออ้างอิง
+
+ตรวจด้วย `npm run paths:check` ซึ่งตรวจชื่อไฟล์ path ในโค้ด ข้อมูลนำเข้าและลิงก์ HTML และทำงานร่วมกับ `npm run test:uat`
+
 ## เนื้อหาและภาพ
 
 แหล่งข้อมูลหลักคือเว็บไซต์ [Sunford](https://www.sunford.co) เก็บข้อมูลเต็มไว้ใน snapshot ส่วนภาพสินค้าแบบตัดพื้นหลังเดิมและภาพแบรนด์บางส่วนมาจาก [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) แสดงราคาเฉพาะรายการที่เว็บไซต์ต้นฉบับเปิดเผยราคา ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford

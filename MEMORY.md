@@ -119,3 +119,9 @@
 - Observed: The user could not run `bun dev` because the agent’s local verification server still held the development-server lock.
 - Root cause: A QA development server was left running after verification without coordinating who would own the local server.
 - Correct behavior: Stop agent-started QA development servers before handing the terminal back unless the user asks to keep them running. When resolving a conflict, verify the process command line and project directory before stopping it, then confirm the port is free. Do not start a replacement server when the user intends to run their own.
+
+## Check translated paths against existing ASCII routes
+
+- Observed: Initial English translations for two Thai routes collided with existing ASCII destinations when compared without case.
+- Root cause: Translating each source segment independently did not account for English routes already present in the imported catalogue.
+- Correct behavior: Compare every proposed destination against the complete existing route set using case-insensitive keys before applying a path migration. Give distinct source pages distinct destinations, retain existing ASCII paths and verify redirects and product memberships across all affected pages.
