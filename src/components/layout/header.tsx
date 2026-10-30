@@ -217,7 +217,7 @@ export function Header({
               <div
                 key={`${index}:${item.href}`}
                 ref={displayMenu === index ? panelRef : undefined}
-                className={`submenu-panel ${displayMenu === index ? "is-active" : ""}`}
+                className={`submenu-panel ${item.href === "/solutions" ? "submenu-panel--solutions" : ""} ${displayMenu === index ? "is-active" : ""}`}
                 aria-hidden={activeMenu === null || displayMenu !== index}
                 inert={activeMenu === null || displayMenu !== index}
               >

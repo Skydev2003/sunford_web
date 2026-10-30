@@ -1,0 +1,62 @@
+[
+  {
+    "id": "rs232",
+    "title": "การส่งข้อมูลน้ำหนักจากเครื่องชั่งไปยังคอมพิวตอร์ แบบใช้สาย RS232",
+    "path": "/solutions/rs232"
+  },
+  {
+    "id": "wireless",
+    "title": "การส่งข้อมูลน้ำหนักจากเครื่องชั่งไปยังคอมพิวตอร์ ไร้สาย",
+    "path": "/solutions/wireless"
+  },
+  {
+    "id": "usb-drive",
+    "title": "การส่งข้อมูลน้ำหนักจากเครื่องชั่งเพื่อบันทึกบน USB Drive",
+    "path": "/solutions/usb-drive"
+  },
+  {
+    "id": "android",
+    "title": "การบันทึกรายงานการชั่งน้ำหนักบนอุปกรณ์ Android เบื่องต้น",
+    "path": "/solutions/android"
+  },
+  {
+    "id": "label-printing",
+    "title": "การพิมพ์สติ๊กเกอร์น้ำหนัก-วันที่-เวลา-ภาพพื้นหลัง-บาร์โค้ด-คิวอาร์โค้ดจากเครื่องชั่ง",
+    "path": "/solutions/label-printing"
+  },
+  {
+    "id": "pos-label-printing",
+    "title": "การพิมพ์สติ๊กเกอร์น้ำหนัก-วันที่-เวลา-ภาพพื้นหลัง-บาร์โค้ด-คิวอาร์โค้ดจากเครื่องชั่ง สำหรับ POS",
+    "path": "/solutions/pos-label-printing"
+  },
+  {
+    "id": "lot-serial",
+    "title": "การชั่งน้ำหนักเพร้อมสร้าง Lot No. และ Serial No. สำหรับกระบวนการผลิต",
+    "path": "/solutions/lot-serial"
+  },
+  {
+    "id": "pos",
+    "title": "การใช้เครื่องชั่งร่วมกับระบบขายหน้าร้าน POS",
+    "path": "/solutions/pos"
+  },
+  {
+    "id": "checkweighing",
+    "title": "การแจ้งเตือนน้ำหนักขาด-เกิน จากช่วงที่กำหนดด้วยเครื่องชั่ง",
+    "path": "/solutions/checkweighing"
+  },
+  {
+    "id": "external-display",
+    "title": "การเชื่อมต่อจอแสดงผลภายนอก",
+    "path": "/solutions/external-display"
+  },
+  {
+    "id": "plc",
+    "title": "การใช้เครื่องชั่งร่วมกับอุปกรณ์ PLC",
+    "path": "/solutions/plc"
+  },
+  {
+    "id": "wet-environments",
+    "title": "การชั่งน้ำหนักสำหรับสภาพเปียกชื้น",
+    "path": "/solutions/wet-environments"
+  }
+]

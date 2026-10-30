@@ -6,8 +6,6 @@ import { CategoriesProvider } from "@/features/cms/components/categories-provide
 
 const sunfordFont = localFont({
   src: [
-    { path: "./fonts/inter-regular.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/inter-bold.ttf", weight: "700", style: "normal" },
     { path: "./fonts/noto-thai-regular.ttf", weight: "400", style: "normal" },
     { path: "./fonts/noto-thai-semibold.ttf", weight: "600", style: "normal" },
   ],

@@ -1,0 +1,408 @@
+{
+  "checkedAt": "2026-10-30T06:47:51.769Z",
+  "source": "https://www.sunford.co/",
+  "pages": [
+    {
+      "id": "rs232",
+      "path": "/solutions/rs232",
+      "sourceUrl": "https://www.sunford.co/การส่งข้อมูลน้ำหนักจากเครื่องชั่งไปยังคอมพิวตอร์",
+      "characters": 3366,
+      "headings": [
+        "การส่งข้อมูลน้ำหนักจากเครื่องชั่งไปยังคอมพิวเตอร์",
+        "การเชื่อมต่อระหว่างอุปกรณ์",
+        "เครื่องชั่ง",
+        "คอมพิวเตอร์",
+        "สายที่ใช้งาน",
+        "การเชื่อมต่อผ่านพอร์ต RS232",
+        "ข้อดีของการส่งข้อมูลน้ำหนักจากเครื่องชั่งไปยังคอมพิวเตอร์",
+        "ความน่าเชื่อถือและความเสถียรสูง",
+        "คอมพิวเตอร์รุ่นใหม่รองรับได้ทันที",
+        "ต้นทุนต่ำและคุ้มค่า",
+        "ใช้งานง่าย ติดตั้งไม่ซับซ้อน",
+        "รองรับซอฟต์แวร์หลากหลาย",
+        "โปรแกรมสำหรับรับข้อมูลน้ำหนักของซันฟอร์ด",
+        "SUNFORD Driver",
+        "SUNFORD INDUS",
+        "สรุป"
+      ],
+      "images": 0,
+      "svg": 4,
+      "tables": 0,
+      "videos": 0,
+      "links": [
+        {
+          "label": "สั่งซื้อสาย RS232 to USB",
+          "source": "https://sunfordshop.com/%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B8%84%E0%B9%89%E0%B8%B2/UNITEXRS232USB",
+          "target": "https://sunfordshop.com/%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B8%84%E0%B9%89%E0%B8%B2/UNITEXRS232USB"
+        },
+        {
+          "label": "SUNFORD Driver",
+          "source": "https://www.sunford.co/software/download/sunford-drv",
+          "target": "/software/download/sunford-drv"
+        },
+        {
+          "label": "รายละเอียดเพิ่มเติม",
+          "source": "https://www.sunford.co/software/download/sunford-drv",
+          "target": "/software/download/sunford-drv"
+        },
+        {
+          "label": "SUNFORD INDUS",
+          "source": "https://www.sunford.co/software/download/sunford-indus",
+          "target": "/software/download/sunford-indus"
+        },
+        {
+          "label": "รายละเอียดเพิ่มเติม",
+          "source": "https://www.sunford.co/software/download/sunford-indus",
+          "target": "/software/download/sunford-indus"
+        }
+      ],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "wireless",
+      "path": "/solutions/wireless",
+      "sourceUrl": "https://www.sunford.co/การส่งข้อมูลน้ำหนักจากเครื่องชั่งไปยังคอมพิวตอร์-ไร้สาย",
+      "characters": 3753,
+      "headings": [
+        "การส่งข้อมูลน้ำหนักจากเครื่องชั่งไปยังคอมพิวเตอร์แบบไร้สายผ่านบลูทูธ",
+        "การเชื่อมต่อระหว่างอุปกรณ์",
+        "เครื่องชั่ง",
+        "อุปกรณ์ที่รองรับ",
+        "ระยะการส่งข้อมูล",
+        "โซลูชันการชั่งน้ำหนักแบบไร้สายยุคใหม่",
+        "ข้อดีของการส่งข้อมูลผ่านบลูทูธ",
+        "อิสระในการวางตำแหน่งและเคลื่อนย้าย",
+        "ความสะดวกในการเชื่อมต่อกับอุปกรณ์สมัยใหม่",
+        "ลดค่าใช้จ่ายในการบำรุงรักษาในระยะยาว",
+        "ติดตั้งง่ายและปรับเปลี่ยนพื้นที่ได้รวดเร็ว",
+        "รองรับเทคโนโลยีและซอฟต์แวร์ยุคใหม่",
+        "การทำงานร่วมกับซอฟต์แวร์ WeWeigh2",
+        "โปรแกรมจัดการข้อมูลน้ำหนัก WeWeigh2",
+        "เปรียบเทียบจุดเด่นรูปแบบการเชื่อมต่อ",
+        "สรุป"
+      ],
+      "images": 0,
+      "svg": 2,
+      "tables": 0,
+      "videos": 0,
+      "links": [
+        {
+          "label": "WeWeigh2",
+          "source": "https://weweigh.app/",
+          "target": "https://weweigh.app/"
+        },
+        {
+          "label": "เข้าชมเว็บไซต์ WeWeigh2",
+          "source": "https://weweigh.app/",
+          "target": "https://weweigh.app/"
+        }
+      ],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "usb-drive",
+      "path": "/solutions/usb-drive",
+      "sourceUrl": "https://www.sunford.co/การส่งข้อมูลน้ำหนักจากเครื่องชั่งเพื่อบันทึกบน-USB-Drive",
+      "characters": 3915,
+      "headings": [
+        "การส่งข้อมูลน้ำหนักจากเครื่องชั่งเพื่อบันทึกบน USB Drive",
+        "การเชื่อมต่อระหว่างอุปกรณ์",
+        "เครื่องชั่ง",
+        "ข้อมูลที่บันทึก",
+        "เครื่องชั่งที่ใช้งานได้",
+        "ตำแหน่งพอร์ตและการทำงาน (SUNFORD WP31E)",
+        "ตัวอย่างข้อมูลที่บันทึกลง USB แล้วนำเข้าคอมพิวเตอร์",
+        "ข้อดีของการบันทึกข้อมูลน้ำหนักลงใน USB Drive",
+        "1. ทำงานได้อิสระ ไม่ต้องใช้คอมพิวเตอร์หน้างาน (Stand-alone Solution)",
+        "2. บันทึกข้อมูลได้รวดเร็วและเป็นอัตโนมัติ (Automated Data Logging)",
+        "3. จัดเก็บข้อมูลเป็นไฟล์มาตรฐาน นำไปใช้ต่อได้ง่าย (Easy Data Export)",
+        "4. มีความปลอดภัยสูงและความน่าเชื่อถือของข้อมูล (Data Security)",
+        "5. พกพาสะดวกและจัดเก็บง่าย (Portability)",
+        "ขั้นตอนการบันทึกลง USB แล้วนำเข้าคอมพิวเตอร์",
+        "ทำไมหัวอ่านรุ่นนี้เหมาะกับหน้างาน"
+      ],
+      "images": 0,
+      "svg": 0,
+      "tables": 1,
+      "videos": 0,
+      "links": [
+        {
+          "label": "ตรวจสอบสินค้า",
+          "source": "https://www.sunford.co/products/10780?variant=69523543ec37d70a70e7aa42&quantity=1",
+          "target": "/products/10780?variant=69523543ec37d70a70e7aa42&quantity=1"
+        },
+        {
+          "label": "▶ ดูคลิปสาธิต",
+          "source": "https://youtu.be/l5Q0paNc8bU?si=pfVxP2VdKyqN9UDs",
+          "target": "https://youtu.be/l5Q0paNc8bU?si=pfVxP2VdKyqN9UDs"
+        }
+      ],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "android",
+      "path": "/solutions/android",
+      "sourceUrl": "https://www.sunford.co/การบันทึกรายงานการชั่งน้ำหนักบนอุปกรณ์-Android-เบื่องต้น",
+      "characters": 3379,
+      "headings": [
+        "การบันทึกรายงานการชั่งน้ำหนักบนอุปกรณ์ Android เบื้องต้น",
+        "การเชื่อมต่อระหว่างอุปกรณ์",
+        "เครื่องชั่ง",
+        "อุปกรณ์ Android",
+        "แอปพลิเคชัน wewiegh",
+        "โซลูชันบันทึกข้อมูลน้ำหนักสำหรับอุปกรณ์ Android",
+        "จุดเด่นสำคัญของการใช้งานบนระบบ Android",
+        "ความคล่องตัวสูงและประหยัดต้นทุนอุปกรณ์",
+        "บันทึกและประมวลผลข้อมูลอัตโนมัติ (ลด Human Error)",
+        "จัดการและส่งออกรายงานได้สะดวก",
+        "ใช้งานง่าย ติดตั้งไม่ซับซ้อน",
+        "เกี่ยวกับแอปพลิเคชัน SUNFORD WeWeigh",
+        "แอปพลิเคชันบันทึกและประมวลผลน้ำหนัก SUNFORD WeWeigh",
+        "สรุปภาพรวม"
+      ],
+      "images": 0,
+      "svg": 2,
+      "tables": 0,
+      "videos": 0,
+      "links": [
+        {
+          "label": "SUNFORD WeWeigh",
+          "source": "https://www.sunford.co/software/download/sunford-we-weight",
+          "target": "/software/download/sunford-we-weight"
+        },
+        {
+          "label": "รายละเอียดเพิ่มเติม SUNFORD WeWeigh",
+          "source": "https://www.sunford.co/software/download/sunford-we-weight",
+          "target": "/software/download/sunford-we-weight"
+        }
+      ],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "label-printing",
+      "path": "/solutions/label-printing",
+      "sourceUrl": "https://www.sunford.co/การพิมพ์สติ๊กเกอร์น้ำหนัก-วันที่-เวลา-ภาพพื้นหลัง-บาร์โค้ด-คิวอาร์โค้ดจากเครื่องชั่ง",
+      "characters": 2460,
+      "headings": [
+        "การพิมพ์สติ๊กเกอร์น้ำหนัก-วันที่-เวลา-ภาพพื้นหลัง-บาร์โค้ด-คิวอาร์โค้ดจากเครื่องชั่ง",
+        "ระบบการพิมพ์ฉลากโดยตรงจากเครื่องชั่ง (Stand-alone Printing)",
+        "รุ่นเครื่องพิมพ์ความร้อน SUNFORD ที่รองรับ",
+        "การพิมพ์แบบความร้อนโดยตรง (Direct Thermal)",
+        "การพิมพ์แบบผ่านริบบอน (Thermal Transfer)",
+        "จุดเด่นและการออกแบบ Template สติ๊กเกอร์",
+        "ออกแบบ Template ได้อย่างอิสระและแม่นยำ",
+        "ใส่ภาพพื้นหลัง โลโก้ และสัญลักษณ์แบรนด์",
+        "แปลงน้ำหนักเป็น Barcode & QR Code",
+        "สรุปภาพรวม"
+      ],
+      "images": 0,
+      "svg": 3,
+      "tables": 0,
+      "videos": 0,
+      "links": [],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "pos-label-printing",
+      "path": "/solutions/pos-label-printing",
+      "sourceUrl": "https://www.sunford.co/การพิมพ์สติ๊กเกอร์น้ำหนัก-วันที่-เวลา-ภาพพื้นหลัง-บาร์โค้ด-คิวอาร์โค้ดจากเครื่องชั่ง-สำหรับ-POS",
+      "characters": 3596,
+      "headings": [
+        "การพิมพ์สติ๊กเกอร์น้ำหนัก วันที่ เวลา ภาพพื้นหลัง บาร์โค้ด และคิวอาร์โค้ดจากเครื่องชั่งสำหรับระบบ POS",
+        "ตอบโจทย์งานขายหน้าร้านยกระดับระบบ POS",
+        "ข้อดีใช้งานระบบ POS",
+        "เชื่อมต่อระบบ POS สแกนขายสินค้าได้ทันที (Automated POS Integration)",
+        "ป้องกันข้อผิดพลาดและลดการทุจริต (Data Accuracy & Security)",
+        "ยกระดับภาพลักษณ์แบรนด์ด้วยภาพพื้นหลังและโลโก้ (Custom Branding)",
+        "บริหารจัดการสต็อกและคุมคุณภาพสินค้าได้แม่นยำ (Inventory & FIFO Control)",
+        "รองรับการสื่อสารข้อมูลเชิงลึกผ่าน QR Code (Interactive Label)",
+        "โปรแกรมและไดรเวอร์สำหรับระบบ POS",
+        "ซอฟต์แวร์จัดการเครื่องชั่งและพิมพ์ฉลาก SUNFORD RLS1100 Software",
+        "สรุปภาพรวม"
+      ],
+      "images": 0,
+      "svg": 3,
+      "tables": 0,
+      "videos": 0,
+      "links": [
+        {
+          "label": "SUNFORD RLS1100 Software",
+          "source": "https://www.sunford.co/software/download/sunford-rls1100",
+          "target": "/software/download/sunford-rls1100"
+        },
+        {
+          "label": "ดาวน์โหลด SUNFORD RLS1100 Software",
+          "source": "https://www.sunford.co/software/download/sunford-rls1100",
+          "target": "/software/download/sunford-rls1100"
+        },
+        {
+          "label": "ศูนย์ดาวน์โหลดซอฟต์แวร์ค้าปลีก",
+          "source": "https://www.sunford.co/software/download#retail-software",
+          "target": "/software/download#retail-software"
+        }
+      ],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "lot-serial",
+      "path": "/solutions/lot-serial",
+      "sourceUrl": "https://www.sunford.co/การชั่งน้ำหนักเพร้อมสร้าง-Lot-No-และ-Serial-No-สำหรับกระบวนการผลิต",
+      "characters": 0,
+      "headings": [],
+      "images": 0,
+      "svg": 0,
+      "tables": 0,
+      "videos": 0,
+      "links": [],
+      "textPreserved": true,
+      "sourceEmpty": true
+    },
+    {
+      "id": "pos",
+      "path": "/solutions/pos",
+      "sourceUrl": "https://www.sunford.co/การใช้เครื่องชั่งร่วมกับระบบขายหน้าร้าน-POS",
+      "characters": 0,
+      "headings": [],
+      "images": 0,
+      "svg": 0,
+      "tables": 0,
+      "videos": 0,
+      "links": [],
+      "textPreserved": true,
+      "sourceEmpty": true
+    },
+    {
+      "id": "checkweighing",
+      "path": "/solutions/checkweighing",
+      "sourceUrl": "https://www.sunford.co/การแจ้งเตือนน้ำหนักขาด-เกิน-จากช่วงที่กำหนดด้วยเครื่องชั่ง",
+      "characters": 3802,
+      "headings": [
+        "การแจ้งเตือนน้ำหนักขาด-เกิน",
+        "หลักการทำงานของระบบ Checkweighing (HI / OK / LO)",
+        "1. รูปแบบการแจ้งเตือนของระบบ (Alert Methods)",
+        "2. ขั้นตอนการตั้งค่าฟังก์ชัน Hi-Lo-OK บนหัวชั่ง (Basic Setup Steps)",
+        "เข้าโหมดตั้งค่า Checkweighing / Target (1-2 นาที)",
+        "กำหนดค่าน้ำหนักต่ำสุด (Low Limit) (1 นาที)",
+        "กำหนดค่าน้ำหนักสูงสุด (High Limit) (1 นาที)",
+        "วางสินค้าเพื่อสอบเช็กสัญญาณเตือน",
+        "3. ประโยชน์หลักในการนำไปใช้ในธุรกิจ",
+        "ลดการสูญเสียวัตถุดิบ",
+        "ควบคุมคุณภาพ 100%",
+        "เพิ่มความเร็วในสายการผลิต",
+        "สรุปภาพรวม"
+      ],
+      "images": 0,
+      "svg": 3,
+      "tables": 1,
+      "videos": 0,
+      "links": [],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "external-display",
+      "path": "/solutions/external-display",
+      "sourceUrl": "https://www.sunford.co/การเชื่อมต่อจอแสดงผลภายนอก",
+      "characters": 2499,
+      "headings": [
+        "การเชื่อมต่อจอแสดงผลภายนอก",
+        "การเชื่อมต่อจอแสดงผลภายนอกกับเครื่องชั่งดิจิทัล SUNFORD",
+        "Step 1: ตรวจสอบพอร์ตเชื่อมต่อ (Check Ports)",
+        "RS232",
+        "DIN",
+        "Step 2: ขั้นตอนการเชื่อมต่อและตั้งค่าระบบ (Setup Steps)",
+        "ตั้งค่าการส่งออกข้อมูลที่เครื่องชั่ง",
+        "เสียบสายสัญญาณและเปิดอุปกรณ์",
+        "แก้ปัญหาเบื้องต้นเมื่อภาพไม่ขึ้น",
+        "ถอดสายแล้วเสียบใหม่",
+        "สลับช่อง Input ของจอภาพ",
+        "อัปเดตไดรเวอร์การ์ดจอ (Graphics Driver)",
+        "ปรับความละเอียดหน้าจอ (Resolution)",
+        "สรุปภาพรวม"
+      ],
+      "images": 0,
+      "svg": 2,
+      "tables": 0,
+      "videos": 0,
+      "links": [],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "plc",
+      "path": "/solutions/plc",
+      "sourceUrl": "https://www.sunford.co/การใช้เครื่องชั่งร่วมกับอุปกรณ์-PLC",
+      "characters": 4330,
+      "headings": [
+        "การใช้งานเครื่องชั่งน้ำหนักร่วมกับอุปกรณ์ PLC",
+        "บทบาทของเครื่องชั่งและ PLC ในระบบอุตสาหกรรมอัตโนมัติ",
+        "1. รูปแบบการเชื่อมต่อระหว่างเครื่องชั่งกับ PLC (Connection Methods)",
+        "2. ข้อดีของการใช้เครื่องชั่งร่วมกับ PLC (Key Benefits)",
+        "ความแม่นยำสูงและทำงานอัตโนมัติ 100%",
+        "ลดระยะเวลา Cycle Time",
+        "บันทึกข้อมูลและเชื่อมต่อระบบหลัก",
+        "มีความปลอดภัยและความเสถียรสูง",
+        "3. ตัวอย่างประยุกต์ใช้งานในอุตสาหกรรม (Industrial Applications)",
+        "ระบบผสมวัตถุดิบ (Automatic Batching System)",
+        "เครื่องบรรจุอัตโนมัติ (Automatic Filling & Packaging)",
+        "สายพานคัดแยกน้ำหนัก (Checkweigher & Sorting)",
+        "4. ข้อควรระวังในการติดตั้งและออกแบบระบบ",
+        "สัญญาณรบกวน (Electrical Noise)",
+        "แรงสั่นสะเทือน (Vibration)",
+        "การต่อลงดิน (Grounding)",
+        "สรุปภาพรวม"
+      ],
+      "images": 0,
+      "svg": 3,
+      "tables": 1,
+      "videos": 0,
+      "links": [],
+      "textPreserved": true,
+      "sourceEmpty": false
+    },
+    {
+      "id": "wet-environments",
+      "path": "/solutions/wet-environments",
+      "sourceUrl": "https://www.sunford.co/การชั่งน้ำหนักสำหรับสภาพเปียกชื้น",
+      "characters": 2867,
+      "headings": [
+        "การชั่งน้ำหนักสำหรับสภาพเปียกชื้น",
+        "ทำไมต้องเลือกเครื่องชั่งเฉพาะทางสำหรับพื้นที่เปียกชื้น",
+        "ข้อดีของเครื่องชั่งสำหรับสภาพเปียกชื้น",
+        "ความทนทานสูงและอายุการใช้งานยาวนาน (High Durability)",
+        "ถูกสุขอนามัย ทำความสะอาดง่าย (Hygiene & Easy Washdown)",
+        "ประสิทธิภาพและความแม่นยำคงที่ (Consistent Accuracy)",
+        "ลดค่าใช้จ่ายในการซ่อมบำรุง (Lower Maintenance Cost)",
+        "ความปลอดภัยของผู้ปฏิบัติงาน (Safety)",
+        "ความรู้เพิ่มเติมเกี่ยวกับมาตรฐาน IP Rating",
+        "คู่มือเลือกมาตรฐาน มาตรฐานการป้องกันน้ำและฝุ่นละออง (IP RATING)",
+        "สรุปภาพรวม"
+      ],
+      "images": 0,
+      "svg": 0,
+      "tables": 0,
+      "videos": 0,
+      "links": [
+        {
+          "label": "มาตรฐานการป้องกันน้ำและฝุ่นละออง (IP RATING)",
+          "source": "https://www.sunford.co/blogs/editorial/มาตรฐานการป้องกันน้ำและฝุ่นละออง_IP_RATING",
+          "target": "/blogs/editorial/ip-ratings-guide"
+        },
+        {
+          "label": "อ่านบทความเรื่อง IP RATING",
+          "source": "https://www.sunford.co/blogs/editorial/มาตรฐานการป้องกันน้ำและฝุ่นละออง_IP_RATING",
+          "target": "/blogs/editorial/ip-ratings-guide"
+        }
+      ],
+      "textPreserved": true,
+      "sourceEmpty": false
+    }
+  ],
+  "assets": []
+}

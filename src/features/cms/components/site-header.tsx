@@ -18,6 +18,11 @@ export async function SiteHeader() {
     }
     return { ...item, links };
   });
+  const solutionsMenu = defaultNavigation.find((item) => item.href === "/solutions")!;
+  const solutionsPosition = items.findIndex((item) => item.href === "/solutions");
+  if (solutionsPosition >= 0) items.splice(solutionsPosition, 1);
+  const posPosition = items.findIndex((item) => item.href.toLowerCase() === "/product/pos");
+  items.splice(posPosition < 0 ? items.length : posPosition + 1, 0, solutionsMenu);
   const mobileLinks = navigation.mobileLinks.map((link) =>
     link.label === "บริการหลังการขาย" ? { ...link, href: "/service" } : link,
   );

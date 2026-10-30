@@ -2,22 +2,15 @@
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Check,
-  ChevronRight,
-  GitCompareArrows,
-  Headphones,
-  Plus,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
+import { ArrowUpRight, Check, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { categories as originalCategories, type CategoryId, type Product } from "../types";
 import { ProductCatalog } from "./product-catalog";
 import { StoreShelf } from "./store-shelf";
+
+const showAssistance = false;
 
 const cleanImages: Record<string, string> = {
   wps10ks: "/images/products/wps10ks.png",
@@ -247,98 +240,61 @@ export function ProductStorefront({
               <StoreProductCard product={product} compact key={product.id} />
             ))}
           </StoreShelf>
-          <StoreShelf
-            id="store-assistance"
-            title="ความช่วยเหลืออยู่ที่นี่."
-            subtitle="ให้เราช่วยคุณเลือกสิ่งที่ใช่"
-          >
-            <Link href="/contact-us" className="store-editorial-card store-support-photo">
-              <ProductImage
-                src={contactImage}
-                alt="บริการและคำปรึกษาจาก Sunford"
-                fill
-                sizes="(max-width: 720px) 85vw, 480px"
-              />
-              <div>
-                <p className="store-card-eyebrow">SUNFORD SPECIALIST</p>
+          {showAssistance && (
+            <StoreShelf
+              id="store-assistance"
+              title="ความช่วยเหลืออยู่ที่นี่."
+              subtitle="ให้เราช่วยคุณเลือกสิ่งที่ใช่"
+            >
+              <Link href="/contact-us" className="store-editorial-card store-support-photo">
+                <ProductImage
+                  src={contactImage}
+                  alt="บริการและคำปรึกษาจาก Sunford"
+                  fill
+                  sizes="(max-width: 720px) 85vw, 480px"
+                />
+                <div>
+                  <p className="store-card-eyebrow">SUNFORD SPECIALIST</p>
+                  <h3>
+                    คุยกับผู้เชี่ยวชาญ
+                    <br />
+                    เลือกเครื่องชั่งให้ตรงกับงาน.
+                  </h3>
+                  <span className="store-card-link">
+                    ติดต่อเรา <ArrowUpRight size={16} />
+                  </span>
+                </div>
+              </Link>
+              <Link href="/warranty/register" className="store-editorial-card">
+                <p className="store-card-eyebrow">การรับประกันสินค้า</p>
                 <h3>
-                  คุยกับผู้เชี่ยวชาญ
+                  มั่นใจได้มากกว่า
                   <br />
-                  เลือกเครื่องชั่งให้ตรงกับงาน.
+                  ด้วยการดูแลจาก Sunford.
                 </h3>
+                <div className="store-editorial-image">
+                  <ProductImage alt="การลงทะเบียนรับประกัน Sunford" fill sizes="400px" />
+                </div>
                 <span className="store-card-link">
-                  ติดต่อเรา <ArrowUpRight size={16} />
+                  ลงทะเบียนรับประกัน <ChevronRight size={16} />
                 </span>
-              </div>
-            </Link>
-            <Link href="/warranty/register" className="store-editorial-card">
-              <p className="store-card-eyebrow">การรับประกันสินค้า</p>
-              <h3>
-                มั่นใจได้มากกว่า
-                <br />
-                ด้วยการดูแลจาก Sunford.
-              </h3>
-              <div className="store-editorial-image">
-                <ProductImage alt="การลงทะเบียนรับประกัน Sunford" fill sizes="400px" />
-              </div>
-              <span className="store-card-link">
-                ลงทะเบียนรับประกัน <ChevronRight size={16} />
-              </span>
-            </Link>
-            <Link href="/technical-specification" className="store-editorial-card">
-              <p className="store-card-eyebrow">บริการและการสนับสนุน</p>
-              <h3>
-                รู้จักเครื่องชั่งของคุณ
-                <br />
-                ในทุกรายละเอียด.
-              </h3>
-              <div className="store-editorial-image">
-                <ProductImage alt="คู่มือและข้อมูลทางเทคนิค" fill sizes="400px" />
-              </div>
-              <span className="store-card-link">
-                ข้อมูลทางเทคนิค <ChevronRight size={16} />
-              </span>
-            </Link>
-          </StoreShelf>
-          <StoreShelf
-            id="store-benefits"
-            title="เลือก Sunford."
-            subtitle="พร้อมเคียงข้างทุกธุรกิจ"
-            className="store-benefits-shelf"
-          >
-            <Link href="/contact-us" className="store-benefit">
-              <Truck size={36} strokeWidth={1.5} />
-              <h3>
-                <span>จัดส่งถึงคุณ.</span>
-                <br />
-                ครอบคลุมทั่วประเทศไทย
-              </h3>
-            </Link>
-            <Link href="/contact-us" className="store-benefit">
-              <Headphones size={36} strokeWidth={1.5} />
-              <h3>
-                <span>ปรึกษาผู้เชี่ยวชาญ.</span>
-                <br />
-                เลือกให้ตรงกับงานของคุณ
-              </h3>
-            </Link>
-            <Link href="/warranty/policy" className="store-benefit">
-              <ShieldCheck size={36} strokeWidth={1.5} />
-              <h3>
-                <span>ดูแลหลังการขาย.</span>
-                <br />
-                พร้อมข้อมูลการรับประกัน
-              </h3>
-            </Link>
-            <button className="store-benefit" onClick={() => openCatalogue()}>
-              <GitCompareArrows size={36} strokeWidth={1.5} />
-              <h3>
-                <span>เปรียบเทียบก่อนเลือก.</span>
-                <br />
-                ดูรายละเอียดได้สูงสุด 3 รุ่น
-              </h3>
-            </button>
-          </StoreShelf>
+              </Link>
+              <Link href="/technical-specification" className="store-editorial-card">
+                <p className="store-card-eyebrow">บริการและการสนับสนุน</p>
+                <h3>
+                  รู้จักเครื่องชั่งของคุณ
+                  <br />
+                  ในทุกรายละเอียด.
+                </h3>
+                <div className="store-editorial-image">
+                  <ProductImage alt="คู่มือและข้อมูลทางเทคนิค" fill sizes="400px" />
+                </div>
+                <span className="store-card-link">
+                  ข้อมูลทางเทคนิค <ChevronRight size={16} />
+                </span>
+              </Link>
+            </StoreShelf>
+          )}
           <StoreShelf
             id="store-solutions"
             title="ประสบการณ์แบบ Sunford."

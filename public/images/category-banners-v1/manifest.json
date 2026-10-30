@@ -1,0 +1,74 @@
+[
+  {
+    "category": "commercial",
+    "title": "เครื่องชั่งเชิงพาณิชย์",
+    "referenceProduct": "ACS-30-JC21",
+    "image": "/images/category-banners-v1/commercial.webp",
+    "width": 2172,
+    "height": 724,
+    "bytes": 173354
+  },
+  {
+    "category": "industrial",
+    "title": "เครื่องชั่งอุตสาหกรรม",
+    "referenceProduct": "TIS-150-JC62Z",
+    "image": "/images/category-banners-v1/industrial.webp",
+    "width": 2172,
+    "height": 724,
+    "bytes": 226460
+  },
+  {
+    "category": "food",
+    "title": "เครื่องชั่งอาหาร",
+    "referenceProduct": "WPS10KS",
+    "image": "/images/category-banners-v1/food.webp",
+    "width": 2160,
+    "height": 728,
+    "bytes": 185330
+  },
+  {
+    "category": "smart",
+    "title": "เครื่องชั่งอัจฉริยะ",
+    "referenceProduct": "RLS1100",
+    "image": "/images/category-banners-v1/smart.webp",
+    "width": 2172,
+    "height": 724,
+    "bytes": 173006
+  },
+  {
+    "category": "pos",
+    "title": "ระบบ POS และอุปกรณ์",
+    "referenceProduct": "P1W + POS1100-A",
+    "image": "/images/category-banners-v1/pos.webp",
+    "width": 2172,
+    "height": 724,
+    "bytes": 191206
+  },
+  {
+    "category": "laboratory",
+    "title": "เครื่องชั่งห้องปฏิบัติการ",
+    "referenceProduct": "C1",
+    "image": "/images/category-banners-v1/laboratory.webp",
+    "width": 2172,
+    "height": 724,
+    "bytes": 110756
+  },
+  {
+    "category": "accessories",
+    "title": "อุปกรณ์เสริม",
+    "referenceProduct": "LP51 + label rolls",
+    "image": "/images/category-banners-v1/accessories.webp",
+    "width": 2172,
+    "height": 724,
+    "bytes": 138840
+  },
+  {
+    "category": "lifestyle",
+    "title": "ไลฟ์สไตล์และสุขภาพ",
+    "referenceProduct": "Fitdays",
+    "image": "/images/category-banners-v1/lifestyle.webp",
+    "width": 2172,
+    "height": 724,
+    "bytes": 135428
+  }
+]

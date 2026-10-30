@@ -7,6 +7,7 @@ import { useCatalogStore } from "@/stores/catalog-store";
 import { ProductCard } from "./product-card";
 import { useState } from "react";
 import { catalogDefaults } from "@/features/cms/data/settings";
+import { ProductBrowser } from "./product-browser";
 
 export function ProductCatalog({
   products,
@@ -47,6 +48,7 @@ export function ProductCatalog({
   const limit = pagination.key === filterKey ? pagination.limit : 24;
   const visible = matching.slice(0, limit);
   const Heading = headingLevel ?? (full && !scoped ? "h1" : "h2");
+  if (full && !scoped) return <ProductBrowser products={products} />;
   return (
     <section id="products" className={`catalog-section container ${full ? "full-catalog" : ""}`}>
       <div className="section-heading">
