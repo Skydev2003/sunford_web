@@ -57,11 +57,11 @@ export const topicGroups = [
 
 /** Only positive product facts or source collection membership qualify a product. */
 export function classifyProductTopics(
-  product: Product,
+  product: Pick<Product, "name" | "subtitle" | "description" | "category"> & Partial<Pick<Product, "connection">>,
   collections: string[] = [],
   sourceFacts = "",
 ) {
-  const text = `${product.name} ${product.subtitle} ${product.description} ${product.connection} ${sourceFacts}`;
+  const text = `${product.name} ${product.subtitle} ${product.description} ${product.connection ?? ""} ${sourceFacts}`;
   const identity = `${product.name} ${product.subtitle}`;
   const has = (pattern: RegExp) => pattern.test(text);
   const member = (pattern: RegExp) => collections.some((path) => pattern.test(path));

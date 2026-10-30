@@ -102,5 +102,5 @@ export function getSourceProduct(slug: string) {
 export async function getPageSearchIndex() {
   return (await getContentPages())
     .filter((page) => page.kind !== "product" && page.path !== "/")
-    .map(({ path, title, kind }) => ({ path, title, kind }));
+    .map(({ path, title }) => ({ path, title }));
 }

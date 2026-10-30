@@ -6,7 +6,11 @@ import { ArrowUpRight, Check, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
-import { categories as originalCategories, type CategoryId, type Product } from "../types";
+import {
+  categories as originalCategories,
+  type CategoryId,
+  type StorefrontProduct,
+} from "../types";
 import { ProductCatalog } from "./product-catalog";
 import { StoreShelf } from "./store-shelf";
 
@@ -28,7 +32,7 @@ function StoreProductCard({
   compact = false,
   dark = false,
 }: {
-  product: Product;
+  product: StorefrontProduct;
   compact?: boolean;
   dark?: boolean;
 }) {
@@ -87,7 +91,7 @@ export function ProductStorefront({
   contactImage,
   softwareImage,
 }: {
-  products: Product[];
+  products: StorefrontProduct[];
   contactImage?: string;
   softwareImage?: string;
 }) {

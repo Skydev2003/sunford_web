@@ -11,6 +11,7 @@ import { getProducts, getProduct } from "@/features/catalog/server/product-repos
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { ProductBrowser } from "@/features/catalog/components/product-browser";
 import { getCatalogPage } from "@/features/catalog/server/catalog-page";
+import { getClientProducts } from "@/features/catalog/server/client-products";
 import { ContentDirectory } from "@/features/content/components/content-directory";
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
@@ -82,14 +83,24 @@ export default async function SourceContentPage({
     : page.productHandles;
   const allProducts = await getProducts();
   const catalog = !page.managed ? await getCatalogPage(page.path, allProducts) : undefined;
-  let products = allProducts.filter((product) =>
-    page.managed
-      ? page.productIds?.includes(product.id)
-      : productHandles.includes(product.sourceId || ""),
+  const productIds = new Set(
+    allProducts
+      .filter((product) =>
+        page.managed
+          ? page.productIds?.includes(product.id)
+          : productHandles.includes(product.sourceId || ""),
+      )
+      .map((product) => product.id),
   );
+  const clientProducts = await getClientProducts();
+  const catalogIds = new Set(catalog?.products.map((product) => product.id));
+  const catalogProducts = catalog ? clientProducts.filter((product) => catalogIds.has(product.id)) : [];
+  let products = clientProducts.filter((product) => productIds.has(product.id));
   if (section?.category) {
     const category = section.category;
-    products = products.map((product) => ({ ...product, category }));
+    products = products.map((product) =>
+      product.category === category ? product : { ...product, category },
+    );
   }
   const title =
     section?.title ??
@@ -143,7 +154,7 @@ export default async function SourceContentPage({
   return (
     <main id="main-content" className="source-content-page">
       {catalog && (
-        <ProductBrowser key={page.path} products={catalog.products} scope={catalog.scope} />
+        <ProductBrowser key={page.path} products={catalogProducts} scope={catalog.scope} />
       )}
       {!catalog && (
         <header className="content-heading container">

@@ -23,7 +23,7 @@
     "paths:check": "node scripts/audit-paths.mjs",
     "uat:local": "node scripts/uat-local.mjs",
     "test:uat": "node --test tests/uat/*.test.mjs",
-    "test:catalog": "tsx --test tests/catalog/management.test.ts",
+    "test:catalog": "tsx --test tests/catalog/*.test.ts",
     "deploy": "bun scripts/deploy.mjs",
     "vercel-build": "node scripts/vercel-build.mjs"
   },
@@ -33,6 +33,7 @@
     "@prisma/client": "^7.10.1",
     "cheerio": "^1.2.0",
     "lucide-react": "^1.61.0",
+    "motion": "^14.8.0",
     "next": "16.4.3",
     "pg": "^8.23.1",
     "react": "19.3.0",

@@ -23,7 +23,7 @@ import {
 import { ProductImage } from "@/components/ui/product-image";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { useCatalogStore } from "@/stores/catalog-store";
-import type { Product, CatalogScope } from "../types";
+import type { CatalogProduct, Product, CatalogScope } from "../types";
 import { classifyProductTopics, topicGroups } from "../data/product-topics";
 import styles from "./product-browser.module.css";
 
@@ -40,9 +40,9 @@ const productPhotos: Record<string, string> = {
   wps10ks: "/images/products/wps10ks.png",
   feh5ks: "/images/products/feh5ks.png",
 };
-const productPhoto = (product: Product) => productPhotos[product.id] ?? product.image;
+const productPhoto = (product: Pick<Product, "id" | "image">) => productPhotos[product.id] ?? product.image;
 
-export function ProductBrowser({ products, scope }: { products: Product[]; scope?: CatalogScope }) {
+export function ProductBrowser({ products, scope }: { products: CatalogProduct[]; scope?: CatalogScope }) {
   const categories = useCategories();
   const category = useCatalogStore((s) => s.category);
   const setCategory = useCatalogStore((s) => s.setCategory);
@@ -104,7 +104,8 @@ export function ProductBrowser({ products, scope }: { products: Product[]; scope
         ? a.name.localeCompare(b.name, "th", { numeric: true })
         : sort === "name-desc"
           ? b.name.localeCompare(a.name, "th", { numeric: true })
-          : Number(b.featured) - Number(a.featured) || a.sortOrder - b.sortOrder,
+          // The server supplies catalogue order; stable sorting preserves it within each group.
+          : Number(b.featured) - Number(a.featured),
     );
   const heroProduct =
     inCategory.find((p) => p.featured && p.image) ?? inCategory.find((p) => p.image);

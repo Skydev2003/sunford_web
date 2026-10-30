@@ -40,3 +40,24 @@ export type Product = {
   imageOverridden?: boolean;
   media?: import("@/features/cms/types").ProductMedia;
 };
+
+export type ProductCardData = Pick<
+  Product,
+  "id" | "slug" | "name" | "category" | "subtitle" | "image" | "capacity" | "badge"
+>;
+export type CatalogProduct = ProductCardData & Pick<Product, "description" | "featured" | "topics">;
+export type StorefrontProduct = CatalogProduct & Pick<Product, "price" | "imageOverridden">;
+export type OverlayProduct = Pick<
+  Product,
+  | "id"
+  | "slug"
+  | "name"
+  | "category"
+  | "subtitle"
+  | "description"
+  | "image"
+  | "capacity"
+  | "readability"
+  | "connection"
+>;
+export type ClientProduct = StorefrontProduct & OverlayProduct;

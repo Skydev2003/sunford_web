@@ -82,7 +82,7 @@
   box-shadow: 0 1px 10px 2px #ed31542b;
 }
 .hero-main .hero-motion-toggle {
-  opacity: 0;
+  opacity: 1;
   transition: opacity 180ms;
 }
 .hero-main:has(.hero-model-stage:hover) .hero-motion-toggle,
@@ -452,10 +452,15 @@
     --hero-header-height: 56px;
     --hero-scene-height: max(850px, calc(100svh - var(--hero-header-height)));
   }
+  .hero-cinematic .hero-main {
+    display: flow-root;
+  }
   .hero-cinematic .hero-copy {
-    top: 24px;
-    left: 24px;
+    position: relative;
+    top: auto;
+    left: auto;
     width: calc(100% - 48px);
+    margin: 24px auto 0;
     text-align: center;
   }
   .hero-scene-eyebrow {
@@ -514,14 +519,29 @@
     display: none;
   }
   .hero-cinematic .slide-controls {
-    bottom: 8px;
+    position: relative;
+    bottom: auto;
     right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    left: auto;
+    transform: none;
+    width: fit-content;
+    margin: 16px auto 0;
+    padding: 4px;
+    gap: 2px;
+    border: 1px solid #d9dce4;
+    border-radius: 28px;
+    background: #fffffff0;
+    box-shadow: 0 3px 12px #2025340d;
+    opacity: 1;
   }
   .hero-cycle-toggle {
+    min-width: 44px;
+    height: 44px;
     padding: 0;
-    margin-right: 4px;
+    margin-right: 0;
+  }
+  .hero-cycle-toggle::before {
+    display: none;
   }
   .hero-cycle-toggle span {
     display: none;
@@ -531,22 +551,31 @@
     margin-right: 7px;
   }
   .hero-cinematic .slide-progress {
-    gap: 3px;
+    gap: 0;
     margin-inline: 2px;
   }
+  .hero-cinematic .slide-controls .icon-button,
   .hero-cinematic .slide-progress button {
-    width: 22px;
+    width: 44px;
+    height: 44px;
   }
   .hero-cinematic .slide-progress button::after {
-    left: 8px;
+    top: 19px;
+    left: 19px;
   }
   .hero-cinematic .slide-progress button.active::after {
     width: 18px;
-    left: 2px;
+    left: 13px;
   }
   .hero-cinematic .hero-motion-toggle {
     right: 16px;
     bottom: 212px;
+    width: 44px;
+    height: 44px;
+    opacity: 1;
+  }
+  .hero-cinematic .hero-motion-toggle::before {
+    display: none;
   }
 }
 @media (max-width: 720px) {
@@ -557,7 +586,6 @@
 @media (max-width: 380px) {
   .hero-cinematic .hero-copy {
     width: calc(100% - 32px);
-    left: 16px;
   }
   .hero-cinematic .hero-tagline {
     font-size: 20px;
@@ -579,7 +607,8 @@
   .hero-model-stage {
     animation: none;
   }
-  .hero-cycle-toggle {
+  .hero-cycle-toggle,
+  .hero-motion-toggle {
     display: none;
   }
 }

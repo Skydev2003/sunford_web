@@ -7,14 +7,14 @@ import Link from "next/link";
 import { ArrowRight, GitCompareArrows, Search, X } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { useCatalogStore } from "@/stores/catalog-store";
-import { type Product } from "../types";
+import { type OverlayProduct } from "../types";
 import type { SearchPage } from "@/features/content/types";
 
 export function CatalogOverlays({
   products,
   pages = [],
 }: {
-  products: Product[];
+  products: OverlayProduct[];
   pages?: SearchPage[];
 }) {
   const categories = useCategories();

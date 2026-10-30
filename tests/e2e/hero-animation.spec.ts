@@ -63,18 +63,18 @@ test("ACS camera moves while text stays still and pauses outside the viewport", 
   const orbit = () =>
     stage
       .locator("model-viewer")
-      .evaluate((element) => (element as ModelViewerElement).cameraOrbit);
+      .evaluate((element) => (element as ModelViewerElement).turntableRotation);
   const start = await orbit();
   await expect.poll(orbit).not.toBe(start);
   const after = (await page.locator(".hero-copy").boundingBox())!;
   expect(after.x).toBeCloseTo(copy.x, 1);
   expect(after.y).toBeCloseTo(copy.y, 1);
-  await page.getByRole("button", { name: "หยุดมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(stage).toHaveAttribute("data-moving", "false");
   const paused = await orbit();
   await page.waitForTimeout(250);
   expect(await orbit()).toBe(paused);
-  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await page.locator("#solutions").scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute("data-moving", "false");
   await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
@@ -97,8 +97,7 @@ test("ACS respects reduced motion and keeps the scene within mobile screens", as
       true,
     );
   }
-  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
-  await expect(stage).toHaveAttribute("data-moving", "true");
+  await expect(page.locator("[data-hero-motion-toggle]")).toBeHidden();
 });
 
 test("an unavailable ACS model retains a product image and working details link", async ({

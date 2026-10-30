@@ -6,6 +6,8 @@ async function selectModel(page: Page, name = "WPS10KS") {
   await page.getByRole("button", { name: `แสดง ${name}`, exact: true }).click();
   const stage = page.locator(".hero-model-stage");
   await expect(stage).toHaveAttribute("data-status", "ready", { timeout: 30000 });
+  const pause = page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true });
+  if (await pause.isVisible()) await pause.click();
   return stage;
 }
 
@@ -28,7 +30,7 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
   const stage = await selectModel(page);
   const viewer = stage.locator("model-viewer");
   await expect(stage).toHaveAttribute("data-moving", "false");
-  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(stage).toHaveAttribute("data-moving", "true");
   expect(modelRequests).toBe(1);
   await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "WPS10KS");
@@ -37,12 +39,14 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
     "/products/wps10ks",
   );
   const orbit = () =>
-    viewer.evaluate((element) => (element as HTMLElement & { cameraOrbit: string }).cameraOrbit);
+    viewer.evaluate(
+      (element) => (element as HTMLElement & { turntableRotation: number }).turntableRotation,
+    );
   const initial = await orbit();
   await expect.poll(orbit).not.toBe(initial);
   await page.evaluate(() => document.fonts.ready);
   const copy = (await page.locator(".hero-copy").boundingBox())!;
-  await page.getByRole("button", { name: "หยุดมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(stage).toHaveAttribute("data-moving", "false");
   const pausedOrbit = await orbit();
   await page.waitForTimeout(350);
@@ -50,7 +54,7 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
   const after = (await page.locator(".hero-copy").boundingBox())!;
   expect(after.x).toBeCloseTo(copy.x, 1);
   expect(after.y).toBeCloseTo(copy.y, 1);
-  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(stage).toHaveAttribute("data-moving", "true");
   await page.locator("#solutions").scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute("data-moving", "false");
@@ -65,9 +69,10 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
   const beforeDrag = await theta();
   await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
   await page.mouse.down();
+  await expect(stage).toHaveAttribute("data-moving", "false");
   await page.mouse.move(box.x + box.width * 0.7, box.y + box.height * 0.55, { steps: 12 });
   await page.mouse.up();
-  await expect(stage).toHaveAttribute("data-moving", "false");
+  await expect(stage).toHaveAttribute("data-moving", "true");
   await expect.poll(async () => Math.abs((await theta()) - beforeDrag)).toBeGreaterThan(0.01);
   await page.getByRole("button", { name: "สินค้าถัดไป", exact: true }).click();
   await expect(stage).toHaveCount(1);
@@ -80,12 +85,14 @@ test("FEH5KS uses its own model and switching slides keeps only one main viewer"
   await page.goto("/");
   const stage = await selectModel(page, "FEH5KS");
   const viewer = stage.locator("model-viewer");
-  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(viewer).toHaveJSProperty("src", "/models/feh5ks.glb");
   await expect(page.locator(".hero-buttons a").first()).toHaveAttribute("href", "/products/feh5ks");
   await expect(stage).toHaveAttribute("data-moving", "true");
   const orbit = () =>
-    viewer.evaluate((element) => (element as HTMLElement & { cameraOrbit: string }).cameraOrbit);
+    viewer.evaluate(
+      (element) => (element as HTMLElement & { turntableRotation: number }).turntableRotation,
+    );
   const initial = await orbit();
   await expect.poll(orbit).not.toBe(initial);
   for (const width of [320, 390, 768]) {
@@ -119,8 +126,7 @@ test("WPS10KS respects reduced motion and fits mobile viewports", async ({ page 
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
   }
-  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
-  await expect(stage).toHaveAttribute("data-moving", "true");
+  await expect(page.locator("[data-hero-motion-toggle]")).toBeHidden();
 });
 
 test("a failed GLB preserves the product image and details link", async ({ page }) => {

@@ -13,31 +13,18 @@ import {
   Pause,
   Play,
 } from "lucide-react";
-import type { Product } from "@/features/catalog/types";
-import { defaultHero } from "@/features/cms/data/settings";
 import type { HeroSettings } from "@/features/cms/types";
 import { HeroStudio } from "./hero-studio";
 import { HeroProductRibbon } from "./hero-product-ribbon";
 import { companyIntro } from "../data/brand";
+import type { HeroSlide } from "../data/hero-slides";
 
 const HeroProductModel = dynamic(
   () => import("./hero-product-model").then((module) => module.HeroProductModel),
   { ssr: false },
 );
 
-const heroImages: Record<string, string> = {
-  "acs30-jc21": "/images/products/acs30-jc21-cutout.png",
-  wps10ks: "/images/products/wps10ks.png",
-  feh5ks: "/images/products/feh5ks.png",
-  rls1100: "/images/products/rls1100.png",
-};
-const heroRibbonImages: Record<string, string> = {
-  "acs30-jc21": "/images/hero/acs30-jc21-carousel-cutout.png",
-  feh5ks: "/images/hero/feh5ks-carousel-cutout.png",
-  wps10ks: "/images/hero/wps10ks-carousel-cutout.png",
-};
-
-export function HeroAnnouncement({ settings = defaultHero }: { settings?: HeroSettings }) {
+export function HeroAnnouncement({ settings }: { settings: Omit<HeroSettings, "slides"> }) {
   return (
     <div className="announcement">
       <span>{settings.announcement}</span>
@@ -48,52 +35,17 @@ export function HeroAnnouncement({ settings = defaultHero }: { settings?: HeroSe
   );
 }
 
-const heroModels: Record<string, string> = {
-  "acs30-jc21": "/models/acs30-jc21.glb",
-  wps10ks: "/models/wps10ks.glb",
-  feh5ks: "/models/feh5ks.glb",
-};
-
 export function Hero({
-  products,
-  settings = defaultHero,
+  slides,
+  settings,
   showAnnouncement = true,
 }: {
-  products: Product[];
-  settings?: HeroSettings;
+  slides: HeroSlide[];
+  settings: Omit<HeroSettings, "slides">;
   showAnnouncement?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const sceneRef = useRef<HTMLElement>(null);
-  const slides = settings.slides.flatMap((slide, index) => {
-    const product = products.find((product) => product.id === slide.productId);
-    if (slide.productId && !product) return [];
-    return [
-      {
-        id: `${index}:${slide.productId}`,
-        name: slide.title || product?.name || "SUNFORD",
-        title: slide.title || `SUNFORD ${product?.name ?? "PRECISION"}`,
-        description:
-          slide.description || product?.subtitle || "เครื่องชั่งและโซลูชัน เพื่อทุกความเป็นไปได้",
-        image:
-          slide.image ||
-          (product
-            ? product.imageOverridden
-              ? product.image
-              : (heroImages[product.id] ?? product.image)
-            : ""),
-        ribbonImage:
-          slide.image ||
-          (product
-            ? product.imageOverridden
-              ? product.image
-              : (heroRibbonImages[product.id] ?? product.image)
-            : ""),
-        href: slide.href || (product ? `/products/${product.slug}` : "/products"),
-        model: product && !slide.image ? heroModels[product.id] : undefined,
-      },
-    ];
-  });
   const activeIndex = slides.length ? active % slides.length : 0;
   const product = slides[activeIndex];
   const [enabledModels, setEnabledModels] = useState<string[]>(() =>
@@ -106,15 +58,15 @@ export function Hero({
   const [cycleEnabled, setCycleEnabled] = useState(true);
   const [cycleAllowed, setCycleAllowed] = useState(false);
   const [focusPaused, setFocusPaused] = useState(false);
-  const [motionSession, setMotionSession] = useState(0);
+  const [motionPaused, setMotionPaused] = useState(false);
   const [draggingProduct, setDraggingProduct] = useState(false);
   const cycleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userPinned = useRef(false);
   const modelsSettled = slides
     .filter((slide) => slide.model)
     .every((slide) => settledModels.includes(slide.id));
-  const spinning = cycleEnabled && cycleAllowed && modelsSettled && !draggingProduct;
-  const cycling = spinning && !focusPaused && slides.length > 1;
+  const spinning = !motionPaused && cycleAllowed && modelsSettled && !draggingProduct;
+  const cycling = spinning && cycleEnabled && !focusPaused && slides.length > 1;
   const pinProduct = () => {
     userPinned.current = true;
     if (cycleTimer.current) clearTimeout(cycleTimer.current);
@@ -129,7 +81,6 @@ export function Hero({
   const selectSlide = (index: number, automatic = false) => {
     if (!automatic) {
       pinProduct();
-      setMotionSession((current) => current + 1);
     }
     if (!slides.length) return;
     const next = (index + slides.length) % slides.length;
@@ -203,14 +154,16 @@ export function Hero({
         data-cycling={cycling}
         data-cycle-mode={cycleEnabled ? "auto" : "pinned"}
         onFocusCapture={(event) =>
-          setFocusPaused(!(event.target as Element).closest("[data-cycle-toggle]"))
+          setFocusPaused(
+            !(event.target as Element).closest("[data-cycle-toggle], [data-hero-motion-toggle]"),
+          )
         }
         onBlurCapture={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget as Node | null))
             setFocusPaused(false);
         }}
       >
-        <HeroStudio sceneRef={sceneRef} />
+        <HeroStudio sceneRef={sceneRef} paused={motionPaused || !cycleAllowed} />
         <div className="container hero-main">
           <div className="hero-copy">
             <p className="hero-scene-eyebrow">
@@ -245,12 +198,11 @@ export function Hero({
                 src={slide.model!}
                 poster={slide.image}
                 name={slide.name}
-                featured={slide.model === heroModels["acs30-jc21"]}
+                featured={slide.model === "/models/acs30-jc21.glb"}
                 active={slide.id === product?.id}
                 enabled={enabledModels.includes(slide.id)}
                 slot={slide.id === product?.id ? 0 : 1}
                 spinning={spinning}
-                motionSession={motionSession}
                 onInspect={pinProduct}
                 onSettled={() => {
                   setSettledModels((current) =>
@@ -282,10 +234,22 @@ export function Hero({
             <HeroProductRibbon
               products={slides.map((slide) => ({ ...slide, image: slide.ribbonImage }))}
               activeId={product?.id}
-              running={cycleAllowed}
+              running={cycleAllowed && !motionPaused}
               onSelect={selectSlide}
             />
           )}
+          <button
+            type="button"
+            className="hero-motion-toggle"
+            data-hero-motion-toggle=""
+            aria-label={motionPaused ? "เล่นการเคลื่อนไหวทั้งหมด" : "หยุดการเคลื่อนไหวทั้งหมด"}
+            aria-pressed={motionPaused}
+            onClick={() => {
+              setMotionPaused(!motionPaused);
+            }}
+          >
+            {motionPaused ? <Play size={16} /> : <Pause size={16} />}
+          </button>
           {slides.length > 1 && (
             <div className="slide-controls" aria-label="เลือกสินค้าแนะนำ">
               <Tooltip>
@@ -301,7 +265,6 @@ export function Hero({
                       userPinned.current = false;
                       setFocusPaused(false);
                       setCycleEnabled(true);
-                      setMotionSession((current) => current + 1);
                     }
                   }}
                 >

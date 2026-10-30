@@ -1,5 +1,53 @@
 # Project state
 
+## Client payload and bundle optimization (2026-10-30)
+
+- Public catalogue/search/storefront Client Components receive a typed projection containing only their shared display, filtering, comparison and image-override fields. Full descriptions remain for instant local search. `getClientProducts` uses request-scoped `React.cache` so the site layout, storefront and filtered category lists reuse the same product objects and retain RSC deduplication. Category membership still resolves from full server-side records; the public product API, database/cache contracts and stored data are unchanged.
+- Related-product cards receive eight display fields. The homepage Server Component resolves configured Hero slides and sends three prepared slides in the default configuration (1,155 bytes JSON), preserving missing/hidden-product filtering, custom images, ribbon assets, destinations and models. The client Hero retains its existing interactions. Page-search props omit the unused `kind` field.
+- Homepage reveals use `motion/react-mini` with native transform keyframes, retaining the same distance, duration, easing, stagger, final appearance, reduced-motion handling and cleanup. No dependencies or styles were added.
+- Warm production baseline versus optimized HTML including inline RSC, raw decimal KB: homepage 885.7 → 830.2; products 544.2 → 487.9; detail 539.9 → 484.7; category 547.3 → 490.9; contact 504.8 → 448.5. Homepage script files referenced in initial HTML total 753.3 → 691.8 KB raw (239.3 → 217.5 KB deterministic gzip), including Next.js runtime/polyfill tags. Shared product JSON drops 296.2 → 254.7 KB. These are size measurements, not latency or Core Web Vitals claims; cold/resumed PPR responses are recorded separately.
+- Verified: final 407-page production build, TypeScript, scoped ESLint/format/diff checks and 24 catalogue unit checks. Forty browser checks passed before the final category-object reuse adjustment, followed by seven focused interaction checks and one serialization regression (41 distinct checks). All main-content text, links and normalized image paths match on five routes; ten reduced-motion screenshots match within channel tolerance 8, with video/model regions masked. API data is byte-for-byte unchanged.
+- Local measurement scripts, raw captures and report are under `output/client-payload/`, with the comparable datasets in `baseline-warm/` and `optimized/`. Browser evidence is under `test-results/client-payload-final/`, `test-results/client-payload-regressions/` and `test-results/client-payload-final-serialization/`. No commit, push, deployment or business-data writes.
+
+## Homepage motion delivery (2026-10-30)
+
+- Delivery scope on `safe`: mobile Hero controls, stable ribbon projection, one shared Hero motion control, gentle homepage reveals and continuous Spotlight playback with its own pause control. Both dependency lockfiles include Motion. The cancelled design sandbox and its assets/tests are absent.
+- Pre-push validation: the final 407-page production build and TypeScript passed after sandbox removal. Existing targeted Hero/homepage browser acceptance results are recorded below. This request pushes the working branch; it does not run the production release flow.
+
+## Removed homepage design sandbox (2026-10-30)
+
+- The user cancelled the design experiment. Removed the standalone route, copied design components, experiment-only UI component, generated poster, browser tests and local render/performance artifacts. The public homepage work and original videos are retained. No commit or push.
+- Verified no remaining experiment source references/targets, removed URL returns 404, public homepage returns 200, TypeScript and formatting/diff checks pass, and the production build generates 407 pages with no experiment route.
+
+## Continuous homepage motion (2026-10-30)
+
+- Current direction: gentle continuous motion, replacing the earlier cinematic treatment at the user's request. All eight content sections use normal document flow without sticky stages, extra viewport-height spacing or scroll-linked image movement. Spotlight uses its original responsive layout.
+- Motion (`motion/react`, with both lockfiles synchronized) reveals headings and copy once: 12px travel, 550ms easing, opacity from 0.65 to 1, 60ms stagger capped at 180ms. Removed the cinematic wrapper option, scroll tracking and scene measurement.
+- Motion is progressively enabled after hydration. Without JavaScript, all copy, links and video posters remain visible in normal flow. Live reduced-motion changes stop text motion and video/Hero autoplay without changing section geometry; no scroll interception or new routes/data contracts were added.
+- Hero product cycling and scene motion are independent. Manual selection or dragging pins the selected product, but the model resumes after release unless explicitly paused. The single Hero control continues to pause/resume only its model, ribbon and studio; visibility gates apply consistently, and existing affine ribbon projection is retained.
+- Spotlight video loops while at least 15% visible and the document is visible, with no cumulative 30-second cutoff. Its separate 44px control sits outside the product link at the lower left, clear of the chat button. Manual pause persists while leaving/re-entering the viewport and changing motion preference. Failed media retains its poster and destination.
+- The previous cinematic implementation passed 42 browser checks and a 407-page production build. Its sticky-position checks are now replaced by normal-scroll/no-extra-spacing checks; existing Hero and continuous-video behavior remains the contract. No commit or push.
+- Gentle-motion verification: 11 distinct browser checks passed, covering all six viewports, natural forward/reverse scroll, no added scene height, resize, reachable links/control centers, continuous video, manual Hero pause, reduced motion, no JavaScript and failed video. The multi-destination link test exceeded its 30-second budget once and passed unchanged on retry. TypeScript, scoped ESLint, formatting and diff checks passed; the production build was not rerun for this follow-up.
+
+## Shared Hero motion control (2026-10-30)
+
+- One visible 44px mobile motion button replaces the separate ribbon, studio and model controls. Its pressed state means all three are paused; playing resumes all three through parent-owned state. Product autoplay is also suspended while motion is paused, and its separate control still selects automatic versus pinned products.
+- Pausing survives product changes, viewport changes and leaving/re-entering the viewport. Existing visibility and reduced-motion safeguards remain authoritative; reduced motion hides the shared control and keeps the scene still. Model loading failure does not remove the shared control for the remaining effects.
+- Screenshot helpers and Hero browser checks use the shared control. Model rotation assertions observe the actual renderer turntable rather than the initial camera configuration.
+- Verified 31 distinct browser checks after updating the former independent-control expectations, including simultaneous pause/resume, product autoplay, mobile touch targets, reduced motion, model fallback and full ribbon rotations. TypeScript, scoped ESLint, formatting and diff checks pass. Changes remain uncommitted and unpushed.
+
+## Hero ribbon projection (2026-10-30)
+
+- Cards follow the existing projected circular path using affine 2D tangent transforms. Removed the per-card projective matrix that distorted intermediate frames when a card reversed its face at the sides of the ring. Layer ordering, autoplay, selection and drag interactions retain their existing behavior.
+- Full-turn browser regression samples 1,921 positions, including frames between the 480 animation keyframes, at 320, 390, 430, 768 and 1440px. It checks rendered card bounds rather than only animation configuration or selected angles.
+
+## Mobile Hero controls (2026-10-30)
+
+- At widths up to 800px, the product controls remain visible in normal flow below the Hero copy and primary links, within the initial viewport. Previous/next, product selectors and autoplay controls have 44px touch targets. The shared motion control also has a visible 44px target on mobile.
+- The Hero heading introduces SUNFORD and stays unchanged when selecting a product. The active product is represented by `data-active-product`, its main model and the details-link destination. Manual selection pins the product; autoplay can be resumed with its existing control.
+- Catalogue browser checks use this contract and pause autoplay/photo motion before screenshot image preloading. Screenshot evidence uses each test's output directory. Removed conflict markers that had been committed in the latest merge.
+- Verified 20 distinct browser checks across the catalogue, Hero models, product ribbon and studio, including 320/390/768px touch controls, manual/automatic playback, dragging, reduced motion and model fallback. Updated old motion checks to inspect the actual turntable rotation. TypeScript, scoped ESLint, formatting and diff checks pass; no commit or push was performed.
+
 ## English-only internal paths (2026-10-29)
 
 - All tracked file/folder names are free of Thai characters. Replaced 111 Thai public page paths with readable English paths, retaining all 392 imported page records and 150 products. Existing ASCII paths retain their spelling/case; translated names avoid collisions with existing ASCII destinations.
