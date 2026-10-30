@@ -4,18 +4,11 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import {
-  ArrowDown,
-  ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
-  Pause,
-  Play,
-} from "lucide-react";
+import { ArrowDown, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import type { HeroSettings } from "@/features/cms/types";
 import { HeroStudio } from "./hero-studio";
 import { HeroProductRibbon } from "./hero-product-ribbon";
+import { HeroBubbles } from "./hero-bubbles";
 import { companyIntro } from "../data/brand";
 import type { HeroSlide } from "../data/hero-slides";
 
@@ -45,6 +38,7 @@ export function Hero({
   showAnnouncement?: boolean;
 }) {
   const [active, setActive] = useState(0);
+  const [highlightRevision, setHighlightRevision] = useState(0);
   const sceneRef = useRef<HTMLElement>(null);
   const activeIndex = slides.length ? active % slides.length : 0;
   const product = slides[activeIndex];
@@ -83,6 +77,7 @@ export function Hero({
       pinProduct();
     }
     if (!slides.length) return;
+    setHighlightRevision((revision) => revision + 1);
     const next = (index + slides.length) % slides.length;
     if (next === activeIndex) return;
     if (slides[next].model)
@@ -148,7 +143,7 @@ export function Hero({
       {showAnnouncement && <HeroAnnouncement settings={settings} />}
       <section
         ref={sceneRef}
-        className={`hero hero-cinematic hero-showroom${showAnnouncement ? "" : " hero-no-announcement"}`}
+        className={`hero hero-cinematic hero-showroom${showAnnouncement ? "" : " hero-no-announcement"}${product?.highlights ? " hero-has-highlights" : ""}`}
         aria-label="Sunford ความแม่นยำที่เรียบง่ายกว่า"
         data-active-product={product?.name}
         data-cycling={cycling}
@@ -166,29 +161,20 @@ export function Hero({
         <HeroStudio sceneRef={sceneRef} paused={motionPaused || !cycleAllowed} />
         <div className="container hero-main">
           <div className="hero-copy">
-            <p className="hero-scene-eyebrow">
-              <span /> PRECISION&nbsp; | &nbsp;RELIABILITY&nbsp; | &nbsp;FOR A BETTER BUSINESS
-            </p>
-            <h1 className="hero-model">
-              <span className="hero-scene-brand">{intro.brand}</span> {intro.title}
-            </h1>
+            <h1 className="hero-model">{intro.title}</h1>
             <p className="hero-tagline">{intro.tagline}</p>
             <p className="hero-description">{intro.description}</p>
-            <div className="hero-buttons">
-              <Link className="button button-red" href={product?.href ?? "/products"}>
-                {settings.primaryLabel} <ArrowUpRight size={17} />
-              </Link>
-              <a className="button button-outline" href={settings.secondaryHref}>
-                {settings.secondaryLabel} <ChevronRight size={16} />
-              </a>
-            </div>
           </div>
-          <div className="hero-value-badge" aria-hidden="true">
-            <TrendingUp size={28} strokeWidth={2} />
-            <span>ตัวช่วย</span>
-            <strong>เพิ่มกำไร</strong>
-            <span>ให้ธุรกิจคุณ</span>
-          </div>
+          {product?.highlights && <p className="hero-product-name">{product.name}</p>}
+          <HeroBubbles
+            key={`${product?.id}-${highlightRevision}`}
+            highlights={product?.highlights}
+            name={product?.name ?? "SUNFORD"}
+            paused={motionPaused}
+            sceneRunning={cycleAllowed}
+            sceneRef={sceneRef}
+            onInteract={pinProduct}
+          />
           <div className="hero-model-dropzone" data-hero-dropzone="" aria-hidden="true" />
           {slides
             .filter((slide) => slide.model)

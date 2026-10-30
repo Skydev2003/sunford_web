@@ -10,6 +10,25 @@ export type HeroSlide = {
   ribbonImage: string;
   href: string;
   model?: string;
+  highlights?: readonly [string, string, string];
+};
+
+const heroHighlights: Partial<Record<string, readonly [string, string, string]>> = {
+  "acs30-jc21": [
+    "ชั่งพร้อมคิดราคา สูงสุด 30 กก.",
+    "รวมยอดหลายรายการและคำนวณเงินทอน",
+    "จอสองด้าน ผู้ขายและลูกค้าอ่านค่าพร้อมกัน",
+  ],
+  wps10ks: [
+    "กันน้ำและฝุ่นมาตรฐาน IP67",
+    "ชั่งสูงสุด 10 กก. ละเอียด 0.5/1 กรัม",
+    "นับจำนวน พร้อมเตือนน้ำหนักขาด–พอดี–เกิน",
+  ],
+  feh5ks: [
+    "ชั่งสูงสุด 5 กก. ละเอียด 1 กรัม",
+    "จานสแตนเลสถอดล้าง ทำความสะอาดง่าย",
+    "ต่อเครื่องพิมพ์ RS232 และ SUNFORD CONNECT ผ่านอุปกรณ์ที่รองรับ",
+  ],
 };
 
 const heroImages: Record<string, string> = {
@@ -56,6 +75,7 @@ export function heroSlideData(products: Product[], slides: HeroSettings["slides"
             : ""),
         href: slide.href || (product ? `/products/${product.slug}` : "/products"),
         model: product && !slide.image ? heroModels[product.id] : undefined,
+        highlights: product ? heroHighlights[product.id] : undefined,
       },
     ];
   });

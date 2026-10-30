@@ -32,22 +32,19 @@ test("homepage introduces Sunford and switches featured products", async ({ page
   await page.goto("/");
   const heading = page.getByRole("heading", { level: 1 });
   const hero = page.locator(".hero-showroom");
-  await expect(heading).toHaveText("ABOUT SUNFORD SUNFORD");
+  await expect(heading).toHaveText("SUNFORD");
+  await expect(page.locator(".hero-scene-eyebrow, .hero-scene-brand")).toHaveCount(0);
   await expect(page.locator(".hero-tagline")).toHaveText("คู่คิดทุกธุรกิจของคุณ");
   await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
   await expect(hero).toHaveAttribute("data-active-product", "ACS-30-JC21");
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
-    "href",
-    "/products/acs30-jc21",
-  );
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
   await expect(page.locator(".hero-model-stage model-viewer")).toHaveAttribute(
     "alt",
     "โมเดล 3 มิติ SUNFORD ACS-30-JC21",
   );
   await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
   await expect(hero).toHaveAttribute("data-active-product", "FEH5KS");
-  await expect(heading).toHaveText("ABOUT SUNFORD SUNFORD");
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute("href", "/products/feh5ks");
+  await expect(heading).toHaveText("SUNFORD");
   await expect(page.locator(".hero-model-stage")).toBeVisible();
   await expect(page.locator(".hero-model-stage model-viewer")).toHaveCount(1);
   await page.getByRole("button", { name: "สินค้าก่อนหน้า" }).click();

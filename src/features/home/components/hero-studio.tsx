@@ -161,9 +161,16 @@ export function HeroStudio({
     };
     const measure = () => {
       if (headerInner) {
-        const height = `${headerInner.getBoundingClientRect().height}px`;
+        const headerBounds = headerInner.getBoundingClientRect();
+        const height = `${headerBounds.height}px`;
         if (scene.style.getPropertyValue("--hero-header-height") !== height)
           scene.style.setProperty("--hero-header-height", height);
+        if (header) {
+          header.dataset.heroBackdropTracked = "";
+          if (visible && scene.getBoundingClientRect().top >= headerBounds.bottom - 1)
+            header.dataset.heroBackdrop = "";
+          else delete header.dataset.heroBackdrop;
+        }
       }
       bounds = field.getBoundingClientRect();
     };
@@ -175,11 +182,6 @@ export function HeroStudio({
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
-        if (header) {
-          header.dataset.heroBackdropTracked = "";
-          if (visible) header.dataset.heroBackdrop = "";
-          else delete header.dataset.heroBackdrop;
-        }
         measure();
         sync();
       },

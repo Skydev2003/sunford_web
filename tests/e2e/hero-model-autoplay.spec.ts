@@ -42,9 +42,15 @@ test("products cycle automatically, stay selected on click, and resume only on r
   await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(1);
   await page.clock.fastForward(7100);
   await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "FEH5KS");
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute("href", "/products/feh5ks");
+  await expect(
+    page.getByRole("list", { name: "จุดเด่น FEH5KS", exact: true }).getByRole("listitem"),
+  ).toHaveCount(3);
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
   const wps = page.locator('[data-hero-model="/models/wps10ks.glb"]');
   await page.getByRole("button", { name: "แสดง WPS10KS", exact: true }).click();
+  await expect(page.getByRole("list", { name: "จุดเด่น WPS10KS", exact: true })).toContainText(
+    "IP67",
+  );
   await expect(scene).toHaveAttribute("data-cycle-mode", "pinned");
   await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(1);
   await page.clock.fastForward(21000);

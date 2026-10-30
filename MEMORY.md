@@ -1,5 +1,29 @@
 # Project Memory
 
+## Check sticky navigation during partial Hero scrolling
+
+- Observed: Hero headings showed through the sticky navigation and foreground bubble controls covered it while the Hero was still partially visible.
+- Root cause: Header transparency followed whole-section intersection, while a body portal bypassed the header's ordinary stacking context. Endpoint screenshots missed the intermediate overlap.
+- Correct behavior: Restore the header surface when content starts passing underneath it, and clip foreground portal paint/hit targets out of the measured navigation area. Check partial scroll on short desktop and mobile viewports, drag a bubble across a real navigation control, and verify returning to the top restores the intended transparent design.
+
+## Restore foreground effects after visual overlay closure
+
+- Observed: Hero bubbles popped into the foreground while the submenu and blur backdrop were still animating closed. A product change during that exit could also mount visible replacement bubbles.
+- Root cause: Layer restoration followed the logical open class instead of the end of delayed CSS transitions; newly mounted effects did not inherit the overlay's closing state.
+- Correct behavior: Keep foreground effects hidden and inert until every covering surface finishes its animations and has hidden computed visibility. Invalidate pending reveals on reopen or unmount, inspect ongoing closure when mounting replacements, then restart the entrance while respecting pause/reduced motion. Verify intermediate frames and product changes during closure, not only the final open/closed screenshots.
+
+## Separate styling verification from live database availability
+
+- Observed: Styling-only production builds repeatedly passed compilation and TypeScript but failed during page generation because the external database connection timed out.
+- Root cause: Build-time public-content reads depend on database availability even when the change only affects CSS.
+- Correct behavior: Retry once, then use the existing `hasDatabase()` snapshot fallback for isolated UI verification if the database remains unavailable. Set a placeholder containing `YOUR-PASSWORD` only in the QA process environment for both build and server; leave environment files and database records unchanged. Report snapshot verification separately from unavailable live-database verification.
+
+## Reset CSS animations after imperative geometry probes
+
+- Observed: A badge pause check reported movement even though computed `animation-play-state` was paused, after the probe had manually sought, paused and played its CSS animations.
+- Root cause: Imperative animation playback changed the animation's control state and contaminated the following CSS-driven pause check. A fresh page using only the real UI paused correctly.
+- Correct behavior: Separate manual keyframe/geometry sampling from real playback-control verification. Reload or use a fresh page after manipulating CSSAnimation timelines, then test pause/resume through the actual UI without imperative `play()` calls.
+
 ## Preserve RSC object sharing when trimming client props
 
 - Observed: Individually projecting the same catalogue for a page and its layout increased serialized data despite removing fields. Projecting filtered category products separately also duplicated their descriptions.

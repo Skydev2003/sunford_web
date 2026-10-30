@@ -78,6 +78,10 @@ test("server Hero slides keep configured order, assets and destinations without 
   assert.equal(slides[0].image, "/images/products/acs30-jc21-cutout.png");
   assert.equal(slides[0].ribbonImage, "/images/hero/acs30-jc21-carousel-cutout.png");
   assert.equal(slides[0].href, "/products/acs30-jc21");
+  assert.ok(slides.every((slide) => slide.highlights?.length === 3));
+  const reversed = heroSlideData(products, [...defaultHero.slides].reverse());
+  assert.match(reversed[0].highlights![0], /IP67/);
+  assert.equal(reversed.at(-1)!.highlights![0], "ชั่งพร้อมคิดราคา สูงสุด 30 กก.");
   const hidden = heroSlideData(
     products.filter((p) => p.id !== "acs30-jc21"),
     defaultHero.slides,
@@ -115,5 +119,6 @@ test("Hero respects image overrides, custom slides and missing product fallbacks
   )[0];
   assert.equal(fallback.name, "SUNFORD");
   assert.equal(fallback.href, "/products");
+  assert.equal(fallback.highlights, undefined);
   assert.equal(heroSlideData([], defaultHero.slides).length, 0);
 });
