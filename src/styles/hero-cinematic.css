@@ -982,8 +982,8 @@ body:has(.site-header[data-hero-backdrop-tracked]:not([data-hero-backdrop])) .he
   pointer-events: auto;
 }
 .hero-bubble-handle:focus-visible {
-  outline: 2px solid #ef0016;
-  outline-offset: 6px;
+  outline: none;
+  box-shadow: 0 0 14px #ffc4d2;
 }
 .hero-floating-bubble[data-dragging="true"] .hero-bubble-handle {
   cursor: grabbing;
