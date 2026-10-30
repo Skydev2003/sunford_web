@@ -13,7 +13,8 @@ test("products rotate in the renderer without rewriting the camera and stop on r
     timeout: 30000,
   });
   await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
-  await page.getByRole("button", { name: "เล่นมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   const viewer = page.locator(".hero-model-stage model-viewer");
   const angle = () => viewer.evaluate((e) => -(e as ModelViewerElement).turntableRotation);
   const camera = await viewer.evaluate((e) => (e as ModelViewerElement).cameraOrbit);
@@ -22,7 +23,7 @@ test("products rotate in the renderer without rewriting the camera and stop on r
   // Playwright's fake timer used below to fast-forward product cycling.
   await expect.poll(angle, { timeout: 10000 }).toBeGreaterThan(start + 0.03);
   expect(await viewer.evaluate((e) => (e as ModelViewerElement).cameraOrbit)).toBe(camera);
-  await page.getByRole("button", { name: "หยุดมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).click();
   const held = await angle();
   await page.waitForTimeout(400);
   expect(await angle()).toBe(held);
@@ -45,17 +46,10 @@ test("products cycle automatically, stay selected on click, and resume only on r
   const wps = page.locator('[data-hero-model="/models/wps10ks.glb"]');
   await page.getByRole("button", { name: "แสดง WPS10KS", exact: true }).click();
   await expect(scene).toHaveAttribute("data-cycle-mode", "pinned");
-  await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(0);
-  const held = await wps
-    .locator("model-viewer")
-    .evaluate((element) => (element as ModelViewerElement).turntableRotation);
+  await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(1);
   await page.clock.fastForward(21000);
   await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "WPS10KS");
-  expect(
-    await wps
-      .locator("model-viewer")
-      .evaluate((element) => (element as ModelViewerElement).turntableRotation),
-  ).toBe(held);
+  await expect(wps).toHaveAttribute("data-moving", "true");
   await expect(models).toHaveCount(3);
   await page.screenshot({
     path: test.info().outputPath("hero-pinned-borderless.jpg"),

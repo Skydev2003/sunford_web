@@ -1,5 +1,35 @@
 # Project Memory
 
+## Read project text as UTF-8 on Windows
+
+- Observed: Python source reads failed repeatedly on files containing Thai text while CSS-only scripts succeeded.
+- Root cause: `Path.read_text()` used the Windows legacy code page instead of the repository's UTF-8 encoding.
+- Correct behavior: Pass `encoding="utf-8"` explicitly to Python `read_text()` and `write_text()` when processing repository source or reports. Do not rely on the host locale.
+
+## Separate browser automation jumps from application motion
+
+- Observed: Performance sampling showed GPU raster stalls when automation scrolled a tall section into view, then instantly jumped again to an offscreen button before clicking.
+- Root cause: The automation's implicit `scrollIntoViewIfNeeded` did not represent the page's normal smooth scrolling. A readiness check also needed to wait for hydration before interpreting the absence of an intro marker.
+- Correct behavior: Wait for application hydration/readiness first; scroll controls into view normally before recording trusted clicks. Keep forced jumps as a separate stress scenario and retain their outliers rather than reporting them as normal scrolling. Use trace attribution to distinguish GPU raster work from JavaScript long tasks.
+
+## Isolate browser test artifacts between runs
+
+- Observed: A second Playwright run removed traces still being written by the first, causing an ENOENT failure during teardown after the UI assertions passed.
+- Root cause: Concurrent runs shared the default output directory, which Playwright cleans at startup.
+- Correct behavior: Run suites sequentially, or assign a distinct output directory to every concurrent run. Keep verification artifacts in ignored directories or outside the source tree.
+
+## Verify sticky scenes and floating control hit targets in the browser
+
+- Observed: A padded scene scrolled away leaving an empty area, and a video control overlapped the floating chat button on mobile.
+- Root cause: Bottom padding did not provide the intended sticky travel area, and visibility/size assertions alone did not detect the overlay.
+- Correct behavior: Give the sticky container a measured minimum height including its scroll travel. Assert the stage's actual position during forward/reverse scrolling and check controls with elementFromPoint at their centers across portrait and landscape sizes.
+
+## Check interpolated frames at ribbon face reversals
+
+- Observed: Moving product cards could stretch into a diagonal band across the Hero even though checks at eight fixed phases passed.
+- Root cause: Per-card projective matrices became unstable during interpolation near the edge-on face reversal; keyframe-only or coarse phase checks missed the intermediate distortion.
+- Correct behavior: Use the already projected position and an affine tangent for these cards. Verify rendered bounds through a full cycle at sub-keyframe intervals on mobile and desktop, including both face reversals and the loop seam.
+
 ## Resolve tooltip children before reading props
 
 - Observed: The product readability tooltip crashed while reading `aria-label` from an undefined `children.props`.
@@ -113,6 +143,18 @@
 - Observed: Desktop and mobile homepage browser checks timed out trying to scroll hidden images into view.
 - Root cause: The preload helper iterated every image, including mounted images hidden by the current UI state.
 - Correct behavior: Select visible images when preloading a page for screenshots. Keep scrolling and natural-width checks for those displayed images; verify hidden images only through the interaction that reveals them.
+
+## Pause moving photo ribbons before screenshot preloading
+
+- Observed: The homepage screenshot check timed out waiting for an image to stop moving even after hidden images were skipped.
+- Root cause: The Hero photo ribbon keeps animating independently of product autoplay, so `scrollIntoViewIfNeeded()` could not obtain a stable image target.
+- Correct behavior: Pause both Hero autoplay and its photo ribbon through their controls before preloading screenshot images. Keep the visible-image and natural-width checks, and store screenshots in each test's output directory.
+
+## Check committed merge results for conflict markers
+
+- Observed: A clean working tree still contained conflict markers in a browser test after a merge, preventing Playwright from parsing the file.
+- Root cause: The marker text was committed in the merge result; Git no longer reported an unmerged path.
+- Correct behavior: Scan the final changed files for conflict markers and run test discovery before committing a merge resolution. Do not treat a clean Git status alone as evidence that conflicts were resolved correctly.
 
 ## Stop QA development servers before handing control back
 

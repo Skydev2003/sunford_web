@@ -106,15 +106,15 @@ export function Hero({
   const [cycleEnabled, setCycleEnabled] = useState(true);
   const [cycleAllowed, setCycleAllowed] = useState(false);
   const [focusPaused, setFocusPaused] = useState(false);
-  const [motionSession, setMotionSession] = useState(0);
+  const [motionPaused, setMotionPaused] = useState(false);
   const [draggingProduct, setDraggingProduct] = useState(false);
   const cycleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userPinned = useRef(false);
   const modelsSettled = slides
     .filter((slide) => slide.model)
     .every((slide) => settledModels.includes(slide.id));
-  const spinning = cycleEnabled && cycleAllowed && modelsSettled && !draggingProduct;
-  const cycling = spinning && !focusPaused && slides.length > 1;
+  const spinning = !motionPaused && cycleAllowed && modelsSettled && !draggingProduct;
+  const cycling = spinning && cycleEnabled && !focusPaused && slides.length > 1;
   const pinProduct = () => {
     userPinned.current = true;
     if (cycleTimer.current) clearTimeout(cycleTimer.current);
@@ -129,7 +129,6 @@ export function Hero({
   const selectSlide = (index: number, automatic = false) => {
     if (!automatic) {
       pinProduct();
-      setMotionSession((current) => current + 1);
     }
     if (!slides.length) return;
     const next = (index + slides.length) % slides.length;
@@ -203,14 +202,16 @@ export function Hero({
         data-cycling={cycling}
         data-cycle-mode={cycleEnabled ? "auto" : "pinned"}
         onFocusCapture={(event) =>
-          setFocusPaused(!(event.target as Element).closest("[data-cycle-toggle]"))
+          setFocusPaused(
+            !(event.target as Element).closest("[data-cycle-toggle], [data-hero-motion-toggle]"),
+          )
         }
         onBlurCapture={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget as Node | null))
             setFocusPaused(false);
         }}
       >
-        <HeroStudio sceneRef={sceneRef} />
+        <HeroStudio sceneRef={sceneRef} paused={motionPaused || !cycleAllowed} />
         <div className="container hero-main">
           <div className="hero-copy">
             <p className="hero-scene-eyebrow">
@@ -250,7 +251,6 @@ export function Hero({
                 enabled={enabledModels.includes(slide.id)}
                 slot={slide.id === product?.id ? 0 : 1}
                 spinning={spinning}
-                motionSession={motionSession}
                 onInspect={pinProduct}
                 onSettled={() => {
                   setSettledModels((current) =>
@@ -282,10 +282,22 @@ export function Hero({
             <HeroProductRibbon
               products={slides.map((slide) => ({ ...slide, image: slide.ribbonImage }))}
               activeId={product?.id}
-              running={cycleAllowed}
+              running={cycleAllowed && !motionPaused}
               onSelect={selectSlide}
             />
           )}
+          <button
+            type="button"
+            className="hero-motion-toggle"
+            data-hero-motion-toggle=""
+            aria-label={motionPaused ? "เล่นการเคลื่อนไหวทั้งหมด" : "หยุดการเคลื่อนไหวทั้งหมด"}
+            aria-pressed={motionPaused}
+            onClick={() => {
+              setMotionPaused(!motionPaused);
+            }}
+          >
+            {motionPaused ? <Play size={16} /> : <Pause size={16} />}
+          </button>
           {slides.length > 1 && (
             <div className="slide-controls" aria-label="เลือกสินค้าแนะนำ">
               <Tooltip>
@@ -301,7 +313,6 @@ export function Hero({
                       userPinned.current = false;
                       setFocusPaused(false);
                       setCycleEnabled(true);
-                      setMotionSession((current) => current + 1);
                     }
                   }}
                 >

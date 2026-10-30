@@ -208,36 +208,7 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.toggle {
-  position: absolute;
-  z-index: 6;
-  pointer-events: auto;
-  right: 22px;
-  bottom: -12px;
-  opacity: 0;
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #d5dbe6;
-  border-radius: 50%;
-  background: #fffffff0;
-  color: #677180;
-}
-.toggle::before {
-  content: "";
-  position: absolute;
-  inset: -7px;
-}
-.toggle:hover {
-  opacity: 1;
-  color: var(--red);
-}
-.toggle:focus-visible {
-  opacity: 1;
-  outline: 2px solid var(--red);
-  outline-offset: 3px;
-}
+
 .viewport[data-static="true"] {
   pointer-events: auto;
   display: flex;
@@ -261,12 +232,7 @@
     height: 175px;
     bottom: 48px;
   }
-  .toggle {
-    bottom: -10px;
-    right: 18px;
-    width: 28px;
-    height: 28px;
-  }
+
   .instruction {
     left: 20px;
     font-size: 8px;
@@ -276,9 +242,7 @@
   .glint {
     animation: none;
   }
-  .toggle {
-    display: none;
-  }
+
   .card {
     will-change: auto;
   }

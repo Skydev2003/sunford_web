@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./hero-product-ribbon.module.css";
 
@@ -26,9 +25,7 @@ export function HeroProductRibbon({
   const motion = useRef<Animation[]>([]);
   const syncMotion = useRef<(() => void) | null>(null);
   const centerCard = useRef<((index: number) => void) | null>(null);
-  const pausedRef = useRef(false);
   const allowedRef = useRef(running);
-  const [paused, setPaused] = useState(false);
   const poolSize = Math.max(72, products.length);
   const productKey = products.map((product) => product.id).join("|");
 
@@ -43,12 +40,7 @@ export function HeroProductRibbon({
     let focusedWindow = true;
     let dragging = false;
     const sync = () => {
-      const play =
-        allowedRef.current &&
-        !pausedRef.current &&
-        !document.hidden &&
-        focusedWindow &&
-        !reduced.matches;
+      const play = allowedRef.current && !document.hidden && focusedWindow && !reduced.matches;
       element.dataset.running = String(play);
       motion.current.forEach((animation) => {
         if (play && animation.playState !== "running") animation.play();
@@ -160,7 +152,6 @@ export function HeroProductRibbon({
         const tangentY = (rise / radius) * tangentZ;
         const horizontal = scale * (tangentX + (worldX * tangentZ) / distance);
         const shear = scale * (tangentY + (worldY * tangentZ) / distance);
-        const foreshortening = -tangentZ / distance;
         // Keep the returning products out of the reading area while they pass behind it.
         const copyClearance =
           !mobile && copy
@@ -171,7 +162,9 @@ export function HeroProductRibbon({
             : 80;
         const visibility = Math.min(1, Math.max(0, 1 + copyClearance / 50));
         return {
-          transform: `translate3d(${x}px, ${y}px, 0) matrix3d(${horizontal},${shear},0,${foreshortening},0,${scale},0,0,0,0,1,0,0,0,0,1)`,
+          // Depth is already projected above. A 2D tangent avoids singular projective
+          // matrix interpolation when the card turns edge-on and reverses its face.
+          transform: `translate(${x}px, ${y}px) matrix(${horizontal},${shear},0,${scale},0,0)`,
           opacity: (0.94 + depth * 0.06) * visibility,
           zIndex: front ? 4 : 1,
         };
@@ -497,19 +490,6 @@ export function HeroProductRibbon({
           : "เลือกสินค้าเพื่อดูรายละเอียด"}
       </p>
       <span ref={announcement} className={styles.srOnly} role="status" aria-live="polite" />
-      <button
-        type="button"
-        className={styles.toggle}
-        aria-label={paused ? "เล่นแถวรูปสินค้า" : "หยุดแถวรูปสินค้า"}
-        aria-pressed={paused}
-        onClick={() => {
-          pausedRef.current = !pausedRef.current;
-          setPaused(pausedRef.current);
-          syncMotion.current?.();
-        }}
-      >
-        {paused ? <Play size={12} /> : <Pause size={12} />}
-      </button>
     </div>
   );
 }
