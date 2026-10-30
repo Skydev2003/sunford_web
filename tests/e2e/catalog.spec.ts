@@ -1,12 +1,12 @@
 import { test, expect } from "@playwright/test";
 
 async function loadPageImages(page: import("@playwright/test").Page) {
-<<<<<<< HEAD
+  for (const name of ["หยุดวนสินค้าอัตโนมัติ", "หยุดการเคลื่อนไหวทั้งหมด"]) {
+    const pause = page.getByRole("button", { name, exact: true });
+    if (await pause.count()) await pause.click();
+  }
   for (const image of await page.locator("main img").all()) {
     if (!(await image.isVisible())) continue;
-=======
-  for (const image of await page.locator("main img:visible").all()) {
->>>>>>> origin/safe
     await image.scrollIntoViewIfNeeded();
     await expect
       .poll(() =>
@@ -26,12 +26,16 @@ async function loadPageImages(page: import("@playwright/test").Page) {
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
 }
 
-test("homepage renders product imagery and cycles featured products", async ({ page }) => {
+test("homepage introduces Sunford and switches featured products", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("SUNFORD ACS-30-JC21");
-  await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
+  const heading = page.getByRole("heading", { level: 1 });
+  const hero = page.locator(".hero-showroom");
+  await expect(heading).toHaveText("ABOUT SUNFORD SUNFORD");
+  await expect(page.locator(".hero-tagline")).toHaveText("คู่คิดทุกธุรกิจของคุณ");
+  await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
+  await expect(hero).toHaveAttribute("data-active-product", "ACS-30-JC21");
   await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
     "href",
     "/products/acs30-jc21",
@@ -41,22 +45,27 @@ test("homepage renders product imagery and cycles featured products", async ({ p
     "โมเดล 3 มิติ SUNFORD ACS-30-JC21",
   );
   await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
-  await expect(page.locator(".hero-model")).toContainText("FEH5KS");
+  await expect(hero).toHaveAttribute("data-active-product", "FEH5KS");
+  await expect(heading).toHaveText("ABOUT SUNFORD SUNFORD");
+  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute("href", "/products/feh5ks");
   await expect(page.locator(".hero-model-stage")).toBeVisible();
   await expect(page.locator(".hero-model-stage model-viewer")).toHaveCount(1);
   await page.getByRole("button", { name: "สินค้าก่อนหน้า" }).click();
-  await expect(page.locator(".hero-model")).toContainText("ACS-30-JC21");
+  await expect(hero).toHaveAttribute("data-active-product", "ACS-30-JC21");
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator(".hero-model-stage")).toHaveAttribute("data-status", "ready", {
     timeout: 30000,
   });
   await loadPageImages(page);
   await page.screenshot({
-    path: "/tmp/sunford-desktop.png",
+    path: test.info().outputPath("sunford-desktop.png"),
     fullPage: true,
     animations: "disabled",
   });
-  await page.screenshot({ path: "/tmp/sunford-first-screen.png", animations: "disabled" });
+  await page.screenshot({
+    path: test.info().outputPath("sunford-first-screen.png"),
+    animations: "disabled",
+  });
   expect(errors).toEqual([]);
 });
 
@@ -125,7 +134,7 @@ test("mobile navigation works and page does not overflow", async ({ page }) => {
   await page.evaluate(() => document.fonts.ready);
   await loadPageImages(page);
   await page.screenshot({
-    path: "/tmp/sunford-mobile.png",
+    path: test.info().outputPath("sunford-mobile.png"),
     fullPage: true,
     animations: "disabled",
   });

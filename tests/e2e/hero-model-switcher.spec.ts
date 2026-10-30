@@ -165,6 +165,35 @@ test("ribbon cards remain attached to their band at the sides and rear throughou
   expect(unsupported).toEqual([]);
 });
 
+for (const width of [320, 390, 430, 768, 1440]) {
+  test(`ribbon cards stay bounded through a complete interpolated turn at ${width}px`, async ({
+    page,
+  }) => {
+    test.setTimeout(60000);
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const ribbon = page.locator("[data-hero-ribbon]");
+    await expect(ribbon).toHaveAttribute("data-static", "false");
+    const oversized = await ribbon.evaluate((element) => {
+      const card = element.querySelector<HTMLElement>('[data-ribbon-card="0"]')!;
+      const animation = card.getAnimations()[0];
+      animation.pause();
+      const duration = Number(animation.effect!.getTiming().duration);
+      const failures: { phase: number; width: number; height: number }[] = [];
+      // Include intermediate frames: keyframe-only checks miss matrix decomposition spikes.
+      for (let step = 0; step <= 1920; step++) {
+        animation.currentTime = (duration * step) / 1920;
+        const box = card.getBoundingClientRect();
+        if (box.width > card.offsetWidth * 1.25 || box.height > card.offsetHeight * 2) {
+          failures.push({ phase: step / 1920, width: box.width, height: box.height });
+        }
+      }
+      return failures.slice(0, 8);
+    });
+    expect(oversized).toEqual([]);
+  });
+}
+
 test("ribbon loops independently of pinned models and pauses for controls, offscreen and reduced motion", async ({
   page,
 }) => {
@@ -186,7 +215,7 @@ test("ribbon loops independently of pinned models and pauses for controls, offsc
   await expect.poll(() => sheen.evaluate((element) => element.style.transform)).toBe(initialLight);
   await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
   await expect(ribbon).toHaveAttribute("data-running", "true");
-  await page.getByRole("button", { name: "หยุดแถวรูปสินค้า", exact: true }).click();
+  await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(ribbon).toHaveAttribute("data-running", "false");
   await expect
     .poll(() =>
@@ -267,7 +296,7 @@ test("ribbon loops independently of pinned models and pauses for controls, offsc
         ),
     )
     .toBe(true);
-  await page.getByRole("button", { name: "เล่นแถวรูปสินค้า", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(ribbon).toHaveAttribute("data-running", "true");
   await page.locator("#solutions").scrollIntoViewIfNeeded();
   await expect(ribbon).toHaveAttribute("data-running", "false");
@@ -282,6 +311,68 @@ test("ribbon loops independently of pinned models and pauses for controls, offsc
 
 test.describe("touch ribbon", () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+  test("mobile controls stay visible above the fold and support touch selection and playback", async ({
+    page,
+  }) => {
+    test.setTimeout(60000);
+    await ready(page);
+    const scene = page.locator(".hero-showroom");
+    const controls = page.locator(".slide-controls");
+    await page.getByRole("button", { name: "หยุดวนสินค้าอัตโนมัติ", exact: true }).tap();
+    await expect(scene).toHaveAttribute("data-cycle-mode", "pinned");
+    for (const [width, height] of [
+      [320, 667],
+      [390, 844],
+      [768, 1024],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await expect(controls).toHaveCSS("opacity", "1");
+      await expect(controls).toBeInViewport({ ratio: 1 });
+      const copy = (await page.locator(".hero-copy").boundingBox())!;
+      const bar = (await controls.boundingBox())!;
+      expect(bar.y).toBeGreaterThanOrEqual(copy.y + copy.height);
+      expect(bar.x).toBeGreaterThanOrEqual(0);
+      expect(bar.x + bar.width).toBeLessThanOrEqual(width);
+      for (const button of await controls.getByRole("button").all()) {
+        const box = (await button.boundingBox())!;
+        expect(box.width).toBeGreaterThanOrEqual(44);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+      await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).tap();
+      await page.getByRole("button", { name: "สินค้าถัดไป", exact: true }).tap();
+      await expect(scene).toHaveAttribute("data-active-product", "FEH5KS");
+      await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
+        "href",
+        "/products/feh5ks",
+      );
+      await page.getByRole("button", { name: "สินค้าก่อนหน้า", exact: true }).tap();
+      await expect(scene).toHaveAttribute("data-active-product", "ACS-30-JC21");
+      expect(await page.evaluate(() => scrollY)).toBe(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+    await expect(page.locator("[data-hero-motion-toggle]")).toHaveCount(1);
+    await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).tap();
+    const motion = page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true });
+    await expect(motion).toHaveCSS("opacity", "1");
+    await expect(motion).toHaveCSS("width", "44px");
+    await expect(motion).toHaveCSS("height", "44px");
+    await motion.tap();
+    await expect(page.locator(".hero-model-stage")).toHaveAttribute("data-moving", "true");
+    await expect(page.locator("[data-hero-studio]")).toHaveAttribute("data-running", "true");
+    await expect(page.locator("[data-hero-ribbon]")).toHaveAttribute("data-running", "true");
+    await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).tap();
+    await expect(page.locator(".hero-model-stage")).toHaveAttribute("data-moving", "false");
+    await expect(page.locator("[data-hero-studio]")).toHaveAttribute("data-running", "false");
+    await expect(page.locator("[data-hero-ribbon]")).toHaveAttribute("data-running", "false");
+    await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).tap();
+    await expect(page.locator("[data-hero-ribbon]")).toHaveAttribute("data-running", "true");
+    await page.getByRole("button", { name: "เล่นวนสินค้าอัตโนมัติ", exact: true }).tap();
+    await expect(scene).toHaveAttribute("data-cycle-mode", "auto");
+    await expect(scene).toHaveAttribute("data-cycling", "true");
+  });
   test("holding a photo on touch can drag it to the main stage without scrolling the page", async ({
     page,
   }) => {

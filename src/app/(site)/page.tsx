@@ -1,4 +1,5 @@
 import { Hero } from "@/features/home/components/hero";
+import { HomeMotion } from "@/features/home/components/home-motion";
 import { ProductSpotlight } from "@/features/home/components/product-spotlight";
 import {
   SourceShowcase,
@@ -37,25 +38,41 @@ export default async function Home() {
               : hero.secondaryHref,
         }}
       />
-      <div className="homepage-lead">
-        <ProductSpotlight
-          products={products}
-          image={images.spotlight}
-          target={targets.spotlight}
-          leading
-        />
-      </div>
-      <SourceShowcase products={products} images={images} targets={targets} />
-      {showHomepageCatalog ? (
-        <ProductCatalog products={products} copy={catalog} />
-      ) : (
-        <CategoryFeature products={products} targets={targets} />
-      )}
-      <BusinessSolutions />
-      <BrandStory />
-      <SunfordStories />
-      <SunfordVideos />
-      <SupportSection />
+      <HomeMotion>
+        <div className="homepage-lead">
+          <ProductSpotlight
+            products={products}
+            image={images.spotlight}
+            target={targets.spotlight}
+            leading
+          />
+        </div>
+      </HomeMotion>
+      <HomeMotion>
+        <SourceShowcase products={products} images={images} targets={targets} />
+      </HomeMotion>
+      <HomeMotion>
+        {showHomepageCatalog ? (
+          <ProductCatalog products={products} copy={catalog} />
+        ) : (
+          <CategoryFeature products={products} targets={targets} />
+        )}
+      </HomeMotion>
+      <HomeMotion>
+        <BusinessSolutions />
+      </HomeMotion>
+      <HomeMotion>
+        <BrandStory />
+      </HomeMotion>
+      <HomeMotion>
+        <SunfordStories />
+      </HomeMotion>
+      <HomeMotion>
+        <SunfordVideos />
+      </HomeMotion>
+      <HomeMotion>
+        <SupportSection />
+      </HomeMotion>
     </main>
   );
 }

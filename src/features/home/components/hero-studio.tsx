@@ -1,16 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
-import { Pause, Play } from "lucide-react";
-import { Tooltip } from "@/components/ui/tooltip";
+import { useEffect, useRef, type RefObject } from "react";
 import styles from "./hero-studio.module.css";
 
 /** Cached CSS surfaces move on the compositor; pointer input never renders React or the model. */
-export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | null> }) {
+export function HeroStudio({
+  sceneRef,
+  paused,
+}: {
+  sceneRef: RefObject<HTMLElement | null>;
+  paused: boolean;
+}) {
   const fieldRef = useRef<HTMLDivElement>(null);
   const syncRef = useRef<(() => void) | null>(null);
-  const pausedRef = useRef(false);
-  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(paused);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+    syncRef.current?.();
+  }, [paused]);
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -243,21 +251,6 @@ export function HeroStudio({ sceneRef }: { sceneRef: RefObject<HTMLElement | nul
         <div className={styles.echo} data-studio-echo="" />
         <div className={styles.backdrop} data-studio-backdrop="" />
       </div>
-      <Tooltip>
-        <button
-          type="button"
-          className={styles.toggle}
-          aria-label={paused ? "เล่นแสงพื้นหลัง" : "หยุดแสงพื้นหลัง"}
-          aria-pressed={paused}
-          onClick={() => {
-            pausedRef.current = !pausedRef.current;
-            setPaused(pausedRef.current);
-            syncRef.current?.();
-          }}
-        >
-          {paused ? <Play size={12} /> : <Pause size={12} />}
-        </button>
-      </Tooltip>
     </>
   );
 }

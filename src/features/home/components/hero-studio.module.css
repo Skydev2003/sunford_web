@@ -125,34 +125,7 @@
 .studio[data-running="true"] .filament {
   animation-play-state: running;
 }
-.toggle {
-  position: absolute;
-  z-index: 6;
-  right: 64px;
-  bottom: 37%;
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid #d9d9df99;
-  border-radius: 50%;
-  background: #ffffffc9;
-  color: #737884;
-}
-.toggle::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-}
-.toggle:hover {
-  color: #e81030;
-  background: #fff;
-}
-.toggle:focus-visible {
-  outline: 2px solid #e81030;
-  outline-offset: 4px;
-}
+
 @keyframes studio-breathe {
   0%,
   100% {
@@ -206,10 +179,7 @@
     width: 85%;
     height: 48%;
   }
-  .toggle {
-    right: 61px;
-    bottom: 212px;
-  }
+
   .flow {
     inset: 25% -75% -10%;
   }
@@ -231,7 +201,6 @@
   .cursor {
     will-change: auto;
   }
-  .toggle,
   .cursor,
   .echo {
     display: none;

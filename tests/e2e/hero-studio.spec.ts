@@ -14,7 +14,7 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   const cursor = studio.locator("[data-studio-cursor]");
   const stage = page.locator(".hero-model-stage");
   await expect(stage).toHaveAttribute("data-status", "ready", { timeout: 30000 });
-  await page.getByRole("button", { name: "หยุดมุมกล้องอัตโนมัติ", exact: true }).click();
+  await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
   await page.evaluate(() => document.fonts.ready);
   await expect(studio).toHaveAttribute("data-running", "true");
   await expect(page.locator(".announcement")).toHaveCount(0);
@@ -71,7 +71,7 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   const transform = () => halo.evaluate((element) => getComputedStyle(element).transform);
   const breathing = await transform();
   await expect.poll(transform).not.toBe(breathing);
-  await page.getByRole("button", { name: "หยุดแสงพื้นหลัง", exact: true }).click();
+  await page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(studio).toHaveAttribute("data-running", "false");
   await expect
     .poll(() =>
@@ -85,7 +85,7 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   const paused = await transform();
   await page.waitForTimeout(200);
   expect(await transform()).toBe(paused);
-  await page.getByRole("button", { name: "เล่นแสงพื้นหลัง", exact: true }).click();
+  await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(studio).toHaveAttribute("data-running", "true");
 
   const model = (await stage.boundingBox())!;
@@ -98,7 +98,7 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   expect(await rings.getAttribute("style")).toBe(dragRings);
   await page.mouse.up();
   await expect(studio).toHaveAttribute("data-running", "true");
-  await expect(stage).toHaveAttribute("data-moving", "false");
+  await expect(stage).toHaveAttribute("data-moving", "true");
   await page.mouse.click(500, bounds.y + 90);
   await expect(studio.locator("[data-studio-pulse]")).toHaveCount(0);
   await expect(cursor).toHaveCSS("opacity", "1");
@@ -126,7 +126,9 @@ test("studio respects reduced motion and preserves mobile content without horizo
     timeout: 30000,
   });
   await expect(studio).toHaveAttribute("data-running", "false");
-  await expect(page.getByRole("button", { name: "หยุดแสงพื้นหลัง", exact: true })).toBeHidden();
+  await expect(
+    page.getByRole("button", { name: "หยุดการเคลื่อนไหวทั้งหมด", exact: true }),
+  ).toBeHidden();
   const rings = studio.locator("[data-studio-rings]");
   await expect(rings.locator("div")).toHaveCSS("animation-name", "none");
   await expect(studio.locator("[data-studio-flow] > div").first()).toHaveCSS(

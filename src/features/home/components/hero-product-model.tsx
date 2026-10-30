@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
-import { Pause, Play } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 
 export function HeroProductModel({
@@ -16,7 +15,6 @@ export function HeroProductModel({
   onSettled,
   spinning = true,
   onInspect,
-  motionSession = 0,
 }: {
   src: string;
   poster: string;
@@ -28,7 +26,6 @@ export function HeroProductModel({
   onSettled?: () => void;
   spinning?: boolean;
   onInspect?: () => void;
-  motionSession?: number;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const viewer = useRef<ModelViewerElement>(null);
@@ -38,14 +35,21 @@ export function HeroProductModel({
   const [visible, setVisible] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [allowMotion, setAllowMotion] = useState(false);
-  const [manualMotion, setManualMotion] = useState<number | null>(null);
+  const [interacting, setInteracting] = useState(false);
   const moving =
-    active &&
-    (spinning || (active && manualMotion === motionSession)) &&
-    status === "ready" &&
-    visible &&
-    !hidden &&
-    allowMotion;
+    active && spinning && status === "ready" && visible && !hidden && allowMotion && !interacting;
+
+  useEffect(() => {
+    const release = () => setInteracting(false);
+    window.addEventListener("pointerup", release, true);
+    window.addEventListener("pointercancel", release, true);
+    window.addEventListener("blur", release);
+    return () => {
+      window.removeEventListener("pointerup", release, true);
+      window.removeEventListener("pointercancel", release, true);
+      window.removeEventListener("blur", release);
+    };
+  }, []);
 
   useEffect(() => {
     settledCallback.current = onSettled;
@@ -77,7 +81,6 @@ export function HeroProductModel({
     };
     const interaction = (event: Event) => {
       if ((event as CustomEvent<{ source: string }>).detail.source === "user-interaction") {
-        setManualMotion(null);
         inspectCallback.current?.();
       }
     };
@@ -134,8 +137,7 @@ export function HeroProductModel({
         aria-hidden={!active}
         onPointerDownCapture={() => {
           if (!active) return;
-          if (viewer.current) viewer.current.autoRotate = false;
-          setManualMotion(null);
+          setInteracting(true);
           onInspect?.();
         }}
       >
@@ -182,27 +184,6 @@ export function HeroProductModel({
           </div>
         )}
       </div>
-      {active && status === "ready" && (
-        <button
-          type="button"
-          className="hero-motion-toggle"
-          aria-label={moving ? "หยุดมุมกล้องอัตโนมัติ" : "เล่นมุมกล้องอัตโนมัติ"}
-          onClick={() => {
-            onInspect?.();
-            if (moving) setManualMotion(null);
-            else {
-              setAllowMotion(true);
-              setManualMotion(motionSession);
-            }
-          }}
-        >
-          {moving ? (
-            <Pause size={12} fill="currentColor" />
-          ) : (
-            <Play size={12} fill="currentColor" />
-          )}
-        </button>
-      )}
     </>
   );
 }
