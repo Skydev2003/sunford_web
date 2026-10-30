@@ -1,5 +1,10 @@
 # Project state
 
+## Release formatting scope (2026-10-30)
+
+- The production release formatting check excludes the three importer-generated JSON snapshots and local `.superpowers` brainstorm artifacts. The importer owns the snapshots' serialization; application source and maintained documentation remain checked. This makes the existing documented snapshot-format policy explicit without rewriting catalogue data or including local drafts in releases.
+- The Hero release was prepared on `uat` through the required release workflow. Historical duplicate admin/path commits caused rebase conflicts; resolutions preserved the current path compatibility and screenshot helper behavior, and the resulting application tree was verified identical to `safe` before this formatting configuration change.
+
 ## Clear sticky navigation during Hero scrolling (2026-10-30)
 
 - The homepage header shares the studio's transparent background only while the Hero remains at its initial position. The existing studio geometry handler restores the header's opaque surface as soon as content starts scrolling beneath it, and restores transparency at the top. This replaces the former rule that kept it transparent for the entire Hero intersection.

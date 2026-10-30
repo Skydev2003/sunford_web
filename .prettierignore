@@ -9,3 +9,8 @@ playwright-report
 output
 outputs
 work
+.superpowers
+# Import snapshots use the importer's JSON serialization.
+src/features/content/data/import-report.json
+src/features/content/data/pages.json
+src/features/content/data/products.json
