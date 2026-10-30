@@ -1,5 +1,11 @@
 # Project Memory
 
+## Preserve already integrated merge history during releases
+
+- Observed: Unconditional release rebases rewrote an approved merge even though both remote tips were already ancestors, splitting equivalent work into duplicate commit histories and producing repeated historical conflicts.
+- Root cause: The release script always rebased instead of checking whether the required upstream history was already contained in the release.
+- Correct behavior: Check `git merge-base --is-ancestor` before each synchronization rebase. Preserve merge parents when the remote tip is already included, retain rebasing for genuinely divergent histories, and verify both first-parent lineage and unchanged content before publication. Keep all validation and concurrency guards enabled.
+
 ## Check sticky navigation during partial Hero scrolling
 
 - Observed: Hero headings showed through the sticky navigation and foreground bubble controls covered it while the Hero was still partially visible.

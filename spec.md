@@ -1,5 +1,11 @@
 # Project state
 
+## Mainline history consolidation (2026-10-30)
+
+- Consolidated the original `safe` history into the current production lineage with the previous `main` revision as the first merge parent. The pending reverse merge contained only the already-released formatter configuration and a documentation conflict; those versions were preserved, and application files remain identical to the approved production tree. Published history is retained.
+- Release synchronization now rebases onto `origin/uat` or `origin/main` only when that remote tip is not already an ancestor. This preserves approved merge parents and prevents replaying historical commits already included in the release. All validation, clean-tree checks, concurrent-release detection and non-force production push safeguards remain mandatory.
+- A regression reproduced the previous merge rewrite, then verified that the release preserves both merge parents, publishes the checked revision and remains unchanged on a repeated release. Existing divergent-branch and conflict cases retain their rebase behavior.
+
 ## Release formatting scope (2026-10-30)
 
 - The production release formatting check excludes the three importer-generated JSON snapshots and local `.superpowers` brainstorm artifacts. The importer owns the snapshots' serialization; application source and maintained documentation remain checked. This makes the existing documented snapshot-format policy explicit without rewriting catalogue data or including local drafts in releases.

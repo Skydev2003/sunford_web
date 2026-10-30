@@ -53,15 +53,21 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
   git(["fetch", "origin"]);
   git(["rev-parse", "--verify", "refs/remotes/origin/main"]);
   // Include teammates' UAT commits without force-pushing the shared UAT branch.
-  // Rebasing onto main afterwards drops patches already released on main.
+  // Preserve approved merges when the remote commits are already included.
   if (
-    git(["rev-parse", "--verify", "refs/remotes/origin/uat"], { allowFailure: true }).status === 0
+    git(["rev-parse", "--verify", "refs/remotes/origin/uat"], { allowFailure: true }).status ===
+      0 &&
+    git(["merge-base", "--is-ancestor", "origin/uat", "HEAD"], { allowFailure: true }).status !== 0
   ) {
     log("Synchronizing uat with origin/uat...");
     git(["rebase", "origin/uat"]);
   }
-  log("Rebasing uat onto origin/main...");
-  git(["rebase", "origin/main"]);
+  if (
+    git(["merge-base", "--is-ancestor", "origin/main", "HEAD"], { allowFailure: true }).status !== 0
+  ) {
+    log("Rebasing uat onto origin/main...");
+    git(["rebase", "origin/main"]);
+  }
   assertReady();
   const revision = git(["rev-parse", "HEAD"]).stdout.trim();
 

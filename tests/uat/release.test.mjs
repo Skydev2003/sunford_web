@@ -73,6 +73,30 @@ test("release rebases uat onto main and pushes the validated revision without re
   f.git(["merge-base", "--is-ancestor", checked, "HEAD"]);
 });
 
+test("release preserves a main-first merge when both remote branches are already included", (t) => {
+  const f = fixture(t);
+  f.git(["switch", "main"]);
+  const main = f.commit("production.txt");
+  f.git(["push", "origin", "main"]);
+  f.git(["switch", "-c", "safe", f.initial]);
+  const safe = f.commit("feature.txt");
+  f.git(["switch", "uat"]);
+  f.git(["merge", "--ff-only", "main"]);
+  f.git(["merge", "--no-ff", "safe", "-m", "Merge safe into mainline"]);
+  const merged = f.git(["rev-parse", "HEAD"]);
+  f.release({
+    runChecks() {
+      assert.equal(f.git(["rev-parse", "HEAD"]), merged);
+      assert.equal(f.git(["rev-parse", "HEAD^1"]), main);
+      assert.equal(f.git(["rev-parse", "HEAD^2"]), safe);
+    },
+  });
+  assert.equal(f.remoteHead("main"), merged);
+  assert.equal(f.remoteHead("uat"), f.initial);
+  f.release();
+  assert.equal(f.remoteHead("main"), merged);
+});
+
 test("release refuses dirty trees, wrong branches and existing Git operations", (t) => {
   const f = fixture(t);
   f.git(["switch", "main"]);
