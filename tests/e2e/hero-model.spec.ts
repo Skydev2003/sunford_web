@@ -34,10 +34,7 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
   await expect(stage).toHaveAttribute("data-moving", "true");
   expect(modelRequests).toBe(1);
   await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "WPS10KS");
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
-    "href",
-    "/products/wps10ks",
-  );
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
   const orbit = () =>
     viewer.evaluate(
       (element) => (element as HTMLElement & { turntableRotation: number }).turntableRotation,
@@ -87,7 +84,7 @@ test("FEH5KS uses its own model and switching slides keeps only one main viewer"
   const viewer = stage.locator("model-viewer");
   await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(viewer).toHaveJSProperty("src", "/models/feh5ks.glb");
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute("href", "/products/feh5ks");
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
   await expect(stage).toHaveAttribute("data-moving", "true");
   const orbit = () =>
     viewer.evaluate(
@@ -129,7 +126,9 @@ test("WPS10KS respects reduced motion and fits mobile viewports", async ({ page 
   await expect(page.locator("[data-hero-motion-toggle]")).toBeHidden();
 });
 
-test("a failed GLB preserves the product image and details link", async ({ page }) => {
+test("a failed GLB preserves the product image without the removed CTA buttons", async ({
+  page,
+}) => {
   await page.route("**/models/wps10ks.glb", (route) => route.abort());
   await page.goto("/");
   await page.getByRole("button", { name: "แสดง WPS10KS", exact: true }).click();
@@ -137,8 +136,5 @@ test("a failed GLB preserves the product image and details link", async ({ page 
   await expect(stage).toHaveAttribute("data-status", "error", { timeout: 30000 });
   await expect(stage.locator(".hero-model-fallback img")).toBeVisible();
   await expect(stage.locator("model-viewer")).toHaveCount(0);
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
-    "href",
-    "/products/wps10ks",
-  );
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
 });

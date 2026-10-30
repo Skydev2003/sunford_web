@@ -34,10 +34,7 @@ test("studio follows the mouse without moving copy and pauses for model dragging
     "ACS-30-JC21",
   );
   await expect(page.locator(".hero-tagline")).toHaveText("คู่คิดทุกธุรกิจของคุณ");
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
-    "href",
-    "/products/acs30-jc21",
-  );
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
   await expect(studio.locator("canvas, video, iframe")).toHaveCount(0);
   await expect(studio.locator("img")).toHaveCount(0);
   await expect(page.locator(".hero-model-standby")).toHaveCount(2);
@@ -109,8 +106,12 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
   await expect(studio).toHaveAttribute("data-running", "true");
   await page.screenshot({ path: test.info().outputPath("hero-studio-after-drag.jpg") });
-  await page.locator(".hero-buttons a").first().click();
-  await expect(page).toHaveURL(/\/products\/acs30-jc21$/, { timeout: 30000 });
+  const catalogueLink = header
+    .getByRole("navigation", { name: "เมนูหลัก" })
+    .getByRole("link", { name: "เครื่องชั่ง", exact: true });
+  const destination = new URL((await catalogueLink.getAttribute("href"))!, page.url()).href;
+  await catalogueLink.click();
+  await expect(page).toHaveURL(destination, { timeout: 30000 });
   await expect(header).not.toHaveAttribute("data-hero-backdrop", "");
   await expect(header.locator(".nav-glass")).toHaveCSS("background-color", "rgb(247, 247, 249)");
 });
@@ -144,7 +145,7 @@ test("studio respects reduced motion and preserves mobile content without horizo
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    await expect(page.locator(".hero-buttons a").first()).toBeVisible();
+    await expect(page.locator(".hero-buttons")).toHaveCount(0);
     await expect(page.locator(".hero-description")).toBeVisible();
   }
   await page.setViewportSize({ width: 390, height: 844 });

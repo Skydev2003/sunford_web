@@ -39,8 +39,10 @@ export function HeroProductRibbon({
     let height = 0;
     let focusedWindow = true;
     let dragging = false;
+    let rotating = false;
     const sync = () => {
-      const play = allowedRef.current && !document.hidden && focusedWindow && !reduced.matches;
+      const play =
+        allowedRef.current && !document.hidden && focusedWindow && !reduced.matches && !rotating;
       element.dataset.running = String(play);
       motion.current.forEach((animation) => {
         if (play && animation.playState !== "running") animation.play();
@@ -58,6 +60,7 @@ export function HeroProductRibbon({
           element.dataset.static === String(reduced.matches))
       )
         return;
+      if (gesture) finish(false);
       const oldPhase = motion.current.length
         ? Number(motion.current[0].currentTime ?? 0) / duration
         : 0;
@@ -214,6 +217,7 @@ export function HeroProductRibbon({
       x: number;
       y: number;
       pointer: string;
+      model: boolean;
     } | null = null;
     let hold: ReturnType<typeof setTimeout> | undefined;
     let frame = 0;
@@ -222,6 +226,35 @@ export function HeroProductRibbon({
     let zone: DOMRect | undefined;
     let suppressClickUntil = 0;
     let flight: Animation | undefined;
+    let rotationTime = 0;
+    let rotationX = 0;
+    let rotationScroll = 0;
+    const paintRotation = () => {
+      frame = 0;
+      const distance = latestX - rotationX;
+      if (reduced.matches) {
+        element.scrollLeft = rotationScroll - distance;
+        return;
+      }
+      const circumference = 2 * Math.PI * width * (width < 801 ? 1.02 : 1.3);
+      const time = rotationTime - (distance / circumference) * duration;
+      const wrapped = ((time % duration) + duration) % duration;
+      motion.current.forEach((animation) => {
+        animation.currentTime = wrapped;
+      });
+    };
+    const beginRotation = () => {
+      if (!gesture) return;
+      clearTimeout(hold);
+      rotating = true;
+      rotationX = gesture.x;
+      rotationTime = Number(motion.current[0]?.currentTime ?? 0);
+      rotationScroll = element.scrollLeft;
+      gesture.card.setPointerCapture(gesture.id);
+      element.dataset.rotating = "true";
+      scene?.dispatchEvent(new CustomEvent("hero-product-drag", { detail: true }));
+      sync();
+    };
     const isOver = () =>
       Boolean(
         zone &&
@@ -236,7 +269,7 @@ export function HeroProductRibbon({
       if (scene) scene.dataset.productDrop = String(isOver());
     };
     const beginDrag = () => {
-      if (!gesture) return;
+      if (!gesture?.model || rotating) return;
       flight?.cancel();
       dragging = true;
       gesture.card.setPointerCapture(gesture.id);
@@ -255,34 +288,39 @@ export function HeroProductRibbon({
     const down = (event: PointerEvent) => {
       if (!event.isPrimary || event.button !== 0 || gesture) return;
       const card = (event.target as Element).closest<HTMLElement>("[data-ribbon-card]");
-      if (!card?.dataset.modelSrc) return;
       gesture = {
         id: event.pointerId,
-        card,
-        index: Number(card.dataset.ribbonCard) % products.length,
+        card: card ?? element,
+        index: card ? Number(card.dataset.ribbonCard) % products.length : -1,
         x: event.clientX,
         y: event.clientY,
         pointer: event.pointerType,
+        model: Boolean(card?.dataset.modelSrc),
       };
       latestX = event.clientX;
       latestY = event.clientY;
-      if (event.pointerType !== "mouse") hold = setTimeout(beginDrag, 200);
+      if (gesture.model && event.pointerType !== "mouse") hold = setTimeout(beginDrag, 200);
     };
     const move = (event: PointerEvent) => {
       if (!gesture || gesture.id !== event.pointerId) return;
       latestX = event.clientX;
       latestY = event.clientY;
-      if (!dragging && Math.hypot(latestX - gesture.x, latestY - gesture.y) > 7) {
-        if (gesture.pointer !== "mouse") {
+      const dx = latestX - gesture.x;
+      const dy = latestY - gesture.y;
+      if (!dragging && !rotating && Math.hypot(dx, dy) > 7) {
+        if (Math.abs(dx) > Math.abs(dy)) {
+          beginRotation();
+        } else if (gesture.model && gesture.pointer === "mouse") {
+          beginDrag();
+        } else {
           clearTimeout(hold);
           gesture = null;
           return;
         }
-        beginDrag();
       }
-      if (!dragging) return;
+      if (!dragging && !rotating) return;
       event.preventDefault();
-      if (!frame) frame = requestAnimationFrame(paintDrag);
+      if (!frame) frame = requestAnimationFrame(rotating ? paintRotation : paintDrag);
     };
     const finish = (accept: boolean) => {
       clearTimeout(hold);
@@ -291,6 +329,16 @@ export function HeroProductRibbon({
       gesture = null;
       if (current.card.hasPointerCapture(current.id))
         current.card.releasePointerCapture(current.id);
+      if (rotating) {
+        cancelAnimationFrame(frame);
+        paintRotation();
+        rotating = false;
+        delete element.dataset.rotating;
+        suppressClickUntil = performance.now() + 500;
+        scene?.dispatchEvent(new CustomEvent("hero-product-drag", { detail: false }));
+        sync();
+        return;
+      }
       if (!dragging) return;
       cancelAnimationFrame(frame);
       frame = 0;
@@ -340,7 +388,7 @@ export function HeroProductRibbon({
       if (gesture?.id === event.pointerId) {
         latestX = event.clientX;
         latestY = event.clientY;
-        if (!dragging && gesture.pointer !== "mouse") {
+        if (!dragging && !rotating && gesture.index >= 0 && gesture.pointer !== "mouse") {
           selectCallback.current(gesture.index);
           suppressClickUntil = performance.now() + 500;
         }
@@ -348,18 +396,21 @@ export function HeroProductRibbon({
       }
     };
     const cancel = () => finish(false);
+    const lostCapture = (event: PointerEvent) => {
+      if (gesture?.id === event.pointerId) finish(false);
+    };
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape") finish(false);
     };
     const click = (event: MouseEvent) => {
-      if (performance.now() < suppressClickUntil) {
+      if (event.detail !== 0 && performance.now() < suppressClickUntil) {
         event.preventDefault();
         event.stopImmediatePropagation();
       }
     };
     const preventImageDrag = (event: Event) => event.preventDefault();
     const touch = (event: TouchEvent) => {
-      if (dragging) event.preventDefault();
+      if (dragging || rotating) event.preventDefault();
     };
     const touchStart = (event: TouchEvent) => {
       // Reserve touches on linked photos for tap/hold; scrolling remains available outside them.
@@ -374,6 +425,7 @@ export function HeroProductRibbon({
     window.addEventListener("blur", windowBlur);
     window.addEventListener("focus", windowFocus);
     element.addEventListener("pointerdown", down);
+    element.addEventListener("lostpointercapture", lostCapture);
     element.addEventListener("click", click, true);
     element.addEventListener("dragstart", preventImageDrag);
     element.addEventListener("contextmenu", preventImageDrag);
@@ -399,6 +451,7 @@ export function HeroProductRibbon({
       window.removeEventListener("blur", windowBlur);
       window.removeEventListener("focus", windowFocus);
       element.removeEventListener("pointerdown", down);
+      element.removeEventListener("lostpointercapture", lostCapture);
       element.removeEventListener("click", click, true);
       element.removeEventListener("dragstart", preventImageDrag);
       element.removeEventListener("contextmenu", preventImageDrag);
@@ -486,8 +539,8 @@ export function HeroProductRibbon({
       <div ref={ghost} className={styles.ghost} aria-hidden="true" />
       <p className={styles.instruction}>
         {products.some((product) => product.model)
-          ? "เลือกสินค้า หรือลากขึ้นเพื่อชมโมเดล"
-          : "เลือกสินค้าเพื่อดูรายละเอียด"}
+          ? "ลากซ้าย–ขวาเพื่อหมุน · เลือกสินค้า หรือลากขึ้นเพื่อชมโมเดล"
+          : "ลากซ้าย–ขวาเพื่อหมุน · เลือกสินค้าเพื่อดูรายละเอียด"}
       </p>
       <span ref={announcement} className={styles.srOnly} role="status" aria-live="polite" />
     </div>

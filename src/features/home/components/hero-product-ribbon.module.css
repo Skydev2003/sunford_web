@@ -8,6 +8,14 @@
   position: absolute;
   inset: 0;
   overflow: visible;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.viewport[data-rotating="true"],
+.viewport[data-rotating="true"] .card {
+  cursor: grabbing;
 }
 .card {
   position: absolute;

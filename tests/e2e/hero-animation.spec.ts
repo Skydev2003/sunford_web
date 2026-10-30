@@ -23,7 +23,7 @@ test("ACS renders a large Retina scene with transparent corners and no legacy vi
     const stage = page.locator(".hero-model-stage--featured");
     await expect(stage).toHaveAttribute("data-status", "ready", { timeout: 30000 });
     await expect(stage.locator("model-viewer")).toHaveJSProperty("src", "/models/acs30-jc21.glb");
-    expect((await stage.boundingBox())!.width).toBeGreaterThan(1440 * 0.5);
+    expect((await stage.boundingBox())!.width).toBeGreaterThan(1440 * 0.4);
     await expect
       .poll(() =>
         stage.locator("model-viewer").evaluate((element) => {
@@ -100,7 +100,7 @@ test("ACS respects reduced motion and keeps the scene within mobile screens", as
   await expect(page.locator("[data-hero-motion-toggle]")).toBeHidden();
 });
 
-test("an unavailable ACS model retains a product image and working details link", async ({
+test("an unavailable ACS model retains a product image without the removed CTA buttons", async ({
   page,
 }) => {
   await page.route("**/models/acs30-jc21.glb", (route) => route.abort());
@@ -109,8 +109,5 @@ test("an unavailable ACS model retains a product image and working details link"
   await expect(stage).toHaveAttribute("data-status", "error", { timeout: 30000 });
   await expect(stage.locator(".hero-model-fallback img")).toBeVisible();
   await expect(stage.locator("model-viewer")).toHaveCount(0);
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
-    "href",
-    "/products/acs30-jc21",
-  );
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
 });

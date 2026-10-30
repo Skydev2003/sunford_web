@@ -13,7 +13,7 @@ async function ready(page: Page) {
   }
 }
 
-test("ribbon selection reuses cached real models and keeps product facts and links in sync", async ({
+test("ribbon selection reuses cached real models and keeps product facts and models in sync", async ({
   page,
 }) => {
   test.setTimeout(60000);
@@ -37,7 +37,7 @@ test("ribbon selection reuses cached real models and keeps product facts and lin
   await expect(page.locator(".hero-model")).toContainText("SUNFORD");
   await expect(page.locator(".hero-description")).toContainText("บริการหลังการขาย");
   await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "FEH5KS");
-  await expect(page.locator(".hero-buttons a").first()).toHaveAttribute("href", "/products/feh5ks");
+  await expect(page.locator(".hero-buttons")).toHaveCount(0);
   await expect(page.locator(".hero-model-stage model-viewer")).toHaveJSProperty(
     "src",
     "/models/feh5ks.glb",
@@ -342,10 +342,7 @@ test.describe("touch ribbon", () => {
       await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).tap();
       await page.getByRole("button", { name: "สินค้าถัดไป", exact: true }).tap();
       await expect(scene).toHaveAttribute("data-active-product", "FEH5KS");
-      await expect(page.locator(".hero-buttons a").first()).toHaveAttribute(
-        "href",
-        "/products/feh5ks",
-      );
+      await expect(page.locator(".hero-buttons")).toHaveCount(0);
       await page.getByRole("button", { name: "สินค้าก่อนหน้า", exact: true }).tap();
       await expect(scene).toHaveAttribute("data-active-product", "ACS-30-JC21");
       expect(await page.evaluate(() => scrollY)).toBe(0);
@@ -382,6 +379,9 @@ test.describe("touch ribbon", () => {
     const card = page.locator('[data-ribbon-card="1"]');
     await page.keyboard.press("Tab");
     await card.focus();
+    await card.evaluate((element) =>
+      element.scrollIntoView({ block: "center", behavior: "instant" }),
+    );
     const box = (await card.boundingBox())!;
     const zone = (await page.locator("[data-hero-dropzone]").boundingBox())!;
     const initialScroll = await page.evaluate(() => scrollY);
@@ -417,7 +417,7 @@ test.describe("touch ribbon", () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
-      await expect(page.locator(".hero-buttons a").first()).toBeVisible();
+      await expect(page.locator(".hero-buttons")).toHaveCount(0);
     }
     await page.screenshot({ path: test.info().outputPath("hero-showroom-mobile.jpg") });
   });
