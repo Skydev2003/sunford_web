@@ -13,6 +13,8 @@ import { getProducts } from "@/features/catalog/server/product-repository";
 import { getHomeImages, getHomeLinkTargets } from "@/features/home/server/home-images";
 import { getSettings } from "@/features/cms/server/documents";
 import { defaultHero, catalogDefaults } from "@/features/cms/data/settings";
+import { heroSlideData } from "@/features/home/data/hero-slides";
+import { getClientProducts } from "@/features/catalog/server/client-products";
 
 // Temporarily hide the homepage catalogue while keeping /products available.
 const showHomepageCatalog = false;
@@ -25,13 +27,14 @@ export default async function Home() {
     getSettings("hero", defaultHero),
     getSettings("catalog", catalogDefaults),
   ]);
+  const { slides, ...heroCopy } = hero;
   return (
     <main id="main-content">
       <Hero
-        products={products}
+        slides={heroSlideData(products, slides)}
         showAnnouncement={false}
         settings={{
-          ...hero,
+          ...heroCopy,
           secondaryHref:
             !showHomepageCatalog && hero.secondaryHref === "#products"
               ? "/products"
@@ -53,7 +56,7 @@ export default async function Home() {
       </HomeMotion>
       <HomeMotion>
         {showHomepageCatalog ? (
-          <ProductCatalog products={products} copy={catalog} />
+          <ProductCatalog products={await getClientProducts()} copy={catalog} />
         ) : (
           <CategoryFeature products={products} targets={targets} />
         )}

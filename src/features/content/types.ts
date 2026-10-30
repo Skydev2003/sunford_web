@@ -42,4 +42,4 @@ export type SourcePage = {
   videos?: { id: string; image: string }[];
 };
 
-export type SearchPage = Pick<SourcePage, "path" | "title" | "kind">;
+export type SearchPage = Pick<SourcePage, "path" | "title">;

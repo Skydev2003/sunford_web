@@ -7,6 +7,7 @@ import { getProduct, getProducts } from "@/features/catalog/server/product-repos
 import { getSettings } from "@/features/cms/server/documents";
 import { defaultSite } from "@/features/cms/data/settings";
 import { ProductCard } from "@/features/catalog/components/product-card";
+import { productCardData } from "@/features/catalog/data/client-products";
 import { getSourceProduct } from "@/features/content/server/content-repository";
 import { ProductGallery } from "@/features/catalog/components/product-gallery";
 import { getContentPage } from "@/features/content/server/content-repository";
@@ -178,7 +179,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
         <div className="product-grid">
           {related.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.id} product={productCardData(p)} />
           ))}
         </div>
       </div>
