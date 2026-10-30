@@ -6,11 +6,12 @@ import { products as curated } from "@/features/catalog/data/products";
 import { productSources } from "@/features/catalog/data/product-sources";
 import { getDocuments } from "@/features/cms/server/documents";
 import { publicPath } from "../data/public-paths.mjs";
+import { solutions, solutionsIndex } from "../data/solutions";
 
 export { getSnapshotProducts } from "../data/catalog-snapshot";
 
 export const importedProducts = sourceProducts as SourceProduct[];
-export const importedPages = sourcePages as SourcePage[];
+export const importedPages = [...sourcePages, solutionsIndex, ...solutions] as SourcePage[];
 const normalize = (value: string) => publicPath(value).replace(/\/$/, "").toLowerCase();
 
 function mergePages(documents: Awaited<ReturnType<typeof getDocuments>>): SourcePage[] {
@@ -62,6 +63,10 @@ export async function getContentPageIndex(): Promise<Record<string, SourcePage>>
   for (const page of pages) {
     const key = normalize(page.path);
     if (!index[key]) index[key] = page;
+  }
+  for (const solution of solutions) {
+    const sourcePath = decodeURIComponent(new URL(solution.sourceUrl).pathname);
+    index[normalize(sourcePath)] = index[normalize(solution.path)];
   }
   for (const document of documents) {
     if (document.deletedAt || document.data.published === false) continue;

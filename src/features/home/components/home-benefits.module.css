@@ -1,0 +1,115 @@
+.section {
+  padding: 52px 0 56px;
+  background: #faf7f9;
+}
+.inner {
+  width: calc(100% - 96px);
+  max-width: 1240px;
+  margin-inline: auto;
+}
+.heading {
+  margin: 0 0 26px;
+  color: #142033;
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.5px;
+  text-wrap: balance;
+}
+.heading span {
+  color: #62616e;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: #fff;
+  color: #142033;
+  box-shadow: 0 5px 18px #57263808;
+  text-decoration: none;
+  transition:
+    transform 180ms ease-out,
+    box-shadow 180ms ease-out;
+}
+.icon {
+  color: #ec123d;
+  flex-shrink: 0;
+}
+.copy h3 {
+  margin: 0 0 5px;
+  color: #d9143b;
+  font-size: clamp(17px, 1.4vw, 20px);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.copy p {
+  margin: 0;
+  color: #414957;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.arrow {
+  position: absolute;
+  top: 30px;
+  right: 24px;
+  color: #8c6f7a;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px #57263812;
+}
+.card:hover .arrow {
+  color: #d9143b;
+}
+.card:focus-visible {
+  outline: 3px solid #d9143b;
+  outline-offset: 4px;
+}
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .section {
+    padding: 36px 0;
+  }
+  .inner {
+    width: calc(100% - 40px);
+  }
+  .heading span {
+    display: block;
+    font-size: 19px;
+  }
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .card {
+    flex-direction: row;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 40px 22px 20px;
+  }
+  .arrow {
+    top: 24px;
+    right: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  .card:hover {
+    transform: none;
+  }
+}

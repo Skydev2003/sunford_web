@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import {
   getContentPage,
   getContentPages,
@@ -9,6 +9,8 @@ import {
 } from "@/features/content/server/content-repository";
 import { getProducts, getProduct } from "@/features/catalog/server/product-repository";
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
+import { ProductBrowser } from "@/features/catalog/components/product-browser";
+import { getCatalogPage } from "@/features/catalog/server/catalog-page";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import { ContentDirectory } from "@/features/content/components/content-directory";
 import { ProductImage } from "@/components/ui/product-image";
@@ -17,6 +19,7 @@ import { SoftwareCatalog } from "@/features/content/components/software-catalog"
 import { ContactPage } from "@/features/content/components/contact-page";
 import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { AboutPage } from "@/features/content/components/about-page";
+import { SolutionsPage } from "@/features/content/components/solutions-page";
 import { getProductSection } from "@/features/content/data/product-sections";
 import {
   resolveContentPath,
@@ -67,6 +70,8 @@ export default async function SourceContentPage({
   }
   const page = await getContentPage(pathname);
   if (!page) notFound();
+  if (page.path === "/solutions" || page.path.startsWith("/solutions/"))
+    return <SolutionsPage page={page} />;
   if (page.path !== pathname && page.managed) redirect(page.path);
   if (page.path === "/contact-us" && !page.managed) return <ContactPage />;
   if (page.path === "/service" && !page.managed) return <AfterSalesPage />;
@@ -77,6 +82,7 @@ export default async function SourceContentPage({
     ? [...new Set(collections.flatMap((collection) => collection?.productHandles ?? []))]
     : page.productHandles;
   const allProducts = await getProducts();
+  const catalog = !page.managed ? await getCatalogPage(page.path, allProducts) : undefined;
   const productIds = new Set(
     allProducts
       .filter((product) =>
@@ -86,7 +92,12 @@ export default async function SourceContentPage({
       )
       .map((product) => product.id),
   );
-  let products = (await getClientProducts()).filter((product) => productIds.has(product.id));
+  const clientProducts = await getClientProducts();
+  const catalogIds = new Set(catalog?.products.map((product) => product.id));
+  const catalogProducts = catalog
+    ? clientProducts.filter((product) => catalogIds.has(product.id))
+    : [];
+  let products = clientProducts.filter((product) => productIds.has(product.id));
   if (section?.category) {
     const category = section.category;
     products = products.map((product) =>
@@ -144,31 +155,33 @@ export default async function SourceContentPage({
   const sectionIntro = introduction.length > 80 ? introduction : "";
   return (
     <main id="main-content" className="source-content-page">
-      <div className="source-local-nav">
-        <div className="container">
-          <Link className="text-link" href="/explore">
-            <ArrowLeft size={15} />
-            สำรวจ Sunford
-          </Link>
-          <span>{page.kind === "collection" ? "ผลิตภัณฑ์" : "SUNFORD"}</span>
-        </div>
-      </div>
-      <header className="content-heading container">
-        <p className="eyebrow">
-          {page.kind === "collection"
-            ? "THE SUNFORD COLLECTION"
-            : page.kind === "article"
-              ? "SUNFORD STORIES"
-              : "SUNFORD"}
-        </p>
-        <h1>{title}</h1>
-        {sectionIntro && <p className="source-section-intro">{sectionIntro}</p>}
-        {formPage && (
-          <a className="button button-red" href={page.sourceUrl} target="_blank" rel="noreferrer">
-            เปิดแบบฟอร์ม Sunford <ArrowUpRight size={17} />
-          </a>
-        )}
-      </header>
+      {catalog && (
+        <ProductBrowser key={page.path} products={catalogProducts} scope={catalog.scope} />
+      )}
+      {!catalog && (
+        <header className="content-heading container">
+          <p className="eyebrow">
+            {page.kind === "collection"
+              ? "THE SUNFORD COLLECTION"
+              : page.kind === "article"
+                ? "SUNFORD STORIES"
+                : "SUNFORD"}
+          </p>
+          <h1>{title}</h1>
+          {sectionIntro && <p className="source-section-intro">{sectionIntro}</p>}
+          {formPage && (
+            <a className="button button-red" href={page.sourceUrl} target="_blank" rel="noreferrer">
+              เปิดแบบฟอร์ม Sunford <ArrowUpRight size={17} />
+            </a>
+          )}
+        </header>
+      )}
+      {catalog && hasContent && page.html && (
+        <details className="container source-prose" style={{ marginBlock: 28 }}>
+          <summary>ข้อมูลเพิ่มเติมเกี่ยวกับ{title}</summary>
+          <article dangerouslySetInnerHTML={{ __html: proseHtml }} />
+        </details>
+      )}
       {softwareIndex && softwareCatalog && <SoftwareCatalog catalog={softwareCatalog} />}
       {/^\/software\/download\/sunford-rls(1100|1800)$/.test(page.path) && (
         <nav
@@ -196,7 +209,7 @@ export default async function SourceContentPage({
           />
         </div>
       )}
-      {section && section.links.length > 0 && (
+      {!catalog && section && section.links.length > 0 && (
         <nav className="container source-section-links" aria-label={`เลือกหมวด${title}`}>
           {section.links.map((link) => (
             <Link
@@ -222,7 +235,7 @@ export default async function SourceContentPage({
           dangerouslySetInnerHTML={{ __html: page.html }}
         />
       )}
-      {page.kind === "collection" ? (
+      {catalog ? null : page.kind === "collection" ? (
         <>
           {products.length ? (
             <ProductCatalog
@@ -276,6 +289,7 @@ export default async function SourceContentPage({
         </>
       )}
       {section &&
+        !catalog &&
         page.kind !== "collection" &&
         (products.length > 0 ? (
           <ProductCatalog

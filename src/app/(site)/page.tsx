@@ -1,6 +1,7 @@
 import { Hero } from "@/features/home/components/hero";
 import { HomeMotion } from "@/features/home/components/home-motion";
 import { ProductSpotlight } from "@/features/home/components/product-spotlight";
+import { BrandFilm } from "@/features/home/components/brand-film";
 import {
   SourceShowcase,
   SunfordStories,
@@ -41,6 +42,7 @@ export default async function Home() {
               : hero.secondaryHref,
         }}
       />
+      <BrandFilm />
       <HomeMotion>
         <div className="homepage-lead">
           <ProductSpotlight

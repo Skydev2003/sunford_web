@@ -10,6 +10,7 @@ export function clientProductData(product: Product): ClientProduct {
     ...productCardData(product),
     description: product.description,
     featured: product.featured,
+    topics: product.topics,
     price: product.price,
     imageOverridden: product.imageOverridden,
     readability: product.readability,

@@ -1,6 +1,21 @@
 import type { NavigationGroup } from "../types";
+import solutions from "@/features/content/data/solution-links.json";
 
 export const defaultNavigationGroups: Record<string, NavigationGroup[]> = {
+  "/solutions": [
+    {
+      label: "การส่งข้อมูลและบันทึก",
+      links: solutions.slice(0, 4).map((item) => ({ label: item.title, href: item.path })),
+    },
+    {
+      label: "การพิมพ์และระบบขาย",
+      links: solutions.slice(4, 8).map((item) => ({ label: item.title, href: item.path })),
+    },
+    {
+      label: "การควบคุมและสภาพแวดล้อม",
+      links: solutions.slice(8).map((item) => ({ label: item.title, href: item.path })),
+    },
+  ],
   "/products": [
     {
       label: "เลือกตามการใช้งาน",
@@ -132,6 +147,7 @@ const navigation = [
       ["POS ระบบ Windows", "/Product/POS/Windows"],
     ],
   },
+  { label: "โซลูชัน", href: "/solutions", links: [["โซลูชันทั้งหมด", "/solutions"]] },
   {
     label: "อุปกรณ์เสริม",
     submenuLabel: "อุปกรณ์และวัสดุเสริม",

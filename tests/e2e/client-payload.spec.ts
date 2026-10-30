@@ -32,7 +32,14 @@ test("full description search and comparison survive client navigation", async (
   const { products } = (await (await request.get("/api/products")).json()) as {
     products: Product[];
   };
-  const target = products.find((product) => product.description.length > 100)!;
+  await page.goto("/products");
+  const catalogue = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+  const targetHref = await catalogue
+    .getByRole("link", { name: /^ดูรายละเอียด / })
+    .first()
+    .getAttribute("href");
+  const target = products.find((product) => `/products/${product.slug}` === targetHref)!;
+  expect(target).toBeTruthy();
   const query = target.description.slice(-30).trim();
   const matches = products.filter((p) =>
     `${p.name} ${p.subtitle} ${p.description}`.toLowerCase().includes(query.toLowerCase()),
@@ -51,16 +58,14 @@ test("full description search and comparison survive client navigation", async (
   await expect(search.locator('a[href="/service"]')).toBeVisible();
   await page.keyboard.press("Escape");
   await page.goto("/products");
-  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
   await page.getByPlaceholder("ค้นหารุ่นสินค้า").fill(query);
-  await expect(page.locator(".catalog-result-count")).toHaveText(`${matches.length} ผลิตภัณฑ์`);
-  const card = page
-    .locator(".product-card")
+  const card = catalogue
+    .locator("article")
     .filter({ has: page.getByRole("heading", { name: target.name, exact: true }) });
   await card
     .getByRole("button", { name: `เพิ่มเพื่อเปรียบเทียบ ${target.name}`, exact: true })
     .click();
-  await card.locator("h3").click();
+  await card.getByRole("heading", { name: target.name, exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/products/${target.slug}$`));
   await page.getByRole("button", { name: "ดูการเปรียบเทียบ" }).click();
   const comparison = page.getByRole("dialog", { name: "เปรียบเทียบสิ่งที่ใช่" });

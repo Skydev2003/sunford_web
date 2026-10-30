@@ -11,6 +11,14 @@ export const categories = [
 ] as const;
 
 export type CategoryId = string;
+export type CatalogScope = {
+  title: string;
+  rootHref: string;
+  rootLabel: string;
+  currentPath: string;
+  topicIds?: string[];
+  links: { label: string; href: string; count: number }[];
+};
 export type Product = {
   id: string;
   slug: string;
@@ -24,6 +32,7 @@ export type Product = {
   connection: string;
   badge: string | null;
   featured: boolean;
+  topics?: string[];
   sortOrder: number;
   sourceId?: string;
   sourceUrl?: string;
@@ -36,7 +45,7 @@ export type ProductCardData = Pick<
   Product,
   "id" | "slug" | "name" | "category" | "subtitle" | "image" | "capacity" | "badge"
 >;
-export type CatalogProduct = ProductCardData & Pick<Product, "description" | "featured">;
+export type CatalogProduct = ProductCardData & Pick<Product, "description" | "featured" | "topics">;
 export type StorefrontProduct = CatalogProduct & Pick<Product, "price" | "imageOverridden">;
 export type OverlayProduct = Pick<
   Product,

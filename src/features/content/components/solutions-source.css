@@ -1,0 +1,3541 @@
+/* Scope เฉพาะภายใน .sunford-rs232-widget เพื่อไม่ให้กระทบธีมหลัก */
+.solution-source--rs232 .sunford-rs232-widget {
+  --sf-primary: #d81f27;
+  --sf-bg: #ffffff;
+  --sf-surface: #ffffff;
+  --sf-text: #1a202c;
+  --sf-muted: #53626f;
+  --sf-border: #e2e8f0;
+  --sf-chip: #f8f9fa;
+
+  box-sizing: border-box;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+  color: var(--sf-text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+  background: var(--sf-bg);
+}
+
+.solution-source--rs232 .sunford-rs232-widget *,
+.solution-source--rs232 .sunford-rs232-widget *::before,
+.solution-source--rs232 .sunford-rs232-widget *::after {
+  box-sizing: border-box;
+}
+
+/* Header */
+.solution-source--rs232 .sunford-rs232-widget .sf-hero {
+  padding: 1.5rem 0;
+  border-bottom: 3px solid var(--sf-primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-brand-badge {
+  display: inline-block;
+  background: var(--sf-primary);
+  color: #ffffff !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.solution-source--rs232 .sunford-rs232-widget h1.sf-title {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-lead {
+  margin: 0;
+  color: var(--sf-muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+/* Flow Diagram */
+.solution-source--rs232 .sunford-rs232-widget .sf-flow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1.25rem;
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-node {
+  flex: 0 0 auto;
+  min-width: 5.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--sf-text);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-node svg {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--sf-primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-wire-container {
+  position: relative;
+  flex: 1 0 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.5rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-wire-line {
+  position: absolute;
+  top: 50%;
+  left: 1.5rem;
+  right: 1.5rem;
+  height: 2px;
+  background: var(--sf-primary);
+  z-index: 1;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-port-badge {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--sf-surface);
+  padding: 0 6px;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-port-badge svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: var(--sf-primary);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-port-badge span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--sf-primary);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* Section & Cards */
+.solution-source--rs232 .sunford-rs232-widget .sf-section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--sf-border);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 22px;
+  background: var(--sf-primary);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-intro-card,
+.solution-source--rs232 .sunford-rs232-widget .sf-sum {
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-left: 5px solid var(--sf-primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-intro-card p,
+.solution-source--rs232 .sunford-rs232-widget .sf-sum p {
+  margin: 0;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-chips li {
+  padding: 0.2rem 0.8rem;
+  background: var(--sf-chip);
+  border: 1px solid var(--sf-border);
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--sf-muted);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-card {
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--sf-primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-card-title-group {
+  flex: 1;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-card-title-group .sf-en-title {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--sf-primary);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--sf-primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-order-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sf-primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  margin-top: 0.5rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-order-link:hover {
+  opacity: 0.85;
+}
+
+/* Software Cards */
+.solution-source--rs232 .sunford-rs232-widget .sf-sw {
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-left: 5px solid var(--sf-primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-sw h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-sw h3 a {
+  color: var(--sf-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-sw p {
+  margin: 0 0 1rem;
+  font-size: 0.98rem;
+  color: #334155;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-btn {
+  display: inline-block;
+  min-height: 2.5rem;
+  padding: 0.5rem 1.2rem;
+  background: var(--sf-primary);
+  color: #ffffff !important;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.solution-source--rs232 .sunford-rs232-widget .sf-btn:hover {
+  opacity: 0.9;
+}
+
+/* Scope เฉพาะภายใน .sunford-ble-widget เท่านั้น ป้องกันผลกระทบกับส่วนอื่นของธีม */
+.solution-source--wireless .sunford-ble-widget {
+  --sf-primary: #d81f27;
+  --sf-primary-light: rgba(216, 31, 39, 0.05);
+  --sf-bg: #ffffff;
+  --sf-surface: #ffffff;
+  --sf-text: #1a202c;
+  --sf-muted: #53626f;
+  --sf-border: #e2e8f0;
+  --sf-chip: #f8f9fa;
+
+  box-sizing: border-box;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+  color: var(--sf-text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+  background: var(--sf-bg);
+}
+
+.solution-source--wireless .sunford-ble-widget *,
+.solution-source--wireless .sunford-ble-widget *::before,
+.solution-source--wireless .sunford-ble-widget *::after {
+  box-sizing: border-box;
+}
+
+/* Header */
+.solution-source--wireless .sunford-ble-widget .sf-hero {
+  padding: 1.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--sf-primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-badge {
+  display: inline-block;
+  background: var(--sf-primary);
+  color: #ffffff !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.solution-source--wireless .sunford-ble-widget h1.sf-title {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.4rem, 4vw, 1.95rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-lead {
+  margin: 0;
+  color: var(--sf-muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+/* BLE Flow Diagram */
+.solution-source--wireless .sunford-ble-widget .sf-flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  overflow-x: auto;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-node {
+  flex: 0 0 auto;
+  min-width: 6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--sf-text);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--sf-primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-wireless-wave {
+  position: relative;
+  flex: 1 0 4rem;
+  height: 0;
+  border-top: 2px dashed var(--sf-primary);
+  text-align: center;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-wireless-wave span {
+  position: absolute;
+  top: -1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--sf-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* Section Styles */
+.solution-source--wireless .sunford-ble-widget .sf-section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--sf-border);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 20px;
+  background: var(--sf-primary);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Cards */
+.solution-source--wireless .sunford-ble-widget .sf-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-card {
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-card-num {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  background: var(--sf-primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-card-title-group {
+  flex: 1;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-card-title-group .sf-en-title {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--sf-primary);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -2px;
+  color: var(--sf-primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Highlight & Box styles */
+.solution-source--wireless .sunford-ble-widget .sf-intro-card,
+.solution-source--wireless .sunford-ble-widget .sf-sum {
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-left: 5px solid var(--sf-primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-intro-card p,
+.solution-source--wireless .sunford-ble-widget .sf-sum p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-intro-card p:last-child,
+.solution-source--wireless .sunford-ble-widget .sf-sum p:last-child {
+  margin-bottom: 0;
+}
+
+/* WeWeigh2 App Card */
+.solution-source--wireless .sunford-ble-widget .sf-app-card {
+  padding: 1.5rem;
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-left: 5px solid var(--sf-primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-app-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #000000;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-app-card h3 a {
+  color: var(--sf-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-app-card p {
+  margin: 0 0 1rem;
+  font-size: 0.98rem;
+  color: #334155;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-app-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-app-features li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-app-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--sf-primary);
+  font-weight: 700;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-btn {
+  display: inline-block;
+  padding: 0.55rem 1.2rem;
+  background: var(--sf-primary);
+  color: #ffffff !important;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-btn:hover {
+  opacity: 0.9;
+}
+
+/* Comparison Card */
+.solution-source--wireless .sunford-ble-widget .sf-compare-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-compare-item {
+  padding: 1.2rem;
+  border: 1px solid var(--sf-border);
+  border-radius: 10px;
+  background: var(--sf-chip);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-compare-item.highlight {
+  border-color: rgba(216, 31, 39, 0.3);
+  background: var(--sf-surface);
+  border-left: 4px solid var(--sf-primary);
+}
+
+.solution-source--wireless .sunford-ble-widget .sf-compare-item strong {
+  display: block;
+  color: #000000;
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Scope Variable Root */
+.solution-source--usb-drive .wp31e-app-scope {
+  --wp31e-primary: #d81f27;
+  --wp31e-primary-hover: #b81920;
+  --wp31e-bg: #ffffff;
+  --wp31e-surface: #ffffff;
+  --wp31e-text: #14202b;
+  --wp31e-muted: #53626f;
+  --wp31e-border: #cfd8df;
+  --wp31e-chip: #f1f5f9;
+
+  font-family: inherit;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--wp31e-text);
+  background: var(--wp31e-bg);
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 20px 18px 40px;
+  box-sizing: border-box;
+}
+
+.solution-source--usb-drive .wp31e-app-scope *,
+.solution-source--usb-drive .wp31e-app-scope *::before,
+.solution-source--usb-drive .wp31e-app-scope *::after {
+  box-sizing: border-box;
+}
+
+/* Header Section */
+.solution-source--usb-drive .wp31e-app-scope header.wp31e-top {
+  padding: 10px 0 16px;
+  border-bottom: 3px solid var(--wp31e-primary);
+  margin-bottom: 24px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .brand-badge {
+  display: inline-block;
+  background-color: var(--wp31e-primary);
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 20px;
+  border-radius: 50px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(216, 31, 39, 0.2);
+}
+
+.solution-source--usb-drive .wp31e-app-scope h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  line-height: 1.25;
+  margin: 6px 0 10px;
+  color: #000000;
+  font-weight: 700;
+}
+
+.solution-source--usb-drive .wp31e-app-scope section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--wp31e-border);
+}
+
+.solution-source--usb-drive .wp31e-app-scope .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 22px;
+  background: var(--wp31e-primary);
+  border-radius: 3px;
+}
+
+/* Grid & Cards */
+.solution-source--usb-drive .wp31e-app-scope .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .card {
+  background: var(--wp31e-surface);
+  border: 1px solid var(--wp31e-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--usb-drive .wp31e-app-scope .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--usb-drive .wp31e-app-scope .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .card-num {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  background: var(--wp31e-primary);
+  color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .card-title-group h3 {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--wp31e-primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .order-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--wp31e-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .order-link:hover {
+  color: var(--wp31e-primary-hover);
+}
+
+/* Diagram & Visual Styles */
+.solution-source--usb-drive .wp31e-app-scope .diagram-container {
+  background: #f8fafc;
+  border: 1px solid var(--wp31e-border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  margin-top: 10px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .indicator-mockup {
+  background: linear-gradient(145deg, #182848, #0e1626);
+  border: 4px solid #b0bec5;
+  border-radius: 16px;
+  padding: 20px;
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  max-width: 620px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-brand {
+  font-family: inherit;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-model {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .badge-ip67 {
+  border: 1.5px solid #00e676;
+  color: #00e676;
+  padding: 1px 7px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-screen {
+  background: #020b12;
+  border: 3px solid #1e293b;
+  border-radius: 10px;
+  padding: 12px 20px;
+  text-align: right;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  margin-bottom: 16px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .screen-digits {
+  font-family: inherit;
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  color: #00ff66;
+  text-shadow: 0 0 12px rgba(0, 255, 102, 0.65);
+  line-height: 1;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .screen-sub {
+  display: flex;
+  justify-content: space-between;
+  color: #00ff66;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-keys {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-key {
+  background: #2b3a4a;
+  border: 1px solid #486581;
+  border-radius: 6px;
+  padding: 7px 2px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #d9e2ec;
+  box-shadow: 0 2px 0 #102a43;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .mock-key.key-on {
+  background: #00875a;
+  border-color: #00a86b;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .usb-port-pointer {
+  position: absolute;
+  right: 32px;
+  bottom: -22px;
+  background: #d81f27;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(216, 31, 39, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .diagram-legend {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .legend-item {
+  background: #ffffff;
+  border: 1px solid var(--wp31e-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.92rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .legend-item b {
+  color: #0f172a;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .video-card {
+  margin-top: 18px;
+  background: #ffffff;
+  border: 1.5px dashed var(--wp31e-border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .video-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ff0000;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .video-btn:hover {
+  background: #cc0000;
+  transform: translateY(-2px);
+}
+
+/* Data Display Table */
+.solution-source--usb-drive .wp31e-app-scope .table-container {
+  max-width: 100%;
+  margin: 1.25rem auto 0;
+  border: 1px solid #d1dbe5;
+  border-radius: 8px;
+  overflow-x: auto;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.solution-source--usb-drive .wp31e-app-scope table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.solution-source--usb-drive .wp31e-app-scope th {
+  background-color: #f0f4f8;
+  color: #1f2d3d;
+  font-weight: 700;
+  padding: 12px 14px;
+  text-align: center;
+  border-bottom: 1px solid #d1dbe5;
+  white-space: nowrap;
+}
+
+.solution-source--usb-drive .wp31e-app-scope td {
+  padding: 12px 14px;
+  text-align: center;
+  border-bottom: 1px solid #eef2f7;
+  white-space: nowrap;
+}
+
+.solution-source--usb-drive .wp31e-app-scope tr:last-child td {
+  border-bottom: none;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .text-right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 20px;
+}
+
+/* Advantages Section */
+.solution-source--usb-drive .wp31e-app-scope .advantages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .advantage-card {
+  background: var(--wp31e-surface);
+  border: 1px solid var(--wp31e-border);
+  border-left: 4px solid var(--wp31e-primary);
+  border-radius: 8px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--usb-drive .wp31e-app-scope .advantage-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .advantage-card ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--wp31e-text);
+}
+
+.solution-source--usb-drive .wp31e-app-scope .advantage-card li {
+  margin-bottom: 6px;
+}
+
+/* Steps List Section */
+.solution-source--usb-drive .wp31e-app-scope ol.steps {
+  padding-left: 0;
+  list-style: none;
+  counter-reset: wp31e-s;
+  margin: 1.25rem 0 0;
+}
+
+.solution-source--usb-drive .wp31e-app-scope ol.steps li {
+  counter-increment: wp31e-s;
+  position: relative;
+  padding: 0 0 24px 48px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope ol.steps li::before {
+  content: counter(wp31e-s);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--wp31e-primary);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.solution-source--usb-drive .wp31e-app-scope ol.steps li::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 36px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--wp31e-border);
+}
+
+.solution-source--usb-drive .wp31e-app-scope ol.steps li:last-child::after {
+  display: none;
+}
+
+.solution-source--usb-drive .wp31e-app-scope ol.steps b {
+  display: block;
+  font-size: 1.05rem;
+  color: #000000;
+  margin-bottom: 2px;
+}
+
+/* Specifications Grid */
+.solution-source--usb-drive .wp31e-app-scope .specs {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 1.25rem;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .specs div {
+  background: var(--wp31e-surface);
+  border: 1px solid var(--wp31e-border);
+  border-left: 3px solid var(--wp31e-primary);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.solution-source--usb-drive .wp31e-app-scope .specs strong {
+  display: block;
+  color: #000000;
+  margin-bottom: 4px;
+}
+
+/* ==========================================
+       THEME CONFIGURATION & GLOBAL STYLES
+       ========================================== */
+.solution-source--android {
+  --primary: #d81f27;
+  --primary-hover: #b81920;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #1a202c;
+  --muted: #53626f;
+  --border: #e2e8f0;
+  --chip: #f8f9fa;
+
+  /* Mapping sf variables for unified styling */
+  --sf-primary: var(--primary);
+  --sf-surface: var(--surface);
+  --sf-border: var(--border);
+  --sf-chip: var(--chip);
+  --sf-muted: var(--muted);
+}
+
+.solution-source--android * {
+  box-sizing: border-box;
+}
+
+.solution-source--android {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+.solution-source--android {
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.solution-source--android .wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ==========================================
+       HEADER & FLOW DIAGRAM
+       ========================================== */
+.solution-source--android header.hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--android .brand-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.solution-source--android h1 {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--android .lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.solution-source--android .flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--android .node {
+  flex: 0 0 auto;
+  min-width: 6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.solution-source--android .node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--android .wireless-wave {
+  position: relative;
+  flex: 1 0 4rem;
+  height: 0;
+  border-top: 2px dashed var(--primary);
+  text-align: center;
+}
+
+.solution-source--android .wireless-wave span {
+  position: absolute;
+  top: -1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ==========================================
+       SECTION & CARD STYLES
+       ========================================== */
+.solution-source--android section,
+.solution-source--android .sf-section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.solution-source--android .section-title,
+.solution-source--android .sf-section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.solution-source--android .section-title::before,
+.solution-source--android .sf-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.solution-source--android .intro-card,
+.solution-source--android .sum,
+.solution-source--android .sf-intro-card,
+.solution-source--android .sf-sum {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--android .intro-card {
+  margin-bottom: 1.5rem;
+}
+
+.solution-source--android .intro-card p,
+.solution-source--android .sum p,
+.solution-source--android .sf-intro-card p,
+.solution-source--android .sf-sum p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--android .intro-card p:last-child,
+.solution-source--android .sum p:last-child {
+  margin-bottom: 0;
+}
+
+/* Grid & Cards */
+.solution-source--android .grid,
+.solution-source--android .sf-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--android .card,
+.solution-source--android .sf-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--android .card:hover,
+.solution-source--android .sf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--android .card-header,
+.solution-source--android .sf-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--android .card-num,
+.solution-source--android .sf-card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--android .card-title-group,
+.solution-source--android .sf-card-title-group {
+  flex: 1;
+}
+
+.solution-source--android .card-title-group h3,
+.solution-source--android .sf-card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--android .detail-list,
+.solution-source--android .sf-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--android .detail-list li,
+.solution-source--android .sf-detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--android .detail-list li::before,
+.solution-source--android .sf-detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.solution-source--android .sf-order-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  margin-top: 0.5rem;
+}
+
+.solution-source--android .sf-order-link:hover {
+  opacity: 0.85;
+}
+
+/* App Card Component */
+.solution-source--android .app-card {
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--android .app-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #000000;
+}
+
+.solution-source--android .app-card h3 a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+.solution-source--android .app-card p {
+  margin: 0 0 1rem;
+  font-size: 0.98rem;
+  color: #334155;
+}
+
+.solution-source--android .app-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.solution-source--android .app-features li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.solution-source--android .app-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.solution-source--android .btn {
+  display: inline-block;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.2rem;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.solution-source--android .btn:hover {
+  background: var(--primary-hover);
+}
+
+/* ==========================================
+       THEME CONFIGURATION & GLOBAL STYLES
+       Main Colors: #d81f27 (Primary Red) & #ffffff (Background & Surface)
+       ========================================== */
+.solution-source--label-printing {
+  --primary: #d81f27;
+  --primary-hover: #b81920;
+  --bg: #ffffff; /* พื้นหลังสีขาว */
+  --surface: #ffffff;
+  --text: #1a202c;
+  --muted: #53626f;
+  --border: #e2e8f0;
+  --chip: #f8f9fa;
+}
+
+.solution-source--label-printing * {
+  box-sizing: border-box;
+}
+
+.solution-source--label-printing {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+.solution-source--label-printing {
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.solution-source--label-printing .wrap {
+  max-width: 800px; /* คอลัมน์เดียว อ่านง่ายสบายตา */
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ==========================================
+       HEADER & FLOW DIAGRAM
+       ========================================== */
+.solution-source--label-printing header.hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--label-printing .brand-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.solution-source--label-printing h1 {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--label-printing .lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Flow Diagram for Direct Printing Workflow */
+.solution-source--label-printing .flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--label-printing .node {
+  flex: 0 0 auto;
+  min-width: 6.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.solution-source--label-printing .node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--label-printing .wire {
+  position: relative;
+  flex: 1 0 3.5rem;
+  height: 0;
+  border-top: 2px solid var(--primary);
+}
+
+.solution-source--label-printing .wire span {
+  position: absolute;
+  top: -1.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ==========================================
+       SECTION & CARD STYLES
+       ========================================== */
+.solution-source--label-printing section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.solution-source--label-printing .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-source--label-printing .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.solution-source--label-printing .intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--label-printing .intro-card p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--label-printing .intro-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* Single Column Grid & Printer Cards */
+.solution-source--label-printing .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--label-printing .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--label-printing .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--label-printing .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--label-printing .card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--label-printing .card-title-group {
+  flex: 1;
+}
+
+.solution-source--label-printing .card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--label-printing .detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--label-printing .detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--label-printing .detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Feature Chips */
+.solution-source--label-printing .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.solution-source--label-printing .chips li {
+  padding: 0.2rem 0.8rem;
+  background: var(--chip);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Summary Box */
+.solution-source--label-printing .sum {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--label-printing .sum p {
+  margin: 0 0 0.75rem;
+  color: #2d3748;
+}
+
+.solution-source--label-printing .sum p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+       THEME CONFIGURATION & GLOBAL STYLES
+       Main Colors: #d81f27 (Primary Red) & #ffffff (Background & Surface)
+       ========================================== */
+.solution-source--pos-label-printing {
+  --primary: #d81f27;
+  --primary-hover: #b81920;
+  --bg: #ffffff; /* พื้นหลังสีขาว */
+  --surface: #ffffff;
+  --text: #1a202c;
+  --muted: #53626f;
+  --border: #e2e8f0;
+  --chip: #f8f9fa;
+}
+
+.solution-source--pos-label-printing * {
+  box-sizing: border-box;
+}
+
+.solution-source--pos-label-printing {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+.solution-source--pos-label-printing {
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.solution-source--pos-label-printing .wrap {
+  max-width: 800px; /* คอลัมน์เดียว อ่านง่ายสบายตา */
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ==========================================
+       HEADER & FLOW DIAGRAM
+       ========================================== */
+.solution-source--pos-label-printing header.hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--pos-label-printing .brand-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.solution-source--pos-label-printing h1 {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--pos-label-printing .lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Flow Diagram for POS Label Printing Workflow */
+.solution-source--pos-label-printing .flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--pos-label-printing .node {
+  flex: 0 0 auto;
+  min-width: 6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.solution-source--pos-label-printing .node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--pos-label-printing .wire {
+  position: relative;
+  flex: 1 0 3.5rem;
+  height: 0;
+  border-top: 2px solid var(--primary);
+}
+
+.solution-source--pos-label-printing .wire span {
+  position: absolute;
+  top: -1.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ==========================================
+       SECTION & CARD STYLES
+       ========================================== */
+.solution-source--pos-label-printing section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.solution-source--pos-label-printing .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-source--pos-label-printing .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.solution-source--pos-label-printing .intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--pos-label-printing .intro-card p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--pos-label-printing .intro-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* Single Column Grid & Advantage Cards */
+.solution-source--pos-label-printing .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--pos-label-printing .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--pos-label-printing .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--pos-label-printing .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--pos-label-printing .card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--pos-label-printing .card-title-group {
+  flex: 1;
+}
+
+.solution-source--pos-label-printing .card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--pos-label-printing .detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--pos-label-printing .detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--pos-label-printing .detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Software Download Card */
+.solution-source--pos-label-printing .sw-card {
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--pos-label-printing .sw-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #000000;
+}
+
+.solution-source--pos-label-printing .sw-card h3 a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+.solution-source--pos-label-printing .sw-card p {
+  margin: 0 0 1rem;
+  font-size: 0.98rem;
+  color: #334155;
+}
+
+.solution-source--pos-label-printing .sw-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.solution-source--pos-label-printing .sw-features li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.solution-source--pos-label-printing .sw-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.solution-source--pos-label-printing .btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.solution-source--pos-label-printing .btn {
+  display: inline-block;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.2rem;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.solution-source--pos-label-printing .btn:hover {
+  background: var(--primary-hover);
+}
+
+.solution-source--pos-label-printing .btn.secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.solution-source--pos-label-printing .btn.secondary:hover {
+  background: rgba(216, 31, 39, 0.08);
+}
+
+/* Summary Box */
+.solution-source--pos-label-printing .sum {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--pos-label-printing .sum p {
+  margin: 0 0 0.75rem;
+  color: #2d3748;
+}
+
+.solution-source--pos-label-printing .sum p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+       THEME CONFIGURATION & GLOBAL STYLES
+       Main Colors: #d81f27 (Primary Red) & #ffffff (Background & Surface)
+       ========================================== */
+.solution-source--checkweighing {
+  --primary: #d81f27;
+  --primary-hover: #b81920;
+  --bg: #ffffff; /* พื้นหลังสีขาว */
+  --surface: #ffffff;
+  --text: #1a202c;
+  --muted: #53626f;
+  --border: #e2e8f0;
+  --chip: #f8f9fa;
+}
+
+.solution-source--checkweighing * {
+  box-sizing: border-box;
+}
+
+.solution-source--checkweighing {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+.solution-source--checkweighing {
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.solution-source--checkweighing .wrap {
+  max-width: 800px; /* คอลัมน์เดียว อ่านง่ายสบายตา */
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ==========================================
+       HEADER & FLOW DIAGRAM
+       ========================================== */
+.solution-source--checkweighing header.hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--checkweighing .brand-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.solution-source--checkweighing h1 {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--checkweighing .lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Flow Diagram for Checkweighing Function */
+.solution-source--checkweighing .flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--checkweighing .node {
+  flex: 0 0 auto;
+  min-width: 6.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.solution-source--checkweighing .node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--checkweighing .wire {
+  position: relative;
+  flex: 1 0 3.5rem;
+  height: 0;
+  border-top: 2px solid var(--primary);
+}
+
+.solution-source--checkweighing .wire span {
+  position: absolute;
+  top: -1.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ==========================================
+       SECTION & CARD STYLES
+       ========================================== */
+.solution-source--checkweighing section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.solution-source--checkweighing .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-source--checkweighing .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.solution-source--checkweighing .intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--checkweighing .intro-card p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--checkweighing .intro-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* TABLE STYLES FOR ALERT METHODS */
+.solution-source--checkweighing .table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.solution-source--checkweighing table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 650px;
+}
+
+.solution-source--checkweighing th {
+  background-color: var(--chip);
+  color: #000000;
+  font-weight: 700;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.solution-source--checkweighing td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: #334155;
+  vertical-align: top;
+}
+
+.solution-source--checkweighing tr:last-child td {
+  border-bottom: none;
+}
+
+.solution-source--checkweighing td strong {
+  color: #000000;
+}
+
+/* Single Column Grid & Cards */
+.solution-source--checkweighing .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--checkweighing .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--checkweighing .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--checkweighing .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--checkweighing .card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--checkweighing .card-title-group {
+  flex: 1;
+}
+
+.solution-source--checkweighing .card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--checkweighing .detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--checkweighing .detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--checkweighing .detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Verification Badge Inside Cards */
+.solution-source--checkweighing .verify-box {
+  margin-top: 0.8rem;
+  padding: 0.75rem 1rem;
+  background: var(--chip);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: #2d3748;
+}
+
+.solution-source--checkweighing .verify-box strong {
+  color: var(--primary);
+}
+
+/* Warning Card */
+.solution-source--checkweighing .warning-card {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: #fff8f8;
+  border: 1px solid #fecaca;
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+}
+
+.solution-source--checkweighing .warning-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.solution-source--checkweighing .warning-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #7f1d1d;
+  line-height: 1.7;
+}
+
+/* Summary Box */
+.solution-source--checkweighing .sum {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--checkweighing .sum p {
+  margin: 0 0 0.75rem;
+  color: #2d3748;
+}
+
+.solution-source--checkweighing .sum p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+       THEME CONFIGURATION & GLOBAL STYLES
+       Main Colors: #d81f27 (Primary Red) & #ffffff (Background & Surface)
+       ========================================== */
+.solution-source--external-display {
+  --primary: #d81f27;
+  --primary-hover: #b81920;
+  --bg: #ffffff; /* พื้นหลังสีขาว */
+  --surface: #ffffff;
+  --text: #1a202c;
+  --muted: #53626f;
+  --border: #e2e8f0;
+  --chip: #f8f9fa;
+}
+
+.solution-source--external-display * {
+  box-sizing: border-box;
+}
+
+.solution-source--external-display {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+.solution-source--external-display {
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.solution-source--external-display .wrap {
+  max-width: 800px; /* คอลัมน์เดียว อ่านง่ายสบายตา */
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ==========================================
+       HEADER & FLOW DIAGRAM
+       ========================================== */
+.solution-source--external-display header.hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--external-display .brand-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.solution-source--external-display h1 {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--external-display .lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Flow Diagram for External Display Connection */
+.solution-source--external-display .flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--external-display .node {
+  flex: 0 0 auto;
+  min-width: 6.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.solution-source--external-display .node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--external-display .wire {
+  position: relative;
+  flex: 1 0 3.5rem;
+  height: 0;
+  border-top: 2px solid var(--primary);
+}
+
+.solution-source--external-display .wire span {
+  position: absolute;
+  top: -1.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ==========================================
+       SECTION & CARD STYLES
+       ========================================== */
+.solution-source--external-display section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.solution-source--external-display .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-source--external-display .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.solution-source--external-display .intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--external-display .intro-card p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--external-display .intro-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* Single Column Grid & Cards */
+.solution-source--external-display .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--external-display .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--external-display .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--external-display .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--external-display .card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--external-display .card-title-group {
+  flex: 1;
+}
+
+.solution-source--external-display .card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--external-display .detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--external-display .detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--external-display .detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Verification Badge Inside Cards */
+.solution-source--external-display .verify-box {
+  margin-top: 0.8rem;
+  padding: 0.75rem 1rem;
+  background: var(--chip);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: #2d3748;
+}
+
+.solution-source--external-display .verify-box strong {
+  color: var(--primary);
+}
+
+/* Feature Chips */
+.solution-source--external-display .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.solution-source--external-display .chips li {
+  padding: 0.2rem 0.8rem;
+  background: var(--chip);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Summary Box */
+.solution-source--external-display .sum {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--external-display .sum p {
+  margin: 0 0 0.75rem;
+  color: #2d3748;
+}
+
+.solution-source--external-display .sum p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+       THEME CONFIGURATION & GLOBAL STYLES
+       Main Colors: #d81f27 (Primary Red) & #ffffff (Background & Surface)
+       ========================================== */
+.solution-source--plc {
+  --primary: #d81f27;
+  --primary-hover: #b81920;
+  --bg: #ffffff; /* พื้นหลังสีขาว */
+  --surface: #ffffff;
+  --text: #1a202c;
+  --muted: #53626f;
+  --border: #e2e8f0;
+  --chip: #f8f9fa;
+}
+
+.solution-source--plc * {
+  box-sizing: border-box;
+}
+
+.solution-source--plc {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+.solution-source--plc {
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.solution-source--plc .wrap {
+  max-width: 800px; /* คอลัมน์เดียว อ่านง่ายสบายตา */
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ==========================================
+       HEADER & FLOW DIAGRAM
+       ========================================== */
+.solution-source--plc header.hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--plc .brand-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.solution-source--plc h1 {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--plc .lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Flow Diagram for PLC Integration */
+.solution-source--plc .flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--plc .node {
+  flex: 0 0 auto;
+  min-width: 6.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.solution-source--plc .node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--plc .wire {
+  position: relative;
+  flex: 1 0 3.5rem;
+  height: 0;
+  border-top: 2px solid var(--primary);
+}
+
+.solution-source--plc .wire span {
+  position: absolute;
+  top: -1.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ==========================================
+       SECTION & CARD STYLES
+       ========================================== */
+.solution-source--plc section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.solution-source--plc .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-source--plc .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.solution-source--plc .intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--plc .intro-card p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--plc .intro-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* TABLE STYLES FOR CONNECTION METHODS */
+.solution-source--plc .table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.solution-source--plc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 650px;
+}
+
+.solution-source--plc th {
+  background-color: var(--chip);
+  color: #000000;
+  font-weight: 700;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.solution-source--plc td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: #334155;
+  vertical-align: top;
+}
+
+.solution-source--plc tr:last-child td {
+  border-bottom: none;
+}
+
+.solution-source--plc td strong {
+  color: #000000;
+}
+
+/* Single Column Grid & Advantage Cards */
+.solution-source--plc .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--plc .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--plc .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--plc .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--plc .card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--plc .card-title-group {
+  flex: 1;
+}
+
+.solution-source--plc .card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--plc .detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--plc .detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--plc .detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Summary Box */
+.solution-source--plc .sum {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--plc .sum p {
+  margin: 0 0 0.75rem;
+  color: #2d3748;
+}
+
+.solution-source--plc .sum p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+       THEME CONFIGURATION & GLOBAL STYLES
+       Main Colors: #d81f27 (Primary Red) & #ffffff (Background & Surface)
+       ========================================== */
+.solution-source--wet-environments {
+  --primary: #d81f27;
+  --primary-hover: #b81920;
+  --bg: #ffffff; /* พื้นหลังสีขาว */
+  --surface: #ffffff;
+  --text: #1a202c;
+  --muted: #53626f;
+  --border: #e2e8f0;
+  --chip: #f8f9fa;
+}
+
+.solution-source--wet-environments * {
+  box-sizing: border-box;
+}
+
+.solution-source--wet-environments {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+.solution-source--wet-environments {
+  margin: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.solution-source--wet-environments .wrap {
+  max-width: 800px; /* คอลัมน์เดียว อ่านง่ายสบายตา */
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ==========================================
+       HEADER & FLOW DIAGRAM
+       ========================================== */
+.solution-source--wet-environments header.hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 2rem;
+}
+
+.solution-source--wet-environments .brand-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.solution-source--wet-environments h1 {
+  margin: 0 0 0.75rem;
+  color: #000000;
+  font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--wet-environments .lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Flow Diagram for Washdown Scale Features */
+.solution-source--wet-environments .flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wet-environments .node {
+  flex: 0 0 auto;
+  min-width: 6.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.solution-source--wet-environments .node svg {
+  display: block;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0 auto 0.25rem;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.6;
+}
+
+.solution-source--wet-environments .wire {
+  position: relative;
+  flex: 1 0 3.5rem;
+  height: 0;
+  border-top: 2px solid var(--primary);
+}
+
+.solution-source--wet-environments .wire span {
+  position: absolute;
+  top: -1.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ==========================================
+       SECTION & CARD STYLES
+       ========================================== */
+.solution-source--wet-environments section {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.solution-source--wet-environments .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-source--wet-environments .section-title::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.solution-source--wet-environments .intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wet-environments .intro-card p {
+  margin: 0 0 0.8rem;
+  color: #2d3748;
+  line-height: 1.8;
+}
+
+.solution-source--wet-environments .intro-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* Single Column Grid & Advantage Cards */
+.solution-source--wet-environments .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.solution-source--wet-environments .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wet-environments .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(216, 31, 39, 0.08);
+  border-color: rgba(216, 31, 39, 0.3);
+}
+
+.solution-source--wet-environments .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.solution-source--wet-environments .card-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.solution-source--wet-environments .card-title-group {
+  flex: 1;
+}
+
+.solution-source--wet-environments .card-title-group h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.solution-source--wet-environments .detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.solution-source--wet-environments .detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #334155;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.solution-source--wet-environments .detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--primary);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Article Info Card */
+.solution-source--wet-environments .info-card {
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wet-environments .info-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #000000;
+}
+
+.solution-source--wet-environments .info-card h3 a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+.solution-source--wet-environments .info-card p {
+  margin: 0 0 1rem;
+  font-size: 0.98rem;
+  color: #334155;
+}
+
+.solution-source--wet-environments .btn {
+  display: inline-block;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.2rem;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.solution-source--wet-environments .btn:hover {
+  background: var(--primary-hover);
+}
+
+/* Summary Box */
+.solution-source--wet-environments .sum {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.solution-source--wet-environments .sum p {
+  margin: 0 0 0.75rem;
+  color: #2d3748;
+}
+
+.solution-source--wet-environments .sum p:last-child {
+  margin-bottom: 0;
+}

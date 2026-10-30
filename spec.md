@@ -1,5 +1,11 @@
 # Project state
 
+## NaThong integration into mainline (2026-10-30)
+
+- Integrated the approved `NaThong` catalogue browser, source-based category membership and topic filters, category artwork, Solutions pages/navigation, homepage brand video and font updates. The merge retains the previous production revision as its first parent and includes the original source branch history; the existing Hero interaction and foreground/menu contracts remain in place.
+- Updated catalogue browser regressions for the new category navigation and Solutions article renderer. Full-page image/screenshot checks receive a longer test budget. Applied the existing formatter to five incoming files and removed an unused importer import; no additional product features were added during integration.
+- Verified a 420-page snapshot production build, 33 catalogue unit checks and 14 distinct browser checks, including search/comparison, client payload sharing, desktop/mobile navigation, sticky-header clipping and bubble/menu timing. All 13 Solutions routes and four category roots returned successful responses, and the local brand video supports byte-range playback. Production publication uses the clean, committed `uat` release workflow.
+
 ## Mainline history consolidation (2026-10-30)
 
 - Consolidated the original `safe` history into the current production lineage with the previous `main` revision as the first merge parent. The pending reverse merge contained only the already-released formatter configuration and a documentation conflict; those versions were preserved, and application files remain identical to the approved production tree. Published history is retained.

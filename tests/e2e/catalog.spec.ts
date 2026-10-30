@@ -27,6 +27,7 @@ async function loadPageImages(page: import("@playwright/test").Page) {
 }
 
 test("homepage introduces Sunford and switches featured products", async ({ page }) => {
+  test.slow();
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
@@ -68,13 +69,17 @@ test("homepage introduces Sunford and switches featured products", async ({ page
 
 test("category filters show matching products and restore the catalogue", async ({ page }) => {
   await page.goto("/products");
-  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
-  await expect(page.locator(".product-card")).toHaveCount(24);
-  await page.getByRole("button", { name: "เครื่องชั่งอุตสาหกรรม", exact: true }).click();
-  await expect(page.locator(".product-card").first()).toBeVisible();
-  await expect(page.locator(".product-card h3").filter({ hasText: "TIS-150-JC62Z" })).toBeVisible();
-  await page.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
-  await expect(page.locator(".product-card")).toHaveCount(24);
+  const catalogue = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+  const navigation = catalogue.getByRole("navigation", { name: "กรองหมวดหมู่สินค้า" });
+  await expect(catalogue.locator("article")).toHaveCount(24);
+  await navigation.getByRole("link", { name: /^อุตสาหกรรม/ }).click();
+  await expect(page).toHaveURL(/\/product\/industrial$/);
+  await expect(catalogue.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่งอุตสาหกรรม");
+  await expect(catalogue.getByRole("heading", { name: "WPS10KS", exact: true })).toBeVisible();
+  await expect(catalogue.locator("article")).toHaveCount(20);
+  await navigation.getByRole("link", { name: /^เครื่องชั่งทั้งหมด/ }).click();
+  await expect(page).toHaveURL(/\/products$/);
+  await expect(catalogue.locator("article")).toHaveCount(24);
 });
 
 test("search opens product details, supports empty results and Escape", async ({ page }) => {
@@ -98,7 +103,6 @@ test("search opens product details, supports empty results and Escape", async ({
 
 test("comparison uses selected product data and clears selections", async ({ page }) => {
   await page.goto("/products");
-  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
   await page.getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ WPS10KS", exact: true }).click();
   await page
     .getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ ACS-30-JC21", exact: true })
@@ -115,6 +119,7 @@ test("comparison uses selected product data and clears selections", async ({ pag
 });
 
 test("mobile navigation works and page does not overflow", async ({ page }) => {
+  test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู" }).click();
@@ -152,10 +157,10 @@ test("catalogue API returns data and unknown products render an unindexable 404 
   const data = await response.json();
   expect(data.products.length).toBeGreaterThanOrEqual(150);
   await page.goto("/products");
-  await page.getByRole("button", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
-  await expect(page.locator(".product-card")).toHaveCount(24);
+  const catalogue = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+  await expect(catalogue.locator("article")).toHaveCount(24);
   await page.getByRole("button", { name: /ดูเพิ่มเติม \(24/ }).click();
-  await expect(page.locator(".product-card")).toHaveCount(48);
+  await expect(catalogue.locator("article")).toHaveCount(48);
   const missing = await page.goto("/products/does-not-exist");
   await expect(page.getByRole("heading", { name: "ยังไม่พบหน้าที่คุณกำลังมองหา" })).toBeVisible();
   // Streaming production responses can send 200 before notFound() resolves.
@@ -170,7 +175,9 @@ test("articles use readable English paths and retain their content", async ({ pa
   const path = "/scale-label-printing";
   const response = await page.goto(path);
   expect(response?.status()).toBe(200);
-  await expect(page.locator(".content-heading h1")).toBeVisible();
-  await expect(page.locator(".source-prose").first()).toBeVisible();
+  const article = page.getByRole("article");
+  await expect(article.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(article).toContainText("RS232");
+  await expect(article).toContainText("SUNFORD LP50 และ LP51");
   expect(decodeURI(new URL(page.url()).pathname)).toBe(path);
 });

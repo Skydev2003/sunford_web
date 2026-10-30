@@ -10,6 +10,15 @@ import { defaultHero } from "../../src/features/cms/data/settings";
 
 const products = getSnapshotProducts();
 
+test("client catalogue retains source-derived topics without rich product data", () => {
+  const product = { ...products[0], topics: ["counting", "connected"] };
+  const client = clientProductData(product);
+  assert.deepEqual(client.topics, ["counting", "connected"]);
+  assert.equal(Object.hasOwn(client, "media"), false);
+  assert.equal(Object.hasOwn(client, "sourceId"), false);
+  assert.equal(Object.hasOwn(client, "sortOrder"), false);
+});
+
 test("client projections retain full search matches, catalogue order and comparison values", () => {
   const search = (p: { name: string; subtitle: string; description: string }, q: string) =>
     `${p.name} ${p.subtitle} ${p.description}`.toLowerCase().includes(q.toLowerCase().trim());
