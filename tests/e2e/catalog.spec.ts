@@ -1,8 +1,12 @@
 import { test, expect } from "@playwright/test";
 
 async function loadPageImages(page: import("@playwright/test").Page) {
+<<<<<<< HEAD
   for (const image of await page.locator("main img").all()) {
     if (!(await image.isVisible())) continue;
+=======
+  for (const image of await page.locator("main img:visible").all()) {
+>>>>>>> origin/safe
     await image.scrollIntoViewIfNeeded();
     await expect
       .poll(() =>
