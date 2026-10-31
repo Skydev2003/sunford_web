@@ -1,11 +1,12 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowDown, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import type { HeroSettings } from "@/features/cms/types";
+import type { HeroSettings, SiteSettings } from "@/features/cms/types";
+import { BrandOpening } from "./brand-opening";
 import { HeroStudio } from "./hero-studio";
 import { HeroProductRibbon } from "./hero-product-ribbon";
 import { HeroBubbles } from "./hero-bubbles";
@@ -31,13 +32,17 @@ export function HeroAnnouncement({ settings }: { settings: Omit<HeroSettings, "s
 export function Hero({
   slides,
   settings,
+  brand,
   showAnnouncement = true,
 }: {
   slides: HeroSlide[];
   settings: Omit<HeroSettings, "slides">;
+  brand: Pick<SiteSettings, "logo" | "name">;
   showAnnouncement?: boolean;
 }) {
   const [active, setActive] = useState(0);
+  const [opening, setOpening] = useState(true);
+  const revealOpening = useCallback(() => setOpening(false), []);
   const [highlightRevision, setHighlightRevision] = useState(0);
   const sceneRef = useRef<HTMLElement>(null);
   const activeIndex = slides.length ? active % slides.length : 0;
@@ -59,7 +64,7 @@ export function Hero({
   const modelsSettled = slides
     .filter((slide) => slide.model)
     .every((slide) => settledModels.includes(slide.id));
-  const spinning = !motionPaused && cycleAllowed && modelsSettled && !draggingProduct;
+  const spinning = !opening && !motionPaused && cycleAllowed && modelsSettled && !draggingProduct;
   const cycling = spinning && cycleEnabled && !focusPaused && slides.length > 1;
   const pinProduct = () => {
     userPinned.current = true;
@@ -140,12 +145,14 @@ export function Hero({
   const intro = companyIntro;
   return (
     <>
+      <BrandOpening logo={brand.logo} name={brand.name} onReveal={revealOpening} />
       {showAnnouncement && <HeroAnnouncement settings={settings} />}
       <section
         ref={sceneRef}
         className={`hero hero-cinematic hero-showroom${showAnnouncement ? "" : " hero-no-announcement"}${product?.highlights ? " hero-has-highlights" : ""}`}
         aria-label="Sunford ความแม่นยำที่เรียบง่ายกว่า"
         data-active-product={product?.name}
+        data-opening={opening}
         data-cycling={cycling}
         data-cycle-mode={cycleEnabled ? "auto" : "pinned"}
         onFocusCapture={(event) =>
@@ -158,7 +165,7 @@ export function Hero({
             setFocusPaused(false);
         }}
       >
-        <HeroStudio sceneRef={sceneRef} paused={motionPaused || !cycleAllowed} />
+        <HeroStudio sceneRef={sceneRef} paused={opening || motionPaused || !cycleAllowed} />
         <div className="container hero-main">
           <div className="hero-copy">
             <h1 className="hero-model">{intro.title}</h1>
@@ -171,7 +178,8 @@ export function Hero({
             highlights={product?.highlights}
             name={product?.name ?? "SUNFORD"}
             paused={motionPaused}
-            sceneRunning={cycleAllowed}
+            opening={opening}
+            sceneRunning={!opening && cycleAllowed}
             sceneRef={sceneRef}
             onInteract={pinProduct}
           />
@@ -186,7 +194,7 @@ export function Hero({
                 name={slide.name}
                 featured={slide.model === "/models/acs30-jc21.glb"}
                 active={slide.id === product?.id}
-                enabled={enabledModels.includes(slide.id)}
+                enabled={!opening && enabledModels.includes(slide.id)}
                 slot={slide.id === product?.id ? 0 : 1}
                 spinning={spinning}
                 onInspect={pinProduct}
@@ -220,7 +228,7 @@ export function Hero({
             <HeroProductRibbon
               products={slides.map((slide) => ({ ...slide, image: slide.ribbonImage }))}
               activeId={product?.id}
-              running={cycleAllowed && !motionPaused}
+              running={!opening && cycleAllowed && !motionPaused}
               onSelect={selectSlide}
             />
           )}

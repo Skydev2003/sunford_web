@@ -20,9 +20,17 @@ test("all bubbles rise smoothly and return to their random origin, including the
   await expect(pops).toHaveCount(4);
   for (const pop of await pops.all()) {
     await expect(pop).toHaveCSS("animation-name", "hero-feature-pop");
-    await expect(pop).toHaveCSS("animation-duration", "1.2s");
+    const duration = await pop.evaluate((e) => parseFloat(getComputedStyle(e).animationDuration));
+    expect(duration).toBeGreaterThanOrEqual(2.5);
+    expect(duration).toBeLessThanOrEqual(2.9);
   }
-  const firstTransform = await pops.first().evaluate((e) => getComputedStyle(e).transform);
+  const firstTransform = await pops.first().evaluate((e) => {
+    // Sample a fresh entrance even when slow browser assertions outlast the first one.
+    const animation = e.getAnimations()[0];
+    animation.currentTime = 0;
+    animation.play();
+    return getComputedStyle(e).transform;
+  });
   await expect
     .poll(() => pops.first().evaluate((e) => getComputedStyle(e).transform))
     .not.toBe(firstTransform);

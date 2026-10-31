@@ -158,8 +158,9 @@
   overflow-wrap: anywhere;
 }
 .hero-product-highlights [data-popup="true"] .hero-feature-pop {
-  animation: hero-feature-pop 1200ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--feature-delay);
+  animation: hero-feature-pop var(--bubble-flight-duration, 2700ms) cubic-bezier(0.32, 0, 0.2, 1)
+    both;
+  animation-delay: var(--bubble-flight-delay, var(--feature-delay));
 }
 .hero-showroom:has([data-hero-studio][data-running="true"]) .hero-feature-bubble,
 .hero-showroom:has([data-hero-studio][data-running="true"]) .hero-feature-bubble::before,
@@ -169,11 +170,19 @@
 @keyframes hero-feature-pop {
   0% {
     opacity: 0;
-    transform: translateY(46px) scale(0.9);
+    offset-distance: 0%;
+    transform: scale(0.32);
+    filter: blur(2.5px);
+  }
+  42% {
+    opacity: 1;
+    filter: blur(0);
   }
   100% {
     opacity: 1;
+    offset-distance: 100%;
     transform: none;
+    filter: blur(0);
   }
 }
 @keyframes hero-feature-float {
@@ -182,7 +191,7 @@
     transform: translateY(0) rotate(var(--feature-tilt));
   }
   50% {
-    transform: translateY(-8px) rotate(var(--feature-tilt));
+    transform: translateY(-5px) rotate(var(--feature-tilt));
   }
 }
 .hero-product-highlights li:nth-child(1) {
@@ -998,6 +1007,14 @@ body:has(.site-header[data-hero-backdrop-tracked]:not([data-hero-backdrop])) .he
 .hero-bubble-layer .hero-feature-bubble,
 .hero-bubble-layer .hero-value-badge {
   pointer-events: none;
+  animation-duration: 9s;
+}
+.hero-bubble-layer .hero-feature-pop {
+  offset-path: var(--bubble-flight-path, none);
+  offset-position: 0 0;
+  offset-anchor: 0 0;
+  offset-rotate: 0deg;
+  offset-distance: 100%;
 }
 .hero-bubble-layer [data-running="true"] .hero-feature-bubble,
 .hero-bubble-layer [data-running="true"] .hero-feature-bubble::before,

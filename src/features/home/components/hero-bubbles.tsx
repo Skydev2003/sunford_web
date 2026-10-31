@@ -18,6 +18,9 @@ type Position = {
   size: number;
   pinned: boolean;
   visible: boolean;
+  flightPath?: string;
+  flightDuration?: number;
+  flightDelay?: number;
   returning?: boolean;
   interacted?: boolean;
 };
@@ -53,6 +56,7 @@ export function HeroBubbles({
   highlights = [],
   name,
   paused,
+  opening = false,
   sceneRunning,
   sceneRef,
   onInteract,
@@ -60,6 +64,7 @@ export function HeroBubbles({
   highlights?: readonly string[];
   name: string;
   paused: boolean;
+  opening?: boolean;
   sceneRunning: boolean;
   sceneRef: RefObject<HTMLElement | null>;
   onInteract: () => void;
@@ -174,9 +179,14 @@ export function HeroBubbles({
     const nodes = Array.from(root.querySelectorAll<HTMLElement>("[data-bubble-anchor]"));
     const headerInner = document.querySelector<HTMLElement>(".site-header .header-inner");
     // Generate only after hydration; offsets remain stable until the product is selected again.
-    const offsets = nodes.map(() => ({
+    const offsets = nodes.map((_, index) => ({
       x: (Math.random() - 0.5) * 18,
       y: (Math.random() - 0.5) * 16,
+      sourceX: 0.4 + Math.random() * 0.2,
+      sourceY: 0.4 + Math.random() * 0.2,
+      curve: (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.5),
+      duration: 2500 + Math.random() * 400,
+      delay: 120 + index * 90 + Math.random() * 30,
     }));
     let frame = 0;
     const measure = () => {
@@ -223,17 +233,33 @@ export function HeroBubbles({
           );
         }
       }
+      const model = scene.querySelector(".hero-model-stage")?.getBoundingClientRect();
       homes.current = nodes.map((node, index) => {
         const box = node.getBoundingClientRect();
+        const x = Math.max(
+          sceneBox.left + 8,
+          Math.min(box.x + offsets[index].x, sceneBox.right - box.width - 8),
+        );
+        const y = Math.max(
+          sceneBox.top + 16,
+          Math.min(box.y + offsets[index].y, sceneBox.bottom - box.height - 16),
+        );
+        const originX = model
+          ? model.x + model.width * offsets[index].sourceX - x - box.width / 2
+          : 0;
+        const originY = model
+          ? model.y + model.height * offsets[index].sourceY - y - box.height / 2
+          : 46;
+        const distance = Math.hypot(originX, originY) || 1;
+        const curve = offsets[index].curve * Math.min(90, distance * 0.22);
+        const bendX = (-originY / distance) * curve;
+        const bendY = (originX / distance) * curve;
         return {
-          x: Math.max(
-            sceneBox.left + 8,
-            Math.min(box.x + offsets[index].x, sceneBox.right - box.width - 8),
-          ),
-          y: Math.max(
-            sceneBox.top + 16,
-            Math.min(box.y + offsets[index].y, sceneBox.bottom - box.height - 16),
-          ),
+          x,
+          y,
+          flightPath: `path("M ${originX} ${originY} C ${originX * 0.72 + bendX} ${originY * 0.72 + bendY} ${originX * 0.12 + bendX * 0.4} ${originY * 0.12 + bendY * 0.4} 0 0")`,
+          flightDuration: offsets[index].duration,
+          flightDelay: offsets[index].delay,
           size: box.width,
           pinned: false,
           visible: box.width > 0,
@@ -383,14 +409,18 @@ export function HeroBubbles({
       if (!drag.current) returnHome(Number(event.currentTarget.dataset.bubbleIndex));
     },
   };
-  const placement = (point: Position): CSSProperties => ({
-    left: 0,
-    top: 0,
-    right: "auto",
-    width: point.size,
-    height: point.size,
-    transform: `translate3d(${point.x}px, ${point.y}px, 0)`,
-  });
+  const placement = (point: Position): CSSProperties =>
+    ({
+      "--bubble-flight-path": point.flightPath,
+      "--bubble-flight-duration": `${point.flightDuration ?? 2700}ms`,
+      "--bubble-flight-delay": `${point.flightDelay ?? 0}ms`,
+      left: 0,
+      top: 0,
+      right: "auto",
+      width: point.size,
+      height: point.size,
+      transform: `translate3d(${point.x}px, ${point.y}px, 0)`,
+    }) as CSSProperties;
   const onReturnEnd = (event: React.TransitionEvent<HTMLElement>) => {
     if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
     const index = Number(event.currentTarget.dataset.bubbleIndex);
@@ -451,13 +481,14 @@ export function HeroBubbles({
             aria-atomic="true"
             data-smooth={!paused && motionAllowed}
             data-menu-covered={menuCovered}
+            data-opening={opening}
             data-in-view={sceneVisible}
-            inert={menuCovered || !sceneVisible}
-            aria-hidden={menuCovered || !sceneVisible ? true : undefined}
+            inert={opening || menuCovered || !sceneVisible}
+            aria-hidden={opening || menuCovered || !sceneVisible ? true : undefined}
           >
             <ul
               aria-label={`จุดเด่น ${name}`}
-              data-popup={!menuCovered && !paused && motionAllowed}
+              data-popup={!opening && !menuCovered && !paused && motionAllowed}
             >
               {highlights.map(
                 (text, index) =>
@@ -501,7 +532,7 @@ export function HeroBubbles({
                 data-bubble-pinned={profit.pinned}
                 data-returning={profit.returning ?? false}
                 data-interacted={profit.interacted ?? false}
-                data-popup={!menuCovered && !paused && motionAllowed}
+                data-popup={!opening && !menuCovered && !paused && motionAllowed}
                 data-dragging={dragging === highlights.length}
                 data-running={
                   sceneVisible &&
