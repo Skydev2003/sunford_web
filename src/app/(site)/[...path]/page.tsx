@@ -10,6 +10,8 @@ import {
 import { getProducts, getProduct } from "@/features/catalog/server/product-repository";
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { ProductBrowser } from "@/features/catalog/components/product-browser";
+import { CategoryBanner } from "@/features/catalog/components/category-banner";
+import { getBannerCategoryForPath } from "@/features/catalog/data/category-banners";
 import { getCatalogPage } from "@/features/catalog/server/catalog-page";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import { ContentDirectory } from "@/features/content/components/content-directory";
@@ -153,12 +155,21 @@ export default async function SourceContentPage({
         .trim()
     : "";
   const sectionIntro = introduction.length > 80 ? introduction : "";
+  const bannerCategory = !page.managed ? getBannerCategoryForPath(page.path) : undefined;
   return (
     <main id="main-content" className="source-content-page">
       {catalog && (
         <ProductBrowser key={page.path} products={catalogProducts} scope={catalog.scope} />
       )}
-      {!catalog && (
+      {!catalog && bannerCategory && (
+        <CategoryBanner
+          category={bannerCategory}
+          title={title}
+          description={sectionIntro}
+          standalone
+        />
+      )}
+      {!catalog && !bannerCategory && (
         <header className="content-heading container">
           <p className="eyebrow">
             {page.kind === "collection"

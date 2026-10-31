@@ -1,0 +1,29 @@
+[
+  {
+    "category": "lifestyle",
+    "title": "ไลฟ์สไตล์และสุขภาพ",
+    "referenceProduct": "SUNFORD Fitdays",
+    "image": "/images/category-banners-v4/lifestyle-b8108b0f13.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 243222
+  },
+  {
+    "category": "laboratory",
+    "title": "เครื่องชั่งห้องปฏิบัติการ",
+    "referenceProduct": "SUNFORD C1",
+    "image": "/images/category-banners-v4/laboratory-40e1fb66df.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 137356
+  },
+  {
+    "category": "pos",
+    "title": "ระบบ POS",
+    "referenceProduct": "P1W + POS1100-A + POS1100-B",
+    "image": "/images/category-banners-v4/pos-35dbcb9a22.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 121996
+  }
+]

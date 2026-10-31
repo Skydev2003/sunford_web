@@ -1,4 +1,9 @@
 .browser {
+  --catalog-bottom-space: 44px;
+  --catalog-sidebar-inset: 10px;
+  --catalog-tail-space: 0px;
+  --catalog-more-height: 45px;
+  --catalog-more-gap: 28px;
   display: grid;
   grid-template-columns: 256px minmax(0, 1fr);
   max-width: 1680px;
@@ -6,6 +11,9 @@
   background: #f6f8fb;
   color: #172231;
   min-height: 75vh;
+}
+.browser:has(.more) {
+  --catalog-tail-space: calc(var(--catalog-more-height) + var(--catalog-more-gap));
 }
 .browser button,
 .browser input,
@@ -22,8 +30,11 @@
   align-self: start;
   display: flex;
   flex-direction: column;
-  max-height: calc(100dvh - 78px);
-  margin: 10px 0 10px 10px;
+  height: calc(100dvh - 68px);
+  max-height: calc(100dvh - 68px);
+  margin: 10px 0
+    calc(var(--catalog-bottom-space) + var(--catalog-tail-space) - var(--catalog-sidebar-inset))
+    10px;
   border-radius: 18px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -99,7 +110,7 @@
   min-height: 144px;
   border-radius: 12px;
   overflow: hidden;
-  margin: 0 0 8px;
+  margin: auto 0 8px;
 }
 .promo > img {
   object-fit: cover;
@@ -161,7 +172,7 @@
 }
 .content {
   min-width: 0;
-  padding: 18px 22px 44px;
+  padding: 18px 22px var(--catalog-bottom-space);
 }
 .banner {
   position: relative;
@@ -327,6 +338,8 @@
 }
 .card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   padding: 14px 16px 17px;
   min-width: 0;
   background: white;
@@ -337,17 +350,22 @@
   position: relative;
   display: block;
   height: clamp(120px, 12vw, 170px);
+  flex-shrink: 0;
   margin: 0 8px 13px;
 }
 .image img {
   object-fit: contain;
 }
 .copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding-right: 22px;
 }
 .copy h2 {
   font-size: 15px;
   line-height: 1.4;
+  min-height: 2.8em;
   margin: 3px 0;
   overflow-wrap: anywhere;
   display: -webkit-box;
@@ -358,6 +376,7 @@
 .copy p {
   font-size: 11px;
   line-height: 1.6;
+  min-height: 3.2em;
   color: #626f82;
   margin: 0 0 9px;
   display: -webkit-box;
@@ -374,12 +393,12 @@
   gap: 5px;
 }
 .tags span {
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.5;
   border-radius: 12px;
   background: #edf5ff;
   color: #29578a;
-  padding: 3px 7px;
+  padding: 4px 8px;
 }
 .tags span:nth-child(2n) {
   color: #2f6b58;
@@ -392,8 +411,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: 1px solid #e1e6ed;
   border-radius: 50%;
   background: #ffffffed;
@@ -416,10 +435,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 29px;
-  height: 29px;
+  width: 26px;
+  height: 26px;
+  aspect-ratio: 1;
+  flex-shrink: 0;
   border: 1px solid #dce3ed;
   border-radius: 50%;
+}
+.detail > svg,
+.compare > svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 .detail:hover {
   background: #fff0f3;
@@ -457,6 +484,11 @@
   padding: 11px 24px;
   margin: 28px auto 0;
   cursor: pointer;
+}
+.more {
+  height: var(--catalog-more-height);
+  margin-top: var(--catalog-more-gap);
+  line-height: 21px;
 }
 .empty {
   padding: 70px 20px;
@@ -512,6 +544,8 @@
 }
 @media (max-width: 900px) {
   .browser {
+    --catalog-bottom-space: 14px;
+    --catalog-sidebar-inset: 14px;
     grid-template-columns: 232px minmax(0, 1fr);
   }
   .sidebar {
@@ -642,7 +676,7 @@
     padding-right: 20px;
   }
   .tags span {
-    font-size: 9px;
+    font-size: 10px;
   }
   .list .card {
     grid-template-columns: 105px 1fr;

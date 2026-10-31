@@ -1,0 +1,47 @@
+[
+  {
+    "category": "commercial",
+    "title": "เครื่องชั่ง",
+    "referenceProduct": "ACS-30-JC21 + WPS10KS + FEH5KS",
+    "image": "/images/category-banners-v3/commercial-fb58bf70b5.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 191820
+  },
+  {
+    "category": "accessories",
+    "title": "อุปกรณ์เสริม",
+    "referenceProduct": "LP51 + DRW-350 + wireless 1D scanner",
+    "image": "/images/category-banners-v3/accessories-a37a029627.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 106498
+  },
+  {
+    "category": "pos",
+    "title": "ระบบ POS",
+    "referenceProduct": "P1W + POS1100-A + POS1100-B",
+    "image": "/images/category-banners-v3/pos-3ea2df9c94.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 165176
+  },
+  {
+    "category": "platforms",
+    "title": "โครงสร้างแท่นชั่ง",
+    "referenceProduct": "TMS 3040 + TCS 4050 + FCS60100",
+    "image": "/images/category-banners-v3/platforms-04cc0bc816.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 155196
+  },
+  {
+    "category": "indicators",
+    "title": "อินดิเคเตอร์แท่นชั่ง",
+    "referenceProduct": "AW31 + SW31S + AC31P",
+    "image": "/images/category-banners-v3/indicators-7195fb804a.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 138446
+  }
+]
