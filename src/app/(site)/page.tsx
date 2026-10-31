@@ -13,7 +13,7 @@ import { BrandStory, BusinessSolutions, SupportSection } from "@/features/home/c
 import { getProducts } from "@/features/catalog/server/product-repository";
 import { getHomeImages, getHomeLinkTargets } from "@/features/home/server/home-images";
 import { getSettings } from "@/features/cms/server/documents";
-import { defaultHero, catalogDefaults } from "@/features/cms/data/settings";
+import { defaultHero, catalogDefaults, defaultSite } from "@/features/cms/data/settings";
 import { heroSlideData } from "@/features/home/data/hero-slides";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 
@@ -21,17 +21,19 @@ import { getClientProducts } from "@/features/catalog/server/client-products";
 const showHomepageCatalog = false;
 
 export default async function Home() {
-  const [products, images, targets, hero, catalog] = await Promise.all([
+  const [products, images, targets, hero, catalog, site] = await Promise.all([
     getProducts(),
     getHomeImages(),
     getHomeLinkTargets(),
     getSettings("hero", defaultHero),
     getSettings("catalog", catalogDefaults),
+    getSettings("site", defaultSite),
   ]);
   const { slides, ...heroCopy } = hero;
   return (
     <main id="main-content">
       <Hero
+        brand={{ logo: site.logo, name: site.name }}
         slides={heroSlideData(products, slides)}
         showAnnouncement={false}
         settings={{

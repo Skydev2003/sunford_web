@@ -1,5 +1,11 @@
 # Project Memory
 
+## Keep initial 3D startup out of the brand opening
+
+- Observed: The first model-viewer activation blocked the main thread for roughly 900ms during the brand opening, skipping the S hold and text-reveal samples even while the logo transform continued on the compositor.
+- Root cause: Starting the 3D runtime at homepage mount competed with a short, reference-timed opening sequence.
+- Correct behavior: Keep the existing product image fallback mounted, but defer model-viewer activation and Hero playback until the opening completes. Verify actual animation times and rendered poses in the browser; do not infer geometric phases from delayed JavaScript timers or change timing just to satisfy a sampling probe.
+
 ## Preserve already integrated merge history during releases
 
 - Observed: Unconditional release rebases rewrote an approved merge even though both remote tips were already ancestors, splitting equivalent work into duplicate commit histories and producing repeated historical conflicts.
