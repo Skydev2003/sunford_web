@@ -21,6 +21,8 @@ import {
   Warehouse,
 } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
+import { CategoryBanner } from "./category-banner";
+import { getBannerCategoryForPath, getCategoryBanner } from "../data/category-banners";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { CatalogProduct, Product, CatalogScope } from "../types";
@@ -119,6 +121,27 @@ export function ProductBrowser({
   const title =
     scope?.title ??
     (category === "all" ? "ผลิตภัณฑ์ทั้งหมด" : (active?.label ?? "ผลิตภัณฑ์ทั้งหมด"));
+  const bannerCategory = scope
+    ? getBannerCategoryForPath(scope.currentPath)
+    : category === "all"
+      ? "commercial"
+      : getCategoryBanner(category)?.category;
+  const bannerBenefits = (
+    <div className={styles.benefits}>
+      <span>
+        <ShieldCheck size={19} />
+        {inCategory.length} ผลิตภัณฑ์
+      </span>
+      <span>
+        <Settings2 size={19} />
+        เปรียบเทียบได้ 3 รุ่น
+      </span>
+      <Link href="/service">
+        <Headphones size={19} />
+        บริการหลังการขาย
+      </Link>
+    </div>
+  );
   const selectCategory = (id: string) => {
     setCategory(id);
     setFeatured(false);
@@ -226,41 +249,42 @@ export function ProductBrowser({
         </Link>
       </aside>
       <div className={styles.content}>
-        <header className={styles.banner}>
-          <div className={styles.bannerCopy}>
-            <span className={styles.brand}>SUNFORD</span>
-            <h1>{title}</h1>
-            <p>
-              {!scope && category === "all"
+        {bannerCategory ? (
+          <CategoryBanner
+            category={bannerCategory}
+            title={title}
+            description={
+              !scope && category === "all"
                 ? "เครื่องชั่งดิจิทัลและโซลูชันธุรกิจ พร้อมบริการหลังการขาย"
-                : heroProduct?.subtitle}
-            </p>
-            <div className={styles.benefits}>
-              <span>
-                <ShieldCheck size={19} />
-                {inCategory.length} ผลิตภัณฑ์
-              </span>
-              <span>
-                <Settings2 size={19} />
-                เปรียบเทียบได้ 3 รุ่น
-              </span>
-              <Link href="/service">
-                <Headphones size={19} />
-                บริการหลังการขาย
-              </Link>
+                : heroProduct?.subtitle
+            }
+          >
+            {bannerBenefits}
+          </CategoryBanner>
+        ) : (
+          <header className={styles.banner}>
+            <div className={styles.bannerCopy}>
+              <span className={styles.brand}>SUNFORD</span>
+              <h1>{title}</h1>
+              <p>
+                {!scope && category === "all"
+                  ? "เครื่องชั่งดิจิทัลและโซลูชันธุรกิจ พร้อมบริการหลังการขาย"
+                  : heroProduct?.subtitle}
+              </p>
+              {bannerBenefits}
             </div>
-          </div>
-          {heroProduct && (
-            <div className={styles.heroImage}>
-              <ProductImage
-                src={productPhoto(heroProduct)}
-                alt={`SUNFORD ${heroProduct.name}`}
-                fill
-                sizes="(max-width: 600px) 40vw, 450px"
-              />
-            </div>
-          )}
-        </header>
+            {heroProduct && (
+              <div className={styles.heroImage}>
+                <ProductImage
+                  src={productPhoto(heroProduct)}
+                  alt={`SUNFORD ${heroProduct.name}`}
+                  fill
+                  sizes="(max-width: 600px) 40vw, 450px"
+                />
+              </div>
+            )}
+          </header>
+        )}
         <div className={styles.toolbar}>
           <p aria-live="polite">{matching.length} รายการ</p>
           <label className={styles.search}>
