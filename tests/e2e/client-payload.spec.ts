@@ -35,8 +35,9 @@ test("full description search and comparison survive client navigation", async (
   await page.goto("/products");
   const catalogue = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
   const targetHref = await catalogue
-    .getByRole("link", { name: /^ดูรายละเอียด / })
+    .locator("article h2")
     .first()
+    .locator("..")
     .getAttribute("href");
   const target = products.find((product) => `/products/${product.slug}` === targetHref)!;
   expect(target).toBeTruthy();
@@ -62,6 +63,7 @@ test("full description search and comparison survive client navigation", async (
   const card = catalogue
     .locator("article")
     .filter({ has: page.getByRole("heading", { name: target.name, exact: true }) });
+  await page.locator(".header-compare").click();
   await card
     .getByRole("button", { name: `เพิ่มเพื่อเปรียบเทียบ ${target.name}`, exact: true })
     .click();
@@ -78,7 +80,6 @@ test("full description search and comparison survive client navigation", async (
   ])
     await expect(comparison.getByRole("table")).toContainText(value);
   await comparison.getByRole("button", { name: "ปิด", exact: true }).click();
-  await page.getByRole("button", { name: "ล้างรายการเปรียบเทียบ" }).click();
   await expect(page.locator(".compare-bar")).toHaveCount(0);
 });
 

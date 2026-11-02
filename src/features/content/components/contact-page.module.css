@@ -1,6 +1,6 @@
 .page {
   --contact-content-width: 1180px;
-  background: #fff;
+  background: transparent;
 }
 .contactIntro {
   position: relative;
@@ -8,7 +8,7 @@
   overflow: clip;
   background:
     radial-gradient(ellipse at 74% 26%, #ffe6ed80, transparent 46%),
-    linear-gradient(180deg, #fff 15%, #f7f9fc 76%, #fff);
+    linear-gradient(180deg, transparent 15%, #f7f9fc80 76%, transparent);
 }
 .contactIntro::before {
   position: absolute;
@@ -152,7 +152,7 @@
   padding: 22px 18px;
   border: 1px solid #ffffff;
   border-radius: 20px;
-  background: #ffffffea;
+  background: #fff;
   box-shadow: 0 20px 48px #233e5f08;
   transition:
     transform 0.25s ease,

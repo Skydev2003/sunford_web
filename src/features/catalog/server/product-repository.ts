@@ -11,6 +11,7 @@ import { getDocuments } from "@/features/cms/server/documents";
 import type { ProductMedia } from "@/features/cms/types";
 import { publicPath } from "@/features/content/data/public-paths.mjs";
 import { attachProductTopics } from "./product-topics";
+import { catalogProductCategory } from "../data/catalog-supplements";
 
 export async function getProducts(): Promise<Product[]> {
   "use cache";
@@ -47,7 +48,11 @@ export async function getProducts(): Promise<Product[]> {
     managed
       .map((row) => {
         const resolved = resolveManagedProduct(row);
-        const product = { ...resolved, slug: publicPath(`/${resolved.slug}`).slice(1) };
+        const product = {
+          ...resolved,
+          category: catalogProductCategory(resolved),
+          slug: publicPath(`/${resolved.slug}`).slice(1),
+        };
         const doc = media.find((doc) => doc.id === `product-media:${product.id}` && !doc.deletedAt);
         if (!doc) return product;
         const settings = doc.data as unknown as ProductMedia;

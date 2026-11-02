@@ -175,37 +175,54 @@
     animation: none;
   }
 }
+.detail-copy {
+  background: #fff;
+}
 .detail-copy h1 {
   overflow-wrap: anywhere;
   font-size: clamp(32px, 3.5vw, 44px);
   font-weight: 600;
-  margin: -8px 0 12px;
+  margin: -8px 0 24px;
   letter-spacing: -1px;
   line-height: 1.25;
 }
-.detail-copy .detail-subtitle {
-  color: var(--ink);
-  font-size: clamp(14px, 1.35vw, 18px);
-  font-weight: 600;
-  line-height: 1.7;
-}
-.spec-list {
-  margin: 36px 0 30px;
-}
-.spec-list > div {
+.detail-highlights {
   display: grid;
-  grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.4fr);
-  gap: 20px;
-  padding-block: 13px;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-  line-height: 1.7;
+  gap: 12px;
+  margin: 0 0 28px;
+  padding-left: 21px;
+  color: var(--ink);
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.8;
+}
+.detail-highlights li {
+  padding-left: 3px;
   overflow-wrap: anywhere;
 }
-.spec-list dt {
+.detail-weighing {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 0 0 28px;
+  font-size: 14px;
+  line-height: 1.7;
+  font-variant-numeric: tabular-nums;
+}
+.detail-weighing th,
+.detail-weighing td {
+  width: 50%;
+  padding: 11px 12px 11px 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+.detail-weighing th {
+  color: #62626b;
+  font-weight: 400;
+}
+.detail-weighing td {
   color: var(--ink);
-  font-size: calc(1em + 1px);
-  font-weight: 600;
 }
 .spec-help {
   display: inline-flex;
@@ -224,10 +241,6 @@
 .spec-help:focus-visible {
   color: var(--ink);
   background: var(--paper);
-}
-.spec-list dd {
-  text-align: left;
-  margin: 0;
 }
 .detail-inquiry {
   min-width: 250px;
@@ -285,6 +298,19 @@
 }
 .related-products {
   padding-top: 90px;
+}
+.related-products .product-grid {
+  gap: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #f6f8fb;
+}
+@media (max-width: 600px) {
+  .related-products .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
 }
 .source-link {
   display: inline-flex;

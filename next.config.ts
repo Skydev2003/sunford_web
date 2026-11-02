@@ -3,7 +3,10 @@ import { networkInterfaces } from "node:os";
 import { lanUatAddresses, nipHost } from "./scripts/lib/lan-uat.mjs";
 import { contentRewrites } from "./src/features/content/data/static-content-params";
 
-const lanOrigins = lanUatAddresses(networkInterfaces()).map(nipHost);
+const lanOrigins = lanUatAddresses(networkInterfaces()).flatMap((address) => [
+  address,
+  nipHost(address),
+]);
 
 const nextConfig: NextConfig = {
   async rewrites() {
@@ -13,7 +16,7 @@ const nextConfig: NextConfig = {
     }));
   },
   devIndicators: false,
-  // Exact LAN nip.io hosts supplied by npm run uat:local; no wildcard DNS access.
+  // Allow both direct LAN IPs and their UAT hostnames; keep the allowlist exact.
   allowedDevOrigins: [
     ...new Set([...lanOrigins, ...(process.env.UAT_DEV_HOSTS ?? "").split(",").filter(Boolean)]),
   ],

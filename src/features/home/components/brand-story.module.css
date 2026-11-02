@@ -4,7 +4,7 @@
   overflow: clip;
   background:
     radial-gradient(ellipse at 15% 80%, #ffe3ea96, transparent 45%),
-    linear-gradient(125deg, #f8fafc, #fff 60%);
+    linear-gradient(125deg, #f8fafc80, #ffffff40 60%);
 }
 .section::before {
   position: absolute;

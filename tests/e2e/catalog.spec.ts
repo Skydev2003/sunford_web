@@ -103,6 +103,7 @@ test("search opens product details, supports empty results and Escape", async ({
 
 test("comparison uses selected product data and clears selections", async ({ page }) => {
   await page.goto("/products");
+  await page.locator(".header-compare").click();
   await page.getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ WPS10KS", exact: true }).click();
   await page
     .getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ ACS-30-JC21", exact: true })
@@ -114,8 +115,8 @@ test("comparison uses selected product data and clears selections", async ({ pag
   await expect(dialog.getByRole("table")).toContainText("ACS-30-JC21");
   await expect(dialog.getByRole("table")).toContainText("30 กิโลกรัม");
   await dialog.getByRole("button", { name: "ปิด", exact: true }).click();
-  await page.getByRole("button", { name: "ล้างรายการเปรียบเทียบ" }).click();
   await expect(page.locator(".compare-bar")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /เพิ่มเพื่อเปรียบเทียบ/ })).toHaveCount(0);
 });
 
 test("mobile navigation works and page does not overflow", async ({ page }) => {

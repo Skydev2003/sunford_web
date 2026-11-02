@@ -38,6 +38,7 @@ function StoreProductCard({
 }) {
   const categories = useCategories();
   const ids = useCatalogStore((state) => state.compareIds);
+  const compareMode = useCatalogStore((state) => state.compareMode);
   const toggleCompare = useCatalogStore((state) => state.toggleCompare);
   const selected = ids.includes(product.id);
   const category = categories.find((item) => item.id === product.category);
@@ -71,17 +72,19 @@ function StoreProductCard({
           />
         </div>
       </Link>
-      <Tooltip>
-        <button
-          className={`store-compare ${selected ? "is-selected" : ""}`}
-          aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
-          aria-pressed={selected}
-          disabled={!selected && ids.length >= 3}
-          onClick={() => toggleCompare(product.id)}
-        >
-          {selected ? <Check size={17} /> : <Plus size={17} />}
-        </button>
-      </Tooltip>
+      {compareMode && (
+        <Tooltip>
+          <button
+            className={`store-compare ${selected ? "is-selected" : ""}`}
+            aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
+            aria-pressed={selected}
+            disabled={!selected && ids.length >= 3}
+            onClick={() => toggleCompare(product.id)}
+          >
+            {selected ? <Check size={17} /> : <Plus size={17} />}
+          </button>
+        </Tooltip>
+      )}
     </article>
   );
 }

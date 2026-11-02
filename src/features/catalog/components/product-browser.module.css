@@ -8,7 +8,7 @@
   grid-template-columns: 256px minmax(0, 1fr);
   max-width: 1680px;
   margin: 0 auto;
-  background: #f6f8fb;
+  background: transparent;
   color: #172231;
   min-height: 75vh;
 }
@@ -345,6 +345,15 @@
   background: white;
   border-radius: 14px;
   box-shadow: 0 6px 18px #263c5a04;
+  color: #172231;
+}
+.card a {
+  color: inherit;
+  text-decoration: none;
+}
+.card :is(a, button):focus-visible {
+  outline: 2px solid #e60032;
+  outline-offset: 3px;
 }
 .image {
   position: relative;
@@ -362,7 +371,7 @@
   flex-direction: column;
   padding-right: 22px;
 }
-.copy h2 {
+.copy :is(h2, h3) {
   font-size: 15px;
   line-height: 1.4;
   min-height: 2.8em;
@@ -428,29 +437,10 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
-.detail {
-  position: absolute;
-  bottom: 16px;
-  right: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  aspect-ratio: 1;
-  flex-shrink: 0;
-  border: 1px solid #dce3ed;
-  border-radius: 50%;
-}
-.detail > svg,
 .compare > svg {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-}
-.detail:hover {
-  background: #fff0f3;
-  color: #e60032;
 }
 .browser :is(button, a, select):focus-visible {
   outline: 2px solid #e60032;
@@ -471,7 +461,7 @@
 .list .copy {
   padding: 12px 60px 12px 24px;
 }
-.list .copy h2 {
+.list .copy :is(h2, h3) {
   font-size: 19px;
 }
 .more,
@@ -669,7 +659,7 @@
   .copy {
     padding-right: 8px;
   }
-  .copy h2 {
+  .copy :is(h2, h3) {
     font-size: 14px;
   }
   .tags {
@@ -687,7 +677,7 @@
   .list .copy {
     padding: 12px 22px 12px 10px;
   }
-  .list .copy h2 {
+  .list .copy :is(h2, h3) {
     font-size: 15px;
   }
 }

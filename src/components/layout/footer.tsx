@@ -11,6 +11,7 @@ import Link from "next/link";
 import { ArrowUp, ArrowUpRight, Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { sunford } from "@/features/home/data/brand";
+import { BackgroundMotionToggle } from "./site-background";
 
 export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnabled = true) {
   return (
@@ -186,6 +187,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
           <a href="#main-content">
             กลับด้านบน <ArrowUp size={15} />
           </a>
+          <BackgroundMotionToggle />
         </div>
       </div>
     </footer>

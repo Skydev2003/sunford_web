@@ -1,0 +1,685 @@
+{
+  "channel": {
+    "id": "UCAr4sj68DRFTnkcOaQ7aclg",
+    "name": "Sunfordthai",
+    "url": "https://www.youtube.com/@sunfordthai1215/videos"
+  },
+  "verifiedAt": "2026-11-02",
+  "videos": [
+    {
+      "id": "da7xfrccHfI",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอล คำนวณราคา SUNFORD รุ่น ACS-30-JC21",
+      "url": "https://www.youtube.com/watch?v=da7xfrccHfI",
+      "duration": 301,
+      "sourceIds": ["10609", "ACS-30-JC21"],
+      "image": "/images/product-videos/da7xfrccHfI.webp",
+      "kind": "video"
+    },
+    {
+      "id": "lDwzvbEdK5A",
+      "title": "แนะนำวิธีใช้ (ขั้นสูง) เครื่องชั่งดิจิตอล คำนวณราคา SUNFORD รุ่น ACS-30-JC21",
+      "url": "https://www.youtube.com/watch?v=lDwzvbEdK5A",
+      "duration": 374,
+      "sourceIds": ["10609", "ACS-30-JC21"],
+      "image": "/images/product-videos/lDwzvbEdK5A.webp",
+      "kind": "video"
+    },
+    {
+      "id": "qk6fCCTOpLY",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น ACS-30-JC21",
+      "url": "https://www.youtube.com/watch?v=qk6fCCTOpLY",
+      "duration": 197,
+      "sourceIds": ["10609", "ACS-30-JC21"],
+      "image": "/images/product-videos/qk6fCCTOpLY.webp",
+      "kind": "video"
+    },
+    {
+      "id": "idpv9oLyQ4w",
+      "title": "แนะนำเครื่องชั่งดิจิตอล พิมพ์สติ๊กเกอร์ ต่อคอมพ์ SUNFORD รุ่น FEH5KS",
+      "url": "https://www.youtube.com/watch?v=idpv9oLyQ4w",
+      "duration": 90,
+      "sourceIds": ["10637", "FEH5KS"],
+      "image": "/images/product-videos/idpv9oLyQ4w.webp",
+      "kind": "video"
+    },
+    {
+      "id": "sxB0Yz08Thk",
+      "title": "SUNFORD FEH5KS เครื่องชั่งดิจิตอลพิมพ์สติกเกอร์ ขนาด 5kg/1g เหมาะสำหรับทุกธุรกิจ",
+      "url": "https://www.youtube.com/watch?v=sxB0Yz08Thk",
+      "duration": null,
+      "sourceIds": ["10637", "FEH5KS"],
+      "image": "/images/product-videos/sxB0Yz08Thk.webp",
+      "kind": "short"
+    },
+    {
+      "id": "0-uxBUFFDT0",
+      "title": "การจัดการรายการสินค้าอย่างง่าย SUNFORD RLS1100",
+      "url": "https://www.youtube.com/watch?v=0-uxBUFFDT0",
+      "duration": 338,
+      "sourceIds": ["10639", "RLS1100"],
+      "image": "/images/product-videos/0-uxBUFFDT0.webp",
+      "kind": "video"
+    },
+    {
+      "id": "9IZatkCjViI",
+      "title": "แนะนำ RLS1100 ตอนที่ 1 : การเชื่อมต่อ Wifi",
+      "url": "https://www.youtube.com/watch?v=9IZatkCjViI",
+      "duration": 256,
+      "sourceIds": ["10639", "RLS1100"],
+      "image": "/images/product-videos/9IZatkCjViI.webp",
+      "kind": "video"
+    },
+    {
+      "id": "krI1iuFgnNw",
+      "title": "แนะนำ RLS1100 : ตอนที่ 2 การลงข้อมูลสินค้า",
+      "url": "https://www.youtube.com/watch?v=krI1iuFgnNw",
+      "duration": 100,
+      "sourceIds": ["10639", "RLS1100"],
+      "image": "/images/product-videos/krI1iuFgnNw.webp",
+      "kind": "video"
+    },
+    {
+      "id": "QDu8RunhuGM",
+      "title": "แนะนำ RLS1100 : ตอนที่ 3 การสร้างปุ่มคีย์ลัด",
+      "url": "https://www.youtube.com/watch?v=QDu8RunhuGM",
+      "duration": 48,
+      "sourceIds": ["10639", "RLS1100"],
+      "image": "/images/product-videos/QDu8RunhuGM.webp",
+      "kind": "video"
+    },
+    {
+      "id": "WRKxq1eojx0",
+      "title": "แนะนำ RLS1100 : ตอนที่ 4 การเปลี่ยนหน่วยทศนิยมราคา",
+      "url": "https://www.youtube.com/watch?v=WRKxq1eojx0",
+      "duration": 77,
+      "sourceIds": ["10639", "RLS1100"],
+      "image": "/images/product-videos/WRKxq1eojx0.webp",
+      "kind": "video"
+    },
+    {
+      "id": "W56MJC6qsRc",
+      "title": "แนะนำ RLS1100 : ตอนที่ 5 การเปลี่ยนสติกเกอร์",
+      "url": "https://www.youtube.com/watch?v=W56MJC6qsRc",
+      "duration": 78,
+      "sourceIds": ["10639", "RLS1100"],
+      "image": "/images/product-videos/W56MJC6qsRc.webp",
+      "kind": "video"
+    },
+    {
+      "id": "mVeiJiiuW7g",
+      "title": "การจัดการรายการสินค้าขั้นสูง SUNFORD RLS1100",
+      "url": "https://www.youtube.com/watch?v=mVeiJiiuW7g",
+      "duration": 570,
+      "sourceIds": ["10639", "RLS1100"],
+      "image": "/images/product-videos/mVeiJiiuW7g.webp",
+      "kind": "video"
+    },
+    {
+      "id": "8eAjargLqd0",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น C1 Precision Balance",
+      "url": "https://www.youtube.com/watch?v=8eAjargLqd0",
+      "duration": 262,
+      "sourceIds": ["10664", "C1-Precision-Balance"],
+      "image": "/images/product-videos/8eAjargLqd0.webp",
+      "kind": "video"
+    },
+    {
+      "id": "_oqswiy0pRw",
+      "title": "แนะนำเครื่องชั่งดิจิตอล วิทยาศาสตร์ ความละเอียดสูง SUNFORD C1",
+      "url": "https://www.youtube.com/watch?v=_oqswiy0pRw",
+      "duration": 129,
+      "sourceIds": ["10664", "C1-Precision-Balance"],
+      "image": "/images/product-videos/_oqswiy0pRw.webp",
+      "kind": "video"
+    },
+    {
+      "id": "jpx1Y2dkBKI",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น S1 Precision Balance",
+      "url": "https://www.youtube.com/watch?v=jpx1Y2dkBKI",
+      "duration": 342,
+      "sourceIds": ["10661"],
+      "image": "/images/product-videos/jpx1Y2dkBKI.webp",
+      "kind": "video"
+    },
+    {
+      "id": "p7kUEKODejs",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD R Series รุ่น R3 และ R6",
+      "url": "https://www.youtube.com/watch?v=p7kUEKODejs",
+      "duration": 394,
+      "sourceIds": ["10680", "10681"],
+      "note": "วิดีโอแนะนำ R Series รุ่น R3 และ R6",
+      "image": "/images/product-videos/p7kUEKODejs.webp",
+      "kind": "video"
+    },
+    {
+      "id": "y9ira81j3XA",
+      "title": "แนะนำเครื่องชั่งน้ำหนักส่วนบุคคล ระบบ BMI SUNFORD Fitdays รุ่น FD1000",
+      "url": "https://www.youtube.com/watch?v=y9ira81j3XA",
+      "duration": 117,
+      "sourceIds": ["10624"],
+      "image": "/images/product-videos/y9ira81j3XA.webp",
+      "kind": "video"
+    },
+    {
+      "id": "7-bIN_pcr4Q",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น WPK5000 กันน้ำ IP67",
+      "url": "https://www.youtube.com/watch?v=7-bIN_pcr4Q",
+      "duration": 116,
+      "sourceIds": ["10668"],
+      "image": "/images/product-videos/7-bIN_pcr4Q.webp",
+      "kind": "video"
+    },
+    {
+      "id": "ZpPVoQU0tZI",
+      "title": "UNBOX SUNFORD WPK5000  ที่สุด‼ ของเครื่องชั่งดิจิตอลกันน้ำขั้นสุด พร้อมลุยน้ำและฝุ่นได้อย่างอิสระ",
+      "url": "https://www.youtube.com/watch?v=ZpPVoQU0tZI",
+      "duration": null,
+      "sourceIds": ["10668"],
+      "image": "/images/product-videos/ZpPVoQU0tZI.webp",
+      "kind": "short"
+    },
+    {
+      "id": "N3kq_x_G--Y",
+      "title": "5 - WeWeigh with WPS10KS  #ซันฟอร์ดความเที่ยงตรงที่คุณวางใจ #sunford #weweighapp",
+      "url": "https://www.youtube.com/watch?v=N3kq_x_G--Y",
+      "duration": null,
+      "sourceIds": ["10669"],
+      "image": "/images/product-videos/N3kq_x_G--Y.webp",
+      "kind": "short"
+    },
+    {
+      "id": "cRkWLAhAVRU",
+      "title": "UNBOX SUNFORD WPS10KS  ที่สุด‼  ของเครื่องชั่งดิจิตอลกันน้ำขั้นสุด พร้อมลุยน้ำและฝุ่นได้อย่างอิสระ",
+      "url": "https://www.youtube.com/watch?v=cRkWLAhAVRU",
+      "duration": null,
+      "sourceIds": ["10669"],
+      "image": "/images/product-videos/cRkWLAhAVRU.webp",
+      "kind": "short"
+    },
+    {
+      "id": "TktAbjKUlDY",
+      "title": "UNBOX SUNFORD WPS6KS ที่สุด‼ ของเครื่องชั่งดิจิตอลกันน้ำขั้นสุด พร้อมลุยน้ำและฝุ่นได้อย่างอิสระ",
+      "url": "https://www.youtube.com/watch?v=TktAbjKUlDY",
+      "duration": null,
+      "sourceIds": ["10671"],
+      "image": "/images/product-videos/TktAbjKUlDY.webp",
+      "kind": "short"
+    },
+    {
+      "id": "9ebWErcfAmA",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น FEH10KS",
+      "url": "https://www.youtube.com/watch?v=9ebWErcfAmA",
+      "duration": 109,
+      "sourceIds": ["10635"],
+      "image": "/images/product-videos/9ebWErcfAmA.webp",
+      "kind": "video"
+    },
+    {
+      "id": "alr4W9XvqYc",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอล คำนวณราคา SUNFORD รุ่น AVS-25-K1",
+      "url": "https://www.youtube.com/watch?v=alr4W9XvqYc",
+      "duration": 327,
+      "sourceIds": ["10613"],
+      "image": "/images/product-videos/alr4W9XvqYc.webp",
+      "kind": "video"
+    },
+    {
+      "id": "zdJQJEioRa4",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น AVS-25-K1",
+      "url": "https://www.youtube.com/watch?v=zdJQJEioRa4",
+      "duration": 94,
+      "sourceIds": ["10613"],
+      "image": "/images/product-videos/zdJQJEioRa4.webp",
+      "kind": "video"
+    },
+    {
+      "id": "Uk1KQVUxfCk",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอล ความละเอียดสูง SUNFORD รุ่น KAH5000S",
+      "url": "https://www.youtube.com/watch?v=Uk1KQVUxfCk",
+      "duration": 441,
+      "sourceIds": ["10625"],
+      "image": "/images/product-videos/Uk1KQVUxfCk.webp",
+      "kind": "video"
+    },
+    {
+      "id": "Fz_IlMfyrds",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น KAH5000S",
+      "url": "https://www.youtube.com/watch?v=Fz_IlMfyrds",
+      "duration": 171,
+      "sourceIds": ["10625"],
+      "image": "/images/product-videos/Fz_IlMfyrds.webp",
+      "kind": "video"
+    },
+    {
+      "id": "GxDaSQxP0Sg",
+      "title": "ฟังกชั่นนับจำนวนชิ้น SUNFORD KAH5000S",
+      "url": "https://www.youtube.com/watch?v=GxDaSQxP0Sg",
+      "duration": null,
+      "sourceIds": ["10625"],
+      "image": "/images/product-videos/GxDaSQxP0Sg.webp",
+      "kind": "short"
+    },
+    {
+      "id": "DFrXvqilbrk",
+      "title": "แนะนำการใช้งานเครื่องชั่งดิจิตอล SUNFORD KBS6000S",
+      "url": "https://www.youtube.com/watch?v=DFrXvqilbrk",
+      "duration": 402,
+      "sourceIds": ["10672"],
+      "image": "/images/product-videos/DFrXvqilbrk.webp",
+      "kind": "video"
+    },
+    {
+      "id": "BDgYV2bnJQc",
+      "title": "ฟังก์ชั่นนับจำนวนชิ้น SUNFORD KBS5000",
+      "url": "https://www.youtube.com/watch?v=BDgYV2bnJQc",
+      "duration": null,
+      "sourceIds": ["10673"],
+      "image": "/images/product-videos/BDgYV2bnJQc.webp",
+      "kind": "short"
+    },
+    {
+      "id": "Rblu9cLdoL8",
+      "title": "SUNFORD KBS5000 เครื่องชั่งดิจิตอลสำหรับงานอาหารมืออาชีพ ชาร์จไฟได้",
+      "url": "https://www.youtube.com/watch?v=Rblu9cLdoL8",
+      "duration": null,
+      "sourceIds": ["10673"],
+      "image": "/images/product-videos/Rblu9cLdoL8.webp",
+      "kind": "short"
+    },
+    {
+      "id": "pIzYlkwJ3Mc",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอล คำนวณราคา SUNFORD รุ่น FEH5000",
+      "url": "https://www.youtube.com/watch?v=pIzYlkwJ3Mc",
+      "duration": 314,
+      "sourceIds": ["10607"],
+      "image": "/images/product-videos/pIzYlkwJ3Mc.webp",
+      "kind": "video"
+    },
+    {
+      "id": "aTjENQVvE4c",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น VL1500S",
+      "url": "https://www.youtube.com/watch?v=aTjENQVvE4c",
+      "duration": 85,
+      "sourceIds": ["10629"],
+      "image": "/images/product-videos/aTjENQVvE4c.webp",
+      "kind": "video"
+    },
+    {
+      "id": "k_n_d5ruSug",
+      "title": "แนะนำ SUNFORD รุ่น VC5000",
+      "url": "https://www.youtube.com/watch?v=k_n_d5ruSug",
+      "duration": 149,
+      "sourceIds": ["10628"],
+      "image": "/images/product-videos/k_n_d5ruSug.webp",
+      "kind": "video"
+    },
+    {
+      "id": "RfNyqEIBlIA",
+      "title": "แนะนำ SUNFORD รุ่น VR5000",
+      "url": "https://www.youtube.com/watch?v=RfNyqEIBlIA",
+      "duration": 166,
+      "sourceIds": ["10617"],
+      "image": "/images/product-videos/RfNyqEIBlIA.webp",
+      "kind": "video"
+    },
+    {
+      "id": "GCtViQSdcgM",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น ACS-30-JE81",
+      "url": "https://www.youtube.com/watch?v=GCtViQSdcgM",
+      "duration": 211,
+      "sourceIds": ["10641"],
+      "image": "/images/product-videos/GCtViQSdcgM.webp",
+      "kind": "video"
+    },
+    {
+      "id": "N2Ta38mUVRA",
+      "title": "SUNFORD ACS-30-JC81 เครื่องชั่งพันธุ์อึด",
+      "url": "https://www.youtube.com/watch?v=N2Ta38mUVRA",
+      "duration": 82,
+      "sourceIds": ["10618", "ACS-30-JC81"],
+      "image": "/images/product-videos/N2Ta38mUVRA.webp",
+      "kind": "video"
+    },
+    {
+      "id": "tid1Gh419Vc",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอล คำนวณราคา เชื่อมต่ออุปกรณ์ SUNFORD รุ่น ACS-30-JC91",
+      "url": "https://www.youtube.com/watch?v=tid1Gh419Vc",
+      "duration": 320,
+      "sourceIds": ["10619"],
+      "image": "/images/product-videos/tid1Gh419Vc.webp",
+      "kind": "video"
+    },
+    {
+      "id": "uKF0lgq1cvQ",
+      "title": "SUNFORD รุ่น ACS-30-JC91 กระดาษหมด ทำยังไงดี? #sunford #ซันฟอร์ด #ค้าขาย",
+      "url": "https://www.youtube.com/watch?v=uKF0lgq1cvQ",
+      "duration": null,
+      "sourceIds": ["10619"],
+      "image": "/images/product-videos/uKF0lgq1cvQ.webp",
+      "kind": "short"
+    },
+    {
+      "id": "4YvdAFmuf-0",
+      "title": "ประกอบเครื่องชั่งดิจิตอล SUNFORD รุ่น ACS-30-JC91 ง่ายมาก #sunford #ซันฟอร์ด #ค้าขาย",
+      "url": "https://www.youtube.com/watch?v=4YvdAFmuf-0",
+      "duration": null,
+      "sourceIds": ["10619"],
+      "image": "/images/product-videos/4YvdAFmuf-0.webp",
+      "kind": "short"
+    },
+    {
+      "id": "F43j_ak_1b4",
+      "title": "แนะนำเครื่องชั่งดิจิตอล คำนวณราคา SUNFORD รุ่น ACS-30-JE21",
+      "url": "https://www.youtube.com/watch?v=F43j_ak_1b4",
+      "duration": null,
+      "sourceIds": ["10631"],
+      "image": "/images/product-videos/F43j_ak_1b4.webp",
+      "kind": "short"
+    },
+    {
+      "id": "3YP3kVnWlR8",
+      "title": "พี่เอื้อมแนะนำ SUNFORD ACS-30-JE21 จอชัด ชั่งง่าย ขายดี ทุกร้านค้า",
+      "url": "https://www.youtube.com/watch?v=3YP3kVnWlR8",
+      "duration": 329,
+      "sourceIds": ["10631"],
+      "image": "/images/product-videos/3YP3kVnWlR8.webp",
+      "kind": "video"
+    },
+    {
+      "id": "xCXRmF-_bX4",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอล คำนวณราคา จอทาวเวอร์ จอแอลอีดี SUNFORD รุ่น ACS-30-JE11",
+      "url": "https://www.youtube.com/watch?v=xCXRmF-_bX4",
+      "duration": 258,
+      "sourceIds": ["10621"],
+      "image": "/images/product-videos/xCXRmF-_bX4.webp",
+      "kind": "video"
+    },
+    {
+      "id": "PNUA8BRdW6g",
+      "title": "แนะนำวิธีใช้ (ขั้นสูง) เครื่องชั่งดิจิตอล คำนวณราคา จอแอลอีดี SUNFORD รุ่น ACS-30-JE11",
+      "url": "https://www.youtube.com/watch?v=PNUA8BRdW6g",
+      "duration": 224,
+      "sourceIds": ["10621"],
+      "image": "/images/product-videos/PNUA8BRdW6g.webp",
+      "kind": "video"
+    },
+    {
+      "id": "5GGViPhZals",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอลอุตสาหกรรม SUNFORD รุ่น ACS-30-FC31",
+      "url": "https://www.youtube.com/watch?v=5GGViPhZals",
+      "duration": 332,
+      "sourceIds": ["10612"],
+      "image": "/images/product-videos/5GGViPhZals.webp",
+      "kind": "video"
+    },
+    {
+      "id": "OzTQ64zefl0",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น ACS-30-FC31",
+      "url": "https://www.youtube.com/watch?v=OzTQ64zefl0",
+      "duration": 82,
+      "sourceIds": ["10612"],
+      "image": "/images/product-videos/OzTQ64zefl0.webp",
+      "kind": "video"
+    },
+    {
+      "id": "MtZWWsXuJdM",
+      "title": "เทียบการใช้งาน ACS-30-FC31 และ FE31 #sunford #ซันฟอร์ด #ธุรกิจ #ขนส่ง #โรงงาน",
+      "url": "https://www.youtube.com/watch?v=MtZWWsXuJdM",
+      "duration": null,
+      "sourceIds": ["10612", "10632"],
+      "note": "วิดีโอเปรียบเทียบรุ่น ACS-30-FC31 และ ACS-30-FE31",
+      "image": "/images/product-videos/MtZWWsXuJdM.webp",
+      "kind": "short"
+    },
+    {
+      "id": "EAtS9AfEZfA",
+      "title": "SUNFORD PCS-60-FC11 เครื่องชั่งเพื่องานขาย และขนส่ง",
+      "url": "https://www.youtube.com/watch?v=EAtS9AfEZfA",
+      "duration": 292,
+      "sourceIds": ["10674", "10683"],
+      "note": "วิดีโอแนะนำรุ่น PCS-60-FC11",
+      "image": "/images/product-videos/EAtS9AfEZfA.webp",
+      "kind": "video"
+    },
+    {
+      "id": "rxXn0mqUJyA",
+      "title": "แนะนำน้องใหม่!!! เพื่องานขนส่งโดยเฉพาะ SUNFORD PCS-60-FC11",
+      "url": "https://www.youtube.com/watch?v=rxXn0mqUJyA",
+      "duration": 64,
+      "sourceIds": ["10674", "10683"],
+      "note": "วิดีโอแนะนำรุ่น PCS-60-FC11",
+      "image": "/images/product-videos/rxXn0mqUJyA.webp",
+      "kind": "video"
+    },
+    {
+      "id": "cgJdxjrrWd4",
+      "title": "ขั้นตอนการประกอบเครื่องชั่ง SUNFORD TCS-150-JC62Z และ JE62ZR",
+      "url": "https://www.youtube.com/watch?v=cgJdxjrrWd4",
+      "duration": 263,
+      "sourceIds": ["10616", "10640"],
+      "note": "วิธีประกอบรุ่น TCS-150-JC62Z และ TCS-150-JE62ZR",
+      "image": "/images/product-videos/cgJdxjrrWd4.webp",
+      "kind": "video"
+    },
+    {
+      "id": "vM-sVt54BSs",
+      "title": "SUNFORD รุ่น TCS-60-JE62ZR พิมพ์เลเบล เหมาะกับงานขายทุกประเภท",
+      "url": "https://www.youtube.com/watch?v=vM-sVt54BSs",
+      "duration": 126,
+      "sourceIds": ["10620"],
+      "image": "/images/product-videos/vM-sVt54BSs.webp",
+      "kind": "video"
+    },
+    {
+      "id": "2uPMG3gmp0w",
+      "title": "แนะนำเครื่องชั่งดิจิตอล คำนวณราคา SUNFORD รุ่น TCS-60-JE62ZR",
+      "url": "https://www.youtube.com/watch?v=2uPMG3gmp0w",
+      "duration": null,
+      "sourceIds": ["10620"],
+      "image": "/images/product-videos/2uPMG3gmp0w.webp",
+      "kind": "short"
+    },
+    {
+      "id": "PdMwtszFdKg",
+      "title": "SUNFORD TCS-AW31 Series เครื่องชั่งดิจิตอล แจ้งเตือนน้ำหนัก ต่อเครื่องพิมพ์ จอเสริม",
+      "url": "https://www.youtube.com/watch?v=PdMwtszFdKg",
+      "duration": 194,
+      "sourceIds": ["10634", "10636", "10638", "TCS-150-AW31"],
+      "note": "วิธีใช้และประกอบเครื่องในตระกูล TCS-AW31",
+      "image": "/images/product-videos/PdMwtszFdKg.webp",
+      "kind": "video"
+    },
+    {
+      "id": "eaU5OzkMNsc",
+      "title": "ขั้นตอนการประกอบเครื่องชั่ง SUNFORD TCS-AW31",
+      "url": "https://www.youtube.com/watch?v=eaU5OzkMNsc",
+      "duration": 274,
+      "sourceIds": ["10634", "10636", "10638", "TCS-150-AW31"],
+      "note": "วิธีใช้และประกอบเครื่องในตระกูล TCS-AW31",
+      "image": "/images/product-videos/eaU5OzkMNsc.webp",
+      "kind": "video"
+    },
+    {
+      "id": "q_rAiMkp228",
+      "title": "ขั้นตอนการประกอบเครื่องชั่ง SUNFORD TMS-AW31",
+      "url": "https://www.youtube.com/watch?v=q_rAiMkp228",
+      "duration": 713,
+      "sourceIds": ["10630"],
+      "note": "วิธีประกอบเครื่องในตระกูล TMS-AW31",
+      "image": "/images/product-videos/q_rAiMkp228.webp",
+      "kind": "video"
+    },
+    {
+      "id": "VcJ5PfOSpl8",
+      "title": "แนะนำการใช้งาน Indicator เครื่องชั่งดิจิตอล SUNFORD รุ่น AW31",
+      "url": "https://www.youtube.com/watch?v=VcJ5PfOSpl8",
+      "duration": 144,
+      "sourceIds": ["10777"],
+      "image": "/images/product-videos/VcJ5PfOSpl8.webp",
+      "kind": "video"
+    },
+    {
+      "id": "8f3rtCN6skU",
+      "title": "แนะนำการใช้งาน Indicator เครื่องชั่งดิจิตอล SUNFORD รุ่น AC31P",
+      "url": "https://www.youtube.com/watch?v=8f3rtCN6skU",
+      "duration": 478,
+      "sourceIds": ["10781"],
+      "image": "/images/product-videos/8f3rtCN6skU.webp",
+      "kind": "video"
+    },
+    {
+      "id": "daMYxeEAqeg",
+      "title": "แนะนำวิธีใช้เครื่องชั่งดิจิตอลในตระกูล AC31S",
+      "url": "https://www.youtube.com/watch?v=daMYxeEAqeg",
+      "duration": 344,
+      "sourceIds": ["10776", "10874", "10875", "TMS-30-AC31S"],
+      "note": "วิธีใช้อินดิเคเตอร์ในตระกูล AC31S",
+      "image": "/images/product-videos/daMYxeEAqeg.webp",
+      "kind": "video"
+    },
+    {
+      "id": "31j1LY179uQ",
+      "title": "แนะนำการใช้งาน Indicator เครื่องชั่งดิจิตอล SUNFORD รุ่น WP31C",
+      "url": "https://www.youtube.com/watch?v=31j1LY179uQ",
+      "duration": 202,
+      "sourceIds": ["10779"],
+      "image": "/images/product-videos/31j1LY179uQ.webp",
+      "kind": "video"
+    },
+    {
+      "id": "KOTeWhXegT4",
+      "title": "แนะนำการใช้งาน Indicator เครื่องชั่งดิจิตอล SUNFORD รุ่น WP31E",
+      "url": "https://www.youtube.com/watch?v=KOTeWhXegT4",
+      "duration": 259,
+      "sourceIds": ["10780"],
+      "image": "/images/product-videos/KOTeWhXegT4.webp",
+      "kind": "video"
+    },
+    {
+      "id": "l5Q0paNc8bU",
+      "title": "ฟังก์ชั่นบันทึกข้อมูลบน Flash drive ใน SUNFORD รุ่น WP31E",
+      "url": "https://www.youtube.com/watch?v=l5Q0paNc8bU",
+      "duration": 88,
+      "sourceIds": ["10780"],
+      "image": "/images/product-videos/l5Q0paNc8bU.webp",
+      "kind": "video"
+    },
+    {
+      "id": "of33_okaF0o",
+      "title": "SUNFORD P1 ครบชุด กับสเปกล้ำทำให้การขายคุณง่ายมากขึ้น",
+      "url": "https://www.youtube.com/watch?v=of33_okaF0o",
+      "duration": 61,
+      "sourceIds": ["10802"],
+      "image": "/images/product-videos/of33_okaF0o.webp",
+      "kind": "video"
+    },
+    {
+      "id": "kGzL5kYWWuk",
+      "title": "แนะนำโปรแกรม SUNFORD POS Android on Cloud - Supermarket",
+      "url": "https://www.youtube.com/watch?v=kGzL5kYWWuk",
+      "duration": 297,
+      "sourceIds": ["10802", "10805"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS บน Android",
+      "image": "/images/product-videos/kGzL5kYWWuk.webp",
+      "kind": "video"
+    },
+    {
+      "id": "k0-hlqHCNYI",
+      "title": "POS Android : สอนวิธี cash register การจัดการหลังร้านสำหรับเจ้าของกิจการ",
+      "url": "https://www.youtube.com/watch?v=k0-hlqHCNYI",
+      "duration": 222,
+      "sourceIds": ["10802", "10805"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS บน Android",
+      "image": "/images/product-videos/k0-hlqHCNYI.webp",
+      "kind": "video"
+    },
+    {
+      "id": "c32nf4m3gyE",
+      "title": "POS Android : สอนวิธี cash register ใช้ปุ่มคำสั่งเรียกดูรายงาน",
+      "url": "https://www.youtube.com/watch?v=c32nf4m3gyE",
+      "duration": 74,
+      "sourceIds": ["10802", "10805"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS บน Android",
+      "image": "/images/product-videos/c32nf4m3gyE.webp",
+      "kind": "video"
+    },
+    {
+      "id": "9aaWVszYegg",
+      "title": "POS Android : สอนวิธี cash register ต่ออุปกรณ์พ่วง",
+      "url": "https://www.youtube.com/watch?v=9aaWVszYegg",
+      "duration": 178,
+      "sourceIds": ["10802", "10805"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS บน Android",
+      "image": "/images/product-videos/9aaWVszYegg.webp",
+      "kind": "video"
+    },
+    {
+      "id": "SECGw6dYPks",
+      "title": "SUNFORD POS Basic Tutorial Ep1 : แนะนำโปรแกรม",
+      "url": "https://www.youtube.com/watch?v=SECGw6dYPks",
+      "duration": 202,
+      "sourceIds": ["10801"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS Basic บน Windows",
+      "image": "/images/product-videos/SECGw6dYPks.webp",
+      "kind": "video"
+    },
+    {
+      "id": "BXyWCqG9akM",
+      "title": "SUNFORD POS Basic Tutorial Ep2 : การขายสินค้า",
+      "url": "https://www.youtube.com/watch?v=BXyWCqG9akM",
+      "duration": 199,
+      "sourceIds": ["10801"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS Basic บน Windows",
+      "image": "/images/product-videos/BXyWCqG9akM.webp",
+      "kind": "video"
+    },
+    {
+      "id": "SOO6Tw7Az58",
+      "title": "SUNFORD POS Basic Tutorial EP3 : การสร้างสินค้าและจัดการสต๊อก",
+      "url": "https://www.youtube.com/watch?v=SOO6Tw7Az58",
+      "duration": 445,
+      "sourceIds": ["10801"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS Basic บน Windows",
+      "image": "/images/product-videos/SOO6Tw7Az58.webp",
+      "kind": "video"
+    },
+    {
+      "id": "Eid33j0guBQ",
+      "title": "SUNFORD POS Basic Tutorial EP5 : การเรียกดูรายงาน",
+      "url": "https://www.youtube.com/watch?v=Eid33j0guBQ",
+      "duration": 195,
+      "sourceIds": ["10801"],
+      "note": "การใช้งานซอฟต์แวร์ SUNFORD POS Basic บน Windows",
+      "image": "/images/product-videos/Eid33j0guBQ.webp",
+      "kind": "video"
+    },
+    {
+      "id": "-adk0Y6lh8k",
+      "title": "แนะนำเครื่องพิมพ์ไร้สาย SUNFORD LP51",
+      "url": "https://www.youtube.com/watch?v=-adk0Y6lh8k",
+      "duration": 61,
+      "sourceIds": ["10730"],
+      "image": "/images/product-videos/-adk0Y6lh8k.webp",
+      "kind": "video"
+    },
+    {
+      "id": "Pq5m419DlKo",
+      "title": "SUNFORD HiCoFE เครื่องชั่งบาริสต้า สำหรับงานกาแฟ ความละเอียดสูง จับเวลาอัตโนมัติ",
+      "url": "https://www.youtube.com/watch?v=Pq5m419DlKo",
+      "duration": 120,
+      "sourceIds": ["10646"],
+      "image": "/images/product-videos/Pq5m419DlKo.webp",
+      "kind": "video"
+    },
+    {
+      "id": "qcGLGvx8NkI",
+      "title": "แนะนำเครื่องชั่งดิจิตอล SUNFORD รุ่น WSS30KS Industrial Waterproof Scale",
+      "url": "https://www.youtube.com/watch?v=qcGLGvx8NkI",
+      "duration": 298,
+      "sourceIds": ["10670", "10863"],
+      "note": "แนะนำตระกูล WSS30KS; รุ่นจอ LCD และ LED แสดงผลต่างกัน",
+      "image": "/images/product-videos/qcGLGvx8NkI.webp",
+      "kind": "video"
+    }
+  ]
+}

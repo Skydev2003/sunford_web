@@ -17,6 +17,7 @@ export function ProductCard({
 }) {
   const categories = useCategories();
   const ids = useCatalogStore((s) => s.compareIds);
+  const compareMode = useCatalogStore((s) => s.compareMode);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
   const selected = ids.includes(product.id);
   return (
@@ -27,17 +28,19 @@ export function ProductCard({
             categoryLabel ??
             categories.find((c) => c.id === product.category)?.english}
         </span>
-        <Tooltip>
-          <button
-            className={`compare-button ${selected ? "selected" : ""}`}
-            aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
-            aria-pressed={selected}
-            disabled={!selected && ids.length >= 3}
-            onClick={() => toggleCompare(product.id)}
-          >
-            {selected ? <Check size={16} /> : <Plus size={16} />}
-          </button>
-        </Tooltip>
+        {compareMode && (
+          <Tooltip>
+            <button
+              className={`compare-button ${selected ? "selected" : ""}`}
+              aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${product.name}`}
+              aria-pressed={selected}
+              disabled={!selected && ids.length >= 3}
+              onClick={() => toggleCompare(product.id)}
+            >
+              {selected ? <Check size={16} /> : <Plus size={16} />}
+            </button>
+          </Tooltip>
+        )}
       </div>
       <Link href={`/products/${product.slug}`} className="product-card-image">
         <ProductImage
