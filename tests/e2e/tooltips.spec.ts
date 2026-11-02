@@ -138,7 +138,9 @@ test("tooltip at the bottom edge stays within narrow and wide viewports", async 
   for (const width of [320, 390, 1440]) {
     await page.mouse.move(0, 0);
     await page.setViewportSize({ width, height: 844 });
-    const launcher = page.locator(".contact-launcher");
+    const launcher = page.locator("[data-mascot-launcher]");
+    const position = (await launcher.boundingBox())!;
+    await page.mouse.move(position.x + position.width / 2, position.y + position.height / 2);
     await launcher.hover();
     const tooltip = page.getByRole("tooltip");
     await expect(tooltip).toHaveText((await launcher.getAttribute("aria-label"))!);

@@ -70,7 +70,7 @@ export function BrandOpening({
       // Only block interaction after JavaScript has committed to playing the opening.
       document.documentElement.style.overflow = "hidden";
       for (const element of document.querySelectorAll<HTMLElement>(
-        ".site-header, #main-content > :not([data-brand-opening]), footer, .floating-contact",
+        ".site-header, #main-content > :not([data-brand-opening]), footer, [data-shop-mascot]",
       )) {
         blocked.set(element, element.inert);
         element.inert = true;

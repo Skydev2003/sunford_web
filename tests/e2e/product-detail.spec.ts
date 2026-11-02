@@ -103,12 +103,7 @@ test("each product category uses its own content in the shared detail layout", a
     const inquiry = page.getByRole("link", { name: "สอบถามราคาและรายละเอียด", exact: true });
     await expect(inquiry).toBeVisible();
     expect(await inquiry.getAttribute("href")).toMatch(/^https:\/\//);
-    const website = page.locator(".detail-service .source-link");
-    await expect(website).toHaveAttribute(
-      "href",
-      "https://sunfordshop.com/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81",
-    );
-    await expect(website).toHaveAttribute("target", "_blank");
+    await expect(page.locator(".detail-service")).toHaveCount(0);
     await expect(page.locator(".product-introduction")).toHaveCount(0);
     await expect(
       page.getByRole("heading", { name: "รายละเอียดสินค้า", exact: true }),
@@ -178,13 +173,6 @@ test("the reference product and long product names fit desktop, tablet and mobil
       const inquiry = (await page.locator(".detail-inquiry").boundingBox())!;
       expect(inquiry.x).toBeGreaterThanOrEqual(0);
       expect(inquiry.x + inquiry.width).toBeLessThanOrEqual(width);
-      if (slug === "10639" && [390, 1440].includes(width)) {
-        await page.locator(".detail-service").screenshot({
-          path: test.info().outputPath(`product-contact-${width}.png`),
-          animations: "disabled",
-        });
-        await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-      }
       if (slug === "10639" && [390, 932].includes(width)) {
         const main = (await page.locator(".product-detail").boundingBox())!;
         const grid = (await page.locator(".detail-grid").boundingBox())!;

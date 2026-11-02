@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, Check, ChevronDown, CircleHelp, Phone } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ChevronDown, CircleHelp } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
 import { getProduct, getProducts } from "@/features/catalog/server/product-repository";
 import { getSettings } from "@/features/cms/server/documents";
@@ -68,74 +68,76 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const detailGroups = groupProductDetails(attributeRows);
   return (
     <main id="main-content" className="product-detail container">
-      <Link href="/products" className="text-link back-link">
-        <ArrowLeft size={16} /> ผลิตภัณฑ์ทั้งหมด
-      </Link>
-      <div className="detail-grid">
-        <ProductGallery
-          key={`${product.id}:${product.image}`}
-          images={presentation.images}
-          primaryImage={product.image}
-          preferFirst={Boolean(product.media)}
-          name={product.name}
-          model={
-            product.id === "acs30-jc21" || product.sourceId === "10609"
-              ? {
-                  src: "/models/acs30-jc21.glb",
-                  poster: "/images/products/acs30-jc21-cutout.png",
-                }
-              : undefined
-          }
-        />
-        <div className="detail-copy">
-          <h1>{product.name}</h1>
-          {summary.highlights.length > 0 && (
-            <ul className="detail-highlights" aria-label="จุดเด่นสินค้า">
-              {summary.highlights.map((text) => (
-                <li key={text}>{text}</li>
-              ))}
-            </ul>
-          )}
-          {summary.weighing && (
-            <table className="detail-weighing" aria-label="พิกัดและค่าอ่านละเอียด">
-              <thead>
-                <tr>
-                  <th scope="col">พิกัดน้ำหนักสูงสุด</th>
-                  <th scope="col">
-                    ค่าอ่านละเอียด
-                    <Tooltip content="ค่าละเอียด คือหน่วยย่อยที่สุดที่หน้าจอเครื่องชั่งแสดงได้ เช่น ค่าละเอียด 1 กรัม จะแสดงน้ำหนักเพิ่มหรือลดทีละ 1 กรัม">
-                      <button type="button" className="spec-help" aria-label="ค่าละเอียดคืออะไร">
-                        <CircleHelp size={16} aria-hidden="true" />
-                      </button>
-                    </Tooltip>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{summary.weighing.capacity}</td>
-                  <td>{summary.weighing.readability}</td>
-                </tr>
-              </tbody>
-            </table>
-          )}
-          {product.price != null ? (
-            <p className="detail-price">
-              {new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(
-                product.price,
-              )}
-            </p>
-          ) : null}
-          <a
-            href={site.line}
-            target="_blank"
-            rel="noreferrer"
-            className="button button-red detail-inquiry"
-          >
-            สอบถามราคาและรายละเอียด
-          </a>
+      <section className="product-overview" aria-label="ภาพรวมสินค้า">
+        <Link href="/products" className="text-link back-link">
+          <ArrowLeft size={16} /> ผลิตภัณฑ์ทั้งหมด
+        </Link>
+        <div className="detail-grid">
+          <ProductGallery
+            key={`${product.id}:${product.image}`}
+            images={presentation.images}
+            primaryImage={product.image}
+            preferFirst={Boolean(product.media)}
+            name={product.name}
+            model={
+              product.id === "acs30-jc21" || product.sourceId === "10609"
+                ? {
+                    src: "/models/acs30-jc21.glb",
+                    poster: "/images/products/acs30-jc21-cutout.png",
+                  }
+                : undefined
+            }
+          />
+          <div className="detail-copy">
+            <h1>{product.name}</h1>
+            {summary.highlights.length > 0 && (
+              <ul className="detail-highlights" aria-label="จุดเด่นสินค้า">
+                {summary.highlights.map((text) => (
+                  <li key={text}>{text}</li>
+                ))}
+              </ul>
+            )}
+            {summary.weighing && (
+              <table className="detail-weighing" aria-label="พิกัดและค่าอ่านละเอียด">
+                <thead>
+                  <tr>
+                    <th scope="col">พิกัดน้ำหนักสูงสุด</th>
+                    <th scope="col">
+                      ค่าอ่านละเอียด
+                      <Tooltip content="ค่าละเอียด คือหน่วยย่อยที่สุดที่หน้าจอเครื่องชั่งแสดงได้ เช่น ค่าละเอียด 1 กรัม จะแสดงน้ำหนักเพิ่มหรือลดทีละ 1 กรัม">
+                        <button type="button" className="spec-help" aria-label="ค่าละเอียดคืออะไร">
+                          <CircleHelp size={16} aria-hidden="true" />
+                        </button>
+                      </Tooltip>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{summary.weighing.capacity}</td>
+                    <td>{summary.weighing.readability}</td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
+            {product.price != null ? (
+              <p className="detail-price">
+                {new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(
+                  product.price,
+                )}
+              </p>
+            ) : null}
+            <a
+              href={site.line}
+              target="_blank"
+              rel="noreferrer"
+              className="button button-red detail-inquiry"
+            >
+              สอบถามราคาและรายละเอียด
+            </a>
+          </div>
         </div>
-      </div>
+      </section>
       <section className="product-information" aria-labelledby="product-information-title">
         <div className="section-heading">
           <h2 id="product-information-title">รายละเอียดสินค้า</h2>
@@ -172,25 +174,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           productName={product.name}
           channelUrl={productVideoCatalog.channel.url}
         />
-        <div className="detail-service">
-          <div className="detail-service-copy">
-            <a className="detail-phone" href={site.phoneHref}>
-              <Phone size={18} aria-hidden="true" /> {site.phone}
-            </a>
-            <p className="detail-note">
-              <Check size={16} aria-hidden="true" /> ให้คำปรึกษาและดูแลหลังการขายโดยทีม Sunford
-            </p>
-            <small>รายละเอียดอาจเปลี่ยนแปลง กรุณายืนยันสเปกและราคาล่าสุดกับทีมงาน</small>
-          </div>
-          <a
-            className="text-link source-link"
-            href="https://sunfordshop.com/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            เยี่ยมชมเว็บไซต์ Sunford Shop <ArrowUpRight size={16} aria-hidden="true" />
-          </a>
-        </div>
       </section>
       <div className="related-products">
         <div className="section-heading">
