@@ -6,6 +6,7 @@ export type HeroSlide = {
   name: string;
   title: string;
   description: string;
+  descriptionOverride?: string;
   image: string;
   ribbonImage: string;
   href: string;
@@ -59,6 +60,7 @@ export function heroSlideData(products: Product[], slides: HeroSettings["slides"
         title: slide.title || `SUNFORD ${product?.name ?? "PRECISION"}`,
         description:
           slide.description || product?.subtitle || "เครื่องชั่งและโซลูชัน เพื่อทุกความเป็นไปได้",
+        descriptionOverride: slide.description || undefined,
         image:
           slide.image ||
           (product

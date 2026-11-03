@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+// Historical Hero 3D interaction contract, explicitly replaced by the image studio.
+test.skip(
+  true,
+  "Retired homepage 3D/bubbles/ribbon; replacement coverage: hero-scene.spec.ts and hero-header-scroll.spec.ts. Product-page 3D remains covered by product-model.spec.ts.",
+);
+
 test.use({ launchOptions: { args: ["--enable-unsafe-swiftshader"] } });
 
 test("all bubbles rise smoothly and return to their random origin, including the profit badge", async ({

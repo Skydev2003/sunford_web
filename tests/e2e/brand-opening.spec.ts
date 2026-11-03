@@ -82,7 +82,8 @@ async function expectReleased(page: Page) {
   });
   await expect(page.locator("[data-brand-opening]")).toBeHidden();
   await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-opening", "false");
-  await expect(page.locator(".hero-bubble-layer")).toHaveAttribute("data-opening", "false");
+  await expect(page.locator(".hero-bubble-layer")).toHaveCount(0);
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-ready", "true");
   expect(
     await page.evaluate(() => ({
       bodyOverflow: getComputedStyle(document.body).overflow,
@@ -160,14 +161,16 @@ for (const viewport of [
           ["symbol", "name"].includes(frame.phase) && (frame.bubblesVisible || frame.bubblePopup),
       ),
     ).toEqual([]);
-    await expect(page.locator('.hero-bubble-layer ul[data-popup="true"]')).toHaveCount(1);
-    await expect(page.locator(".hero-bubble-layer .hero-feature-pop").first()).toBeVisible();
+    await expect(page.locator("[data-hero-scene]")).toBeVisible();
+    await expect(page.locator(".hero-bubble-layer, model-viewer")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
     await page.screenshot({ path: test.info().outputPath(`brand-revealed-${viewport.width}.png`) });
-    await page.getByRole("button", { name: "แสดง FEH5KS", exact: true }).click();
-    await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "FEH5KS");
+    await expect(page.locator("[data-hero-product]")).toHaveAttribute(
+      "href",
+      "/products/acs30-jc21",
+    );
     expect(errors).toEqual([]);
   });
 }
@@ -190,8 +193,9 @@ test("reduced motion shows an immediately usable homepage", async ({ page }) => 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expectReleased(page);
   expect((await openingFrames(page)).some((frame) => frame.covered)).toBe(false);
-  await page.getByRole("button", { name: "แสดง FEH5KS", exact: true }).click();
-  await expect(page.locator(".hero-cinematic")).toHaveAttribute("data-active-product", "FEH5KS");
+  await expect(page.locator("[data-hero-product]")).toHaveAttribute("href", "/products/acs30-jc21");
+  await page.locator("[data-hero-product]").focus();
+  await expect(page.locator("[data-hero-product]")).toBeFocused();
 });
 
 for (const exit of ["Escape", "Tab", "resize", "reduced motion"] as const) {
@@ -225,7 +229,11 @@ test("without JavaScript the opening cannot cover or lock the site", async ({
     await page.goto("/");
     await expect(page.locator("[data-brand-opening]")).toBeHidden();
     await expect(
-      page.getByRole("heading", { name: "SUNFORD", exact: true, level: 1 }),
+      page.getByRole("heading", {
+        name: "เครื่องชั่ง SUNFORD สำหรับธุรกิจของคุณ",
+        exact: true,
+        level: 1,
+      }),
     ).toBeVisible();
     await expect(page.locator(".site-header .brand")).toBeVisible();
     expect(
@@ -263,8 +271,14 @@ test("failed hydration releases the opening, header and Hero through the CSS fal
   await expect(opening).toBeHidden({ timeout: 10000 });
   await expect(page.locator(".site-header .brand")).toBeVisible();
   await expect(page.locator(".site-header .desktop-nav")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".hero-main")).toHaveCSS("visibility", "visible");
-  await expect(page.getByRole("heading", { name: "SUNFORD", exact: true, level: 1 })).toBeVisible();
+  await expect(page.locator(".hero-main:visible")).toHaveCSS("visibility", "visible");
+  await expect(
+    page.getByRole("heading", {
+      name: "เครื่องชั่ง SUNFORD สำหรับธุรกิจของคุณ",
+      exact: true,
+      level: 1,
+    }),
+  ).toBeVisible();
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe(
     "visible",
   );

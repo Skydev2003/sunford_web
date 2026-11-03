@@ -2,7 +2,7 @@ import styles from "./brand-film.module.css";
 
 export function BrandFilm() {
   return (
-    <section className={styles.section} aria-label="วิดีโอ Sunford">
+    <section id="brand-film" className={styles.section} aria-label="วิดีโอ Sunford">
       <video
         className={styles.video}
         width={1920}

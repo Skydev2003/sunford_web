@@ -30,11 +30,19 @@ export default async function Home() {
     getSettings("site", defaultSite),
   ]);
   const { slides, ...heroCopy } = hero;
+  const [featured] = heroSlideData(products, slides);
   return (
     <main id="main-content">
       <Hero
         brand={{ logo: site.logo, name: site.name }}
-        slides={heroSlideData(products, slides)}
+        product={
+          featured && {
+            name: featured.name,
+            image: featured.image,
+            href: featured.href,
+            descriptionOverride: featured.descriptionOverride,
+          }
+        }
         showAnnouncement={false}
         settings={{
           ...heroCopy,
