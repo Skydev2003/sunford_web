@@ -5,9 +5,12 @@ test("story cards use supplied illustrations, original article facts and source 
   page,
 }) => {
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+    timeout: 15000,
+  });
   const section = page.locator("#stories");
   const track = section.locator(".stories-track");
-  const cards = track.locator(":scope > a");
+  const cards = track.locator(':scope > a[data-focus-copy="1"]');
   await section.scrollIntoViewIfNeeded();
   const articles = sourcePages
     .filter((article) => article.kind === "article" && !article.path.startsWith("/business/"))
@@ -55,9 +58,12 @@ test("three centered story cards stay clear while outer cards become progressive
 }) => {
   await page.setViewportSize({ width: 1440, height: 950 });
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+    timeout: 15000,
+  });
   const section = page.locator("#stories");
   const track = section.locator(".stories-track");
-  const cards = track.locator(":scope > a");
+  const cards = track.locator(':scope > a[data-focus-copy="1"]');
   await track.scrollIntoViewIfNeeded();
   for (const index of [0, 1, 2]) {
     await expect
@@ -72,7 +78,7 @@ test("three centered story cards stay clear while outer cards become progressive
   expect(originalBlur).toBeGreaterThan(2.9);
   const layout = await track.evaluate((element) => {
     const view = element.getBoundingClientRect();
-    const nodes = Array.from(element.children)
+    const nodes = Array.from(element.querySelectorAll('[data-focus-copy="1"]'))
       .slice(0, 3)
       .map((card) => card.getBoundingClientRect());
     return {

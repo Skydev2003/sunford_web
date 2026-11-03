@@ -2,8 +2,7 @@ import { defaultSite } from "@/features/cms/data/settings";
 import type { SiteSettings } from "@/features/cms/types";
 import { cacheLife, cacheTag } from "next/cache";
 import { getSettings } from "@/features/cms/server/documents";
-import { patchSection, sectionValue } from "@/features/cms/server/section-tree";
-import { FloatingContact } from "@/components/contact/floating-contact";
+import { patchSection } from "@/features/cms/server/section-tree";
 import { ContactBannerVisibility } from "@/components/contact/contact-banner-visibility";
 import { CustomerCoverage } from "@/features/customer-map/components/customer-coverage";
 import Image from "next/image";
@@ -11,7 +10,6 @@ import Link from "next/link";
 import { ArrowUp, ArrowUpRight, Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { sunford } from "@/features/home/data/brand";
-import { BackgroundMotionToggle } from "./site-background";
 
 export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnabled = true) {
   return (
@@ -89,7 +87,6 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
           <nav className="footer-links" aria-label="เกี่ยวกับ Sunford">
             <h3>รู้จักซันฟอร์ด</h3>
             <Link href="/#story">เรื่องราวของเรา</Link>
-            <Link href="/#solutions">โซลูชันธุรกิจ</Link>
             <Link href={sunford.erp}>ERP</Link>
             <Link href={sunford.mes}>MES</Link>
             <a href="https://www.sunford.co" target="_blank" rel="noreferrer">
@@ -187,7 +184,6 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
           <a href="#main-content">
             กลับด้านบน <ArrowUp size={15} />
           </a>
-          <BackgroundMotionToggle />
         </div>
       </div>
     </footer>
@@ -200,14 +196,5 @@ export async function Footer() {
   cacheTag("cms");
   const site = await getSettings("site", defaultSite);
   const edits = await getSettings("section:footer", { customerMapEnabled: true });
-  return (
-    <>
-      {patchSection(FooterTemplate(site, edits.customerMapEnabled), edits)}
-      <FloatingContact
-        site={site}
-        expertLabel={sectionValue(edits, "text", "คุยกับผู้เชี่ยวชาญ ").trim()}
-        expertHref={sectionValue(edits, "href", site.line)}
-      />
-    </>
-  );
+  return patchSection(FooterTemplate(site, edits.customerMapEnabled), edits);
 }

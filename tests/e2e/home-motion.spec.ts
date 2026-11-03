@@ -15,13 +15,16 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto("/");
+    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+      timeout: 15000,
+    });
     const sections = page.locator('[data-home-motion="reveal"]');
-    await expect(sections).toHaveCount(8);
+    await expect(sections).toHaveCount(5);
     await expect(sections.first()).toHaveAttribute("data-motion-enabled", "true");
     await page.evaluate(() => {
       document.documentElement.style.scrollBehavior = "auto";
     });
-    const highlights = sections.filter({ has: page.locator(".product-spotlight, #solutions") });
+    const highlights = sections.filter({ has: page.locator(".product-spotlight, #story") });
     await expect(highlights).toHaveCount(2);
     for (const section of await highlights.all()) {
       const geometry = await section.evaluate((element) => ({
@@ -44,7 +47,9 @@ for (const viewport of [
       const playback = section.getByRole("button");
       if (await playback.count()) {
         await playback.scrollIntoViewIfNeeded();
-        await expect(playback).toHaveCSS("width", "44px");
+        const control = (await playback.boundingBox())!;
+        expect(control.width).toBeGreaterThanOrEqual(44);
+        expect(control.height).toBeGreaterThanOrEqual(44);
         expect(
           await playback.evaluate((e) => {
             const rect = e.getBoundingClientRect();
@@ -79,7 +84,7 @@ for (const viewport of [
   });
 }
 
-test("spotlight loops beyond 30 seconds and manual pause survives viewport and visibility changes", async ({
+test("spotlight loops without playback controls and respects visibility and motion preferences", async ({
   page,
 }) => {
   test.setTimeout(60000);
@@ -103,17 +108,10 @@ test("spotlight loops beyond 30 seconds and manual pause survives viewport and v
     .poll(async () => Number(await video.getAttribute("data-played-seconds")), { timeout: 25000 })
     .toBeGreaterThan(35);
   await expect(video).toHaveJSProperty("paused", false);
-  const pause = page.getByRole("button", { name: "หยุดวิดีโอสินค้า", exact: true });
-  expect(await pause.evaluate((e) => e.closest("a"))).toBeNull();
-  await pause.focus();
-  await page.keyboard.press("Enter");
-  await expect(video).toHaveJSProperty("paused", true);
-  const held = await video.evaluate((e: HTMLVideoElement) => e.currentTime);
+  await expect(page.getByRole("button", { name: /^(หยุด|เล่น)วิดีโอสินค้า$/ })).toHaveCount(0);
   await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
-  await video.scrollIntoViewIfNeeded();
   await expect(video).toHaveJSProperty("paused", true);
-  expect(await video.evaluate((e: HTMLVideoElement) => e.currentTime)).toBe(held);
-  await page.getByRole("button", { name: "เล่นวิดีโอสินค้า", exact: true }).click();
+  await video.scrollIntoViewIfNeeded();
   await expect(video).toHaveJSProperty("paused", false);
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", { configurable: true, value: true });

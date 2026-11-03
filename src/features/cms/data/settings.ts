@@ -3,7 +3,7 @@ import { sunford } from "@/features/home/data/brand";
 export const defaultHero: HeroSettings = {
   announcement: "เทคโนโลยีการชั่งและระบบจัดการข้อมูล เพื่อธุรกิจของคุณ",
   announcementLabel: "ให้เราช่วยเลือก",
-  announcementHref: "#support",
+  announcementHref: "/service",
   tagline: "ความแม่นยำ ที่เรียบง่ายกว่า.",
   primaryLabel: "ดูเพิ่มเติม",
   secondaryLabel: "ค้นพบผลิตภัณฑ์",

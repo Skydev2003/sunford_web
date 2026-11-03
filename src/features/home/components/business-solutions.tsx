@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Link2, Monitor, PackageCheck } from "lucide-react";
+import { ArrowRight, Monitor, PackageCheck } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";
 import { solutionImages } from "../data/business-solutions";
 import styles from "./business-solutions.module.css";
@@ -107,22 +107,6 @@ export function BusinessSolutionsTemplate() {
           </Link>
         </div>
       </div>
-
-      <nav className={styles.links} aria-label="โซลูชันและซอฟต์แวร์ที่เกี่ยวข้อง">
-        <span>
-          <Link2 size={17} aria-hidden="true" />
-          เชื่อมต่อกับ Sunford
-        </span>
-        <Link href={sunford.erp}>
-          โซลูชัน ERP <ArrowRight size={14} aria-hidden="true" />
-        </Link>
-        <Link href={sunford.mes}>
-          โซลูชัน MES <ArrowRight size={14} aria-hidden="true" />
-        </Link>
-        <Link href={sunford.downloads}>
-          ดาวน์โหลดซอฟต์แวร์ <ArrowRight size={14} aria-hidden="true" />
-        </Link>
-      </nav>
     </section>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import type { SiteSettings } from "@/features/cms/types";
 import { SunfordMascot } from "./sunford-mascot";
 export function FloatingContact(props: {
@@ -6,5 +7,6 @@ export function FloatingContact(props: {
   expertLabel: string;
   expertHref: string;
 }) {
-  return <SunfordMascot {...props} />;
+  const [dismissed, setDismissed] = useState(false);
+  return dismissed ? null : <SunfordMascot {...props} onDismiss={() => setDismissed(true)} />;
 }

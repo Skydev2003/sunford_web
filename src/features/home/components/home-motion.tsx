@@ -28,7 +28,8 @@ export function HomeMotion({ children }: { children: ReactNode }) {
     const sync = () => {
       element.dataset.motionEnabled = String(!preference.matches);
       if (preference.matches) {
-        animations.forEach((animation) => animation.stop());
+        animations.forEach((animation) => animation.cancel());
+        animations.clear();
         targets.forEach((target) => {
           target.style.opacity = "1";
           target.style.transform = "none";
@@ -66,7 +67,8 @@ export function HomeMotion({ children }: { children: ReactNode }) {
     sync();
     return () => {
       observer.disconnect();
-      animations.forEach((animation) => animation.stop());
+      animations.forEach((animation) => animation.cancel());
+      animations.clear();
       preference.removeEventListener("change", sync);
     };
   }, [animate, stage]);

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { getCategories } from "@/features/cms/server/categories";
 import { CategoriesProvider } from "@/features/cms/components/categories-provider";
+import { navigationStartScript } from "@/components/layout/navigation-start";
 
 const sunfordFont = localFont({
   src: [
@@ -21,7 +22,15 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const categories = await getCategories();
   return (
-    <html lang="th" className={sunfordFont.variable} data-scroll-behavior="smooth">
+    <html
+      lang="th"
+      className={sunfordFont.variable}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
+      <head>
+        <script id="navigation-start" dangerouslySetInnerHTML={{ __html: navigationStartScript }} />
+      </head>
       <body>
         <CategoriesProvider categories={categories}>{children}</CategoriesProvider>
       </body>

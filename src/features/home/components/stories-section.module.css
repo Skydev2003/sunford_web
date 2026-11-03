@@ -1,9 +1,9 @@
 .section {
-  --story-window-width: min(1120px, calc(100vw - 96px));
+  --story-window-width: min(960px, calc(100vw - 96px));
   --story-card-width: calc((var(--story-window-width) - 32px) / 3);
   --story-gap: 16px;
   overflow: hidden;
-  padding-block: 44px 36px;
+  padding-block: 32px 28px;
   background:
     radial-gradient(ellipse at 90% 100%, #ffe8f0, transparent 50%),
     linear-gradient(#ffffff40 60%, #fff8fb80);
@@ -14,8 +14,9 @@
   justify-content: space-between;
   gap: 24px;
   width: calc(100% - 96px);
-  max-width: 1240px;
+  max-width: 1180px;
   margin: 0 auto 22px;
+  text-align: left;
 }
 .eyebrow {
   color: #ff1644;
@@ -26,7 +27,7 @@
 .heading h2 {
   margin-top: 9px;
   color: #142033;
-  font-size: clamp(26px, 2.8vw, 36px);
+  font-size: clamp(26px, 2.5vw, 32px);
   font-weight: 600;
   letter-spacing: -0.7px;
   line-height: 1.4;
@@ -113,7 +114,7 @@
   font-weight: 500;
   line-height: 1.5;
 }
-.card:nth-child(3n) .badge {
+.card[data-focus-accent] .badge {
   background: #f77995;
   color: #fff;
 }

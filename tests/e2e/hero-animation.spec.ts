@@ -81,7 +81,7 @@ test("ACS camera moves while text stays still and pauses outside the viewport", 
   await page.waitForTimeout(250);
   expect(await orbit()).toBe(paused);
   await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
-  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  await page.locator("#story").scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute("data-moving", "false");
   await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute("data-moving", "true");

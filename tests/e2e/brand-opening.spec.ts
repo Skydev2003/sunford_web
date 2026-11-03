@@ -167,9 +167,10 @@ for (const viewport of [
       true,
     );
     await page.screenshot({ path: test.info().outputPath(`brand-revealed-${viewport.width}.png`) });
-    await expect(page.locator("[data-hero-product]")).toHaveAttribute(
-      "href",
-      "/products/acs30-jc21",
+    await expect(page.locator("[data-hero-logo-space]")).toBeEmpty();
+    await expect(page.locator("[data-hero-scene] video source")).toHaveAttribute(
+      "src",
+      "/videos/sunford-web.mp4",
     );
     expect(errors).toEqual([]);
   });
@@ -193,9 +194,9 @@ test("reduced motion shows an immediately usable homepage", async ({ page }) => 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expectReleased(page);
   expect((await openingFrames(page)).some((frame) => frame.covered)).toBe(false);
-  await expect(page.locator("[data-hero-product]")).toHaveAttribute("href", "/products/acs30-jc21");
-  await page.locator("[data-hero-product]").focus();
-  await expect(page.locator("[data-hero-product]")).toBeFocused();
+  const consultation = page.locator('[data-hero-scene] a[href="/contact-us"]');
+  await consultation.focus();
+  await expect(consultation).toBeFocused();
 });
 
 for (const exit of ["Escape", "Tab", "resize", "reduced motion"] as const) {
@@ -230,7 +231,7 @@ test("without JavaScript the opening cannot cover or lock the site", async ({
     await expect(page.locator("[data-brand-opening]")).toBeHidden();
     await expect(
       page.getByRole("heading", {
-        name: "เครื่องชั่ง SUNFORD สำหรับธุรกิจของคุณ",
+        name: "เครื่องชั่ง สำหรับธุรกิจของคุณ",
         exact: true,
         level: 1,
       }),
@@ -250,19 +251,20 @@ test("the opening stays on the homepage and preserves anchored visits", async ({
   await page.goto("/products");
   await expect(page.locator("[data-brand-opening]")).toHaveCount(0);
   await recordOpening(page);
-  await page.goto("/#support", { waitUntil: "domcontentloaded" });
+  await page.goto("/#stories", { waitUntil: "domcontentloaded" });
   await expectReleased(page);
   expect(
     (await openingFrames(page)).some((frame) =>
       ["symbol", "name", "docking"].includes(frame.phase),
     ),
   ).toBe(false);
-  await expect(page.locator("#support")).toBeInViewport();
+  await expect(page.locator("#stories")).toBeInViewport();
 });
 
 test("failed hydration releases the opening, header and Hero through the CSS fallback", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.route(/\/_next\/static\/.*\.js(?:\?|$)/, (route) => route.abort());
   await page.goto("/", { waitUntil: "domcontentloaded" });
   expect(await page.evaluate(() => matchMedia("(scripting: enabled)").matches)).toBe(true);
@@ -274,7 +276,7 @@ test("failed hydration releases the opening, header and Hero through the CSS fal
   await expect(page.locator(".hero-main:visible")).toHaveCSS("visibility", "visible");
   await expect(
     page.getByRole("heading", {
-      name: "เครื่องชั่ง SUNFORD สำหรับธุรกิจของคุณ",
+      name: "เครื่องชั่ง สำหรับธุรกิจของคุณ",
       exact: true,
       level: 1,
     }),

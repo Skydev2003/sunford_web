@@ -1,0 +1,708 @@
+- generic [ref=e2]:
+  - link "ข้ามไปยังเนื้อหา" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - button "ค้นหาสินค้า" [ref=e7] [cursor=pointer]
+      - button "เปรียบเทียบสินค้า" [ref=e11] [cursor=pointer]
+      - button "เปิดเมนู" [ref=e19] [cursor=pointer]
+  - main [ref=e21]:
+    - region "เครื่องชั่ง สำหรับธุรกิจของคุณ" [ref=e27]
+    - region [ref=e29]:
+      - generic [ref=e30]:
+        - heading "แข็งแรงทนทาน ใช้งานง่าย มีประสิทธิภาพ" [level=2] [ref=e31]
+        - button "เล่นวิดีโอ แข็งแรงทนทาน ใช้งานง่าย มีประสิทธิภาพ | SUNFORD Biz Talk EP.16" [ref=e33] [cursor=pointer]
+    - region [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - heading "SUNFORD JC21" [level=2] [ref=e43]
+          - paragraph [ref=e44]: ชั่งน้ำหนัก คำนวณราคา อ่านชัดทั้งสองด้าน
+        - link "ดูรายละเอียด ACS-30-JC21" [ref=e46] [cursor=pointer]:
+          - /url: /products/acs30-jc21
+          - generic "วิดีโอสินค้า SUNFORD ACS-30-JC21" [ref=e47]
+    - region [ref=e50]:
+      - generic [ref=e51]:
+        - heading "เลือก หมวดหมู่สินค้า" [level=2] [ref=e52]
+        - generic [ref=e53]:
+          - region "เครื่องชั่งดิจิทัล" [ref=e54]:
+            - img "เครื่องชั่งดิจิทัล" [ref=e55]
+          - generic [ref=e56]:
+            - paragraph [ref=e57]: เลือกผลิตภัณฑ์และโซลูชัน SUNFORD ที่เหมาะกับการใช้งานของคุณ
+            - generic "หมวดหมู่สินค้า SUNFORD" [ref=e58]:
+              - article [ref=e59]:
+                - button "สำรวจ เครื่องชั่งดิจิทัล" [pressed] [ref=e60] [cursor=pointer]:
+                  - generic [ref=e61]: เครื่องชั่งดิจิทัล
+                  - generic [ref=e69]: เครื่องชั่งดิจิทัล แม่นยำ ทนทาน ครอบคลุมทุกการใช้งานจากโรงงานถึงบ้าน ใช้งานง่าย ตอบโจทย์ทุกความต้องการ
+              - article [ref=e70]:
+                - button "สำรวจ เครื่องชั่งอัจฉริยะ" [ref=e71] [cursor=pointer]:
+                  - generic [ref=e72]: เครื่องชั่งอัจฉริยะ
+                  - generic [ref=e79]: เครื่องชั่งอัจฉริยะ จัดการง่ายในยุคดิจิทัล รองรับการประมวลผล จัดเก็บข้อมูล และเชื่อมต่ออุปกรณ์อื่น เหมาะสำหรับธุรกิจที่ต้องการความแม่นยำและคล่องตัว
+              - article [ref=e80]:
+                - button "สำรวจ อุปกรณ์เสริม" [ref=e81] [cursor=pointer]:
+                  - generic [ref=e82]: อุปกรณ์เสริม
+                  - generic [ref=e88]: เพิ่มศักยภาพระบบด้วยอุปกรณ์เสริมคุณภาพ เชื่อมต่อเครื่องพิมพ์ จอแสดงผล และระบบ POS ได้อย่างลงตัว รองรับทุกการใช้งานทางธุรกิจ
+              - article [ref=e89]:
+                - button "สำรวจ แอปพลิเคชันและซอฟต์แวร์" [ref=e90] [cursor=pointer]:
+                  - generic [ref=e91]: แอปพลิเคชันและซอฟต์แวร์
+                  - generic [ref=e97]: จัดการง่าย แสดงผลครบ จบด้วยซอฟต์แวร์เดียว รองรับการติดตาม วิเคราะห์ และรายงานแบบเรียลไทม์ เพื่อการตัดสินใจที่แม่นยำ
+        - generic [ref=e98]:
+          - paragraph [ref=e99]: สินค้าและโซลูชัน ในหมวดนี้
+          - generic "สินค้าและโซลูชัน ในหมวดนี้" [ref=e100]:
+            - generic [ref=e101]:
+              - link "ACS-30-JC21" [ref=e102] [cursor=pointer]:
+                - /url: /products/acs30-jc21
+              - link "RLS1100" [ref=e103] [cursor=pointer]:
+                - /url: /products/rls1100
+              - link "FEH5KS" [ref=e104] [cursor=pointer]:
+                - /url: /products/feh5ks
+              - link "TIS-150-JC62Z" [ref=e105] [cursor=pointer]:
+                - /url: /products/tis150-jc62z
+              - link "WPS10KS" [ref=e106] [cursor=pointer]:
+                - /url: /products/wps10ks
+              - link "POS1100-A" [ref=e107] [cursor=pointer]:
+                - /url: /products/pos1100
+              - link "SUNFORD TCS-150-AW31" [ref=e108] [cursor=pointer]:
+                - /url: /products/TCS-150-AW31
+              - link "แท่นเหล็ก จอแอลอีดี 150กก./50ก." [ref=e109] [cursor=pointer]:
+                - /url: /products/FCS-150-SW31
+              - link "เครื่องชั่งดิจิทัลสแตนเลส ไม่กันน้ำ กันสนิม จอแอลอีดี 150กก./5ก." [ref=e110] [cursor=pointer]:
+                - /url: /products/TSS-150-SW31S
+              - link "เครื่องชั่งกันน้ำ กันสนิม 150กก./50ก." [ref=e111] [cursor=pointer]:
+                - /url: /products/CSS-150-SW31
+              - link "เครื่องชั่งนับจำนวน แท่นเหล็ก-เสาสแตนเลส จอแอลซีดี 30กก./1ก." [ref=e112] [cursor=pointer]:
+                - /url: /products/TMS-30-AC31S
+              - link "เครื่องชั่งน้ำหนักและคำนวณราคา" [ref=e113] [cursor=pointer]:
+                - /url: /products/ACS-30-JC21
+              - link "เครื่องชั่งน้ำหนักและคำนวณราคา ชนิดกันน้ำ" [ref=e114] [cursor=pointer]:
+                - /url: /products/ACS-30-JC81
+              - link "เครื่องชั่งน้ำหนัก พิมพ์ฉลากสินค้า SUNFORD RLS1100 30 กิโลกรัม พิมพ์ป้ายราคาบาร์โค้ด/ฉลากบาร์โค้ด/ฉลากรายการสินค้า" [ref=e115] [cursor=pointer]:
+                - /url: /products/RLS1100
+              - link "SUNFORD C1 เครื่องชั่งดิจิตอลความละเอียดสูง 1000กรัม/0.01กรัม" [ref=e116] [cursor=pointer]:
+                - /url: /products/C1-Precision-Balance
+              - link "SUNFORD FEH5KS เครื่องชั่งน้ำหนักระบบดิจิตอล เกรดอุตสาหกรรม" [ref=e117] [cursor=pointer]:
+                - /url: /products/FEH5KS
+              - link "VR5000" [ref=e118] [cursor=pointer]:
+                - /url: /products/10617
+              - link "WPK5000" [ref=e119] [cursor=pointer]:
+                - /url: /products/10668
+              - link "VL1500S" [ref=e120] [cursor=pointer]:
+                - /url: /products/10629
+              - link "Fitdays" [ref=e121] [cursor=pointer]:
+                - /url: /products/10624
+              - link "TGS600S" [ref=e122] [cursor=pointer]:
+                - /url: /products/10667
+              - link "AVS-25-K1" [ref=e123] [cursor=pointer]:
+                - /url: /products/10613
+              - link "VC5000" [ref=e124] [cursor=pointer]:
+                - /url: /products/10628
+              - link "Hi CoFE" [ref=e125] [cursor=pointer]:
+                - /url: /products/10646
+              - link "C1" [ref=e126] [cursor=pointer]:
+                - /url: /products/10664
+              - link "C5" [ref=e127] [cursor=pointer]:
+                - /url: /products/10665
+              - link "R3" [ref=e128] [cursor=pointer]:
+                - /url: /products/10680
+              - link "R6" [ref=e129] [cursor=pointer]:
+                - /url: /products/10681
+              - link "S1" [ref=e130] [cursor=pointer]:
+                - /url: /products/10661
+              - link "S2" [ref=e131] [cursor=pointer]:
+                - /url: /products/10662
+              - link "S3" [ref=e132] [cursor=pointer]:
+                - /url: /products/10666
+              - link "ACS-30-JC21ET" [ref=e133] [cursor=pointer]:
+                - /url: /products/10614
+              - link "ACS-30-JC21EL" [ref=e134] [cursor=pointer]:
+                - /url: /products/10643
+              - link "ACS-30-FC31" [ref=e135] [cursor=pointer]:
+                - /url: /products/10612
+              - link "ACS-30-JC91" [ref=e136] [cursor=pointer]:
+                - /url: /products/10619
+              - link "ACS-30-JE21" [ref=e137] [cursor=pointer]:
+                - /url: /products/10631
+              - link "PCS-60-FC11" [ref=e138] [cursor=pointer]:
+                - /url: /products/10674
+              - link "ACS-30-FE31" [ref=e139] [cursor=pointer]:
+                - /url: /products/10632
+              - link "ACS-30-JC81" [ref=e140] [cursor=pointer]:
+                - /url: /products/10618
+              - link "ACS-30-JE81" [ref=e141] [cursor=pointer]:
+                - /url: /products/10641
+              - link "TCS-60-JC62Z" [ref=e142] [cursor=pointer]:
+                - /url: /products/10656
+              - link "TCS-150-JC62Z" [ref=e143] [cursor=pointer]:
+                - /url: /products/10616
+              - link "TCS-60-JE62ZR" [ref=e144] [cursor=pointer]:
+                - /url: /products/10620
+              - link "TCS-150-JE62ZR" [ref=e145] [cursor=pointer]:
+                - /url: /products/10640
+              - link "TIS-150-JE62ZR" [ref=e146] [cursor=pointer]:
+                - /url: /products/10856
+              - link "ACS-30-JE11" [ref=e147] [cursor=pointer]:
+                - /url: /products/10621
+              - link "KAH5000S" [ref=e148] [cursor=pointer]:
+                - /url: /products/10625
+              - link "FEH5000" [ref=e149] [cursor=pointer]:
+                - /url: /products/10607
+              - link "KBS5000" [ref=e150] [cursor=pointer]:
+                - /url: /products/10673
+              - link "FEH10KS" [ref=e151] [cursor=pointer]:
+                - /url: /products/10635
+              - link "WPS6KS" [ref=e152] [cursor=pointer]:
+                - /url: /products/10671
+              - link "KBS6000S" [ref=e153] [cursor=pointer]:
+                - /url: /products/10672
+              - link "WSS30KS-LCD" [ref=e154] [cursor=pointer]:
+                - /url: /products/10863
+              - link "WSS30KS-LED" [ref=e155] [cursor=pointer]:
+                - /url: /products/10670
+              - link "ACS-30-AC31S" [ref=e156] [cursor=pointer]:
+                - /url: /products/10875
+              - link "ACS-3-AC31S" [ref=e157] [cursor=pointer]:
+                - /url: /products/10874
+              - link "TMS-60-AW31" [ref=e158] [cursor=pointer]:
+                - /url: /products/10630
+              - link "TMS-30-AC31" [ref=e159] [cursor=pointer]:
+                - /url: /products/10651
+              - link "FCS-60-AW31" [ref=e160] [cursor=pointer]:
+                - /url: /products/10655
+              - link "TCS-150-AW31" [ref=e161] [cursor=pointer]:
+                - /url: /products/10634
+              - link "TCS-500-AW31" [ref=e162] [cursor=pointer]:
+                - /url: /products/10638
+              - link "TCS-300-AW31" [ref=e163] [cursor=pointer]:
+                - /url: /products/10636
+              - link "FCS-300-SW31" [ref=e164] [cursor=pointer]:
+                - /url: /products/10654
+              - link "FCS-150-SW31" [ref=e165] [cursor=pointer]:
+                - /url: /products/10653
+              - link "VCS-300-SW31" [ref=e166] [cursor=pointer]:
+                - /url: /products/10685
+              - link "TSS-60-SW31" [ref=e167] [cursor=pointer]:
+                - /url: /products/10647
+              - link "TSS-300-SW31" [ref=e168] [cursor=pointer]:
+                - /url: /products/10649
+              - link "TSS-150-SW31" [ref=e169] [cursor=pointer]:
+                - /url: /products/10648
+              - link "FLS60KS" [ref=e170] [cursor=pointer]:
+                - /url: /products/10861
+              - link "FLS150KS" [ref=e171] [cursor=pointer]:
+                - /url: /products/10862
+              - link "PCS-60-FC11 (SUS304 PAN)" [ref=e172] [cursor=pointer]:
+                - /url: /products/10683
+              - link "POS1100-B" [ref=e173] [cursor=pointer]:
+                - /url: /products/10659
+              - link "CCS-150-JC62Z" [ref=e174] [cursor=pointer]:
+                - /url: /products/10867
+              - link "TCS-150-SW31F" [ref=e175] [cursor=pointer]:
+                - /url: /products/10865
+              - link [aria-hidden] [ref=e176] [cursor=pointer]:
+                - /url: /products/acs30-jc21
+              - link [aria-hidden] [ref=e177] [cursor=pointer]:
+                - /url: /products/rls1100
+              - link [aria-hidden] [ref=e178] [cursor=pointer]:
+                - /url: /products/feh5ks
+              - link [aria-hidden] [ref=e179] [cursor=pointer]:
+                - /url: /products/tis150-jc62z
+              - link [aria-hidden] [ref=e180] [cursor=pointer]:
+                - /url: /products/wps10ks
+              - link [aria-hidden] [ref=e181] [cursor=pointer]:
+                - /url: /products/pos1100
+              - link [aria-hidden] [ref=e182] [cursor=pointer]:
+                - /url: /products/TCS-150-AW31
+              - link [aria-hidden] [ref=e183] [cursor=pointer]:
+                - /url: /products/FCS-150-SW31
+              - link [aria-hidden] [ref=e184] [cursor=pointer]:
+                - /url: /products/TSS-150-SW31S
+              - link [aria-hidden] [ref=e185] [cursor=pointer]:
+                - /url: /products/CSS-150-SW31
+              - link [aria-hidden] [ref=e186] [cursor=pointer]:
+                - /url: /products/TMS-30-AC31S
+              - link [aria-hidden] [ref=e187] [cursor=pointer]:
+                - /url: /products/ACS-30-JC21
+              - link [aria-hidden] [ref=e188] [cursor=pointer]:
+                - /url: /products/ACS-30-JC81
+              - link [aria-hidden] [ref=e189] [cursor=pointer]:
+                - /url: /products/RLS1100
+              - link [aria-hidden] [ref=e190] [cursor=pointer]:
+                - /url: /products/C1-Precision-Balance
+              - link [aria-hidden] [ref=e191] [cursor=pointer]:
+                - /url: /products/FEH5KS
+              - link [aria-hidden] [ref=e192] [cursor=pointer]:
+                - /url: /products/10617
+              - link [aria-hidden] [ref=e193] [cursor=pointer]:
+                - /url: /products/10668
+              - link [aria-hidden] [ref=e194] [cursor=pointer]:
+                - /url: /products/10629
+              - link [aria-hidden] [ref=e195] [cursor=pointer]:
+                - /url: /products/10624
+              - link [aria-hidden] [ref=e196] [cursor=pointer]:
+                - /url: /products/10667
+              - link [aria-hidden] [ref=e197] [cursor=pointer]:
+                - /url: /products/10613
+              - link [aria-hidden] [ref=e198] [cursor=pointer]:
+                - /url: /products/10628
+              - link [aria-hidden] [ref=e199] [cursor=pointer]:
+                - /url: /products/10646
+              - link [aria-hidden] [ref=e200] [cursor=pointer]:
+                - /url: /products/10664
+              - link [aria-hidden] [ref=e201] [cursor=pointer]:
+                - /url: /products/10665
+              - link [aria-hidden] [ref=e202] [cursor=pointer]:
+                - /url: /products/10680
+              - link [aria-hidden] [ref=e203] [cursor=pointer]:
+                - /url: /products/10681
+              - link [aria-hidden] [ref=e204] [cursor=pointer]:
+                - /url: /products/10661
+              - link [aria-hidden] [ref=e205] [cursor=pointer]:
+                - /url: /products/10662
+              - link [aria-hidden] [ref=e206] [cursor=pointer]:
+                - /url: /products/10666
+              - link [aria-hidden] [ref=e207] [cursor=pointer]:
+                - /url: /products/10614
+              - link [aria-hidden] [ref=e208] [cursor=pointer]:
+                - /url: /products/10643
+              - link [aria-hidden] [ref=e209] [cursor=pointer]:
+                - /url: /products/10612
+              - link [aria-hidden] [ref=e210] [cursor=pointer]:
+                - /url: /products/10619
+              - link [aria-hidden] [ref=e211] [cursor=pointer]:
+                - /url: /products/10631
+              - link [aria-hidden] [ref=e212] [cursor=pointer]:
+                - /url: /products/10674
+              - link [aria-hidden] [ref=e213] [cursor=pointer]:
+                - /url: /products/10632
+              - link [aria-hidden] [ref=e214] [cursor=pointer]:
+                - /url: /products/10618
+              - link [aria-hidden] [ref=e215] [cursor=pointer]:
+                - /url: /products/10641
+              - link [aria-hidden] [ref=e216] [cursor=pointer]:
+                - /url: /products/10656
+              - link [aria-hidden] [ref=e217] [cursor=pointer]:
+                - /url: /products/10616
+              - link [aria-hidden] [ref=e218] [cursor=pointer]:
+                - /url: /products/10620
+              - link [aria-hidden] [ref=e219] [cursor=pointer]:
+                - /url: /products/10640
+              - link [aria-hidden] [ref=e220] [cursor=pointer]:
+                - /url: /products/10856
+              - link [aria-hidden] [ref=e221] [cursor=pointer]:
+                - /url: /products/10621
+              - link [aria-hidden] [ref=e222] [cursor=pointer]:
+                - /url: /products/10625
+              - link [aria-hidden] [ref=e223] [cursor=pointer]:
+                - /url: /products/10607
+              - link [aria-hidden] [ref=e224] [cursor=pointer]:
+                - /url: /products/10673
+              - link [aria-hidden] [ref=e225] [cursor=pointer]:
+                - /url: /products/10635
+              - link [aria-hidden] [ref=e226] [cursor=pointer]:
+                - /url: /products/10671
+              - link [aria-hidden] [ref=e227] [cursor=pointer]:
+                - /url: /products/10672
+              - link [aria-hidden] [ref=e228] [cursor=pointer]:
+                - /url: /products/10863
+              - link [aria-hidden] [ref=e229] [cursor=pointer]:
+                - /url: /products/10670
+              - link [aria-hidden] [ref=e230] [cursor=pointer]:
+                - /url: /products/10875
+              - link [aria-hidden] [ref=e231] [cursor=pointer]:
+                - /url: /products/10874
+              - link [aria-hidden] [ref=e232] [cursor=pointer]:
+                - /url: /products/10630
+              - link [aria-hidden] [ref=e233] [cursor=pointer]:
+                - /url: /products/10651
+              - link [aria-hidden] [ref=e234] [cursor=pointer]:
+                - /url: /products/10655
+              - link [aria-hidden] [ref=e235] [cursor=pointer]:
+                - /url: /products/10634
+              - link [aria-hidden] [ref=e236] [cursor=pointer]:
+                - /url: /products/10638
+              - link [aria-hidden] [ref=e237] [cursor=pointer]:
+                - /url: /products/10636
+              - link [aria-hidden] [ref=e238] [cursor=pointer]:
+                - /url: /products/10654
+              - link [aria-hidden] [ref=e239] [cursor=pointer]:
+                - /url: /products/10653
+              - link [aria-hidden] [ref=e240] [cursor=pointer]:
+                - /url: /products/10685
+              - link [aria-hidden] [ref=e241] [cursor=pointer]:
+                - /url: /products/10647
+              - link [aria-hidden] [ref=e242] [cursor=pointer]:
+                - /url: /products/10649
+              - link [aria-hidden] [ref=e243] [cursor=pointer]:
+                - /url: /products/10648
+              - link [aria-hidden] [ref=e244] [cursor=pointer]:
+                - /url: /products/10861
+              - link [aria-hidden] [ref=e245] [cursor=pointer]:
+                - /url: /products/10862
+              - link [aria-hidden] [ref=e246] [cursor=pointer]:
+                - /url: /products/10683
+              - link [aria-hidden] [ref=e247] [cursor=pointer]:
+                - /url: /products/10659
+              - link [aria-hidden] [ref=e248] [cursor=pointer]:
+                - /url: /products/10867
+              - link [aria-hidden] [ref=e249] [cursor=pointer]:
+                - /url: /products/10865
+              - link [aria-hidden] [ref=e250] [cursor=pointer]:
+                - /url: /products/acs30-jc21
+              - link [aria-hidden] [ref=e251] [cursor=pointer]:
+                - /url: /products/rls1100
+              - link [aria-hidden] [ref=e252] [cursor=pointer]:
+                - /url: /products/feh5ks
+              - link [aria-hidden] [ref=e253] [cursor=pointer]:
+                - /url: /products/tis150-jc62z
+              - link [aria-hidden] [ref=e254] [cursor=pointer]:
+                - /url: /products/wps10ks
+              - link [aria-hidden] [ref=e255] [cursor=pointer]:
+                - /url: /products/pos1100
+              - link [aria-hidden] [ref=e256] [cursor=pointer]:
+                - /url: /products/TCS-150-AW31
+              - link [aria-hidden] [ref=e257] [cursor=pointer]:
+                - /url: /products/FCS-150-SW31
+              - link [aria-hidden] [ref=e258] [cursor=pointer]:
+                - /url: /products/TSS-150-SW31S
+              - link [aria-hidden] [ref=e259] [cursor=pointer]:
+                - /url: /products/CSS-150-SW31
+              - link [aria-hidden] [ref=e260] [cursor=pointer]:
+                - /url: /products/TMS-30-AC31S
+              - link [aria-hidden] [ref=e261] [cursor=pointer]:
+                - /url: /products/ACS-30-JC21
+              - link [aria-hidden] [ref=e262] [cursor=pointer]:
+                - /url: /products/ACS-30-JC81
+              - link [aria-hidden] [ref=e263] [cursor=pointer]:
+                - /url: /products/RLS1100
+              - link [aria-hidden] [ref=e264] [cursor=pointer]:
+                - /url: /products/C1-Precision-Balance
+              - link [aria-hidden] [ref=e265] [cursor=pointer]:
+                - /url: /products/FEH5KS
+              - link [aria-hidden] [ref=e266] [cursor=pointer]:
+                - /url: /products/10617
+              - link [aria-hidden] [ref=e267] [cursor=pointer]:
+                - /url: /products/10668
+              - link [aria-hidden] [ref=e268] [cursor=pointer]:
+                - /url: /products/10629
+              - link [aria-hidden] [ref=e269] [cursor=pointer]:
+                - /url: /products/10624
+              - link [aria-hidden] [ref=e270] [cursor=pointer]:
+                - /url: /products/10667
+              - link [aria-hidden] [ref=e271] [cursor=pointer]:
+                - /url: /products/10613
+              - link [aria-hidden] [ref=e272] [cursor=pointer]:
+                - /url: /products/10628
+              - link [aria-hidden] [ref=e273] [cursor=pointer]:
+                - /url: /products/10646
+              - link [aria-hidden] [ref=e274] [cursor=pointer]:
+                - /url: /products/10664
+              - link [aria-hidden] [ref=e275] [cursor=pointer]:
+                - /url: /products/10665
+              - link [aria-hidden] [ref=e276] [cursor=pointer]:
+                - /url: /products/10680
+              - link [aria-hidden] [ref=e277] [cursor=pointer]:
+                - /url: /products/10681
+              - link [aria-hidden] [ref=e278] [cursor=pointer]:
+                - /url: /products/10661
+              - link [aria-hidden] [ref=e279] [cursor=pointer]:
+                - /url: /products/10662
+              - link [aria-hidden] [ref=e280] [cursor=pointer]:
+                - /url: /products/10666
+              - link [aria-hidden] [ref=e281] [cursor=pointer]:
+                - /url: /products/10614
+              - link [aria-hidden] [ref=e282] [cursor=pointer]:
+                - /url: /products/10643
+              - link [aria-hidden] [ref=e283] [cursor=pointer]:
+                - /url: /products/10612
+              - link [aria-hidden] [ref=e284] [cursor=pointer]:
+                - /url: /products/10619
+              - link [aria-hidden] [ref=e285] [cursor=pointer]:
+                - /url: /products/10631
+              - link [aria-hidden] [ref=e286] [cursor=pointer]:
+                - /url: /products/10674
+              - link [aria-hidden] [ref=e287] [cursor=pointer]:
+                - /url: /products/10632
+              - link [aria-hidden] [ref=e288] [cursor=pointer]:
+                - /url: /products/10618
+              - link [aria-hidden] [ref=e289] [cursor=pointer]:
+                - /url: /products/10641
+              - link [aria-hidden] [ref=e290] [cursor=pointer]:
+                - /url: /products/10656
+              - link [aria-hidden] [ref=e291] [cursor=pointer]:
+                - /url: /products/10616
+              - link [aria-hidden] [ref=e292] [cursor=pointer]:
+                - /url: /products/10620
+              - link [aria-hidden] [ref=e293] [cursor=pointer]:
+                - /url: /products/10640
+              - link [aria-hidden] [ref=e294] [cursor=pointer]:
+                - /url: /products/10856
+              - link [aria-hidden] [ref=e295] [cursor=pointer]:
+                - /url: /products/10621
+              - link [aria-hidden] [ref=e296] [cursor=pointer]:
+                - /url: /products/10625
+              - link [aria-hidden] [ref=e297] [cursor=pointer]:
+                - /url: /products/10607
+              - link [aria-hidden] [ref=e298] [cursor=pointer]:
+                - /url: /products/10673
+              - link [aria-hidden] [ref=e299] [cursor=pointer]:
+                - /url: /products/10635
+              - link [aria-hidden] [ref=e300] [cursor=pointer]:
+                - /url: /products/10671
+              - link [aria-hidden] [ref=e301] [cursor=pointer]:
+                - /url: /products/10672
+              - link [aria-hidden] [ref=e302] [cursor=pointer]:
+                - /url: /products/10863
+              - link [aria-hidden] [ref=e303] [cursor=pointer]:
+                - /url: /products/10670
+              - link [aria-hidden] [ref=e304] [cursor=pointer]:
+                - /url: /products/10875
+              - link [aria-hidden] [ref=e305] [cursor=pointer]:
+                - /url: /products/10874
+              - link [aria-hidden] [ref=e306] [cursor=pointer]:
+                - /url: /products/10630
+              - link [aria-hidden] [ref=e307] [cursor=pointer]:
+                - /url: /products/10651
+              - link [aria-hidden] [ref=e308] [cursor=pointer]:
+                - /url: /products/10655
+              - link [aria-hidden] [ref=e309] [cursor=pointer]:
+                - /url: /products/10634
+              - link [aria-hidden] [ref=e310] [cursor=pointer]:
+                - /url: /products/10638
+              - link [aria-hidden] [ref=e311] [cursor=pointer]:
+                - /url: /products/10636
+              - link [aria-hidden] [ref=e312] [cursor=pointer]:
+                - /url: /products/10654
+              - link [aria-hidden] [ref=e313] [cursor=pointer]:
+                - /url: /products/10653
+              - link [aria-hidden] [ref=e314] [cursor=pointer]:
+                - /url: /products/10685
+              - link [aria-hidden] [ref=e315] [cursor=pointer]:
+                - /url: /products/10647
+              - link [aria-hidden] [ref=e316] [cursor=pointer]:
+                - /url: /products/10649
+              - link [aria-hidden] [ref=e317] [cursor=pointer]:
+                - /url: /products/10648
+              - link [aria-hidden] [ref=e318] [cursor=pointer]:
+                - /url: /products/10861
+              - link [aria-hidden] [ref=e319] [cursor=pointer]:
+                - /url: /products/10862
+              - link [aria-hidden] [ref=e320] [cursor=pointer]:
+                - /url: /products/10683
+              - link [aria-hidden] [ref=e321] [cursor=pointer]:
+                - /url: /products/10659
+              - link [aria-hidden] [ref=e322] [cursor=pointer]:
+                - /url: /products/10867
+              - link [aria-hidden] [ref=e323] [cursor=pointer]:
+                - /url: /products/10865
+    - generic [ref=e327]:
+      - region "ภาพการใช้งานจริงของลูกค้า Sunford" [ref=e328]:
+        - generic [ref=e329]:
+          - button "ดูภาพลูกค้าถัดไป คลิกหรือลากเพื่อเปลี่ยนภาพ" [ref=e334]:
+            - generic [ref=e336]:
+              - img "ผู้ประกอบการร้านค้ากับเครื่องชั่ง Sunford ในการทำงานจริง"
+            - generic [ref=e337]: REAL PEOPLE. REAL POSSIBILITIES.
+          - generic "แนวคิดจากซันฟอร์ด":
+            - paragraph:
+              - generic: ชั่งง่าย
+              - generic: ขายสบาย
+              - generic: พร้อมทุกวัน
+          - generic [ref=e338]:
+            - generic:
+              - paragraph:
+                - generic: คู่ใจร้านค้า
+                - generic: ทุกการซื้อขาย
+            - generic:
+              - paragraph:
+                - generic: ทุกรอยยิ้ม
+                - generic: คือแรงใจเรา
+        - paragraph [ref=e339]: 1 / 4 · ร้านค้าของผู้ประกอบการ
+      - generic [ref=e340]:
+        - paragraph [ref=e341]: BEHIND EVERY MEASUREMENT
+        - heading "เบื้องหลังทุกตัวเลข คือความตั้งใจของคุณ" [level=2] [ref=e342]: เบื้องหลังทุกตัวเลขคือความตั้งใจของคุณ
+        - paragraph [ref=e343]: Sunford เริ่มต้นจากความตั้งใจที่จะช่วยให้ผู้ประกอบการ โรงงาน ร้านค้าปลีก และผู้ค้ารายย่อย พัฒนาธุรกิจด้วยเทคโนโลยีเครื่องชั่งดิจิทัล
+        - paragraph [ref=e344]: เราให้ความสำคัญกับคุณภาพ ความทนทาน การใช้งานที่ไม่ซับซ้อน และบริการหลังการขาย เพื่อเป็นส่วนหนึ่งของโอกาสและการเติบโตของคุณ
+        - generic [ref=e345]:
+          - generic [ref=e346]:
+            - strong [ref=e351]: เชื่อถือได้
+            - paragraph [ref=e352]: ใช้ได้ทุกวัน
+          - generic [ref=e353]:
+            - strong [ref=e359]: ดูแลโดยทีมงาน
+            - paragraph [ref=e360]: มืออาชีพ
+          - generic [ref=e361]:
+            - strong [ref=e366]: พัฒนาอย่างต่อเนื่อง
+            - paragraph [ref=e367]: เพื่อธุรกิจของคุณ
+        - generic [ref=e368]:
+          - link "รู้จักเรื่องราวของ Sunford" [ref=e369] [cursor=pointer]:
+            - /url: /about-us
+          - generic [ref=e370]:
+            - strong [ref=e371]: SUNFORD
+            - generic [ref=e372]: Precision you can trust.
+    - region [ref=e375]:
+      - generic [ref=e376]:
+        - generic [ref=e377]:
+          - paragraph [ref=e378]: SUNFORD STORIES
+          - heading "เรื่องราวของคนทำธุรกิจ." [level=2] [ref=e379]
+          - paragraph [ref=e380]: แรงบันดาลใจ ความรู้ และเทคนิคดี ๆ เพื่อให้ธุรกิจของคุณเติบโตไปด้วยกัน
+        - link "ดูเรื่องราวทั้งหมด" [ref=e381] [cursor=pointer]:
+          - /url: /news-and-activities
+      - region "เรื่องราวของคนทำธุรกิจ." [ref=e385]:
+        - link "ภาพประกอบการชั่งส่วนผสมอาหารจากภาพที่แนบ เคล็ดลับธุรกิจ Sunford Stories บทความ รวมความรู้ เทคนิค และเรื่องราวการใช้งานเครื่องชั่งจาก Sunford เพื่อคนทำธุรกิจ อ่านเพิ่มเติม" [ref=e386]:
+          - /url: /blogs/editorial
+          - generic [ref=e387]:
+            - img "ภาพประกอบการชั่งส่วนผสมอาหารจากภาพที่แนบ" [ref=e389]
+            - generic [ref=e390]: เคล็ดลับธุรกิจ
+          - generic [ref=e391]:
+            - generic [ref=e392]: Sunford Stories
+            - heading "บทความ" [level=3] [ref=e393]
+            - paragraph [ref=e394]: รวมความรู้ เทคนิค และเรื่องราวการใช้งานเครื่องชั่งจาก Sunford เพื่อคนทำธุรกิจ
+            - generic [ref=e395]: อ่านเพิ่มเติม
+        - link "ภาพประกอบเครื่องชั่งกับผักสดจากภาพที่แนบ แนะนำสินค้า 15 ก.ย. 2568 เครื่องชั่งในบ้าน จำเป็นแค่ไหน? รู้จักเครื่องชั่งในบ้าน กับบทบาทในการติดตามน้ำหนักและการดูแลตัวเอง อ่านเพิ่มเติม" [ref=e399]:
+          - /url: /blogs/editorial/do-you-need-a-home-scale
+          - generic [ref=e400]:
+            - img "ภาพประกอบเครื่องชั่งกับผักสดจากภาพที่แนบ" [ref=e402]
+            - generic [ref=e403]: แนะนำสินค้า
+          - generic [ref=e404]:
+            - time [ref=e405]: 15 ก.ย. 2568
+            - heading "เครื่องชั่งในบ้าน จำเป็นแค่ไหน?" [level=3] [ref=e406]
+            - paragraph [ref=e407]: รู้จักเครื่องชั่งในบ้าน กับบทบาทในการติดตามน้ำหนักและการดูแลตัวเอง
+            - generic [ref=e408]: อ่านเพิ่มเติม
+        - link "จอ LCD และจอ LED แบบไหน? จะดีกว่ากัน คู่มือการเลือกซื้อ 13 ต.ค. 2568 จอ LCD และจอ LED แบบไหน? จะดีกว่ากัน เปรียบเทียบจอ LCD และ LED ทั้งการแสดงผลและการใช้งาน เพื่อเลือกให้เหมาะกับคุณ อ่านเพิ่มเติม" [ref=e412]:
+          - /url: /blogs/editorial/lcd-vs-led-displays
+          - generic [ref=e413]:
+            - img "จอ LCD และจอ LED แบบไหน? จะดีกว่ากัน" [ref=e414]
+            - generic [ref=e415]: คู่มือการเลือกซื้อ
+          - generic [ref=e416]:
+            - time [ref=e417]: 13 ต.ค. 2568
+            - heading "จอ LCD และจอ LED แบบไหน? จะดีกว่ากัน" [level=3] [ref=e418]
+            - paragraph [ref=e419]: เปรียบเทียบจอ LCD และ LED ทั้งการแสดงผลและการใช้งาน เพื่อเลือกให้เหมาะกับคุณ
+            - generic [ref=e420]: อ่านเพิ่มเติม
+        - link "เลขน้ำหนักมาได้ไง ทั้งที่ไม่ได้ชั่ง? ความรู้ผลิตภัณฑ์ 14 ต.ค. 2568 เลขน้ำหนักมาได้ไง ทั้งที่ไม่ได้ชั่ง? ทำความเข้าใจอาการลมกวนที่ทำให้ตัวเลขน้ำหนักเปลี่ยน และแนวทางลดผลกระทบต่อเครื่องชั่ง อ่านเพิ่มเติม" [ref=e424]:
+          - /url: /blogs/editorial/why-scales-show-weight-without-a-load
+          - generic [ref=e425]:
+            - img "เลขน้ำหนักมาได้ไง ทั้งที่ไม่ได้ชั่ง?" [ref=e426]
+            - generic [ref=e427]: ความรู้ผลิตภัณฑ์
+          - generic [ref=e428]:
+            - time [ref=e429]: 14 ต.ค. 2568
+            - heading "เลขน้ำหนักมาได้ไง ทั้งที่ไม่ได้ชั่ง?" [level=3] [ref=e430]
+            - paragraph [ref=e431]: ทำความเข้าใจอาการลมกวนที่ทำให้ตัวเลขน้ำหนักเปลี่ยน และแนวทางลดผลกระทบต่อเครื่องชั่ง
+            - generic [ref=e432]: อ่านเพิ่มเติม
+        - link "ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่ ความรู้จาก Sunford 14 ต.ค. 2568 ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่ 1. ชาร์จอย่างไรให้แบตเตอรี่มีอายุใช้งานยาวนาน อ่านเพิ่มเติม" [ref=e436]:
+          - /url: /blogs/editorial/battery-charging-guide
+          - generic [ref=e437]:
+            - img "ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่" [ref=e438]
+            - generic [ref=e439]: ความรู้จาก Sunford
+          - generic [ref=e440]:
+            - time [ref=e441]: 14 ต.ค. 2568
+            - heading "ข้อควรทราบเกี่ยวกับการชาร์จแบตเตอรี่" [level=3] [ref=e442]
+            - paragraph [ref=e443]: 1. ชาร์จอย่างไรให้แบตเตอรี่มีอายุใช้งานยาวนาน
+            - generic [ref=e444]: อ่านเพิ่มเติม
+        - link "เอกสารสอบเทียบเครื่องชั่ง ISO 17025 ความรู้จาก Sunford 3 เม.ย. 2569 เอกสารสอบเทียบเครื่องชั่ง ISO 17025 เอกสารสอบเทียบเครื่องชั่ง ISO/IEC 17025 หรือ ใบรับรองการสอบเทียบ (Calibration Certificate) อ่านเพิ่มเติม" [ref=e448]:
+          - /url: /blogs/editorial/iso-17025-scale-calibration
+          - generic [ref=e449]:
+            - img "เอกสารสอบเทียบเครื่องชั่ง ISO 17025" [ref=e450]
+            - generic [ref=e451]: ความรู้จาก Sunford
+          - generic [ref=e452]:
+            - time [ref=e453]: 3 เม.ย. 2569
+            - heading "เอกสารสอบเทียบเครื่องชั่ง ISO 17025" [level=3] [ref=e454]
+            - paragraph [ref=e455]: เอกสารสอบเทียบเครื่องชั่ง ISO/IEC 17025 หรือ ใบรับรองการสอบเทียบ (Calibration Certificate)
+            - generic [ref=e456]: อ่านเพิ่มเติม
+        - 'link "มาตรฐานการป้องกันน้ำและฝุ่นละออง IP Rating ความรู้จาก Sunford 3 เม.ย. 2569 มาตรฐานการป้องกันน้ำและฝุ่นละออง IP Rating มาตรฐานการป้องกันน้ำและฝุ่น (Ingress Protection rating : IEC60529) อ่านเพิ่มเติม" [ref=e460]':
+          - /url: /blogs/editorial/ip-ratings-guide
+          - generic [ref=e461]:
+            - img "มาตรฐานการป้องกันน้ำและฝุ่นละออง IP Rating" [ref=e462]
+            - generic [ref=e463]: ความรู้จาก Sunford
+          - generic [ref=e464]:
+            - time [ref=e465]: 3 เม.ย. 2569
+            - heading "มาตรฐานการป้องกันน้ำและฝุ่นละออง IP Rating" [level=3] [ref=e466]
+            - paragraph [ref=e467]: "มาตรฐานการป้องกันน้ำและฝุ่น (Ingress Protection rating : IEC60529)"
+            - generic [ref=e468]: อ่านเพิ่มเติม
+        - link "เอกสารรับรองชั่งตวงวัด ความรู้จาก Sunford 3 เม.ย. 2569 เอกสารรับรองชั่งตวงวัด หนังสือรับรองจากชั่งตวงวัด (ใบผ่านตรวจรับรอง) อ่านเพิ่มเติม" [ref=e472]:
+          - /url: /blogs/editorial/weights-and-measures-certification
+          - generic [ref=e473]:
+            - img "เอกสารรับรองชั่งตวงวัด" [ref=e474]
+            - generic [ref=e475]: ความรู้จาก Sunford
+          - generic [ref=e476]:
+            - time [ref=e477]: 3 เม.ย. 2569
+            - heading "เอกสารรับรองชั่งตวงวัด" [level=3] [ref=e478]
+            - paragraph [ref=e479]: หนังสือรับรองจากชั่งตวงวัด (ใบผ่านตรวจรับรอง)
+            - generic [ref=e480]: อ่านเพิ่มเติม
+    - region "วิดีโอจาก Sunford" [ref=e486]:
+      - generic [ref=e488]:
+        - paragraph [ref=e489]: WATCH & DISCOVER
+        - heading "วิดีโอจาก Sunford" [level=2] [ref=e490]
+      - region "วิดีโอจาก Sunford" [ref=e492]:
+        - button "เล่นวิดีโอจาก Sunford 1" [ref=e493]:
+          - img "วิดีโอจาก Sunford 1" [ref=e494]
+        - button "เล่นวิดีโอจาก Sunford 2" [ref=e498]:
+          - img "วิดีโอจาก Sunford 2" [ref=e499]
+        - button "เล่นวิดีโอจาก Sunford 3" [ref=e503]:
+          - img "วิดีโอจาก Sunford 3" [ref=e504]
+        - button "เล่นวิดีโอจาก Sunford 4" [ref=e508]:
+          - img "วิดีโอจาก Sunford 4" [ref=e509]
+  - contentinfo [ref=e513]:
+    - generic [ref=e515]:
+      - generic [ref=e516]:
+        - link [ref=e517] [cursor=pointer]:
+          - /url: /
+          - img "SUNFORD" [ref=e518]
+        - paragraph [ref=e519]:
+          - strong [ref=e520]: ความเที่ยงตรง ที่คุณวางใจ
+          - generic [ref=e521]: Precision you can trust.
+        - generic [ref=e522]:
+          - link "03-427-6999" [ref=e523] [cursor=pointer]:
+            - /url: tel:034276999
+          - link "info@sunford.co.th" [ref=e528] [cursor=pointer]:
+            - /url: mailto:info@sunford.co.th
+          - link [ref=e534] [cursor=pointer]:
+            - /url: /contact-us
+            - generic [ref=e539]:
+              - strong [ref=e540]: ศูนย์บริการลูกค้าซันฟอร์ด
+              - generic [ref=e541]: 99 หมู่ 9 ต.บางระกำ อ.บางเลนจ.นครปฐม 73130
+      - navigation "ผลิตภัณฑ์ Sunford" [ref=e542]:
+        - heading "ผลิตภัณฑ์" [level=3] [ref=e543]
+        - link "เครื่องชั่งดิจิทัล" [ref=e544] [cursor=pointer]:
+          - /url: /products
+        - link "อุปกรณ์เสริม" [ref=e545] [cursor=pointer]:
+          - /url: /product/scale-accessories
+        - link "ระบบ POS และอุปกรณ์" [ref=e546] [cursor=pointer]:
+          - /url: /products
+        - link "แอปพลิเคชันและซอฟต์แวร์" [ref=e547] [cursor=pointer]:
+          - /url: /applications-and-softwares
+      - navigation "เกี่ยวกับ Sunford" [ref=e548]:
+        - heading "รู้จักซันฟอร์ด" [level=3] [ref=e549]
+        - link "เรื่องราวของเรา" [ref=e550] [cursor=pointer]:
+          - /url: /#story
+        - link "ERP" [ref=e551] [cursor=pointer]:
+          - /url: /solution/erp
+        - link "MES" [ref=e552] [cursor=pointer]:
+          - /url: /solution/mes
+        - link "เว็บไซต์ Sunford" [ref=e553] [cursor=pointer]:
+          - /url: https://www.sunford.co
+      - generic [ref=e557]:
+        - heading "พร้อมดูแลคุณ" [level=3] [ref=e558]
+        - link "บริการหลังการขาย" [ref=e559] [cursor=pointer]:
+          - /url: /service
+        - link "ลงทะเบียนรับประกัน" [ref=e560] [cursor=pointer]:
+          - /url: /warranty/register
+        - link "ดาวน์โหลดซอฟต์แวร์" [ref=e561] [cursor=pointer]:
+          - /url: /software/download
+        - link "LINE @sunford" [ref=e562] [cursor=pointer]:
+          - /url: https://line.me/R/ti/p/@sunford
+        - generic "ติดตาม Sunford" [ref=e566]:
+          - link "Facebook Messenger Sunford" [ref=e567] [cursor=pointer]:
+            - /url: https://m.me/sunfordthai
+          - link "LINE Sunford" [ref=e570] [cursor=pointer]:
+            - /url: https://line.me/R/ti/p/@sunford
+          - link "YouTube Sunford" [ref=e571] [cursor=pointer]:
+            - /url: https://www.youtube.com/@sunfordthai1215
+          - link "เว็บไซต์ Sunford" [ref=e574] [cursor=pointer]:
+            - /url: https://www.sunford.co/
+      - generic [ref=e578]:
+        - img "แผนที่ประเทศไทย" [ref=e579]
+        - generic [ref=e580]:
+          - heading "ครอบคลุม ทั่วประเทศ" [level=3] [ref=e581]: ครอบคลุมทั่วประเทศ
+          - paragraph [ref=e582]: จัดส่งทั่วประเทศไทยพร้อมทีมดูแลและให้คำปรึกษา
+    - generic [ref=e584]:
+      - generic [ref=e585]: ©2026SUNFORD. All rights reserved.
+      - generic [ref=e586]: Designed for precision. Built for possibility.
+      - link "กลับด้านบน" [ref=e587] [cursor=pointer]:
+        - /url: "#main-content"

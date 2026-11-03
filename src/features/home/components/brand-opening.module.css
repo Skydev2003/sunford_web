@@ -42,18 +42,22 @@
   height: auto;
 }
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  .opening:not([data-phase="complete"]) {
+  :global(html:not([data-home-opening="skip"])) .opening:not([data-phase="complete"]) {
     display: block;
     pointer-events: auto;
     animation: opening-fail-open 0s 7s forwards;
   }
-  body:not(:has(:target)):has(.opening:not([data-phase="complete"])) :global(.site-header .brand) {
+  :global(html:not([data-home-opening="skip"]))
+    body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
+    :global(.site-header .brand) {
     visibility: hidden;
     animation: opening-content-fail-open 0s 7s forwards;
   }
-  body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
+  :global(html:not([data-home-opening="skip"]))
+    body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
     :global(.site-header .desktop-nav),
-  body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
+  :global(html:not([data-home-opening="skip"]))
+    body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
     :global(.site-header .header-actions) {
     opacity: 0;
     animation: opening-content-fail-open 0s 7s forwards;
@@ -66,11 +70,14 @@
   .opening ~ [data-opening] :global(.hero-main) {
     transition: opacity 700ms ease;
   }
-  body:not(:has(:target))
+  :global(html:not([data-home-opening="skip"]))
+    body:not(:has(:target))
     .opening:not([data-phase="reveal"]):not([data-phase="complete"])
     ~ [data-opening="true"]
     :global(.hero-main),
-  body:has(.opening:not([data-phase="complete"])) :global(.hero-bubble-layer[data-opening="true"]) {
+  :global(html:not([data-home-opening="skip"]))
+    body:has(.opening:not([data-phase="complete"]))
+    :global(.hero-bubble-layer[data-opening="true"]) {
     visibility: hidden;
     opacity: 0;
     animation: opening-content-fail-open 0s 7s forwards;

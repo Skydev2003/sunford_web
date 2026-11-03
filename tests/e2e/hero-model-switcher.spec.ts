@@ -304,7 +304,7 @@ test("ribbon loops independently of pinned models and pauses for controls, offsc
     .toBe(true);
   await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(ribbon).toHaveAttribute("data-running", "true");
-  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  await page.locator("#story").scrollIntoViewIfNeeded();
   await expect(ribbon).toHaveAttribute("data-running", "false");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(ribbon).toHaveAttribute("data-static", "true");

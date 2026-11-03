@@ -1,7 +1,7 @@
 import { getSettings } from "@/features/cms/server/documents";
 import { patchSection } from "@/features/cms/server/section-tree";
 import Image from "next/image";
-import { ArrowRight, ShieldCheck, UsersRound, Settings2 } from "lucide-react";
+import { ShieldCheck, UsersRound, Settings2 } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";
 import { BusinessSolutionsTemplate } from "./business-solutions";
 import { CustomerStoryGallery } from "./customer-story-gallery";
@@ -79,7 +79,7 @@ export function BrandStoryTemplate() {
           </div>
           <div className={storyStyles.actions}>
             <a className={storyStyles.storyLink} href={sunford.about}>
-              รู้จักเรื่องราวของ Sunford <ArrowRight size={18} aria-hidden="true" />
+              รู้จักเรื่องราวของ Sunford
             </a>
             <div className={storyStyles.signature}>
               <strong>SUNFORD</strong>

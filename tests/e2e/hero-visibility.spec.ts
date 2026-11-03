@@ -4,7 +4,7 @@ import { mkdtemp, readFile, realpath, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
 
-test("real background tabs stop light without Playwright's forced focus", async ({
+test("real background tabs pause video without Playwright's forced focus", async ({
   playwright,
   baseURL,
 }) => {
@@ -68,22 +68,11 @@ test("real background tabs stop light without Playwright's forced focus", async 
     await other.bringToFront();
     await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe("hidden");
     await expect(scene).toHaveAttribute("data-running", "false");
-    const phase = () =>
-      scene.evaluate((n) =>
-        n
-          .getAnimations({ subtree: true })
-          .filter(
-            (a) =>
-              a instanceof CSSAnimation && /studio-light|reflected-light/.test(a.animationName),
-          )
-          .map((a) => Number(a.currentTime)),
-      );
-    const frozen = await phase();
-    await page.waitForTimeout(250);
-    expect(await phase()).toEqual(frozen);
+    const video = scene.locator("video");
+    await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
     await page.bringToFront();
     await expect(scene).toHaveAttribute("data-running", "true");
-    await expect.poll(phase).not.toEqual(frozen);
+    await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
   } finally {
     if (browser) {
       const session = await browser.newBrowserCDPSession();

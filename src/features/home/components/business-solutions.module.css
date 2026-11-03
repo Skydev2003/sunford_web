@@ -47,7 +47,7 @@
 }
 .grid {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
 }
 .feature {
@@ -218,34 +218,6 @@
 .card:hover .cardArtwork img {
   transform: translateY(-3px);
 }
-.links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  margin-top: 21px;
-  font-size: 11px;
-}
-.links > span,
-.links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  line-height: 1.6;
-}
-.links > span {
-  color: #646b7f;
-}
-.links a {
-  color: var(--red);
-  padding-left: 20px;
-  border-left: 1px solid #d1d4dd;
-}
-.links a:hover {
-  color: #a71025;
-  text-decoration: underline;
-}
 @media (max-width: 1100px) {
   .heading {
     padding-inline: 12px;
@@ -300,9 +272,9 @@
     font-size: 7px;
   }
 }
-@media (max-width: 850px) and (min-width: 721px) {
+@media (max-width: 991.98px) and (min-width: 721px) {
   .grid {
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .featureCopy h3 {
     font-size: 23px;
@@ -409,20 +381,6 @@
   }
   .cardEyebrow {
     font-size: 8px;
-  }
-  .links {
-    justify-content: flex-start;
-    gap: 13px 17px;
-    margin-top: 19px;
-    font-size: 10px;
-  }
-  .links > span {
-    width: 100%;
-  }
-  .links a {
-    padding-left: 0;
-    border-left: 0;
-    gap: 5px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

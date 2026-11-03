@@ -51,6 +51,7 @@ export function BrandOpening({
     const finish = () => {
       if (completed || disposed) return;
       completed = true;
+      document.documentElement.dataset.homeOpening = "skip";
       root.dataset.phase = "complete";
       restore();
       reveal();
@@ -63,7 +64,12 @@ export function BrandOpening({
     };
     const resize = () => finish();
     const start = async () => {
-      if (preference.matches || location.hash || scrollY > 0) {
+      if (
+        document.documentElement.dataset.homeOpening === "skip" ||
+        preference.matches ||
+        location.hash ||
+        scrollY > 0
+      ) {
         finish();
         return;
       }
@@ -162,6 +168,8 @@ export function BrandOpening({
     };
     window.addEventListener("keydown", key);
     window.addEventListener("resize", resize);
+    window.addEventListener("popstate", finish);
+    window.addEventListener("pagehide", finish);
     preference.addEventListener("change", reduce);
     void start();
     return () => {
@@ -169,6 +177,8 @@ export function BrandOpening({
       if (!completed) restore();
       window.removeEventListener("keydown", key);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("popstate", finish);
+      window.removeEventListener("pagehide", finish);
       preference.removeEventListener("change", reduce);
     };
   }, [onReveal]);

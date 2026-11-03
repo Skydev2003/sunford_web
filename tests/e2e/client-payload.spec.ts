@@ -89,7 +89,7 @@ test("mini motion preserves reveal timing, final appearance and live reduced mot
   await page.goto("/");
   const section = page
     .locator('[data-home-motion="reveal"]')
-    .filter({ has: page.locator("#solutions") });
+    .filter({ has: page.locator("#story") });
   await expect(section).toHaveAttribute("data-motion-enabled", "true");
   await page.evaluate(() => {
     document.documentElement.style.scrollBehavior = "auto";

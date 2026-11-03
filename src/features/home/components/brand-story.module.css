@@ -22,14 +22,14 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   align-items: center;
-  gap: clamp(32px, 4vw, 60px);
-  max-width: 1240px;
-  padding-block: 64px 48px;
+  gap: clamp(28px, 3vw, 48px);
+  max-width: 1120px;
+  padding-block: 48px 36px;
 }
 .gallery {
   min-width: 0;
   width: 100%;
-  max-width: 520px;
+  max-width: 440px;
   justify-self: center;
   padding-inline: 36px 42px;
 }

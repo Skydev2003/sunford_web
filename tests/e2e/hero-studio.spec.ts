@@ -105,7 +105,7 @@ test("studio follows the mouse without moving copy and pauses for model dragging
   await page.mouse.click(500, bounds.y + 90);
   await expect(studio.locator("[data-studio-pulse]")).toHaveCount(0);
   await expect(cursor).toHaveCSS("opacity", "1");
-  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  await page.locator("#story").scrollIntoViewIfNeeded();
   await expect(studio).toHaveAttribute("data-running", "false");
   await expect(header).not.toHaveAttribute("data-hero-backdrop", "");
   await expect(header.locator(".nav-glass")).toHaveCSS("background-color", "rgb(247, 247, 249)");

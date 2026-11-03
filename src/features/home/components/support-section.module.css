@@ -1,5 +1,5 @@
 .section {
-  padding: 44px 28px 48px;
+  padding: 32px 28px 36px;
   background: transparent;
   font-family: inherit;
 }
@@ -43,8 +43,8 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 48px;
-  max-width: 1180px;
+  gap: 32px;
+  max-width: 1120px;
   margin: 26px auto 0;
 }
 
@@ -61,7 +61,7 @@
   position: relative;
   display: block;
   width: 100%;
-  max-width: 176px;
+  max-width: 152px;
   aspect-ratio: 400 / 205;
   overflow: hidden;
   isolation: isolate;

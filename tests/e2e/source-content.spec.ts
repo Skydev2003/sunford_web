@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("desktop menu expands over a uniform curtain and closes with Escape", async ({ page }) => {
   await page.goto("/");
-  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  await page.locator("#story").scrollIntoViewIfNeeded();
   const links = page.getByRole("navigation", { name: "เมนูหลัก", exact: true }).getByRole("link");
   const firstLabel = (await links.nth(0).innerText()).trim();
   const secondLabel = (await links.nth(1).innerText()).trim();
