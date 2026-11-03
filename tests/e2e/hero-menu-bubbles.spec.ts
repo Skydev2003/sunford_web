@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+// Historical Hero 3D interaction contract, explicitly replaced by the image studio.
+test.skip(
+  true,
+  "Retired homepage 3D/bubbles/ribbon; replacement coverage: hero-scene.spec.ts and hero-header-scroll.spec.ts. Product-page 3D remains covered by product-model.spec.ts.",
+);
+
 test.use({
   viewport: { width: 1440, height: 900 },
   launchOptions: { args: ["--enable-unsafe-swiftshader"] },
@@ -9,6 +15,9 @@ test("bubbles wait for the entire menu exit before rising again, including a pre
   page,
 }) => {
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+    timeout: 10000,
+  });
   await page.getByRole("button", { name: "แสดง FEH5KS", exact: true }).click();
   const layer = page.locator(".hero-bubble-layer");
   const bubble = layer.locator("li").first();
@@ -61,9 +70,9 @@ test("bubbles wait for the entire menu exit before rising again, including a pre
             backdropVisible: getComputedStyle(backdrop).visibility !== "hidden",
             bubblesVisible: getComputedStyle(bubbles).visibility === "visible",
             opacity: Number(style.opacity),
-            y: style.transform === "none" ? 0 : new DOMMatrixReadOnly(style.transform).m42,
+            y: pop.getBoundingClientRect().y - pop.parentElement!.getBoundingClientRect().y,
           });
-          if (performance.now() - start >= 2400) resolve(frames);
+          if (performance.now() - start >= 4200) resolve(frames);
           else requestAnimationFrame(sample);
         };
         sample();
@@ -78,7 +87,7 @@ test("bubbles wait for the entire menu exit before rising again, including a pre
   const entering = frames.filter((f) => f.bubblesVisible);
   expect(entering.length).toBeGreaterThan(20);
   expect(entering[0].opacity).toBeLessThan(0.2);
-  expect(entering[0].y).toBeGreaterThan(30);
+  expect(Math.abs(entering[0].y)).toBeGreaterThan(30);
   expect(entering.some((f) => f.opacity > 0.2 && f.opacity < 0.9)).toBe(true);
   expect(entering.at(-1)!.opacity).toBe(1);
   expect(entering.at(-1)!.y).toBe(0);
@@ -104,6 +113,9 @@ test("quick reopening cancels a pending reveal; pause, reduced motion and mobile
   page,
 }) => {
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+    timeout: 10000,
+  });
   await page.getByRole("button", { name: "แสดง FEH5KS", exact: true }).click();
   const layer = page.locator(".hero-bubble-layer");
   const links = page.locator(".desktop-nav a");
@@ -148,6 +160,9 @@ test("quick reopening cancels a pending reveal; pause, reduced motion and mobile
 
 test("a product change during menu closure also waits for the backdrop", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+    timeout: 10000,
+  });
   await page.getByRole("button", { name: "แสดง FEH5KS", exact: true }).click();
   await page.locator(".desktop-nav a").first().focus();
   await expect(page.locator(".nav-backdrop")).toHaveCSS("opacity", "1");

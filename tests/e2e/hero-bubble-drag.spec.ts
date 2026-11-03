@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+// Historical Hero 3D interaction contract, explicitly replaced by the image studio.
+test.skip(
+  true,
+  "Retired homepage 3D/bubbles/ribbon; replacement coverage: hero-scene.spec.ts and hero-header-scroll.spec.ts. Product-page 3D remains covered by product-model.spec.ts.",
+);
+
 test.use({ launchOptions: { args: ["--enable-unsafe-swiftshader"] } });
 
 test("all bubbles rise smoothly and return to their random origin, including the profit badge", async ({
@@ -20,9 +26,17 @@ test("all bubbles rise smoothly and return to their random origin, including the
   await expect(pops).toHaveCount(4);
   for (const pop of await pops.all()) {
     await expect(pop).toHaveCSS("animation-name", "hero-feature-pop");
-    await expect(pop).toHaveCSS("animation-duration", "1.2s");
+    const duration = await pop.evaluate((e) => parseFloat(getComputedStyle(e).animationDuration));
+    expect(duration).toBeGreaterThanOrEqual(2.5);
+    expect(duration).toBeLessThanOrEqual(2.9);
   }
-  const firstTransform = await pops.first().evaluate((e) => getComputedStyle(e).transform);
+  const firstTransform = await pops.first().evaluate((e) => {
+    // Sample a fresh entrance even when slow browser assertions outlast the first one.
+    const animation = e.getAnimations()[0];
+    animation.currentTime = 0;
+    animation.play();
+    return getComputedStyle(e).transform;
+  });
   await expect
     .poll(() => pops.first().evaluate((e) => getComputedStyle(e).transform))
     .not.toBe(firstTransform);

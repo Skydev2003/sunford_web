@@ -1,5 +1,17 @@
 # Project Memory
 
+## Verify requested raster resolution against actual image output
+
+- Observed: Six transparent product edits requested as 4K returned native widths of 1536–1774 pixels from the built-in image tool.
+- Root cause: A resolution requested in a natural-language prompt does not guarantee the returned file dimensions.
+- Correct behavior: Inspect actual image metadata before claiming a resolution. Keep native retouched masters, export an explicitly labeled upscaled 3840 × 2160 PNG when needed, preserve alpha, and verify the final dimensions, transparent margins and composites on light/dark backgrounds.
+
+## Keep initial 3D startup out of the brand opening
+
+- Observed: The first model-viewer activation blocked the main thread for roughly 900ms during the brand opening, skipping the S hold and text-reveal samples even while the logo transform continued on the compositor.
+- Root cause: Starting the 3D runtime at homepage mount competed with a short, reference-timed opening sequence.
+- Correct behavior: Keep the existing product image fallback mounted, but defer model-viewer activation and Hero playback until the opening completes. Verify actual animation times and rendered poses in the browser; do not infer geometric phases from delayed JavaScript timers or change timing just to satisfy a sampling probe.
+
 ## Preserve already integrated merge history during releases
 
 - Observed: Unconditional release rebases rewrote an approved merge even though both remote tips were already ancestors, splitting equivalent work into duplicate commit histories and producing repeated historical conflicts.
@@ -209,3 +221,15 @@
 - Observed: Initial English translations for two Thai routes collided with existing ASCII destinations when compared without case.
 - Root cause: Translating each source segment independently did not account for English routes already present in the imported catalogue.
 - Correct behavior: Compare every proposed destination against the complete existing route set using case-insensitive keys before applying a path migration. Give distinct source pages distinct destinations, retain existing ASCII paths and verify redirects and product memberships across all affected pages.
+
+## Separate responsive image cancellation from real image failure
+
+- Observed: A valid Hero image disappeared permanently when the viewport crossed the picture source breakpoint while the image was loading.
+- Root cause: `HTMLImageElement.decode()` rejects when its selected source changes as well as when an image fails. A callback tied only to the product image URL treated that cancellation as a permanent error.
+- Correct behavior: Use load/error events for active requests. When recovering an error that happened before hydration, verify that the image is already complete with zero natural width and still has the same selected source and matching media before declaring failure. Test delayed artwork through desktop-to-mobile-to-desktop resizing.
+
+## Scope homepage styling to the active scene lifecycle
+
+- Observed: Client navigation to the contact page retained the homepage Hero DOM in a hidden router cache. A selector based on any Hero being present would still match on the internal page.
+- Root cause: DOM presence is not proof that a cached route is active.
+- Correct behavior: Let the active Hero own Header attributes and remove them in effect cleanup. Scope shared Header decoration to those active attributes; use DOM-presence fallback only without scripting, when navigation replaces the document. Verify computed Header colors after client-side CTA navigation, partial scrolling and return visits.

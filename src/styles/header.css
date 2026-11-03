@@ -21,14 +21,18 @@
   opacity: 0;
   transition: opacity var(--nav-flyout-duration) var(--nav-ease) 80ms;
 }
-/* The homepage studio is one surface behind the navigation and hero. */
-.site-header[data-hero-backdrop]:not(.is-menu-open) .nav-glass,
-body:has(.hero-no-announcement)
-  .site-header:not([data-hero-backdrop-tracked]):not(.is-menu-open)
-  .nav-glass {
-  background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+/* The active Hero owns this attribute; cached, hidden homepage DOM cannot retain the theme. */
+.site-header[data-hero-backdrop]:not(.is-menu-open) .nav-glass {
+  background: #f4f8fde6;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+@media (scripting: none) {
+  body:has(.hero-studio-scene) .site-header .nav-glass {
+    background: #f4f8fde6;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
 }
 .site-header.is-menu-open .nav-glass::after {
   opacity: 1;

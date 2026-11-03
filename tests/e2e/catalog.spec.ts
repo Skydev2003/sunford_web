@@ -26,34 +26,22 @@ async function loadPageImages(page: import("@playwright/test").Page) {
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
 }
 
-test("homepage introduces Sunford and switches featured products", async ({ page }) => {
+test("homepage introduces Sunford through the configured product and consultation", async ({
+  page,
+}) => {
   test.slow();
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
   const heading = page.getByRole("heading", { level: 1 });
-  const hero = page.locator(".hero-showroom");
-  await expect(heading).toHaveText("SUNFORD");
-  await expect(page.locator(".hero-scene-eyebrow, .hero-scene-brand")).toHaveCount(0);
-  await expect(page.locator(".hero-tagline")).toHaveText("คู่คิดทุกธุรกิจของคุณ");
-  await page.getByRole("button", { name: "แสดง ACS-30-JC21", exact: true }).click();
-  await expect(hero).toHaveAttribute("data-active-product", "ACS-30-JC21");
-  await expect(page.locator(".hero-buttons")).toHaveCount(0);
-  await expect(page.locator(".hero-model-stage model-viewer")).toHaveAttribute(
-    "alt",
-    "โมเดล 3 มิติ SUNFORD ACS-30-JC21",
-  );
-  await page.getByRole("button", { name: "สินค้าถัดไป" }).click();
-  await expect(hero).toHaveAttribute("data-active-product", "FEH5KS");
-  await expect(heading).toHaveText("SUNFORD");
-  await expect(page.locator(".hero-model-stage")).toBeVisible();
-  await expect(page.locator(".hero-model-stage model-viewer")).toHaveCount(1);
-  await page.getByRole("button", { name: "สินค้าก่อนหน้า" }).click();
-  await expect(hero).toHaveAttribute("data-active-product", "ACS-30-JC21");
+  const hero = page.locator("[data-hero-scene]");
+  await expect(heading).toContainText("SUNFORD");
+  await expect(hero.locator("[data-hero-product]")).toHaveAttribute("href", "/products/acs30-jc21");
+  await expect(hero.locator("img")).toHaveAttribute("src", "/images/hero/acs30-jc21-front.webp");
+  await expect(hero.locator('a[href="/contact-us"]')).toBeVisible();
+  await expect(page.locator(".hero-model-stage, model-viewer")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator(".hero-model-stage")).toHaveAttribute("data-status", "ready", {
-    timeout: 30000,
-  });
   await loadPageImages(page);
   await page.screenshot({
     path: test.info().outputPath("sunford-desktop.png"),
