@@ -28,12 +28,26 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>) {
     let active = true;
     const update = () => {
       frame = 0;
+      const opening = surface.querySelector<HTMLElement>("[data-brand-opening]");
+      const hero = surface.querySelector("[data-hero-scene]");
+      if (
+        hero &&
+        opening &&
+        opening.dataset.phase !== "complete" &&
+        document.documentElement.dataset.homeOpening !== "skip"
+      ) {
+        header.dataset.navTone = isLightSurface(hero) ? "light" : "dark";
+        return;
+      }
       const top = header.querySelector(".header-inner")?.getBoundingClientRect();
       const y = (top?.height ?? 58) / 2;
       const lightSamples = [0.25, 0.5, 0.75].filter((fraction) => {
         const content = document
           .elementsFromPoint(innerWidth * fraction, y)
-          .find((element) => element.closest("main, footer"));
+          .find(
+            (element) =>
+              element.closest("main, footer") && !element.closest("[data-brand-opening]"),
+          );
         const section = content?.closest("section, article, main, footer") ?? content;
         return isLightSurface(section);
       }).length;
@@ -47,7 +61,12 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>) {
     const content = new MutationObserver((records) => {
       if (records.some((record) => !header.contains(record.target))) schedule();
     });
-    content.observe(surface, { childList: true, subtree: true });
+    content.observe(surface, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-phase"],
+    });
     const resize = new ResizeObserver(schedule);
     resize.observe(surface);
     window.addEventListener("scroll", schedule, { passive: true });

@@ -81,9 +81,10 @@ export function FocusDragScroll({
       const middle = track!.scrollLeft + track!.clientWidth / 2;
       const step = count > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : cards[0].offsetWidth;
       const clearRadius = matchMedia("(min-width: 721px)").matches ? step : 0;
+      const centers = cards.map((card) => card.offsetLeft + card.offsetWidth / 2);
       let distance = Infinity;
       cards.forEach((card, index) => {
-        const delta = Math.abs(card.offsetLeft + card.offsetWidth / 2 - middle);
+        const delta = Math.abs(centers[index] - middle);
         const fade = Math.max(0, Math.min(1, (delta - clearRadius) / Math.max(1, step)));
         card.style.setProperty("--focus-blur", `${(fade * 3).toFixed(3)}px`);
         card.style.setProperty("--focus-opacity", (1 - fade * 0.38).toFixed(3));

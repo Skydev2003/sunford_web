@@ -195,6 +195,26 @@ test("the opening plays again after reloading the homepage", async ({ page }) =>
   expect(replay.some((frame) => frame.phase === "docking")).toBe(true);
 });
 
+test("a cold font load cannot move the navigation away from the docking logo", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.route("**/*.ttf", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await route.continue();
+  });
+  await recordOpening(page);
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expectReleased(page);
+  await page.evaluate(() => document.fonts.ready);
+  const frames = await openingFrames(page);
+  const docked = frames
+    .filter((frame) => frame.logoTime !== null && frame.logoTime >= 2750)
+    .at(-1)!;
+  const header = await page.locator(".site-header .brand img").boundingBox();
+  expect(docked).toBeDefined();
+  expect(Math.abs(docked.logo!.x - header!.x)).toBeLessThan(1);
+  expect(Math.abs(docked.logo!.y - header!.y)).toBeLessThan(1);
+});
+
 test("reduced motion shows an immediately usable homepage", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await recordOpening(page);

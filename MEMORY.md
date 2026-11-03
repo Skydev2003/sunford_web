@@ -1,5 +1,11 @@
 # Project Memory
 
+## Verify cold-load geometry and normal-motion navigation together
+
+- Observed: Opening correctness tests passed, but slow fonts still moved the Header logo5.25px after its destination was measured; reduced-motion nav tests also missed tone detection sampling the blocking opening as white.
+- Root cause: Stable/warm assets and reduced motion did not exercise the normal opening's overlay, inert content and late font replacement.
+- Correct behavior: Wait for Header fonts before capturing the docking target, sample the actual Hero beneath the opening, and verify normal-motion cold fonts plus final real-header alignment. Use lightweight frame sampling for performance claims; per-frame geometry probes can force layout and are diagnostic only.
+
 ## Keep carousel rebases free of inherited transform transitions
 
 - Observed: Replacing a visible loop copy with its identical original caused a small video-card size/position jump, although logical indices and blur matched.

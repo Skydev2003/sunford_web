@@ -23,6 +23,17 @@ async function beneathNav(page: Page, selector: string) {
 }
 
 for (const width of [1440, 390]) {
+  test(`opening overlay does not change the navigation surface at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "symbol");
+    await expectTone(page, "dark");
+    await expect(page.locator(".site-header")).toHaveCount(1);
+    await expect(page.locator(".nav-glass")).toHaveCount(1);
+    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expectTone(page, "dark");
+  });
+
   test(`navigation follows dark and light sections, including expanded menus at ${width}px`, async ({
     page,
   }) => {

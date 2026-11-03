@@ -83,7 +83,8 @@ export function BrandOpening({
       }
       timers.push(setTimeout(finish, 6000));
       try {
-        await image.decode();
+        // The centered navigation moves when its font replaces the fallback font.
+        await Promise.all([image.decode(), document.fonts.ready]);
       } catch {
         if (!disposed) finish();
         return;

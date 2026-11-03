@@ -1,5 +1,13 @@
 # Project state
 
+## Navbar cold-load stability and layer audit (2026-11-03)
+
+- Confirmed one Header and one 58px nav glass surface with blur12px; the closed menu backdrop adds no blur. The opening is a separate intentional overlay. Disabling nav blur retained startup stalls, so no glass layer was removed.
+- Fixed three measured issues: surface detection now uses the actual Hero during the blocking opening and resamples on phase changes; carousel measurement reads all card centers before writing visual styles; opening waits for logo decoding and Header font metrics before capturing its docking target. A delayed-font regression reproduced a5.25px final logo jump before the fix. Existing 6s release/7s CSS fail-open and reduced-motion/skip behavior remain.
+- Final isolated Node24/webpack snapshot builds420pages. All32 Chrome checks pass (normal opening/tone, delayed fonts, menus/routes, carousel loops/drag/actions, Header scroll, skip/reload/reduced motion/noJS/failure fallback). Actual-write layout instrumentation falls from34 read-after-style-write boundaries in baseline production to≤2 allowed development reconciliations. TypeScript/scoped lint/format/diff pass; all3 application files hash-match tested QA; desktop/mobile screenshots reviewed.
+- Lightweight cold-load frame probes at1440/390px and1440px CPU4 record no gap>50ms between active-animation frames (max34.8/7.7/34.7ms). This is a three-run local headless measurement, not a physical-device or universal frame-rate guarantee; initial parsing/hydration is excluded. Earlier geometry-reading probes themselves force layout and are retained as diagnostics, not evidence of overall FPS improvement.
+- Evidence: `output/navbar-loading-stutter/`. Production QA uses database-free snapshot fallback; no deployed-site write, dependency/environment/CMS/business-data change or qualifying Next.js framework feedback. OwnedQA3152 stopped; user's dev server retained.
+
 ## Deployment formatting excludes browser snapshots (2026-11-03)
 
 - Added `.playwright-cli` to `.prettierignore` after reproducing the release's three YAML formatting failures. The generated files remain unchanged; source formatting checks stay enabled.
