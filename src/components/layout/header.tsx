@@ -2,7 +2,7 @@
 import { Tooltip } from "@/components/ui/tooltip";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, GitCompareArrows, Menu, Search, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, GitCompareArrows, Menu, Search, X } from "lucide-react";
 import {
   type CSSProperties,
   useCallback,
@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import { useCatalogStore } from "@/stores/catalog-store";
+import { useHeaderSurface } from "./use-header-surface";
 
 import {
   defaultNavigation,
@@ -20,6 +21,19 @@ import {
 } from "@/features/cms/data/navigation";
 import { defaultSite } from "@/features/cms/data/settings";
 import type { NavigationItem, SiteSettings } from "@/features/cms/types";
+
+function navigateSamePageHash(event: { preventDefault: () => void }, href: string) {
+  const destination = new URL(href, window.location.href);
+  if (
+    destination.hash &&
+    destination.origin === window.location.origin &&
+    destination.pathname === window.location.pathname &&
+    destination.search === window.location.search
+  ) {
+    event.preventDefault();
+    window.location.hash = destination.hash;
+  }
+}
 
 export function Header({
   items = defaultNavigation,
@@ -30,17 +44,21 @@ export function Header({
   site?: SiteSettings;
   extras?: typeof defaultNavigationExtras;
 }) {
-  const navigation = items.map((item) => ({
-    ...item,
-    links: item.links.map((link) => [link.label, link.href]),
-    groups:
+  const navigation = items.map((item) => {
+    const groups =
       item.href === "/#support"
         ? [
             { label: extras.exploreLabel, links: extras.exploreLinks },
             { label: extras.helpLabel, links: extras.helpLinks },
           ]
-        : (item.groups ?? defaultNavigationGroups[item.href] ?? []),
-  }));
+        : (item.groups ?? defaultNavigationGroups[item.href] ?? []);
+    return {
+      ...item,
+      links: item.links.map((link) => [link.label, link.href]),
+      groups,
+      hasSubmenu: item.links.length > 0 || groups.length > 0,
+    };
+  });
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [displayMenu, setDisplayMenu] = useState(0);
@@ -48,6 +66,7 @@ export function Header({
   const [menuStart, setMenuStart] = useState(0);
   const [switchingMenu, setSwitchingMenu] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
+  useHeaderSurface(headerRef);
   const brandRef = useRef<HTMLAnchorElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -108,6 +127,11 @@ export function Header({
     "--nav-flyout-duration": `${Math.round(menuHeight * 0.5)}ms`,
   } as CSSProperties;
   useEffect(() => {
+    const desktop = matchMedia("(min-width: 1400px)");
+    const closeOnLayoutChange = () => {
+      closeDesktopMenu();
+      setMenuOpen(false);
+    };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         closeDesktopMenu();
@@ -115,8 +139,10 @@ export function Header({
       }
     };
     window.addEventListener("keydown", closeOnEscape);
+    desktop.addEventListener("change", closeOnLayoutChange);
     return () => {
       window.removeEventListener("keydown", closeOnEscape);
+      desktop.removeEventListener("change", closeOnLayoutChange);
       clearTimers();
     };
   }, [clearTimers, closeDesktopMenu]);
@@ -133,6 +159,12 @@ export function Header({
         onMouseLeave={scheduleClose}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
+            if (menuOpen)
+              headerRef.current?.querySelector<HTMLButtonElement>(".menu-toggle")?.focus();
+            else if (activeMenu !== null)
+              headerRef.current
+                ?.querySelectorAll<HTMLAnchorElement>(".desktop-nav a")
+                [activeMenu]?.focus();
             closeDesktopMenu();
             setMenuOpen(false);
           }
@@ -154,11 +186,22 @@ export function Header({
               <Link
                 key={`${index}:${item.href}`}
                 href={item.href}
-                onMouseEnter={() => scheduleOpen(index)}
-                onFocus={() => openDesktopMenu(index)}
+                onMouseEnter={() => (item.hasSubmenu ? scheduleOpen(index) : closeDesktopMenu())}
+                onFocus={() => (item.hasSubmenu ? openDesktopMenu(index) : closeDesktopMenu())}
                 onClick={closeDesktopMenu}
-                aria-expanded={activeMenu === index}
-                aria-controls={activeMenu === index ? "desktop-submenu" : undefined}
+                onKeyDown={(event) => {
+                  if (event.key !== "ArrowDown" || !item.hasSubmenu) return;
+                  event.preventDefault();
+                  openDesktopMenu(index);
+                  requestAnimationFrame(() => {
+                    const links = panelRef.current?.querySelectorAll<HTMLAnchorElement>("a");
+                    Array.from(links ?? [])
+                      .find((link) => link.getClientRects().length > 0)
+                      ?.focus();
+                  });
+                }}
+                aria-expanded={item.hasSubmenu ? activeMenu === index : undefined}
+                aria-controls={item.hasSubmenu ? "desktop-submenu" : undefined}
               >
                 {item.label}
               </Link>
@@ -219,7 +262,7 @@ export function Header({
               <div
                 key={`${index}:${item.href}`}
                 ref={displayMenu === index ? panelRef : undefined}
-                className={`submenu-panel ${item.href === "/solutions" ? "submenu-panel--solutions" : ""} ${displayMenu === index ? "is-active" : ""}`}
+                className={`submenu-panel ${item.href === "/solutions" ? "submenu-panel--solutions" : ""} ${item.href === "/products" || item.href === "/applications-and-softwares" ? "submenu-panel--wide" : ""} ${displayMenu === index ? "is-active" : ""}`}
                 aria-hidden={activeMenu === null || displayMenu !== index}
                 inert={activeMenu === null || displayMenu !== index}
               >
@@ -234,6 +277,7 @@ export function Header({
                         href={href}
                         prefetch={false}
                         onClick={closeDesktopMenu}
+                        onNavigate={(event) => navigateSamePageHash(event, href)}
                       >
                         <span>{label}</span>
                       </Link>
@@ -254,6 +298,7 @@ export function Header({
                         href={link.href}
                         prefetch={false}
                         onClick={closeDesktopMenu}
+                        onNavigate={(event) => navigateSamePageHash(event, link.href)}
                       >
                         <span>{link.label}</span>
                       </Link>
@@ -266,16 +311,52 @@ export function Header({
         </nav>
         {menuOpen && (
           <nav id="mobile-navigation" className="mobile-nav" aria-label="เมนูมือถือ">
-            {navigation.map((item, index) => (
-              <Link
-                key={`${index}:${item.href}`}
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-                <ArrowUpRight size={15} />
-              </Link>
-            ))}
+            {navigation.map((item, index) =>
+              item.hasSubmenu ? (
+                <details key={`${index}:${item.href}`} className="mobile-nav-group">
+                  <summary>
+                    {item.label}
+                    <ChevronDown size={17} aria-hidden="true" />
+                  </summary>
+                  <div className="mobile-nav-panel">
+                    {item.links.map(([label, href]) => (
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={() => setMenuOpen(false)}
+                        onNavigate={(event) => navigateSamePageHash(event, href)}
+                      >
+                        {label}
+                      </Link>
+                    ))}
+                    {item.groups.map((group) => (
+                      <div key={group.label} className="mobile-nav-section">
+                        <p>{group.label}</p>
+                        {group.links.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setMenuOpen(false)}
+                            onNavigate={(event) => navigateSamePageHash(event, link.href)}
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ) : (
+                <Link
+                  key={`${index}:${item.href}`}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                  <ArrowUpRight size={15} />
+                </Link>
+              ),
+            )}
             {extras.mobileLinks.map((link, index) => (
               <Link key={index} href={link.href} onClick={() => setMenuOpen(false)}>
                 {link.label}

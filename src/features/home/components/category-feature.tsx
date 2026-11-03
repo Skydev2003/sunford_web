@@ -3,14 +3,19 @@ import { showcaseDefaults } from "@/features/cms/data/settings";
 import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTargets } from "../data/link-targets";
 import { CategoryFeaturePanels } from "./category-feature-panels";
-import { categoryImageVersion } from "../data/category-images";
+import { getCatalogPage } from "@/features/catalog/server/catalog-page";
+import { getContentPage } from "@/features/content/server/content-repository";
+import { pageFeatureEntries, productFeatureEntries } from "../data/category-feature-items";
+import { defaultHomeImages, type HomeImages } from "../data/image-slots";
 
 export async function CategoryFeature({
   products,
   targets,
+  images = {},
 }: {
   products: Product[];
   targets: HomeLinkTargets;
+  images?: HomeImages;
 }) {
   const copy = await getSettings("showcase", {
     ...showcaseDefaults,
@@ -49,14 +54,38 @@ export async function CategoryFeature({
       description: copy.softwareDescription,
     },
   ] as const;
+  const defaults = defaultHomeImages();
+  const items = await Promise.all(
+    cards.map(async (card) => {
+      const href = resolveHomeLink(card.id, targets[card.id], products);
+      const targetProduct = targets[card.id]?.productId;
+      // MES is the existing CTA; the dedicated smart-scale page owns product membership.
+      const path =
+        card.id === "smart" && href?.toLowerCase() === "/product/mes" && !targetProduct
+          ? "/product/smart-weighing"
+          : href;
+      const catalog = path && !targetProduct ? await getCatalogPage(path, products) : undefined;
+      const entries = !href
+        ? []
+        : targetProduct
+          ? productFeatureEntries(products.filter((product) => product.id === targetProduct))
+          : catalog
+            ? productFeatureEntries(catalog.products)
+            : pageFeatureEntries(path ? await getContentPage(path) : undefined, products);
+      const image = images[card.id] ?? defaults[card.id]!;
+      return {
+        ...card,
+        image,
+        entries,
+        companionImage:
+          card.id === "accessories" && !images.accessories ? "/images/pd/RYG-POLE.png" : undefined,
+      };
+    }),
+  );
   return (
     <CategoryFeaturePanels
-      key={categoryImageVersion}
-      linkLabel={copy.linkLabel}
-      items={cards.map((card) => ({
-        ...card,
-        href: resolveHomeLink(card.id, targets[card.id], products),
-      }))}
+      key={items.map((item) => `${item.image}|${item.companionImage ?? ""}`).join("|")}
+      items={items}
     />
   );
 }

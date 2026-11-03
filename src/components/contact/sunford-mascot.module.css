@@ -24,13 +24,33 @@
   aspect-ratio: 1199 / 1312;
   border-radius: 14px;
   -webkit-tap-highlight-color: transparent;
-  touch-action: none;
+  touch-action: manipulation;
   user-select: none;
-  cursor: grab;
+  cursor: pointer;
   padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
+}
+.close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #e7e7eb;
+  border-radius: 50%;
+  background: #fff;
+  color: #62626b;
+  box-shadow: 0 2px 8px #20202412;
+  cursor: pointer;
+}
+.close:hover {
+  color: #d60b24;
 }
 .character::after {
   content: "";

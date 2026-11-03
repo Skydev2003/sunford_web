@@ -47,23 +47,23 @@ export async function ProductSpotlight({
     >
       <div className="container spotlight-inner">
         <div className="spotlight-copy">
-          <h2 id="spotlight-title">{copy.title}</h2>
+          <h2 id="spotlight-title">
+            {copy.title.split(/(\bJC21\b)/).map((part, index) =>
+              part === "JC21" ? (
+                <span key={index} className="spotlight-model">
+                  {part}
+                </span>
+              ) : (
+                part
+              ),
+            )}
+          </h2>
           <p className="spotlight-tagline">{copy.accent}</p>
           {copy.description && (
             <p className="spotlight-description" style={{ whiteSpace: "pre-line" }}>
               {copy.description}
             </p>
           )}
-          <div className="spotlight-actions">
-            {href && (
-              <Link href={href} className="button button-red">
-                {copy.primaryLabel}
-              </Link>
-            )}
-            <a href={copy.secondaryHref} className="button spotlight-secondary-button">
-              {copy.secondaryLabel}
-            </a>
-          </div>
         </div>
         {showVideo ? (
           <SpotlightProductVideo

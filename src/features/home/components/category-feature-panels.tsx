@@ -2,109 +2,150 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Plus, X } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { categoryImages, type CategoryImageId } from "../data/category-images";
+import type { HomeImageSlot } from "../data/image-slots";
+import type { CategoryFeatureEntry } from "../data/category-feature-items";
+import { CategoryFeatureIcon } from "./category-feature-icons";
 
 export type CategoryFeatureItem = {
-  id: CategoryImageId;
+  id: Exclude<HomeImageSlot, "spotlight">;
   label: string;
   title: string;
   description: string;
-  href?: string;
+  image: string;
+  companionImage?: string;
+  entries: CategoryFeatureEntry[];
 };
 
-export function CategoryFeaturePanels({
-  items,
-  linkLabel,
-}: {
-  items: CategoryFeatureItem[];
-  linkLabel: string;
-}) {
-  const [active, setActive] = useState<number | null>(null);
+export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] }) {
+  const [active, setActive] = useState(0);
+  const selected = items[active] ?? items[0];
+  if (!selected) return null;
+  // Fill a wide belt even for a small software collection, using its own real entries.
+  const beltItems = selected.entries.length
+    ? Array.from(
+        { length: Math.max(1, Math.ceil(20 / selected.entries.length)) },
+        () => selected.entries,
+      ).flat()
+    : [];
+
   return (
     <section
       id="product-experience"
       className="category-feature"
-      aria-label="สำรวจผลิตภัณฑ์และโซลูชัน Sunford"
-      onPointerLeave={(event) => {
-        if (event.pointerType !== "touch" && !event.currentTarget.querySelector(":focus-visible"))
-          setActive(null);
-      }}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActive(null);
-      }}
-      onKeyDown={(event) => {
-        if (event.key === "Escape") setActive(null);
-      }}
+      aria-labelledby="category-feature-title"
     >
-      <div className="category-feature-backdrops" aria-hidden="true">
-        <div className="category-feature-image is-base">
-          <ProductImage src={categoryImages.overview} alt="" fill sizes="100vw" />
-        </div>
-        {items.map((item, index) => (
+      <div className="category-feature-inner">
+        <h2 id="category-feature-title">
+          เลือก <span>หมวดหมู่สินค้า</span>
+        </h2>
+        <div className="category-feature-layout">
           <div
-            key={item.id}
-            className={`category-feature-image ${active === index ? "is-active" : ""}`}
+            id="category-feature-media"
+            className="category-feature-media"
+            role="region"
+            aria-label={selected.title}
           >
-            <ProductImage src={categoryImages[item.id]} alt="" fill sizes="100vw" />
+            {selected.companionImage ? (
+              <div className="category-feature-accessories" key={selected.id}>
+                <div className="category-feature-pole">
+                  <ProductImage
+                    src={selected.companionImage}
+                    alt="ไฟสัญญาณสามสี SUNFORD RYG-POLE"
+                    fill
+                    sizes="(min-width: 992px) 18vw, 32vw"
+                  />
+                </div>
+                <div className="category-feature-printer">
+                  <ProductImage
+                    src={selected.image}
+                    alt={selected.title}
+                    fill
+                    sizes="(min-width: 992px) 32vw, 56vw"
+                  />
+                </div>
+              </div>
+            ) : (
+              <ProductImage
+                key={selected.id}
+                src={selected.image}
+                alt={selected.title}
+                fill
+                sizes="(min-width: 1600px) 900px, (min-width: 992px) 55vw, 100vw"
+              />
+            )}
           </div>
-        ))}
-      </div>
-      <div className="category-feature-grid">
-        {items.map((item, index) => {
-          const expanded = active === index;
-          return (
-            <article
-              key={item.id}
-              className={`category-feature-panel ${expanded ? "is-active" : ""}`}
-              onPointerEnter={(event) => {
-                if (event.pointerType !== "touch") setActive(index);
-              }}
-              onFocusCapture={(event) => {
-                if (event.target instanceof HTMLElement && event.target.matches(":focus-visible"))
-                  setActive(index);
-              }}
-            >
-              <h2 className="category-feature-heading">
-                <button
-                  type="button"
-                  className="category-feature-trigger"
-                  aria-label={`สำรวจ ${item.title}`}
-                  aria-expanded={expanded}
-                  aria-controls={`category-detail-${item.id}`}
-                  onClick={() => setActive(index)}
+          <div className="category-feature-choices">
+            <p className="category-feature-intro">
+              เลือกผลิตภัณฑ์และโซลูชัน SUNFORD ที่เหมาะกับการใช้งานของคุณ
+            </p>
+            <div className="category-feature-grid" aria-label="หมวดหมู่สินค้า SUNFORD">
+              {items.map((item, index) => (
+                <article
+                  key={item.id}
+                  className={`category-feature-panel ${active === index ? "is-active" : ""}`}
                 >
-                  <span>{item.label}</span>
-                  <Plus size={20} strokeWidth={1.4} aria-hidden="true" />
-                </button>
-              </h2>
+                  <button
+                    type="button"
+                    className="category-feature-trigger"
+                    aria-label={`สำรวจ ${item.title}`}
+                    aria-pressed={active === index}
+                    aria-controls="category-feature-media"
+                    onClick={() => setActive(index)}
+                  >
+                    <span className="category-feature-card-heading">
+                      <span className="category-feature-icon" aria-hidden="true">
+                        <CategoryFeatureIcon category={item.id} />
+                      </span>
+                      <span>{item.title}</span>
+                    </span>
+                    <span className="category-feature-description">{item.description}</span>
+                  </button>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+        {beltItems.length > 0 && (
+          <div className="category-feature-products">
+            <p className="category-feature-belt-label" id="category-feature-belt-label">
+              <span>สินค้าและโซลูชัน</span> ในหมวดนี้
+            </p>
+            <div className="category-feature-belt" aria-labelledby="category-feature-belt-label">
               <div
-                id={`category-detail-${item.id}`}
-                className="category-feature-content"
-                aria-hidden={!expanded}
-                inert={!expanded}
+                className="category-feature-track"
+                style={{ animationDuration: `${beltItems.length * 2}s` }}
               >
-                <button
-                  type="button"
-                  className="category-feature-close"
-                  onClick={() => setActive(null)}
-                  aria-label={`ปิดรายละเอียด ${item.title}`}
-                >
-                  <X size={17} />
-                </button>
-                <p className="category-feature-eyebrow">SUNFORD</p>
-                <h3>{item.title}</h3>
-                <p className="category-feature-description">{item.description}</p>
-                {item.href && (
-                  <Link className="category-feature-link" href={item.href}>
-                    {linkLabel} <ArrowUpRight size={16} />
-                  </Link>
+                {[0, 1, 2].flatMap((copy) =>
+                  beltItems.map((entry, index) => {
+                    const duplicate = copy > 0 || index >= selected.entries.length;
+                    return (
+                      <Link
+                        key={`${copy}-${index}-${entry.id}`}
+                        className={`category-feature-product${duplicate ? " is-duplicate" : ""}`}
+                        href={entry.href}
+                        prefetch={false}
+                        aria-label={duplicate ? undefined : entry.title}
+                        aria-hidden={duplicate || undefined}
+                        tabIndex={duplicate ? -1 : undefined}
+                        title={entry.title}
+                        data-product-id={entry.id}
+                      >
+                        <ProductImage
+                          src={entry.image}
+                          alt=""
+                          width={70}
+                          height={70}
+                          sizes="70px"
+                        />
+                      </Link>
+                    );
+                  }),
                 )}
               </div>
-            </article>
-          );
-        })}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

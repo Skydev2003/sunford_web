@@ -1,52 +1,33 @@
 import { test, expect } from "@playwright/test";
 
-test("home solutions show editable artwork, working destinations and a compact responsive layout", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1366, height: 768 });
-  await page.goto("/");
-  const section = page.locator("#solutions");
-  await section.scrollIntoViewIfNeeded();
-  await expect(section.getByRole("heading", { level: 2 })).toContainText(
-    "เมื่อทุกอย่างเชื่อมถึงกัน",
-  );
-  await expect(section.locator("img")).toHaveCount(4);
-  for (const img of await section.locator("img").all()) {
-    await expect
-      .poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0))
-      .toBe(true);
-  }
-  await expect(section.getByRole("link", { name: /ค้นพบ SUNFORD POS/ })).toHaveAttribute(
-    "href",
-    "/products/pos1100",
-  );
-  await expect(section.getByRole("link", { name: /ACCESSORIES/ })).toHaveAttribute(
-    "href",
-    "/product/scale-accessories",
-  );
-  await expect(section.getByRole("link", { name: /SOFTWARE & APPLICATIONS/ })).toHaveAttribute(
-    "href",
-    "/applications-and-softwares",
-  );
-  expect(await section.evaluate((el) => el.getBoundingClientRect().height)).toBeLessThan(740);
-  await section.screenshot({
-    path: "output/business-solutions-desktop.png",
-    animations: "disabled",
-    caret: "initial",
+test.use({ javaScriptEnabled: false });
+
+for (const width of [1440, 390]) {
+  test(`homepage omits the removed business solutions section at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("#solutions")).toHaveCount(0);
+    await expect(page.getByText("ONE CONNECTED ECOSYSTEM", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /ค้นพบ SUNFORD POS/ })).toHaveCount(0);
+    await expect(page.locator('a[href="/#solutions"], a[href="#solutions"]')).toHaveCount(0);
+    await expect(page.locator("[data-home-motion]")).toHaveCount(5);
+    await expect(
+      page.locator("[data-home-motion]:has(#product-experience) + [data-home-motion] #story"),
+    ).toHaveCount(1);
+    await expect(page.locator(".product-spotlight")).toHaveCount(1);
+    await expect(
+      page.locator("#product-experience .category-feature-product").first(),
+    ).toHaveAttribute("href", /^\/products\//);
+    await expect(page.locator("#stories")).toHaveCount(1);
+    await expect(page.locator("#support")).toHaveCount(0);
+    await expect(page.getByText("ALWAYS BY YOUR SIDE", { exact: true })).toHaveCount(0);
+    await expect(
+      page.getByText("มากกว่าสินค้า คือการดูแลที่วางใจได้", { exact: true }),
+    ).toHaveCount(0);
+    await expect(page.locator('img[src*="service-illustrations"]')).toHaveCount(0);
+    await expect(page.locator("footer")).toHaveCount(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
   });
-  for (const width of [768, 390, 320]) {
-    await page.setViewportSize({ width, height: 844 });
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
-      `Overflow at ${width}px`,
-    ).toBe(true);
-    for (const img of await section.locator('img:not([aria-hidden="true"])').all())
-      await expect(img).toBeVisible();
-  }
-  await page.setViewportSize({ width: 390, height: 844 });
-  await section.screenshot({
-    path: "output/business-solutions-mobile.png",
-    animations: "disabled",
-    caret: "initial",
-  });
-});
+}

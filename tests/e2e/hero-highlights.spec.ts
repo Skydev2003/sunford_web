@@ -276,7 +276,7 @@ test("feature bubbles replay on selection, float and obey shared playback and re
   await expect(page.locator(".hero-feature-pop").first()).toHaveCSS("opacity", "1");
   await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect.poll(async () => (await timelines()).every((a) => a.state === "running")).toBe(true);
-  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  await page.locator("#story").scrollIntoViewIfNeeded();
   await expect(studio).toHaveAttribute("data-running", "false");
   await expect.poll(async () => (await timelines()).every((a) => a.state === "paused")).toBe(true);
   await page.evaluate(() => scrollTo(0, 0));

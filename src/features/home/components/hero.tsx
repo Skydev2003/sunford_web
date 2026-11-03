@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import type { HeroSettings, SiteSettings } from "@/features/cms/types";
 import { BrandOpening } from "./brand-opening";
-import { HeroScene, type HeroProduct } from "./hero-scene";
+import { HeroScene } from "./hero-scene";
 
 export function HeroAnnouncement({ settings }: { settings: Omit<HeroSettings, "slides"> }) {
   return (
@@ -18,12 +18,12 @@ export function HeroAnnouncement({ settings }: { settings: Omit<HeroSettings, "s
 }
 
 export function Hero({
-  product,
+  description,
   settings,
   brand,
   showAnnouncement = true,
 }: {
-  product?: HeroProduct;
+  description?: string;
   settings: Omit<HeroSettings, "slides">;
   brand: Pick<SiteSettings, "logo" | "name">;
   showAnnouncement?: boolean;
@@ -34,7 +34,7 @@ export function Hero({
     <>
       <BrandOpening logo={brand.logo} name={brand.name} onReveal={revealOpening} />
       {showAnnouncement && <HeroAnnouncement settings={settings} />}
-      <HeroScene product={product} opening={opening} showAnnouncement={showAnnouncement} />
+      <HeroScene description={description} opening={opening} showAnnouncement={showAnnouncement} />
     </>
   );
 }

@@ -1,13 +1,14 @@
 .section {
-  --video-window-width: min(1120px, calc(100vw - 96px));
+  --video-window-width: min(960px, calc(100vw - 96px));
   --video-card-width: calc((var(--video-window-width) - 32px) / 3);
   width: 100%;
   overflow: hidden;
 }
 .section .heading {
   width: calc(100% - 96px);
-  max-width: 1240px;
+  max-width: 1180px;
   margin-inline: auto;
+  text-align: left;
 }
 .section .track {
   position: relative;

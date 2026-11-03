@@ -5,11 +5,10 @@ import {
   ArrowUpRight,
   ChevronRight,
   MessageCircleMore,
-  Pause,
   Phone,
-  Play,
   ShoppingBag,
   Star,
+  X,
 } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import type { SiteSettings } from "@/features/cms/types";
@@ -24,16 +23,17 @@ export function SunfordMascot({
   site,
   expertLabel,
   expertHref,
+  onDismiss,
 }: {
   site: SiteSettings;
   expertLabel: string;
   expertHref: string;
+  onDismiss: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [paused, setPaused] = useState(false);
   const root = useRef<HTMLElement>(null);
   const launcher = useRef<HTMLButtonElement>(null);
-  const { rootEvents, characterEvents } = useMascotMotion(root, paused || open);
+  useMascotMotion(root);
   const panelId = useId();
 
   useEffect(() => {
@@ -81,14 +81,15 @@ export function SunfordMascot({
   return (
     <aside
       ref={root}
-      {...rootEvents}
       className={styles.mascot}
       aria-label={`ติดต่อ ${site.name}`}
       data-shop-mascot
-      data-paused={paused}
       data-open={open}
     >
       <div className={styles.walkway}>
+        <button type="button" className={styles.close} aria-label="ปิดตัวละคร" onClick={onDismiss}>
+          <X size={16} aria-hidden="true" />
+        </button>
         <button
           type="button"
           className={styles.bubble}
@@ -200,32 +201,13 @@ export function SunfordMascot({
             aria-expanded={open}
             data-mascot-launcher
             draggable={false}
-            {...characterEvents}
-            onClick={(event) => {
-              characterEvents.onClick(event);
-              if (!event.defaultPrevented) setOpen(!open);
-            }}
+            onClick={() => setOpen(!open)}
           >
             <span className={styles.figure}>
               <span className={styles.sprite} aria-hidden="true" />
-              <canvas className={styles.sideSprite} data-mascot-canvas aria-hidden="true" />
             </span>
           </button>
         </Tooltip>
-        <div className={styles.controls}>
-          <button
-            type="button"
-            aria-label={paused ? "เล่นการเคลื่อนไหวมาสคอต" : "หยุดการเคลื่อนไหวมาสคอต"}
-            aria-pressed={paused}
-            onClick={() => setPaused(!paused)}
-          >
-            {paused ? (
-              <Play size={12} aria-hidden="true" />
-            ) : (
-              <Pause size={12} aria-hidden="true" />
-            )}
-          </button>
-        </div>
       </div>
     </aside>
   );

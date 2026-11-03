@@ -1,5 +1,57 @@
 # Project Memory
 
+## SUNFORD service scope
+
+- The owner confirmed on 2026-11-03 that SUNFORD does not offer a calibration service. Do not advertise calibration as a company service or add it to navigation. Product calibration instructions are separate from offering a service.
+
+## Cancel section reveals when their route is hidden
+
+- Observed: Navigating away during a HomeMotion reveal could show the error boundary on Back. A paused-reveal browser regression reproduced the crash.
+- Root cause: Motion's stop() commits current styles; the route cache keeps nodes connected but hides them, so native commitStyles() throws InvalidStateError. Checking isConnected alone does not prove the target is rendered.
+- Correct behavior: Cancel and clear HomeMotion controls during effect cleanup and before applying the reduced-motion baseline. Verify navigation and Back while a real reveal is still active, plus a live reduced-motion change.
+
+## Distinguish hash filters from document anchors
+
+- Observed: Navbar software links changed the URL hash on the downloads page while the selected filter remained unchanged.
+- Root cause: The software catalogue subscribes to native hashchange; a same-page client-router navigation did not emit it. The fragment is filter state, not a DOM element ID.
+- Correct behavior: For same-page Navbar hash links, use Link onNavigate to delegate fragment changes to the browser. Verify both the URL and selected filter, including first entry, changing categories and Back; do not require a DOM ID for filter fragments.
+
+## Smoke-test hardware video encoders before a long render
+
+- Observed: The installed FFmpeg NVENC encoder required a newer API than the current GPU driver provided, so encoder startup failed before writing frames.
+- Root cause: Available encoder names do not prove driver compatibility.
+- Correct behavior: Run a two-frame encode at the target resolution before selecting a hardware encoder. If initialization fails, use the installed software encoder and preserve the user's drivers; do not change drivers for a rendering task without a separate request. Poll renderer sessions to successful completion before previewing or verifying dependent files.
+
+## Trace active section styles before layout changes
+
+- Observed: Global legacy story/support selectors resembled current sections, but the mounted components use CSS Modules.
+- Root cause: Similar selector names were treated as evidence of ownership before checking the current JSX imports.
+- Correct behavior: Follow the mounted component's stylesheet imports and inspect computed geometry before editing section sizes. Remove edits to inactive selectors; verify the actual production-rendered section afterward.
+
+## Verify a complete QA build before running browser suites
+
+- Observed: An old QA server announced readiness, but requests returned 500 because its prerender manifest was missing.
+- Root cause: A leftover BUILD_ID was treated as proof of a complete production build.
+- Correct behavior: Use a fresh task-specific QA directory, confirm the build completed and its prerender manifest exists, then smoke-test HTTP 200 before running UI suites. Do not reuse another task's mutable build directory based only on BUILD_ID.
+
+## Keep dark section backgrounds fixed during scroll reveals
+
+- Observed: Revealing an entire black section over the white page surface exposed a 24px white strip and faded the section background.
+- Root cause: The section itself received translateY and opacity animation rather than its inner content.
+- Correct behavior: Animate the inner content while keeping the section background at opacity 1 with no transform. Sample actual intermediate animation frames and adjacent section bounds on desktop/mobile; settled screenshots alone miss the seam.
+
+## Keep concurrent browser verification outputs separate
+
+- Observed: Starting another Playwright run with the default output directory while a previous run was still finishing removed an in-progress trace artifact and produced an ENOENT test failure.
+- Root cause: Each Playwright run cleans its output directory; the two runs shared `test-results`.
+- Correct behavior: Wait for the active Playwright run to finish before launching another, or give each concurrent run a distinct `--output` directory. Use a clean sequential rerun to verify any case affected by artifact collisions.
+
+## Verify physical labels after generative retouching
+
+- Observed: Product background edits changed a readable LCD number and a small printed model code despite preservation instructions.
+- Root cause: Generative retouching reconstructs text and display segments rather than preserving every source pixel.
+- Correct behavior: Compare readable model codes, display values and button order against the original before delivery; correct observed changes with a narrowly targeted edit and recheck the alpha on light/dark backgrounds. Preserve source files and native retouched masters, and identify AI reconstruction and upscaling in the handoff.
+
 ## Verify requested raster resolution against actual image output
 
 - Observed: Six transparent product edits requested as 4K returned native widths of 1536–1774 pixels from the built-in image tool.
@@ -233,3 +285,33 @@
 - Observed: Client navigation to the contact page retained the homepage Hero DOM in a hidden router cache. A selector based on any Hero being present would still match on the internal page.
 - Root cause: DOM presence is not proof that a cached route is active.
 - Correct behavior: Let the active Hero own Header attributes and remove them in effect cleanup. Scope shared Header decoration to those active attributes; use DOM-presence fallback only without scripting, when navigation replaces the document. Verify computed Header colors after client-side CTA navigation, partial scrolling and return visits.
+
+## Verify locale and settled selection before reference measurements
+
+- Observed: A temporary reference tab redirected from the requested localized route to English, producing inconsistent text wrapping and section-height comparisons with a Thai mock. Immediate snapshots after role clicks also briefly retained previous media/list content.
+- Root cause: Requested URL and dispatched click were treated as proof of the rendered locale and completed component update.
+- Correct behavior: Assert the actual URL and document language, select the intended locale through the visible UI when needed, and wait for the selected state plus expected media/list content before capturing geometry. Store locale with every baseline and replace invalid measurements rather than mixing languages.
+
+## Set the isolated build directory on the build command itself
+
+- Observed: A QA build briefly started in the live workspace after preparing a separate source copy. It was stopped before compilation finished; the existing dev process remained running and returned HTTP 200.
+- Root cause: The replacement command copied files into QA but retained the live workspace as its command working directory.
+- Correct behavior: Run the build as a separate command with an explicit absolute QA `workdir`. Verify that path before launching and confirm the build output does not load the live environment file. Do not rely on a preceding copy operation to change the working directory.
+
+## Check the composited color of translucent navigation
+
+- Observed: Matching a reference navbar's computed rgba color first produced pale gray; adding an opaque dark Header base then hid the actual backdrop blur.
+- Root cause: HoN overlays content with a fixed translucent navbar. SUNFORD's former sticky layout reserved an empty surface beneath the glass, and the later opaque base blocked sampling of page content.
+- Correct behavior: For reference blur fidelity, place real page content behind the translucent fixed Header and remove opaque layers beneath its glass. Reserve header space separately on internal pages. Verify screenshots plus a controlled patterned backdrop with blur enabled/disabled; computed CSS alone cannot prove visible blur. Check closed/scrolled/expanded desktop and mobile states. Do not restore an opaque base as a substitute for matching compositing.
+
+## Do not reset a moving link track on pointer focus
+
+- Observed: The first click on a moving category image stopped/repositioned its track without opening the link. A real-pointer regression reproduced the URL remaining on the homepage.
+- Root cause: A `:focus-within` accessibility rule also ran on mousedown, removing the animation and moving the pressed link away before mouseup.
+- Correct behavior: Limit track-reset/manual-scroll styling to keyboard-visible focus using `:has(a:focus-visible)`. Keep pointer focus from changing link geometry between press and release; test first-click navigation at a nonzero animation phase, keyboard activation and touch tap.
+
+## Pass file globs to ripgrep rather than literal PowerShell paths
+
+- Observed: Several searches reported that a path ending in `category-feature*` was invalid on Windows.
+- Root cause: PowerShell did not expand the wildcard for the native `rg` command, so ripgrep received a literal wildcard path.
+- Correct behavior: Search the actual directory and pass the filename pattern through `rg -g 'category-feature*.tsx'`; do not append wildcards to path arguments passed to ripgrep from PowerShell.

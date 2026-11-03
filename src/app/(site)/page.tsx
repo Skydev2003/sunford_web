@@ -1,15 +1,11 @@
 import { Hero } from "@/features/home/components/hero";
+import { SectionTwoVideo } from "@/features/home/components/section-two-video";
 import { HomeMotion } from "@/features/home/components/home-motion";
 import { ProductSpotlight } from "@/features/home/components/product-spotlight";
-import { BrandFilm } from "@/features/home/components/brand-film";
-import {
-  SourceShowcase,
-  SunfordStories,
-  SunfordVideos,
-} from "@/features/home/components/source-showcase";
+import { SunfordStories, SunfordVideos } from "@/features/home/components/source-showcase";
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { CategoryFeature } from "@/features/home/components/category-feature";
-import { BrandStory, BusinessSolutions, SupportSection } from "@/features/home/components/sections";
+import { BrandStory } from "@/features/home/components/sections";
 import { getProducts } from "@/features/catalog/server/product-repository";
 import { getHomeImages, getHomeLinkTargets } from "@/features/home/server/home-images";
 import { getSettings } from "@/features/cms/server/documents";
@@ -32,17 +28,10 @@ export default async function Home() {
   const { slides, ...heroCopy } = hero;
   const [featured] = heroSlideData(products, slides);
   return (
-    <main id="main-content" data-background-start="solutions">
+    <main id="main-content">
       <Hero
         brand={{ logo: site.logo, name: site.name }}
-        product={
-          featured && {
-            name: featured.name,
-            image: featured.image,
-            href: featured.href,
-            descriptionOverride: featured.descriptionOverride,
-          }
-        }
+        description={featured?.descriptionOverride}
         showAnnouncement={false}
         settings={{
           ...heroCopy,
@@ -52,7 +41,7 @@ export default async function Home() {
               : hero.secondaryHref,
         }}
       />
-      <BrandFilm />
+      <SectionTwoVideo />
       <HomeMotion>
         <div className="homepage-lead">
           <ProductSpotlight
@@ -64,17 +53,11 @@ export default async function Home() {
         </div>
       </HomeMotion>
       <HomeMotion>
-        <SourceShowcase products={products} images={images} targets={targets} />
-      </HomeMotion>
-      <HomeMotion>
         {showHomepageCatalog ? (
           <ProductCatalog products={await getClientProducts()} copy={catalog} />
         ) : (
-          <CategoryFeature products={products} targets={targets} />
+          <CategoryFeature products={products} targets={targets} images={images} />
         )}
-      </HomeMotion>
-      <HomeMotion>
-        <BusinessSolutions />
       </HomeMotion>
       <HomeMotion>
         <BrandStory />
@@ -84,9 +67,6 @@ export default async function Home() {
       </HomeMotion>
       <HomeMotion>
         <SunfordVideos />
-      </HomeMotion>
-      <HomeMotion>
-        <SupportSection />
       </HomeMotion>
     </main>
   );

@@ -3,8 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
-import styles from "./spotlight-product-video.module.css";
 
 export function SpotlightProductVideo({
   src,
@@ -19,10 +17,6 @@ export function SpotlightProductVideo({
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const pausedRef = useRef(false);
-  const syncRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const element = video.current;
@@ -34,13 +28,12 @@ export function SpotlightProductVideo({
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false;
     const sync = () => {
-      if (visible && !document.hidden && !preference.matches && !pausedRef.current) {
+      if (visible && !document.hidden && !preference.matches) {
         element.play().catch(() => {
           // Keep the sharp poster visible if the browser blocks autoplay.
         });
       } else element.pause();
     };
-    syncRef.current = sync;
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting && entry.intersectionRatio >= 0.15;
@@ -53,7 +46,6 @@ export function SpotlightProductVideo({
     document.addEventListener("visibilitychange", sync);
     return () => {
       observer.disconnect();
-      syncRef.current = null;
       preference.removeEventListener("change", sync);
       document.removeEventListener("visibilitychange", sync);
       element.pause();
@@ -76,8 +68,6 @@ export function SpotlightProductVideo({
       preload="metadata"
       aria-label={`วิดีโอสินค้า SUNFORD ${name}`}
       onError={() => setFailed(true)}
-      onPlay={() => setPlaying(true)}
-      onPause={() => setPlaying(false)}
     />
   );
 
@@ -93,22 +83,6 @@ export function SpotlightProductVideo({
         </Link>
       ) : (
         <div className="spotlight-visual spotlight-visual-motion">{media}</div>
-      )}
-      {!failed && (
-        <button
-          type="button"
-          className={styles.toggle}
-          aria-label={playing ? "หยุดวิดีโอสินค้า" : "เล่นวิดีโอสินค้า"}
-          aria-pressed={paused}
-          onClick={() => {
-            const next = playing;
-            pausedRef.current = next;
-            setPaused(next);
-            syncRef.current?.();
-          }}
-        >
-          {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
-        </button>
       )}
     </div>
   );

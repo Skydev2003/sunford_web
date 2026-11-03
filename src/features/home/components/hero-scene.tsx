@@ -2,50 +2,29 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { companyIntro } from "../data/brand";
-import type { HeroSlide } from "../data/hero-slides";
 import styles from "./hero-scene.module.css";
 
-const frontViews: Record<string, string> = {
-  "/images/products/acs30-jc21-cutout.png": "/images/hero/acs30-jc21-front.webp",
-  "/images/products/wps10ks.png": "/images/hero/wps10ks-front.webp",
-  "/images/products/feh5ks.png": "/images/hero/feh5ks-front.webp",
-};
-
-export type HeroProduct = Pick<HeroSlide, "name" | "image" | "href" | "descriptionOverride">;
-
 export function HeroScene({
-  product,
+  description,
   opening,
   showAnnouncement = false,
 }: {
-  product?: HeroProduct;
+  description?: string;
   opening: boolean;
   showAnnouncement?: boolean;
 }) {
   const root = useRef<HTMLElement>(null);
-  const artwork = useRef<HTMLImageElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
   const revealPlayed = useRef(false);
-  const [failedImage, setFailedImage] = useState<string | null>(null);
   const [allowed, setAllowed] = useState(false);
-  const image = product?.image ? (frontViews[product.image] ?? product.image) : "";
-  const href = product?.href || "/products";
-  const imageVisible = Boolean(image && image !== failedImage);
 
   useEffect(() => {
-    const node = artwork.current;
-    if (!node || !image || !node.complete || node.naturalWidth > 0) return;
-    const failedSource = node.currentSrc;
-    let disposed = false;
-    void node.decode().catch(() => {
-      if (!disposed && node.complete && node.naturalWidth === 0 && node.currentSrc === failedSource)
-        setFailedImage(image);
-    });
-    return () => {
-      disposed = true;
-    };
-  }, [image]);
+    const element = video.current;
+    if (!element) return;
+    if (!opening && allowed) void element.play().catch(() => {});
+    else element.pause();
+  }, [opening, allowed]);
 
   useEffect(() => {
     const scene = root.current;
@@ -63,7 +42,7 @@ export function HeroScene({
       if (scene.style.getPropertyValue("--hero-header-height") !== height)
         scene.style.setProperty("--hero-header-height", height);
       header.dataset.heroBackdropTracked = "";
-      if (scene.getBoundingClientRect().top >= bounds.bottom - 1) header.dataset.heroBackdrop = "";
+      if (scene.getBoundingClientRect().top >= -1) header.dataset.heroBackdrop = "";
       else delete header.dataset.heroBackdrop;
     };
     const observer = new IntersectionObserver(
@@ -99,7 +78,8 @@ export function HeroScene({
 
   useEffect(() => {
     const next = root.current?.nextElementSibling as HTMLElement | null;
-    if (!next) return;
+    const content = next?.firstElementChild as HTMLElement | null;
+    if (!next || !content) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let animation: Animation | undefined;
     const observer = new IntersectionObserver(
@@ -108,7 +88,7 @@ export function HeroScene({
         revealPlayed.current = true;
         observer.unobserve(next);
         next.setAttribute("data-hero-scroll-reveal", "revealing");
-        animation = next.animate(
+        animation = content.animate(
           [
             { opacity: 0.65, transform: "translateY(24px)" },
             { opacity: 1, transform: "none" },
@@ -147,61 +127,40 @@ export function HeroScene({
   return (
     <section
       ref={root}
-      className={`hero hero-cinematic hero-studio-scene ${styles.scene}${showAnnouncement ? "" : " hero-no-announcement"}`}
+      id="brand-film"
+      className={`hero hero-cinematic hero-video-scene ${styles.scene}${showAnnouncement ? "" : " hero-no-announcement"}`}
       aria-labelledby="hero-title"
       data-hero-scene=""
-      data-active-product={product?.name}
+      data-home-section="1"
       data-opening={opening}
       data-ready={!opening}
       data-running={!opening && allowed}
     >
-      <div className={styles.lighting} aria-hidden="true">
-        <div className={styles.light} />
-        <div className={`${styles.light} ${styles.reflectedLight}`} />
-      </div>
+      <video
+        ref={video}
+        className={styles.video}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster="/videos/sunford-poster.jpg"
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        <source src="/videos/sunford-web.mp4" type="video/mp4" />
+      </video>
+      <div className={styles.overlay} aria-hidden="true" />
       <div className={`hero-main ${styles.main}`}>
-        <div className={styles.copy}>
-          <h1 id="hero-title" className={styles.heading}>
-            <span>เครื่องชั่ง SUNFORD</span> <span>สำหรับธุรกิจของคุณ</span>
-          </h1>
-          <p className={styles.description}>
-            {product?.descriptionOverride || companyIntro.description}
-          </p>
+        <h1 id="hero-title" className={styles.heading}>
+          <span>เครื่องชั่ง</span> <span>สำหรับธุรกิจของคุณ</span>
+        </h1>
+        <div className={styles.logoSpace} data-hero-logo-space="" aria-hidden="true" />
+        <div className={styles.actions}>
           <Link className={styles.cta} href="/contact-us" prefetch={false}>
             ปรึกษาผู้เชี่ยวชาญ
           </Link>
+          <p className={styles.description}>{description || companyIntro.description}</p>
         </div>
-        <Link
-          className={styles.product}
-          href={href}
-          prefetch={false}
-          data-hero-product=""
-          aria-label={`ดูรายละเอียด ${product?.name ?? "สินค้า SUNFORD"}`}
-        >
-          {imageVisible ? (
-            <span className={styles.object} data-hero-object="">
-              {/* The same compact source serves every viewport without a second download. */}
-              {/* eslint-disable-next-line @next/next/no-img-element -- Already optimized WebP; retain one discoverable source at all sizes. */}
-              <img
-                ref={artwork}
-                src={image}
-                alt={`เครื่องชั่ง SUNFORD ${product?.name ?? ""}`.trim()}
-                width={800}
-                height={521}
-                fetchPriority="high"
-                onError={() => setFailedImage(image)}
-              />
-            </span>
-          ) : (
-            <span className={styles.imageFallback}>
-              <span>{product?.name ?? "SUNFORD"}</span>
-              {image ? "ไม่สามารถแสดงภาพสินค้าได้" : "ค้นพบเครื่องชั่งสำหรับธุรกิจของคุณ"}
-              <span>
-                ดูรายละเอียดสินค้า <ArrowUpRight size={16} aria-hidden="true" />
-              </span>
-            </span>
-          )}
-        </Link>
       </div>
     </section>
   );

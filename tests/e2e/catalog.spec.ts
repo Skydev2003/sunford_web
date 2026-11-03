@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 async function loadPageImages(page: import("@playwright/test").Page) {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   for (const name of ["หยุดวนสินค้าอัตโนมัติ", "หยุดการเคลื่อนไหวทั้งหมด"]) {
     const pause = page.getByRole("button", { name, exact: true });
     if (await pause.count()) await pause.click();
@@ -19,16 +20,14 @@ async function loadPageImages(page: import("@playwright/test").Page) {
       .toBe(true);
   }
   await page
-    .locator(".stories-track, .video-track")
+    .locator(".stories-track, .video-track, .category-feature-belt")
     .evaluateAll((elements) =>
       elements.forEach((element) => element.scrollTo({ left: 0, behavior: "instant" })),
     );
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
 }
 
-test("homepage introduces Sunford through the configured product and consultation", async ({
-  page,
-}) => {
+test("homepage introduces Sunford through the brand video and consultation", async ({ page }) => {
   test.slow();
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -37,8 +36,9 @@ test("homepage introduces Sunford through the configured product and consultatio
   const heading = page.getByRole("heading", { level: 1 });
   const hero = page.locator("[data-hero-scene]");
   await expect(heading).toContainText("SUNFORD");
-  await expect(hero.locator("[data-hero-product]")).toHaveAttribute("href", "/products/acs30-jc21");
-  await expect(hero.locator("img")).toHaveAttribute("src", "/images/hero/acs30-jc21-front.webp");
+  await expect(hero.locator("video source")).toHaveAttribute("src", "/videos/sunford-web.mp4");
+  await expect(hero.locator("[data-hero-logo-space]")).toBeEmpty();
+  await expect(hero.locator("[data-hero-product], img")).toHaveCount(0);
   await expect(hero.locator('a[href="/contact-us"]')).toBeVisible();
   await expect(page.locator(".hero-model-stage, model-viewer")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
@@ -113,6 +113,10 @@ test("mobile navigation works and page does not overflow", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู" }).click();
   await expect(page.getByRole("navigation", { name: "เมนูมือถือ" })).toBeVisible();
+  await page
+    .locator("#mobile-navigation summary")
+    .filter({ hasText: /^สินค้า$/ })
+    .click();
   await page
     .getByRole("navigation", { name: "เมนูมือถือ" })
     .getByRole("link", { name: "ระบบ POS", exact: true })

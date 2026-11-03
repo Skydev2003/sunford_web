@@ -6,8 +6,11 @@ test.describe("mobile centered previews", () => {
   for (const selector of [".video-track", ".stories-track"]) {
     test(`${selector} focuses side previews before opening them`, async ({ page }) => {
       await page.goto("/", { waitUntil: "domcontentloaded" });
+      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+        timeout: 15000,
+      });
       const track = page.locator(selector);
-      const cards = track.locator(":scope > *");
+      const cards = track.locator(':scope > [data-focus-copy="1"]');
       await track.scrollIntoViewIfNeeded();
 
       async function expectFocused(index: number) {
@@ -71,8 +74,11 @@ test("three videos stay sharp and the next video becomes gradually clearer witho
 }) => {
   await page.setViewportSize({ width: 1440, height: 950 });
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
+    timeout: 15000,
+  });
   const track = page.locator(".video-track");
-  const cards = track.locator(":scope > button");
+  const cards = track.locator(':scope > button[data-focus-copy="1"]');
   await track.scrollIntoViewIfNeeded();
   for (const index of [0, 1, 2]) {
     await expect

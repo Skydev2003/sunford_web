@@ -75,7 +75,7 @@ test("products cycle automatically, stay selected on click, and resume only on r
     "data-active-product",
     "ACS-30-JC21",
   );
-  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  await page.locator("#story").scrollIntoViewIfNeeded();
   await expect(scene).toHaveAttribute("data-cycling", "false");
   await expect(page.locator('.hero-model-card[data-moving="true"]')).toHaveCount(0);
   await page.clock.fastForward(21000);

@@ -59,7 +59,7 @@ test("WPS10KS loads on selection, moves its camera, and stops for pause, draggin
   expect(after.y).toBeCloseTo(copy.y, 1);
   await page.getByRole("button", { name: "เล่นการเคลื่อนไหวทั้งหมด", exact: true }).click();
   await expect(stage).toHaveAttribute("data-moving", "true");
-  await page.locator("#solutions").scrollIntoViewIfNeeded();
+  await page.locator("#story").scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute("data-moving", "false");
   await page.locator(".hero-cinematic").scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute("data-moving", "true");
