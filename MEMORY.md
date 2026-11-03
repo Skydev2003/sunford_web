@@ -1,5 +1,11 @@
 # Project Memory
 
+## Keep carousel rebases free of inherited transform transitions
+
+- Observed: Replacing a visible loop copy with its identical original caused a small video-card size/position jump, although logical indices and blur matched.
+- Root cause: The global button transform transition animated the original card from its previous offscreen scale after the instantaneous scroll rebase. Story cards already overrode that transition.
+- Correct behavior: When JavaScript drives per-frame carousel scale, override inherited transform transitions on the focused video cards. Verify normal-motion rebases by comparing visible logical cards, geometry and blur immediately before/after the copy swap; reduced-motion tests alone can hide the jump.
+
 ## SUNFORD service scope
 
 - The owner confirmed on 2026-11-03 that SUNFORD does not offer a calibration service. Do not advertise calibration as a company service or add it to navigation. Product calibration instructions are separate from offering a service.

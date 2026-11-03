@@ -1,5 +1,17 @@
 # Project state
 
+## Looping focus for stories and videos (2026-11-03)
+
+- Both homepage FocusDragScroll collections now keep3central cards clear on desktop and1on mobile≤720px, following the user's correction. Outer previews blur/fade and click into the clear window; clear cards retain native story/video actions. Three copies and a settled-scroll rebase allow looping both directions. Dragging blocks rebasing until release; pointer/touch/keyboard region arrows and viewport/modal changes retain logical selection. Duplicate copies are aria-hidden/tabIndex-1 and hidden entirely withoutJS. Badge styles use logical indices, keeping copies visually consistent.
+- Video focus cards override inherited button transform transitions to avoid a measured~6.5px copy-swap scale jump. Final native normal-motion probes cover4rebases at1440/390px: same visible logical items/badgecolors,0blurdelta,maxhorizontalgeometrydelta0.375CSSpx. This measures item continuity, not complete raster equality.
+- Final isolated Node24/webpack420page build/typecheck passes. Clean final13Chromecases pass: looping/previews/actions, mouse/touch/keyboard, drag suppression, progressiveblur, data/images, modal retention and noJS. Six viewport widths × two carousels show desktop3/mobile1sharp, nooverflow/0pageerrors; screenshots reviewed. Four appfiles hash-match QA; staticchecks pass. Early tests needed Opening readiness and logical-copy selectors; an initial video action retry and failed probes are retained separately. ExternalYouTubestream playback not reverified; iframe/modal actions verified.
+- Evidence/report: `output/looping-focus/`. Concurrent heading alignment preserved. Originaldev retained; ownedQA3144 stopped. No dependencies, storeddata, environment-file edits or deployment. Final Next.js feedback review found no qualifying framework issue; discontinuity was application CSS.
+
+## Smooth opening logo departure into navigation (2026-11-03)
+
+- Frame sampling confirmed the wordmark stayed stationary from 1700–1900ms before restarting with a steep docking ease. Removed that 200ms hold, begin docking at 1700ms and use the gentler existing 0.4/0/0.2/1 ease. Arrival remains 2750ms and completion 2850ms; real Header target, skip/reload policy and reduced-motion behavior remain.
+- Eleven Chrome opening regressions pass against existing dev, plus four repeated desktop/mobile runs with new frame assertions proving upward movement/shrinking during the former hold and accurate final docking. TypeScript, scoped lint/format/diff pass; final desktop screenshot reviewed. Initial run could not launch the missing bundled browser; rerun used installed Chrome. No production build/deploy; owned inspection browser closed, user dev retained. Final feedback review: no qualifying Next.js issue.
+
 ## Navbar reorganized around real company destinations (2026-11-03)
 
 - Reorganized the existing Header into six roots: สินค้า (`/products`), โซลูชันตามธุรกิจ (`/solutions`), ซอฟต์แวร์ (`/applications-and-softwares`), บริการ (`/service`), เกี่ยวกับเรา (`/about-us`) and ติดต่อเรา (`/contact-us`). The logo remains the homepage link. Products use a four-column mega menu covering scales, indicators/platforms, POS, accessories, consumables and existing guides. Business groups connect actual retail/coffee, production, laboratory, ERP/MES and weighing-data pages. Software uses the existing download catalogue and detail pages. No new landing routes, Top Bar, quote route or calibration service were added; the owner confirmed calibration is not offered.

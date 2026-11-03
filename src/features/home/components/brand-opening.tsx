@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import styles from "./brand-opening.module.css";
 
 // Measured against the supplied 30fps reference. The S is cropped from the real wordmark.
-const timing = { name: 1250, dock: 1900, reveal: 2350, end: 2850 };
+const timing = { name: 1250, dock: 1700, reveal: 2350, end: 2850 };
 const symbolCenter = 95 / 690;
 
 export function BrandOpening({
@@ -128,11 +128,10 @@ export function BrandOpening({
             offset: timing.name / timing.end,
             easing: "cubic-bezier(0.4,0,0.2,1)",
           },
-          { transform: pose(1, true), offset: 1700 / timing.end },
           {
             transform: pose(1, true),
             offset: timing.dock / timing.end,
-            easing: "cubic-bezier(0.65,0,0.35,1)",
+            easing: "cubic-bezier(0.4,0,0.2,1)",
           },
           { transform: dock, offset: 2750 / timing.end },
           { transform: dock, opacity: 1, offset: 1 },

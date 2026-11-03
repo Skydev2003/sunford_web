@@ -128,7 +128,7 @@ for (const viewport of [
     expect(symbol.wordOpacity).toBeLessThan(0.01);
     const named = frames.filter(
       (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 1700 && frame.logoTime <= 1900,
+        frame.logo && frame.logoTime !== null && frame.logoTime >= 1650 && frame.logoTime <= 1700,
     );
     expect(named.length).toBeGreaterThan(1);
     expect(named.at(-1)!.wordOpacity).toBeGreaterThan(0.99);
@@ -136,9 +136,16 @@ for (const viewport of [
     const centered = named[named.length - 1].logo!;
     expect(Math.abs(centered.x + centered.width / 2 - viewport.width / 2)).toBeLessThan(6);
     expect(Math.abs(centered.y + centered.height / 2 - viewport.height / 2)).toBeLessThan(6);
+    const earlyFlight = frames.filter(
+      (frame) =>
+        frame.logo && frame.logoTime !== null && frame.logoTime >= 1800 && frame.logoTime <= 1900,
+    );
+    expect(earlyFlight.length).toBeGreaterThan(1);
+    expect(earlyFlight.at(-1)!.logo!.width).toBeLessThan(centered.width - 5);
+    expect(earlyFlight.at(-1)!.logo!.y).toBeLessThan(centered.y - 5);
     const docking = frames.filter(
       (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 1900 && frame.logoTime <= 2750,
+        frame.logo && frame.logoTime !== null && frame.logoTime >= 1700 && frame.logoTime <= 2750,
     );
     expect(docking.length).toBeGreaterThan(1);
     expect(docking[docking.length - 1].logo!.width).toBeLessThan(docking[0].logo!.width);

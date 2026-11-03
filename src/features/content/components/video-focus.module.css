@@ -20,6 +20,7 @@
   filter: blur(var(--focus-blur, 0px));
   opacity: var(--focus-opacity, 1);
   transform: scale(var(--focus-scale, 1));
+  transition: none;
 }
 .section .card:focus-visible {
   outline: 3px solid #e71843;
