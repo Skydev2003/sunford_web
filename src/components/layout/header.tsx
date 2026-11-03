@@ -81,7 +81,8 @@ export function Header({
     closeTimer.current = setTimeout(closeDesktopMenu, 120);
   };
   const setSearchOpen = useCatalogStore((state) => state.setSearchOpen);
-  const setCompareOpen = useCatalogStore((state) => state.setCompareOpen);
+  const startCompare = useCatalogStore((state) => state.startCompare);
+  const compareMode = useCatalogStore((state) => state.compareMode);
   const compareCount = useCatalogStore((state) => state.compareIds.length);
   useLayoutEffect(() => {
     const panel = panelRef.current;
@@ -180,8 +181,9 @@ export function Header({
               <button
                 className="icon-button header-compare"
                 aria-label="เปรียบเทียบสินค้า"
+                aria-pressed={compareMode}
                 onClick={() => {
-                  setCompareOpen(true);
+                  startCompare();
                   closeDesktopMenu();
                 }}
               >

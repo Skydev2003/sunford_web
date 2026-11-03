@@ -1,7 +1,7 @@
 .page {
   --service-muted: #858ba2;
   --service-line: #e2e7f0;
-  background: #f6f8fb;
+  background: transparent;
   color: #101a3c;
 }
 .page :global(.container) {

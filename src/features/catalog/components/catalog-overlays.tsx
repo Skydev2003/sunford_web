@@ -20,6 +20,7 @@ export function CatalogOverlays({
   const categories = useCategories();
   const searchOpen = useCatalogStore((s) => s.searchOpen);
   const compareOpen = useCatalogStore((s) => s.compareOpen);
+  const compareMode = useCatalogStore((s) => s.compareMode);
   const ids = useCatalogStore((s) => s.compareIds);
   const setSearchOpen = useCatalogStore((s) => s.setSearchOpen);
   const setCompareOpen = useCatalogStore((s) => s.setCompareOpen);
@@ -95,21 +96,25 @@ export function CatalogOverlays({
           )}
         </div>
       </Modal>
-      {selected.length > 0 && (
+      {compareMode && (
         <div className="compare-bar">
           <div>
             <GitCompareArrows size={20} />
             <span>
-              เปรียบเทียบสินค้า <strong>{selected.length}/3</strong>
+              เปรียบเทียบสินค้า <strong aria-live="polite">{selected.length}/3</strong>
             </span>
           </div>
-          <button onClick={() => setCompareOpen(true)} className="button button-red">
+          <button
+            onClick={() => setCompareOpen(true)}
+            className="button button-red"
+            disabled={!selected.length}
+          >
             ดูการเปรียบเทียบ <ArrowRight size={15} />
           </button>
           <Tooltip>
             <button
               className="icon-button"
-              aria-label="ล้างรายการเปรียบเทียบ"
+              aria-label={selected.length ? "ล้างรายการเปรียบเทียบ" : "ยกเลิกการเปรียบเทียบ"}
               onClick={clearCompare}
             >
               <X size={18} />

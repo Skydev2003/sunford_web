@@ -32,7 +32,7 @@ export default async function Home() {
   const { slides, ...heroCopy } = hero;
   const [featured] = heroSlideData(products, slides);
   return (
-    <main id="main-content">
+    <main id="main-content" data-background-start="solutions">
       <Hero
         brand={{ logo: site.logo, name: site.name }}
         product={

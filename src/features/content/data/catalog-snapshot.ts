@@ -23,15 +23,19 @@ function inferCategory(product: SourceProduct): Product["category"] {
   for (const [collection, category] of sourceCategories)
     if (product.collections?.some((item) => item.path === publicPath(`/collections/${collection}`)))
       return category;
-  const text = `${product.name} ${product.description} ${product.collections?.map((item) => item.title).join(" ")}`;
-  if (/POS|พอส/i.test(product.name)) return "pos";
-  if (/RLS|smart|MES|อัจฉริยะ/i.test(text)) return "smart";
+  const identity = product.name;
+  const text = `${identity} ${product.description}`;
+  // Imported collection menus and compatibility copy can mention every product
+  // family. A display, column or paper roll remains an accessory in that copy.
   if (
-    /printer|เครื่องพิมพ์|^LP\d|sticker|สติ๊กเกอร์|กระดาษ|LED-R|อะไหล่|สายสัญญาณ|อุปกรณ์เสริม/i.test(
-      product.name,
-    )
+    /printer|เครื่องพิมพ์|^LP\d|sticker|สติ[๊กก]*เกอร์|กระดาษ|LED-R|อะไหล่|สายสัญญาณ|อุปกรณ์เสริม|เสาสแตนเลส|^RAMP\b|ทางลาด/i.test(
+      identity,
+    ) &&
+    !/เครื่องชั่ง|^RLS/i.test(identity)
   )
     return "accessories";
+  if (/POS|พอส/i.test(product.name)) return "pos";
+  if (/RLS|smart|MES|อัจฉริยะ/i.test(identity)) return "smart";
   if (
     /(?:^|\s)(?:C1|C5|R3|R6|S1|S2|S3)(?:\s|$)|laboratory|วิเคราะห์|ความละเอียดสูง/i.test(
       product.name,

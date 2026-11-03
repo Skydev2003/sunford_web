@@ -6,7 +6,7 @@
   padding-block: 44px 36px;
   background:
     radial-gradient(ellipse at 90% 100%, #ffe8f0, transparent 50%),
-    linear-gradient(#fff 60%, #fff8fb);
+    linear-gradient(#ffffff40 60%, #fff8fb80);
 }
 .heading {
   display: flex;

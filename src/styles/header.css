@@ -91,6 +91,10 @@
 .header-compare {
   position: relative;
 }
+.header-compare[aria-pressed="true"] {
+  color: var(--red);
+  background: var(--paper);
+}
 .header-compare > span {
   position: absolute;
   right: -2px;

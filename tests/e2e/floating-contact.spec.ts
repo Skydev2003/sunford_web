@@ -1,185 +1,170 @@
 import { expect, test } from "@playwright/test";
 
-test("homepage contact banner moves into a fixed contact launcher with real destinations", async ({
+test("the global child mascot preserves working phone, LINE, Messenger and shop destinations", async ({
   page,
   context,
 }) => {
-  await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator(".contact-banner")).toHaveCount(0);
-  const widget = page.locator(".floating-contact");
-  const launcher = widget.getByRole("button", { name: "คุยกับผู้เชี่ยวชาญ", exact: true });
-  await expect(launcher).toBeVisible();
-  await expect(launcher).toHaveAttribute("aria-expanded", "false");
-  await expect(widget.locator(".contact-launcher-label")).toHaveCount(0);
-  await expect(widget.getByRole("link")).toHaveCount(0);
-  const initial = await launcher.boundingBox();
-  await page.getByRole("contentinfo").scrollIntoViewIfNeeded();
-  const after = await launcher.boundingBox();
-  expect(Math.abs(after!.y - initial!.y)).toBeLessThanOrEqual(8);
-  expect(await widget.evaluate((element) => getComputedStyle(element).position)).toBe("fixed");
+  const widget = page.locator("[data-shop-mascot]");
+  const launcher = page.locator("[data-mascot-launcher]");
+  await expect(widget).toHaveCount(1);
+  await expect(page.locator(".contact-launcher")).toHaveCount(0);
   await launcher.click();
   const panel = widget.getByRole("region", { name: "ช่องทางติดต่อ" });
-  await expect(panel).toBeVisible();
-  await expect(panel.getByRole("link")).toHaveCount(3);
-  await expect(panel.getByRole("link").first()).toHaveAccessibleName(/โทรศัพท์/);
-  await expect(panel.getByRole("link").nth(1)).toHaveAccessibleName(/LINE/);
-  await expect(panel.getByRole("link").last()).toHaveAccessibleName(/Facebook/);
-  const line = panel.getByRole("link", { name: /คุยกับผู้เชี่ยวชาญ/ });
-  await expect(line).toHaveAttribute("href", "https://line.me/R/ti/p/@sunford");
-  await expect(panel.getByRole("link", { name: /โทรศัพท์/ })).toHaveAttribute(
+  await expect(panel.getByRole("link")).toHaveCount(4);
+  await expect(panel.getByRole("link", { name: /^โทรศัพท์/ })).toHaveAttribute(
     "href",
     "tel:034276999",
   );
-  const facebook = panel.getByRole("link", { name: /แชทผ่าน Facebook/ });
-  await expect(facebook).toHaveAttribute("href", "https://m.me/sunfordthai");
-  const logo = panel.getByRole("img", { name: "LINE", exact: true });
-  await expect(logo).toBeVisible();
-  await expect
-    .poll(() => logo.evaluate((element) => (element as HTMLImageElement).naturalWidth))
-    .toBeGreaterThan(0);
-  await page.screenshot({
-    path: test.info().outputPath("contact-desktop.png"),
-    animations: "disabled",
-  });
-  // Intercept the destination to exercise new-tab clicks without contacting anyone.
-  await context.route("https://line.me/**", (route) =>
-    route.fulfill({ contentType: "text/html", body: "LINE destination verified" }),
-  );
-  const linePopup = page.waitForEvent("popup");
-  await line.click();
-  const lineTab = await linePopup;
-  await expect(lineTab).toHaveURL("https://line.me/R/ti/p/@sunford");
-  await lineTab.close();
-  await context.route("https://m.me/**", (route) =>
-    route.fulfill({ contentType: "text/html", body: "Messenger destination verified" }),
-  );
-  const facebookPopup = page.waitForEvent("popup");
-  await facebook.click();
-  const facebookTab = await facebookPopup;
-  await expect(facebookTab).toHaveURL("https://m.me/sunfordthai");
-  await facebookTab.close();
+  for (const [name, url] of [
+    [/ผ่าน LINE/, "https://line.me/R/ti/p/@sunford"],
+    [/แชทผ่าน Facebook/, "https://m.me/sunfordthai"],
+    [
+      /เยี่ยมชม Sunford Shop/,
+      "https://sunfordshop.com/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81",
+    ],
+  ] as const) {
+    await context.route(url, (route) =>
+      route.fulfill({ contentType: "text/html", body: "Destination verified" }),
+    );
+    const popup = page.waitForEvent("popup");
+    await panel.getByRole("link", { name }).click();
+    const tab = await popup;
+    await expect(tab).toHaveURL(url);
+    await tab.close();
+  }
   await page.keyboard.press("Escape");
-  await expect(panel).toHaveCount(0);
+  await expect(panel).toBeHidden();
   await expect(launcher).toBeFocused();
   await expect(launcher).toHaveAttribute("aria-expanded", "false");
-  await page.evaluate(() => document.fonts.ready);
-  await page.mouse.click(0, 0);
-  await page.getByRole("contentinfo").locator(".footer-address").hover();
-  await page
-    .getByRole("contentinfo")
-    .screenshot({ path: test.info().outputPath("footer-desktop.png"), animations: "disabled" });
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page
-    .getByRole("contentinfo")
-    .screenshot({ path: test.info().outputPath("footer-mobile.png"), animations: "disabled" });
 });
 
-test("contact launcher stays inside the mobile viewport on product pages", async ({ page }) => {
+test("contact menu stays open with readable labels and closes on an outside click", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/products/rls1100");
-  const widget = page.locator(".floating-contact");
-  await expect(widget).toBeVisible();
-  await page.getByRole("contentinfo").scrollIntoViewIfNeeded();
-  await widget.getByRole("button", { name: "คุยกับผู้เชี่ยวชาญ", exact: true }).click();
+  const widget = page.locator("[data-shop-mascot]");
+  await page.locator("[data-mascot-launcher]").click();
   const panel = widget.getByRole("region", { name: "ช่องทางติดต่อ" });
   await expect(panel).toBeVisible();
-  const bounds = await panel.boundingBox();
-  expect(bounds!.x).toBeGreaterThanOrEqual(0);
-  expect(bounds!.y).toBeGreaterThanOrEqual(0);
-  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(390);
-  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(844);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({
-    path: test.info().outputPath("contact-mobile.png"),
-    animations: "disabled",
-  });
+  await expect(panel.getByRole("heading", { name: "ให้เราช่วยดูแลคุณ" })).toHaveCount(0);
+  await expect(panel.getByText("แนะนำ", { exact: true })).toBeVisible();
+  await expect(panel.getByRole("link")).toHaveCount(4);
+  const bounds = (await panel.boundingBox())!;
+  expect(bounds.x).toBeGreaterThanOrEqual(0);
+  expect(bounds.y).toBeGreaterThanOrEqual(0);
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);
+  expect(bounds.y + bounds.height).toBeLessThanOrEqual(844);
+  expect(bounds.width).toBeLessThanOrEqual(248);
+  for (const row of await panel.getByRole("link").all()) {
+    expect((await row.boundingBox())!.height).toBeLessThanOrEqual(60);
+  }
   await page.getByRole("heading", { name: "RLS1100", exact: true }).click();
-  await expect(panel).toHaveCount(0);
-  await expect(page.locator(".contact-banner")).toBeVisible();
+  await expect(panel).toBeHidden();
+  await expect(widget).toBeVisible();
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 640, height: 360 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.locator("[data-mascot-launcher]").click();
+    await expect(panel).toBeVisible();
+    await expect
+      .poll(async () => {
+        const bounds = (await panel.boundingBox())!;
+        const contentWidth = await page.evaluate(() => document.documentElement.clientWidth);
+        return (
+          bounds.x >= 0 &&
+          bounds.y >= 0 &&
+          bounds.x + bounds.width <= contentWidth &&
+          bounds.y + bounds.height <= viewport.height
+        );
+      })
+      .toBe(true);
+    await page.locator("[data-mascot-launcher]").click();
+    await expect(panel).toBeHidden();
+  }
 });
 
-test("labels slide away after five seconds while the contact buttons stay usable", async ({
-  page,
-  context,
-}) => {
-  await page.goto("/");
-  const widget = page.locator(".floating-contact");
-  await widget.getByRole("button", { name: "คุยกับผู้เชี่ยวชาญ", exact: true }).click();
-  const started = Date.now();
-  const labels = widget.locator(".contact-action-label");
-  await expect(labels.first()).toBeVisible();
-  await expect(labels.last()).toBeVisible();
-  await expect(labels.first()).toBeHidden({ timeout: 7500 });
-  expect(Date.now() - started).toBeGreaterThanOrEqual(4500);
-  await expect(labels.last()).toBeHidden();
-  const panel = widget.getByRole("region", { name: "ช่องทางติดต่อ" });
-  await expect(panel.getByRole("link")).toHaveCount(3);
-  await expect(
-    widget.getByRole("button", { name: "ปิดช่องทางติดต่อ", exact: true }),
-  ).toHaveAttribute("aria-expanded", "true");
-  await page.screenshot({
-    path: test.info().outputPath("contact-icons-after-five-seconds.png"),
-    animations: "disabled",
-  });
-  await context.route("https://line.me/**", (route) =>
-    route.fulfill({
-      contentType: "text/html",
-      body: "LINE destination verified after labels disappeared",
-    }),
-  );
-  const popup = page.waitForEvent("popup");
-  await panel.getByRole("link", { name: /คุยกับผู้เชี่ยวชาญ/ }).click();
-  const tab = await popup;
-  await expect(tab).toHaveURL("https://line.me/R/ti/p/@sunford");
-  await tab.close();
-  await widget.getByRole("button", { name: "ปิดช่องทางติดต่อ", exact: true }).click();
-  await widget.getByRole("button", { name: "คุยกับผู้เชี่ยวชาญ", exact: true }).click();
-  await expect(labels.first()).toBeVisible();
-});
-
-test("pointer and scrolling give the contact launcher a small drift without evading clicks", async ({
+test("mouse can cross the pet-panel gap and the menu closes immediately outside their region", async ({
   page,
 }) => {
-  await page.goto("/");
-  const widget = page.locator(".floating-contact");
-  const initial = (await widget.boundingBox())!;
-  await page.mouse.move(35, 180);
-  await expect
-    .poll(async () => Math.abs((await widget.boundingBox())!.x - initial.x))
-    .toBeGreaterThan(0.2);
-  const samples = page.evaluate(async () => {
-    const widget = document.querySelector(".floating-contact")!;
-    const positions: number[] = [];
-    for (let frame = 0; frame < 40; frame++) {
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      positions.push(widget.getBoundingClientRect().top);
-    }
-    return positions;
-  });
-  await page.mouse.wheel(0, 500);
-  const positions = await samples;
-  expect(Math.max(...positions) - Math.min(...positions)).toBeGreaterThan(0.2);
-  const moved = (await widget.boundingBox())!;
-  expect(Math.abs(moved.x - initial.x)).toBeLessThanOrEqual(4);
-  expect(Math.abs(moved.y - initial.y)).toBeLessThanOrEqual(7);
-  await widget.getByRole("button", { name: "คุยกับผู้เชี่ยวชาญ", exact: true }).click();
-  await expect(widget.getByRole("region", { name: "ช่องทางติดต่อ" })).toBeVisible();
-});
-
-test("reduced motion keeps contact buttons still and fully functional", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  const widget = page.locator(".floating-contact");
-  const initial = (await widget.boundingBox())!;
-  await page.mouse.move(35, 180);
-  await page.mouse.wheel(0, 500);
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
-  const moved = (await widget.boundingBox())!;
-  expect(Math.abs(moved.x - initial.x)).toBeLessThan(0.1);
-  expect(Math.abs(moved.y - initial.y)).toBeLessThan(0.1);
-  await widget.getByRole("button", { name: "คุยกับผู้เชี่ยวชาญ", exact: true }).click();
-  await expect(widget.getByRole("region", { name: "ช่องทางติดต่อ" }).getByRole("link")).toHaveCount(
-    3,
+  await page.goto("/service");
+  const mascot = page.locator("[data-shop-mascot]");
+  const launcher = page.locator("[data-mascot-launcher]");
+  const panel = mascot.locator("[data-mascot-contact]");
+  await launcher.click();
+  await expect(panel).toBeVisible();
+  const pet = (await launcher.boundingBox())!;
+  const menu = (await panel.boundingBox())!;
+  const crossingX = Math.max(pet.x, menu.x) + Math.min(pet.width, menu.width) / 2;
+  const gapY =
+    menu.y < pet.y ? (menu.y + menu.height + pet.y) / 2 : (pet.y + pet.height + menu.y) / 2;
+  await page.mouse.move(crossingX, gapY);
+  await expect(panel).toBeVisible();
+  await panel.getByRole("link", { name: /ผ่าน LINE/ }).hover();
+  await expect(panel).toBeVisible();
+  await page.mouse.move(Math.max(0, Math.min(pet.x, menu.x) - 30), pet.y);
+  await expect(panel).toBeHidden();
+  await expect(launcher).toHaveAttribute("aria-expanded", "false");
+  await launcher.focus();
+  await launcher.press("Enter");
+  await expect(panel).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
+});
+
+test.describe("touch contact menu", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test("lifting a finger keeps contact links open until dismissed", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/service");
+    const launcher = page.locator("[data-mascot-launcher]");
+    await launcher.tap();
+    const panel = page.locator("[data-mascot-contact]");
+    await expect(panel).toBeVisible();
+    await expect(panel.getByRole("link")).toHaveCount(4);
+    await launcher.tap();
+    await expect(panel).toBeHidden();
+  });
+});
+
+test("the invitation opens the compact contact menu without navigating to the shop", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/service");
+  const invitation = page.locator("[data-mascot-invitation]");
+  await expect(invitation).toHaveJSProperty("tagName", "BUTTON");
+  await expect(invitation).not.toHaveAttribute("href");
+  await invitation.evaluate((element) => {
+    const animation = element.getAnimations()[0];
+    animation.pause();
+    animation.currentTime = 15500;
+  });
+  await invitation.click();
+  const panel = page.locator("[data-mascot-contact]");
+  await expect(panel).toBeVisible();
+  await expect(panel.getByRole("link")).toHaveCount(4);
+  await expect(panel.getByRole("heading")).toHaveCount(0);
+  await expect(panel.getByRole("link", { name: "เยี่ยมชม Sunford Shop" })).toHaveAttribute(
+    "href",
+    /sunfordshop\.com/,
   );
+  await expect(page).toHaveURL(/\/service$/);
+  expect(page.context().pages()).toHaveLength(1);
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    if (!(await panel.isVisible())) await page.locator("[data-mascot-launcher]").click();
+    await page.screenshot({
+      path: test.info().outputPath(`compact-contact-${viewport.width}.png`),
+    });
+  }
 });

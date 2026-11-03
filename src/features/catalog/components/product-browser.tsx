@@ -4,14 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   ArrowRight,
-  Check,
   FlaskConical,
   Grid2X2,
   GitCompareArrows,
   Headphones,
   List,
   Package,
-  Plus,
   Scale,
   Search,
   Settings2,
@@ -21,9 +19,12 @@ import {
   Warehouse,
 } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
+import { CategoryBanner } from "./category-banner";
+import { getBannerCategoryForPath, getCategoryBanner } from "../data/category-banners";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { useCatalogStore } from "@/stores/catalog-store";
-import type { CatalogProduct, Product, CatalogScope } from "../types";
+import type { CatalogProduct, CatalogScope } from "../types";
+import { CatalogProductCard, catalogProductPhoto } from "./catalog-product-card";
 import { classifyProductTopics, topicGroups } from "../data/product-topics";
 import styles from "./product-browser.module.css";
 
@@ -34,14 +35,6 @@ const categoryIcons = {
   food: Scale,
   smart: Settings2,
 };
-
-const productPhotos: Record<string, string> = {
-  "acs30-jc21": "/images/products/acs30-jc21-cutout.png",
-  wps10ks: "/images/products/wps10ks.png",
-  feh5ks: "/images/products/feh5ks.png",
-};
-const productPhoto = (product: Pick<Product, "id" | "image">) =>
-  productPhotos[product.id] ?? product.image;
 
 export function ProductBrowser({
   products,
@@ -55,9 +48,8 @@ export function ProductBrowser({
   const setCategory = useCatalogStore((s) => s.setCategory);
   const query = useCatalogStore((s) => s.query);
   const setQuery = useCatalogStore((s) => s.setQuery);
-  const compareIds = useCatalogStore((s) => s.compareIds);
-  const toggleCompare = useCatalogStore((s) => s.toggleCompare);
-  const setCompareOpen = useCatalogStore((s) => s.setCompareOpen);
+  const compareMode = useCatalogStore((s) => s.compareMode);
+  const startCompare = useCatalogStore((s) => s.startCompare);
   const [mode, setMode] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState("recommended");
   const [topic, setTopic] = useState("all");
@@ -119,6 +111,27 @@ export function ProductBrowser({
   const title =
     scope?.title ??
     (category === "all" ? "ผลิตภัณฑ์ทั้งหมด" : (active?.label ?? "ผลิตภัณฑ์ทั้งหมด"));
+  const bannerCategory = scope
+    ? getBannerCategoryForPath(scope.currentPath)
+    : category === "all"
+      ? "commercial"
+      : getCategoryBanner(category)?.category;
+  const bannerBenefits = (
+    <div className={styles.benefits}>
+      <span>
+        <ShieldCheck size={19} />
+        {inCategory.length} ผลิตภัณฑ์
+      </span>
+      <span>
+        <Settings2 size={19} />
+        เปรียบเทียบได้ 3 รุ่น
+      </span>
+      <Link href="/service">
+        <Headphones size={19} />
+        บริการหลังการขาย
+      </Link>
+    </div>
+  );
   const selectCategory = (id: string) => {
     setCategory(id);
     setFeatured(false);
@@ -126,7 +139,12 @@ export function ProductBrowser({
     setLimit(24);
   };
   return (
-    <section className={styles.browser} id="products" aria-label="แคตตาล็อกสินค้า Sunford">
+    <section
+      className={styles.browser}
+      id="products"
+      data-page-surface="paper"
+      aria-label="แคตตาล็อกสินค้า Sunford"
+    >
       <aside className={styles.sidebar}>
         <nav className={styles.categories} aria-label="กรองหมวดหมู่สินค้า">
           {scope
@@ -192,7 +210,11 @@ export function ProductBrowser({
             <Star size={18} />
             สินค้าแนะนำ
           </button>
-          <button onClick={() => setCompareOpen(true)}>
+          <button
+            onClick={startCompare}
+            aria-pressed={compareMode}
+            className={compareMode ? styles.active : undefined}
+          >
             <GitCompareArrows size={18} />
             เปรียบเทียบสินค้า
           </button>
@@ -226,41 +248,42 @@ export function ProductBrowser({
         </Link>
       </aside>
       <div className={styles.content}>
-        <header className={styles.banner}>
-          <div className={styles.bannerCopy}>
-            <span className={styles.brand}>SUNFORD</span>
-            <h1>{title}</h1>
-            <p>
-              {!scope && category === "all"
+        {bannerCategory ? (
+          <CategoryBanner
+            category={bannerCategory}
+            title={title}
+            description={
+              !scope && category === "all"
                 ? "เครื่องชั่งดิจิทัลและโซลูชันธุรกิจ พร้อมบริการหลังการขาย"
-                : heroProduct?.subtitle}
-            </p>
-            <div className={styles.benefits}>
-              <span>
-                <ShieldCheck size={19} />
-                {inCategory.length} ผลิตภัณฑ์
-              </span>
-              <span>
-                <Settings2 size={19} />
-                เปรียบเทียบได้ 3 รุ่น
-              </span>
-              <Link href="/service">
-                <Headphones size={19} />
-                บริการหลังการขาย
-              </Link>
+                : heroProduct?.subtitle
+            }
+          >
+            {bannerBenefits}
+          </CategoryBanner>
+        ) : (
+          <header className={styles.banner}>
+            <div className={styles.bannerCopy}>
+              <span className={styles.brand}>SUNFORD</span>
+              <h1>{title}</h1>
+              <p>
+                {!scope && category === "all"
+                  ? "เครื่องชั่งดิจิทัลและโซลูชันธุรกิจ พร้อมบริการหลังการขาย"
+                  : heroProduct?.subtitle}
+              </p>
+              {bannerBenefits}
             </div>
-          </div>
-          {heroProduct && (
-            <div className={styles.heroImage}>
-              <ProductImage
-                src={productPhoto(heroProduct)}
-                alt={`SUNFORD ${heroProduct.name}`}
-                fill
-                sizes="(max-width: 600px) 40vw, 450px"
-              />
-            </div>
-          )}
-        </header>
+            {heroProduct && (
+              <div className={styles.heroImage}>
+                <ProductImage
+                  src={catalogProductPhoto(heroProduct)}
+                  alt={`SUNFORD ${heroProduct.name}`}
+                  fill
+                  sizes="(max-width: 600px) 40vw, 450px"
+                />
+              </div>
+            )}
+          </header>
+        )}
         <div className={styles.toolbar}>
           <p aria-live="polite">{matching.length} รายการ</p>
           <label className={styles.search}>
@@ -342,51 +365,14 @@ export function ProductBrowser({
           </div>
         )}
         <div className={`${styles.grid} ${mode === "list" ? styles.list : ""}`} aria-live="polite">
-          {matching.slice(0, limit).map((p) => {
-            const selected = compareIds.includes(p.id);
-            return (
-              <article className={styles.card} key={p.id}>
-                <Link href={`/products/${p.slug}`} className={styles.image}>
-                  <ProductImage
-                    src={productPhoto(p)}
-                    alt={`SUNFORD ${p.name}`}
-                    fill
-                    sizes="(max-width: 600px) 45vw, (max-width: 1100px) 30vw, 22vw"
-                  />
-                </Link>
-                <button
-                  className={styles.compare}
-                  aria-label={`${selected ? "นำออกจาก" : "เพิ่มเพื่อ"}เปรียบเทียบ ${p.name}`}
-                  aria-pressed={selected}
-                  disabled={!selected && compareIds.length >= 3}
-                  onClick={() => toggleCompare(p.id)}
-                >
-                  {selected ? <Check size={15} /> : <Plus size={15} />}
-                </button>
-                <div className={styles.copy}>
-                  <span className={styles.brand}>SUNFORD</span>
-                  <Link href={`/products/${p.slug}`}>
-                    <h2>{p.name}</h2>
-                  </Link>
-                  <p>{p.subtitle}</p>
-                  <div className={styles.tags}>
-                    {p.badge && <span>{p.badge}</span>}
-                    {p.capacity && p.capacity !== "—" && <span>{p.capacity}</span>}
-                    <span>
-                      {scope?.title ?? categories.find((c) => c.id === p.category)?.label}
-                    </span>
-                  </div>
-                </div>
-                <Link
-                  className={styles.detail}
-                  href={`/products/${p.slug}`}
-                  aria-label={`ดูรายละเอียด ${p.name}`}
-                >
-                  <ArrowRight size={17} />
-                </Link>
-              </article>
-            );
-          })}
+          {matching.slice(0, limit).map((product) => (
+            <CatalogProductCard
+              key={product.id}
+              product={product}
+              categoryLabel={scope?.title}
+              headingLevel={2}
+            />
+          ))}
         </div>
         {!matching.length && (
           <div className={styles.empty}>

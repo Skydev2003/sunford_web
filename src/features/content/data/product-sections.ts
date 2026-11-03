@@ -41,6 +41,7 @@ const accessoryLinks = [
   { label: "เครื่องพิมพ์", href: "/collections/printers" },
   { label: "ชิ้นส่วนเสริม", href: "/product/Scale-parts" },
   { label: "วัสดุสิ้นเปลือง", href: "/product/Consumables" },
+  { label: "สินค้าพรีเมี่ยม", href: "/product/premium" },
 ];
 
 function section(

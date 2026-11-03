@@ -2,7 +2,11 @@ import "server-only";
 import { getContentPage } from "@/features/content/server/content-repository";
 import { getProductSection } from "@/features/content/data/product-sections";
 import type { Product, CatalogScope } from "../types";
-import { supplementalCatalogGroup } from "../data/catalog-supplements";
+import {
+  catalogProductGroup,
+  supplementalCatalogGroup,
+  supplementalCatalogSection,
+} from "../data/catalog-supplements";
 
 const groups = [
   {
@@ -58,6 +62,7 @@ const groups = [
       "/collections/consumables",
       "/collections/POS Related",
       "/collections/scale-accessories",
+      "/collections/premium",
     ],
   },
 ];
@@ -83,7 +88,18 @@ export async function getCatalogPage(path: string, allProducts: Product[]) {
     const paths = section?.collectionPaths.length ? section.collectionPaths : [href];
     const pages = await Promise.all(paths.map(getContentPage));
     const handles = new Set(pages.flatMap((page) => page?.productHandles ?? []));
-    return allProducts.filter((product) => handles.has(product.sourceId ?? ""));
+    return allProducts.filter((product) => {
+      if (catalogProductGroup(product) !== group.root) return false;
+      if (handles.has(product.sourceId ?? "")) return true;
+      const supplemental = supplementalCatalogSection(product);
+      if (!supplemental) return false;
+      return (
+        supplemental === key(href) ||
+        getProductSection(supplemental)?.collectionPaths.some((candidate) =>
+          paths.some((path) => key(path) === key(candidate)),
+        )
+      );
+    });
   };
   const lists = await Promise.all(navigation.map((link) => members(link.href)));
   const rootIds = new Set(lists[0].map((product) => product.id));

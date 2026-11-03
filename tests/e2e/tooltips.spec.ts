@@ -7,7 +7,7 @@ test("product readability help explains display increments without changing the 
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/products/10639");
   const help = page.getByRole("button", { name: "ค่าละเอียดคืออะไร", exact: true });
-  const value = page.locator(".spec-list > div").filter({ has: help }).locator("dd");
+  const value = page.locator(".detail-weighing tbody td").nth(1);
   const original = await value.textContent();
   await help.hover();
   const tooltip = page.getByRole("tooltip");
@@ -115,6 +115,7 @@ test("tooltip descriptions follow comparison state while the original action sti
   page,
 }) => {
   await page.goto("/");
+  await page.locator(".header-compare").click();
   const add = page.getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ WPS10KS", exact: true });
   await add.hover();
   await expect(page.getByRole("tooltip")).toHaveText("เพิ่มเพื่อเปรียบเทียบ WPS10KS");
@@ -127,6 +128,8 @@ test("tooltip descriptions follow comparison state while the original action sti
   await remove.hover();
   await expect(page.getByRole("tooltip")).toHaveText("นำออกจากเปรียบเทียบ WPS10KS");
   await remove.click();
+  await expect(page.locator(".compare-bar")).toContainText("0/3");
+  await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
   await expect(page.locator(".compare-bar")).toHaveCount(0);
 });
 
@@ -135,7 +138,9 @@ test("tooltip at the bottom edge stays within narrow and wide viewports", async 
   for (const width of [320, 390, 1440]) {
     await page.mouse.move(0, 0);
     await page.setViewportSize({ width, height: 844 });
-    const launcher = page.locator(".contact-launcher");
+    const launcher = page.locator("[data-mascot-launcher]");
+    const position = (await launcher.boundingBox())!;
+    await page.mouse.move(position.x + position.width / 2, position.y + position.height / 2);
     await launcher.hover();
     const tooltip = page.getByRole("tooltip");
     await expect(tooltip).toHaveText((await launcher.getAttribute("aria-label"))!);

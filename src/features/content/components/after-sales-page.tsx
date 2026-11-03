@@ -93,7 +93,7 @@ export function AfterSalesPage() {
   }
 
   return (
-    <main id="main-content" className={styles.page}>
+    <main id="main-content" className={styles.page} data-page-surface="paper">
       <div className="container">
         <nav className={styles.breadcrumb} aria-label="เส้นทางนำทาง">
           <Link href="/">หน้าแรก</Link>

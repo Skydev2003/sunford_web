@@ -11,6 +11,7 @@ export function ProductImage({
   height,
   sizes,
   preload = false,
+  unoptimized = false,
   className,
 }: {
   src?: string;
@@ -20,6 +21,7 @@ export function ProductImage({
   height?: number;
   sizes?: string;
   preload?: boolean;
+  unoptimized?: boolean;
   className?: string;
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
@@ -43,6 +45,7 @@ export function ProductImage({
       height={height}
       sizes={sizes}
       preload={preload}
+      unoptimized={unoptimized}
       className={className}
       onError={() => setFailedSrc(src)}
     />

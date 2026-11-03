@@ -1,0 +1,47 @@
+[
+  {
+    "category": "commercial",
+    "title": "เครื่องชั่ง",
+    "referenceProduct": "ACS-30-JC21",
+    "image": "/images/category-banners-v2/commercial-458234ad93.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 167462
+  },
+  {
+    "category": "accessories",
+    "title": "อุปกรณ์เสริม",
+    "referenceProduct": "LP51",
+    "image": "/images/category-banners-v2/accessories-651959bf18.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 122348
+  },
+  {
+    "category": "pos",
+    "title": "ระบบ POS",
+    "referenceProduct": "P1W + POS1100-A",
+    "image": "/images/category-banners-v2/pos-accc855038.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 223860
+  },
+  {
+    "category": "platforms",
+    "title": "โครงสร้างแท่นชั่ง",
+    "referenceProduct": "Platform TMS 3040",
+    "image": "/images/category-banners-v2/platforms-fc9c29cc5a.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 159920
+  },
+  {
+    "category": "indicators",
+    "title": "อินดิเคเตอร์แท่นชั่ง",
+    "referenceProduct": "Indicator AW31",
+    "image": "/images/category-banners-v2/indicators-e2174168d3.webp",
+    "width": 3032,
+    "height": 570,
+    "bytes": 164248
+  }
+]

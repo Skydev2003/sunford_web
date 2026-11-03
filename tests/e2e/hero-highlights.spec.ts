@@ -175,7 +175,7 @@ test("callouts surround the model without covering copy or controls across respo
         });
         expect(fits, `${viewport.width} ${name}: bubble text fits its circle`).toBe(true);
         const text = (await item.locator(".hero-feature-text").boundingBox())!;
-        const chat = await page.locator(".contact-launcher").boundingBox();
+        const chat = await page.locator("[data-mascot-launcher]").boundingBox();
         if (chat) expect(overlaps(text, chat), "feature text stays clear of chat").toBe(false);
       }
       await expect(page.locator(".hero-bubble-layer")).toHaveCSS("pointer-events", "none");

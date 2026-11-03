@@ -18,6 +18,7 @@ test("storefront shelves scroll, show real photos and preserve comparison", asyn
   await expect
     .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
     .toBeGreaterThan(0);
+  await page.locator(".header-compare").click();
   await featured
     .getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ WPS10KS", exact: true })
     .click();
@@ -26,7 +27,7 @@ test("storefront shelves scroll, show real photos and preserve comparison", asyn
     "WPS10KS",
   );
   await page.getByRole("dialog").getByRole("button", { name: "ปิด", exact: true }).click();
-  await page.getByRole("button", { name: "ล้างรายการเปรียบเทียบ" }).click();
+  await expect(page.locator(".compare-bar")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.screenshot({ path: "C:/tmp/sunford-store-desktop.png", animations: "disabled" });
