@@ -321,3 +321,9 @@
 - Observed: Several searches reported that a path ending in `category-feature*` was invalid on Windows.
 - Root cause: PowerShell did not expand the wildcard for the native `rg` command, so ripgrep received a literal wildcard path.
 - Correct behavior: Search the actual directory and pass the filename pattern through `rg -g 'category-feature*.tsx'`; do not append wildcards to path arguments passed to ripgrep from PowerShell.
+
+## Exclude generated browser snapshots from formatting checks
+
+- Observed: The release stopped at `format:check` because three generated Playwright CLI YAML snapshots did not match Prettier formatting.
+- Root cause: `.playwright-cli` was absent from `.prettierignore`, so `prettier --check .` included browser-generated artifacts.
+- Correct behavior: Keep `.playwright-cli` in `.prettierignore`. Preserve generated snapshots as local evidence and verify `bun run format:check` after changing formatter exclusions; do not disable source formatting or reformat generated evidence to unblock releases.

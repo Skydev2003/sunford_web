@@ -6,6 +6,7 @@ public
 src/app/fonts
 test-results
 playwright-report
+.playwright-cli
 output
 outputs
 work

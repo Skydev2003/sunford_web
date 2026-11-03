@@ -1,5 +1,10 @@
 # Project state
 
+## Deployment formatting excludes browser snapshots (2026-11-03)
+
+- Added `.playwright-cli` to `.prettierignore` after reproducing the release's three YAML formatting failures. The generated files remain unchanged; source formatting checks stay enabled.
+- `bun run format:check` and `bun run lint` pass. Prettier's file-info API confirms all six existing browser artifacts are ignored while `package.json` remains included. No production build, commit or deployment was run for this formatter configuration change.
+
 ## Looping focus for stories and videos (2026-11-03)
 
 - Both homepage FocusDragScroll collections now keep3central cards clear on desktop and1on mobile≤720px, following the user's correction. Outer previews blur/fade and click into the clear window; clear cards retain native story/video actions. Three copies and a settled-scroll rebase allow looping both directions. Dragging blocks rebasing until release; pointer/touch/keyboard region arrows and viewport/modal changes retain logical selection. Duplicate copies are aria-hidden/tabIndex-1 and hidden entirely withoutJS. Badge styles use logical indices, keeping copies visually consistent.
