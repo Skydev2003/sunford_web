@@ -1,5 +1,14 @@
 import { expect, test } from "@playwright/test";
 import type { Product } from "../../src/features/catalog/types";
+import { catalogProductGroup } from "../../src/features/catalog/data/catalog-supplements";
+
+const categoryTitles = ["เครื่องชั่ง", "อุปกรณ์เสริม", "โครงสร้างแท่นชั่ง", "อินดิเคเตอร์แท่นชั่ง"];
+const categoryPaths = [
+  "/products",
+  "/product/scale-accessories",
+  "/product/scale-platforms",
+  "/Indicator",
+];
 
 test("category choices and product belt fit below navigation on desktop", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -46,6 +55,7 @@ test("category selection changes its media while preserving every description an
   await section.scrollIntoViewIfNeeded();
   const buttons = section.locator(".category-feature-trigger");
   await expect(buttons).toHaveCount(4);
+  await expect(section.locator(".category-feature-card-heading")).toHaveText(categoryTitles);
   await expect(section.locator(".category-feature-description")).toHaveCount(4);
   await expect(section.locator(".category-feature-panel a")).toHaveCount(0);
   await expect(section.locator(".category-feature-icon img")).toHaveCount(0);
@@ -55,15 +65,18 @@ test("category selection changes its media while preserving every description an
     .evaluateAll((nodes) => nodes.map((node) => node.innerHTML));
   expect(new Set(icons).size).toBe(4);
   await expect(page.locator(".source-showcase, .showcase-tile")).toHaveCount(0);
-  const expectedImages = [
-    "/images/pd/WPS10KS.png",
-    "/images/pd/RLS1100.png",
-    "/images/pd/TRP-58B.png",
-    "/images/pd/app.png",
-  ];
   const response = await page.request.get("/api/products");
   expect(response.ok()).toBe(true);
   const { products }: { products: Product[] } = await response.json();
+  const groups = categoryPaths.map((path) =>
+    products.filter((product) => catalogProductGroup(product) === path && product.image),
+  );
+  const expectedImages = [
+    "/images/pd/WPS10KS.png",
+    "/images/pd/TRP-58B.png",
+    "/videos/ChatGPT Image Nov 4, 2026, 01_57_30 PM.png",
+    "/videos/ChatGPT Image Nov 4, 2026, 01_57_44 PM.png",
+  ];
   const sources = new Set<string>();
   for (let index = 0; index < 4; index++) {
     const button = buttons.nth(index);
@@ -83,12 +96,17 @@ test("category selection changes its media while preserving every description an
       expectedImages[index],
     );
     await expect(image).toHaveCSS("object-fit", "contain");
-    await expect(section.locator(".category-feature-media img")).toHaveCount(index === 2 ? 2 : 1);
-    if (index === 2)
+    await expect(section.locator(".category-feature-media img")).toHaveCount(index === 1 ? 2 : 1);
+    if (index === 1)
       await expect(section.getByAltText("ไฟสัญญาณสามสี SUNFORD RYG-POLE")).toBeVisible();
     const originals = section.locator(".category-feature-product:not(.is-duplicate)");
     const count = await originals.count();
     expect(count).toBeGreaterThan(0);
+    expect(
+      await originals.evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute("data-product-id")),
+      ),
+    ).toEqual(groups[index].map((product) => product.id));
     const paddedCount = count * Math.max(1, Math.ceil(20 / count));
     await expect(section.locator(".category-feature-product")).toHaveCount(paddedCount * 3);
     expect(
@@ -96,27 +114,23 @@ test("category selection changes its media while preserving every description an
         .locator(".category-feature-track")
         .evaluate((node) => (node as HTMLElement).style.animationDuration),
     ).toBe(`${paddedCount * 2}s`);
-    if (index < 3) {
-      const entries = await originals.evaluateAll((nodes) =>
-        nodes.map((node) => ({
-          id: node.getAttribute("data-product-id"),
-          title: node.getAttribute("aria-label"),
-          href: node.getAttribute("href"),
-          image: node.querySelector("img")?.getAttribute("src"),
-        })),
-      );
-      for (const entry of entries) {
-        const product = products.find((product) => product.id === entry.id)!;
-        expect(product).toBeTruthy();
-        expect(entry.title).toBe(product.name);
-        expect(entry.href).toBe(`/products/${product.slug}`);
-        const url = new URL(entry.image!, page.url());
-        expect(url.searchParams.get("url") ?? url.pathname).toBe(product.image);
-      }
-    }
-    expect(await originals.first().getAttribute("href")).toMatch(
-      index === 3 ? /^\/software\/download#/ : /^\/products\//,
+    const entries = await originals.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        id: node.getAttribute("data-product-id"),
+        title: node.getAttribute("aria-label"),
+        href: node.getAttribute("href"),
+        image: node.querySelector("img")?.getAttribute("src"),
+      })),
     );
+    for (const entry of entries) {
+      const product = products.find((product) => product.id === entry.id)!;
+      expect(product).toBeTruthy();
+      expect(entry.title).toBe(product.name);
+      expect(entry.href).toBe(`/products/${product.slug}`);
+      const url = new URL(entry.image!, page.url());
+      expect(url.searchParams.get("url") ?? url.pathname).toBe(product.image);
+    }
+    expect(await originals.first().getAttribute("href")).toMatch(/^\/products\//);
     expect(
       await section
         .locator(".category-feature-product.is-duplicate")
@@ -159,11 +173,10 @@ test("failed category artwork retains its frame and category navigation", async 
   await expect(media.locator(".media-placeholder")).toBeVisible();
   const frame = (await media.boundingBox())!;
   expect(frame.width / frame.height).toBeCloseTo(16 / 9, 2);
-  await section.locator(".category-feature-trigger").nth(1).click();
-  await expect(section.locator(".category-feature-trigger").nth(1)).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  await section.getByRole("button", { name: "สำรวจ อินดิเคเตอร์แท่นชั่ง", exact: true }).click();
+  await expect(
+    section.getByRole("button", { name: "สำรวจ อินดิเคเตอร์แท่นชั่ง", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(media.locator("img")).toBeVisible();
 });
 
@@ -239,12 +252,12 @@ test("category keyboard links remain reachable and live reduced motion provides 
 });
 
 for (const width of [1440, 390]) {
-  test(`moving category product and software links navigate on the first click at ${width}px`, async ({
+  test(`moving scale and accessory links navigate on the first click at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    for (const category of [0, 3]) {
+    for (const category of [0, 1]) {
       await page.goto("/");
       await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
       const section = page.locator("#product-experience");
@@ -273,7 +286,7 @@ for (const width of [1440, 390]) {
   });
 }
 
-test("moving software links open on the first touch tap", async ({ browser, baseURL }) => {
+test("moving accessory links open on the first touch tap", async ({ browser, baseURL }) => {
   const context = await browser.newContext({
     baseURL,
     viewport: { width: 390, height: 1000 },
@@ -285,7 +298,7 @@ test("moving software links open on the first touch tap", async ({ browser, base
     const page = await context.newPage();
     await page.goto("/");
     await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
-    await page.locator(".category-feature-trigger").nth(3).tap();
+    await page.getByRole("button", { name: "สำรวจ อุปกรณ์เสริม", exact: true }).tap();
     const belt = page.locator(".category-feature-belt");
     await belt.scrollIntoViewIfNeeded();
     await page.locator(".category-feature-track").evaluate((e) => {
@@ -309,11 +322,13 @@ test("moving software links open on the first touch tap", async ({ browser, base
 
 test("category media precedes readable two-column choices on mobile and sits alongside on desktop", async ({
   page,
-}) => {
+}, testInfo) => {
+  const pageErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const section = page.locator("#product-experience");
-  for (const width of [320, 390, 576, 577, 768, 769, 991, 992, 1399, 1400, 1920]) {
+  for (const width of [320, 390, 576, 577, 768, 769, 991, 992, 1399, 1400, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await section.scrollIntoViewIfNeeded();
     const media = (await section.locator(".category-feature-media").boundingBox())!;
@@ -334,7 +349,23 @@ test("category media precedes readable two-column choices on mobile and sits alo
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
+    if ([320, 390, 768, 1440].includes(width)) {
+      await expect(section.locator(".category-feature-card-heading")).toHaveText(categoryTitles);
+      for (const button of await section.locator(".category-feature-trigger").all()) {
+        await button.click();
+        await expect(button).toHaveAttribute("aria-pressed", "true");
+        const image = section.locator(".category-feature-media img").last();
+        await expect
+          .poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth))
+          .toBeGreaterThan(0);
+        expect(await button.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(
+          true,
+        );
+      }
+      await section.screenshot({ path: testInfo.outputPath(`categories-${width}.png`) });
+    }
   }
+  expect(pageErrors).toEqual([]);
 });
 
 test("category artwork, vector icons and product destinations remain available without JavaScript", async ({

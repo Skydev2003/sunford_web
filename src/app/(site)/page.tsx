@@ -12,6 +12,7 @@ import { getSettings } from "@/features/cms/server/documents";
 import { defaultHero, catalogDefaults, defaultSite } from "@/features/cms/data/settings";
 import { heroSlideData } from "@/features/home/data/hero-slides";
 import { getClientProducts } from "@/features/catalog/server/client-products";
+import styles from "@/features/home/components/home-page.module.css";
 
 // Temporarily hide the homepage catalogue while keeping /products available.
 const showHomepageCatalog = false;
@@ -28,7 +29,7 @@ export default async function Home() {
   const { slides, ...heroCopy } = hero;
   const [featured] = heroSlideData(products, slides);
   return (
-    <main id="main-content">
+    <main id="main-content" className={styles.page}>
       <Hero
         brand={{ logo: site.logo, name: site.name }}
         description={featured?.descriptionOverride}
@@ -56,7 +57,7 @@ export default async function Home() {
         {showHomepageCatalog ? (
           <ProductCatalog products={await getClientProducts()} copy={catalog} />
         ) : (
-          <CategoryFeature products={products} targets={targets} images={images} />
+          <CategoryFeature products={products} images={images} />
         )}
       </HomeMotion>
       <HomeMotion>

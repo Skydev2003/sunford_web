@@ -3,13 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ProductImage } from "@/components/ui/product-image";
-import type { HomeImageSlot } from "../data/image-slots";
 import type { CategoryFeatureEntry } from "../data/category-feature-items";
-import { CategoryFeatureIcon } from "./category-feature-icons";
+import { CategoryFeatureIcon, type CategoryFeatureCategory } from "./category-feature-icons";
 
 export type CategoryFeatureItem = {
-  id: Exclude<HomeImageSlot, "spotlight">;
-  label: string;
+  id: CategoryFeatureCategory;
   title: string;
   description: string;
   image: string;
@@ -21,7 +19,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
   const [active, setActive] = useState(0);
   const selected = items[active] ?? items[0];
   if (!selected) return null;
-  // Fill a wide belt even for a small software collection, using its own real entries.
+  // Fill a wide belt even for a small category, using its own real entries.
   const beltItems = selected.entries.length
     ? Array.from(
         { length: Math.max(1, Math.ceil(20 / selected.entries.length)) },
@@ -43,6 +41,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
           <div
             id="category-feature-media"
             className="category-feature-media"
+            data-category={selected.id}
             role="region"
             aria-label={selected.title}
           >

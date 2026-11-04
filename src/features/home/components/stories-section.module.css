@@ -4,9 +4,8 @@
   --story-gap: 16px;
   overflow: hidden;
   padding-block: 32px 28px;
-  background:
-    radial-gradient(ellipse at 90% 100%, #ffe8f0, transparent 50%),
-    linear-gradient(#ffffff40 60%, #fff8fb80);
+  color: #f5f5f7;
+  background: #000;
 }
 .heading {
   display: flex;
@@ -26,7 +25,7 @@
 }
 .heading h2 {
   margin-top: 9px;
-  color: #142033;
+  color: #f5f5f7;
   font-size: clamp(26px, 2.5vw, 32px);
   font-weight: 600;
   letter-spacing: -0.7px;
@@ -37,7 +36,7 @@
 }
 .intro {
   margin-top: 4px;
-  color: #748097;
+  color: #a1a1a6;
   font-size: 13px;
   line-height: 1.7;
 }
@@ -50,12 +49,12 @@
   margin-bottom: 5px;
   padding: 10px 20px;
   border-radius: 999px;
-  background: #fff0f5;
-  color: #f4113d;
+  background: #1c1c1e;
+  color: #ff4c60;
   font-size: 12px;
 }
 .allStories:hover {
-  background: #ffe1eb;
+  background: #2a2a2a;
 }
 .section .track {
   position: relative;
@@ -69,10 +68,10 @@
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #fff;
+  border: 1px solid #2a2a2a;
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 25px #993c5a08;
+  background: #111;
+  box-shadow: 0 8px 25px #0004;
   filter: blur(var(--focus-blur, 0px));
   opacity: var(--focus-opacity, 1);
   transform: scale(var(--focus-scale, 1));
@@ -81,8 +80,8 @@
     box-shadow 0.2s;
 }
 .card:hover {
-  border-color: #f6c8d5;
-  box-shadow: 0 10px 28px #993c5a14;
+  border-color: #555;
+  box-shadow: 0 10px 28px #0008;
 }
 .card:focus-visible {
   outline: 3px solid #e71843;
@@ -96,7 +95,7 @@
   isolation: isolate;
   overflow: hidden;
   aspect-ratio: 1.27;
-  background: #f5f6f8;
+  background: #111;
 }
 .photo > img {
   object-fit: cover;
@@ -108,14 +107,14 @@
   left: 14px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #fff4f8f5;
-  color: #ee1c48;
+  background: #171717f5;
+  color: #ff4c60;
   font-size: 10px;
   font-weight: 500;
   line-height: 1.5;
 }
 .card[data-focus-accent] .badge {
-  background: #f77995;
+  background: #9f1432;
   color: #fff;
 }
 .body {
@@ -128,14 +127,14 @@
   display: block;
   min-height: 17px;
   margin-bottom: 4px;
-  color: #7e899d;
+  color: #a1a1a6;
   font-size: 11px;
   line-height: 1.7;
 }
 .card h3 {
   display: -webkit-box;
   overflow: hidden;
-  color: #18243a;
+  color: #f5f5f7;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.4;
@@ -148,7 +147,7 @@
   min-height: 56px;
   overflow: hidden;
   margin-block: 5px 16px;
-  color: #7c879a;
+  color: #a1a1a6;
   font-size: 13px;
   line-height: 1.55;
   -webkit-box-orient: vertical;
@@ -159,7 +158,7 @@
   align-items: center;
   gap: 10px;
   margin-top: auto;
-  color: #f31340;
+  color: #ff4c60;
   font-size: 13px;
   font-weight: 500;
 }
@@ -169,7 +168,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #fff0f5;
+  background: #242424;
 }
 /* Display just the two supplied photos from the reference, preserving their
    original pixels. The clipped area excludes the mock-up's dates and copy. */
