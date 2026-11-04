@@ -1,5 +1,17 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
+import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
+
+async function openPrimaryProductsMenu(page: Page, width: number) {
+  if (width >= 1400) {
+    await page.locator(".desktop-nav").getByRole("link", { name: "สินค้า", exact: true }).hover();
+    return page.locator(".submenu-panel.is-active .submenu-group-primary .submenu-links");
+  }
+  await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+  const group = page.locator("#mobile-navigation details").first();
+  await group.locator("summary").click();
+  return group.locator(".mobile-nav-panel");
+}
 
 const labels = ["สินค้า", "โซลูชันตามธุรกิจ", "ซอฟต์แวร์", "บริการ", "เกี่ยวกับเรา", "ติดต่อเรา"];
 const menus = [
@@ -15,6 +27,89 @@ const menus = [
   { label: "บริการ", groups: ["ข้อมูลและความช่วยเหลือ"] },
   { label: "เกี่ยวกับเรา", groups: [] },
 ];
+
+for (const width of [1440, 390]) {
+  test(`primary product links match the catalog and select each real family at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto("/contact-us");
+    const links = [
+      { id: "all", label: "ผลิตภัณฑ์ทั้งหมด", href: "/products" },
+      ...productCategoryDefinitions.map(({ id, label }) => ({
+        id,
+        label,
+        href: `/products?category=${id}`,
+      })),
+    ];
+    for (const [index, item] of links.entries()) {
+      const menu = await openPrimaryProductsMenu(page, width);
+      const primaryLinks = width >= 1400 ? menu.locator("a") : menu.locator(":scope > a");
+      await expect(primaryLinks).toHaveText(links.map((link) => link.label));
+      expect(
+        await primaryLinks.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href"))),
+      ).toEqual(links.map((link) => link.href));
+      if (index === 0)
+        await page.screenshot({ path: test.info().outputPath(`product-menu-${width}.png`) });
+      await menu.getByRole("link", { name: item.label, exact: true }).click();
+      await expect(page).toHaveURL(new URL(item.href, page.url()).href);
+      const catalog = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+      await expect(catalog.getByRole("heading", { level: 2 })).toHaveText(item.label);
+      if (item.id !== "all")
+        await expect(
+          catalog
+            .getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true })
+            .getByRole("button", { name: item.label, exact: true }),
+        ).toHaveAttribute("aria-pressed", "true");
+      if (width < 1400) await expect(page.locator("#mobile-navigation")).toHaveCount(0);
+    }
+    await page.screenshot({ path: test.info().outputPath(`selected-family-${width}.png`) });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    expect(errors).toEqual([]);
+  });
+}
+
+test("catalog category URLs support direct entry, refresh, local changes and browser history", async ({
+  page,
+  browser,
+  baseURL,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/products?category=pos");
+  const catalog = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+  await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ระบบ POS");
+  await page.reload();
+  await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ระบบ POS");
+  const parents = catalog.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true });
+  await parents.getByRole("button", { name: "โครงสร้างแท่นชั่ง", exact: true }).click();
+  await expect(page).toHaveURL(/\/products\?category=platforms$/);
+  const menu = await openPrimaryProductsMenu(page, 1440);
+  await menu.getByRole("link", { name: "ระบบ POS", exact: true }).click();
+  await expect(page).toHaveURL(/\/products\?category=pos$/);
+  await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ระบบ POS");
+  await page.goBack();
+  await expect(page).toHaveURL(/\/products\?category=platforms$/);
+  await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("โครงสร้างแท่นชั่ง");
+  await catalog.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).click();
+  await expect(page).toHaveURL(/\/products$/);
+  await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+  await page.goto("/products?category=not-a-real-family");
+  await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+  await expect(catalog.locator("article")).toHaveCount(24);
+  const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
+  try {
+    const staticPage = await context.newPage();
+    await staticPage.goto("/products");
+    await expect(staticPage.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+    await expect(staticPage.locator("article")).toHaveCount(24);
+  } finally {
+    await context.close();
+  }
+});
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -114,7 +209,9 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   await products.locator("summary").focus();
   await page.keyboard.press("Enter");
   await expect(products).toHaveAttribute("open", "");
-  await expect(products.getByRole("link", { name: "อินดิเคเตอร์", exact: true })).toBeVisible();
+  await expect(
+    products.getByRole("link", { name: "อินดิเคเตอร์แท่นชั่ง", exact: true }),
+  ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(mobile).toHaveCount(0);
   await expect(toggle).toBeFocused();
@@ -122,9 +219,9 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   await page.locator("#mobile-navigation summary").first().click();
   await page
     .locator("#mobile-navigation")
-    .getByRole("link", { name: "อินดิเคเตอร์", exact: true })
+    .getByRole("link", { name: "อินดิเคเตอร์แท่นชั่ง", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/Indicator$/);
+  await expect(page).toHaveURL(/\/products\?category=indicators$/);
   await expect(page.locator("#mobile-navigation")).toHaveCount(0);
 });
 

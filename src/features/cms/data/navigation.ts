@@ -1,18 +1,21 @@
 import type { NavigationGroup, NavigationItem } from "../types";
+import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
+
+const productSubmenuLabel = "ผลิตภัณฑ์ทั้งหมด";
+const productLinks = [
+  { label: productSubmenuLabel, href: "/products" },
+  ...productCategoryDefinitions.map(({ id, label }) => ({
+    label,
+    href: `/products?category=${id}`,
+  })),
+];
 
 export const defaultNavigation: NavigationItem[] = [
   {
     label: "สินค้า",
-    submenuLabel: "สินค้าทั้งหมด",
+    submenuLabel: productSubmenuLabel,
     href: "/products",
-    links: [
-      { label: "สินค้าทั้งหมด", href: "/products" },
-      { label: "เครื่องชั่งดิจิทัล", href: "/Product/Digital-weighing" },
-      { label: "อินดิเคเตอร์", href: "/Indicator" },
-      { label: "โครงสร้างแท่นชั่ง", href: "/product/scale-platforms" },
-      { label: "ระบบ POS", href: "/Product/POS" },
-      { label: "อุปกรณ์เสริม", href: "/product/scale-accessories" },
-    ],
+    links: productLinks,
     groups: [
       {
         label: "เครื่องชั่งดิจิทัล",
@@ -175,10 +178,26 @@ export const defaultNavigationGroups: Record<string, NavigationGroup[]> = Object
 );
 
 export function resolveNavigationItems(items: NavigationItem[]): NavigationItem[] {
-  return items.length === defaultNavigation.length &&
-    items.every((item, index) => item.href === defaultNavigation[index].href)
-    ? items
-    : defaultNavigation;
+  if (
+    items.length !== defaultNavigation.length ||
+    !items.every((item, index) => item.href === defaultNavigation[index].href)
+  )
+    return defaultNavigation;
+  const products = items.find((item) => item.href === "/products")!;
+  if (
+    products.submenuLabel === productSubmenuLabel &&
+    products.links.length === productLinks.length &&
+    products.links.every(
+      (link, index) =>
+        link.label === productLinks[index].label && link.href === productLinks[index].href,
+    )
+  )
+    return items;
+  return items.map((item) =>
+    item.href === "/products"
+      ? { ...item, submenuLabel: productSubmenuLabel, links: productLinks }
+      : item,
+  );
 }
 
 export const defaultNavigationExtras = {

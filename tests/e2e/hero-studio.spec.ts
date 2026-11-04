@@ -165,7 +165,7 @@ test("studio respects reduced motion and preserves mobile content without horizo
     mobileNavigation.getByRole("link", { name: "บริการหลังการขาย", exact: true }),
   ).toBeVisible();
   await mobileNavigation.getByRole("link", { name: "อินดิเคเตอร์แท่นชั่ง", exact: true }).click();
-  await expect(page).toHaveURL(/\/Indicator$/);
+  await expect(page).toHaveURL(/\/products\?category=indicators$/);
   await expect(page.locator("#mobile-navigation")).toHaveCount(0);
   await expect(page.locator(".nav-glass")).toHaveCSS("background-color", "rgb(247, 247, 249)");
 });
