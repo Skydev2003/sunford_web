@@ -21,10 +21,12 @@ export function CatalogProductCard({
   product,
   categoryLabel,
   headingLevel = 3,
+  modelOnly = false,
 }: {
   product: ProductCardData;
   categoryLabel?: string;
   headingLevel?: 2 | 3;
+  modelOnly?: boolean;
 }) {
   const categories = useCategories();
   const compareIds = useCatalogStore((s) => s.compareIds);
@@ -33,7 +35,7 @@ export function CatalogProductCard({
   const selected = compareIds.includes(product.id);
   const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
-    <article className={styles.card}>
+    <article className={styles.card} data-model-only={modelOnly || undefined}>
       <Link href={`/products/${product.slug}`} className={styles.image}>
         <ProductImage
           src={catalogProductPhoto(product)}
@@ -54,19 +56,23 @@ export function CatalogProductCard({
         </button>
       )}
       <div className={styles.copy}>
-        <span className={styles.brand}>SUNFORD</span>
+        {!modelOnly && <span className={styles.brand}>SUNFORD</span>}
         <Link href={`/products/${product.slug}`}>
           <Heading>{product.name}</Heading>
         </Link>
-        <p>{product.subtitle}</p>
-        <div className={styles.tags}>
-          {product.badge && <span>{product.badge}</span>}
-          {product.capacity && product.capacity !== "—" && <span>{product.capacity}</span>}
-          <span>
-            {categoryLabel ??
-              categories.find((category) => category.id === product.category)?.label}
-          </span>
-        </div>
+        {!modelOnly && (
+          <>
+            <p>{product.subtitle}</p>
+            <div className={styles.tags}>
+              {product.badge && <span>{product.badge}</span>}
+              {product.capacity && product.capacity !== "—" && <span>{product.capacity}</span>}
+              <span>
+                {categoryLabel ??
+                  categories.find((category) => category.id === product.category)?.label}
+              </span>
+            </div>
+          </>
+        )}
       </div>
     </article>
   );

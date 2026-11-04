@@ -9,10 +9,6 @@ import {
 } from "@/features/content/server/content-repository";
 import { getProducts, getProduct } from "@/features/catalog/server/product-repository";
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
-import { ProductBrowser } from "@/features/catalog/components/product-browser";
-import { CategoryBanner } from "@/features/catalog/components/category-banner";
-import { getBannerCategoryForPath } from "@/features/catalog/data/category-banners";
-import { getCatalogPage } from "@/features/catalog/server/catalog-page";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import { ContentDirectory } from "@/features/content/components/content-directory";
 import { ProductImage } from "@/components/ui/product-image";
@@ -72,6 +68,7 @@ export default async function SourceContentPage({
   }
   const page = await getContentPage(pathname);
   if (!page) notFound();
+  if (!page.managed && getProductSection(page.path)) redirect("/products");
   if (page.path === "/solutions" || page.path.startsWith("/solutions/"))
     return <SolutionsPage page={page} />;
   if (page.path !== pathname && page.managed) redirect(page.path);
@@ -84,7 +81,6 @@ export default async function SourceContentPage({
     ? [...new Set(collections.flatMap((collection) => collection?.productHandles ?? []))]
     : page.productHandles;
   const allProducts = await getProducts();
-  const catalog = !page.managed ? await getCatalogPage(page.path, allProducts) : undefined;
   const productIds = new Set(
     allProducts
       .filter((product) =>
@@ -95,10 +91,6 @@ export default async function SourceContentPage({
       .map((product) => product.id),
   );
   const clientProducts = await getClientProducts();
-  const catalogIds = new Set(catalog?.products.map((product) => product.id));
-  const catalogProducts = catalog
-    ? clientProducts.filter((product) => catalogIds.has(product.id))
-    : [];
   let products = clientProducts.filter((product) => productIds.has(product.id));
   if (section?.category) {
     const category = section.category;
@@ -155,44 +147,24 @@ export default async function SourceContentPage({
         .trim()
     : "";
   const sectionIntro = introduction.length > 80 ? introduction : "";
-  const bannerCategory = !page.managed ? getBannerCategoryForPath(page.path) : undefined;
   return (
     <main id="main-content" className="source-content-page">
-      {catalog && (
-        <ProductBrowser key={page.path} products={catalogProducts} scope={catalog.scope} />
-      )}
-      {!catalog && bannerCategory && (
-        <CategoryBanner
-          category={bannerCategory}
-          title={title}
-          description={sectionIntro}
-          standalone
-        />
-      )}
-      {!catalog && !bannerCategory && (
-        <header className="content-heading container">
-          <p className="eyebrow">
-            {page.kind === "collection"
-              ? "THE SUNFORD COLLECTION"
-              : page.kind === "article"
-                ? "SUNFORD STORIES"
-                : "SUNFORD"}
-          </p>
-          <h1>{title}</h1>
-          {sectionIntro && <p className="source-section-intro">{sectionIntro}</p>}
-          {formPage && (
-            <a className="button button-red" href={page.sourceUrl} target="_blank" rel="noreferrer">
-              เปิดแบบฟอร์ม Sunford <ArrowUpRight size={17} />
-            </a>
-          )}
-        </header>
-      )}
-      {catalog && hasContent && page.html && (
-        <details className="container source-prose" style={{ marginBlock: 28 }}>
-          <summary>ข้อมูลเพิ่มเติมเกี่ยวกับ{title}</summary>
-          <article dangerouslySetInnerHTML={{ __html: proseHtml }} />
-        </details>
-      )}
+      <header className="content-heading container">
+        <p className="eyebrow">
+          {page.kind === "collection"
+            ? "THE SUNFORD COLLECTION"
+            : page.kind === "article"
+              ? "SUNFORD STORIES"
+              : "SUNFORD"}
+        </p>
+        <h1>{title}</h1>
+        {sectionIntro && <p className="source-section-intro">{sectionIntro}</p>}
+        {formPage && (
+          <a className="button button-red" href={page.sourceUrl} target="_blank" rel="noreferrer">
+            เปิดแบบฟอร์ม Sunford <ArrowUpRight size={17} />
+          </a>
+        )}
+      </header>
       {softwareIndex && softwareCatalog && <SoftwareCatalog catalog={softwareCatalog} />}
       {/^\/software\/download\/sunford-rls(1100|1800)$/.test(page.path) && (
         <nav
@@ -220,7 +192,7 @@ export default async function SourceContentPage({
           />
         </div>
       )}
-      {!catalog && section && section.links.length > 0 && (
+      {section && section.links.length > 0 && (
         <nav className="container source-section-links" aria-label={`เลือกหมวด${title}`}>
           {section.links.map((link) => (
             <Link
@@ -246,7 +218,7 @@ export default async function SourceContentPage({
           dangerouslySetInnerHTML={{ __html: page.html }}
         />
       )}
-      {catalog ? null : page.kind === "collection" ? (
+      {page.kind === "collection" ? (
         <>
           {products.length ? (
             <ProductCatalog
@@ -300,7 +272,6 @@ export default async function SourceContentPage({
         </>
       )}
       {section &&
-        !catalog &&
         page.kind !== "collection" &&
         (products.length > 0 ? (
           <ProductCatalog

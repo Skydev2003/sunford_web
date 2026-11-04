@@ -3,36 +3,26 @@ import { load } from "cheerio";
 import sourcePages from "../../src/features/content/data/pages.json";
 
 const sections = [
-  { path: "/product/scale-platforms", title: "โครงสร้างแท่นชั่ง", count: 23 },
-  { path: "/Product/benchtop-platforms", title: "แท่นชั่งตั้งโต๊ะ", count: 2 },
-  { path: "/Product/floor-platforms", title: "แท่นชั่งตั้งพื้น", count: 14 },
-  { path: "/Product/POS", title: "ระบบ POS ชั่งน้ำหนักเพื่อการขาย", count: 3 },
-  { path: "/Product/POS/Android", title: "POS ระบบ Android", count: 2 },
-  { path: "/Product/POS/Windows", title: "POS ระบบ Windows", count: 1 },
+  "/product/scale-platforms",
+  "/Product/benchtop-platforms",
+  "/Product/floor-platforms",
+  "/Product/POS",
+  "/Product/POS/Android",
+  "/Product/POS/Windows",
 ];
 
-test("platform and POS menus show every source product in the correct section", async ({
-  page,
-}) => {
+test("legacy platform and POS menus open the replacement catalog", async ({ page }) => {
   test.setTimeout(120000);
-  for (const section of sections) {
-    await page.goto(section.path);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(section.title);
-    await expect(page.locator(".product-card")).toHaveCount(section.count);
+  for (const path of sections) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/products$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+    await expect(
+      page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" }).locator("article"),
+    ).toHaveCount(24);
     await expect(page.locator(".source-empty, .source-image-slot .media-placeholder")).toHaveCount(
       0,
     );
-    await expect(page.locator('.source-section-links [aria-current="page"]')).toHaveCount(1);
-    if (section.path.endsWith("/Windows")) {
-      await expect(page.locator(".product-card")).toContainText("P1W");
-      await expect(page.locator('.product-card a[href="/products/10802"]')).toHaveCount(0);
-      await expect(page.locator(".product-category")).toHaveText("POS ระบบ Windows");
-    }
-    if (section.path.endsWith("/Android")) {
-      await expect(page.locator(".product-grid")).toContainText("P1");
-      await expect(page.locator(".product-grid")).toContainText("P4");
-      await expect(page.locator(".product-grid")).not.toContainText("P1W");
-    }
     await page.setViewportSize({ width: 390, height: 844 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,

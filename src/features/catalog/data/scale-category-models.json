@@ -1,0 +1,277 @@
+{
+  "sourceFile": "docs/sunford-scale-categories.md",
+  "sourceSha256": "7c7f4520a0b1981d7644baca7bf8854369db4001b0588fb9230312c02c96f237",
+  "categories": [
+    {
+      "id": "scale-price",
+      "label": "เครื่องชั่งคำนวณราคาหน้าร้าน",
+      "englishLabel": "Price Computing Scales",
+      "groups": [
+        {
+          "label": "รุ่นตั้งโต๊ะขนาดเล็ก–กลาง",
+          "models": [
+            "ACS-30-JC21",
+            "ACS-30-JC21ET",
+            "ACS-30-JC21EL",
+            "ACS-30-FC31",
+            "ACS-30-FE31",
+            "ACS-30-JE11",
+            "ACS-30-JE21",
+            "ACS-30-JC91",
+            "ACS-3-AC31",
+            "ACS-30-AC31",
+            "ACS-30-JC81",
+            "ACS-30-JE81",
+            "TCS-60-JC62Z",
+            "TCS-60-JE62ZR"
+          ]
+        },
+        {
+          "label": "รุ่นแท่นชั่ง / ชั่งน้ำหนักมาก",
+          "models": [
+            "CCS-150-JC62Z",
+            "DCS-150-JC62Z",
+            "TIS-150-JC62Z",
+            "TIS-150-JE62ZR",
+            "TIS-300-JC62Z",
+            "TIS-300-JE62ZR"
+          ]
+        },
+        {
+          "label": "รุ่นพิมพ์สติ๊กเกอร์ / ระบบ POS",
+          "models": ["RLS1100", "POS1100-A", "POS1100-B"]
+        }
+      ]
+    },
+    {
+      "id": "scale-industrial",
+      "label": "เครื่องชั่งอุตสาหกรรมงานผลิต",
+      "englishLabel": "Industrial & Production Scales",
+      "groups": [
+        {
+          "label": "รุ่นตั้งโต๊ะงานผลิต / ตรวจนับ",
+          "models": [
+            "FEH5000",
+            "FEH5KS",
+            "FEH10KS",
+            "FEH30KS",
+            "KBS5000",
+            "KBS6000S",
+            "PCS-60-FC11",
+            "TMS-30-AC31S",
+            "TMS-60-AW31"
+          ]
+        },
+        {
+          "label": "รุ่นแท่นชั่งอุตสาหกรรม / ตั้งพื้น",
+          "models": [
+            "FCS-60-AW31",
+            "FCS-150-AW31",
+            "FCS-150-SW31",
+            "FCS-300-SW31",
+            "TCS-150-AW31",
+            "TCS-300-AW31",
+            "TCS-500-AW31",
+            "TCS-600-AW31",
+            "TSS-60-SW31S",
+            "TSS-150-SW31S",
+            "TSS-300-SW31S",
+            "VCS-300-SW31S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scale-analytical",
+      "label": "เครื่องชั่งงานวิเคราะห์ความแม่นยำสูง",
+      "englishLabel": "High Precision & Laboratory Scales",
+      "groups": [
+        {
+          "label": "รุ่นซีรีส์ C (วิทยาศาสตร์มาตรฐาน ISO)",
+          "models": ["C1", "C5"]
+        },
+        {
+          "label": "รุ่นซีรีส์ R (หน้าจอแสดงผล 2 ฝั่ง)",
+          "models": ["R3", "R6"]
+        },
+        {
+          "label": "รุ่นซีรีส์ S & TGS",
+          "models": ["S1", "S2", "S3", "TGS600S", "AVS-25-K1"]
+        }
+      ]
+    },
+    {
+      "id": "scale-kitchen",
+      "label": "เครื่องชั่งงานครัวและกาแฟ",
+      "englishLabel": "Kitchen & Coffee Scales",
+      "groups": [
+        {
+          "label": "เครื่องชั่งงานครัวและตวงของเหลว",
+          "models": ["WPK5000", "VR5000", "VC5000", "KAH5000S", "VL15000S"]
+        },
+        {
+          "label": "เครื่องชั่งกาแฟ",
+          "models": ["VB3000S HiCoFE"]
+        },
+        {
+          "label": "เครื่องชั่งสุขภาพ / บุคคล",
+          "models": ["Fitdays Smart Scale - FD1000"]
+        }
+      ]
+    },
+    {
+      "id": "scale-water-dust",
+      "label": "เครื่องชั่งกันน้ำและกันฝุ่น 100%",
+      "englishLabel": "Waterproof Scales IP67 & Stainless Steel",
+      "groups": [
+        {
+          "label": "รุ่นกันน้ำ 100% (IP67 / โครงสร้างสแตนเลส)",
+          "models": ["WPS6KS", "WPS10KS", "WSS30KS", "WPK5000"]
+        },
+        {
+          "label": "รุ่นคำนวณราคากันน้ำ 100%",
+          "models": ["ACS-30-JC81", "ACS-30-JE81"]
+        },
+        {
+          "label": "รุ่นแท่นชั่งกันน้ำ IP67",
+          "models": [
+            "TSS-30-WP31E",
+            "TSS-60-WP31E",
+            "TSS-150-WP31E",
+            "TSS-300-WP31E",
+            "CCS-150-JC62Z"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scale-benchtop",
+      "label": "เครื่องชั่งตั้งโต๊ะ",
+      "englishLabel": "Bench / Tabletop Scales",
+      "groups": [
+        {
+          "label": "ซีรีส์คำนวณราคา",
+          "models": [
+            "ACS-30-JC21",
+            "ACS-30-JC21ET",
+            "ACS-30-JC21EL",
+            "ACS-30-FC31",
+            "ACS-30-FE31",
+            "ACS-30-JE11",
+            "ACS-30-JE21",
+            "ACS-30-JC81",
+            "ACS-30-JE81",
+            "ACS-30-JC91",
+            "TCS-60-JC62Z",
+            "TCS-60-JE62ZR"
+          ]
+        },
+        {
+          "label": "ซีรีส์งานชั่งทั่วไป / งานผลิต",
+          "models": [
+            "FEH5000",
+            "FEH5KS",
+            "FEH10KS",
+            "FEH30KS",
+            "WPK5000",
+            "WPS6KS",
+            "WPS10KS",
+            "WSS30KS",
+            "VR5000",
+            "VC5000",
+            "KAH5000S",
+            "KBS5000",
+            "KBS6000S",
+            "VB3000S HiCoFE",
+            "TMS-30-AC31S",
+            "TMS-60-AW31",
+            "PCS-60-FC11"
+          ]
+        },
+        {
+          "label": "ซีรีส์วิเคราะห์ความแม่นยำสูง",
+          "models": ["C1", "C5", "R3", "R6", "S1", "S2", "S3", "TGS600S"]
+        }
+      ]
+    },
+    {
+      "id": "scale-floor",
+      "label": "เครื่องชั่งตั้งพื้น",
+      "englishLabel": "Platform / Floor Scales",
+      "groups": [
+        {
+          "label": "แท่นชั่งคำนวณราคา",
+          "models": [
+            "CCS-150-JC62Z",
+            "DCS-150-JC62Z",
+            "TIS-150-JC62Z",
+            "TIS-150-JE62ZR",
+            "TIS-300-JC62Z",
+            "TIS-300-JE62ZR",
+            "TIS-150-SW31F",
+            "TIS-300-SW31F"
+          ]
+        },
+        {
+          "label": "แท่นชั่งอุตสาหกรรม / เตือนน้ำหนัก",
+          "models": [
+            "FCS-60-AW31",
+            "FCS-150-AW31",
+            "FCS-150-SW31",
+            "FCS-300-SW31",
+            "TCS-150-AW31",
+            "TCS-300-AW31",
+            "TCS-500-AW31",
+            "TCS-600-AW31",
+            "TCS-150-JE62ZR",
+            "TCS-150-SW31F"
+          ]
+        },
+        {
+          "label": "แท่นชั่งสแตนเลส / กันน้ำ",
+          "models": [
+            "TSS-30-WP31E",
+            "TSS-60-WP31E",
+            "TSS-150-WP31E",
+            "TSS-300-WP31E",
+            "TSS-60-SW31S",
+            "TSS-150-SW31S",
+            "TSS-300-SW31S",
+            "VCS-300-SW31S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scale-pole",
+      "label": "เครื่องชั่งมีเสา",
+      "englishLabel": "Pole Display / Pole Structure Scales",
+      "groups": [
+        {
+          "label": "รุ่นตั้งโต๊ะมีเสาคำนวณราคา",
+          "models": ["TCS-60-JC62Z", "TCS-150-JC62Z"]
+        },
+        {
+          "label": "รุ่นแท่นชั่งตั้งพื้นมีเสา",
+          "models": [
+            "TCS-150-JE62ZR",
+            "TCS-150-AW31",
+            "TCS-300-AW31",
+            "TCS-500-AW31",
+            "TCS-600-AW31",
+            "CCS-150-JC62Z",
+            "TIS-150-JC62Z",
+            "TIS-150-JE62ZR",
+            "TIS-300-JC62Z",
+            "TIS-300-JE62ZR"
+          ]
+        },
+        {
+          "label": "รุ่นเครื่องชั่ง POS มีเสา",
+          "models": ["POS1100-A", "POS1100-B"]
+        }
+      ]
+    }
+  ],
+  "referenceSha256": "b1f94ee912bbe983f2b936a260e2319867d29b7431437cb6539a1bddc69339e1"
+}

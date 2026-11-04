@@ -1,100 +1,77 @@
 import { expect, test } from "@playwright/test";
-import { load } from "cheerio";
 import sourcePages from "../../src/features/content/data/pages.json";
-import type { Product } from "../../src/features/catalog/types";
-import { publicPath } from "../../src/features/content/data/public-paths.mjs";
 
-// Dedicated source collections correct several misconfigured landing-page grids.
-const collectionSources: Record<string, string[]> = {
-  "/product/digital-weighing": ["เครื่องชั่ง"],
-  "/product/laboratory": ["ห้องปฏิบัติการ"],
-  "/product/industrial": ["อุตสาหกรรม"],
-  "/product/commercial": ["พาณิชยกรรมและบริการ"],
-  "/product/lifestyle-scales": ["ไลฟ์สไตล์"],
-  "/product/lifestyle": ["ไลฟ์สไตล์"],
-  "/indicator": [
-    "อินดิเคเตอร์ห้องปฏิบัติการ",
-    "อินดิเคเตอร์อุตสาหกรรม",
-    "อินดิเคเตอร์พาณิชยกรรมและบริการ",
-  ],
-  "/indicator/industrial": ["อินดิเคเตอร์อุตสาหกรรม"],
-  "/product/scale-platforms": ["โครงสร้างแท่นชั่ง"],
-  "/product/scale-peripherals": ["อุปกรณ์ต่อพ่วง"],
-  "/product/scale-parts": ["ชิ้นส่วน"],
-  "/product/parts": ["ชิ้นส่วน"],
-  "/product/consumables": ["วัสดุสิ้นเปลือง"],
-  "/product/pos/windows": ["POS ระบบ Windows"],
-};
+const legacyCategories = sourcePages.filter(
+  (page) =>
+    page.kind !== "product" &&
+    (page.kind === "collection" || /^\/(product|indicator)(\/|$)/i.test(page.path)),
+);
 
-test("every source category renders its published products without cross-category substitutes", async ({
+test("every imported category and collection redirects to the replacement catalog", async ({
   request,
 }) => {
   test.setTimeout(180000);
-  const response = await request.get("/api/products");
-  expect(response.ok()).toBe(true);
-  const { products } = (await response.json()) as { products: Product[] };
-  const bySlug = new Map(products.map((product) => [product.slug, product]));
-  const categories = sourcePages.filter(
-    (page) => page.kind === "collection" || /^\/(product|indicator)(\/|$)/i.test(page.path),
-  );
-  for (let start = 0; start < categories.length; start += 4) {
-    await Promise.all(
-      categories.slice(start, start + 4).map(async (source) => {
-        const sourceCollections = collectionSources[source.path.toLowerCase()];
-        const handles = new Set(
-          sourceCollections
-            ? sourceCollections.flatMap(
-                (name) =>
-                  sourcePages.find((page) => page.path === publicPath(`/collections/${name}`))!
-                    .productHandles,
-              )
-            : source.productHandles,
-        );
-        const published = products.filter((product) => handles.has(product.sourceId ?? ""));
-        const page = await request.get(source.path);
-        expect(page.status(), source.path).toBe(200);
-        const $ = load(await page.text());
-        expect($(".product-card").length, source.path).toBe(Math.min(24, published.length));
-        if (published.length) {
-          expect($(".catalog-result-count").text(), source.path).toContain(
-            `${published.length} ผลิตภัณฑ์`,
-          );
-          $(".product-card-image").each((_, link) => {
-            const slug = decodeURIComponent($(link).attr("href")!.split("/").at(-1)!);
-            expect(handles.has(bySlug.get(slug)?.sourceId ?? ""), `${source.path}: ${slug}`).toBe(
-              true,
-            );
-          });
-        } else {
-          expect($(".source-empty").text(), source.path).toContain("ยังไม่มีสินค้าในหมวดหมู่นี้");
-          expect($(".source-empty .media-placeholder").length, source.path).toBe(0);
-        }
-      }),
-    );
+  expect(legacyCategories.length).toBeGreaterThan(50);
+  for (const category of legacyCategories) {
+    const response = await request.get(category.path, { maxRedirects: 0 });
+    expect(response.status(), category.path).toBe(307);
+    expect(response.headers().location, category.path).toBe("/products");
   }
 });
 
-test("category search stays local and the complete scale catalogue can be expanded", async ({
-  page,
-}) => {
-  await page.goto("/product/industrial");
-  await expect(page.locator(".product-card")).toHaveCount(20);
-  await page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("no-matching-model");
-  await expect(page.locator(".product-card")).toHaveCount(0);
-  await page.goto("/Indicator");
-  await expect(page.locator(".product-card")).toHaveCount(7);
-  await expect(page.locator(".product-category").first()).toHaveText("อินดิเคเตอร์แท่นชั่ง");
-  await page.goto("/Product/Digital-weighing");
-  await expect(page.locator(".catalog-result-count")).toContainText("71 ผลิตภัณฑ์");
-  while (await page.locator(".catalog-load-more button").count())
-    await page.locator(".catalog-load-more button").click();
-  await expect(page.locator(".product-card")).toHaveCount(71);
-  await page.setViewportSize({ width: 390, height: 844 });
-  for (const path of ["/Indicator", "/product/scale-accessories", "/product/Consumables"]) {
-    await page.goto(path);
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
-      path,
-    ).toBe(true);
+for (const width of [390, 768, 1440]) {
+  test(`legacy links open the responsive replacement catalog at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    for (const path of [
+      "/Product/Digital-weighing",
+      "/product/digital-weighing",
+      "/Indicator",
+      "/product/scale-platforms",
+      "/Product/POS",
+      "/product/scale-accessories",
+      "/collections/scales",
+    ]) {
+      await page.goto(path);
+      await expect(page).toHaveURL(/\/products$/);
+      const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+      await expect(region.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+      await expect(
+        region.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }).getByRole("button"),
+      ).toHaveCount(5);
+      await expect(region.locator("article")).toHaveCount(24);
+      await expect(page.locator("[data-category-banner]")).toHaveCount(0);
+      await expect(region.getByRole("navigation", { name: "กรองหมวดหมู่สินค้า" })).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+    await page.screenshot({ path: test.info().outputPath(`replacement-${width}.png`) });
+    expect(errors).toEqual([]);
+  });
+}
+
+test("legacy categories also redirect without JavaScript", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
+  try {
+    const page = await context.newPage();
+    await page.goto("/Product/Digital-weighing");
+    await expect(page).toHaveURL(/\/products$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+    await expect(page.locator("article")).toHaveCount(24);
+  } finally {
+    await context.close();
   }
+});
+
+test("noncatalog pages and unknown routes keep their own behavior", async ({ page }) => {
+  for (const path of ["/about-us", "/contact-us", "/service", "/software/download", "/solutions"]) {
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
+    await expect(page).toHaveURL(new URL(path, page.url()).href);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  }
+  const missing = await page.goto("/product/unknown-retired-category");
+  expect(missing?.status()).toBe(404);
 });
