@@ -1,0 +1,69 @@
+{
+  "images": [
+    {
+      "file": "aws1-lowkey.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "sha256": "46d4f924e69febca2e62fb19035377afe801aa16870f86fc5d845e6235f315a6",
+      "corners": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "file": "platform-lowkey.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "sha256": "d2e2e539c8ab8075847fea89e0ebd1832ca17fd605dd2cc43dcb3b1968134732",
+      "corners": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ]
+    }
+  ],
+  "source": "AI relighting/reconstruction from the two user-supplied references; original source files unchanged.",
+  "review": "Both visually inspected: front centered, no promotional overlays, green display remains readable, platform has original mount and no added indicator.",
+  "framework_feedback": "Media-only generation; no qualifying Next.js issue."
+}
