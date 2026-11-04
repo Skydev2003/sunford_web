@@ -1,5 +1,298 @@
 # Project state
 
+## Task: Rebuild SUNFORD Official Website — plan-v2 (2026-11-04)
+
+Status: "Need Information"
+Approval: "Pending"
+Documentation Approval: "Approved"
+Documentation Progress: "Done"
+
+Status / Approval ข้างต้นใช้กับการพัฒนาเว็บไซต์ ส่วนคำขอล่าสุดอนุญาตเฉพาะการปรับ Spec/Plan ก่อน ยังไม่แก้โค้ด หัวข้อนี้แทนร่างงานเว็บไซต์ที่ยังไม่มีบรีฟด้านล่าง โดยเก็บหัวข้อเดิมเป็นประวัติ ค่า Ready to Code ในไฟล์แนบไม่ใช่หลักฐานว่าข้อมูลหรือการอนุมัติครบแล้ว
+
+### Goal
+
+จัดทำข้อกำหนดและแผน Rebuild เว็บไซต์ทางการ SUNFORD จาก `C:/Users/cityc/Downloads/plan-v2.md` ให้ตรงโครงสร้างจริงและ AGENTS.md ครอบคลุมหน้าแรก สินค้า โซลูชัน ซอฟต์แวร์ บริการ เกี่ยวกับเรา ติดต่อเรา และ Navigation / Footer โดยยังไม่เริ่ม Implementation
+
+### Scope In
+
+- รอบเอกสารนี้: ปรับเฉพาะ spec.md / plan.md ตรวจเส้นทางจริงและสิ่งที่มีอยู่ แยกข้อกำหนดที่ยืนยันแล้ว ข้อเสนอจากแผน และข้อมูลที่ยังขาด
+- ขอบเขตเว็บไซต์ที่เสนอให้พัฒนาในภายหลัง: หน้าแรก, /products, /products/[slug] และหก Canonical Routes คือ /products, /solutions, /applications-and-softwares, /service, /about-us, /contact-us พร้อม Header / Mega Menu / Footer ที่เกี่ยวข้อง
+- ใช้ Stack เดิม: Next.js 16 App Router, React 19, TypeScript 5, CSS Modules และ CSS เดิม, Prisma ORM 7 / PostgreSQL, Node.js 24
+- รักษา Brand Consistency ธีมดำ-ขาว-แดง ข้อมูลสินค้า รูปภาพ Routes และพฤติกรรมที่ยืนยันแล้ว ปรับเฉพาะส่วนต่างจากของเดิมที่ Spec/Plan ฉบับพร้อมอนุมัติระบุ
+
+### Scope Out
+
+- รอบนี้ไม่แก้ AGENTS.md, โค้ดเว็บไซต์, Stylesheets, Dependencies, ฐานข้อมูล หรือไฟล์ต้นฉบับ plan-v2.md
+- ไม่เพิ่ม Tailwind CSS / UI Library ไม่สร้าง Admin, เปลี่ยน Schema, Migration, Seed หรือ Deploy จากแผนนี้
+- ไม่สร้างหน้า Route แยกใหม่เพื่อแทน Catch-all ไม่ลบข้อมูลนำเข้า ไม่เปลี่ยน URL หรือรื้อ Component เดิมโดยไม่มีข้อกำหนดและการอนุมัติเฉพาะ
+- ไม่แต่งข้อมูลรับประกัน ชื่อซอฟต์แวร์ Claim มาตรฐาน/การรับรอง รูปภาพ หรือ API และห้ามโฆษณาบริการรับสอบเทียบ (Calibration Service) เพราะ SUNFORD ไม่มีบริการนี้
+
+### Current State / Verified Architecture
+
+- หน้าแรก `src/app/(site)/page.tsx` และแคตตาล็อก `src/app/(site)/products/page.tsx` เป็น async Server Components อยู่แล้ว ใช้ Repository และ Settings ฝั่งเซิร์ฟเวอร์ ไม่จำเป็นต้องเริ่มทำ RSC / Prisma ใหม่ทั้งหมดจากข้อความในแผน
+- `/solutions`, `/applications-and-softwares`, `/service`, `/about-us`, `/contact-us` ใช้ `src/app/(site)/[...path]/page.tsx` ซึ่งเลือก Component / Content ตาม Path; การแก้ไฟล์นี้อาจกระทบหน้าสาธารณะอื่นด้วย
+- Header จริงคือ `src/components/layout/header.tsx` และ Footer คือ `src/components/layout/footer.tsx` ไม่ใช่ Header.tsx / Footer.tsx; Header รับ Settings ผ่าน SiteHeader และมีหก Canonical Routes ใน navigation.ts อยู่แล้ว
+- Repository สินค้าใช้ Prisma ฝั่งเซิร์ฟเวอร์และมี Snapshot fallback เมื่อไม่ตั้งฐานข้อมูล ต้องรักษากฎไม่ดึงสินค้าที่ซ่อน/ลบกลับมาและการแชร์ข้อมูลระหว่าง Server/Client ตาม Contract เดิม
+- พบสโลแกน “ความเที่ยงตรง ที่คุณวางใจ” ใน Footer เดิม ส่วนเนื้อหาใหม่และตำแหน่งที่ต้องการเพิ่มยังต้องกำหนด
+- รอบนี้ยืนยันจาก Source เท่านั้น ยังไม่ได้ทดสอบ HTTP, ฐานข้อมูลจริง, Build หรือ Browser ของเว็บไซต์
+
+### UI/UX Brand Alignment
+
+- ใช้ Brand Guideline/Reference ที่ผู้ใช้อนุมัติและ Tokens ใน src/styles/base.css รักษาโลโก้ Typography ระยะห่าง รูปสินค้า และ Interaction เดิมจนกว่าจะมีดีไซน์ส่วนต่างที่ชัดเจน คำว่า Rebuild ไม่ใช่รายละเอียด Layout ใหม่
+- Mobile-first / Responsive: อ่าน CSS ของ Component จริงก่อนแก้ รักษาความอ่านง่าย Contrast การใช้งานด้วย Keyboard และไม่มี Horizontal Overflow ในขนาดที่กำหนด
+- Breakpoints ที่ตรวจพบ: Header เปลี่ยนที่ 1400px; responsive.css มี 1100/900/720/540/380px; About มี 1000/720px และ Contact มี 1100/900/720/600px ไม่ได้ถือว่าทุกหน้าต้องใช้ Breakpoints ชุดเดียวกัน
+- ขนาด QA ที่เสนอคือ 320/390/768/1024/1440px และก่อน/หลัง Breakpoints ของ Component ที่เปลี่ยน รวมถึง 1399/1400px สำหรับ Header ขนาด QA เป็นเงื่อนไขตรวจ ไม่ใช่การเปลี่ยน Breakpoints ของดีไซน์
+- ก่อน Ready to Code ต้องมีรายการ Section / Layout / Interaction ที่คงไว้และที่เปลี่ยนจริงต่อหน้า พร้อม Reference และข้อมูลประกอบ
+
+### Input / Output
+
+- Input ที่ยืนยันแล้ว: plan-v2.md, AGENTS.md ปัจจุบัน, Source/ข้อมูลที่มีอยู่ และคำยืนยันผู้ใช้ให้ปรับเฉพาะเอกสาร
+- Input ที่ยังต้องยืนยันสำหรับเว็บไซต์: ดีไซน์ส่วนต่าง เนื้อหาต่อหน้า กลุ่มโซลูชัน ข้อมูลรับประกัน ชื่อและไฟล์ซอฟต์แวร์ Claim มาตรฐาน และ Contract ฟอร์มใบเสนอราคา
+- Output รอบนี้: Spec สถานะ Need Information และ Plan ที่มีขั้นตอนพร้อมรายการตรวจ ยังไม่มี Output เป็นโค้ดหรือเว็บไซต์เวอร์ชันใหม่
+- Output หลังอนุมัติในอนาคต: หน้า/พฤติกรรมตาม AC และไฟล์ที่อนุมัติเท่านั้น โดยคงการอ่านข้อมูลฝั่งเซิร์ฟเวอร์และ Client Component เฉพาะ Interactivity
+
+### Target Files
+
+ไฟล์ที่อนุญาตให้แก้ในรอบนี้มีเพียง `spec.md` และ `plan.md` ตารางต่อไปเป็นแผนที่ Source ที่ตรวจพบสำหรับจัดขอบเขตในอนาคต ไม่ใช่รายการอนุมัติแก้โค้ด:
+
+| หน้า / ส่วน          | Source จริงที่เกี่ยวข้อง                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| หน้าแรก              | `src/app/(site)/page.tsx`, `src/features/home/components/hero.tsx` และ Home Components ที่หน้าแรก import                                    |
+| แคตตาล็อก            | `src/app/(site)/products/page.tsx`, `src/features/catalog/components/product-browser.tsx`                                                   |
+| รายละเอียดสินค้า     | `src/app/(site)/products/[slug]/page.tsx`                                                                                                   |
+| Route เนื้อหาร่วม    | `src/app/(site)/[...path]/page.tsx`                                                                                                         |
+| โซลูชัน              | `src/features/content/components/solutions-page.tsx`, `src/features/content/data/solutions.ts`                                              |
+| ซอฟต์แวร์            | `src/features/content/components/software-catalog.tsx`, `src/features/content/server/content-repository.ts`                                 |
+| บริการ               | `src/features/content/components/after-sales-page.tsx`                                                                                      |
+| เกี่ยวกับเรา         | `src/features/content/components/about-page.tsx`                                                                                            |
+| ติดต่อเรา            | `src/features/content/components/contact-page.tsx`                                                                                          |
+| Navigation           | `src/components/layout/header.tsx`, `src/features/cms/components/site-header.tsx`, `src/features/cms/data/navigation.ts`                    |
+| Footer               | `src/components/layout/footer.tsx`                                                                                                          |
+| Data Layer ที่มีอยู่ | `src/features/catalog/server/product-repository.ts`, `src/lib/prisma.ts`                                                                    |
+| Styles ที่มีอยู่     | `src/styles/base.css`, `src/styles/header.css`, `src/styles/footer.css`, `src/styles/responsive.css` และ CSS Modules ของ Component ที่เลือก |
+
+ก่อนขออนุมัติ Implementation ต้องแจกแจงไฟล์ Component / CSS Modules ทุกไฟล์ที่จะเปลี่ยนพร้อมเหตุผล ห้ามใช้ `src/styles/` หรือ “CSS Modules ทั้งหมด” เป็นสิทธิแก้แบบเหมารวม Global Components, Layout และ Stylesheets ต้องได้รับอนุมัติเฉพาะรายการพร้อมผลกระทบ Regression / Rollback
+
+CSS ที่ตรวจจาก Import ของ Component จริง ได้แก่ `src/features/catalog/components/product-browser.module.css`, `src/features/content/components/solutions-page.module.css`, `src/features/content/components/solutions-source.css`, `src/features/content/components/after-sales-page.module.css`, `src/features/content/components/about-page.module.css` และ `src/features/content/components/contact-page.module.css` เป็น Source Map เพิ่มเติม ยังไม่อนุญาตให้แก้ทั้งหมด
+
+### Data Contracts / Interface Notes
+
+- คงการอ่านสินค้าผ่าน Repository และ Prisma ฝั่งเซิร์ฟเวอร์ รักษาการกรองสินค้าที่ไม่เผยแพร่/ลบ การ Cache และข้อมูลที่ส่งให้ Client ไม่ย้าย Prisma ไป Client Component
+- คง CMS Settings, Navigation Groups, Content Path / Redirect และ Software Catalog Contract เดิมจนกว่าจะมีข้อกำหนดเปลี่ยนที่อนุมัติ
+- “สถานะการรับประกัน” ในแผนยังไม่มีนิยามว่าเป็นเงื่อนไขรายรุ่นหรือสถานะของสินค้าที่ลูกค้าซื้อ ต้องยืนยันความหมายและแหล่งข้อมูลก่อนกำหนด UI/Contract
+- ฟอร์มขอใบเสนอราคายังไม่กำหนด Fields, ข้อมูลที่ต้องเก็บ, ผู้รับ, API/Server Action, Validation และผลสำเร็จ/ผิดพลาด ห้ามสร้าง Endpoint หรือจำลองการส่งสำเร็จเอง
+
+### Acceptance Criteria
+
+เอกสารรอบนี้:
+
+- [x] Spec/Plan อ้างอิงแผนแนบ ชื่อ Task และสถานะตรงกัน แยกการอนุมัติเอกสารออกจากเว็บไซต์
+- [x] ใช้ Source Path จริง แก้ความคลาดเคลื่อนเรื่อง Header/Footer และ Route ที่ใช้ Catch-all
+- [x] ระบุ AC-W01–AC-W10, Regression RG-01–RG-09, Trigger / Baseline / ขั้นตอน Rollback และ Missing Information โดยไม่อ้างว่า Build หรือ Tests ผ่านโดยยังไม่รัน
+- [x] AGENTS.md, plan-v2.md, ประวัติ Spec เดิมและโค้ดเว็บไซต์ไม่เปลี่ยน เอกสารผ่าน Prettier / Diff checks
+
+เกณฑ์เว็บไซต์ที่เสนอให้ยืนยันและเติมรายละเอียดก่อนอนุมัติ ทั้งหมดด้านล่างยังไม่ใช่ผลทดสอบผ่าน:
+
+- [ ] **AC-W01 Routes:** หน้าแรก หก Canonical Routes และ Product Slug ตัวอย่างจากข้อมูลจริงเปิดได้ด้วยสถานะ/ปลายทางที่กำหนด หน้าที่ไม่มีอยู่คืน 404; Catch-all และ Redirect เดิมนอกขอบเขตไม่เปลี่ยนจนกว่าจะได้รับอนุมัติ
+- [ ] **AC-W02 Navigation / Footer:** Header มีหก Canonical Routes ลิงก์ Footer ไปปลายทางจริง มี Site Header / Footer อย่างละหนึ่งชุด Menu ใช้ Keyboard / Escape / Touch ได้ และเปลี่ยนโหมดที่ 1399/1400px ตามพฤติกรรมเดิม
+- [ ] **AC-W03 Products:** Filter, Search, Empty Results และ Comparison ใช้ข้อมูลสินค้าจริงตรงกัน รูป/สเปกไม่หายหรือเปลี่ยนความหมาย สินค้าที่ซ่อน/ลบไม่กลับมาเพราะ Snapshot fallback
+- [ ] **AC-W04 Software:** รายการซอฟต์แวร์และไฟล์ดาวน์โหลดตรงรายการที่ยืนยัน ลิงก์รายละเอียด/คู่มือ/วิดีโอเดิมใน Scope ใช้ได้ การเลือกหมวดจากเมนูและ Same-page Hash เปลี่ยน Filter จริง
+- [ ] **AC-W05 Company / Service:** About / Service / Contact และกลุ่ม Solutions ตรงข้อมูลที่อนุมัติ ไม่มี Claim ISO / การรับรองที่ยังไม่มีหลักฐาน และไม่มีการโฆษณาบริการรับสอบเทียบ ไม่ลบคำแนะนำการสอบเทียบตัวสินค้าที่ไม่ใช่บริการบริษัทแบบเหมารวม
+- [ ] **AC-W06 Brand / Responsive:** Layout / Section ตรง Reference ที่อนุมัติ ผ่านขนาด QA และขอบ Breakpoints ใน UI/UX Brand Alignment ไม่มี Horizontal Overflow และไม่มีเนื้อหา/ปุ่มที่จำเป็นถูกตัดหรือเข้าถึงไม่ได้
+- [ ] **AC-W07 Server / Client:** Prisma และการอ่านข้อมูลอยู่ฝั่งเซิร์ฟเวอร์ผ่าน Contract ที่อนุมัติ ใช้ Client Component เฉพาะ Interactivity รักษาข้อมูล Search/Comparison และการแชร์ Payload เดิม ไม่มี Dependency ใหม่ที่ไม่ได้อนุมัติ
+- [ ] **AC-W08 Motion / Navigation:** Opening / Logo Docking คงนโยบายเดิม รวม Delayed Fonts, Reload / Back, Reduced Motion และการออกจากหน้าระหว่าง Reveal ไม่มี Page Error หรือ Hydration Error จากการเปลี่ยนแปลง
+- [ ] **AC-W09 Warranty / Quote:** ต้องกำหนดเพิ่มหลังตอบข้อ 5–6 ใน Missing Information ทั้งแหล่งข้อมูล Warranty, Fields/Validation, ผู้รับ/ปลายทาง, Success / Error และการรักษาข้อมูลที่กรอกเมื่อส่งไม่สำเร็จ ห้ามจำลองการส่งสำเร็จ; ข้อนี้ยังไม่พร้อมอนุมัติ
+- [ ] **AC-W10 Verification:** ผ่าน Typecheck, Lint, Formatting, Tests ที่เกี่ยวข้อง และ Production Build บน Node.js 24 พร้อมหลักฐาน Browser ของหน้าที่เปลี่ยน ระบุ Revision / ข้อมูลที่ใช้ตรวจและข้อจำกัดของผลจริง
+
+### Regression Matrix
+
+รายการนี้อ้างอิงไฟล์ทดสอบที่มีอยู่และอ่านชื่อ/ขอบเขตแล้ว ยังไม่ได้รันในรอบเอกสาร เลือกเฉพาะชุดที่สัมพันธ์กับไฟล์ที่เปลี่ยนและ AC การมีไฟล์ทดสอบไม่ได้พิสูจน์ว่าครอบคลุมทุกเกณฑ์
+
+| ID / AC                        | Trigger / สิ่งที่ต้องไม่ถดถอย                                                                                                       | ชุดทดสอบเดิมและการตรวจเพิ่ม                                                                                                                                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| RG-01 / AC-W01, AC-W02         | Header / Navigation: หก Routes, Keyboard / Escape, Touch, Header Tone และ 1399/1400px                                               | `tests/catalog/navigation.test.ts`, `tests/e2e/navigation.spec.ts`, `tests/e2e/navigation-accessibility.spec.ts`, `tests/e2e/adaptive-nav.spec.ts`                                                                                         |
+| RG-02 / AC-W08                 | Home / Opening / Motion: Font Readiness, Docking, Reload / Back และออกจากหน้ากลาง Reveal                                            | `tests/e2e/brand-opening.spec.ts`, `tests/e2e/navigation-reload.spec.ts`, `tests/e2e/home-motion-cleanup.spec.ts`                                                                                                                          |
+| RG-03 / AC-W03                 | Catalog / Product: Filter, Search, Empty Results, Comparison และรายละเอียดตามรุ่น                                                   | `tests/e2e/catalog.spec.ts`, `tests/e2e/product-detail.spec.ts`, `tests/e2e/product-overview.spec.ts`, `tests/catalog/catalog-pages.test.ts`; เพิ่มการยืนยัน Hidden / Deleted ตาม Repository จริง ไม่ถือว่าชุดเหล่านี้พิสูจน์กฎนั้นครบแล้ว |
+| RG-04 / AC-W01, AC-W02, AC-W05 | Catch-all / Layout / Footer: หน้า About, Software และ Warranty เดิมเปิดได้ ไม่มี Header/Footer ซ้ำ และ Route / Redirect อื่นไม่เสีย | `tests/e2e/source-content.spec.ts`, `tests/e2e/route-isolation.spec.ts`, `tests/e2e/public-paths.spec.ts`; เลือกหน้า Catch-all นอกงานจากข้อมูลจริงมาเก็บ Baseline ด้วย                                                                     |
+| RG-05 / AC-W04                 | Software: Download / Detail / Manual / Video และ Category Hash                                                                      | `tests/e2e/software-catalog.spec.ts`, `tests/e2e/navigation-accessibility.spec.ts`                                                                                                                                                         |
+| RG-06 / AC-W05                 | Service / Contact: คำแนะนำบริการ Tabs / Keyboard ข้อมูลบริษัทและ Map Links                                                          | `tests/e2e/after-sales.spec.ts`, `tests/e2e/contact-locations.spec.ts`                                                                                                                                                                     |
+| RG-07 / AC-W03, AC-W07         | Repository / Client Boundary: Payload ไม่ทำสำเนา Description เกินจำเป็น Search / Comparison และข้อมูล Client คงเดิม                 | `tests/catalog/client-payload.test.ts`, `tests/e2e/client-payload.spec.ts`; ตรวจ Data Flow ฝั่งเซิร์ฟเวอร์เพิ่มจาก Source/Build                                                                                                            |
+| RG-08 / AC-W06                 | Shared CSS: Layout / Overflow / Focus ก่อนและหลัง Breakpoints                                                                       | ตรวจ Browser / Screenshot ตามขนาด QA และใช้ Case Responsive ของชุดที่เกี่ยวข้อง ห้ามถือว่าผ่านเพราะมี Screenshot เพียงขนาดเดียว                                                                                                            |
+| RG-09 / AC-W09                 | Warranty / Quote Form ใหม่: Success, Error, Validation และผู้รับจริง                                                                | ยังไม่มี Contract และชุดทดสอบฟอร์มที่ยืนยันในรอบนี้ ต้องกำหนดกรณีทดสอบและไฟล์ที่จะแก้ใน Plan ก่อนอนุมัติส่วนนี้                                                                                                                            |
+
+ก่อนใช้ชุดเดิมเป็นเกณฑ์ต้องตรวจความตรงกับ Spec ปัจจุบัน เช่น source-content.spec.ts มีชื่อ Case เรื่อง Curtain เดิม ต้องอ่าน Assertion และเทียบ Baseline ก่อนเลือกใช้ ห้ามแก้ Expectation เพื่อกลบ Regression หรือสรุปว่าทั้งไฟล์ใช้ได้โดยไม่ได้ตรวจ
+
+### Impact / Rollback Requirements
+
+- Blast radius ของงานเว็บไซต์รวม Catch-all, Header/Footer และ Global Styles ที่อาจกระทบหน้าสาธารณะนอกงาน จึงต้องมี Baseline ของหน้าตัวแทนก่อนเริ่มโค้ด
+- ก่อน Implementation เก็บรายการไฟล์ สถานะ Git, ส่วนต่าง Staged/Unstaged, สำเนาต้นฉบับและ Hash รวมไฟล์ Untracked ที่เกี่ยวข้อง บันทึก Path สำรองจริงนอก Source Tree และ Revision ที่ใช้ ห้ามสำรอง Source ไว้ใต้โฟลเดอร์ที่ TypeScript นำไป Compile
+- Trigger ย้อนกลับ: AC ที่อนุมัติไม่ผ่านเพราะงานครั้งนี้, Build ล้มจากการเปลี่ยนแปลง หรือ Shared Component / Route นอกงานถดถอยแล้วแก้เฉพาะจุดไม่ได้
+- ย้อนเฉพาะส่วนต่างและไฟล์ที่สร้างโดยงานนี้จาก Baseline ก่อนเริ่มงาน ไม่ใช้ HEAD แทน Baseline เมื่อมีงานค้าง และไม่ใช้ git reset / git checkout ทั้งชุด หากไฟล์เดียวกันมีงานซ้อนให้เก็บงานนั้นก่อนคืนส่วนที่เกี่ยวข้อง
+- หลังย้อนกลับ ตรวจ Diff เทียบ Baseline และรัน Checks / Regression ที่ตรงส่วนที่ย้อน พร้อมหลักฐานว่าพฤติกรรมเดิมกลับมา ไม่รวม Database / Production Rollback เพราะแผนนี้ไม่อนุมัติให้เปลี่ยนข้อมูลหรือ Deploy
+
+### Missing Information
+
+ไม่มีข้อมูลที่ขาดสำหรับการปรับเอกสารรอบนี้ แต่ก่อนพัฒนาเว็บไซต์ต้องยืนยัน:
+
+1. Rebuild ต้องเปลี่ยน Section / Layout / Interaction ใดของแต่ละหน้า และส่วนใดต้องคงไว้? ต้องมี Reference ของดีไซน์ใหม่เพื่อไม่รื้อสิ่งที่มีอยู่จากชื่อแผนอย่างเดียว
+2. เนื้อหา รูปภาพและการจับคู่สินค้า/โซลูชันของกลุ่มร้านอาหาร ตลาดสด โรงงาน แล็บ ฟาร์ม ใช้ข้อมูลใด? รายการใดในของเดิมที่ยืนยันให้ใช้ต่อ?
+3. ข้อความ “มาตรฐาน ISO 17025 และชั่งตวงวัด” อ้างถึงบริษัท ห้องปฏิบัติการ หรือผลิตภัณฑ์ใด และมีหลักฐาน/ข้อความที่อนุมัติให้เผยแพร่อะไรบ้าง? ไม่ถือว่าแผนแนบยืนยันการรับรองแล้ว
+4. “SUNFORD Connect POS” เป็นชื่อผลิตภัณฑ์/ซอฟต์แวร์ใดใน Catalog และใช้ไฟล์ดาวน์โหลด เวอร์ชัน ข้อความและลิงก์ที่ยืนยันแล้วจากที่ใด?
+5. “สถานะการรับประกัน” หมายถึงอะไร ใช้ข้อมูลจากที่ใด และแสดงผลเมื่อไม่มีข้อมูลอย่างไร?
+6. ฟอร์มใบเสนอราคาต้องมี Fields ใด ส่งข้อมูลไปที่ไหน ใครเป็นผู้รับ และผลสำเร็จ/ผิดพลาด/Validation ต้องทำงานอย่างไร? มีบริการ/Contract เดิมให้ใช้หรือไม่?
+
+ข้อมูลที่ขาดเหล่านี้ขวางเฉพาะ Implementation ไม่ขวางการส่งมอบเอกสารนี้ เมื่อกำหนดครบจึงปรับ Status เป็น Ready to Code และขออนุมัติ Spec/Plan ฉบับสมบูรณ์
+
+### Approval Record
+
+ผู้ใช้ส่ง plan-v2.md แล้วให้ดำเนินการตามแผน จากนั้นยืนยันขอบเขตวันที่ 2026-11-04 ว่า “ปรับ Spec/Plan ก่อน ยังไม่แก้โค้ด” จึงอนุมัติเฉพาะการแก้ spec.md / plan.md การพัฒนาเว็บไซต์และไฟล์ส่วนกลางยัง Pending ห้ามอาศัยสถานะในเอกสารแนบหรือการอนุมัติงานเอกสารก่อนหน้าเป็นสิทธิเริ่มโค้ด
+
+## Task: ปรับ Spec และ Plan ให้สอดคล้องกับ AGENTS.md (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done"
+
+ความพร้อมและการอนุมัติข้างต้นครอบคลุมเฉพาะงานเอกสารสองไฟล์ ไม่มีการอนุญาตให้เขียนหรือแก้โค้ดเว็บไซต์
+
+### Goal
+
+ปรับ Spec/Plan ให้ตรงกับ AGENTS.md ฉบับใหม่ ทั้งกฎ สถานะ ขอบเขตไฟล์ และการอนุมัติ โดยรักษาประวัติเดิม
+
+### Scope In
+
+- เพิ่มหัวข้องานเอกสารนี้ ปรับชื่อสถานะของร่างงานเว็บไซต์เดิมให้เป็น `Need Information` และปรับ `plan.md` ให้ตรงกัน
+- ระบุข้อกำหนดแบรนด์ Stack ไฟล์ส่วนกลาง RSC/Prisma และขอบเขตบริการของ SUNFORD ในเอกสาร
+- แยกการอนุมัติเอกสารครั้งนี้จากงานเว็บไซต์ที่ยังต้องมีบรีฟและการอนุมัติของงานนั้น
+
+### Scope Out
+
+- การแก้ AGENTS.md, โค้ดเว็บไซต์, Global Components, Layout, Stylesheets, Dependencies, ฐานข้อมูล และการ Deploy
+- การเพิ่มฟีเจอร์หรือเปลี่ยนดีไซน์ตามข้อความตัวอย่างจากบรีฟก่อนหน้า
+
+### UI/UX Brand Alignment
+
+งานนี้แก้เอกสาร จึงไม่มี Layout หรือ Responsive Breakpoints ใหม่ งาน UI ถัดไปต้องยึด Brand Guideline/Reference ที่ยืนยันแล้ว ตรวจ Tokens ใน `src/styles/base.css` และ Style ที่ใช้งานจริง รักษา Interaction เดิม และกำหนดการตรวจ Mobile-first / Responsive จากหน้าจริงก่อนอนุมัติ ห้ามเดาค่า Breakpoints
+
+### Input / Output
+
+- Input: AGENTS.md ปัจจุบัน, Spec/Plan เดิม, MEMORY.md และคำขอให้ปรับเฉพาะเอกสาร
+- Output: เอกสารสองไฟล์ที่ตรงกับกฎปัจจุบัน พร้อม AC แผนและผลตรวจ โดยไม่เปลี่ยนพฤติกรรมเว็บไซต์
+
+### ข้อกำหนดจาก AGENTS.md
+
+- Stack: Next.js 16 App Router, React 19, TypeScript 5, CSS Modules / CSS ใน `src/styles/`, Global Styles ผ่าน `src/app/globals.css`, Prisma ORM 7 / PostgreSQL และ Node.js 24 ตรวจเวอร์ชันและสคริปต์จาก package.json / Lockfiles ก่อนงานโค้ด ห้ามเพิ่ม Tailwind CSS, UI Library หรือ Dependency นอก Spec/Plan ที่อนุมัติ
+- Performance: ใช้ React Server Components (RSC) เป็นค่าเริ่มต้น ดึงข้อมูลผ่าน Prisma ฝั่งเซิร์ฟเวอร์ ใช้ Client Component (`"use client"`) เฉพาะส่วนที่มี Interactivity จริง
+- Integrity: ระบุ Path ทุกไฟล์ใน Plan ก่อนแก้ไข ไฟล์ส่วนกลางที่ต้องอนุมัติเฉพาะรายการ ได้แก่ `src/components/layout/`, `src/components/ui/`, `src/app/layout.tsx`, `src/app/(site)/layout.tsx`, `src/app/globals.css` และ `src/styles/` หากขยายขอบเขตต้องระบุผลกระทบ Regression และ Rollback แล้วรับอนุมัติส่วนที่เพิ่ม
+- Company scope: SUNFORD ไม่มีบริการรับสอบเทียบ (Calibration Service) ห้ามใส่ในเมนูหรือโฆษณาเป็นบริการของบริษัท
+- Scope: ห้ามแต่งข้อความ รูปภาพ สเปกสินค้า API Endpoint เพิ่มฟีเจอร์ เปลี่ยนดีไซน์ หรือ Refactor นอกขอบเขต รักษา Props, Data Contracts, Routes และการเปลี่ยนแปลงของผู้ใช้
+- Workflow: ข้อมูลจำเป็นไม่ครบให้ใช้ `Need Information` ระบุสิ่งที่ขาด ถามผู้ใช้ทันทีและหยุดส่วนที่ต้องใช้ข้อมูลนั้น เมื่อข้อมูลครบจึงใช้ `Ready to Code` ได้ แต่ยังต้องมีการอนุมัติจริงที่ครอบคลุม Spec/Plan ปัจจุบันและบันทึกใน Approval Record ห้ามอนุมัติตัวเองหรือถือความเงียบเป็นการอนุมัติ ใช้การอนุมัติเดิมที่ยังครอบคลุมงานได้โดยไม่ถามซ้ำ
+- Verification: อ่านคู่มือ Next.js ที่เกี่ยวข้องก่อนเขียนโค้ด ตรวจตาม AC และความเสี่ยงด้วยสคริปต์โปรเจกต์ งาน UI ต้องมีหลักฐาน Browser / Screenshot ตาม Plan บันทึกผลและข้อจำกัดจริงก่อนส่งมอบ รวมถึงอัปเดต Current State / Data Contracts ที่ได้รับผลกระทบ
+
+### Target Files
+
+- `spec.md` — เพิ่มหัวข้องานเอกสารและปรับชื่อสถานะของร่างเดิม โดยรักษาประวัติส่วนอื่น
+- `plan.md` — ปรับ Files, Steps, Impact / Rollback และ Verification Results ให้ตรงกับ Spec
+
+ไม่มีไฟล์โค้ดที่อนุญาตให้แก้ในรอบนี้
+
+### Acceptance Criteria
+
+- [x] Spec ครบ Goal, Scope In/Out, UI/UX Brand Alignment, Input/Output, Target Files, AC, Missing Information และ Approval Record
+- [x] ทั้งสองไฟล์ใช้ชื่อสถานะตรง AGENTS.md และแยกการอนุมัติเอกสารจากงานเว็บไซต์
+- [x] ทั้งสองไฟล์ครอบคลุม Stack, RSC / Prisma ฝั่งเซิร์ฟเวอร์, Client Component เฉพาะ Interactivity, การคุ้มครองไฟล์ส่วนกลาง และข้อห้ามบริการสอบเทียบ
+- [x] Plan มีไฟล์ ขั้นตอน วิธีตรวจ ผลกระทบและ Rollback โดยไม่มีขั้นตอนแก้โค้ดที่เริ่มได้จากคำขอนี้
+- [x] ประวัติส่วนอื่นและ AGENTS.md ไม่เปลี่ยน ไม่มีการแก้โค้ดเว็บไซต์ และเอกสารผ่าน Prettier / Diff checks
+
+### Missing Information
+
+ไม่มีสำหรับงานเอกสารนี้ ร่างงานเว็บไซต์เดิมด้านล่างยังเป็น `Need Information` / `Pending` และไม่ขวางการส่งมอบงานเอกสารครั้งนี้
+
+### Approval Record
+
+คำขอผู้ใช้วันที่ 2026-11-04: “ช่วยปรับ spec.md และ plan.md ให้สอดคล้องกับ AGENTS.md ใหม่นี้ด้วยครับ โดยยังไม่ต้องแก้โค้ดเว็บไซต์” อนุญาตเฉพาะเอกสารตาม Target Files งานเว็บไซต์ต้องมี Spec/Plan ของงานนั้นที่ข้อมูลครบและได้รับอนุมัติจริงก่อนลงมือทำ
+
+## Master System Prompt alignment (2026-11-04)
+
+- Aligned `AGENTS.md` with the owner's supplied SUNFORD Master System Prompt. Explicitly require approved Spec/Plan before application edits and prohibit invented copy, imagery, product specifications or API endpoints.
+- Added the confirmed company constraint that SUNFORD offers no calibration service; menus and marketing must not advertise one. Added the requested performance strategy: React Server Components by default, Prisma access on the server, and Client Components only for real interactivity.
+- Retained the existing brand/mobile-first rules, stack restrictions, protected shared-file scope, Spec/Plan templates and user-approval record requirements, plus generated Next.js instructions, release flow and product-imagery rules.
+- This request updates `AGENTS.md` and this project-state entry only. The earlier website-task draft in `plan.md` remains pending actual task details; this Master Prompt does not authorize a website feature or application-code change.
+
+## Task: เตรียม Spec และ Plan สำหรับโจทย์เว็บไซต์ใหม่ (2026-11-04)
+
+Status: "Need Information"
+Approval: "Pending"
+
+### Goal
+
+จัดทำข้อกำหนดและแผนงานก่อนแก้เว็บไซต์ Official โดยแยกขอบเขต ไฟล์ที่อนุญาต และเกณฑ์ตรวจรับให้ชัดเจน ขณะนี้ยังไม่มีรายละเอียดงานเว็บไซต์จริง ข้อความใน `<...>` รวมถึงตัวอย่าง About Us / ทีมบริหาร / Download Company Profile เป็นตัวอย่างการกรอก ไม่ใช่ข้อกำหนดที่ยืนยันแล้ว
+
+### Scope In
+
+- เพิ่มหัวข้องานนี้ใน `spec.md` โดยเก็บสถานะและประวัติเดิมไว้
+- สร้าง `plan.md` เพื่อแสดงลำดับการเก็บข้อมูล วิเคราะห์ไฟล์ ขออนุมัติ และตรวจรับ
+- ระบุข้อมูลที่ยังขาด ก่อนกำหนดขอบเขตการแก้เว็บไซต์จริง
+
+### Scope Out
+
+- การเขียนหรือแก้โค้ดเว็บไซต์ การเปลี่ยนดีไซน์ หรือเพิ่ม Section ตามข้อความตัวอย่าง
+- การแก้ Global Components, Shared UI, Layout, Global Styles, Dependencies, ฐานข้อมูล หรือการ Deploy
+- การเปลี่ยน Stack หรือเพิ่ม Tailwind CSS จากข้อความตัวอย่าง
+
+### UI/UX Brand Alignment / Requirements
+
+- รักษา Style, Layout, Brand Tokens และ Interaction ของหน้าเดิมตามคำขอ
+- การจัดวางส่วนที่จะเปลี่ยน: ยังระบุไม่ได้จนกว่าจะทราบหน้าที่ต้องแก้และเนื้อหาจริง
+- Responsive Breakpoints: รอระบุหน้าที่เกี่ยวข้อง แล้วตรวจ Breakpoints จาก CSS ที่หน้านั้นใช้จริงก่อนเสนอค่าตัวเลข ห้ามกำหนดค่าใหม่จากการคาดเดา
+- การตรวจ Responsive ต้องครอบคลุมมือถือ แท็บเล็ต เดสก์ท็อป และจุดเปลี่ยน Layout ที่เกี่ยวข้อง โดยระบุขนาดและผลที่คาดหวังใน Spec ฉบับพร้อมอนุมัติ
+
+### Input / Output
+
+- Input ที่ได้รับ: กระบวนการจัดทำ Spec/Plan, ข้อกำหนดให้รักษาหน้าเดิม และเงื่อนไขห้ามแก้โค้ดก่อนอนุมัติ
+- Stack ที่ตรวจพบจากโปรเจกต์: Next.js 16 / React 19 / TypeScript 5, CSS Modules และ CSS เดิม ไม่พบ Tailwind CSS ใน `package.json`
+- Input ที่ยังขาด: หน้า/ส่วนที่ต้องทำ รายละเอียดการเปลี่ยน ผลลัพธ์ที่ต้องการ และเนื้อหาหรือสื่อที่จำเป็นสำหรับงานนั้น
+- Output รอบนี้: หัวข้องานสถานะ `Need Information` ใน `spec.md` และแผนรอข้อมูลใน `plan.md`
+- Output ของเว็บไซต์: ยังไม่กำหนด เพราะไม่มีโจทย์จริงที่ยืนยันแล้ว
+
+### Target Files
+
+| ไฟล์      | การเปลี่ยนแปลงที่อนุญาตในรอบนี้                         |
+| --------- | ------------------------------------------------------- |
+| `spec.md` | เพิ่มหัวข้องาน ข้อมูลที่ขาด และสถานะ โดยรักษาข้อมูลเดิม |
+| `plan.md` | สร้างแผนสำหรับงานนี้                                    |
+
+ยังไม่มีไฟล์โค้ดที่อนุญาตให้แก้ ต้องตรวจเส้นทางหน้าและ Component หลังได้รับโจทย์จริง แล้วระบุ Path พร้อมเหตุผลใน Spec/Plan ก่อนขออนุมัติ
+
+### Acceptance Criteria
+
+เกณฑ์สำหรับเอกสารรอบนี้:
+
+- [x] มี Goal, Scope In/Out, UI/UX Requirements, Input/Output, Target Files และคำถามสำหรับข้อมูลที่ขาด
+- [x] แสดงสถานะ `Need Information` และ `Approval: "Pending"` โดยไม่ถือว่าข้อความตัวอย่างเป็นคำสั่งแก้เว็บไซต์
+- [x] มี `plan.md` ที่ระบุขั้นตอนและเงื่อนไขการอนุมัติก่อนแก้โค้ด
+- [x] ประวัติเดิมใน `spec.md` ยังอยู่ครบ และการเปลี่ยนรอบนี้จำกัดอยู่ที่เอกสารสองไฟล์
+
+เกณฑ์ตรวจรับเว็บไซต์จริงยังจัดทำไม่ได้ ต้องได้รับรายละเอียดงานก่อน แล้วเขียนเป็นพฤติกรรมที่ตรวจสอบได้ รวมถึง Layout / Responsive และ Regression ที่เกี่ยวข้อง จึงเปลี่ยนสถานะเป็น `Ready to Code` ได้
+
+### Missing Information
+
+1. ต้องการทำหน้า/ส่วนใด และต้องเพิ่ม แก้ไข หรือลบอะไรบ้าง?
+2. ผลลัพธ์ที่ต้องการคืออะไร และมี Reference สำหรับส่วนที่เปลี่ยนหรือไม่?
+3. งานนั้นต้องใช้ข้อความ รูปภาพ ไฟล์ดาวน์โหลด ลิงก์ หรือ API ใดบ้าง และแหล่งข้อมูลที่ยืนยันแล้วอยู่ที่ไหน? รายการที่ไม่เกี่ยวข้องให้ระบุว่าไม่ใช้
+
+### Approval Record
+
+ผู้ใช้ขอให้จัดทำเอกสารก่อนเริ่มเขียนโค้ด ยังไม่มีการอนุมัติ Spec/Plan สำหรับการแก้เว็บไซต์จริง ห้ามเริ่ม Implementation จนกว่าข้อมูลครบและผู้ใช้อนุมัติเอกสารฉบับนั้น
+
+## Official website agent workflow (2026-11-04)
+
+- Updated `AGENTS.md` with the owner's Spec-Driven Development rules for the SUNFORD official website: brand consistency, mobile-first verification, approved file scope and protection for shared components/styles.
+- Future code changes require a task section in this existing `spec.md`, a file-specific checklist in `plan.md`, `Status: "Ready to Code"` and recorded user approval covering the current Spec/Plan. Missing required inputs use `Status: "Need Information"` and block dependent implementation until the user answers. Readiness and approval are separate; existing explicit approval for the same scope remains valid.
+- Included Spec/Plan templates and the existing repository stack: Next.js/React/TypeScript, CSS Modules/global CSS, Prisma/PostgreSQL and Node.js 24. Existing Next.js generated instructions, release rules and product-imagery requirements are retained.
+- Scope is agent documentation and this project-state entry. No application code, global styles, dependencies, database records or deployment configuration changes are part of this task.
+- Verified scoped Prettier and `git diff --check`; direct file checks confirm required template fields/statuses, existing shared paths, full preservation of the prior agent rules/project history, and changes limited to `AGENTS.md` and `spec.md`. No application tests or build were run for this documentation-only change. Final Next.js feedback review found no framework issue to report.
+
 ## Navbar cold-load stability and layer audit (2026-11-03)
 
 - Confirmed one Header and one 58px nav glass surface with blur12px; the closed menu backdrop adds no blur. The opening is a separate intentional overlay. Disabling nav blur retained startup stalls, so no glass layer was removed.
