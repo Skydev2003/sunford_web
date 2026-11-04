@@ -333,3 +333,15 @@
 - Observed: The release stopped at `format:check` because three generated Playwright CLI YAML snapshots did not match Prettier formatting.
 - Root cause: `.playwright-cli` was absent from `.prettierignore`, so `prettier --check .` included browser-generated artifacts.
 - Correct behavior: Keep `.playwright-cli` in `.prettierignore`. Preserve generated snapshots as local evidence and verify `bun run format:check` after changing formatter exclusions; do not disable source formatting or reformat generated evidence to unblock releases.
+
+## Attribute performance counters before setting regression budgets
+
+- Observed: A scroll regression initially expected zero Header measurements after removing Hero's duplicate reads, but two calls remained in the separate Header surface sampler.
+- Root cause: The counter included every caller of the same DOM method, mixing the work being removed with existing necessary behavior.
+- Correct behavior: Capture call stacks before interpreting a shared performance counter. Derive the budget from the controlled interaction and required callers, then rerun the refined test against both the original and changed code. Do not remove unrelated functionality or relax a threshold without proving the original code still fails.
+
+## Keep page controls and body portals in the same stacking context
+
+- Observed: A body-level layout portal at z-index30 intercepted the Header at40 even after both used named tokens; a browser hit-target regression reproduced it.
+- Root cause: The outer site wrapper's isolation created a separate parent context for the Header. Its child40 could not outrank a sibling portal30 in the document context.
+- Correct behavior: Keep the outer site wrapper free of unnecessary isolation when page-level controls and body portals must share the scale. Isolate decorative sections locally, retain native showModal top-layer behavior, and verify Header hit targets against a real body portal plus modal hit targets against critical9999 content. Do not fix parent-context conflicts by increasing child numbers.

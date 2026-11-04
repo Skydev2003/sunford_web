@@ -1,5 +1,266 @@
 # Project state
 
+## Task: Central Z-Index Scale (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done"
+
+### Goal
+
+รวมค่าลำดับเลเยอร์เป็น CSS Custom Properties กลางตามช่วงที่ผู้ใช้กำหนด จัด Navbar/Dropdown/Tooltip/Modal ให้ตรงบทบาท รักษาลำดับของภาพ ข้อความ และปุ่มภายใน Stacking Context เดิม ไม่ใช้ตัวเลขสูงเพื่อข้ามกล่องแม่
+
+### Scope In
+
+- กำหนด Tokens ใน src/styles/base.css: Background -2 / Decoration -1 / Base0, Local/Layout10–50, Dropdown/Tooltip100–500, Modal1000–5000 และ Critical9999
+- ย้าย z-index ทั้ง26ไฟล์ CSS และ zIndex ใน2ไฟล์ Animation เดิมมาใช้ Tokens ตามรายการใน plan.md รักษาลำดับสัมพันธ์ของ Local Layers รวมส่วนที่ยังไม่ได้ Mount โดยไม่เปิดใช้ฟีเจอร์เหล่านั้น
+- ตรวจ Header กับ Body Portal จริง หาก Outer Site Wrapper แยก Context จน Layout30ทับ Header40 ให้ยกเลิกเฉพาะ isolation ของ Wrapper นั้น โดยรักษา Context และพื้นหลังของแต่ละ Section พร้อม Regression ก่อน/หลัง
+- Navbar ปกติ40, Backdrop ของเมนู100, Header ขณะเปิดเมนู110ทั้ง Desktop/Mobile, Submenu120, Header Controls130 ภายใน Header, Tooltip200, Compare Bar50; ลด Hero Portal เดิม2000เป็น Layout30 และเลิก Header2001
+- Modal / Customer Map Dialog ใช้1100และ ::backdrop1000 โดยคง showModal() / Native Top Layer และ Portal ของ Tooltip ภายใน Dialog; จอง Critical9999สำหรับ Skip Link/Contact Widget เดิม ไม่สร้าง Widget ใหม่
+- ตรวจ Click/Hit Targets, Focus, Escape, Outside Click, Scroll, Responsive, Hero ไม่บังเนื้อหา และภาพส่วนที่ใช้ Local Layers
+
+### Scope Out
+
+ไม่เปลี่ยน Design/เนื้อหา/Routes/Data Contracts/Dependencies/Media/Animation Timing/Database ไม่เพิ่ม Portal/State/Stacking Context โดยไม่มีสาเหตุที่ตรวจพบ ไม่เพิ่ม Live Chat/Cookie/Loading UI และไม่ Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ช่วงเลเยอร์และ Best Practices ในคำสั่งผู้ใช้, CSS/Component ปัจจุบันและ Brand Tokens เดิม
+- Design: สี Layout Typography Interaction เดิม เปลี่ยนเฉพาะลำดับเลเยอร์ตามบทบาท; Local Tokens เปรียบเทียบกันภายในกล่องแม่ ไม่ใช่ลำดับทั่วทั้ง Document
+- Responsive: 320/390/768/1440px และ Landscape844×390 ตรวจ Navbar เปิด/ปิด Modal และภาพ Hero/Catalog/About/Contact ที่เกี่ยวข้อง
+
+### Input / Output
+
+- Input: คำสั่งล่าสุดและ Source Working Tree ที่มีงาน Non-blocking Logo ก่อนหน้า; Stack ตรวจจาก package.json/Lockfiles Next16.4.3 React19.3 TypeScript5 Node24
+- Output: Source ใช้ Tokens กลาง พร้อม Regression/ภาพ/เอกสารแผนผังเลเยอร์และ Rollback ไม่มี Interface/Props/API Contract เปลี่ยน
+- Native Dialog อยู่ใน Browser Top Layer ซึ่งแยกจาก Document z-index จึงคงอยู่เหนือ Critical9999 ของหน้าปกติ ไม่ทำให้แชททะลุ Modal ที่กำลังใช้งาน
+
+### Target Files
+
+รายการ Path ที่อนุญาตทั้งหมดอยู่ใน Files ของ Task ชื่อเดียวกันใน plan.md รวม26 CSS ที่เปลี่ยนเลข /1 Outer Context CSS /2 Animation Sources, Regression และ Test เดิมที่ปรับ Contract/Locator, spec.md/plan.md และหลักฐานใน output/z-index-scale-20261104/
+
+### Acceptance Criteria
+
+- [x] ค่าตัวเลขสำหรับ CSS z-index อยู่ใน Tokens กลางและช่วงที่กำหนด ทุก Reference รวม WAAPI มีตัวแปรรองรับ ไม่เหลือ2000/2001หรือเลข Inline ที่ไม่มีชื่อ
+- [x] เนื้อหาทั่วไปใช้ auto/0 ตามเดิม Local10–50รักษาลำดับเดิม ภาพตกแต่งติดลบยังอยู่ภายในกล่องแม่ที่ตั้งไว้ ไม่ถูกยกขึ้นข้าม Navbar
+- [x] Navbar/Backdrop/Submenu/Tooltip อยู่ในช่วงที่ถูกต้อง เมนูและ Header Controls คลิกได้จริงระหว่างเปิด/ปิด รวม Mobile และ Escape/Outside Click/Keyboard
+- [x] Search/Compare/Video/Customer Map Dialog อยู่เหนือเนื้อหาและตัวอย่าง Critical9999, ::backdrop ทำงาน Focus/Escape/Close ถูกต้อง Tooltip ภายใน Dialog มองเห็นและไม่หลุดไปใต้ Dialog
+- [x] โลโก้ไม่บัง/รอเนื้อหา ไม่ล็อก Scroll; Hero/Content/Catalog Controls ยังใช้งานได้และไม่มี Overflow ที่ขนาดตรวจ
+- [x] Build/Typecheck/Lint/Formatting และ Regression ที่เกี่ยวข้องผ่าน ตรวจภาพจริงและ Source Hash ตรงกับ Production QA ที่ทดสอบ — Layer9/9ผ่าน; ชุดรวมมีข้อจำกัดข้อมูลสินค้าเดิม1กรณีตามรายละเอียดด้านล่าง ไม่อ้างว่าชุดรวมผ่านทั้งหมด
+- [x] เก็บงานก่อนหน้าและประวัติเอกสารไว้ มีไฟล์ก่อนแก้/วิธีย้อนเฉพาะส่วนต่าง ปิดเฉพาะ QA ที่เปิดเอง ไม่กระทบ Dev3000เดิม
+
+### Missing Information
+
+ไม่มี ใช้ช่วงเลเยอร์จากคำสั่งผู้ใช้และบทบาทของ Component ที่ตรวจพบ การคง Native Top Layer เป็นเงื่อนไขของ Dialog ที่มีอยู่ ไม่เพิ่มระบบสำคัญใหม่
+
+### Approval Record
+
+ผู้ใช้อนุมัติวันที่2026-11-04: “เริ่มงานได้เลยตามหลักมาตรฐาน” พร้อม Z-Index Scale และ Stacking Context Best Practices ครอบคลุมการรวมตัวแปรและแก้ Shared Styles ที่กำหนดเลเยอร์ใน Plan นี้ เป็นคำอนุมัติสำหรับงานนี้ ไม่ใช่ Rebuild หรือ Deployment
+
+### Current State / Verification Results
+
+- มี23 Tokens ใน src/styles/base.css ย้ายค่า CSS76จุดและ WAAPI2 Expressions มาใช้ชื่อกลาง เพิ่ม Modal/Backdrop Tokens4จุด เนื้อหาทั่วไป auto/0 และลำดับ Local Layers เดิมยังอยู่; ไม่เหลือ Numeric z-index ใน Source CSS
+- Regression พบ Outer Wrapper isolation ทำให้ Body Portal30ทับ Header40ได้จริง (context-red-tests.json) เอาเฉพาะ isolation ของ src/components/layout/site-background.module.css ออกแล้ว Test ผ่าน ไม่เพิ่ม Portal/State และไม่เปลี่ยน Context ของ Hero/Footer/Sections
+- Production Layer Regression9/9ผ่าน รวมจอ320/390/768/844 Landscape/1440, Portal Hit Test, Native Modal เหนือ Critical9999, Tooltip ใน Dialog และการ Resolve Tokens ใน Orbit WAAPI จริง
+- Production Browser ชุดสุดท้าย102/103ผ่านจาก16ไฟล์ รวม Hero/Logo/Navigation/Tooltip/Map/Compare/Contact/Stories/Video/After-sales; Orbit Unit4/4ผ่าน Build webpack420หน้าบน Node24.22.1 และ Typecheck/Lint/Formattingผ่าน
+- ข้อจำกัดนอกงานเลเยอร์: Search → /products/feh5ks ได้ชื่อรายการตัวพิมพ์ใหญ่อีกตัวใน Production QA บน Windows ข้อมูลเดิมมีทั้ง Slug feh5ks และ FEH5KS; Prerender Manifest มี2เส้นทางแต่ไฟล์ HTML/RSC เหลือชุดเดียว ยืนยันผลซ้ำ3ครั้ง ไม่แก้ Route/ข้อมูลสินค้าและไม่ลด Assertion ของ catalog.spec.ts
+- กรณี Search เดียวกันผ่านบน QA Development ที่ Warm แล้ว1/1 รอบ Cold ก่อนหน้ารอ Compilation เกิน URL Assertion5วินาที; ไม่ใช้ Dev Pass แทนผล Production ที่ยังไม่ผ่าน ข้อจำกัดนี้ต้องจัดการเรื่อง Canonical Slug เป็นงานแยก
+- เก็บ Failure ทุกช่วง: Baseline Red7, Green รอบแรก4/7จาก Locator หลังปิด/Keyboard Modality ที่ Test ตั้งไม่ถูก แล้วแก้เฉพาะ Testเป็น7/7; ชุดรวมแรก99/102จาก Test อ้างเมนูเดิม/กริดหน้าแรก/Mascot ที่ถอดไปแล้ว ปรับ Testไปยัง Navigation/Products/Compare Bar จริงโดยไม่เปลี่ยน UI; Refined18/19ก่อนปรับ Tooltip Target สุดท้าย
+- ตรวจ12ภาพ Hero/Menu/Search ที่1440/768/390/844 ไม่มี Page Errors/Overflow พร้อมภาพ Map/Contact จาก Regression; Source Application29ไฟล์ตรงกับ QA ทุก Hash ตัวแปรทุกชื่ออยู่ในช่วงที่กำหนด ประวัติ Spec/Plan และ Memory เดิมรักษาไว้
+- QA3162/3163หยุดแล้ว Dev3000 PID6824เดิมยังอยู่ ไม่เปลี่ยน Data/Dependency/Media ไม่ Commit/Deploy; ส่วน UI เก่าไม่ได้ Mount เพื่อตรวจ มีเพียง Token/Source Audit และ Orbit Keyframe Test ไม่อ้าง E2E ของฟีเจอร์ที่ไม่ได้เปิดใช้
+- หลักฐาน: output/z-index-scale-20261104/delivery.md, summary.json, scope-audit.json, source-hashes.json, visual-evidence.json และ before-files.zip; เตรียม Next.js feedback draft แบบไม่เปิดเผยข้อมูลโปรเจกต์สำหรับปัญหา Case-only Prerender บน Windows ไม่ส่งแทนผู้ใช้
+
+## Task: Non-blocking SUNFORD logo animation (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done"
+
+### Goal
+
+ให้เนื้อหาและลิงก์หลักแสดงตั้งแต่ HTML ส่วนเมนู/วิดีโอพร้อมตาม Hydration ปกติโดยไม่รอโลโก้ SUNFORD ที่เล่นเป็นของตกแต่งในพื้นที่ว่างกลาง Hero ไม่ใช้ Opening เป็นเงื่อนไขรอการแสดงผลหรือ Scroll
+
+### Scope In
+
+- ย้าย S → SUNFORD ไปในช่อง data-hero-logo-space และจางออกเมื่อจบ ไม่เคลื่อนผ่าน Heading/CTA ไป Dock ใน Navbar อีก เพราะโลโก้ Navbar ต้องแสดงตลอด
+- เอาม่านเต็มจอ การซ่อน Hero/Navbar, inert และการล็อก Scroll ของ Opening ออก รักษาโทนดำ–แดงที่เพิ่งอนุมัติเป็น Halo ภายในพื้นที่โลโก้เท่านั้น
+- ตัด State/Callback ที่ผูกความพร้อมของ Hero และ Video กับโลโก้ ให้ Hero wrapper เป็น Server Component และส่ง Logo Animation ผ่าน ReactNode slot; HeroScene/BrandOpening ยังเป็น Client เฉพาะงานโต้ตอบ/Animation
+- คงนโยบาย Reload / Back / Anchor / Reduced Motion / No-JS / Failure และหยุดของตกแต่งเมื่อผู้ใช้เริ่มใช้งาน เพื่อไม่ทิ้งผลกระทบระหว่างเปลี่ยนหน้า
+
+### Scope Out
+
+- ไม่เปลี่ยน Header/Footer, Routes, ข้อความ โลโก้ต้นฉบับ วิดีโอ ข้อมูลสินค้า Dependencies ฐานข้อมูล หรือ Deploy
+- ไม่ย้อนงานลด Geometry Reads ของ Hero หรือสีดำ–แดงของงานก่อนหน้า ไม่เปลี่ยน spec-history / Plan เดิมที่เก็บไว้
+
+### UI/UX Brand Alignment
+
+Reference คือคำขอให้โลโก้ไม่บัง/หน่วงเนื้อหา โลโก้เดิมและช่องว่างสำหรับโลโก้ใน Hero เดิม จำกัดภาพและ Halo ให้อยู่ในช่องนั้นทุกเฟรม เมนูและโลโก้ Navbar แสดงตั้งแต่ Server HTML ตรวจ Desktop1440 / Tablet768 / Mobile390/320 และ Landscape844×390 ไม่บังชื่อเรื่อง ปุ่ม หรือข้อความ และไม่มี Overflow
+
+### Input / Output
+
+- Input: คำอนุมัติล่าสุด Source ปัจจุบันรวมงาน Performance และพื้นหลังดำที่ยังไม่ Commit
+- Output: ข้อความ/ลิงก์ Hero ที่แสดงได้จาก HTML โดยไม่รอ Image Decode, Fonts, Hydration หรือจบโลโก้ ส่วน Client Interaction/Video ยังต้อง Hydrate ตามปกติ พร้อม Animation ที่ไม่จับ Pointer และข้อมูลก่อน/หลังจาก Production Snapshot
+- Interface: HeroScene รับ Logo ReactNode แทน Opening State; Video ขึ้นกับ Visibility / Reduced Motion ไม่ขึ้นกับจังหวะโลโก้ ไม่มี Data/API Contract เปลี่ยน
+
+### Target Files
+
+- src/features/home/components/brand-opening.tsx / brand-opening.module.css — Animation และ Halo ที่อยู่ในช่องโลโก้ ไม่ล็อกหน้า
+- src/features/home/components/hero.tsx — ตัด Opening State และส่ง Client Logo ผ่าน Slot จาก Server wrapper
+- src/features/home/components/hero-scene.tsx / hero-scene.module.css — ใส่ Slot ในพื้นที่เดิม ให้ Video/Ready ทำงานอิสระ
+- tests/e2e/nonblocking-opening.spec.ts — Regression ก่อน Hydration / ฟอนต์ช้า / การใช้งานระหว่าง Animation
+- tests/e2e/brand-opening.spec.ts / hero-scene.spec.ts — ปรับ Contract ที่เปลี่ยนโดยตั้งใจจาก Fullscreen Dock เป็น Contained Decoration และ Hero Ready ทันที
+- tests/e2e/catalog.spec.ts — ปรับ Assertion พื้นที่โลโก้ และ Assertion เก่าที่ไม่ตรง Baseline (Heading ภาษาไทย / Pagination24) โดยคง Filter/Search/Comparison Tests ไม่เปลี่ยนโค้ดแคตตาล็อก
+- spec.md / plan.md — ขอบเขต คำอนุมัติ Checklist และผลตรวจ; หลักฐานอยู่ใน output/nonblocking-opening-20261104/
+
+### Acceptance Criteria
+
+- [x] เมื่อหน่วง JavaScript หรือฟอนต์ Hero Heading, คำอธิบาย, CTA และ Navbar ยังมองเห็นและไม่ถูกโลโก้บัง ไม่ต้องรอ CSS Fail-open
+- [x] ระหว่างโลโก้ Pending/Playing ไม่มี inert / Scroll Lock จาก Opening, Pointer ไปถึงปุ่มจริงและเมนู/CTA/Scroll ใช้ได้
+- [x] ทุกเฟรมที่ตรวจ โลโก้อยู่ภายในพื้นที่ว่างที่กำหนด ไม่ทับ Heading/CTA หรือบัง Navbar รองรับ Desktop/Tablet/Mobile/Landscape
+- [x] Animation เล่น S → SUNFORD แล้วจางออก นโยบาย Back/Reload/Anchor/Reduced Motion/No-JS/Failure และ Cleanup ระหว่าง Navigation ยังถูกต้อง Video ไม่รอ Logo แต่ยัง Pause ตาม Visibility/Preference
+- [x] มี Red/Green กับ Baseline เดิม Production ก่อน/หลังใช้ข้อมูล/วิธีวัดเดียวกัน บันทึก LCP/CLS/Errors/ข้อจำกัดและไม่อ้างผล Field Data
+- [x] Build, Typecheck, Lint, Formatting และชุด Regression ที่เกี่ยวข้องผ่าน ตรวจภาพจริงและ Hash ของ Source ที่ทดสอบ ไม่รบกวน Dev3000เดิม
+
+### Missing Information
+
+ไม่มีสำหรับงานนี้ ใช้พื้นที่ว่างเดิมและการแสดงผลทันทีตามคำขอ การไม่ใช้ Fullscreen/Docking เป็นการเปลี่ยนพฤติกรรมที่ตั้งใจในงานนี้ แทน Contract Opening เดิมเฉพาะส่วนที่ขัดกัน
+
+### Approval Record
+
+ผู้ใช้อนุมัติวันที่2026-11-04: “งั้นช่วยปรับให้แอนิเมชันโลโก้ SUNFORD เล่นโดยไม่บังหรือหน่วงการแสดงเนื้อหาหลักได้เลยครับ” ครอบคลุมการเลิกบัง/ล็อกหน้าและการแยกจังหวะโลโก้จากเนื้อหา ไม่ครอบคลุม Rebuild / ข้อมูล / Deployment
+
+### Current State / Verification Results
+
+- Hero wrapper เป็น Server Component ส่ง Logo ผ่าน ReactNode slot; HeroScene มี data-ready=true ตั้งแต่ HTML และ Video ใช้ Visibility/Reduced Motion เท่านั้น ไม่รอ Callback จาก Logo
+- BrandOpening อยู่ภายใน data-hero-logo-space แบบ absolute / pointer-events:none เล่น S → SUNFORD → Fade ใน1.85วินาที ไม่ซ่อน Header/Hero ไม่ตั้ง inert และไม่เปลี่ยน Overflow ของ Document; Interaction จบของตกแต่งได้ทันที
+- Production Snapshot ก่อน/หลังใช้ Node24.22.1 / Next16.4.3 webpack / Chrome156 ข้อมูลเดียวกัน วัด3รอบต่อ Cold/Warm ใน1440×900,390×844 และ1440×900 CPU4 รวม36โหลด
+- LCP กลาง Cold Desktop2444→192ms, Mobile2416→160ms, CPU4 3968→576ms; Warm2256→116 / 2240→112 / 3156→256ms ตามลำดับ ค่านี้เป็น Local Production ไม่มี Network Throttling ไม่ใช่ Field Data หรือผลบนมือถือจริง
+- หลังแก้18โหลดไม่มี Page Errors/Overflow; CLS Cold สูงสุด0.00109834 (ก่อน0), Warm0 ไม่อ้างว่า CLS เป็น0ทั้งหมด; ช่วง Animation ที่ Active ไม่พบ Frame Gap>50ms สูงสุด34.6ms ไม่รวม Startup/Pending และไม่อ้าง INP/FPS ทั้งเว็บ
+- Browser Regression77กรณีตรวจผ่าน: ชุดรวม76ผ่าน และ1กรณีมี Assertion เก่า20รายการที่ไม่ตรง Source เดิม24 แก้เฉพาะ Test แล้วรันกรณีนั้นซ้ำผ่าน ไม่ใช่การรันชุดเต็ม77ผ่านในครั้งเดียว เก็บหลักฐานรอบที่ล้มเหลวไว้
+- มี6กรณีใหม่สำหรับ HTML ก่อน Hydration, Fonts ช้า, Search/CTA ระหว่าง Logo และ Header หลังเปลี่ยนหน้า; ก่อนแก้5กรณีแสดง Failure ของ Contract เดิม การรอ HTML/CSS ใน Test ถูกปรับเพื่อแยก Missing DOM ออกจาก Hidden Content
+- Typecheck / ESLint / Full Prettier ผ่าน; Catalog Unit50และUAT27ผ่าน; Production Build420หน้า ผ่าน ตรวจภาพ12ภาพที่1440/768/390/844 Landscape และ Geometry ทุกเฟรมใน Regression; Hero Responsive รวม320pxผ่าน
+- Application Source5ไฟล์ตรงกับ Production ที่ทดสอบทุก Hash ไม่มี Shared Header/Global Styles/Database/Dependency/Media เปลี่ยน เก็บงานค้างก่อนหน้าไว้ ปิดเฉพาะ QA3160 ส่วน Dev3000 PID6824เดิมยังอยู่ ไม่มี Commit/Deploy
+- หลักฐานและข้อจำกัด: output/nonblocking-opening-20261104/delivery.md, summary.json, before.json, after.json, source-hashes.json และ before-files.zip สำหรับคืนเฉพาะส่วนต่างของงานนี้
+- Final Next.js feedback reporting pass: ไม่พบปัญหา Framework ที่เข้าเกณฑ์รายงาน
+
+## Task: Premium black brand opening (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done"
+
+### Goal
+
+เปลี่ยนพื้นหลัง Opening โลโก้ก่อนเข้า Hero จากขาวอมชมพูเป็นดำที่เข้ากับสีแดงและดูพรีเมียม ตามคำขอผู้ใช้
+
+### Scope In
+
+- ปรับเฉพาะ .backdrop ใน src/features/home/components/brand-opening.module.css เป็นดำลึก #050505 มีแสง charcoal นุ่มกลางภาพ และแดงเข้มจาง ๆ รอบจุดโฟกัส
+- ใช้ CSS gradients เดิม ไม่เพิ่มไฟล์ภาพหรือภาระดาวน์โหลด
+
+### Scope Out
+
+- ไม่เปลี่ยนพื้นหลัง Hero หลัง Opening, โลโก้ สีแดงแบรนด์ #d7192d, ข้อความ, Layout, Timing, Navigation หรือไฟล์ส่วนกลาง
+
+### UI/UX Brand Alignment
+
+- Reference: คำขอผู้ใช้พื้นหลังดำเข้ากับแดงและดูแพง, โลโก้เดิม และ token ใน src/styles/base.css
+- Design: ดำเป็นสีหลัก แสงแดงระดับต่ำเพื่อให้โลโก้เด่น ไม่เพิ่มลวดลายหรือข้อความ
+- Responsive: ตรวจ Opening ที่ 390, 768 และ 1440px รวมช่วงเปลี่ยนเข้า Hero
+
+### Input / Output
+
+- Input: พื้นหลัง CSS ปัจจุบันใน BrandOpening และคำขอล่าสุด ตีความส่วนเปิดเป็น Opening โลโก้ก่อน Hero
+- Output: Opening พื้นหลังดำพรีเมียม ไม่มีการเปลี่ยน Data Contracts
+
+### Acceptance Criteria
+
+- [x] Opening มีพื้นหลังดำเป็นหลักและโลโก้แดงชัดเจน พร้อมภาพ Desktop / Tablet / Mobile
+- [x] Timing และตำแหน่ง Logo Docking, Skip, Reduced Motion และ Fail-open เดิมยังทำงาน
+- [x] Formatting และ Regression ที่เกี่ยวข้องผ่าน ไม่มี Overflow หรือ Page Errors จากงานนี้
+
+### Missing Information
+
+ไม่มี ผู้ใช้อนุมัติ Spec/Plan แล้ว
+
+### Approval Record
+
+ผู้ใช้อนุมัติวันที่ 2026-11-04: “อนุมัติ แก้ไขพื้นหลังส่วนเปิดตามแผนได้เลย” ครอบคลุม CSS backdrop และการตรวจตามแผน
+
+### Verification Results
+
+- เปลี่ยนเฉพาะ background 2 gradients ใน CSS Module เป็นดำ #050505 / charcoal และสีแบรนด์แดง alpha 0d
+- Browser Chrome บน localhost:3000: Opening Regression ผ่าน 12/12 รวม Docking, Delayed Font, Reload, Escape/Tab/Resize, Reduced Motion, No-JS, Anchor และ Hydration Fail-open
+- ตรวจภาพ 390/768/1440px ที่ประมาณ 400/900/1450ms รวม 9 ภาพใน output/black-opening-20261104/ โลโก้ชัดและเปลี่ยนเข้า Hero ตามเดิม; Desktop/Mobile regression ยืนยันไม่มี Overflow / Page Errors
+- Prettier ของ CSS/Spec/Plan และ git diff --check ผ่าน ไม่รัน Production Build สำหรับการแก้เฉพาะค่าสี CSS
+- รอบแรกบน 127.0.0.1 ถูก Dev Origin Protection บล็อกและหยุดหลังพบปัญหา; เปลี่ยน URL ทดสอบเป็น localhost แล้วผ่าน ไม่แก้ Config หรือหยุดเซิร์ฟเวอร์ผู้ใช้
+- Final Next.js feedback review: ไม่พบปัญหา Framework ที่เข้าเกณฑ์รายงาน; Dev Origin Protection ทำงานตามการตั้งค่า ไม่มี Commit / Push / Deploy
+
+## Task: Homepage loading and motion performance (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done"
+
+### Goal
+
+ลดเวลาที่ผู้ใช้รอเนื้อหาหลักของหน้าแรกและลดงานที่ขวางเฟรม โดยเทียบ Production Baseline ก่อน/หลัง แยกงานนี้ออกจาก Rebuild plan-v2 ซึ่งยัง Need Information / Pending
+
+### Scope In
+
+- เก็บ LCP / CLS / Long Tasks / จังหวะเฟรมและ Opening บน Production Snapshot ที่ใช้ Node.js 24 และข้อมูล Snapshot เดิม
+- แก้ Opening / Hero เฉพาะสาเหตุที่ยืนยันจากการวัด อนุญาตให้ลดช่วงรอและปรับจังหวะเผยเนื้อหาตามคำแนะนำ Performance ที่ผู้ใช้ให้เริ่มทำแล้ว โดยรักษารูปโลโก้ ทิศทางการเคลื่อนไหวและการ Dock ที่ถูกต้อง
+- ลดการวัด Geometry / เขียน Style ระหว่าง Scroll หากยืนยันผลกระทบ เพิ่ม Behavioral Regression และทดสอบ Navigation / Responsive ที่เกี่ยวข้อง
+
+### Scope Out
+
+- ไม่ Rebuild หน้าอื่น ไม่เปลี่ยนข้อมูลบริษัท/สินค้า Routes, Database, Dependencies หรือ Deployment
+- ไม่ถอด Navbar Glass หรือเปลี่ยนภาพ/วิดีโอตามการคาดเดา ไม่อ้างผลเครื่องจริงหรือผู้ใช้ทั้งหมดจาก Local Benchmark
+
+### UI/UX Brand Alignment
+
+คงธีม โลโก้ ข้อความ Hero และปลายทาง CTA เดิม ลดเวลารออย่างที่ผู้ใช้เห็นจริง รักษา Delayed-font Docking, Skip, Reload / Back, Reduced Motion, No-JS / Failure Fallback และ Video Pause เมื่อไม่อยู่ในจอ ตรวจ Desktop 1440px / Mobile 390px และ Responsive 320/768/1399/1400px ที่เกี่ยวข้อง
+
+### Input / Output
+
+- Input: ภาพ Local LCP4.26s / CLS0 / INP8ms, Source ปัจจุบัน, หลักฐาน Performance เดิม และคำอนุมัติให้เริ่มแก้ไข
+- Output: การแก้ Homepage ที่พิสูจน์ด้วยค่า Production ก่อน/หลัง พร้อม Tests และรายงานใน output/homepage-performance-20261104/
+- Backend / Data Contracts เดิมไม่เปลี่ยน การปรับ Server/Client อื่นหรือไฟล์ส่วนกลางต้องมีหลักฐานและบันทึกขอบเขตเพิ่มเติมก่อนลงมือ
+
+### Target Files
+
+- `src/features/home/components/brand-opening.tsx` — จังหวะ Opening / Reveal ตามผล Baseline
+- `src/features/home/components/hero-scene.tsx` — งานวัดตำแหน่งและการอัปเดตระหว่าง Scroll
+- `tests/e2e/home-performance.spec.ts` — Regression พฤติกรรมการรอเนื้อหา/Scroll ที่พิสูจน์สาเหตุ
+- `tests/e2e/brand-opening.spec.ts` — ปรับกรณีตรวจจังหวะที่เปลี่ยนโดยตั้งใจ โดยคงการตรวจ Geometry และ Fallback
+- `spec.md`, `plan.md` — ขอบเขต ขั้นตอน ผลตรวจและข้อจำกัด
+- `MEMORY.md` — บันทึกวิธีแยกเจ้าของงานที่ตัวนับ Performance ตรวจพบ เพื่อไม่ตั้ง Regression Budget ผิดขอบเขต
+
+### Acceptance Criteria
+
+- [x] มี Production Baseline ก่อนแก้และผลหลังแก้ด้วยข้อมูล/เครื่องมือเดียวกันอย่างน้อย 3 รอบต่อกรณี Desktop / Mobile / Desktop CPU4 แยก Cold / Warm และช่วง Startup / Active Opening
+- [x] ยืนยันสาเหตุก่อนแก้ มี Behavioral Regression ที่ล้มก่อนและผ่านหลังแก้ และ LCP กลางของกรณีเป้าหมายดีขึ้นจริงโดยไม่ทำให้เนื้อหามองไม่เห็นเพื่อแต่งตัวเลข
+- [x] Logo Docking / Delayed Fonts, Skip / Reload / Back, Reduced Motion / No-JS / Fail-open และ Hero Video Behavior ที่เกี่ยวข้องยังผ่าน ไม่มี Page Errors / Overflow จากงานนี้
+- [x] การลดงาน Scroll ไม่เปลี่ยนความสูง Hero หรือการเลือก Header Backdrop และไม่เพิ่ม Layout Read ต่อเฟรม
+- [x] Production Build, Typecheck, Lint, Formatting และ Regression ที่เกี่ยวข้องผ่าน บันทึกกรณีไม่ผ่านหรือไม่ได้ตรวจตามจริง
+
+### Verification Results
+
+- ลด Opening จาก2850เป็น1850ms และเริ่ม Reveal จาก2350เป็น1350ms รักษา Logo Poses, Font Readiness และ Fail-open เดิม ไม่แก้ CSS, รูป/วิดีโอ, Navbar Glass หรือ Data Layer
+- Hero วัดความสูง Header เฉพาะ Resize และรวม Scroll Backdrop Updates ภายใน requestAnimationFrame พร้อมเขียน Attributes เฉพาะค่าที่เปลี่ยน Regression แบบ Scroll ลง/กลับขึ้นลด Header Reads จาก4เหลือ2ครั้งที่ยังจำเป็นต่อ Header Surface Sampling
+- Production Snapshot Node.js24 / Chrome156 วัดก่อน18และหลัง18โหลด (3รอบ × Desktop1440 / Mobile390 / DesktopCPU4 × Cold/Warm) LCP กลาง Cold: Desktop3500→2480ms, Mobile3472→2416ms, CPU4 5320→4072ms; Warm3276→2268 / 3364→2348 / 5148→4136ms ตามลำดับ
+- CLS0และไม่มี Page Errors / Overflow ทุกโหลดหลังแก้ ช่วง Active Opening ไม่มี Frame Gap>50ms ทั้งก่อนและหลัง จึงไม่อ้างว่าแก้ FPS ทุกช่วงหรือทุกเครื่อง Startup Parsing / Hydration บน CPU4 ยังเป็นข้อจำกัด
+- Production Build ผ่าน, Typecheck / Lint / Formatting ผ่าน, Catalog50 + UAT27 + Browser62กรณีผ่าน ภาพระหว่าง Opening และหน้าสุดท้าย Desktop/Mobile ตรวจแล้ว Sourceสองไฟล์ตรง Hash ของ QA ที่ Build และทดสอบ
+- หลักฐานและรายงาน: output/homepage-performance-20261104/delivery.md พร้อม before.json, after.json, summary.json, final-tests.json และ source-hashes.json ใช้ Snapshot Data ไม่มีการยืนยันฐานข้อมูล/เครื่องจริงหรือ INP ภาคสนาม ไม่มี Commit / Push / Deploy และ QA3156/3157ปิดแล้ว Final Next.js feedback review: ไม่มีปัญหา Framework ที่เข้าเกณฑ์รายงาน
+
+### Missing Information
+
+ไม่มีข้อมูลที่ขวางงาน Performance เฉพาะขอบเขตนี้ ภาพไม่ได้ระบุ Dev/Production หรือเครื่องที่วัด จึงใช้ Baseline Production แยกใหม่และไม่อ้างว่าเป็นการทำซ้ำเครื่องผู้ใช้ เป้าหมาย LCP2.5s เป็นทิศทาง ไม่ใช่คำรับรองก่อนวัด
+
+### Approval Record
+
+ผู้ใช้กล่าว “เริ่มแก้ไขได้เลย” วันที่ 2026-11-04 หลังข้อเสนอให้ตรวจ Production Trace, ลดเวลารอเนื้อหา Opening และลดงาน Client/Scroll ตามหลักฐาน อนุมัติงาน Performance ตามขอบเขตนี้ ไม่มีการอนุมัติ Rebuild plan-v2, เปลี่ยนข้อมูล หรือ Deploy
+
 ## Task: Rebuild SUNFORD Official Website — plan-v2 (2026-11-04)
 
 Status: "Need Information"
