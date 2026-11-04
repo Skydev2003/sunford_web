@@ -4,19 +4,10 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import styles from "./brand-opening.module.css";
 
-// Measured against the supplied 30fps reference. The S is cropped from the real wordmark.
-const timing = { name: 1250, dock: 1700, reveal: 2350, end: 2850 };
+const timing = { grow: 450, name: 550, settled: 950, fade: 1550, end: 1850 };
 const symbolCenter = 95 / 690;
 
-export function BrandOpening({
-  logo,
-  name,
-  onReveal,
-}: {
-  logo: string;
-  name: string;
-  onReveal: () => void;
-}) {
+export function BrandOpening({ logo, name }: { logo: string; name: string }) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,31 +21,19 @@ export function BrandOpening({
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     const animations: Animation[] = [];
     const timers: ReturnType<typeof setTimeout>[] = [];
-    const previousOverflow = document.documentElement.style.overflow;
-    const blocked = new Map<HTMLElement, boolean>();
     let disposed = false;
-    let revealed = false;
     let completed = false;
 
-    const reveal = () => {
-      if (revealed) return;
-      revealed = true;
-      onReveal();
-    };
-    const restore = () => {
+    const cancel = () => {
       timers.forEach(clearTimeout);
       animations.forEach((animation) => animation.cancel());
-      blocked.forEach((wasInert, element) => (element.inert = wasInert));
-      blocked.clear();
-      document.documentElement.style.overflow = previousOverflow;
     };
     const finish = () => {
       if (completed || disposed) return;
       completed = true;
       document.documentElement.dataset.homeOpening = "skip";
       root.dataset.phase = "complete";
-      restore();
-      reveal();
+      cancel();
     };
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape" || event.key === "Tab") finish();
@@ -62,7 +41,9 @@ export function BrandOpening({
     const reduce = () => {
       if (preference.matches) finish();
     };
-    const resize = () => finish();
+    const scroll = () => {
+      if (scrollY > 0) finish();
+    };
     const start = async () => {
       if (
         document.documentElement.dataset.homeOpening === "skip" ||
@@ -73,36 +54,24 @@ export function BrandOpening({
         finish();
         return;
       }
-      // Only block interaction after JavaScript has committed to playing the opening.
-      document.documentElement.style.overflow = "hidden";
-      for (const element of document.querySelectorAll<HTMLElement>(
-        ".site-header, #main-content > :not([data-brand-opening]), footer, [data-shop-mascot]",
-      )) {
-        blocked.set(element, element.inert);
-        element.inert = true;
-      }
       timers.push(setTimeout(finish, 6000));
       try {
-        // The centered navigation moves when its font replaces the fallback font.
         await Promise.all([image.decode(), document.fonts.ready]);
       } catch {
-        if (!disposed) finish();
-        return;
-      }
-      if (disposed || root.dataset.phase === "complete") return;
-      const target = document.querySelector<HTMLImageElement>(".site-header .brand img");
-      if (!target) {
         finish();
         return;
       }
-      const destination = target.getBoundingClientRect();
-      const width = logoNode.getBoundingClientRect().width;
+      if (disposed || completed) return;
+      const bounds = root.getBoundingClientRect();
+      const width = Math.min(440, bounds.width * 0.56, bounds.height * 0.85 * (690 / 141));
+      if (width < 1) {
+        finish();
+        return;
+      }
+      logoNode.style.width = `${width}px`;
       const height = (width * 141) / 690;
-      const centerX = innerWidth / 2;
-      const centerY = innerHeight / 2;
       const pose = (scale: number, centered = false) =>
-        `translate3d(${centerX - width * (centered ? 0.5 : symbolCenter) * scale}px, ${centerY - (height * scale) / 2}px, 0) scale(${scale})`;
-      const dock = `translate3d(${destination.x}px, ${destination.y}px, 0) scale(${destination.width / width})`;
+        `translate3d(${bounds.width / 2 - width * (centered ? 0.5 : symbolCenter) * scale}px, ${(bounds.height - height * scale) / 2}px, 0) scale(${scale})`;
       const animate = (
         node: HTMLElement,
         frames: Keyframe[],
@@ -123,19 +92,15 @@ export function BrandOpening({
             offset: 150 / timing.end,
             easing: "cubic-bezier(0.16,1,0.3,1)",
           },
-          { transform: pose(1), offset: 550 / timing.end },
+          { transform: pose(1), offset: timing.grow / timing.end },
           {
             transform: pose(1),
             offset: timing.name / timing.end,
             easing: "cubic-bezier(0.4,0,0.2,1)",
           },
-          {
-            transform: pose(1, true),
-            offset: timing.dock / timing.end,
-            easing: "cubic-bezier(0.4,0,0.2,1)",
-          },
-          { transform: dock, offset: 2750 / timing.end },
-          { transform: dock, opacity: 1, offset: 1 },
+          { transform: pose(1, true), offset: timing.settled / timing.end },
+          { transform: pose(1, true), opacity: 1, offset: timing.fade / timing.end },
+          { transform: pose(1, true), opacity: 0, offset: 1 },
         ],
         { duration: timing.end },
       )
@@ -147,17 +112,25 @@ export function BrandOpening({
           { clipPath: "inset(0 79.7% 0 20.3%)", opacity: 0, filter: "blur(2px)" },
           { clipPath: "inset(0 0% 0 20.3%)", opacity: 1, filter: "blur(0px)" },
         ],
-        { delay: timing.name, duration: 450, easing: "cubic-bezier(0.25,0.1,0.25,1)" },
+        {
+          delay: timing.name,
+          duration: timing.settled - timing.name,
+          easing: "cubic-bezier(0.25,0.1,0.25,1)",
+        },
       );
-      animate(backdrop, [{ opacity: 1 }, { opacity: 0 }], {
-        delay: 2050,
-        duration: 800,
-        easing: "cubic-bezier(0.4,0,0.2,1)",
-      });
+      animate(
+        backdrop,
+        [
+          { opacity: 0 },
+          { opacity: 1, offset: 150 / timing.end },
+          { opacity: 1, offset: timing.fade / timing.end },
+          { opacity: 0 },
+        ],
+        { duration: timing.end },
+      );
       for (const [phase, delay] of [
         ["name", timing.name],
-        ["docking", timing.dock],
-        ["reveal", timing.reveal],
+        ["settled", timing.settled],
       ] as const) {
         timers.push(
           setTimeout(() => {
@@ -167,21 +140,26 @@ export function BrandOpening({
       }
     };
     window.addEventListener("keydown", key);
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", finish);
+    window.addEventListener("pointerdown", finish, { passive: true });
+    window.addEventListener("scroll", scroll, { passive: true });
     window.addEventListener("popstate", finish);
     window.addEventListener("pagehide", finish);
     preference.addEventListener("change", reduce);
     void start();
     return () => {
       disposed = true;
-      if (!completed) restore();
+      cancel();
+      root.dataset.phase = "complete";
       window.removeEventListener("keydown", key);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", finish);
+      window.removeEventListener("pointerdown", finish);
+      window.removeEventListener("scroll", scroll);
       window.removeEventListener("popstate", finish);
       window.removeEventListener("pagehide", finish);
       preference.removeEventListener("change", reduce);
     };
-  }, [onReveal]);
+  }, []);
 
   return (
     <div

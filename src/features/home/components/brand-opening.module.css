@@ -1,7 +1,7 @@
 .opening {
   display: none;
-  position: fixed;
-  z-index: 3000;
+  position: absolute;
+  z-index: 1;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -9,16 +9,17 @@
 .backdrop {
   position: absolute;
   inset: 0;
+  opacity: 0;
   background:
-    radial-gradient(ellipse at 50% 58%, #fff 0%, #fff8fa 44%, transparent 76%),
-    radial-gradient(ellipse at 50% -20%, #f7cbd3 0%, #faf5f7 55%, #f5f6f9 100%);
+    radial-gradient(ellipse closest-side at 50% 58%, #d7192d0d 0%, transparent 62%),
+    radial-gradient(ellipse closest-side at 50% 42%, #1a191bd9 0%, #0c0b0d88 48%, transparent 100%);
 }
 .logo {
-  --opening-logo-width: clamp(280px, 32vw, 440px);
   position: absolute;
   top: 0;
   left: 0;
-  width: var(--opening-logo-width);
+  width: 56%;
+  max-width: 440px;
   aspect-ratio: 690 / 141;
   transform-origin: 0 0;
   opacity: 0;
@@ -44,57 +45,11 @@
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   :global(html:not([data-home-opening="skip"])) .opening:not([data-phase="complete"]) {
     display: block;
-    pointer-events: auto;
     animation: opening-fail-open 0s 7s forwards;
-  }
-  :global(html:not([data-home-opening="skip"]))
-    body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
-    :global(.site-header .brand) {
-    visibility: hidden;
-    animation: opening-content-fail-open 0s 7s forwards;
-  }
-  :global(html:not([data-home-opening="skip"]))
-    body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
-    :global(.site-header .desktop-nav),
-  :global(html:not([data-home-opening="skip"]))
-    body:not(:has(:target)):has(.opening:not([data-phase="complete"]))
-    :global(.site-header .header-actions) {
-    opacity: 0;
-    animation: opening-content-fail-open 0s 7s forwards;
-  }
-  body:has(.opening[data-phase="reveal"]) :global(.site-header .desktop-nav),
-  body:has(.opening[data-phase="reveal"]) :global(.site-header .header-actions) {
-    opacity: 1;
-    transition: opacity 500ms ease;
-  }
-  .opening ~ [data-opening] :global(.hero-main) {
-    transition: opacity 700ms ease;
-  }
-  :global(html:not([data-home-opening="skip"]))
-    body:not(:has(:target))
-    .opening:not([data-phase="reveal"]):not([data-phase="complete"])
-    ~ [data-opening="true"]
-    :global(.hero-main),
-  :global(html:not([data-home-opening="skip"]))
-    body:has(.opening:not([data-phase="complete"]))
-    :global(.hero-bubble-layer[data-opening="true"]) {
-    visibility: hidden;
-    opacity: 0;
-    animation: opening-content-fail-open 0s 7s forwards;
-  }
-  body:has(:target) .opening {
-    display: none;
   }
 }
 @keyframes opening-fail-open {
   to {
     visibility: hidden;
-    pointer-events: none;
-  }
-}
-@keyframes opening-content-fail-open {
-  to {
-    visibility: visible;
-    opacity: 1;
   }
 }

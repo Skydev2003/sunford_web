@@ -20,7 +20,7 @@ for (const [width, height] of [
   [320, 700],
   [844, 390],
 ]) {
-  test(`video Hero keeps HoN text order and empty logo space at ${width}x${height}`, async ({
+  test(`video Hero keeps its text order and reserved logo space at ${width}x${height}`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height });
@@ -40,10 +40,10 @@ for (const [width, height] of [
       "/videos/sunford-poster.jpg",
     );
     await expect(
-      scene(page).locator("img, [data-hero-product], [data-hero-object], canvas"),
+      scene(page).locator("img:visible, [data-hero-product], [data-hero-object], canvas"),
     ).toHaveCount(0);
     const blank = scene(page).locator("[data-hero-logo-space]");
-    await expect(blank).toBeEmpty();
+    await expect(blank.locator("[data-brand-opening]")).toBeHidden();
     await expect(blank).toHaveAttribute("aria-hidden", "true");
     const heading = (await scene(page).locator("h1").boundingBox())!;
     const space = (await blank.boundingBox())!;
@@ -73,26 +73,22 @@ for (const [width, height] of [
   });
 }
 
-test("video remains paused until Opening releases the Hero", async ({ page }) => {
+test("Hero readiness and video playback do not wait for the logo", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(scene(page)).toHaveAttribute("data-opening", "true");
-  expect(
-    await scene(page)
-      .locator("video")
-      .evaluate((v: HTMLVideoElement) => v.paused),
-  ).toBe(true);
-  await ready(page);
+  await expect(scene(page)).toHaveAttribute("data-opening", "false");
+  await expect(scene(page)).toHaveAttribute("data-ready", "true");
+  await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
   await expect
     .poll(() =>
       scene(page)
         .locator("video")
-        .evaluate((v: HTMLVideoElement) => v.paused),
+        .evaluate((video: HTMLVideoElement) => video.paused),
     )
     .toBe(false);
 });
 
-test("video plays after Opening and pauses offscreen, then resumes", async ({ page }) => {
+test("video plays in view and pauses offscreen, then resumes", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   await ready(page);
@@ -140,7 +136,7 @@ test("native scrolling reveals the next content once, without a second brand fil
 });
 
 for (const width of [1440, 390]) {
-  test(`without JavaScript the video poster, empty logo space and consultation remain usable at ${width}px`, async ({
+  test(`without JavaScript the video poster, reserved logo space and consultation remain usable at ${width}px`, async ({
     browser,
     baseURL,
   }) => {
@@ -158,7 +154,7 @@ for (const width of [1440, 390]) {
         "poster",
         "/videos/sunford-poster.jpg",
       );
-      await expect(scene(page).locator("[data-hero-logo-space]")).toBeEmpty();
+      await expect(scene(page).locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
       await expect(page.locator("[data-brand-opening]")).toBeHidden();
       await scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" }).click();
       await expect(page).toHaveURL(/\/contact-us$/);

@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { companyIntro } from "../data/brand";
 import styles from "./hero-scene.module.css";
 
 export function HeroScene({
   description,
-  opening,
+  logo,
   showAnnouncement = false,
 }: {
   description?: string;
-  opening: boolean;
+  logo: ReactNode;
   showAnnouncement?: boolean;
 }) {
   const root = useRef<HTMLElement>(null);
@@ -22,9 +22,9 @@ export function HeroScene({
   useEffect(() => {
     const element = video.current;
     if (!element) return;
-    if (!opening && allowed) void element.play().catch(() => {});
+    if (allowed) void element.play().catch(() => {});
     else element.pause();
-  }, [opening, allowed]);
+  }, [allowed]);
 
   useEffect(() => {
     const scene = root.current;
@@ -33,17 +33,29 @@ export function HeroScene({
     const headerInner = header?.querySelector<HTMLElement>(".header-inner");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false;
+    let backdropFrame = 0;
     scene.dataset.enhanced = "true";
     const sync = () => setAllowed(visible && !document.hidden && !reduced.matches);
+    const syncBackdrop = () => {
+      backdropFrame = 0;
+      if (!header) return;
+      const atTop = scene.getBoundingClientRect().top >= -1;
+      if (!header.hasAttribute("data-hero-backdrop-tracked"))
+        header.dataset.heroBackdropTracked = "";
+      if (atTop && !header.hasAttribute("data-hero-backdrop")) header.dataset.heroBackdrop = "";
+      else if (!atTop && header.hasAttribute("data-hero-backdrop"))
+        delete header.dataset.heroBackdrop;
+    };
+    const requestBackdrop = () => {
+      if (!backdropFrame) backdropFrame = requestAnimationFrame(syncBackdrop);
+    };
     const measureHeader = () => {
       if (!header || !headerInner) return;
       const bounds = headerInner.getBoundingClientRect();
       const height = `${bounds.height}px`;
       if (scene.style.getPropertyValue("--hero-header-height") !== height)
         scene.style.setProperty("--hero-header-height", height);
-      header.dataset.heroBackdropTracked = "";
-      if (scene.getBoundingClientRect().top >= -1) header.dataset.heroBackdrop = "";
-      else delete header.dataset.heroBackdrop;
+      requestBackdrop();
     };
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -55,7 +67,7 @@ export function HeroScene({
     observer.observe(scene);
     const resize = new ResizeObserver(measureHeader);
     if (headerInner) resize.observe(headerInner);
-    window.addEventListener("scroll", measureHeader, { passive: true });
+    window.addEventListener("scroll", requestBackdrop, { passive: true });
     window.addEventListener("resize", measureHeader);
     document.addEventListener("visibilitychange", sync);
     reduced.addEventListener("change", sync);
@@ -64,8 +76,9 @@ export function HeroScene({
     return () => {
       observer.disconnect();
       resize.disconnect();
-      window.removeEventListener("scroll", measureHeader);
+      window.removeEventListener("scroll", requestBackdrop);
       window.removeEventListener("resize", measureHeader);
+      cancelAnimationFrame(backdropFrame);
       document.removeEventListener("visibilitychange", sync);
       reduced.removeEventListener("change", sync);
       delete scene.dataset.enhanced;
@@ -132,9 +145,9 @@ export function HeroScene({
       aria-labelledby="hero-title"
       data-hero-scene=""
       data-home-section="1"
-      data-opening={opening}
-      data-ready={!opening}
-      data-running={!opening && allowed}
+      data-opening="false"
+      data-ready="true"
+      data-running={allowed}
     >
       <video
         ref={video}
@@ -154,7 +167,9 @@ export function HeroScene({
         <h1 id="hero-title" className={styles.heading}>
           <span>เครื่องชั่ง</span> <span>สำหรับธุรกิจของคุณ</span>
         </h1>
-        <div className={styles.logoSpace} data-hero-logo-space="" aria-hidden="true" />
+        <div className={styles.logoSpace} data-hero-logo-space="" aria-hidden="true">
+          {logo}
+        </div>
         <div className={styles.actions}>
           <Link className={styles.cta} href="/contact-us" prefetch={false}>
             ปรึกษาผู้เชี่ยวชาญ

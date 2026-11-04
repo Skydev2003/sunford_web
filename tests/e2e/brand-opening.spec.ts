@@ -9,9 +9,10 @@ type OpeningFrame = {
   logo: { x: number; y: number; width: number; height: number } | null;
   symbol: { x: number; y: number; width: number; height: number } | null;
   header: { x: number; y: number; width: number; height: number } | null;
+  space: { x: number; y: number; width: number; height: number } | null;
   wordOpacity: number | null;
   wordClip: string | null;
-  covered: boolean;
+  visible: boolean;
   bubblesVisible: boolean;
   bubblePopup: boolean;
 };
@@ -44,9 +45,10 @@ async function recordOpening(page: Page) {
           logo: box(logo),
           symbol: box(opening.querySelector("[data-brand-opening-symbol]")),
           header: box(document.querySelector(".site-header .brand img")),
+          space: box(document.querySelector("[data-hero-logo-space]")),
           wordOpacity: word ? Number(getComputedStyle(word).opacity) : null,
           wordClip: word ? getComputedStyle(word).clipPath : null,
-          covered:
+          visible:
             style.visibility === "visible" &&
             style.display !== "none" &&
             Number(style.opacity) > 0.05,
@@ -96,9 +98,11 @@ async function expectReleased(page: Page) {
 
 for (const viewport of [
   { width: 1440, height: 900 },
+  { width: 768, height: 1024 },
   { width: 390, height: 844 },
+  { width: 844, height: 390 },
 ]) {
-  test(`the branded opening reveals its name, docks into the real header, then releases Hero at ${viewport.width}px`, async ({
+  test(`the decorative logo reveals its name inside the reserved Hero space at ${viewport.width}px`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -113,68 +117,71 @@ for (const viewport of [
       contentType: "application/json",
     });
     const phases = [...new Set(frames.map((frame) => frame.phase))];
-    expect(phases).toEqual(expect.arrayContaining(["symbol", "name", "docking", "complete"]));
+    expect(phases).toEqual(expect.arrayContaining(["symbol", "name", "settled", "complete"]));
     expect(phases.indexOf("symbol")).toBeLessThan(phases.indexOf("name"));
-    expect(phases.indexOf("name")).toBeLessThan(phases.indexOf("docking"));
+    expect(phases.indexOf("name")).toBeLessThan(phases.indexOf("settled"));
     const symbolFrames = frames.filter(
       (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 550 && frame.logoTime <= 1150,
+        frame.logo && frame.logoTime !== null && frame.logoTime >= 450 && frame.logoTime <= 525,
     );
     expect(symbolFrames.length).toBeGreaterThan(1);
     const symbol = symbolFrames.at(-1)!;
     expect(
-      Math.abs(symbol.logo!.x + (symbol.logo!.width * 95) / 690 - viewport.width / 2),
+      Math.abs(
+        symbol.logo!.x +
+          (symbol.logo!.width * 95) / 690 -
+          (symbol.space!.x + symbol.space!.width / 2),
+      ),
     ).toBeLessThan(4);
     expect(symbol.wordOpacity).toBeLessThan(0.01);
     const named = frames.filter(
       (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 1650 && frame.logoTime <= 1700,
+        frame.logo && frame.logoTime !== null && frame.logoTime >= 900 && frame.logoTime <= 950,
     );
     expect(named.length).toBeGreaterThan(1);
     expect(named.at(-1)!.wordOpacity).toBeGreaterThan(0.99);
     expect(named.at(-1)!.wordClip).not.toBe(symbol.wordClip);
-    const centered = named[named.length - 1].logo!;
-    expect(Math.abs(centered.x + centered.width / 2 - viewport.width / 2)).toBeLessThan(6);
-    expect(Math.abs(centered.y + centered.height / 2 - viewport.height / 2)).toBeLessThan(6);
-    const earlyFlight = frames.filter(
-      (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 1800 && frame.logoTime <= 1900,
+    const centered = named.at(-1)!;
+    expect(
+      Math.abs(
+        centered.logo!.x +
+          centered.logo!.width / 2 -
+          (centered.space!.x + centered.space!.width / 2),
+      ),
+    ).toBeLessThan(6);
+    expect(
+      Math.abs(
+        centered.logo!.y +
+          centered.logo!.height / 2 -
+          (centered.space!.y + centered.space!.height / 2),
+      ),
+    ).toBeLessThan(6);
+    const active = frames.filter(
+      (frame) => frame.phase !== "complete" && frame.logo && frame.logo.width > 0 && frame.space,
     );
-    expect(earlyFlight.length).toBeGreaterThan(1);
-    expect(earlyFlight.at(-1)!.logo!.width).toBeLessThan(centered.width - 5);
-    expect(earlyFlight.at(-1)!.logo!.y).toBeLessThan(centered.y - 5);
-    const docking = frames.filter(
-      (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 1700 && frame.logoTime <= 2750,
-    );
-    expect(docking.length).toBeGreaterThan(1);
-    expect(docking[docking.length - 1].logo!.width).toBeLessThan(docking[0].logo!.width);
-    const final = frames
-      .filter(
-        (frame) =>
-          frame.logo &&
-          frame.header &&
-          frame.logoTime !== null &&
-          frame.logoTime >= 2750 &&
-          frame.logoTime <= 2850,
-      )
-      .at(-1)!;
-    expect(final).toBeDefined();
-    for (const coordinate of ["x", "y", "width", "height"] as const)
-      expect(Math.abs(final.logo![coordinate] - final.header![coordinate])).toBeLessThan(3);
+    for (const frame of active) {
+      expect(frame.logo!.x).toBeGreaterThanOrEqual(frame.space!.x - 1);
+      expect(frame.logo!.y).toBeGreaterThanOrEqual(frame.space!.y - 1);
+      expect(frame.logo!.x + frame.logo!.width).toBeLessThanOrEqual(
+        frame.space!.x + frame.space!.width + 1,
+      );
+      expect(frame.logo!.y + frame.logo!.height).toBeLessThanOrEqual(
+        frame.space!.y + frame.space!.height + 1,
+      );
+    }
     expect(
       frames.filter(
         (frame) =>
           ["symbol", "name"].includes(frame.phase) && (frame.bubblesVisible || frame.bubblePopup),
       ),
     ).toEqual([]);
-    await expect(page.locator("[data-hero-scene]")).toBeVisible();
+    await expect(page.locator(".site-header .brand")).toBeVisible();
     await expect(page.locator(".hero-bubble-layer, model-viewer")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
     await page.screenshot({ path: test.info().outputPath(`brand-revealed-${viewport.width}.png`) });
-    await expect(page.locator("[data-hero-logo-space]")).toBeEmpty();
+    await expect(page.locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
     await expect(page.locator("[data-hero-scene] video source")).toHaveAttribute(
       "src",
       "/videos/sunford-web.mp4",
@@ -191,11 +198,13 @@ test("the opening plays again after reloading the homepage", async ({ page }) =>
   await page.reload({ waitUntil: "domcontentloaded" });
   await expectReleased(page);
   const replay = await openingFrames(page);
-  expect(replay.some((frame) => frame.phase === "symbol" && frame.covered)).toBe(true);
-  expect(replay.some((frame) => frame.phase === "docking")).toBe(true);
+  expect(replay.some((frame) => frame.phase === "symbol" && frame.visible)).toBe(true);
+  expect(replay.some((frame) => frame.phase === "settled")).toBe(true);
 });
 
-test("a cold font load cannot move the navigation away from the docking logo", async ({ page }) => {
+test("cold fonts only delay the decoration and its final name stays inside the Hero space", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.route("**/*.ttf", async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -203,16 +212,24 @@ test("a cold font load cannot move the navigation away from the docking logo", a
   });
   await recordOpening(page);
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-hero-scene] h1")).toBeVisible({ timeout: 1000 });
+  await expect(page.locator(".site-header .brand")).toBeVisible();
   await expectReleased(page);
-  await page.evaluate(() => document.fonts.ready);
   const frames = await openingFrames(page);
-  const docked = frames
-    .filter((frame) => frame.logoTime !== null && frame.logoTime >= 2750)
+  const settled = frames
+    .filter((frame) => frame.logoTime !== null && frame.logoTime >= 1000 && frame.logoTime <= 1500)
     .at(-1)!;
-  const header = await page.locator(".site-header .brand img").boundingBox();
-  expect(docked).toBeDefined();
-  expect(Math.abs(docked.logo!.x - header!.x)).toBeLessThan(1);
-  expect(Math.abs(docked.logo!.y - header!.y)).toBeLessThan(1);
+  expect(settled).toBeDefined();
+  expect(
+    Math.abs(
+      settled.logo!.x + settled.logo!.width / 2 - (settled.space!.x + settled.space!.width / 2),
+    ),
+  ).toBeLessThan(1);
+  expect(
+    Math.abs(
+      settled.logo!.y + settled.logo!.height / 2 - (settled.space!.y + settled.space!.height / 2),
+    ),
+  ).toBeLessThan(1);
 });
 
 test("reduced motion shows an immediately usable homepage", async ({ page }) => {
@@ -220,7 +237,7 @@ test("reduced motion shows an immediately usable homepage", async ({ page }) => 
   await recordOpening(page);
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expectReleased(page);
-  expect((await openingFrames(page)).some((frame) => frame.covered)).toBe(false);
+  expect((await openingFrames(page)).some((frame) => frame.visible)).toBe(false);
   const consultation = page.locator('[data-hero-scene] a[href="/contact-us"]');
   await consultation.focus();
   await expect(consultation).toBeFocused();

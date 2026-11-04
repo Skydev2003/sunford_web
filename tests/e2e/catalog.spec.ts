@@ -35,10 +35,10 @@ test("homepage introduces Sunford through the brand video and consultation", asy
   await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
   const heading = page.getByRole("heading", { level: 1 });
   const hero = page.locator("[data-hero-scene]");
-  await expect(heading).toContainText("SUNFORD");
+  await expect(heading).toHaveText("เครื่องชั่ง สำหรับธุรกิจของคุณ");
   await expect(hero.locator("video source")).toHaveAttribute("src", "/videos/sunford-web.mp4");
-  await expect(hero.locator("[data-hero-logo-space]")).toBeEmpty();
-  await expect(hero.locator("[data-hero-product], img")).toHaveCount(0);
+  await expect(hero.locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
+  await expect(hero.locator("[data-hero-product], img:visible")).toHaveCount(0);
   await expect(hero.locator('a[href="/contact-us"]')).toBeVisible();
   await expect(page.locator(".hero-model-stage, model-viewer")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
@@ -64,7 +64,7 @@ test("category filters show matching products and restore the catalogue", async 
   await expect(page).toHaveURL(/\/product\/industrial$/);
   await expect(catalogue.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่งอุตสาหกรรม");
   await expect(catalogue.getByRole("heading", { name: "WPS10KS", exact: true })).toBeVisible();
-  await expect(catalogue.locator("article")).toHaveCount(20);
+  await expect(catalogue.locator("article")).toHaveCount(24);
   await navigation.getByRole("link", { name: /^เครื่องชั่งทั้งหมด/ }).click();
   await expect(page).toHaveURL(/\/products$/);
   await expect(catalogue.locator("article")).toHaveCount(24);
