@@ -1,5 +1,1178 @@
 # Project state
 
+## Task: Separate commits and push UAT (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+
+### Goal
+
+แยกไฟล์ตามกลุ่มงานที่เสร็จแล้ว Commit และPushไปorigin/uatตามคำสั่งผู้ใช้
+
+### Scope In
+
+- 4กลุ่มCommitตามลำดับDependency: Homepage/categories/artwork/theme, Catalog/manifest/legacy retirement, Product navigation, Documentation
+- รวมเฉพาะSource/Tests/Referenceและ2ภาพหน้าแรกที่ใช้งานจริง เก็บภาพทดลอง/ภาพโลโก้ที่ยังไม่ใช้ไว้Local
+- ตรวจDiff/Formatting/Typecheck/Lint/UnitและสถานะRemote ก่อนStage/Commit/Pushตามรายการไฟล์ในPlan
+
+### Scope Out
+
+ไม่แก้ฟีเจอร์ ไม่รื้อCancellationงานOpening/Header logo ไม่รวมOutput/Secrets/Unused generated media ไม่Push main/Deploy/Force push
+
+### UI/UX Brand Alignment
+
+- Reference: งานที่อนุมัติและตรวจแล้วในTaskก่อนหน้า ไม่มีดีไซน์ใหม่ในงานGitนี้
+- Design/Responsive: คงพฤติกรรมและผลตรวจเดิมทุกหน้า
+
+### Input / Output
+
+- Input: “แยกไไฟล์และคอมมิตพุท”
+- Output: 4Commitsแยกกลุ่มพร้อมPush origin/uat และยืนยันRemote SHA
+- Contract: ไม่มีApp/Data contractเปลี่ยนจากการจัดCommit
+
+### Acceptance Criteria
+
+- [x] จัดไฟล์4กลุ่มตรงManifest ไม่มีไฟล์ทดลอง/Secret/Cancelled codeปน
+- [x] Formatting/Typecheck/Lint/Catalog+UAT unitผ่าน
+- [ ] Pushแบบปกติไปorigin/uatและยืนยันRemote SHAตรงLocal (Receiptบันทึกในรายงานส่งมอบหลังPush)
+- [x] บันทึกSource commit IDsและรายการไฟล์Localที่ไม่รวม
+
+### Missing Information
+
+ไม่มี BranchปัจจุบันคือuatและRemoteoriginตรวจจากGitแล้ว
+
+### Approval Record
+
+ผู้ใช้สั่งแยกไฟล์ Commit และPushโดยตรง ใช้uatที่กำลังทำงาน ไม่ถือว่าอนุมัติProduction release
+
+### Current State
+
+จัดกลุ่ม37Pathsเป็น4Commit groupsตามManifestแล้ว Source commitsคือ1e2243e(Home11ไฟล์),354538f(Catalog19ไฟล์),ffb6f7f(Navigation4ไฟล์) และกลุ่มDocumentation3ไฟล์ ครอบคลุมงานที่อนุมัติทั้งหมดโดยไม่รื้อCancellationของOpening/Header logo
+
+Full formatting/Typecheck/Lintผ่าน Catalog unit60/60และUAT unit27/27ผ่านบนNode24 UATรอบแรก26/27เพราะAuditอ่านTracked deletionที่ยังไม่Stage หลังStageการลบตามCommitแล้วรันเต็ม27ผ่านโดยไม่แก้โค้ดใหม่ Browser evidenceจากTaskก่อนหน้าคงอยู่ งานGitนี้ไม่เปลี่ยนApp logic/ไม่Buildซ้ำ
+
+เก็บUnused local media6ไฟล์นอกCommit:public/images/product-studio-20261104/5ไฟล์และpublic/videos/ChatGPT Image Nov 4, 2026, 02_14_56 PM.png ไม่มีApp references ไม่ลบไฟล์เหล่านี้ Raw patch/Untracked ZIP/Hashes/Groups/ผลตรวจอยู่output/commit-push-separated-20261104/ Push targetคือorigin/uatเท่านั้น การยืนยันRemote SHAและCommitเอกสารสุดท้ายบันทึกในdelivery.mdเมื่อส่งมอบ ไม่ทำProduction release Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Remove parent category subtitles (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — all five category subtitles removed and verified"
+
+### Goal
+
+ลบข้อความย่อยใต้ชื่อหมวดหลักทุกตัว เช่น “8 หมวดย่อย” ตามภาพ
+
+### Scope In
+
+ลบSubtitle spanทั้ง5ParentและCSSที่รองรับบรรทัดรอง จัดIcon/ชื่อให้อยู่กึ่งกลางแนวตั้งในปุ่มขนาดเดิม ปรับAssertionเดิมให้ตรวจข้อความเหลือชื่อหมวดเท่านั้น
+
+### Scope Out
+
+ไม่แก้ชื่อ/Icon/ขนาดปุ่ม/สี/การเลือก/Child controls/ข้อมูล/Mockรายสินค้า/Global styles/Routes
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพ “8 หมวดย่อย” ล่าสุดและปุ่มหมวดจริงใน/products
+- Design: เหลือIcon+ชื่อหมวด คงปุ่ม76px/Single row/สีเดิม
+- Responsive: ชุดเดิม320/390/768/844/1440
+
+### Input / Output
+
+- Input: “ข้อความย่อยด้านล่างของแต่ละหมวดลบออกครับ”
+- Output: ไม่มี “8 หมวดย่อย” หรือ “หมวดย่อยตัวอย่าง” ใต้ชื่อParent
+- Contract: ไม่มีProps/State/Dataเปลี่ยน
+
+### Acceptance Criteria
+
+- [x] Parentทั้ง5ปุ่มมีเฉพาะIconและชื่อ ไม่มีข้อความรอง
+- [x] ขนาด/Single row/Child scrolling/Selection/Functionalเดิมผ่านBrowser
+- [x] Typecheck/Scoped Lint/Format/Diffผ่านและตรวจภาพจริง
+
+### Missing Information
+
+ไม่มี ผู้ใช้ระบุทุกหมวดและตำแหน่งข้อความชัดเจน
+
+### Approval Record
+
+คำสั่งล่าสุดอนุมัติลบข้อความรองใต้Parentทุกปุ่มตามภาพ รวมการจัดแนวเนื้อหาในพื้นที่เดิม
+
+### Current State
+
+ลบSubtitle spanทั้ง5ปุ่มและCSSบรรทัดรองแล้ว Icon/ชื่อCenteredแนวตั้งในปุ่ม76pxเดิม Chrome11/11ผ่านรวมTextเท่าชื่อหมวดเท่านั้นและResponsive5ขนาด/Child scrolling/Selection/Search/Sort/Compare ตรวจภาพDesktop1440/Mobile390แล้ว Typecheck/Scoped ESLint/Prettier/Whitespaceผ่าน ไม่มีData/Route/ชื่อหมวดเปลี่ยน หลักฐานZIP5ไฟล์/Browser/ภาพ/รายงานในoutput/remove-category-subtitles-20261104/ ไม่Build/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Supplied opening and navigation logos without glow (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Withdrawn — user asked to stop"
+Progress: "Cancelled — application and test changes reverted"
+
+### Cancellation Record
+
+ผู้ใช้สั่ง “หยุดก่อนครับเอาส่วนเมื่อกี้ออกยังไม่ทำ” วันที่2026-11-04 จึงหยุดงานOpening/Header logoทั้งหมดและถอนการเปลี่ยนรอบนี้ ไม่ดำเนินต่อจนกว่าจะได้รับคำสั่งใหม่
+
+### Current State / Verification
+
+- คืนHeader,Hero,BrandOpening TSX/CSSและ2Test filesครบ6ไฟล์ตรงBytesก่อนงานตามbefore-files.zip/rollback-verification.json
+- ลบเฉพาะ2ไฟล์UIใหม่brand-logo.tsxและbrand-logo.module.css ไม่มีImportเหลือ ไม่แก้ไฟล์PNGที่ผู้ใช้ให้
+- ใช้Dev3000เดิม ไม่Restart/Commit/Deploy รักษาThemeหน้าแรกดำและงานเมนู/หมวด/การ์ดในChatอื่น ไม่คืนSpec/Planทั้งไฟล์
+- เก็บCancelled codeในcancelled-work.zipเพื่อReviewโดยไม่ใส่ในApp source ผลทดสอบที่รันก่อนยกเลิกไม่ใช่ผลส่งมอบงานใหม่
+- งานนี้ไม่อนุมัติให้ลงมือซ้ำอัตโนมัติ รอคำสั่งผู้ใช้ใหม่เท่านั้น Final Next feedbackไม่มีQualifying Framework Issueใหม่
+
+## Task: Remove red product belt frames (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — normal and hover frames removed and verified"
+
+### Goal
+
+เอากรอบสีแดงรอบรูปสินค้าในแถบเลื่อนหน้าแรกตามภาพออก
+
+### Scope In
+
+เปลี่ยนBorderสีแดงเป็นTransparentเพื่อคงขนาดรูป และลบเงาแดง/สีกรอบHoverเฉพาะ.category-feature-product คงHoverยกขึ้นและKeyboard focusเดิม
+
+### Scope Out
+
+ไม่แก้ภาพ/ขนาด/Link/หมวด/Animation/Background/Focus outline/Componentอื่น
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพแถบรูปสินค้าบนพื้นดำล่าสุดและSelectorที่ใช้งานจริงในsrc/styles/category-feature.css
+- Design: ไม่มีเส้นหรือเงาแดงรอบThumbnailในNormal/Hover คงขอบมนและพื้นที่เดิม
+- Responsive: ตรวจDesktop1440/Mobile390และทั้ง4หมวด
+
+### Input / Output
+
+- Input: “เอากรอบสีแดงออกครับ” พร้อมภาพ
+- Output: แถบรูปสินค้าไม่มีกรอบแดงในNormal/Hover
+- Contract: CSSเฉพาะThumbnail ไม่มีProps/Dataเปลี่ยน
+
+### Acceptance Criteria
+
+- [x] Normal/Hoverไม่มีBorder/Shadowแดงทั้ง4หมวด
+- [x] Thumbnail70px/ภาพ/Link/การเลื่อน/Keyboard focusเดิมคงอยู่ ไม่มีOverflow
+- [x] Browserภาพจริง/Scoped regression/Format/WhitespaceและDiffผ่าน
+
+### Missing Information
+
+ไม่มี ภาพระบุกรอบThumbnailชัดเจน
+
+### Approval Record
+
+คำสั่งล่าสุดอนุมัติเอากรอบแดงของแถบสินค้าตามภาพออก รวมCSSในsrc/styles/category-feature.cssที่เป็นเจ้าของกรอบนั้น
+
+### Current State
+
+BorderThumbnailเป็นTransparentและลบShadowแดงNormal/Hoverแล้ว คง70x70/ขอบมน/Hoverยกขึ้น/Keyboard outlineเดิม Browser4หมวดที่1440/390รวม8กรณี Borderrgba0/Shadownoneทั้งNormal/Hover ภาพโหลด/Linkเดิมครบ Focus3px Solid ไม่มีOverflow/Page errors ตรวจภาพDesktop/Mobileแล้ว Scoped regression4/4ผ่านครอบคลุมAnimation/Hover pause/Keyboard/Moving links Desktop–Mobile Prettier/Whitespace/Diffผ่าน แก้เฉพาะ2Selectorใน1CSS หลักฐานoutput/remove-belt-border-20261104/ ไม่Build/Typecheck/DeployสำหรับCSS-only Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Sync primary product navigation with catalog (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — real category labels and selected destinations verified"
+
+### Goal
+
+ซิงค์รายการหลักในเมนูสินค้าตามภาพกับหมวดสินค้าจริง และให้ลิงก์เปิดหมวดที่เลือกใน `/products`
+
+### Scope In
+
+- ใช้ productCategoryDefinitions เป็นแหล่งชื่อ/ลำดับ/IDของ5หมวด รายการแรก “ผลิตภัณฑ์ทั้งหมด” ตรงหัวข้อหน้า /products
+- ลิงก์หมวดใช้ /products?category=<IDจริง> แทนLegacy URLsที่Redirectไปสินค้ารวม
+- SyncเฉพาะPrimary linksและsubmenuLabelของเมนู/products รวมSaved navigationปัจจุบันในRuntime ไม่แก้DB/คอลัมน์คู่มือ/เมนูอื่น
+- Catalogอ่านcategoryผ่านตัวSyncขนาดเล็กใต้Suspense แยกจากSSRของรายการสินค้า Validationเฉพาะ5ID ค่าไม่รู้จักใช้All
+- ปุ่มParentในCatalogอัปเดตQueryด้วยHistory replaceStateโดยไม่Reload เพื่อให้Nav/Refresh/Backตรงกับหมวดจริง ไม่เพิ่มHistoryทุกการกดปุ่มกรอง
+
+### Scope Out
+
+ไม่แก้Header markup/Shared styles/ดีไซน์/หมวดย่อย/ข้อมูลสินค้า/ตัวจัดMembership/เมนูคอลัมน์อื่น/Database/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพPrimary product submenuและ5หมวดจริงในCatalog
+- Design: โครง/สี/ขนาด/การเปิดปิดเมนูเดิม เปลี่ยนชื่อให้ตรง “เครื่องชั่ง”, “อินดิเคเตอร์แท่นชั่ง”, “โครงสร้างแท่นชั่ง”, “ระบบ POS”, “อุปกรณ์เสริม”
+- Responsive: Desktop1440/Mobile390และCatalog320/390/768/844/1440จากชุดเดิม
+
+### Input / Output
+
+- Input: “ซิงค์หมวดหมู่ nav ส่วนนี้จากรูปที่แนบ และปรับข้อความให้ตรงกับหมวดหมู่สินค้าจริง”
+- Output: Nav6รายการตรงชื่อจริง คลิกแต่ละหมวดแล้วSelected/หัวข้อ/รายการสินค้าตรงกันทั้งจากหน้าอื่นและในหน้า/products
+- Contract: URL categoryยอมรับ5IDจากDefinitions ค่าอื่น/ไม่มีค่าเป็นAll; การกรองเลือกหมวดต้องใช้JavaScriptตามCatalogเดิม SSRของรายการรวมยังอยู่ครบ
+
+### Acceptance Criteria
+
+- [x] ชื่อ/ลำดับ/Query linksตรงDefinitions และSaved primary navถูกSyncโดยไม่Mutateข้อมูลเดิม
+- [x] Desktop/Mobileคลิกครบ5หมวดและAllได้ Selected/Headingตรง URL รวมSame-page/Refresh/Back/Invalid ID
+- [x] Catalog/หมวดย่อย/Search/CompareเดิมและNo-JSสินค้ารวมยังผ่านRegression
+- [x] Unit/Typecheck/Scoped Lint/Format/Browserและภาพจริงผ่าน
+
+### Missing Information
+
+ไม่มี ใช้ชื่อหมวดหลักและMembershipจริงที่มีอยู่
+
+### Approval Record
+
+คำสั่งล่าสุดอนุมัติSyncPrimary navตามภาพกับหมวดจริง รวมชื่อและการไปหมวดที่ตรงกัน ใช้ข้อมูลจริงจากDefinitions ไม่เปลี่ยนเมนูส่วนอื่น
+
+### Current State
+
+Primary navใช้ชื่อ/ลำดับ5หมวดจากDefinitionsและลิงก์/products?category=IDจริงแล้ว รายการAll/คำเกริ่นใช้ “ผลิตภัณฑ์ทั้งหมด” Saved navซิงค์เฉพาะPrimary links/submenuLabelโดยไม่แก้DBหรือGroupsอื่น CatalogรับQueryผ่านตัวSyncใต้Suspenseและปุ่มParentอัปเดตURLด้วยHistory replaceState คงSSRของรายการรวม
+
+Unit60/60และChrome21/21ผ่าน รวมDesktop1440/Mobile390คลิกAll+5หมวด Direct/Refresh/Local change/Same-page/Back/Invalid IDและNo-JSรายการรวม ชุดCatalogเดิม11รายการยังผ่านครบรวมแถบหมวดย่อยเลื่อน Typecheck/Scoped ESLint/Prettier/Whitespaceผ่าน ภาพเมนูDesktop/MobileและSelected categoryตรวจแล้ว Scope auditเปลี่ยน2ไฟล์แอป+3TestตามPlan ไม่แก้Header markup/Styles/DefinitionsและประวัติDocsเดิมคงอยู่
+
+รอบBrowserแรกหยุดหลังพบSelectorทดสอบหาulแต่Markupจริงเป็นdiv แก้เฉพาะHarnessแล้วรันครบ21ผ่าน เก็บArtifactsรอบเดิมไว้ หลักฐานoutput/sync-product-nav-20261104/ ZIP7ไฟล์ ไม่Production Build/Full E2E/Database/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Single-row scrollable catalog subcategories (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — one row, arrow scrolling and keyboard behavior verified"
+
+### Goal
+
+หมวดย่อยใน `/products` เรียงแนวนอนแถวเดียว ห้ามWrap และกดปุ่มเลื่อนดูหมวดที่เกินพื้นที่ได้ตามภาพผู้ใช้
+
+### Scope In
+
+- Trackหมวดย่อยSingle row/nowrap/overflow-xเฉพาะTrack พร้อมปุ่มลูกศรซ้าย–ขวาเมื่อเลือกParentที่มีChild
+- ใช้RefและscrollByในEventเท่านั้น ไม่เพิ่มEffect/Stateใหม่ รองรับReduced motion และResetตำแหน่งTrackเมื่อเปลี่ยนParentด้วยKey
+- รักษาGroup/ปุ่มAll/ชื่อ/aria-pressedและการเลือกเดิม ปุ่มลูกศรอยู่นอกGroupหมวดย่อย
+
+### Scope Out
+
+ไม่แก้Parent row/การ์ดสินค้า/ข้อมูล/หมวด/Route/Shared styles/Dependencies/Database/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพหมวดย่อยIndicatorและScalesล่าสุด ปุ่ม/สี/FocusตามCSSเดิม
+- Design: ชื่อหมวดย่อยบรรทัดเดียว ใช้ลูกศรLucideเดิมและTouch target44px Trackยืดหดในพื้นที่คงเหลือ
+- Responsive: 320/390/768/844/1440 ต้องมีChildเพียงแถวเดียว ไม่มีDocument overflow จอเล็กวางTrackใต้HeadingตามPatternเดิม
+
+### Input / Output
+
+- Input: “หมวดย่อยให้เรียงไปข้างๆเลยครับห้ามล้นไปแถวอื่นให้กดเลื่อนเอา”
+- Output: หมวดย่อยไม่ขึ้นแถวใหม่ ลูกศรกดเลื่อนได้ทั้ง2ทิศ มือถือปัดและKeyboardไปหมวดท้ายได้
+- Contract: ไม่มีData/Propsเปลี่ยน การเลื่อนเป็นUI-only ไม่เปลี่ยนFilterจนกดเลือกหมวด
+
+### Acceptance Criteria
+
+- [x] ทุกขนาดChild9ปุ่มของScalesอยู่แถวเดียว ชื่อnowrapและDocumentไม่Overflow
+- [x] ลูกศรขวาเลื่อนไปข้างหน้า ซ้ายเลื่อนกลับ และไม่เปลี่ยนSelectedเอง
+- [x] Keyboardเข้าถึงChildท้ายและเลือกได้ เปลี่ยนParentเริ่มTrackใหม่ Reduced motionใช้Scrollทันที
+- [x] ชุดBrowserเดิม11รายการ Typecheck/Scoped Lint/Formatและภาพจริงผ่าน
+
+### Missing Information
+
+ไม่มี ผู้ใช้ระบุการไม่Wrapและกดเลื่อนชัดเจน
+
+### Approval Record
+
+คำสั่งล่าสุดอนุมัติแถบหมวดย่อยแถวเดียวและปุ่มเลื่อนตามภาพ รวมResponsiveที่เกี่ยวข้อง
+
+### Current State
+
+หมวดย่อยเป็นTrackแถวเดียวแล้ว มีลูกศร44pxเลื่อน80%ของพื้นที่Trackต่อครั้ง เลื่อนแบบSmoothและInstantเมื่อReduced motion เปลี่ยนParentสร้างTrackใหม่เริ่มที่ซ้ายสุด โดยไม่เพิ่มEffect/Stateใหม่ Groupและการเลือกเดิมคงอยู่
+
+Chrome11/11ผ่าน ตรวจ320/390/768/844/1440 Child9ปุ่มYเดียวกัน/nowrap/ไม่มีDocument overflow ลูกศรทั้ง2ทิศไม่เปลี่ยนSelected Keyboard8TabsถึงChildท้ายและEnterเลือกได้ Parent resetและReduced motionผ่าน ภาพ320/390/768/1440ตรวจแล้ว Typecheck/Scoped ESLint/Prettier/Whitespaceผ่าน งานนี้เปลี่ยน2ไฟล์แอป+1Test โดยAuditแยกการเปลี่ยนhome-page.module.cssจากงานหน้าแรกที่ดำเนินพร้อมกันและรักษาไว้ ประวัติDocsเดิมตรวจโดยแยกTaskหน้าแรกที่มีการอัปเดตคู่ขนาน หลักฐานoutput/single-row-subcategories-20261104/ ไม่Build/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Remove catalog explanatory notice (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — notice removed and browser regressions verified"
+
+### Goal
+
+นำข้อความแจ้งเหนือแถบหมวดหลักตามภาพออกจาก `/products`
+
+### Scope In
+
+ลบParagraphแจ้งและข้อความสลับตามParentที่ตำแหน่งเดียวกัน พร้อมCSSเฉพาะnoticeที่ไม่มีผู้ใช้แล้ว ปรับAssertionเดิมให้ตรวจว่าไม่มีข้อความนี้
+
+### Scope Out
+
+ไม่แก้ป้ายMockรายสินค้า ข้อมูล หมวด ตัวกรอง สี ขนาดปุ่ม Global styles หรือRoutes
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพข้อความ “จัดหมวดตามรายการรุ่นที่ยืนยัน รุ่นที่ยังไม่มีข้อมูลแสดงเป็น Mock” ล่าสุด
+- Design: ใช้แถบหมวดเดิมหลังลบParagraph ไม่มีข้อความทดแทน
+- Responsive: ตรวจBrowserเดิม320/390/768/844/1440
+
+### Input / Output
+
+- Input: “ข้อความนี้เอาออก” พร้อมภาพ
+- Output: ไม่มีข้อความแจ้งเหนือแถบหมวดทุกParent; ป้ายMockบนสินค้าเดิมยังอยู่
+- Contract: ไม่มีProps/State/Dataเปลี่ยน
+
+### Acceptance Criteria
+
+- [x] ไม่มีParagraphแจ้งและข้อความทั้ง3สถานะในตำแหน่งเดิม
+- [x] Parent/Child/Mock/Search/Compare/Responsiveเดิมผ่านBrowser regression
+- [x] Typecheck/Scoped Lint/FormatและตรวจSource diffผ่าน
+
+### Missing Information
+
+ไม่มี ภาพระบุข้อความและตำแหน่งชัดเจน
+
+### Approval Record
+
+คำสั่งล่าสุด “ข้อความนี้เอาออก” อนุมัติลบข้อความแจ้งในตำแหน่งที่ระบุและช่องว่างของParagraphนั้น
+
+### Current State
+
+ลบParagraphแจ้งเหนือหมวดทุกสถานะและ.notice CSSแล้ว ป้ายMockรายสินค้า/ข้อมูล/การเลือกเดิมคงอยู่ Chrome Regression11/11ผ่าน รวมParent5/Child8/Mock/Search/CompareและResponsive5ขนาด ตรวจภาพMobileไม่มีข้อความแล้ว Typecheck/Scoped ESLint/Format/Whitespaceผ่าน DiffเทียบBackupตรงเฉพาะParagraph/StyleและAssertion หลักฐานoutput/remove-catalog-notice-20261104/ ไม่Build/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Refined black background across homepage (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — all homepage surfaces black with responsive and route checks"
+
+### Goal
+
+ปรับหน้าแรกทั้งหมดเป็นพื้นหลังดำเรียบหรูตามคำสั่งและภาพBrand Story ล่าสุด ให้ทุกSectionต่อเนื่องบนดำ ใช้ขาว/เทาอ่อนให้อ่านง่ายและสีแดงSUNFORDเป็นAccent
+
+### Scope In
+
+- Mainหน้าแรกใช้Page CSS Moduleเป็นTheme hook:พื้นดำ#000,ตัวอักษร#f5f5f7,ข้อความรอง#a1a1a6,เส้น#2a2a2a คงFont/Layout/ระยะ/Media/Interactions
+- BrandStoryและStories CSS Modulesใช้เฉพาะหน้าแรก เปลี่ยนBackgroundชมพู/ขาวและCardsเป็นBlack/Charcoal ปรับตัวหนังสือ/เส้น/ป้าย/ไอคอนอ่านชัด ตัดPink decorative ring
+- Page moduleScope Footerผ่านSibling selectorเฉพาะเมื่อMainหน้าแรกอยู่ เปลี่ยนFooter gray/red backgroundsเป็นBlack เส้นแบ่งเทา ปรับText/Links/Icon surfaces และซ่อนเฉพาะFooter sceneที่เป็นภาพพื้นหลังตกแต่ง ไม่แก้Footer component/Shared styles
+- Hero/วิดีโอ/สินค้า/หมวดเดิมคงอยู่ Hero fallbackดำแทน#111 กรอบProduct beltเป็นCharcoal Headingวิดีโอขาว Headerใช้Surface samplerเดิมตรวจดำจริง ไม่แตะHeader logic
+
+### Scope Out
+
+ไม่เปลี่ยนเนื้อหา/ภาพ/วิดีโอ/ลิงก์/การจัดหมวด/จำนวน/ขนาดCard/แอนิเมชัน/Modal overlays/หน้าอื่น/Data/Dependencies/Database/Deployment ไม่ReviveHomepage catalogที่ปิดอยู่หรือHero3Dที่Retireแล้ว
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพที่ผู้ใช้ให้ เน้นStory Section และคำสั่ง “ปรับหน้าแรกให้เป็นพื้นหลังดำเรียบหรูทั้งหมด”; Brandดำ/แดง/ขาวที่มีอยู่ในHeroและCategoryFeature
+- Design: Base#000,Card#111,Text#f5f5f7,Muted#a1a1a6,Border#2a2a2a,Redเดิม ขจัดLarge pale surfaces/ชมพูไล่สี คงActual photo/video pixels
+- Responsive:320/390/768/1440 ตรวจทุกSection/Story/Stories/Video/Footer คอนทราสต์ข้อความหลัก/รอง OverflowและHeader tone
+
+### Input / Output
+
+- Input: คำสั่งและภาพล่าสุด SourceComponents/CSSที่ใช้งานจริง
+- Output: หน้าแรกดำต่อเนื่องตั้งแต่HeroถึงFooter Cardรองเข้มและข้อความชัด Footerของ/productsหรือ/contact-usยังStyleเดิม
+- Contract: Home mainเพิ่มLocal classจากhome-page.module.css; selectorsที่มีผลFooter/Parentต้องมีLocal page classอยู่ ไม่เพิ่มJS/state/global theme providerและไม่เปลี่ยนHTML/data contracts
+
+### Acceptance Criteria
+
+- [x] ทุกHomepage SectionและFooter major surfaceเป็นดำ ไม่มีPink/White section backgroundที่สร้างจากCSS
+- [x] Brand Story/Stories/Card overlays/Footerอ่านข้อความชัด รูป/เนื้อหา/Links/Interactionเดิมครบ
+- [x] Header toneเป็นDarkเมื่อScrollSectionดำ และหน้า/productsกลับStyleเดิมเมื่อออกจากหน้าแรก ไม่มีTheme leak
+- [x] Responsive4ขนาด ไม่มีOverflow ตรวจภาพจริงและContrastข้อความหลัก/รองบนDark surfaces
+- [x] Typecheck/Scoped Lint/Format/Active homepage Browser36กรณี/Scope auditผ่าน พร้อมBackup/ผลจริงและรักษางานอื่น; ข้อจำกัดMap5กรณีที่CMSปิดบันทึกแยก
+
+### Missing Information
+
+ไม่มี ผู้ใช้กำหนดหน้าแรกทั้งหมดและโทนBlackเรียบหรูชัดเจน ไม่ตีความให้แก้หน้ารายละเอียดหรือMediaต้นฉบับ
+
+### Approval Record
+
+คำสั่งล่าสุด “ปรับหน้าแรกให้เป็นพื้นหลังดำเรียบหรูทั้งหมด” อนุมัติปรับThemeทั้งHomeรวมFooterเฉพาะHomeและสีตัวหนังสือที่จำเป็น ขอบเขตนี้ไม่แตะShared Header/Footer sourceหรือGlobal stylesheet
+
+### Current State
+
+เปลี่ยนMain/ทุกSection/Footer major surfacesเป็น#000ครบแล้ว BrandStory/Stories cardsเป็นCharcoal ข้อความขาว/เทาAccentแดง ตัดPink decorative ringและFooter backdrop sceneเฉพาะHome คงDOMเนื้อหา/Headings/Link/Image URLsตรงBaselineทุกตัว ไม่แตะMedia pixels/ข้อมูล/แอนิเมชัน
+
+ตรวจ320/390/768/1440ทุกSectionไม่มีOverflow Header toneDarkบนStory ตรวจภาพStory/Stories/FooterDesktop/Mobileแล้ว Contrast86ตัวอย่างข้อความหลัก/รองขั้นต่ำ5.17:1 โหมดProductsRouteเมื่อออกจากHomeยังมีBackground/Color/Header/FooterตรงBaselineและกลับHomeยังดำ
+
+จำกัดสีThemeบนSurfaceโดยไม่Override --ink/--muted/--lineที่สืบทอดเข้าLight Dialog และจำกัดVideo heading selectorเฉพาะSection heading ตรวจVideo Modalเปิดด้วยKeyboard/ปิดได้ สีพื้นWhiteกับText/Headingrgb(29,29,31)เดิมครบ
+
+Typecheck/Scoped ESLint/Prettier/Whitespaceผ่าน ชุดActive Homepage Regression6ไฟล์36/36ผ่าน ไม่มีFlaky/Skipped รอบรวมแรก41กรณีผ่าน36และFail5เฉพาะCustomerMapเพราะCMSปัจจุบันแสดงFooter coverageเป็นDIVไม่มีปุ่มเปิดตามเงื่อนไขenabled=false เก็บFailureเดิม ไม่เปิดMap/เปลี่ยนDataเพื่อให้Testผ่าน ไม่อ้างAll41ผ่านหรือยืนยันMap flow
+
+Own app4ไฟล์ตามPlan Source auditพบProductCategoryMock TSX/CSSเปลี่ยนคู่ขนานในงานอื่นจึงรักษาไว้ ไม่ทับหรืออ้างเป็นงานThemeนี้ BackupZIP5ไฟล์ก่อนแก้และหลักฐานoutput/homepage-black-20261104/delivery.md/summary.json/ผลจริง/ภาพ Screenshotsสุดท้ายซ่อนเฉพาะDev portalด้วยCapture option ไม่แก้UIแอป
+
+ใช้Dev3000เดิม ไม่Restart/Production Build/Full E2E/Database/Commit/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Compact single-row catalog categories (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — compact row and responsive keyboard scrolling verified"
+
+### Goal
+
+ย่อปุ่มหมวดหลักทั้ง5ใน `/products` และจัดแถวเดียวเพื่อลดพื้นที่แนวตั้งตามภาพผู้ใช้
+
+### Scope In
+
+- เปลี่ยนเฉพาะCSSของParent navigation เป็น5คอลัมน์แถวเดียว ปุ่มสูง76px ไอคอน24px ชื่อ14px ข้อความรอง11px ไอคอนซ้าย/ข้อความขวา
+- Desktopแสดงครบ5ปุ่มเมื่อพื้นที่พอ จอแคบเลื่อนแนวนอนในแถวเดิม ปุ่มขั้นต่ำ190pxเพื่ออ่านชื่อครบและกดง่าย
+- ปรับResponsive assertionsเดิมให้ตรวจSingle row/Compact height/Keyboard scroll แทนGrid2–4คอลัมน์
+
+### Scope Out
+
+ไม่เปลี่ยนข้อความ/ไอคอนต้นฉบับ/สี/หมวด/ข้อมูล/การ์ดสินค้า/ตัวกรอง/Global styles/Routes/Dependencies/Database/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพหมวดหลัก5ปุ่มล่าสุดและComponent/Brand tokensเดิมใน src/styles/base.css
+- Design: เก็บสีขาว/เส้นขอบ/Selectedสีแดง/Focusเดิม ลดขนาดและระยะห่างเฉพาะหมวดหลัก
+- Responsive: 320/390/768/844/1440; ทุกปุ่มอยู่แถวเดียว ไม่มีDocument overflow จอเล็กเลื่อนและใช้Keyboardไปปุ่มท้ายได้
+
+### Input / Output
+
+- Input: “ปรับให้เล็กลงและอยู่ในแถวเดียวกันจะได้ไม่กินพื้นที่เยอะ” พร้อมภาพหมวดหลัก
+- Output: แถบหมวดหลักเตี้ยลง แสดงครบ5ปุ่มในDesktopและเลื่อนแถวเดียวในMobile/Tablet
+- Contract: CSS-only ไม่มีState/Props/Data contractเปลี่ยน ปุ่มaria-pressed/aria-controlsและการเลือกเดิมคงอยู่
+
+### Acceptance Criteria
+
+- [x] 5ปุ่มมีตำแหน่งYเดียวกัน สูงไม่เกิน80px ไอคอน24px ชื่อครบไม่ถูกตัด
+- [x] Desktop1440แสดงครบโดยไม่เลื่อน Mobile/Tabletเลื่อนได้เฉพาะแถบ ไม่มีDocument overflow และKeyboardไปปุ่มท้ายได้
+- [x] เลือกParent/Child/Search/Sort/Compare/Grid/Listเดิมยังผ่านBrowser regression
+- [x] Scoped Format/Lint/TypecheckและภาพDesktop/Mobile/Tabletตรวจผ่าน จำกัด1ไฟล์แอปและ1ไฟล์ทดสอบ
+
+### Missing Information
+
+ไม่มี ใช้การเลื่อนแนวนอนเป็นResponsiveของแถวเดียวโดยรักษาชื่อครบตามComponentเดิม
+
+### Approval Record
+
+คำสั่งล่าสุดอนุมัติย่อหมวดหลักและจัดแถวเดียวตามภาพ ขอบเขตCSSเฉพาะแถบหมวดและResponsiveที่เกี่ยวข้องครอบคลุมคำขอนี้
+
+### Current State
+
+Parent navigationเป็นแถวเดียว5ปุ่มแล้ว สูง76px ไอคอน24px ชื่อ14px/ข้อความรอง11px Desktop1440แสดงครบ จอ320/390/768/844เลื่อนเฉพาะแถบ ชื่อเต็มอ่านได้เมื่อเลื่อนถึงปุ่ม Keyboard Tabไปหมวดท้ายและกลับได้ Outlineไม่ถูกตัด
+
+Chromeชุดเดิม11/11ผ่าน รวมFunctional5Parent/8Child/Search/Sort/CompareและResponsive5ขนาด ตรวจภาพจริง320/390/768/1440แล้ว ไม่มีDocument overflow/Page errors TypecheckและScoped ESLint/CSS+Test Prettierผ่าน Source auditเปลี่ยนเฉพาะ1CSS+1Testของงานนี้ งานหน้าแรกสีดำที่เริ่มพร้อมกันอยู่นอกขอบเขตและคงไว้
+
+หลักฐานBackup4ไฟล์/Source hashes/Scope audit/ภาพ/รายงานอยู่ output/compact-categories-20261104/ ใช้Dev3000เดิม ไม่Restart/Production Build/Full E2E/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Short product card model names (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — verified short model names and factual accessory labels"
+
+### Goal
+
+ย่อชื่อการ์ด/productsที่เป็นชื่อโฆษณา/คำบรรยายให้เหลือรุ่นจริง เช่นRLS1100/C1/FEH5KSตามภาพ รุ่นไม่มีรหัสใช้ชื่อสั้นพร้อมขนาด/แพ็กตามคำตอบล่าสุด
+
+### Scope In
+
+- เพิ่มCard name helperใช้Source ID/ชื่อ/รายละเอียดที่ตรวจจากSnapshot กำหนดExplicit labelsไม่เดาจากความจุหรือรหัสฐานข้อมูลตัวเลข ไม่จับรหัสคล้ายกันแทน
+- 9Legacy Scaleชื่อยาวใช้รหัสSourceจริง C1-Precision-Balanceใช้C1 ตัดSUNFORD/Indicator/Platform/RAMP prefixออกจากชื่อรุ่นที่มีอยู่
+- อุปกรณ์/วัสดุไม่มีรหัสใช้ชื่อสั้นและคงขนาด/Pack/กันน้ำที่จำแนกสินค้า Legacyที่มีหลายPackไม่เลือกPackใดเอง ScannerมีสายSource detailsปนรหัสWirelessจึงใช้ชื่อสั้นมีสายตามชื่อสินค้า ไม่เดารหัสใหม่
+- Routeสร้างcardNames keyed by real Product IDจากSource IDฝั่งServer ส่งเฉพาะLabelให้Browserไม่ส่งRaw Source ใหม่ UIใช้LabelในAll/Parent/Child/Sort พร้อมSearchทั้งชื่อสั้นและชื่อเต็ม
+- Membership8ChildยังตามManifest100% แยกDisplay labelจากDocument model:VB3000S HiCoFE→VB3000S,Fitdays Smart Scale - FD1000→FD1000 รุ่นอื่น/Mockคงรหัสตรงเดิม
+
+### Scope Out
+
+ไม่แก้Database/ชื่อจริง/Slug/รูป/รายละเอียด/Manifest membership/Shared Card/Header Search/หน้าอื่น/Styles/Dependencies/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพล่าสุดและsource products.json+Manifestที่ผู้ใช้ให้
+- Design: รูปเดิม ชื่อกึ่งกลางเดิม ใช้เฉพาะLabelสั้น ไม่เพิ่มป้าย/คำบรรยายกลับ
+- Responsive:320/390/768/1440 Grid/List ตรวจชื่อWrapและOverflow
+
+### Input / Output
+
+- Input: “แก้ไขตัวไหนที่มีชื่อยาวๆให้แก้เป็น ใช้แค่ชื่อรุ่นก็พอครับ” และคำตอบ “ใช้ชื่อสั้นพร้อมขนาด/แพ็ก” สำหรับรายการไม่มีรหัส
+- Output: ทั้ง150Real cardsใช้Labelสั้นที่มีหลักฐาน Mock18ไม่ถูกเปลี่ยนเป็นสินค้าจริง
+- Contract: ProductCategoryMock.cardNames:Record<string,string> keyed by Product IDเป็นDisplay-only; Sortใช้Displayed label Searchยังชื่อ/Subtitle/Descriptionเดิม URL/Compare IDคงอยู่ Catalog DTOไม่เปลี่ยน
+
+### Acceptance Criteria
+
+- [x] ชื่อยาวตามภาพทุกตัวเหลือรหัสจริง รวมTSS-150-SW31S/CSS-150-SW31/TMS-30-AC31S/ACS-30-JC21/RLS1100/C1/FEH5KS
+- [x] Consumablesสั้นพร้อมขนาด/แพ็กที่ยืนยัน ไม่เอาNumeric Source ID/ความจุ/มาตรฐานเป็นModel ไม่รวมรายการซ้ำหรือแก้Suffix
+- [x] All/5Parent/8Child/Search/Sort/Compareเดิมผ่าน Label aliases2ชื่อเปลี่ยนอย่างชัดเจนโดยMembershipคงเดิม
+- [x] ตรวจResponsive/ภาพจริง Typecheck/Scoped Lint/Catalog Browser/Format/ScopeและประวัติDocsผ่าน
+
+### Missing Information
+
+ไม่มี ผู้ใช้ยืนยันหลักเกณฑ์ไม่มีรหัสแล้ว รหัสที่ข้อมูลปนกันใช้ชื่อสั้นตามข้อมูลที่ยืนยัน ไม่แต่งรหัส
+
+### Approval Record
+
+คำขอล่าสุดอนุมัติชื่อรุ่นสั้นบนการ์ด และคำตอบ “ใช้ชื่อสั้นพร้อมขนาด/แพ็ก” อนุมัติFallbackสำหรับสินค้าที่ไม่มีรหัส การเปลี่ยนนี้เป็นPresentationเฉพาะ/products
+
+### Current State
+
+ใช้Card name helper/Server mapping/UI displayแล้ว ย่อ83จาก150รายการที่ชื่อมีPrefix/รายละเอียด ชื่อยาวตามภาพทุกตัวเป็นรหัสตรงSource เช่นTSS-150-SW31S/CSS-150-SW31/TMS-30-AC31S/RLS1100/C1/FEH5KS ไม่มีการเปลี่ยนSuffix/รหัส/Slugจริง Consumablesใช้ขนาด/Pack/กันน้ำที่ยืนยันตามคำตอบผู้ใช้ ชื่อยาวสุด31ตัวอักษร ไม่แต่งModelให้รายการไม่มีรหัส
+
+Browserตรวจ150Real cardsตรงName auditและURLเดิมครบ Searchชื่อเต็มยังพบรุ่นสั้น Grid/List320/390/768/1440ทั้ง8กรณีชื่อCentered ไม่มีClipping/Overflow ตรวจภาพDesktop/Mobile/Consumablesแล้ว MockVL15000Sเดิมยังอยู่ Membership8ChildเดิมและMock18ไม่เปลี่ยน ย่อเฉพาะDisplay aliases2ชื่อเป็นVB3000S/FD1000
+
+Catalog Unit58/58ผ่าน Scoped Browser11/11ผ่านทั้งรอบแรกและรอบสุดท้าย ไม่มีFlaky/Skipped Typecheck/Scoped ESLint/Prettier/Whitespaceผ่าน มีงานConcurrent legacy cleanupแก้Catch-all/ProductCatalogและลบLegacy Browser/Bannerพร้อมปรับRoute regression ระหว่างงาน จึงรักษาการเปลี่ยนนั้น ไม่อ้างว่าเป็นงานตั้งชื่อรอบนี้ /Indicatorขณะนี้Redirect/productsตามงานนั้น
+
+Exploratory captureแรกClipอยู่นอกViewportของGridยาว เปลี่ยนวิธีเป็นViewport captureแล้วPrimary checksครบ มีAssertionตรวจCardเก่าที่ล้าสมัยเพราะConcurrent redirectจึงTimeoutและเก็บFailureไว้ ยืนยันRedirectจริงด้วยHeading level1หลังแก้Locatorที่เดิมตรง2Heading ไม่แก้แอปเพราะปัญหาHarnessเหล่านี้
+
+หลักฐานoutput/short-card-names-20261104/delivery.md, summary.json, name-audit.json, presentation.json, final-regression.json, catalog-unit.log, scope-audit.jsonและภาพ ใช้Dev3000เดิม ไม่Restart/Production Build/Full E2E/Database/Commit/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Remove unused legacy catalog structure (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — old category structure removed and redirects verified"
+
+### Goal
+
+ลบโครงส่วนที่ไม่ได้ใช้ตามภาพหน้า `/Product/Digital-weighing` ที่ผู้ใช้ส่งมา
+
+### Scope In
+
+- หมวดสินค้าเดิมที่ไม่ใช่ CMS-managed และตรวจพบด้วย getProductSection รวม Product/Indicator/Collections เปลี่ยนไป `/products` ฝั่ง Server โดยไม่ Render โครงเก่า
+- ลบ ProductBrowser และ CategoryBanner พร้อมทางเรียกเดิมใน Catch-all และ ProductCatalog; เก็บ product-browser.module.css ที่การ์ดหน้าใหม่ยังใช้
+- ปรับ Regression ที่ตรวจ URL/โครงเก่าให้ตรงพฤติกรรมใหม่
+
+### Scope Out
+
+ไม่ลบข้อมูลสินค้า รูปภาพ หรือ Resolver ที่ `/products` ใช้ ไม่เปลี่ยนดีไซน์หน้าใหม่ Header/Global styles, Product detail, CMS-managed pages, Database หรือ Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพหน้าจอ `/Product/Digital-weighing` จากผู้ใช้
+- Design: ใช้หน้า `/products` ปัจจุบันแทน Sidebar/Banner/Toolbar หน้าเก่า
+- Responsive: ตรวจหน้าเป้าหมายและ Redirect ที่ 390/768/1440 พร้อม Screenshot และไม่มี Overflow
+
+### Input / Output
+
+- Input: “ลบโครงส่วนนี้ออกให้หน่อยครับไม่ได้ใช้แล้ว” พร้อมภาพหน้าเก่า
+- Output: URL หมวดเดิมไป `/products` แสดงหน้าใหม่ ข้อมูล/หมวด/รุ่นและลิงก์สินค้าเดิมยังอยู่
+- Contract: getProductSection ใช้ระบุหน้าหมวดเดิม; redirect('/products') ก่อนดึงข้อมูลเพื่อ Render หมวดเก่า ไม่เปลี่ยน getCatalogPage ที่หน้าใหม่ยังใช้
+
+### Acceptance Criteria
+
+- [x] ผู้ใช้ยืนยันเลิกใช้โครงหน้าหมวดเก่าทั้งหมดและใช้ `/products` แทน
+- [x] URL หมวด/Collection เดิมไปหน้าใหม่ และไม่มี ProductBrowser/CategoryBanner consumer เหลือ
+- [x] หน้าใหม่ 5 หมวด/8 หมวดย่อย/ค้นหา/Compare/Responsive และ Product detail ยังผ่าน Regression
+- [x] Typecheck, Scoped Lint/Format, Catalog unit และ Browser ผ่านตาม Plan พร้อมหลักฐาน
+
+### Missing Information
+
+ไม่มี ผู้ใช้ยืนยันขอบเขตและปลายทางแล้ว
+
+### Approval Record
+
+ผู้ใช้ตอบ “ลบโครงหน้าหมวดสินค้าเก่าทั้งหมด แล้วใช้ /products แทน” อนุมัติเลิกใช้โครงเก่าทุกหมวดและย้ายไปหน้าใหม่ รวมทางเรียกและ Regression ที่เกี่ยวข้องตาม Plan นี้
+
+### Current State
+
+ลบ ProductBrowser/CategoryBanner และ CSS ของ Banner แล้ว Catch-all Redirect หมวดที่ไม่ใช่ CMS-managed ไป `/products` ก่อน Render โครงเก่า ถอดทางเรียกจาก ProductCatalog เก็บ Shared card CSS, Data resolver, Manifest และรูปเดิมครบ
+
+ตรวจครบ158 Source category/Collection เป็น307ไป `/products` Chrome Regression26/26ผ่าน รวม No JS, Responsive390/768/1440, หน้าใหม่5Parent/8Child/Search/Sort/Compare/Grid/List, Menu และ26หน้ารายละเอียด Platform/POSพร้อมGallery Catalog unit58/58, Typecheck/Scoped Lint/Format/Whitespaceผ่าน ตรวจภาพจริงทั้ง3ขนาดแล้ว
+
+เพิ่ม output ใน tsconfig.exclude หลังพบไฟล์สำรองเก่าถูกCompileโดยRecursive include ไม่แก้หรือลบหลักฐานเก่า บันทึกบทเรียนในMEMORY หลักฐาน/ZIP14ไฟล์และรายงานอยู่ output/legacy-catalog-removal-20261104/ Source auditจำกัดตามPlanและประวัติDocsเดิมคงอยู่
+
+รอบแรก Browser tests24รายการเริ่มไม่ได้เพราะไม่มีBundled Chromium จึงใช้Installed Chromeตรวจครบผ่าน ไม่Restart Dev3000 ไม่ทำProduction Build/Full E2E/Commit/Deploy Final Next feedback reviewไม่พบQualifying Framework Issueใหม่
+
+## Task: Center model-only product card copy (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — model-only cards and responsive behavior verified"
+
+### Goal
+
+หน้า/productsแสดงข้อความการ์ดสินค้าแต่ละตัวเฉพาะชื่อรุ่น จัดกึ่งกลางใต้รูป ตามภาพและคำสั่งล่าสุด
+
+### Scope In
+
+- คงรูป/Link/Compare ชื่อรุ่นเดิม แสดงชื่อรุ่นกึ่งกลาง นำBrand/SUNFORDที่เป็นข้อความUI,Subtitle,Capacity/Category/Badge tagsออกจากการแสดงผลการ์ดในหน้านี้ทั้งGrid/List
+- CatalogProductCardเพิ่มmodelOnlyแบบOpt-in defaultfalse คงหน้าที่ใช้Cardเดิมนอก/products ไม่แก้Shared stylesheet; CSSเฉพาะProductCategoryMockจัดกึ่งกลางและให้ชื่อยาวWrapครบ
+- Mock cardเหลือชื่อรุ่นกึ่งกลางใต้Placeholder เอาคำบรรยายออก ย้ายMock badgeเป็นOverlayในพื้นที่Placeholderเพื่อไม่สับสนกับสินค้าจริง
+
+### Scope Out
+
+ไม่แก้ภาพสินค้าหรือข้อความที่พิมพ์อยู่ในรูป ไม่แก้ชื่อรุ่น/Data/8Child/5Parent/Header/Detail/หน้าอื่น/Global styles/Dependencies/Database/Deployment
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพหน้าการ์ดPlatformทั้ง2ภาพล่าสุดจากผู้ใช้และCardเดิม
+- Design: รูปเดิม/ขนาดชื่อเดิม ใช้Centered textและCopyสั้นลงตามคำสั่ง ไม่มีBrandหรือคำบรรยายUIซ้ำ
+- Responsive:320/390/768/1440 Grid/List ชื่อยาวต้องWrapไม่มีOverflow
+
+### Input / Output
+
+- Input: ผู้ใช้สั่ง “ปรับให้การ์ดทุกตัวของสินค้ามีแค่ชื่อรุ่นไว้ตรงกลาง” พร้อมภาพPlatform
+- Output: ทุกCardในหน้า/productsแสดงข้อความหลักเฉพาะรุ่นและCentered; Mockมีป้ายที่Artเพื่อรักษาสถานะตัวอย่าง
+- Contract: CatalogProductCard.modelOnly?:boolean defaultfalse; opt-inเพิ่มdata-model-onlyสำหรับCSSเฉพาะหน้านี้ ไม่แก้ProductDTO/Link/Compare IDs
+
+### Acceptance Criteria
+
+- [x] สินค้าจริงทุก5ParentและScales Childไม่มีBrand/Subtitle/TagsในCard DOM แต่รูป/รุ่น/Linkเดิมครบ
+- [x] ชื่อGrid/Listกึ่งกลางและWrapได้ทุก4ขนาด Mockชื่อกึ่งกลางไม่มีคำบรรยายแต่ยังระบุMockในArt
+- [x] Compare/Filter/Search/Sort/Paginationและชื่อรุ่นManifestยังผ่านBrowserเดิม หน้าCategoryเดิมยังใช้รายละเอียดเดิม
+- [x] Typecheck/Scoped Lint/Format/Whitespace/Browserพร้อมภาพจริงผ่าน จำกัด3ไฟล์แอปและรักษางานเดิม
+
+### Missing Information
+
+ไม่มี ใช้ภาพระบุขอบเขตProductCategoryMock และคงรูปสินค้า
+
+### Approval Record
+
+คำสั่งล่าสุดอนุมัติปรับข้อความการ์ดสินค้าทั้งหน้า/productsให้เหลือชื่อรุ่นกึ่งกลาง การเพิ่มOpt-inในCardที่ใช้ร่วมกันเพื่อจำกัดผลอยู่ในขอบเขตนี้ ไม่เปลี่ยนConsumerอื่น
+
+### Current State
+
+หน้า/productsเปิดmodelOnlyทุกReal Cardแล้ว แสดงเฉพาะชื่อรุ่นกึ่งกลาง ไม่RenderBrand/Subtitle/TagsในCard DOM รูป/Link/Compareเดิม Mock titleกึ่งกลางและย้ายป้ายMockไปArt ไม่มีคำบรรยาย ตัวเลือกdefaultfalseคงCardในCategoryเดิม
+
+Chromeตรวจ150Real/18Mockครบ5Parent จำนวน92/7/23/3/43เมื่อรวมScales Mock รูปแบบGrid/Listที่320/390/768/1440ชื่อCentered ไม่มีClipping/Overflow ตรวจภาพDesktop/Mobile/List/Mockแล้ว Page Error0 Category /IndicatorยังมีBrand/Subtitle/Tagsเดิม
+
+Scoped Browser Regressionเดิม11/11ผ่าน ไม่มีFlaky/Skipped Typecheck/Scoped ESLint/Prettier/git diff --checkผ่าน Source auditพบเฉพาะ3ไฟล์แอปที่อยู่ในPlan ข้อมูล/ชื่อรุ่น/Manifest/ไอคอนเดิมคงอยู่ หลักฐานoutput/model-only-cards-20261104/delivery.md, presentation.json, regression.json, scope-audit.jsonและภาพ
+
+ใช้Dev3000เดิม ไม่Restart/Production Build/Full E2E/Database/Commit/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Match product category icons to homepage (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — icons and responsive browser checks verified"
+
+### Goal
+
+ปรับไอคอน5หมวดหลักหน้า/productsตามภาพผู้ใช้ ให้4หมวดใช้ไอคอนเดียวกับหน้าแรกและสร้างPOSที่ยังไม่มี
+
+### Scope In
+
+ใช้CategoryFeatureIconของScales/Indicators/Platforms/AccessoriesเดิมโดยImportมาใช้ ไม่แก้โมดูลหน้าแรก เพิ่มSVGจอPOSพร้อมเครื่องรับชำระเงินในComponentแคตตาล็อก ขนาด32/viewBox32/stroke1.75/currentColor/roundตรงต้นแบบ
+
+### Scope Out
+
+ไม่เปลี่ยนCards/CSS/สี/ข้อความ/Membership/8Child/Mock product placeholder/Shared files/Dependencies/Database/Deployment
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพ2ภาพที่ผู้ใช้ให้และsrc/features/home/components/category-feature-icons.tsx
+- Design: ไอคอนเส้น32pxและcurrentColorรับสีMuted/Redจากปุ่มเดิม POSเป็นสัญลักษณ์ทั่วไปไม่อ้างรูปร่างสินค้าจริง
+- Responsive: ตรวจ320/390/768/1440และSelectedสีแดง Boundsเดิม
+
+### Input / Output
+
+- Input: ผู้ใช้สั่ง “ปรับไอคอนของหมวดหมู่ให้เหมือนกับไอคอนหน้าแรกและตัวที่ไม่มีให้สร้างขึ้น”
+- Output: 5Parentมีไอคอนสื่อหมวดตรงกัน4ชุดเดิมและPOSใหม่ ไม่ใช้Packageเหมือนกันทั้งหมด
+- Contract: ไอคอนตกแต่งaria-hidden/focusable=false ไม่แก้Props/Data contracts/Routes หน้าแรกและMock card Packageเดิม
+
+### Acceptance Criteria
+
+- [x] ไอคอน4หมวดตรงSVGหน้าแรก POSเป็นเส้นสไตล์เดียวกัน
+- [x] ขนาด32x32และสีHover/Selectedเดิม ไม่มีAccessible nameซ้ำ
+- [x] ตรวจBrowserResponsive/การเลือกหมวด/ภาพจริงและTypecheck/Scoped Lint/Formatผ่าน
+- [x] เฉพาะ1ไฟล์แอปเปลี่ยนในรอบนี้ งานเดิม/หน้าแรกคงอยู่
+
+### Missing Information
+
+ไม่มี ผู้ใช้อนุญาตสร้างไอคอนที่ยังไม่มีโดยตรง
+
+### Approval Record
+
+คำสั่งล่าสุดพร้อมภาพอนุมัติให้แทนไอคอนทั้ง5หมวดและสร้างตัวที่ขาด ใช้ขอบเขตนี้โดยไม่ขยายไปเปลี่ยนดีไซน์หรือไฟล์ส่วนกลาง
+
+### Current State
+
+แทน5Parentด้วย4SVGหน้าแรกที่ImportโดยตรงและPOSใหม่แล้ว BrowserเทียบouterHTMLของ4SVGกับหน้าแรกจริงตรงกัน100% ทั้ง5แตกต่างกัน ขนาด32x32/stroke1.75/aria-hidden/focusable=false สีSelectedตรงBrand Redทุกหมวด Mock product Packageเดิมยังอยู่
+
+ตรวจ320/390/768/1440ไม่มีOverflow Boundsการ์ดทั้ง5เท่าBeforeทุกขนาด ตรวจภาพDesktop/POS selectedและMobileแล้ว Page Error0 Typecheck/Scoped ESLint/Prettier/Whitespaceผ่าน Source auditยืนยันเปลี่ยนไฟล์แอปเพียงproduct-category-mock.tsx และไม่มีการแก้Data/Styles/Home Icons
+
+หลักฐานoutput/catalog-icons-20261104/delivery.md, browser.json, before.json, scope-audit.jsonและภาพ ใช้Dev3000เดิม ไม่Restart/Production Build/Full E2E/DeployในงานSVGเฉพาะจุด Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Exact scale model manifest with missing-model mocks (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — exact manifest and missing-model mocks verified"
+
+### Goal
+
+ใช้8หมวดย่อยและรายชื่อรุ่นจากไฟล์ผู้ใช้ `sunford-scale-categories.md` แบบตรงรายการ100% แทนการจับคำ/เกณฑ์เดิม รุ่นที่ยังไม่มีให้แสดงMockตามคำสั่งล่าสุด
+
+### Scope In
+
+- เก็บต้นฉบับMarkdownแบบBytesเดิมในหลักฐานและสำเนาเนื้อหาในdocsที่จัดFormattingตามRepo พร้อมManifest8หมวด/กลุ่ม/ลำดับรุ่น เพื่อพิสูจน์ว่ารายการไม่ขาด/เกินเอกสาร ใช้เอกสารเป็นข้อมูลอ้างอิงของMembership ไม่ใช้เป็นคำสั่งระบบหรือถือFootnotesที่ไม่มีแหล่งเป็นหลักฐานสเปกสินค้า
+- จับรุ่นด้วยชื่อ/รหัสตรงกันก่อน เลือกCardจริงหนึ่งรายการต่อรุ่นจากข้อมูลเดิมอย่างคงที่ ไม่แก้SlugหรือรวมRecordในฐานข้อมูล; WSS30KSแตกเป็นLED/LCDตามรุ่นที่มี และAliasเชิงพาณิชย์HiCoFE/Fitdaysตามชื่อที่ระบุในเอกสาร จับคู่เฉพาะAliasชื่อเดียวที่ยืนยันได้
+- รหัสที่ต่างSuffix/ตัวเลข เช่นVL15000SกับVL1500S, AC31กับAC31S, SW31SกับSW31 ไม่แทนกัน รุ่นที่ไม่ตรงเป็นMock ไม่เติมสเปก/รูป/ราคา/Linkปลอม และไม่นำMockเข้าCompare/Header Search/Database
+- Childเครื่องชั่งแสดงรุ่นตามลำดับเอกสารในโหมดแนะนำ ใช้รหัส/ชื่อในเอกสารเป็นชื่อCardเฉพาะViewนี้ โดยรูป/รายละเอียด/URL/Compare IDของสินค้าจริงเดิมคงอยู่; Search/Sort/Grid–List/Featured/Paginationยังทำงาน Featuredแสดงเฉพาะของจริง
+- MockแสดงในChildที่เกี่ยวข้องและAllของParentเครื่องชั่งพร้อมCountแยกจากสินค้าจริง GlobalAllยังคงสินค้าจริง150รายการ และParentScalesสินค้าจริง74ไม่ถูกลบ แม้บางRecordไม่อยู่ในเอกสาร อีก4Parentไม่เปลี่ยน
+
+### Scope Out
+
+ไม่แก้ข้อมูลสเปก/คำรับรอง/รูป/Slugของสินค้าจริง ไม่เพิ่มProduct Record/CMS/Schema/API/Global Store/Shared Card ไม่แก้Homepage/Mediaที่มีงานอื่น ไม่Commit/Deploy ไม่สร้างระดับเมนูใหม่จากหัวข้อบรรยายในเอกสาร
+
+### UI/UX Brand Alignment
+
+- Reference:ไฟล์Markdownล่าสุดจากผู้ใช้และUI ProductCategoryMockที่อนุมัติแล้ว
+- Design:8ชื่อไทยตามเอกสาร Styleเดิม MockมีPackage icon/ชื่อรุ่น/ป้ายMock/ข้อความว่ายังไม่มีข้อมูลจริง ไม่มีรูปสินค้าที่แต่งขึ้นหรือปุ่มไปหน้าที่ไม่มีจริง
+- Responsive:320/390/768/844Landscape/1440 ตรวจชื่อยาว CardMockและViewรายการพร้อมKeyboard/Compare
+
+### Input / Output
+
+- Input:Markdownผู้ใช้ทั้งไฟล์, ProductsจริงจากgetCatalogPageเดิมและcachedClientProducts ไม่มีการใช้คำบรรยายเก่าจัดสมาชิกแทนรายการในไฟล์
+- Output:8Childตรงรายการทุกรุ่น รุ่นจริงเชื่อมURLเดิม รุ่นไม่มีเป็นMockที่ระบุชัด
+- Contract:Childมีmodel entries `{ model, documentModel, productId? }`;ไม่มีproductIdหมายถึงMockไม่ใช่Productจริง productIdsยังมีเฉพาะของจริง Parentทั้ง5ยัง150รายการ Membershipเดิมของ8Childถูกแทนด้วยManifestใหม่นี้ รวมFitdaysในKitchenตามไฟล์แม้เกณฑ์ก่อนหน้าไม่จัดเข้า
+- English headings/กลุ่มรุ่นเก็บในManifestเพื่อTraceability UIยังใช้8ชื่อไทยและโครงสร้างเดิม ไม่คัดลอกข้อความสเปกจากเอกสารไปเขียนทับข้อมูลสินค้า
+
+### Acceptance Criteria
+
+- [x] ผู้ใช้สั่งใช้ไฟล์แบบ100%และอนุญาตMockกรณีไม่มีจริงอย่างชัดเจน
+- [x] Manifestตรง8หัวข้อ/กลุ่ม/ลำดับรุ่นในMarkdownสำเนา ไม่มีการเดาเพิ่ม/แก้รหัสที่ต่างกัน
+- [x] ทุกEntryเป็นรุ่นจริงที่จับตรง/มีAliasที่ระบุ หรือเป็นMockชัดเจน ไม่ขาดรายการเอกสาร ไม่ให้สินค้าที่ไม่ระบุเข้าChildด้วยKeywordเก่า
+- [x] Mockไม่มีLink/รูปสเปกปลอม/Compare และCountแยกของจริง ParentScales74/Global150และอีก4Parentเดิมไม่หาย
+- [x] Search/Sort/Featured/Grid–List/Pagination/Parent reset/Compareยังทำงาน และ8Childตรงไฟล์รวมMissing ModelsในBrowserทุกขนาด
+- [x] Unit/Browser/Typecheck/Scoped Lint/Format/Buildผ่าน มีBackup/Hash/ภาพ/ผลจริง ปิดเฉพาะQAที่เปิดเอง
+
+### Missing Information
+
+ไม่มี รุ่นที่ไม่ตรงสามารถทำMockได้ตามคำสั่ง ไม่ตีความรหัสคล้ายกันเป็นรุ่นเดียว
+
+### Approval Record
+
+ผู้ใช้วันที่2026-11-04ให้ไฟล์และสั่ง “หมวดหมู่ย่อยเอา เครื่องชั่งเอาตามนี้แบบ 100% ครับ ถ้าตัวไหนไม่มีทำเป็นmockไว้ได้เลย” อนุมัติMembershipตามManifestและMockแทนรุ่นที่ไม่มี คำสั่งนี้แทนเกณฑ์จับคำเดิมเฉพาะ8Child โดยไม่ขยายไปแก้ข้อมูลสินค้าหรือDeployment
+
+### Current State
+
+ใช้Manifestครบ8หมวด/กลุ่ม/ลำดับตามเอกสารแล้ว Unitตรวจรายการทั้งหมดตรงMarkdownและHashต้นฉบับ/สำเนา รุ่นจริงจับExact name/sourceId/slug/bounded model token และAlias2รายการที่ระบุ WSS30KSแสดงLCD/LEDตามรุ่นจริง รหัสต่างSuffix/ตัวเลขไม่แทนกัน
+
+จำนวนReal/MockรายChildตามลำดับ:18/5,15/6,9/0,6/1,8/4,37/1,12/14,11/3 มีMockไม่ซ้ำ18รุ่น แสดงเฉพาะScales/Childพร้อมป้ายและCountแยก ไม่มีLink/รูปสินค้าแต่ง/ราคา/Compare ตัวจริงParentScales74และGlobal150ยังครบ ไม่มีDB/Schema/API/Shared Card change
+
+Production Browser13/13ผ่านไม่มีFlaky/Skipped; Catalog Unit58/58,Typecheck,Scoped ESLint,PrettierและNode24.22.1 webpack Build420หน้าผ่าน ตรวจResponsive5ขนาดรวม10Mock Grid/Listเพิ่มเติมและภาพDesktop/Mobile Sourceแอป6ไฟล์ตรงQAตามHash ใช้Snapshot fallbackในQA ไม่อ้างLive DBหรือFull E2E Suite
+
+Devรอบแรก10/11เนื่องจากTestคาดว่าCompare barต้องไม่แสดง แต่พฤติกรรมเดิมแสดง0/3อย่างถูกต้อง แก้Testให้ตรวจ0/3/ปุ่มDisabled/ยกเลิกแล้วFocused1/1ผ่านและProductionครบ13/13ผ่าน เก็บFailureเดิม ไม่มีการเปลี่ยนแอปเพราะTest assumptionนี้
+
+หลักฐานในoutput/scale-manifest-20261104/delivery.mdและsummary.json Backup10ไฟล์ก่อนแก้รวมMemory,ต้นฉบับBytesเดิม,Manifest audit,Resultsและภาพ ปิดQA3168 PID45504แล้ว Dev3000 PID15684เดิมยังทำงาน รักษางานHomepage/Mediaคู่ขนาน ไม่Commit/Deploy Final Next feedback reviewไม่มีQualifying Framework Issueใหม่
+
+## Task: Enlarge homepage platform and indicator artwork (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — measured image enlargement and responsive verification"
+
+### Goal
+
+ขยายรูปใหญ่หมวดโครงสร้างแท่นชั่งและอินดิเคเตอร์แท่นชั่งขึ้นเล็กน้อยตามคำขอ ใช้ขนาดเพิ่ม20%จากปัจจุบันโดยคงกรอบเดิม
+
+### Scope In
+
+เพิ่มตัวระบุหมวดให้กรอบรูปและCSS scale1.2เฉพาะรูปใหญ่ของplatforms/indicatorsในStylesheetหมวดเดิม ตรวจว่าตัวสินค้ายังแสดงครบ พื้นที่ดำส่วนเกินอาจถูกกรอบตัดได้
+
+### Scope Out
+
+ไม่แก้ไฟล์PNG รูปเครื่องชั่ง/อุปกรณ์เสริม แถบสินค้า ลำดับหมวด ข้อความ สมาชิกกลุ่ม ขนาดกรอบ Layoutหน้าอื่น CMS DependenciesหรือDatabase
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพPNGพื้นดำ2ไฟล์ที่ผู้ใช้ให้และขนาดปัจจุบันในหน้าแรก
+- Design: ขยาย20%จากศูนย์กลางด้วยTransform ไม่เปลี่ยนสี/สัดส่วน/ภาพจริงหรือระยะห่างกรอบ
+- Responsive: วัดก่อน/หลังที่390/1440 ตรวจภาพจริง320/390/768/1440และRegressionเดิม12ขนาด
+
+### Input / Output
+
+- Input: ผู้ใช้สั่ง “ขยายรูปแท่นกับอินดิเคเตอร์ให้ใหญ่ขึ้นอีกหน่อยครับ ตอนนี้ดูเล็กไป”
+- Output: รูป2หมวดใหญ่ขึ้น20%โดยตัวสินค้าไม่ถูกตัดหรือทับเนื้อหา
+- Contract: Category IDเดิมใช้เป็นCSS hook รูปอีก2หมวดและกรอบมีขนาดเท่าเดิม
+
+### Acceptance Criteria
+
+- [x] รูปเป้าหมายใหญ่ขึ้น20%จากBaselineทั้งDesktop/Mobile รูปอื่น/กรอบไม่เปลี่ยนขนาด
+- [x] ตรวจภาพจริงว่าตัวสินค้ายังครบ ไม่มีOverflow/การทับเนื้อหาใหม่
+- [x] Category RegressionเดิมและScoped Typecheck/Lint/Formattingผ่าน
+- [x] เปลี่ยนเฉพาะไฟล์ที่ระบุและรักษาภาพต้นฉบับ/งานอื่น
+
+### Missing Information
+
+ไม่มี ใช้20%เป็นการปรับเล็กน้อยตามคำขอและตรวจภาพก่อนส่งมอบ
+
+### Approval Record
+
+ผู้ใช้ขอขยายเฉพาะรูปแท่น/อินดิเคเตอร์ในหน้าแรกวันที่2026-11-04ตามข้อความข้างต้น เป็นการอนุมัติปรับขนาด2รูปต่อจากงานภาพที่รับแล้ว ครอบคลุมCSSเฉพาะ2รูปใน `src/styles/category-feature.css` ไม่ขยายไปเปลี่ยนStyleส่วนอื่น
+
+### Current State
+
+เพิ่มdata-categoryในกรอบและCSS Ruleเฉพาะplatforms/indicatorsแล้ว วัดBefore/Afterที่390/1440ได้อัตราส่วนความกว้าง/สูง1.2ทั้ง2รูป รูปเครื่องชั่ง/อุปกรณ์เสริมและกรอบทุกรูปเท่าเดิม ตรวจภาพเป้าหมายDesktop/MobileและภาพResponsive320/390/768/1440แล้วเห็นสินค้าครบ ไม่ล้น/ไม่ทับเนื้อหา
+
+Typecheck/Scoped ESLint/Prettierผ่าน Category Regressionรอบรวม10/11ผ่าน โดยEnterไปหน้าสินค้า1กรณีรอURLเกิน5วินาที; รันกรณีเดิมซ้ำโดยไม่แก้Source/Testแล้วผ่าน1/1 ไม่ยืนยันสาเหตุของTimeoutและเก็บผลล้มเหลวเดิมไว้ Responsive12ขนาดผ่าน ไม่มีPage Error/Overflowใหม่ ไม่เพิ่มหรือลดAssertion
+
+Application Diffของงานนี้มีเพียงdata attribute1จุดและCSS Rule1ชุด งานScale Subcategoriesมีการแก้Source/Test/Planคู่ขนานจึงรักษาไว้ ไม่ทับหรืออ้างเป็นผลงานรอบนี้ ภาพต้นฉบับไม่แก้ Dev3000เดิมยังทำงาน ไม่เริ่ม/หยุดServerหรือBuildProductionซ้ำ หลักฐานใน `output/homepage-enlarge-images-20261104/` Next Feedbackรอบสุดท้ายไม่มีQualifying Framework Issueใหม่
+
+## Media delivery: SUNFORD opening logo low-key image (2026-11-04)
+
+- User directly requested the supplied red SUNFORD logo in the preceding premium dark-studio style for a website opening asset. Created `public/images/product-studio-20261104/sunford-logo-lowkey.png`,1254×1254 RGB, with centered legible red wordmark, black background and restrained upper-left lighting. No added slogan or graphics. This is AI-retouched raster artwork, not a replacement vector identity master.
+- Visually reviewed the generated image; square dimensions and copied-master hash verified in `sunford-logo-lowkey-verification.json`. Source ERP logo and website opening implementation remain unchanged. Media generation only; no application integration/deployment or qualifying Next.js framework feedback.
+
+## Task: Eight scale subcategories (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done"
+
+### Goal
+
+เปลี่ยนเฉพาะChildของParentเครื่องชั่งเป็น8ชื่อเรียงตามข้อความผู้ใช้ (จัดเลขซ้ำเป็น1–8และใช้ตัวสะกดตั้งโต๊ะ): เครื่องชั่งคำนวณราคาหน้าร้าน, เครื่องชั่งอุตสาหกรรมงานผลิต, เครื่องชั่งงานวิเคราะห์ความแม่นยำสูง, เครื่องชั่งงานครัวและกาแฟ, เครื่องชั่งกันน้ำและกันฝุ่น 100%, เครื่องชั่งตั้งโต๊ะ, เครื่องชั่งตั้งพื้น, เครื่องชั่งมีเสา
+
+### Scope In
+
+- จัดสมาชิกด้วยหมวดเดิมและข้อเท็จจริงในชื่อ/คำอธิบาย/สเปกที่ยืนยันได้ตามคำอนุมัติล่าสุด รุ่นเดียวอยู่หลายChildได้ รุ่นที่ข้อมูลไม่พออยู่ในAll ไม่บังคับให้8Childเป็นPartitionหรือครอบคลุมParentทั้งหมด
+- คำนวณราคาใช้Topic priceเดิม; อุตสาหกรรม/วิเคราะห์ใช้Membershipอุตสาหกรรม/ห้องปฏิบัติการเดิม; ครัว/กาแฟใช้Collectionหรือข้อความการใช้งานที่ระบุชัด; รูปทรงใช้ข้อความยืนยันตั้งโต๊ะ/ตั้งพื้น/มีเสาเท่านั้น ไม่เดาจากรูปหรือพิกัด
+- กันน้ำ/กันฝุ่นต้องมีข้อความยืนยันทั้ง2อย่างและไม่ถูกปฏิเสธ ไม่ใช้กันน้ำอย่างเดียวหรือIPอย่างเดียวแทนข้อความทั้ง2 ชื่อที่มี100%มาจากผู้ใช้ ไม่เพิ่มข้อความรับรองในหน้ารายละเอียดหรืออ้างว่าIPเท่ากับรับประกัน100%
+- คง5Parent/สมาชิกเดิม All150/เครื่องชั่ง74 และอีก4ParentยังมีDemo01–02 คงSearch/Sort/Featured/Grid–List/Pagination/Compare/Parent–Child reset
+- ปรับข้อความกำกับให้แยกChildจริงของเครื่องชั่งกับChildตัวอย่างของกลุ่มอื่น และรองรับชื่อปุ่มยาวในCSS Moduleเดิม
+
+### Scope Out
+
+ไม่แก้Membership5Parent/Classificationส่วนกลาง ข้อมูลหรือสเปกสินค้า รูป API/CMS/Database/Global Store/Shared Layout งานHomepage/Mediaที่ค้างอยู่ ไม่Commit/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference:8ชื่อจากผู้ใช้และProductCategoryMock/CSSเดิม
+- Design:ปุ่มChildแบบSingle-select/All สี ฟอนต์และLayoutเดิม Wrapชื่อยาว ไม่เพิ่มภาพหรือคำโฆษณา
+- Responsive:320×800,390×844,768×1024,844×390,1440×1000 ตรวจชื่อยาว Focus/Hit Targets/Overflow
+
+### Input / Output
+
+- Input:Product IDsของเครื่องชั่งจากgetCatalogPageเดิม, Membershipindustrial/laboratoryเดิม, collections/source description/detailsและข้อมูลปัจจุบัน
+- Output:8Childจริงเฉพาะเครื่องชั่ง พร้อมหลักฐานสมาชิกและNegative/Missing cases อีก4Parentเป็นDemoตามเดิม
+- Contract:เพิ่มสถานะChildตัวอย่างต่อParent; Childเครื่องชั่งอาจOverlap/มีรุ่นไม่ถูกจัด Childได้ ส่วนParentทั้ง5ยังครอบคลุม150เหมือนเดิม ข้อความปฏิเสธมีผลเหนือข้อมูลบวก
+
+### Acceptance Criteria
+
+- [x] ผู้ใช้ยืนยันนโยบายข้อมูลเดิม/สเปกที่ยืนยันได้ Overlap และข้อมูลไม่พอคงAll
+- [x] 8ชื่อและลำดับถูกต้องเฉพาะเครื่องชั่ง ไม่มีDemo01–02ในParentนี้ อีก4Parentเดิมไม่เปลี่ยน
+- [x] ทุกChildเป็นSubsetของ74และมีหลักฐานตามเกณฑ์ ไม่ใช้Platform/อุปกรณ์เสามาจัดเป็นเครื่องชั่ง ไม่ใช้Negative factsเป็นPositive
+- [x] All74/All150ยังครบ Product URLs/เนื้อหาเดิมไม่เปลี่ยน การเลือกParent/Child/Search/Sort/Pagination/Compareยังทำงาน
+- [x] Catalog Unit/Browser/ชื่อยาวทั้ง5ขนาด/Typecheck/Scoped Lint/Format/Buildผ่าน เก็บผลและข้อจำกัดจริงก่อนส่งมอบ
+- [x] Backup/Hash/Contractอัปเดต และปิดเฉพาะQAที่เริ่มเอง รักษางานอื่นที่ค้างอยู่
+
+### Missing Information
+
+ไม่มีข้อมูลจำเป็นที่ขาดหลังคำยืนยัน นโยบายข้อมูลไม่พอคงAllได้รับอนุมัติแล้ว จึงไม่อนุมานว่าSKUที่ไม่มีคำยืนยันรูปทรงต้องเข้ารูปทรงใด
+
+### Approval Record
+
+วันที่2026-11-04 ผู้ใช้ให้8ชื่อ แล้วตอบคำถามเรื่องMembershipชัดเจนว่า “ใช้เกณฑ์นี้ และให้สินค้าอยู่ได้หลายหมวด” หลังอธิบายว่าจะใช้หมวดเดิม/สเปกที่ยืนยันได้ ข้อมูลไม่พอคงAll และกันน้ำ/กันฝุ่นต้องยืนยันทั้ง2อย่าง ใช้เป็นคำอนุมัติขอบเขตที่เปลี่ยนนี้ ไม่รวมงานParentอื่น/Deployment
+
+### Current State
+
+เพิ่ม8ChildจริงเฉพาะScalesแล้ว Parent DTOมีsubcategoriesAreMock:Scalesเป็นfalse อีก4Parentเป็นtrue ไม่SerializeSource FactsหรือCheerioไปClient ใช้ข้อมูลที่Serverจับคู่แล้ว การWrapปุ่มยาวแก้เฉพาะCSS Moduleเดิม
+
+- ผลตรวจMembershipจริงเรียง8หมวดได้23/36/8/22/7/1/4/2รายการ มีOverlapตามอนุมัติ รวมSKUที่เข้าอย่างน้อย1Child70รายการ; POS1100-A, รายการRLS1100ที่Slugเป็นตัวใหญ่, Fitdays, POS1100-Bอีก4รายการข้อมูลไม่พอตามเกณฑ์ จึงยังอยู่ในAll74 ไม่เดาจากชื่อรุ่นหรือรูป ภาพ/URL/All150ยังอยู่ครบ
+- Devรอบแรก10/11ผ่าน พบFitdaysเข้าKitchenเพราะครัวตรงครอบครัวจริง ไม่ลดAssertion เพิ่มNegative Unitที่เห็นRedก่อนแก้ เปลี่ยนเป็นคำการใช้งานครัวที่ชัดเจน แล้วTargeted Dev1/1ผ่าน เก็บdev-tests.json/kitchen-red.log/dev-recheck.jsonครบ
+- Final Production13/13ผ่าน ไม่มีFlaky/Skipped ในชุดเลือก ทั้ง8ชื่อ/Subset/Overlap/All74/150/เทียบIndustrialและAnalyticalกับหน้าเดิม/Parent reset/Search/Sort/Featured/Grid–List/Pagination/Compare3/Global Search/API/404/อีก4Demo และResponsive5ขนาด ไม่อ้างFull E2E Suiteผ่าน
+- Catalog Unit57/57ผ่าน รวม7กรณีใหม่ Source Factsจริง/Water+Dustทั้ง2/Negative override/Form factorsไม่เดาภาพหรือพิกัด/Platform boundary/Family-health copy; Typecheck/Scoped ESLint/Formattingผ่าน Buildwebpack420หน้าบนNode24.22.1ผ่าน
+- ตรวจภาพและBoundsที่320/390/768/844Landscape/1440 ปุ่มชื่อยาวไม่ล้นและHit Targets/Keyboard/Focusทำงาน ไม่มีPage Error/Overflowใหม่ Sourceแอป5ไฟล์ตรงHashกับQAที่ทดสอบ; Productionใช้Snapshot fallbackและPlaceholderเฉพาะProcess ไม่เขียนDB/Env
+- เพิ่มMEMORYเรื่องThai usage phraseตามAGENTS Project Memory ไม่แตะHomepage/Media/Shared Sourceที่มีงานอื่นค้างอยู่ สำรอง7ไฟล์ก่อนแก้ในbefore-files.zipพร้อมbaseline-source.json; HelperและUnit Testเป็นไฟล์ใหม่
+- หลักฐานอยู่output/scale-subcategories-20261104/: delivery.md, production-tests.json, dev-tests.json, dev-recheck.json, catalog-unit.log, kitchen-red.log, membership-audit.json, mobile-label-bounds.json, source-hashes.json, build.log และscales-desktop.png/scales-320.png/scales-390.png/scales-768.png/scales-844.png
+- ปิดQA3167 PID33220ที่เริ่มเองแล้ว ตรวจไม่มีListener3167 Dev3000 PID15684เดิมยังอยู่ ไม่Commit/Push/Deploy Final Next feedback reviewไม่มีFramework candidateใหม่ ข้อจำกัดDetail1pxและCase-only Slugก่อนหน้ายังไม่ถูกแก้หรืออ้างว่าผ่าน
+
+## Task: Supplied homepage platform and indicator images (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — supplied images and responsive behavior verified"
+
+### Goal
+
+ใช้ภาพPNGสองไฟล์ที่ผู้ใช้ส่งแทนรูปใหญ่ของหมวดโครงสร้างแท่นชั่งและอินดิเคเตอร์แท่นชั่งบนหน้าแรก
+
+### Scope In
+
+- แท่นชั่ง: `/videos/ChatGPT Image Nov 4, 2026, 01_57_30 PM.png`
+- อินดิเคเตอร์: `/videos/ChatGPT Image Nov 4, 2026, 01_57_44 PM.png`
+- เปลี่ยนเฉพาะImage referencesของ2Card definitionsและExpected ImagesในRegressionเดิม ใช้ไฟล์ต้นฉบับโดยไม่แก้ภาพ
+
+### Scope Out
+
+ไม่เปลี่ยนลำดับหมวด เนื้อหา ไอคอน รูปเครื่องชั่ง/อุปกรณ์เสริม แถบสินค้า รูปในProduct Data Layout Styles CMS DependenciesหรือDatabase
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพพื้นดำ2ไฟล์ที่ผู้ใช้ระบุโดยตรง คงกรอบ16:9และobject-fit containเดิมเพื่อไม่ตัดสินค้า
+- Design: ไม่เพิ่มข้อความหรือปรับภาพ ใช้Next Imageผ่านProductImageเดิม
+- Responsive: ตรวจรูป2หมวดและLayoutที่320/390/768/1440pxด้วยCategory Regressionเดิม
+
+### Input / Output
+
+- Input: คำขอ “นำสองรูปนี้ไปใส่ส่วนของแท่นและอินดิเคเตอร์” และไฟล์จริงใน `public/videos/`
+- Output: เมื่อเลือกหมวดแท่นหรืออินดิเคเตอร์ แสดงภาพที่ผู้ใช้ให้ตรงหมวด
+- Contract: เปลี่ยนเฉพาะภาพใหญ่ ไม่เปลี่ยนProduct IDsหรือภาพของสินค้ารายชิ้นในแถบ
+
+### Acceptance Criteria
+
+- [x] รูปใหญ่ทั้งสองตรงไฟล์ที่ส่งและโหลดสำเร็จเมื่อเลือกหมวด
+- [x] ลำดับ4หมวดและสมาชิกสินค้า/ลิงก์เดิมคงอยู่ รูปอีก2หมวดไม่เปลี่ยน
+- [x] Category Regression/ResponsiveและScoped Lint/Formatting/Typecheckผ่าน พร้อมภาพหลักฐาน
+- [x] ไฟล์PNGต้นฉบับและSourceนอกขอบเขตไม่เปลี่ยน
+
+### Missing Information
+
+ไม่มี จับคู่ภาพแท่นและภาพอินดิเคเตอร์ได้ชัดเจนจากไฟล์ที่ผู้ใช้ส่ง
+
+### Approval Record
+
+ผู้ใช้รับงานหมวดหน้าแรกแล้ว และสั่งเปลี่ยนเฉพาะภาพ2หมวดด้วยคำขอข้างต้นวันที่2026-11-04 ใช้เป็นคำอนุมัติการแก้ไขเฉพาะภาพที่ระบุ ไม่ขยายงานออกแบบหรือสร้างภาพ
+
+### Current State
+
+ใช้2ภาพที่ผู้ใช้ส่งเป็นรูปใหญ่ของหมวดแท่น/อินดิเคเตอร์แล้ว โดยอ้างไฟล์PNGเดิมตรง ๆ ผ่านNext Image ไม่แก้Bytesต้นฉบับ คงContain/กรอบเดิม ลำดับ4หมวดและสมาชิก/รูปในแถบสินค้าไม่เปลี่ยน
+
+Dev Chrome Category Regression11/11ผ่าน ไม่มีFlaky/Skipped รวมรูป2ไฟล์โหลดจริง ชื่อ/สมาชิก/ลิงก์ Keyboard Pointer TouchและResponsive12ขนาด320–1920px; ตรวจภาพจริง320/390/768/1440และภาพแยกแท่น/อินดิเคเตอร์Desktop/Mobileแล้ว ไม่มีPage Error/Overflowใหม่ Typecheck/Scoped ESLint/PrettierและWhitespace Checkผ่าน
+
+AuditยืนยันApplication Diffมีเพียง2Image references และExpected ImagesในTest ภาพต้นฉบับ/Sourceอื่น/ประวัติSpec/Planก่อนงานไม่เปลี่ยน หลักฐานอยู่ใน `output/homepage-category-images-20261104/` ใช้Dev3000เดิม ไม่เริ่ม/หยุดServer ไม่เปลี่ยนEnv/DatabaseหรือBuildProductionซ้ำ ไม่มีNext.js issueใหม่ที่เข้าเกณฑ์Feedback
+
+## Media delivery: indicator and platform low-key studio photographs (2026-11-04)
+
+- User directly requested two reference-based premium studio images with centered front views, dark backgrounds, soft upper-left lighting and lower-body shadow falloff. Delivered separate AWS1 indicator and platform assembly images, without adding an indicator to the platform or promotional text. This authorizes media generation only; no website mounting, code, shared UI, CMS or database changes were made.
+- Final RGB PNGs are1254×1254 in `public/images/product-studio-20261104/aws1-lowkey.png` and `platform-lowkey.png`. AI relighting/reconstruction was visually reviewed; square dimensions, hashes and corner pixel samples are recorded in the adjacent `verification.json`. Original references and generated masters are retained. No 4K or pixel-identical product reconstruction claim. No qualifying Next.js framework feedback for this media-only work.
+
+## Task: Swap homepage indicator and accessory cards (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — order and interactions verified on existing development server"
+
+### Goal
+
+สลับตำแหน่งอินดิเคเตอร์แท่นชั่งกับอุปกรณ์เสริมตามภาพที่ผู้ใช้ระบุ ลำดับใหม่คือ เครื่องชั่ง, อุปกรณ์เสริม, โครงสร้างแท่นชั่ง, อินดิเคเตอร์แท่นชั่ง โดยแทนลำดับงานหน้าแรกก่อนหน้าเฉพาะจุดนี้
+
+### Scope In
+
+ย้ายทั้งCard definitionในArrayเดิม รวมชื่อ คำอธิบาย รูป ไอคอน และกลุ่มสินค้าที่ผูกตามID ปรับExpected OrderและIndexที่ผูกกับอุปกรณ์เสริมในRegressionเดิมให้ตรงตำแหน่งใหม่
+
+### Scope Out
+
+ไม่เปลี่ยนเนื้อหา รูป สมาชิกกลุ่ม Layout Styles CMS หน้าProduct DependenciesหรือDatabase
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพอินดิเคเตอร์/อุปกรณ์เสริมที่ผู้ใช้แนบและ4การ์ดหน้าแรกที่เพิ่งตรวจผ่าน
+- Design: คงStyleและInteractionเดิม ย้ายขวาบนกับขวาล่างในGrid2×2
+- Responsive: ตรวจDesktop/Tablet/Mobileด้วยRegressionเดิม รวมภาพ320/390/768/1440px
+
+### Input / Output
+
+- Input: คำสั่งผู้ใช้ “สองส่วนนี้สลับตำแหน่งกันครับ” พร้อมภาพสองการ์ดที่ระบุชัดเจน
+- Output: อุปกรณ์เสริมเป็นการ์ด2 อินดิเคเตอร์เป็นการ์ด4 เครื่องชั่งและโครงสร้างแท่นอยู่ตำแหน่งเดิม
+- Contract: เปลี่ยนเฉพาะลำดับ ไม่เปลี่ยนIDหรือสมาชิกกลุ่ม
+
+### Acceptance Criteria
+
+- [x] ลำดับ4ชื่อใหม่ตรงคำสั่งและเลือกทุกหมวดได้
+- [x] รูป สมาชิกสินค้าและลิงก์ยังตรงหมวด อุปกรณ์เสริมมีภาพประกอบเดิมและPointer/Touchยังเปิดสินค้าได้
+- [x] RegressionหมวดเดิมและResponsiveผ่าน พร้อมScoped Lint/Formatting/Typecheckตามความเหมาะสม
+- [x] เปลี่ยนเฉพาะไฟล์ในPlanและรักษางานเดิมอื่น พร้อมผลตรวจจริง
+
+### Missing Information
+
+ไม่มี
+
+### Approval Record
+
+ผู้ใช้อนุมัติSpec/Planหน้าแรกและรับงานแล้ว จากนั้นสั่งแก้เฉพาะตำแหน่งของสองการ์ดชัดเจนว่า “สองส่วนนี้สลับตำแหน่งกันครับ” วันที่2026-11-04 ใช้คำสั่งแก้ไขนี้เป็นการอนุมัติขอบเขตเฉพาะการสลับ ไม่ขยายงานอื่น
+
+### Current State
+
+สลับทั้ง2Card definitionsแล้ว ลำดับปัจจุบันคือเครื่องชั่ง/อุปกรณ์เสริม/โครงสร้างแท่นชั่ง/อินดิเคเตอร์แท่นชั่ง แทนลำดับในงานหน้าแรกก่อนหน้าเฉพาะจุดนี้ ตรวจเทียบBackupแล้วเนื้อหา4การ์ดและโค้ดนอกArrayเหมือนเดิมทุกตัวอักษร รูป/สมาชิกผูกกับIDเดิม
+
+Dev Chrome Category Regression11/11ผ่าน รวม12ขนาดหน้าจอ เลือกทุกหมวดที่320/390/768/1440 และตรวจภาพจริง4ขนาด ไม่มีPage Error/Overflowใหม่ Typecheck/Scoped ESLint/PrettierและWhitespace Checkผ่าน ผลตรวจใช้Dev3000ที่ผู้ใช้เปิดอยู่ ไม่รันProduction Buildซ้ำ ไม่เปลี่ยนEnvironmentหรือเริ่ม/หยุดServer หลักฐานอยู่ใน `output/homepage-category-swap-20261104/`
+
+## Task: Homepage four product categories (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — verified with isolated production snapshot"
+
+### Goal
+
+ปรับหมวดในหน้าแรกส่วน `#product-experience` ตามภาพผู้ใช้ ให้เรียงเป็น เครื่องชั่ง, อินดิเคเตอร์แท่นชั่ง, โครงสร้างแท่นชั่ง, อุปกรณ์เสริม
+
+### Scope In
+
+- เปลี่ยนชื่อและลำดับการ์ดทั้ง4ช่องตามคำขอ คงสีดำ/แดง Typography Layout และ Interaction เดิม
+- รูปใหญ่และแถบสินค้าใช้สมาชิกจริงของ4กลุ่มจาก `getCatalogPage`: `/products`, `/Indicator`, `/product/scale-platforms`, `/product/scale-accessories` ไม่ใช้สินค้าของ Smart/Software ใต้ชื่อใหม่
+- คงรูปเครื่องชั่งและอุปกรณ์เสริมเดิม รวมภาพประกอบ RYG-POLE; หมวดอินดิเคเตอร์/โครงสร้างแท่นใช้รูปสินค้ารายการแรกที่มีรูปในกลุ่มจริงจาก Server ไม่สร้างภาพใหม่
+- คงคำอธิบายเครื่องชั่ง/อุปกรณ์เสริมที่มีอยู่; อินดิเคเตอร์ใช้ข้อความรายกลุ่มเดิม “ห้องปฏิบัติการ อุตสาหกรรม พาณิชยกรรมและบริการ”; โครงสร้างแท่นใช้ “แท่นชั่งตั้งโต๊ะ แท่นชั่งตั้งพื้น แท่นชั่งขนาดใหญ่” จาก `product-sections.ts` ไม่เพิ่มคำกล่าวอ้างสินค้า
+- ปรับไอคอนเฉพาะ4การ์ดให้ตรงหมวด และแยกชนิดข้อมูลการ์ดออกจาก Legacy CMS image-slot IDs; ไม่ย้ายหรือเขียนทับข้อมูล CMS เก่า
+
+### Scope Out
+
+ไม่แก้หน้า `/products` ที่กำลังมีงาน5หมวด, Navbar/Footer/Global Styles, CMS forms/settings/schema, ข้อมูลสินค้า/Database, Software section อื่น, Dependencies, Commit/Push/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพที่ผู้ใช้แนบและส่วนปัจจุบัน `category-feature-panels.tsx`, `src/styles/category-feature.css`, `src/styles/base.css`
+- Design: คงการ์ด2×2บนจอที่รองรับและResponsiveเดิม รูปจริง ไม่มีข้อความหรือภาพโฆษณาใหม่
+- Responsive: ตรวจ320×800,390×844,768×1024,1440×900 ทั้งชื่อยาว การเลือก รูป และแถบสินค้า
+
+### Input / Output
+
+- Input:4ชื่อและลำดับจากข้อความผู้ใช้; ข้อมูลกลุ่มจริงจาก `catalog-page.ts`; คำอธิบายย่อยจาก `product-sections.ts`; รูปจากสินค้าเดิม
+- Output: หน้าแรกมี4หมวดที่ชื่อ รูป และสินค้าตรงกัน โดยปุ่มเลือกและลิงก์สินค้าทำงานเดิม
+- Contract:4หมวดของหน้าแรกใช้ IDsตรงความหมาย แยกจาก `HomeImageSlot` เก่า; Legacy Smart/Software targets/images ไม่ถูกนำมาติดชื่อใหม่ และยังเก็บอยู่ใน CMS เดิม; Spotlight และBusiness Solutions ไม่เปลี่ยน
+
+### Acceptance Criteria
+
+- [x] ชื่อ4หมวดและลำดับตรงคำขอ ไม่มีชื่อ Smart/Software ในการ์ดส่วนนี้
+- [x] เลือกทุกหมวดแล้วรูปโหลดได้ แถบสินค้าตรงสมาชิกกลุ่มจริง ลิงก์ไปสินค้าจริง และมีหมวดที่เลือกเพียงหนึ่งรายการ
+- [x] คงKeyboard/Pointer/Touch และแถบสินค้าต่อเนื่อง; อุปกรณ์เสริมเป็นการ์ดที่4และมีรูปประกอบเดิม
+- [x] Browser/ภาพทั้ง4ขนาดไม่มีOverflowใหม่; Typecheck, Scoped ESLint/Prettier และRegressionที่เกี่ยวข้องผ่าน หรือรายงานข้อจำกัดพร้อมหลักฐาน
+- [x] รักษางาน5หมวดหน้าProductและงานเดิมอื่นทั้งหมด อัปเดตผลตรวจจริงก่อนส่งมอบ
+
+### Missing Information
+
+ไม่มีข้อมูลจำเป็นที่ขาด ผู้ใช้อนุมัติSpec/Planนี้แล้ว
+
+### Approval Record
+
+ผู้ใช้ขอ “หน้าแรกหมวดหมู่ปรับให้เป็น 1.เครื่องชั่ง 2.อินดิเคเตอร์แท่นชั่ง 3.โครงสร้างแท่นชั่ง 4.อุปกรณ์เสริม” พร้อมภาพส่วนเป้าหมาย และอนุมัติSpec/Planนี้วันที่2026-11-04ว่า “อนุมัติ เริ่มแก้ไขตาม Spec และ Plan ได้เลย” ครอบคลุมชื่อ รูป สมาชิกสินค้าและการตรวจตามแผน
+
+### Current State
+
+หน้าแรกใช้4หมวดจริงแล้ว แถบสินค้าจากServerกลุ่มเดิมครบตามลำดับ74/7/23/43รายการในการตรวจSnapshot; อินดิเคเตอร์ใช้รูปAW31และโครงสร้างแท่นใช้รูปแรกในกลุ่ม ไม่ใช้ภาพSmart/Softwareเดิม ส่วนเครื่องชั่ง/อุปกรณ์เสริมคงImage Overridesเดิมได้ ชื่อหมวดทั้ง4ไม่อ่านLegacy showcase namesอีก Legacy targetsไม่ควบคุมแถบสินค้าส่วนนี้ Spotlightและข้อมูลCMSยังคงเดิม
+
+Build Node24แบบwebpackผ่าน420หน้า Typecheck/Scoped ESLint/Prettierผ่าน Catalog Unit50/50และProduction Browser19/19ผ่าน รวมการเลือก สมาชิกครบ ลิงก์Enter/Pointer/Touch แถบต่อเนื่อง Reduced Motion ภาพเสีย No-JSและHero/Consultationเดิม Responsiveตรวจ12ขนาดระหว่าง320–1920px พร้อมเลือกทุกหมวดที่320/390/768/1440; ภาพจริง4ขนาดและภาพแยกหมวดDesktop/Mobileอยู่ใน `output/homepage-four-categories-20261104/`
+
+ผลนี้ใช้SnapshotในQAแยก ไม่ได้ทดสอบLive Database; รอบแรก19กรณีเปิดBrowserไม่ได้เพราะไม่มีBundled Chromium จากนั้นใช้Chromeที่ติดตั้งและรันครบผ่าน เก็บFailureเดิมไว้ ไม่แก้Sourceเพื่อข้ามปัญหาเครื่องมือ Source5ไฟล์ตรงHashQAและตรวจแล้วเปลี่ยนเฉพาะ7ไฟล์ที่อยู่ในแผน Sourceงาน5หมวดหน้าProductคงเดิม และรักษาผลตรวจ/สถานะDoneที่งานอื่นอัปเดตในหัวข้องานนั้นระหว่างรอบนี้ ไม่ย้อนทับเอกสารร่วม ไม่มีFramework Feedback candidateใหม่
+
+## Task: Five real product families (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done"
+
+### Goal
+
+เปลี่ยนหมวดหลักในหน้า `/products` เป็น5หมวดตามลำดับที่ผู้ใช้ระบุ: เครื่องชั่ง, อินดิเคเตอร์แท่นชั่ง, โครงสร้างแท่นชั่ง, ระบบ POS, อุปกรณ์เสริม และเชื่อมสินค้าตามกลุ่มจริงที่มีอยู่ในระบบ หมวดย่อยยังเป็นตัวอย่างจนกว่าจะได้ข้อมูลจากผู้ใช้
+
+### Scope In
+
+- แทน6หมวดสมมติด้วย5ชื่อจริงข้างต้น ใช้ Source `getCatalogPage` เดิมทั้ง5Root: `/products`, `/Indicator`, `/product/scale-platforms`, `/Product/POS`, `/product/scale-accessories`
+- ขยาย Products input ของ `/products` จาก74เครื่องชั่งเป็นผลรวม5กลุ่ม โดยคง Product IDs/ข้อมูล/ลำดับของข้อมูล Server และ cached ClientProduct projection เดิม ไม่แก้ Classification Helpers หรือข้อมูลธุรกิจ
+- ส่ง Parent IDs/ชื่อ/Product IDs จาก Server เข้า Component ให้กรองตามสมาชิกกลุ่มจริง แบ่งเฉพาะหมวดย่อย01–02เป็นตัวอย่างภายใน Parent ของตัวเอง ไม่จัดสินค้าข้ามกลุ่ม
+- ปรับข้อความกำกับให้ระบุว่ายังรอเฉพาะหมวดย่อยจริง การ์ดไม่มีข้อความรอชื่อหมวดหลักอีก รักษา Search/Sort/Featured/Grid–List/Load more/Empty reset/Compare3รุ่นและ Parent–Child reset
+- Layout และ Brand Tokens เดิม การ์ดหมวด4/3/2คอลัมน์ตามขนาดเดิม ไม่เปลี่ยนเป็น5คอลัมน์โดยไม่มีคำสั่ง; ตรวจชื่อยาวที่320px
+
+### Scope Out
+
+ไม่กำหนดชื่อหรือความหมายหมวดย่อยจริง ไม่แก้ Source Classification, Navbar/Footer/Global Styles, Shared Card/Global Store, Routes อื่น, Schema/Database/API/Dependencies ไม่ Commit/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: หน้า Product mock ที่อนุมัติแล้ว และ5ชื่อ/ลำดับจากผู้ใช้; คง `src/styles/base.css` และ CSS Module ของหน้านี้
+- Design: ขาว/เทา/แดง SUNFORD ฟอนต์และรูปสินค้าเดิม ปรับเฉพาะเนื้อหาหมวดและการรองรับชื่อยาว ไม่เพิ่มรูป/สเปก/ไอคอนแทนหมวดที่ยังไม่มี Reference
+- Responsive:320×800,390×844,768×1024,844×390,1440×1000 ตรวจชื่อหมวด Focus/Hit Targets และไม่มี Overflow
+
+### Input / Output
+
+- Input:5ชื่อจริงจากผู้ใช้และคำยืนยัน “เชื่อมสินค้าตาม 5 หมวดจริงด้วย”; Membershipจาก `getCatalogPage` ซึ่งมีอยู่แล้ว ไม่ใช้คำ Keyword จัดกลุ่มใหม่
+- Output: หน้าเดียวเลือก5หมวดจริง ครอบคลุมสินค้าของทั้ง5กลุ่ม พร้อม2หมวดย่อยตัวอย่างต่อหมวด
+- Contract: `ProductCategory { id, label, productIds, subcategories: { id, label, productIds }[] }`; Parent Membershipมาจาก Server, Child IDsใช้ `mock-*` เฉพาะการสาธิต ไม่ส่งเข้า Global Store/Database
+- ตรวจ Source Snapshotก่อนแก้ได้150รายการ แบ่ง74/7/23/3/43ตามลำดับ5หมวด ไม่มี Unassigned; Runtimeจะใช้จำนวนจริงจาก Server ไม่ Hardcode Counts ใน UI
+
+### Acceptance Criteria
+
+- [x] ผู้ใช้ยืนยัน5ชื่อ/ลำดับและการขยายไปยังสินค้าจริงทั้ง5กลุ่ม
+- [x] UIมี5หมวดตามลำดับและชื่อที่ระบุ ไม่มีหมวด06หรือข้อความรอชื่อหมวดหลัก
+- [x] Product IDsแต่ละ Parentตรงกับกลุ่มเดิม; Allเป็นผลรวมครบ ไม่ซ้ำ/ไม่หาย และ Childrenเป็นส่วนย่อยของ Parentตนเอง
+- [x] หมวดย่อยยังระบุว่าเป็นตัวอย่าง Parentเปลี่ยนแล้ว Child/Limitรีเซ็ต; Search/Sort/Load more/Compareยังทำงานกับข้อมูลชุดใหม่
+- [x] ตรวจ Browser/ภาพ/ชื่อยาว/Keyboardทั้ง5ขนาด ไม่มี Page Error/Overflow ใหม่ พร้อม Typecheck/Scoped Lint/Format/Catalog Unit และ Buildแยกผ่าน
+- [x] อัปเดตผลจริง/Hash/Backup และปิดเฉพาะ QAที่เริ่มเอง ไม่กระทบDevเดิม
+
+### Missing Information
+
+รอชื่อ/ลำดับ/การจัดกลุ่มหมวดย่อยจริงจากผู้ใช้ภายหลัง ไม่เป็นตัวขัดขวางรอบนี้ซึ่งคง Childเป็นDemo; ไม่มีข้อมูลจำเป็นอื่นที่ขาด
+
+### Approval Record
+
+ผู้ใช้วันที่2026-11-04แจ้งให้ปรับหมวดหลักเป็น5ชื่อข้างต้น และตอบคำถามขอบเขตอย่างชัดเจนว่า “เชื่อมสินค้าตาม 5 หมวดจริงด้วย” หลังอธิบายว่าจะขยาย `/products` จาก74รายการเป็นทั้ง5กลุ่ม ถือเป็นการอนุมัติส่วนที่เปลี่ยนตามคำขอนี้ ส่วนหมวดย่อยยังเป็นตัวอย่างตามขอบเขตเดิม
+
+### Current State
+
+สำรอง7ไฟล์ก่อนเริ่มไว้ใน `output/product-main-categories-20261104/before-files.zip` พร้อม SHA256; งานหน้าProductรอบก่อนและประวัติด้านล่างยังรักษาไว้ ผล74รายการ/6หมวดของงานก่อนถูกแทนเฉพาะขอบเขตที่ผู้ใช้ยืนยันในรอบนี้
+
+- `/products` ใช้5ชื่อ/ลำดับที่ผู้ใช้ระบุแล้ว Membershipมาจาก getCatalogPageเดิมผ่านServer ไม่แบ่งหมวดหลักด้วยการวนสินค้าอีก; หน้าAllรวม150รายการ เริ่ม24และโหลดเพิ่มได้จนครบ
+- ตรวจBrowser MembershipทุกParentกับClassificationเดิมจากAPIแล้วตรงกันทั้ง74/7/23/3/43รายการ ไม่มีซ้ำหรือหลุดกลุ่ม; Children01–02แบ่งเฉพาะProduct IDsในParentของตัวเองและมีข้อความกำกับเป็นตัวอย่าง
+- Dev Regression10/10และProduction Regression12/12ผ่าน ไม่มีFlaky/Skipped รวม5ขนาด320/390/768/844Landscape/1440, Parent–Child reset/Search/Sort/Grid–List/Featured/Compare3/Global Search/Categoryเดิม/API/404 ที่เลือกตรวจ ไม่อ้างFull E2E Suiteผ่าน
+- Build webpackผ่าน420หน้าบนNode24.22.1; Typecheck/Scoped ESLint/Formattingผ่าน Catalog Unit50/50ผ่าน Production QAใช้Snapshot FallbackและPlaceholderเฉพาะProcess ไม่แก้Env/Database
+- ตรวจภาพDesktop1440×1300/Mobile390×844และผลResponsiveทั้ง5ขนาด ชื่อหมวดจริงแสดงครบ และPOSแสดง3เครื่องบันทึกเงินสดจริง Sourceแอป4ไฟล์ตรงHashกับQA
+- หลักฐาน: `output/product-main-categories-20261104/delivery.md`, `dev-tests.json`, `production-tests.json`, `catalog-unit.log`, `build.log`, `observed-membership.json`, `source-hashes.json`, `categories-desktop.png`, `categories-mobile.png`, `pos-mobile.png` และภาพResponsiveในโฟลเดอร์ผลTest
+- ปิดQA3166 PID45564ที่เริ่มเองแล้ว ยืนยันไม่มีListener3166 เก็บDev3000 PID15684เดิมไว้ ไม่มีCommit/Push/Deploy ไม่มีFramework issueใหม่ที่เข้าเกณฑ์Next feedback ข้อจำกัดDetail TestและCase-only Slugจากงานก่อนยังอยู่นอกScopeและไม่ได้อ้างว่าแก้แล้ว
+
+## Task: HoN-inspired product category mock (2026-11-04)
+
+Status: "Ready to Code"
+Approval: "Approved"
+Progress: "Done — new page verified; pre-existing detail-layout test limitation documented"
+
+### Goal
+
+นำโครงสร้างการเลือกหมวดหลัก → หมวดย่อย → รายการจาก https://heroesofnewerth.com/learnatorium/heroes มาทำ mock สำหรับแทนหน้า `/products` ของ SUNFORD โดยผู้ใช้จะแจ้งหมวดหมู่และหมวดหมู่ย่อยจริงภายหลัง
+
+### Scope In
+
+- ตรวจหน้าอ้างอิงผ่าน Computer/Browser Use รวมการเปลี่ยนหมวดหลัก การเลือกหมวดย่อย ค้นหา ไม่พบผล ล้างคำค้น เปิดรายละเอียด/Back และรูปแบบ Responsive พร้อมหลักฐาน
+- จัดทำภาพโครงร่างเพื่ออนุมัติใน `output/catalog-reference-20261104/` ภาพนี้เป็นข้อเสนอแบบนิ่ง ยังไม่ใช่ UI ที่ติดตั้งในแอป
+- หลังอนุมัติ: แทน Sidebar/Banner การเลือกหมวดบน `/products` ด้วยหัวเรื่อง ช่องค้นหา การ์ดหมวดหลัก 6 ช่องตัวอย่าง ปุ่มหมวดย่อย และกริดสินค้าตามลำดับอ้างอิง
+- ใช้ชื่อกลาง “หมวดหมู่ 01–06” / “หมวดย่อย 01–02” เฉพาะ mock จำนวนช่องเป็นตัวอย่างเลย์เอาต์ ไม่ใช่จำนวนหมวดจริงที่ตกลงแล้ว แสดงข้อความว่าการจัดกลุ่มเป็นตัวอย่าง
+- แยก Fixture หมวดหลัก/ลูกและ Product IDs ตัวอย่างออกจากข้อมูลธุรกิจ ใช้สินค้าที่มีอยู่จริงเท่านั้น ไม่อนุมานประเภทใหม่จากชื่อ/ภาพสินค้า ตัวเลือกทั้งหมดแสดงรายการเดิมครบตาม Scope ที่ Server ส่งให้
+- รักษาขอบเขตสินค้าของ `/products` ปัจจุบัน (Browser ตรวจพบ 74 รายการ ไม่ใช่สินค้าทั้งระบบ) พร้อมชื่อ รูป รายละเอียด ลำดับตั้งต้น Search/Sort/Grid–List/Featured/Load more และ Compare สูงสุด 3 รุ่น ย้าย Control เดิมให้อยู่ใต้การ์ดหมวดตามความเหมาะสม
+- ใช้ Client Component เฉพาะการเลือก/ค้นหา/แสดงรายการ คงการโหลดข้อมูล Server และ ClientProduct projection เดิม
+
+### Scope Out
+
+ไม่กำหนด Taxonomy จริง ไม่บันทึก Fixture ลงฐานข้อมูล/CMS ไม่แก้ Schema/API/Store ส่วนกลาง ไม่เปลี่ยนหน้า Category อื่นหรือ `/products/[slug]` ไม่แก้ Navbar/Footer/Global CSS/Shared Product Card ไม่เพิ่ม Dependency ไม่เปลี่ยนภาพสินค้า ไม่ Commit/Push/Deploy
+
+### UI/UX Brand Alignment
+
+- Reference: หน้า HoN ที่ผู้ใช้เปิดและภาพแนบ ใช้โครงสร้างเลือกหมวด; Brand ใช้ `src/styles/base.css`, ฟอนต์ Noto Thai ที่โหลดใน `src/app/layout.tsx` และ Product Card ที่ใช้อยู่
+- Design: SUNFORD red `#d7192d`, ink `#1d1d1f`, muted `#6e6e73`, paper `#f5f5f7`, line `#e5e5ea`, white `#ffffff`; คง Header/Footer และภาพสินค้าต้นฉบับ การ์ดเลือกมีกรอบ/พื้นแดงอ่อนและ Focus ที่มองเห็นได้
+- Layout: หัวเรื่อง → ค้นหา → การ์ดหมวดหลัก → ชื่อหมวด/ปุ่มหมวดย่อย → Control/จำนวนรายการ → กริดสินค้า ไม่ใช้ Sidebar เดิมบนหน้านี้ การ์ดหมวดหลัก 4 คอลัมน์ Desktop / 3 Tablet / 2 Mobile; สินค้าใช้ 4/3/2 ตามความกว้างและไม่เกิด Horizontal Overflow ที่ 320px
+- Responsive: หลังลงมือ ตรวจ 320/390/768/1440px และ Landscape844×390 รวมชื่อยาว การ Wrap หมวดย่อย เมนู Search/Compare และการกดบนมือถือ
+- ข้อเสนอนี้ปรับ Search ให้ทำงานร่วมกับหมวดตัวอย่างที่เลือกตามรูปแบบ Catalog เดิม ไม่คัดลอก Global Search ข้ามประเภทเนื้อหาของ HoN เพราะรอบนี้เป็นหน้า Product mock
+
+### Input / Output
+
+- Input: คำขอผู้ใช้วันที่2026-11-04, HoN reference, Source และสินค้าที่ Server ของ `/products` ส่งอยู่แล้ว; หมวดจริงถูกเลื่อนออกจากรอบ mock ตามคำขอผู้ใช้
+- Output: รอบเตรียมได้รายงาน/ภาพโครงร่าง/Spec/Plan; หลังอนุมัติได้ Interactive mock บน `/products` โดย URL รายละเอียดสินค้ายังคงเดิม
+- Proposed local-only interface: `MockCategory { id, label, subcategories: { id, label, productIds: string[] }[] }`; IDs เป็น `mock-*` และไม่มีการส่งเข้า CategoryId/CMS/Database ตัวเลือก All ใช้ Products input เดิม การเปลี่ยนหมวด Reset หมวดย่อยและ Limit; Query/Sort/Featured ทำงานร่วมกับ Product IDs ของ Fixture และ Count คำนวณจากรายการจริง
+- Plan จำกัดการสลับ Component ใน `src/app/(site)/products/page.tsx`; คง `ProductBrowser` เดิมสำหรับผู้เรียกอื่น จึงไม่เปลี่ยน Props/Contracts ของ Route อื่น
+
+### Acceptance Criteria
+
+- [x] ตรวจและบันทึกโครงสร้าง/Interaction อ้างอิงกับ Source เจ้าของหน้าเดิม โดยแยกข้อสังเกตจากข้อเสนอ SUNFORD
+- [x] มีภาพโครงร่างแบบนิ่งให้ตรวจ พร้อมรายการไฟล์/ผลกระทบ/วิธีย้อนกลับก่อนแก้แอป
+- [x] ผู้ใช้อนุมัติ Spec/Plan ฉบับนี้ก่อนแก้ไฟล์แอปพลิเคชัน
+- [x] `/products` ใช้โครงสร้างใหม่และตัวอย่างหมวด/หมวดย่อย เลือกได้ทีละรายการ Reset Child เมื่อเปลี่ยน Parent และระบุชัดว่าการจัดกลุ่มยังเป็น mock
+- [x] ทุก Product ID ใน Fixture มาจาก Products input จริง All แสดงชุดเดิมครบ ไม่แก้ข้อมูลหรือสร้างหมวดธุรกิจใหม่ ไม่มีสินค้าหายจาก All
+- [x] Search/Sort/Featured/Grid–List/Load more/Empty reset และ Compare3รุ่น ทำงาน; ภาพ/ลิงก์สินค้าตรงข้อมูลเดิม Header Search/Compare ไม่ได้รับผลจาก Mock IDs
+- [x] ตรวจ Keyboard/Focus/aria-pressed, Responsive และ Click Targets พร้อมภาพจริงตามขนาดที่ระบุ ไม่มี Overflow หรือ Page Error ใหม่
+- [x] Typecheck/Lint/Formatting/Catalog Unit และ Browser Regression ของหน้าใหม่ผ่าน; Build แยกผ่าน420หน้า ชุดรวม14/15 มี Detail Test เดิม1กรณีที่ยืนยันล้มเหมือนก่อนแก้ตามผลด้านล่าง ไม่อ้างว่าชุดรวมผ่านทั้งหมด
+- [x] อัปเดตผลจริงและ Source Hash ใน Spec/Plan เก็บ Rollback เฉพาะงานนี้และหยุดเฉพาะ QA Server ที่เริ่มเอง
+
+### Missing Information
+
+- สำหรับ mock: ไม่มีข้อมูลจำเป็นที่ขาด ป้ายและการจับกลุ่มตัวอย่างระบุเป็น Demo และผู้ใช้อนุมัติแนวทางแล้ว
+- สำหรับ Taxonomy จริง: รอชื่อหมวดหลัก/ลูก ลำดับ ไอคอนหรือภาพถ้าต้องการ และความสัมพันธ์กับ Product IDs จากผู้ใช้ภายหลัง ไม่เป็นข้อกำหนดที่ Agent แต่งแทน
+- ก่อนนำ Taxonomy จริงเข้าระบบต้องอัปเดต Spec/Plan และรับอนุมัติส่วนนั้นอีกครั้ง
+
+### Approval Record
+
+ผู้ใช้อนุมัติวันที่2026-11-04: “อนุมัติครับ ลงมือแทนหน้าโปรดักต์เดิมตาม Spec/Plan นี้ได้เลย ใช้หมวดหมู่ตัวอย่างไปก่อน เดี๋ยวผมแจ้งหมวดหลักและหมวดย่อยจริงภายหลังครับ” ครอบคลุมไฟล์และขอบเขตใน Plan นี้ รวมหมวดตัวอย่างแยกจากข้อมูลธุรกิจ ไม่รวม Taxonomy จริงหรือ Deployment
+
+### Current State / Verification Results
+
+- เปลี่ยน `/products` เป็น ProductCategoryMock แล้ว ใช้6หมวด/2หมวดย่อยต่อหมวดจาก Product IDs ที่ Server ส่งมา แบ่งวนตามลำดับ Input เพื่อสาธิตเท่านั้น ไม่มีความหมาย Taxonomy ธุรกิจ ไม่มี Persistence และไม่ส่ง Mock IDs เข้า Catalog Store ส่วนกลาง
+- การเลือกหมวดหลักรีเซ็ตหมวดย่อย/Limit; การเปลี่ยนคำค้น/หมวดย่อย/Featured รีเซ็ต Pagination และ Query จาก Store ภายนอกมี Filter Key ป้องกันคง Limit ผิดชุด การเรียง/กริด–รายการ/เปรียบเทียบใช้ข้อมูลและ Shared Card เดิม
+- ตัวเลือกทั้งหมดคง74รายการ เริ่ม24→48→72→74; Browser เปรียบเทียบ Baseline กับหน้าใหม่แล้วชื่อ/คำอธิบาย/ลิงก์/Alt และลำดับ74รายการตรงกันทุกจุด หมวดหลักทั้ง6เป็น Partition ของชุดเดิม และ Childrenทั้ง2เป็น Partition ของ Parent ทุกหมวด
+- Dev Browser10/10ผ่าน; Production Snapshot Browser ชุด15กรณีได้14ผ่าน ไม่มี Flaky/Skip โดยหน้าใหม่10/10ผ่าน รวม Keyboard/Focus/Hit Targets/ไม่มี Overflow/Page Error ที่320×800,390×844,768×1024,844×390,1440×1000 และ Global Compare3รุ่น/Search/Navigation/API/404 ที่เลือกตรวจผ่าน
+- ข้อจำกัดก่อนงาน: `product-overview.spec.ts` คาดจุดเริ่มส่วนรายละเอียด y≥767 แต่ได้766 ที่1366×768 ยืนยันล้มแบบเดียวกันบน Baseline Production ที่185/186 Application Filesตรงกับ Source ปัจจุบัน อีก1ไฟล์คือ Route `/products` ที่ตรง Backup ก่อนแก้ ไม่มีการแก้ Detail CSS หรือปรับ Assertion ให้ผ่าน
+- Test เดิมใน `catalog.spec.ts` ที่เริ่มจาก Sidebar บน `/products` ไม่อยู่ในชุดเลือกตรวจของหน้าใหม่ เพราะ UI Contract นั้นถูกแทนตาม Spec นี้ Coverage การเลือก Parent/Child และการนำทางจาก Category เดิมกลับ `/products` อยู่ใน `product-category-mock.spec.ts`; ไม่แก้ Test เดิมนอก Files ที่อนุมัติ และไม่อ้างว่า Full E2E Suite ผ่าน
+- Build webpackบน Node24.22.1ผ่าน420หน้า; Typecheck/Scoped ESLint/Formattingผ่าน และ Catalog Unit50/50ผ่าน Production QA ใช้ Snapshot Fallback โดยตั้ง Placeholder เฉพาะ Process ไม่มีการคัดลอก Env หรือเขียน Database; Source Application4ไฟล์ตรง Hash กับ QA Build
+- ตรวจภาพจริงทั้ง5ขนาดจาก Production พร้อมภาพส่งมอบ Desktop1440×1400/Mobile390×844 ภาพแรกในส่วนนี้เป็นผล Implementation; `mock-proposal.png` ด้านล่างเป็นภาพข้อเสนอเก่า เก็บไว้เป็นประวัติ
+- หลักฐานผลลงมือ: `output/catalog-reference-20261104/delivery.md`, `production-tests.json`, `dev-tests.json`, `dev-responsive.json`, `baseline-detail-tests.json`, `inventory-comparison.json`, `source-hashes.json`, `detail-baseline-source-check.json`, `build.log`, `catalog-desktop.png`, `catalog-mobile.png`, `catalog-mobile-results.png`; Backup Route อยู่ใน `before/products-page.tsx`
+- ไม่มี Framework issue ใหม่จากงานนี้ที่เข้าเกณฑ์ Next.js feedback; ข้อจำกัด Case-only Slug ที่บันทึกไว้ก่อนหน้ายังไม่ถูกแก้หรือใช้เป็นผลผ่านของรอบนี้
+- ปิด QA3164 PID4068 และ Baseline3165 PID35220 ที่เริ่มเองแล้ว ยืนยันไม่มี Listener ทั้งสอง Port; Dev3000 PID15684เดิมยังอยู่ เปิดแท็บ `/products` คืน All74รายการไว้ ไม่มี Commit/Push/Deploy
+- บันทึกการตรวจอ้างอิงรอบเตรียมด้านล่างเก็บเป็นประวัติ ไม่ใช่สถานะรอ Implementation ปัจจุบัน
+- ตรวจ HoN ผ่าน Browser จริง: หมวดหลักเป็น Link เปลี่ยน Path; หมวดย่อยเป็น Single-select Button ในหน้าเดิม; Heroes All มี110รายการ; Search พบ Arachna แม้เลือก Hard Support ที่ไม่มี Arachna และล้างคำค้นคืนรายการของตัวกรองเดิม; คำค้นไม่ตรงทำให้ Grid ว่าง ไม่มีข้อความอธิบายให้เห็นในบริเวณผลลัพธ์ที่ตรวจ
+- ตรวจ Desktop1440×1000: การ์ดหมวดหลัก4คอลัมน์ และ Heroes Grid7คอลัมน์ gap24px; Mobile390×844: การ์ดหมวดหลัก2คอลัมน์ และ Heroes Grid1คอลัมน์ ปุ่มหมวดย่อย Wrap หลายแถว; Tablet ยังไม่มีหลักฐานขนาด768ที่ยืนยันได้ จึงไม่อ้างว่าตรวจครบ
+- เปิด Arachna ได้หน้า Detail จริงและ Browser Back กลับ Heroes; ไม่ยืนยันการคง Filter ข้าม Back เพราะ Snapshot ไม่มี Active State ที่ชัดเจน
+- ตรวจ `http://localhost:3000/products`: เครื่องชั่ง74รายการ มี24รายการเริ่มต้นและปุ่มดูเพิ่มเติม พร้อม Controls เดิม; Source ใช้ ProductBrowser ที่ถูกเรียกจาก Route อื่นด้วย จึงเสนอแยก Component ใหม่สำหรับหน้านี้
+- ตรวจ Stack จาก package.json/package-lock.json/bun.lock: Next16.4.3 React19.3 Prisma7.10.1 TypeScript5 Node24; อ่านคู่มือ Next ที่ติดตั้งเกี่ยวกับ Server/Client Components สำหรับขอบเขตที่จะเสนอ
+- ขณะเตรียมข้อเสนอแก้เฉพาะ Spec/Plan และสร้าง Design/Research artifacts ไม่มีการทดสอบแอปฉบับใหม่เพราะยังไม่ได้เขียน; ไม่เริ่ม/หยุด Dev Server ไม่เขียน Database
+- Next.js feedback review: ไม่มี Framework issue ใหม่ที่ยืนยันได้จากงานตรวจอ้างอิงรอบนี้ ข้อจำกัด Case-only Slug จากงานก่อนหน้ายังอยู่นอก Scope
+
 ## Task: Central Z-Index Scale (2026-11-04)
 
 Status: "Ready to Code"

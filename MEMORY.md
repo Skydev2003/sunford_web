@@ -1,5 +1,11 @@
 # Project Memory
 
+## Exclude archived source snapshots from TypeScript checks
+
+- Observed: Removing an unused component caused typecheck to fail on an old `.tsx` backup inside `output`, although application imports had been removed.
+- Root cause: TypeScript's recursive include patterns also compiled local evidence files.
+- Correct behavior: Keep `output` excluded in `tsconfig.json`. Preserve backup files as evidence; do not restore retired application components solely to satisfy imports in archived snapshots.
+
 ## Verify cold-load geometry and normal-motion navigation together
 
 - Observed: Opening correctness tests passed, but slow fonts still moved the Header logo5.25px after its destination was measured; reduced-motion nav tests also missed tone detection sampling the blocking opening as white.
@@ -345,3 +351,15 @@
 - Observed: A body-level layout portal at z-index30 intercepted the Header at40 even after both used named tokens; a browser hit-target regression reproduced it.
 - Root cause: The outer site wrapper's isolation created a separate parent context for the Header. Its child40 could not outrank a sibling portal30 in the document context.
 - Correct behavior: Keep the outer site wrapper free of unnecessary isolation when page-level controls and body portals must share the scale. Isolate decorative sections locally, retain native showModal top-layer behavior, and verify Header hit targets against a real body portal plus modal hit targets against critical9999 content. Do not fix parent-context conflicts by increasing child numbers.
+
+## Match Thai usage phrases instead of word fragments
+
+- Observed: A health scale entered the kitchen subgroup because the bare Thai fragment ครัว also matched ครอบครัว (family) in its product copy.
+- Root cause: Substring presence was treated as evidence of a complete usage term.
+- Correct behavior: Match explicit usage phrases or authoritative collection membership. Do not use ครัว alone as a kitchen predicate. Keep a regression with family-health copy and a real health-scale record, alongside positive kitchen/coffee examples; verify that products without evidence remain available under All.
+
+## Honor owner-supplied model manifests
+
+- Observed: The owner supplied an explicit scale-model document after the earlier evidence/keyword classification, including Fitdays in kitchen/coffee.
+- Root cause: Keeping the old family-health exclusion as the current membership rule would contradict the newer explicit owner manifest.
+- Correct behavior: Use docs/sunford-scale-categories.md as the authoritative membership for these eight scale children. Explicit entries supersede prior heuristic exclusions, including Fitdays. Preserve the general Thai substring-matching lesson for unrelated classifiers. Resolve exact model codes and documented aliases; show missing codes as clearly labeled Mock cards rather than normalizing differing suffixes, capacity numbers or zeros. Do not copy unverified document footnotes into product specifications.
