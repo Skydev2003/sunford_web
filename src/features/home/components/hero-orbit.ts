@@ -66,7 +66,12 @@ export function createOrbitFrames(
     layout.push({
       offset: t,
       transform: `translate3d(${dx}px, ${dy}px, 0) scale(${scale})`,
-      zIndex: depth > 0.66 ? "3" : depth < -0.05 ? "0" : "2",
+      zIndex:
+        depth > 0.66
+          ? "var(--z-local-control)"
+          : depth < -0.05
+            ? "var(--z-base)"
+            : "var(--z-local-overlay)",
     });
     const opacity = depth >= 0 ? 0.5 + Math.min(1, depth) * 0.5 : 0.5 + depth * 0.8;
     const startOpacity = before.slot === 0 ? 1 : 0.5;

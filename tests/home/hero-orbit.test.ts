@@ -68,7 +68,7 @@ test("the rear product travels behind the circle, shrinking and fading instead o
   assert.ok(middle.y < Math.min(seats[1].y, seats[2].y) - 30);
   assert.ok(middle.scale < 0.85);
   assert.ok(Number(frames.surface[18].opacity) < 0.3);
-  assert.equal(frames.layout[18].zIndex, "0");
+  assert.equal(frames.layout[18].zIndex, "var(--z-base)");
 });
 
 test("the outgoing model can keep its full-resolution surface until the orbit ends", () => {

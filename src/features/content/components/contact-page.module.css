@@ -12,7 +12,7 @@
 }
 .contactIntro::before {
   position: absolute;
-  z-index: -1;
+  z-index: var(--z-decoration);
   top: -180px;
   right: -100px;
   width: 680px;
@@ -51,7 +51,7 @@
 }
 .introduction {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local-raised);
 }
 .introduction .eyebrow {
   display: flex;
@@ -162,7 +162,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .channel:hover {
-    z-index: 1;
+    z-index: var(--z-local-raised);
     transform: scale(1.025);
     box-shadow: 0 16px 36px #233e5f14;
   }
@@ -177,7 +177,7 @@
 }
 .channel::before {
   position: absolute;
-  z-index: -1;
+  z-index: var(--z-decoration);
   top: -130px;
   right: -35px;
   width: 300px;
@@ -308,7 +308,7 @@ a.channel:not(.lineChannel):hover {
 }
 .locations::before {
   position: absolute;
-  z-index: -1;
+  z-index: var(--z-decoration);
   top: -160px;
   right: -40px;
   width: 480px;

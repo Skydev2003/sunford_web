@@ -1,7 +1,7 @@
 .floating-contact {
   --contact-size: 62px;
   position: fixed;
-  z-index: 45;
+  z-index: var(--z-critical);
   right: 24px;
   bottom: max(24px, env(safe-area-inset-bottom));
   width: var(--contact-size);

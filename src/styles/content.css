@@ -600,7 +600,7 @@
 .showcase-tile-copy {
   max-width: 450px;
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local-raised);
 }
 .showcase-tile .eyebrow {
   color: var(--red);
@@ -692,7 +692,7 @@
   content: "";
   position: absolute;
   inset: -50%;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   pointer-events: none;
   background: linear-gradient(
     45deg,

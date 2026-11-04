@@ -27,7 +27,7 @@
   position: absolute;
   bottom: 26px;
   left: 26px;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   color: #fff;
   font-size: 10px;
   letter-spacing: 1px;

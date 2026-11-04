@@ -1,7 +1,7 @@
 .opening {
   display: none;
   position: absolute;
-  z-index: 1;
+  z-index: var(--z-base);
   inset: 0;
   overflow: hidden;
   pointer-events: none;

@@ -1,7 +1,6 @@
 .surface {
   --site-header-height: 58px;
   position: relative;
-  isolation: isolate;
   min-height: 100vh;
   background: #fff;
   padding-top: var(--site-header-height);

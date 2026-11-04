@@ -139,7 +139,7 @@
   top: 20px;
   left: 22px;
   right: 20px;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   gap: 8px;
 }
 .product-badge {

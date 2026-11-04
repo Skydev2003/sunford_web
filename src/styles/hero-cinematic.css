@@ -24,7 +24,7 @@
 }
 .hero-cinematic .hero-copy {
   position: absolute;
-  z-index: 5;
+  z-index: var(--z-local-copy);
   top: 6.5%;
   left: 6.7%;
   width: min(44vw, 790px);
@@ -45,7 +45,7 @@
 .hero-product-highlights {
   --bubble-scale: 0.84;
   position: absolute;
-  z-index: 21;
+  z-index: var(--z-local-badge);
   inset: 0;
   pointer-events: none;
   color: #ef070f;
@@ -59,7 +59,7 @@
 }
 .hero-product-name {
   position: absolute;
-  z-index: 5;
+  z-index: var(--z-local-copy);
   top: 48.5%;
   left: 20%;
   width: max-content;
@@ -154,7 +154,7 @@
 }
 .hero-feature-text {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   overflow-wrap: anywhere;
 }
 .hero-product-highlights [data-popup="true"] .hero-feature-pop {
@@ -344,7 +344,7 @@
 .hero-model-standby,
 .hero-cinematic .hero-visual {
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   left: 43.5%;
   top: 4%;
   width: 52%;
@@ -372,7 +372,7 @@
 }
 .hero-model-dropzone {
   position: absolute;
-  z-index: 10;
+  z-index: var(--z-local-dropzone);
   left: 48%;
   top: 12%;
   width: 46%;
@@ -402,7 +402,7 @@
 }
 .hero-cinematic .hero-motion-toggle {
   position: absolute;
-  z-index: 6;
+  z-index: var(--z-local-scene-control);
   right: 22px;
   left: auto;
   bottom: 37%;
@@ -428,7 +428,7 @@
   --badge-float-duration: 6s;
   --badge-float-distance: 8px;
   position: absolute;
-  z-index: 21;
+  z-index: var(--z-local-badge);
   left: 83.5%;
   top: 3.5%;
   width: calc(clamp(108px, 7.8vw, 148px) * var(--bubble-scale));
@@ -528,7 +528,7 @@
 }
 .hero-cinematic .slide-controls {
   position: absolute;
-  z-index: 6;
+  z-index: var(--z-local-scene-control);
   bottom: 9px;
   right: 10%;
   opacity: 0;
@@ -583,7 +583,7 @@
 }
 .hero-scene-scroll {
   position: absolute;
-  z-index: 6;
+  z-index: var(--z-local-scene-control);
   bottom: 10px;
   left: 6.5%;
   display: none;
@@ -917,7 +917,7 @@
 .hero-bubble-layer {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  z-index: var(--z-floating);
   width: 100%;
   transform: none;
   opacity: 1;
@@ -944,13 +944,13 @@ body:has(.site-header[data-hero-backdrop-tracked]:not([data-hero-backdrop])) .he
 }
 @media (min-width: 1101px) {
   body:has(.nav-backdrop.is-open) .hero-bubble-layer {
-    z-index: 38;
+    z-index: var(--z-floating);
     visibility: hidden;
     transition: none;
   }
 }
 .hero-bubble-layer[data-menu-covered="true"] {
-  z-index: 38;
+  z-index: var(--z-floating);
   visibility: hidden;
   transition: none;
 }
@@ -970,10 +970,10 @@ body:has(.site-header[data-hero-backdrop-tracked]:not([data-hero-backdrop])) .he
 }
 .hero-floating-bubble[data-bubble-pinned="true"],
 .hero-floating-bubble[data-returning="true"] {
-  z-index: 2;
+  z-index: var(--z-local-overlay);
 }
 .hero-floating-bubble[data-dragging="true"] {
-  z-index: 3;
+  z-index: var(--z-local-control);
 }
 .hero-bubble-handle {
   display: block;

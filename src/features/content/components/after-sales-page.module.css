@@ -324,7 +324,7 @@
 .contactCard::before {
   content: "";
   position: absolute;
-  z-index: -1;
+  z-index: var(--z-decoration);
   width: 125%;
   height: 110%;
   top: 36%;

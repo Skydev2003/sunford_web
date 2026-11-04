@@ -8,7 +8,7 @@
 }
 .section::before {
   position: absolute;
-  z-index: -1;
+  z-index: var(--z-decoration);
   bottom: -330px;
   left: -210px;
   width: 1100px;
@@ -40,7 +40,7 @@
 }
 .backCard {
   position: absolute;
-  z-index: -1;
+  z-index: var(--z-decoration);
   overflow: hidden;
   inset: -8px 0 5px;
   border: 1px solid #ffffffb3;
@@ -118,7 +118,7 @@
 }
 .photoLabel {
   position: absolute;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   bottom: 24px;
   left: 24px;
   color: #fff;
@@ -138,7 +138,7 @@
 }
 .quoteCard {
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   top: 7%;
   left: -34px;
   width: 136px;
@@ -176,7 +176,7 @@
 }
 .sideCards {
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   top: 23%;
   right: -36px;
   display: grid;

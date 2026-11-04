@@ -3,10 +3,11 @@ import { test, expect } from "@playwright/test";
 test("after-sales links open the service page and preserve service-specific instructions", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const supportMenu = page
     .getByRole("navigation", { name: "เมนูหลัก", exact: true })
-    .getByRole("link", { name: "บริการและการสนับสนุน", exact: true });
+    .getByRole("link", { name: "บริการ", exact: true });
   await supportMenu.hover();
   await page
     .locator("#desktop-submenu")
@@ -52,6 +53,10 @@ test("after-sales links open the service page and preserve service-specific inst
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+  await page
+    .locator("#mobile-navigation summary")
+    .filter({ hasText: /^บริการ$/ })
+    .click();
   await page
     .getByRole("navigation", { name: "เมนูมือถือ", exact: true })
     .getByRole("link", { name: "บริการหลังการขาย", exact: true })

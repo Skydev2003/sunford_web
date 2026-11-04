@@ -243,7 +243,12 @@ test("ribbon loops independently of pinned models and pauses for controls, offsc
       }),
     );
     const boxes = cards
-      .filter((card) => !card.hidden && getComputedStyle(card).zIndex === "4")
+      .filter(
+        (card) =>
+          !card.hidden &&
+          getComputedStyle(card).zIndex ===
+            getComputedStyle(card).getPropertyValue("--z-local-front").trim(),
+      )
       .map((card) => card.getBoundingClientRect())
       .filter((box) => box.x > innerWidth * 0.2 && box.right < innerWidth * 0.8)
       .sort((a, b) => a.x - b.x);

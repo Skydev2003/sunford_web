@@ -1,4 +1,33 @@
 :root {
+  /* Below: keep negative layers inside their existing isolated section. */
+  --z-background: -2;
+  --z-decoration: -1;
+  --z-base: 0;
+  /* Local overlap order only; these values do not escape a parent context. */
+  --z-local-raised: 10;
+  --z-local-overlay: 15;
+  --z-local-control: 20;
+  --z-local-front: 25;
+  --z-local-copy: 30;
+  --z-local-scene-control: 35;
+  --z-local-dropzone: 40;
+  --z-local-drag: 45;
+  --z-local-badge: 50;
+  /* Document layout. */
+  --z-floating: 30;
+  --z-header: 40;
+  --z-sticky: 50;
+  /* Dropdowns and tooltips. Opening the Header lifts its whole context. */
+  --z-nav-backdrop: 100;
+  --z-nav-open: 110;
+  --z-dropdown: 120;
+  --z-nav-controls: 130;
+  --z-tooltip: 200;
+  /* Native showModal() still owns top-layer ordering and focus isolation. */
+  --z-modal-backdrop: 1000;
+  --z-modal: 1100;
+  /* Reserved for critical page UI; never used to override a native modal. */
+  --z-critical: 9999;
   --red: #d7192d;
   --ink: #1d1d1f;
   --muted: #6e6e73;
@@ -144,7 +173,7 @@ p {
   left: 20px;
   padding: 15px;
   background: white;
-  z-index: 100;
+  z-index: var(--z-critical);
 }
 .skip-link:focus {
   top: 10px;

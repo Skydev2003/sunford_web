@@ -4,7 +4,7 @@
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 40;
+  z-index: var(--z-critical);
   width: 136px;
   pointer-events: none;
   transform: translate3d(
@@ -36,7 +36,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 3;
+  z-index: var(--z-local-control);
   display: grid;
   place-items: center;
   width: 32px;
@@ -62,7 +62,7 @@
   border-radius: 50%;
   background: #24253023;
   box-shadow: 0 3px 6px #24253020;
-  z-index: -1;
+  z-index: var(--z-decoration);
 }
 .figure {
   position: relative;
@@ -151,7 +151,7 @@
 }
 .invitationIcon {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   display: grid;
   place-items: center;
   flex: 0 0 28px;
@@ -164,7 +164,7 @@
 }
 .bubble .invitation {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   display: block;
   white-space: nowrap;
 }
@@ -185,7 +185,7 @@
 }
 .contactPanel {
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   left: var(--panel-x, 0px);
   top: var(--panel-y, -280px);
   width: calc(var(--contact-pill-width) + 16px);

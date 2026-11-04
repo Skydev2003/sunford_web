@@ -169,7 +169,7 @@ export function HeroProductRibbon({
           // matrix interpolation when the card turns edge-on and reverses its face.
           transform: `translate(${x}px, ${y}px) matrix(${horizontal},${shear},0,${scale},0,0)`,
           opacity: (0.94 + depth * 0.06) * visibility,
-          zIndex: front ? 4 : 1,
+          zIndex: front ? "var(--z-local-front)" : "var(--z-local-raised)",
         };
       });
       cards.forEach((card, index) => {

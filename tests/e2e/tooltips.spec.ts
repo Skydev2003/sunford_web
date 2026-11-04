@@ -114,31 +114,32 @@ test("keyboard tooltip dismisses with Escape and remains visible above a modal",
 test("tooltip descriptions follow comparison state while the original action still works", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/products");
   await page.locator(".header-compare").click();
+  const cancel = page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true });
+  await cancel.hover();
+  await expect(page.getByRole("tooltip")).toHaveText("ยกเลิกการเปรียบเทียบ");
   const add = page.getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ WPS10KS", exact: true });
-  await add.hover();
-  await expect(page.getByRole("tooltip")).toHaveText("เพิ่มเพื่อเปรียบเทียบ WPS10KS");
   await add.click();
   await expect(page.getByRole("tooltip")).toHaveCount(0);
-  await expect(page.locator(".compare-bar")).toBeVisible();
+  await expect(page.locator(".compare-bar")).toContainText("1/3");
   const remove = page.getByRole("button", { name: "นำออกจากเปรียบเทียบ WPS10KS", exact: true });
   await expect(remove).toHaveAttribute("aria-pressed", "true");
-  await page.mouse.move(5, 5);
-  await remove.hover();
-  await expect(page.getByRole("tooltip")).toHaveText("นำออกจากเปรียบเทียบ WPS10KS");
+  await page.getByRole("button", { name: "ล้างรายการเปรียบเทียบ", exact: true }).hover();
+  await expect(page.getByRole("tooltip")).toHaveText("ล้างรายการเปรียบเทียบ");
   await remove.click();
   await expect(page.locator(".compare-bar")).toContainText("0/3");
-  await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
+  await cancel.click();
   await expect(page.locator(".compare-bar")).toHaveCount(0);
 });
 
 test("tooltip at the bottom edge stays within narrow and wide viewports", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/products");
+  await page.locator(".header-compare").click();
   for (const width of [320, 390, 1440]) {
     await page.mouse.move(0, 0);
     await page.setViewportSize({ width, height: 844 });
-    const launcher = page.locator("[data-mascot-launcher]");
+    const launcher = page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true });
     const position = (await launcher.boundingBox())!;
     await page.mouse.move(position.x + position.width / 2, position.y + position.height / 2);
     await launcher.hover();

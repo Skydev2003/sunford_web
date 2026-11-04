@@ -1,4 +1,5 @@
 .customer-map-dialog {
+  z-index: var(--z-modal);
   width: min(1280px, calc(100vw - 48px));
   max-width: none;
   max-height: calc(100dvh - 48px);
@@ -12,6 +13,7 @@
   box-shadow: 0 24px 100px #11182740;
 }
 .customer-map-dialog::backdrop {
+  z-index: var(--z-modal-backdrop);
   background: #12141c75;
   backdrop-filter: blur(12px);
 }
@@ -148,7 +150,7 @@
 }
 .customer-map-level {
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   right: 12px;
   bottom: 42px;
   padding: 5px 9px;
@@ -161,7 +163,7 @@
 }
 .customer-map-detail-loading {
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   left: 50%;
   bottom: 44px;
   transform: translateX(-50%);
@@ -192,7 +194,7 @@
 .customer-map-tools {
   display: flex;
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   right: 13px;
   top: 13px;
   gap: 3px;
@@ -216,7 +218,7 @@
   flex-direction: column;
   gap: 3px;
   position: absolute;
-  z-index: 1;
+  z-index: var(--z-tooltip);
   left: 13px;
   top: 13px;
   max-width: calc(100% - 155px);
@@ -350,7 +352,7 @@
 }
 .customer-map-boundary-notice {
   position: absolute;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   bottom: 48px;
   left: 12px;
   right: 12px;

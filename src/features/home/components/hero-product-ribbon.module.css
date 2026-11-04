@@ -56,7 +56,7 @@
 }
 .photo {
   position: absolute;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   inset: 4% 7% 27%;
   pointer-events: none;
 }
@@ -66,7 +66,7 @@
 }
 .caption {
   position: absolute;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   inset: auto 5% 7%;
   display: grid;
   gap: 3px;
@@ -87,7 +87,7 @@
 }
 .glint {
   position: absolute;
-  z-index: 0;
+  z-index: var(--z-base);
   inset: 0;
   background: linear-gradient(
     108deg,
@@ -135,14 +135,14 @@
   pointer-events: none;
 }
 .rail {
-  z-index: 3;
+  z-index: var(--z-local-control);
 }
 .rail .rimTop {
   /* The studio image already supplies the upper red edge. */
   display: none;
 }
 .rearRail {
-  z-index: 0;
+  z-index: var(--z-base);
   mask-image: linear-gradient(to right, transparent 35%, #000 52%);
 }
 .rimTop,
@@ -185,7 +185,7 @@
 }
 .ghost {
   position: fixed;
-  z-index: 20;
+  z-index: var(--z-local-drag);
   left: 0;
   top: 0;
   width: 140px;

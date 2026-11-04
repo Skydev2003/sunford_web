@@ -109,12 +109,12 @@
   right: 1.5rem;
   height: 2px;
   background: var(--sf-primary);
-  z-index: 1;
+  z-index: var(--z-local-raised);
 }
 
 .solution-source--rs232 .sunford-rs232-widget .sf-port-badge {
   position: relative;
-  z-index: 2;
+  z-index: var(--z-local-overlay);
   display: flex;
   flex-direction: column;
   align-items: center;

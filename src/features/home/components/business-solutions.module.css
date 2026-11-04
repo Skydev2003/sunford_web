@@ -67,7 +67,7 @@
 }
 .featureCopy {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   width: 86%;
   margin-inline: auto;
   padding-top: 30px;
@@ -150,7 +150,7 @@
 }
 .cardCopy {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local-raised);
   width: 61%;
   padding: 17px 22px;
 }
@@ -190,7 +190,7 @@
 }
 .cardArtwork {
   position: absolute;
-  z-index: 0;
+  z-index: var(--z-base);
   right: -4px;
   bottom: 0;
   width: 43%;

@@ -14,7 +14,7 @@
 
 .video {
   position: absolute;
-  z-index: -2;
+  z-index: var(--z-background);
   inset: 0;
   width: 100%;
   height: 100%;
@@ -24,7 +24,7 @@
 
 .overlay {
   position: absolute;
-  z-index: -1;
+  z-index: var(--z-decoration);
   inset: 0;
   background: linear-gradient(#000b, #0006 45%, #000c);
   pointer-events: none;
