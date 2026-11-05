@@ -990,3 +990,231 @@ Progress: "Done"
 - ตรวจภาพจริงทั้งช่วง Opening และหลังเปิดหน้า Desktop/Mobile Sourceสองไฟล์ตรง Hash QA ตาม source-hashes.json ไม่มีการแก้ CSS / Media / Database / Dependency / Routes
 - หลักฐาน: output/homepage-performance-20261104/delivery.md, summary.json, before.json, after.json, final-tests.json และ Test Traces ของรอบ Red / Green
 - QA3156/3157หยุดแล้ว ไม่มี Commit / Push / Deploy Final Next.js feedback review: ไม่มีปัญหา Framework ที่เข้าเกณฑ์รายงาน
+
+
+---
+
+# Plan: Legacy website content gap audit (2026-11-05)
+
+Approval: "User requested read-only audit and list; no implementation approval"
+
+## Files
+
+- `output/legacy-content-audit-20261105/report.md` — detailed Thai gap list, source/local evidence, priorities and limitations.
+- `output/legacy-content-audit-20261105/inventory.json` — complete source Sitemap comparison and historical missing-image HEAD recheck.
+- `output/legacy-content-audit-20261105/source-sitemap.xml` — source inventory observed during the audit.
+- `spec.md`, `plan.md` — append audit scope and verified outcome, retaining prior history.
+- Application files, imported business content and database — read only.
+
+## Steps
+
+- [x] Read applicable instructions/task-observer context and project spec/memory; inspect repository and runtime data paths.
+- [x] Inspect all412 public Sitemap URLs in Browser, additional menu links, live source forms, service tabs and unavailable content; exclude nine account/transaction/search/test URLs.
+- [x] Compare source URL inventory with392 imported pages/12 solutions and150 products; inspect local running pages/API and catalog mocks.
+- [x] Run existing content validator and recheck historical missing image URL statuses; classify verified gaps versus intentional exclusions/source gaps.
+- [x] Write/read report and inventory; update spec/plan and verify only documentation changed.
+
+## Impact / Rollback
+
+R2 documentation and ignored output artifacts only. No application/content/database writes, commit, push or deployment. Reversal removes only this audit's appended documentation and generated report folder if explicitly requested, preserving all previous work.
+
+## Verification Results
+
+Browser coverage412/412 public Sitemap URLs; live source product URLs160 including one unavailable FCS and nine products absent locally. Local API150 products, missing9confirmed. Source-to-import comparison15missing URLs includes9valid products,2populated solution pages,2blank solution pages,1empty collection and1unavailable product. Existing content validator passed. HEAD20historical missing images:15HTTP404,5HTTP403. Report distinguishes previously empty Lot/Serial/POS/article content now populated in source, incomplete DRV content, approved mocks and forms. No assertion of every-word equivalence, binary download/install success, private account migration or production deployment. Final Next.js feedback review: no qualifying framework issue.
+
+
+---
+
+# Plan: Legacy content migration preserving current design (2026-11-05)
+
+วันที่ 5 พฤศจิกายน 2026
+
+Scope revision: ผู้ใช้สั่งให้คงหมวดหมู่เดิมไว้ทั้งหมด และจะจัดหมวดใหม่เอง การแก้เอกสารครั้งนี้ไม่ใช่การอนุมัติ implementation
+
+Status: "Ready to Code — verified-content scope only"
+Approval: "Approved — revised category-preserving scope"
+
+## เป้าหมายและข้อกำหนดที่รับจากผู้ใช้
+
+ดึงข้อมูลที่ตรวจพบว่ายังขาดจากเว็บ SUNFORD เดิม มาใช้ในโปรเจกต์นี้ โดยรักษาหน้าตาและพฤติกรรมของโปรเจกต์ปัจจุบัน ไม่เปลี่ยนดีไซน์ให้เป็นเว็บเดิม
+
+สมมติฐานที่ใช้เสนอแผน: “รูปแบบไม่เสีย” หมายถึงรักษาสี ฟอนต์ โลโก้ Header/Footer, Hero/Opening, layout, card styles, animation และ responsive ปัจจุบัน จำนวนสินค้า/ข้อความ/รูปในพื้นที่เนื้อหาสามารถเพิ่มตามข้อมูลที่นำเข้าได้ ไม่ได้หมายถึงภาพทุก pixel ต้องเหมือนก่อนเพิ่มข้อมูล
+
+## ขอบเขตรอบที่ขออนุมัติ
+
+1. เพิ่มสินค้า 9 SKU: `10732`, `10733`, `10838`, `10839`, `10840`, `10841`, `10842`, `10843`, `10844` พร้อมรูปจริง แกลเลอรีและรายละเอียดที่ตรวจสอบกับต้นฉบับได้ แยก PU30M16 สอง SKU แม้ชื่อซ้ำ
+2. คงชื่อ/ID/ลำดับหมวดหลัก หมวดย่อย เมนู การจัดกลุ่มสินค้าเดิม และ mock children ทั้งหมด ไม่ refresh collection records หรือจัดหมวดใหม่จากเว็บเดิม ผู้ใช้จะจัดหมวดใหม่เองภายหลัง
+3. เติม `/solutions/lot-serial`, `/solutions/pos`; เพิ่ม `/solutions/windows` และ `/solutions/driver` ในหน้ารวมโซลูชันเดิม รักษาเนื้อหา/ปลายทางของโซลูชันอื่น
+4. เติมเนื้อหา `/software/download/sunford-drv` และ `/blogs/editorial/before-using-a-price-computing-scale` โดยเก็บวิดีโอเดิมและแหล่งอ้างอิง
+5. ผูกภาพปก Biz Talk กับ records ที่ยืนยันภาพได้จากต้นฉบับ รวม EP.1–27 เป็นเป้าหมายค้นหา; แก้รูปเดิมที่ขาดเฉพาะเมื่อหาไฟล์จริงที่ตรวจสอบได้ ไม่รับประกันว่าจะกู้ทุกไฟล์ที่ต้นฉบับตอบ 403/404 ได้
+6. ข้อมูลหมวดจากต้นฉบับเก็บได้เฉพาะหลักฐานใน staging เพื่อให้ผู้ใช้จัดหมวดภายหลัง ไม่ merge เข้าหมวดที่ใช้งานอยู่ สินค้าใหม่ใช้ได้เฉพาะหมวดหลักเดิมที่มีอยู่และตรงข้อมูลอุปกรณ์เสริม โดยไม่สร้าง/ตั้งชื่อ/จัดหมวดย่อยใหม่หรือย้ายสินค้าเดิม
+7. ทำให้สินค้าใหม่แสดงใน runtime ที่ใช้ฐานข้อมูลด้วย: เพิ่มเฉพาะ 9 SKU ที่ขาดผ่าน Prisma หลังสำรองและตรวจ target configuration จริง รายการเดิม รวม drafts/deleted/CMS edits ต้องไม่ถูกเขียนทับหรือคืนสถานะ
+
+## ข้อมูลที่ยังไม่พร้อมและไม่รวมในรอบนี้
+
+- การสร้าง เปลี่ยนชื่อ เรียงใหม่ ย้าย ยุบ หรือเปลี่ยนสมาชิกหมวดของสินค้าเดิมทั้งหมด อยู่นอก scope รวมการแทน mock children 01/02 ด้วยหมวดจริง
+- 18 exact-model mocks คงไว้จนมีรูป/สเปกตรงรุ่นที่ยืนยันได้ ไม่ใช้รุ่นใกล้เคียงแทน
+- ERP/MES/คู่มือ/Android ขั้นสูง/พารามิเตอร์ที่ต้นฉบับยังว่าง ไม่แต่งข้อมูลเติม
+- ค่ารายละเอียดของ PU30M16 ที่ต้นฉบับขัดกันเก็บเป็นรายการรอยืนยัน ไม่ตีความหรือสร้างค่า structured specification แทน จะนำเข้าเฉพาะข้อมูลที่ยืนยันได้และรายงานส่วนที่พักไว้
+- ไม่เพิ่ม backend ฟอร์มรับประกัน/ติดต่อ บัญชี ตะกร้า ชำระเงิน หรือบริการสอบเทียบ; ฟอร์มต้องมี contract การรับ/จัดเก็บ/แจ้งทีมงานก่อน
+- ไม่เพิ่มตัวกรองข่าวหรือระบบจัดหมวดบทความใหม่ในรอบนำเข้าข้อมูลนี้ การแก้ภาพปกไม่เปลี่ยน layout ข่าว
+- ไม่ deploy, commit, push หรือ migrate schema และไม่เพิ่ม dependency
+
+## วิธีรักษารูปแบบ
+
+- แยกข้อมูลกับการแสดงผล: ดึงข้อความ รูป วิดีโอ ตาราง และลิงก์ โดยไม่เปลี่ยนหมวดที่ใช้งานอยู่ ไม่คัดลอก CSS, fonts, navigation, script, event handler หรือ widget ของเว็บเดิมมาทับโปรเจกต์
+- ใช้ Product detail, CatalogProductCard, ContentDirectory และ typography เนื้อหาที่มีอยู่แล้ว โซลูชันที่เติมใช้ prose styling เดิมของโปรเจกต์เฉพาะเนื้อหาใหม่ ไม่เปลี่ยน stylesheet ของโซลูชันที่มีอยู่
+- ไม่แก้ `src/components/layout/`, `src/components/ui/`, layout ของ App/Site, `src/app/globals.css`, `src/styles/`, CSS Modules ปัจจุบัน หรือ `solutions-source.css`
+- เก็บชื่อ/ข้อความ/รูปจริงและ source URL; ไม่ย่อรายละเอียดจนข้อมูลหาย และไม่ทำให้ข้อมูลเก่าอื่นถูกแทนด้วยผล import ที่ว่าง
+
+## รายการไฟล์ที่อยู่ในแผน
+
+### ตัวนำเข้าและข้อมูล
+
+- `scripts/import-sunford.mjs` — รองรับ targeted staging/merge ของสินค้า บทความ และภาพปก โดยไม่ merge collection records หรือแก้การจัดหมวดเดิม; แยก content จริงออกจาก shared page chrome; ห้าม refresh ทั้งเว็บไซต์ทับ snapshot เดิม
+- `scripts/import-solutions.mjs` — targeted staging/merge ของ 4 โซลูชัน; รักษา dynamic content ที่ตรวจใน Browser แล้ว; โหมดนี้ไม่สร้าง/เขียน CSS ต้นฉบับ
+- `scripts/solution-sources.mjs` — เพิ่มแหล่ง Windows/Driver และ English destinations สองรายการ
+- `scripts/import-legacy-products.ts` — สคริปต์เฉพาะงานเพิ่ม 9 SKU ผ่าน Prisma แบบ transaction, allowlist, backup/preflight/readback; ใช้ schema/client ปัจจุบัน
+- `src/features/content/data/products.json` — เพิ่ม 9 records โดยไม่แก้ 150 records เดิม
+- `src/features/content/data/pages.json` — เพิ่มเฉพาะ product page records, DRV, บทความเป้าหมายและภาพปกที่ยืนยันได้; collection records/สมาชิกหมวดเดิมต้องตรง baseline
+- `src/features/content/data/import-report.json` — อัปเดตยอดและ provenance ของ targeted import; เก็บรายการปัญหาที่ยังไม่หาย
+- `src/features/content/data/solutions.json`, `solution-links.json`, `solutions-import-report.json` — เติมสองหน้าเดิม เพิ่มสองหน้าใหม่ และผลตรวจ; ไม่เขียนทับโซลูชันอื่น
+- `src/features/catalog/data/catalog-card-names.ts` — ชื่อสั้น LP53/LP54 และล้อ โดยรักษาความต่างสอง SKU
+- `src/features/catalog/data/catalog-supplements.ts` — หากจำเป็นเฉพาะ 9 SKU ใหม่ ให้ใช้ family อุปกรณ์เสริมที่มีอยู่แล้วตามข้อมูลต้นฉบับ โดยไม่แก้ชื่อ/ID/ลำดับหมวดหรือการจัดกลุ่มของ 150 สินค้าเดิม
+- `src/features/content/components/solutions-page.tsx` — หากต้องเพิ่ม wrapper ให้เนื้อหาที่เติม ใช้ prose classes ที่มีอยู่แล้วเฉพาะเป้าหมาย ไม่แก้ layout ของหน้าเดิม
+- `src/features/content/data/public-paths.mjs` — mapping แหล่งใหม่เฉพาะเมื่อจำเป็นต่อ legacy alias/English paths; ไม่เปลี่ยน mapping เดิม
+- `public/images/imported/` — เฉพาะไฟล์จากสินค้า 9 SKU/ภาพบทความที่อยู่ใน scope โดยใช้ชื่อ hash ตาม URL เดิม ก่อนคัดลอกเข้า public ต้องบันทึก source→destination→hash ของทุกไฟล์ลง `asset-manifest.json` และรายการ Assets ของ plan ไม่มีการลบหรือทับภาพที่มีอยู่
+
+### Verification และเอกสาร
+
+- `tests/catalog/management.test.ts` — อัปเดตยอดสินค้าที่คาดหวัง และตรวจว่า records เดิม/slug/สถานะยังอยู่ครบ
+- `tests/e2e/product-category-mock.spec.ts` — อัปเดตเฉพาะยอดรวมเมื่อเพิ่มสินค้าใหม่ คง assertions หมวดเดิมและหมวดย่อย 01/02 พร้อม tests การเลื่อน ค้นหา Grid/List และ Compare
+- `tests/catalog/legacy-content-migration.test.ts` — เพิ่ม meaningful regression ของ scoped merge, collection records/การจัดกลุ่มสินค้าเดิมต้องไม่เปลี่ยน, ไม่ทำข้อมูลเดิมหาย, source identity และการไม่คัดลอก executable markup/CSS
+- `tests/e2e/legacy-content-migration.spec.ts` — ตรวจ 9 detail pages, หน้าเนื้อหาเป้าหมาย, ภาพจริง, legacy links, การเข้าถึงใน catalog/search และ responsive
+- `spec.md`, `plan.md` — บันทึก approval จริงก่อน implementation และอัปเดตผลตรวจ/contract notes โดยรักษาประวัติ
+- `output/legacy-content-migration-20261105/` — แผน, backup/hash baseline, staged content, `asset-manifest.json`, source/merge manifests, screenshots, ผลตรวจ, receipt และรายการรอยืนยัน ห้ามนำ output backups มาเป็น app imports
+
+ไฟล์/ขอบเขตอื่นนอกเหนือรายการนี้ต้องอัปเดตแผนและขออนุมัติส่วนที่เพิ่มก่อนแก้ ไม่ใช้คำขอรักษารูปแบบเป็นเหตุ refactor ส่วนกลาง
+
+## ลำดับดำเนินการและจุดตรวจ
+
+- [x] ตรวจรายงานและเส้นทางข้อมูลจริง: snapshot, renderer, category resolver, Prisma import และพฤติกรรมคัดลอก CSS ของตัวนำเข้า
+- [x] ระบุเป้าหมายและข้อจำกัด พร้อมแผนไฟล์/ผลกระทบที่ตรวจได้
+- [x] รับการอนุมัติ Spec/Plan ฉบับนี้ บันทึกข้อความจริงก่อนแก้แอป
+- [x] สำรองไฟล์และ hash; เก็บภาพ baseline หน้า Home/Catalog/สินค้าเดิม/บทความ/โซลูชัน พร้อมตรวจสภาพ DB แบบอ่านอย่างเดียว
+- [x] ตรวจข้อกำหนด Next.js ใน `node_modules/next/dist/docs/` และ Prisma skill ที่ตรงกับการเพิ่มข้อมูล ก่อนเขียน implementation
+- [x] ดึงข้อมูลเป้าหมายแบบสดลง staging ตรวจ dynamic DOM กับข้อมูลที่สกัด; ทำ manifest ทุก record/asset ก่อน merge
+- [x] ตรวจ source conflict/ไฟล์ขาด แยกข้อมูลที่ยืนยันไม่ได้ แล้ว merge เฉพาะ allowlist
+- [x] เติมเฉพาะ prose wrapper/เนื้อหาโดยไม่แก้ CSS/ส่วนกลาง; ยืนยัน category definitions, collection records, mock children, การจัดกลุ่ม 150 products เดิม และโซลูชันนอก scope มีค่าเดิม
+- [x] ตรวจ target database จาก configuration; สำรองและเพิ่มเฉพาะ 9 IDs ที่ยังไม่มี ไม่ update/delete แถวเดิม ถ้า target/diff ไม่ตรงแผนให้หยุดส่วนเขียน DB แล้วรายงาน
+- [x] ตรวจ `content:validate`, `paths:check`, `typecheck`, scoped lint/format, `test:catalog`, `test:uat` และ build ตาม scripts ของโปรเจกต์
+- [x] Browser ตรวจ 320/390/768/1440px: ไม่มี overflow/ข้อความหรือภาพตัดผิด; Header/Hero/Footer/สี/ฟอนต์/พื้นที่เดิมยังเหมือน baseline; catalog scrolling/search/Grid/List/Compare ยังทำงาน
+- [x] ตรวจ 9 products ใน runtime/API ที่ใช้ข้อมูลจริง เทียบรูปและ details กับ staging; เป้าหมาย159 products เมื่อ baseline150และเพิ่ม9ครบ ห้ามอ้างความสำเร็จจาก snapshot อย่างเดียว
+- [x] ตรวจ diff/รูปก่อนหลัง อัปเดตผลจริงและรายการที่พักไว้ แล้วส่งมอบ local preview โดยยังไม่ deploy
+
+## ผลกระทบและการย้อนกลับ
+
+- ข้อมูลสินค้าเป็นส่วนกลางของ Home/Search/Catalog/Compare จำนวนและรายการสินค้าใหม่อาจเพิ่มขึ้น แต่ taxonomy/หมวดย่อย/การจัดกลุ่มสินค้าเดิมต้องไม่เปลี่ยน ต้องตรวจทุก consumer เหล่านี้แม้ไม่แก้ UI
+- การเพิ่มข้อมูลผ่านฐานข้อมูลอาจมองเห็นในทุก runtime ที่ใช้ฐานข้อมูลเดียวกันหลัง cache หมด เป็น R1; ต้องแจ้ง target ที่ตรวจได้ก่อนเขียนและไม่ถือว่าคำอนุมัติรอบนี้เป็น production release
+- งานไฟล์ย้อนกลับด้วยเฉพาะ diff/backup ของงานนี้ ไม่ reset working tree และไม่ทับงานผู้ใช้
+- DB เก็บ receipt ของ IDs ที่สร้างใน transaction และสำรองก่อนเปลี่ยน หากต้องถอนข้อมูลให้เสนอรายการเจาะจงก่อนดำเนินการที่อาจกระทบการแก้ภายหลัง ห้ามลบแถวแบบกว้าง
+- ไม่รับประกันความตรง pixel ทุกตำแหน่งเมื่อข้อมูลเพิ่ม แต่ต้องมีหลักฐานว่า design tokens, CSS/ส่วนกลาง และ interaction เดิมไม่ถูกเปลี่ยน
+
+## สถานะปัจจุบัน
+
+เสร็จแล้วตามการอนุมัติด้านล่าง: เพิ่ม9products/4solutions/2content pages/27covers โดยรักษาหมวดและรูปแบบเดิม หลักฐานและผลตรวจจริงอยู่ในหัวข้อส่งมอบท้ายไฟล์และ `output/legacy-content-migration-20261105/delivery.md` ไม่มีDeploy/Commit/Push
+
+## บันทึกการแก้ขอบเขต
+
+ผู้ใช้: “แก้ไขหมวดหมู่เดิมยังไม่ต้องเปลี่ยนนะครับผมจะจัดหมวดหมู่ใหม่” — ตัดงานเปลี่ยน taxonomy/หมวดย่อย/collection membership เดิมออกจากแผน และถอน category resolver/page files ที่ไม่จำเป็นออกจาก allowlist คงงานนำเข้าข้อความ รูป วิดีโอ และสินค้าใหม่ ไม่มีการแก้แอปหรือจัดหมวดในรอบนี้ สถานะอนุมัติ implementation ยังคง Pending
+
+### Implementation Approval Record (2026-11-05)
+
+ผู้ใช้: “อนุมัติครับ เริ่มดึงข้อมูลมาใส่ตามแผนได้เลย โดยคงหมวดหมู่และรูปแบบของโปรเจกต์เดิมไว้ทั้งหมดครับ” อนุมัติแผนฉบับตัดงานเปลี่ยนหมวดออกแล้ว รวมการเพิ่มเฉพาะ9สินค้าใหม่ตามแผน ไม่ใช่การอนุมัติDeploy/Commit/Push
+
+
+## Approved-scope asset manifest (implementation)
+
+Only these verified source assets may be added; existing same-hash files are retained.
+
+- `public/images/imported/9e4efc3814af8de93c76.png`
+- `public/images/imported/fecfd81b02530b678bea.jpeg`
+- `public/images/imported/5b5c06463c124780e375.jpeg`
+- `public/images/imported/1f42dcb175b211a5e5a0.jpeg`
+- `public/images/imported/f5221c4dabdfbb896521.jpeg`
+- `public/images/imported/fcc2261c57419939a6bc.jpeg`
+- `public/images/imported/6a68fcd23e2e0ae847fa.jpeg`
+- `public/images/imported/9ef35f092a9f37f3d2b2.png`
+- `public/images/imported/b94646bfa790187c7408.jpeg`
+- `public/images/imported/d0c9bc7f327caeb9e315.jpeg`
+- `public/images/imported/905ae1755bfa6797e436.jpeg`
+- `public/images/imported/687dd522eb20364194a1.jpeg`
+- `public/images/imported/591472e226128954c500.jpeg`
+- `public/images/imported/7eca4a1b9c513e467206.jpeg`
+- `public/images/imported/d1ffef32058244994c21.png`
+- `public/images/imported/571ae179cc51c3d199d6.jpeg`
+- `public/images/imported/15f2a43578e4ba567269.png`
+- `public/images/imported/075589e73bce31f63486.jpeg`
+- `public/images/imported/85e77a12707e0a83210a.png`
+- `public/images/imported/b049f793084caca70df7.jpeg`
+- `public/images/imported/147e9d451f3595e95a19.png`
+- `public/images/imported/f4dbc64bf3e48e014031.jpeg`
+- `public/images/imported/70523b62719b969c772f.png`
+- `public/images/imported/1e5f0488fd49ae368b6e.jpeg`
+- `public/images/imported/9130315b99dac74c03ce.png`
+- `public/images/imported/d617f054cc9fbdbf81c7.jpeg`
+- `public/images/imported/e75aa9daf108b92efc49.png`
+- `public/images/imported/ad56db83c5d9a6e56e17.jpeg`
+- `public/images/imported/d38b0590612131d939cb.png`
+- `public/images/imported/cb67cd0bfeb3931d92e0.png`
+- `public/images/imported/fcf37c1b9275c5a5fa00.png`
+- `public/images/imported/941e52ff7b59ac2cdb05.png`
+- `public/images/imported/f091f57be797a460f58e.png`
+- `public/images/imported/fdd01b3c94f28fbf4678.png`
+- `public/images/imported/1e686d7bff927cb1997e.png`
+- `public/images/imported/cbdd5326c0274a7470ef.png`
+- `public/images/imported/3da21dd2d0c0d9c3d7ee.png`
+- `public/images/imported/0a74d7a11d8462312c9b.png`
+- `public/images/imported/212c2fc63d7672a5d15c.png`
+- `public/images/imported/667252ef8c3960d2fb89.png`
+- `public/images/imported/98fe946718550cdb767d.png`
+- `public/images/imported/3640acdc7d6ec67afb1e.png`
+- `public/images/imported/adeb77d27b3198a9f1d0.png`
+- `public/images/imported/5ed48aaa0bf0d7e6a0bb.png`
+- `public/images/imported/e486815c184870d3dcb4.png`
+- `public/images/imported/eb7327f044184ebc605d.png`
+- `public/images/imported/a22c69d9d7729868d083.png`
+- `public/images/imported/78b2983ec86cce9dd8c3.png`
+- `public/images/imported/12e1ceea776c7788d14a.png`
+- `public/images/imported/e80426487f4fc1e3a53e.png`
+- `public/images/imported/c4318546491d30fed637.png`
+- `public/images/imported/b6d2ff935221e6a463fb.png`
+- `public/images/imported/e5fe81299783b0a5111a.png`
+- `public/images/imported/62644bdc4b0749f7aad3.png`
+- `public/images/imported/87c3a17f2f7459fa59f6.png`
+- `public/images/imported/c0d1c61d3d714cc63990.jpg`
+
+## Final verification and delivery (2026-11-05)
+
+- Completed approved merge: 159 products, 401 pages, 14 solutions, 27 covers; 56 verified source images, 47 new public files.
+- Preserved all 150 previous snapshot products, 112 collection records, 10 unrelated solutions and 295 baseline files outside approved edits. No CSS/global layout/navigation/taxonomy changes. Existing mock children and 18 model mocks remain.
+- Insert-only database transaction added nine IDs; 161 total / 159 published. Final read-only verification confirms all 152 original rows equal backup, including two non-public rows.
+- Passed content validation, path audit, TypeScript, ESLint, scoped Prettier, diff whitespace, UAT27/27, Browser26/26 with responsive checks and unchanged layout metrics in ten baseline cases.
+- Catalog65/65 passed in isolated current-code copy using canonical Git reference bytes. Root Windows worktree64/65: pre-existing CRLF checksum mismatch in the protected category document; no category document/test/manifest edits or skipped tests. Both logs retained.
+- Production build passed under Node24.22.1, 431/431 static pages; ten HTTP smoke routes passed and API returned159 products. Local production preview remains on port3000; task-owned dev server stopped before build.
+- Held one expired-TLS source image and conflicting PU/Nylon claim for SKU10838. Other historical missing source data remains documented; no invented substitute.
+- Backup, source/asset manifests, DB backup/receipt, before/after screenshots and final preservation audit are in output/legacy-content-migration-20261105/. See delivery.md for exact logs, limitations and rollback.
+- Final Next.js feedback reporting pass: no verified qualifying framework issue. No commit, push or deployment performed.
+
+## Commit / push follow-up (2026-11-05)
+
+User approved: “สองจุดนี้พักไว้ก่อนครับ และ commit/push”. Keep the two held items unchanged. Use existing current branch `safe` and its `origin/safe` upstream; no production release.
+
+Files: commit only the migration application/data/importer/test files and verified image assets already listed above, plus this approval record in `spec.md` and `plan.md`. Exclude output backups, database receipts and environment files.
+
+- [x] Inspect diff, current branch/upstream, existing verification evidence and remote state.
+- [ ] Stage the exact migration allowlist; inspect staged paths and whitespace.
+- [ ] Commit the verified migration and push normally to `origin/safe`.
+- [ ] Confirm remote commit matches local HEAD and working tree is clean.
+
+Rollback: use a normal revert of this migration commit if later requested; no history rewrite or database deletion. Verification: prior application Build/Browser tests remain applicable because follow-up changes only approval documentation; inspect exact staged diff before commit and remote hash after push. Final Next.js feedback review: no qualifying framework issue in this Git-only follow-up.

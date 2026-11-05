@@ -58,5 +58,15 @@
     "id": "wet-environments",
     "title": "การชั่งน้ำหนักสำหรับสภาพเปียกชื้น",
     "path": "/solutions/wet-environments"
+  },
+  {
+    "id": "windows",
+    "title": "การบันทึกรายงานการชั่งน้ำหนักบนอุปกรณ์ Windows",
+    "path": "/solutions/windows"
+  },
+  {
+    "id": "driver",
+    "title": "การปรับเปลี่ยนรูปแบบข้อมูลที่ส่งออกจากเครื่องชั่ง โดยใช้โปรแกรม Sunford Driver",
+    "path": "/solutions/driver"
   }
 ]

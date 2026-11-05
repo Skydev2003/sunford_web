@@ -1,10 +1,217 @@
-import { writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { load } from "cheerio";
 import sanitizeHtml from "sanitize-html";
 import postcss from "postcss";
 import { solutionSources } from "./solution-sources.mjs";
 import { publicPath } from "../src/features/content/data/public-paths.mjs";
+import assert from "node:assert/strict";
+import path from "node:path";
+
+const argument = (name) => {
+  const index = process.argv.indexOf(name);
+  if (index < 0) return null;
+  const value = process.argv[index + 1];
+  if (!value || value.startsWith("--")) throw new Error(`${name} requires a directory`);
+  return path.resolve(value);
+};
+const proseIds = new Set(["lot-serial", "pos", "windows", "driver"]);
+
+if (argument("--apply-staged")) {
+  const stage = argument("--apply-staged");
+  const folder = "src/features/content/data";
+  const old = JSON.parse(await readFile(`${folder}/solutions.json`, "utf8"));
+  const additions = JSON.parse(await readFile(`${stage}/solutions.json`, "utf8"));
+  assert.equal(additions.length, proseIds.size);
+  assert.deepEqual(new Set(additions.map((row) => row.id)), proseIds);
+  for (const row of additions) {
+    assert(row.text.length > 300 && row.path === `/solutions/${row.id}`);
+    const $ = load(row.html);
+    assert.equal($("script,style,link,form,input,object,embed,[style]").length, 0);
+    $("*").each((_, node) => {
+      for (const [name, value] of Object.entries(node.attribs ?? {})) {
+        assert(!/^on/i.test(name));
+        assert(!/^\s*(javascript|vbscript|data):/i.test(value));
+      }
+    });
+  }
+  const merged = old.map((row) => additions.find((item) => item.id === row.id) ?? row);
+  merged.push(...additions.filter((row) => !old.some((item) => item.id === row.id)));
+  const report = JSON.parse(await readFile(`${folder}/solutions-import-report.json`, "utf8"));
+  const refresh = JSON.parse(await readFile(`${stage}/solutions-import-report.json`, "utf8"));
+  report.pages = report.pages.map((row) => refresh.pages.find((item) => item.id === row.id) ?? row);
+  report.pages.push(
+    ...refresh.pages.filter((row) => !report.pages.some((item) => item.id === row.id)),
+  );
+  report.lastTargetedRefresh = {
+    checkedAt: refresh.checkedAt,
+    ids: [...proseIds],
+    importedSourceCss: false,
+  };
+  await writeFile(`${folder}/solutions.json`, JSON.stringify(merged, null, 2) + "\n");
+  await writeFile(
+    `${folder}/solution-links.json`,
+    JSON.stringify(
+      merged.map(({ id, title, path }) => ({ id, title, path })),
+      null,
+      2,
+    ) + "\n",
+  );
+  await writeFile(`${folder}/solutions-import-report.json`, JSON.stringify(report, null, 2) + "\n");
+  console.log("Merged four verified solutions; all other solutions and source CSS preserved.");
+  process.exit(0);
+}
+
+if (argument("--stage")) {
+  const stage = argument("--stage");
+  const sources = argument("--source-dir");
+  assert(sources, "Staging requires fresh --source-dir HTML captured for review");
+  const digest = (value) => createHash("sha256").update(value).digest("hex").slice(0, 20);
+  const readSource = async (url) =>
+    load(await readFile(path.join(sources, `${digest(new URL(url).href)}.html`), "utf8"));
+  const originals = JSON.parse(await readFile("src/features/content/data/pages.json", "utf8"));
+  const manifest = JSON.parse(await readFile(path.join(stage, "asset-manifest.json"), "utf8"));
+  const unavailable = JSON.parse(await readFile(path.join(stage, "asset-failures.json"), "utf8"));
+  const sourceLinks = new Map(
+    solutionSources.map((source) => [
+      decodeURIComponent(new URL(source.sourceUrl).pathname),
+      source.path,
+    ]),
+  );
+  const copy = ($) => {
+    const root = $(".dynamic__layout__component").children().last().clone();
+    assert(root.length, "Missing source content root");
+    root.find(".service-body").closest("section").remove();
+    root
+      .find(
+        "script,style,meta,title,link,noscript,form,input,select,textarea,.sf-footer,[id^='component-footer'],[id*='component-shelve-article-banner'],.salesdesk_widget_button_group",
+      )
+      .remove();
+    root.find("svg").each((_, node) => {
+      const image = $(node);
+      const label =
+        image.attr("aria-label") ||
+        image
+          .find("text")
+          .map((_, text) => $(text).text())
+          .get()
+          .join(" ");
+      if (label) image.replaceWith($("<span>").text(label));
+      else image.remove();
+    });
+    root.find("a[href]").each((_, node) => {
+      const anchor = $(node);
+      const href = anchor.attr("href");
+      if (href.startsWith("#")) return;
+      const url = new URL(href, "https://www.sunford.co");
+      if (url.hostname.replace(/^www\./, "") === "sunford.co") {
+        anchor.attr(
+          "href",
+          `${sourceLinks.get(decodeURIComponent(url.pathname)) ?? publicPath(url.pathname)}${url.search}${url.hash}`,
+        );
+      }
+    });
+    root.find("img[src]").each((_, node) => {
+      const image = $(node);
+      const found = manifest.find((asset) => asset.source === image.attr("src"));
+      if (!found) {
+        assert(
+          unavailable.some((asset) => asset.source === image.attr("src")),
+          `Unstaged source image: ${image.attr("src")}`,
+        );
+        image.remove();
+      } else image.attr("src", found.path);
+    });
+    const html = sanitizeHtml(root.html(), {
+      allowedTags: [...sanitizeHtml.defaults.allowedTags, "img", "iframe", "video", "source"],
+      transformTags: { main: "div", header: "div", footer: "div" },
+      allowedAttributes: {
+        a: ["href", "title", "target", "rel"],
+        img: ["src", "alt", "width", "height", "loading"],
+        iframe: ["src", "title", "allowfullscreen"],
+        video: ["src", "poster", "controls"],
+        source: ["src", "type"],
+        td: ["colspan", "rowspan"],
+        th: ["colspan", "rowspan"],
+      },
+      allowedIframeHostnames: ["www.youtube.com", "www.youtube-nocookie.com", "www.google.com"],
+      allowedSchemes: ["https", "http", "mailto", "tel"],
+    });
+    const text = load(html, null, false).text().replace(/\s+/g, " ").trim();
+    assert.equal(
+      text.replace(/\s/g, ""),
+      root.text().replace(/\s/g, ""),
+      "Source text lost during sanitization",
+    );
+    assert(text.length > 300, "Source body is empty");
+    const parsed = load(html, null, false);
+    return {
+      html,
+      text,
+      images: parsed("img")
+        .map((_, node) => parsed(node).attr("src"))
+        .get(),
+    };
+  };
+  const staged = [];
+  for (const source of solutionSources.filter((row) => proseIds.has(row.id))) {
+    const content = copy(await readSource(source.sourceUrl));
+    staged.push({
+      ...source,
+      sourceUrl: new URL(source.sourceUrl).href,
+      kind: "page",
+      ...content,
+      productHandles: [],
+      collectionIds: [],
+      hasSourcePlaceholder: false,
+    });
+  }
+  const updates = [];
+  for (const destination of [
+    "/software/download/sunford-drv",
+    "/blogs/editorial/before-using-a-price-computing-scale",
+  ]) {
+    const original = originals.find((page) => page.path === destination);
+    assert(original);
+    updates.push({ ...original, ...copy(await readSource(original.sourceUrl)) });
+  }
+  const covers = [];
+  for (const article of originals.filter((page) => /\/SUNFORD_BIZ_TALK_EP\.\d+$/.test(page.path))) {
+    const $ = await readSource(article.sourceUrl);
+    const url = $("meta[property='og:image']").attr("content");
+    const asset = manifest.find((item) => item.source === url);
+    assert(asset, `Unverified article cover: ${article.path}`);
+    covers.push({ path: article.path, image: asset.path, source: url });
+  }
+  await writeFile(path.join(stage, "solutions.json"), JSON.stringify(staged, null, 2));
+  await writeFile(
+    path.join(stage, "content-updates.json"),
+    JSON.stringify({ pages: updates, covers }, null, 2),
+  );
+  await writeFile(
+    path.join(stage, "solutions-import-report.json"),
+    JSON.stringify(
+      {
+        checkedAt: new Date().toISOString(),
+        pages: staged.map(({ id, path, sourceUrl, text }) => ({
+          id,
+          path,
+          sourceUrl,
+          characters: text.length,
+          textPreserved: true,
+          sourceEmpty: false,
+          importedSourceCss: false,
+        })),
+      },
+      null,
+      2,
+    ),
+  );
+  console.log(
+    `Staged ${staged.length} solutions, ${updates.length} content pages and ${covers.length} verified covers without source CSS.`,
+  );
+  process.exit(0);
+}
 
 await mkdir("output/solutions-source", { recursive: true });
 await mkdir("public/images/solutions", { recursive: true });

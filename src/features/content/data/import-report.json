@@ -1,8 +1,8 @@
 {
   "checkedAt": "2026-10-26T03:58:29.206Z",
   "source": "https://www.sunford.co",
-  "pages": 392,
-  "products": 150,
+  "pages": 401,
+  "products": 159,
   "collections": 112,
   "assets": 909,
   "failedPages": [
@@ -233,5 +233,25 @@
     "products": 150,
     "failedPages": [],
     "missingImages": []
+  },
+  "legacyContentMigration": {
+    "checkedAt": "2026-11-05T02:34:57.495Z",
+    "addedProductIds": [
+      "10732",
+      "10733",
+      "10838",
+      "10839",
+      "10840",
+      "10841",
+      "10842",
+      "10843",
+      "10844"
+    ],
+    "updatedPages": [
+      "/software/download/sunford-drv",
+      "/blogs/editorial/before-using-a-price-computing-scale"
+    ],
+    "covers": 27,
+    "categoriesPreserved": true
   }
 }

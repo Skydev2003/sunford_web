@@ -305,9 +305,9 @@ test("homepage image defaults preserve the current artwork in five independent p
   assert.equal(defaults.software, "/images/pd/app.png");
 });
 
-test("all 150 imported products retain unique slugs and supported categories", () => {
+test("all 159 imported products retain unique slugs and supported categories", () => {
   const snapshot = getSnapshotProducts();
-  assert.equal(snapshot.length, 150);
+  assert.equal(snapshot.length, 159);
   assert.equal(new Set(snapshot.map((product) => product.slug)).size, snapshot.length);
   for (const product of snapshot)
     assert.ok(

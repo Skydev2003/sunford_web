@@ -213,7 +213,7 @@ test("missing document models are explicit mocks with no product links or compar
   await expect(region.locator("article")).toHaveCount(0);
   await expect(region.getByRole("status")).toHaveText("0 รายการ");
   await region.getByRole("button", { name: "ล้างตัวกรองทั้งหมด" }).click();
-  await expect(region.getByRole("status")).toHaveText("150 รายการ");
+  await expect(region.getByRole("status")).toHaveText("159 รายการ");
   await expect(region.locator('article[data-mock-product="true"]')).toHaveCount(0);
 });
 

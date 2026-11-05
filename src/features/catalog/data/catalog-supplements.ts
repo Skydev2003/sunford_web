@@ -38,6 +38,12 @@ function originalProduct(product: Product) {
 /** The hardware family is independent of stale database category defaults. */
 export function catalogProductGroup(product: Product): CatalogGroup | undefined {
   const source = originalProduct(product);
+  if (
+    ["10732", "10733", "10838", "10839", "10840", "10841", "10842", "10843", "10844"].includes(
+      source?.sourceId ?? product.sourceId ?? "",
+    )
+  )
+    return "/product/scale-accessories";
   const name = source?.name ?? product.name;
   if (/\bindicator\b|อินดิเคเตอร์/i.test(name)) return "/Indicator";
   if (/^Platform\b|โครงสร้างแท่นชั่ง/i.test(name)) return "/product/scale-platforms";

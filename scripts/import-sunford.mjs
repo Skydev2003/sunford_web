@@ -6,11 +6,192 @@ import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { publicContent, publicPath } from "../src/features/content/data/public-paths.mjs";
+import assert from "node:assert/strict";
+
+const option = (name) => {
+  const index = process.argv.indexOf(name);
+  if (index < 0) return null;
+  const value = process.argv[index + 1];
+  if (!value || value.startsWith("--")) throw new Error(`${name} requires a path`);
+  return path.resolve(value);
+};
+const legacyProductIds = new Set([
+  "10732",
+  "10733",
+  "10838",
+  "10839",
+  "10840",
+  "10841",
+  "10842",
+  "10843",
+  "10844",
+]);
+
+if (option("--apply-staged")) {
+  const stage = option("--apply-staged");
+  const folder = "src/features/content/data";
+  const read = async (name) => JSON.parse(await readFile(name, "utf8"));
+  const oldProducts = await read(`${folder}/products.json`);
+  const oldPages = await read(`${folder}/pages.json`);
+  const stagedProducts = await read(`${stage}/products.json`);
+  const stagedPages = await read(`${stage}/pages.json`);
+  const updates = await read(`${stage}/content-updates.json`);
+  const manifest = await read(`${stage}/asset-manifest.json`);
+  for (const old of oldProducts) {
+    assert.deepEqual(
+      stagedProducts.find((row) => row.sourceId === old.sourceId),
+      old,
+      `Existing product changed: ${old.sourceId}`,
+    );
+  }
+  const added = stagedProducts.filter(
+    (row) => !oldProducts.some((old) => old.sourceId === row.sourceId),
+  );
+  const expectedMissing = [...legacyProductIds].filter(
+    (id) => !oldProducts.some((row) => row.sourceId === id),
+  );
+  assert.equal(added.length, expectedMissing.length);
+  assert.deepEqual(new Set(added.map((row) => row.sourceId)), new Set(expectedMissing));
+  const addedPages = stagedPages.filter((row) => !oldPages.some((old) => old.path === row.path));
+  assert.equal(stagedPages.length, oldPages.length + added.length);
+  assert.deepEqual(
+    new Set(addedPages.map((row) => row.path)),
+    new Set(expectedMissing.map((id) => `/products/${id}`)),
+  );
+  assert(
+    addedPages.every(
+      (row) =>
+        row.kind === "product" &&
+        row.productHandles.length === 1 &&
+        row.productHandles[0] === row.path.split("/").at(-1),
+    ),
+  );
+  const allowedUpdates = new Set([
+    "/software/download/sunford-drv",
+    "/blogs/editorial/before-using-a-price-computing-scale",
+  ]);
+  assert.deepEqual(new Set(updates.pages.map((row) => row.path)), allowedUpdates);
+  const fingerprint = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+  for (const original of oldPages) {
+    if (allowedUpdates.has(original.path) || legacyProductIds.has(original.path.split("/").at(-1)))
+      continue;
+    const staged = stagedPages.find((row) => row.path === original.path);
+    const withCover = updates.covers.some((row) => row.path === original.path);
+    const comparable = (row) => (withCover && row ? { ...row, images: [] } : row);
+    assert.equal(
+      fingerprint(comparable(staged)),
+      fingerprint(comparable(original)),
+      "Original pages or collections changed",
+    );
+  }
+  assert.equal(new Set(updates.covers.map((row) => row.path)).size, updates.covers.length);
+  for (const cover of updates.covers) {
+    assert(/^\/blogs\/editorial\/SUNFORD_BIZ_TALK_EP\.\d+$/.test(cover.path));
+    assert(oldPages.some((row) => row.path === cover.path));
+  }
+  const localImages = new Set(manifest.map((asset) => asset.path));
+  for (const row of [
+    ...stagedProducts.filter((row) => legacyProductIds.has(row.sourceId)),
+    ...updates.pages,
+  ]) {
+    assert(new URL(row.sourceUrl).hostname === "www.sunford.co");
+    if (row.sourceId) {
+      assert.equal(row.sourceUrl, `https://www.sunford.co/products/${row.sourceId}`);
+      assert(row.images.length && row.description.trim());
+    }
+    for (const field of ["html", "descriptionHtml", "detailsHtml", "specificationHtml"]) {
+      const $ = load(row[field] || "");
+      assert.equal(
+        $("script,style,link,form,input,object,embed").length,
+        0,
+        `Unsafe HTML: ${row.path}`,
+      );
+      $("*").each((_, node) => {
+        for (const [name, value] of Object.entries(node.attribs || {})) {
+          assert(!/^on|^style$/i.test(name), "Unsafe source attribute");
+          assert(!/^\s*(javascript|vbscript|data):/i.test(value), "Unsafe source URL");
+        }
+      });
+    }
+    assert(
+      row.images.every((src) => localImages.has(src)),
+      `Unverified image in ${row.path}`,
+    );
+  }
+  for (const cover of updates.covers) assert(localImages.has(cover.image), "Unverified cover");
+  for (const asset of manifest) {
+    assert(/^https:\/\//.test(asset.source));
+    const extension = path.extname(new URL(asset.source).pathname).toLowerCase();
+    assert([".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif", ".svg"].includes(extension));
+    const name = `${createHash("sha256").update(asset.source).digest("hex").slice(0, 20)}${extension}`;
+    assert.equal(asset.path, `/images/imported/${name}`);
+    const bytes = await readFile(path.join(stage, "assets", name));
+    assert.equal(createHash("sha256").update(bytes).digest("hex"), asset.sha256);
+    const target = path.join("public/images/imported", name);
+    try {
+      assert.equal(
+        createHash("sha256")
+          .update(await readFile(target))
+          .digest("hex"),
+        asset.sha256,
+        "Refusing to replace existing image",
+      );
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+  }
+  const finalPages = stagedPages.map((page) => {
+    const replacement = updates.pages.find((row) => row.path === page.path);
+    const cover = updates.covers.find((row) => row.path === page.path);
+    return replacement ?? (cover ? { ...page, images: [cover.image] } : page);
+  });
+  for (const old of oldPages.filter((row) => row.kind === "collection")) {
+    assert.deepEqual(
+      finalPages.find((row) => row.path === old.path),
+      old,
+    );
+  }
+  for (const asset of manifest) {
+    const name = asset.path.split("/").at(-1);
+    const target = path.join("public/images/imported", name);
+    try {
+      await writeFile(target, await readFile(path.join(stage, "assets", name)), { flag: "wx" });
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+    }
+  }
+  const report = await read(`${folder}/import-report.json`);
+  report.pages = finalPages.length;
+  report.products = stagedProducts.length;
+  report.collections = finalPages.filter((row) => row.kind === "collection").length;
+  report.legacyContentMigration = {
+    checkedAt: new Date().toISOString(),
+    addedProductIds: [...legacyProductIds],
+    updatedPages: [...allowedUpdates],
+    covers: updates.covers.length,
+    categoriesPreserved: true,
+  };
+  for (const [name, value] of [
+    ["pages", finalPages],
+    ["products", stagedProducts],
+    ["import-report", report],
+  ]) {
+    await writeFile(`${folder}/${name}.json`, JSON.stringify(value, null, 2));
+  }
+  console.log(
+    `Merged ${added.length} new products, ${updates.pages.length} content pages and ${updates.covers.length} covers; all existing products and collections preserved.`,
+  );
+  process.exit(0);
+}
 
 const origin = "https://www.sunford.co";
 // A targeted refresh merges these pages and their products into the snapshot.
 const requestedPaths = process.argv.includes("--paths")
-  ? process.argv.slice(process.argv.indexOf("--paths") + 1)
+  ? process.argv
+      .slice(process.argv.indexOf("--paths") + 1)
+      .filter(
+        (value, index, values) => !values.slice(0, index + 1).some((item) => item.startsWith("--")),
+      )
   : null;
 const usePageCache = process.argv.includes("--use-page-cache");
 if (requestedPaths && !requestedPaths.length) throw new Error("--paths requires source paths");
@@ -25,8 +206,13 @@ const previous = requestedPaths
     )
   : null;
 const cacheDir = path.resolve("node_modules/.cache/sunford-import");
-const outputDir = path.resolve("src/features/content/data");
-const assetDir = path.resolve("public/images/imported");
+const stageDirectory = option("--stage");
+if (stageDirectory && !requestedPaths) throw new Error("Staging requires explicit --paths");
+const sourceDirectory = option("--source-dir");
+const outputDir = stageDirectory ?? path.resolve("src/features/content/data");
+const assetDir = stageDirectory
+  ? path.join(stageDirectory, "assets")
+  : path.resolve("public/images/imported");
 await Promise.all([
   mkdir(cacheDir, { recursive: true }),
   mkdir(outputDir, { recursive: true }),
@@ -58,6 +244,15 @@ const report = {
 const assets = new Map();
 const pages = [];
 const products = [];
+const withheldDetails = [];
+function reviewedProductHtml(html, sourceId) {
+  if (!stageDirectory || sourceId !== "10838") return html;
+  const $ = load(html, null, false);
+  $("p")
+    .filter((_, node) => $(node).text().trim() === "ล้อแสตนเลส SUS304 Nylon ปลอดภัยสำหรับงานอาหาร")
+    .remove();
+  return $.html();
+}
 const rawCollections = new Map();
 const gridProducts = new Map();
 function localLink(href) {
@@ -183,6 +378,7 @@ const plain = (html) => {
 const attrs = (value) =>
   Array.isArray(value) ? value.find((item) => item?.loc === "TH") || value[0] : value;
 async function getHtml(url) {
+  if (sourceDirectory) return readFile(path.join(sourceDirectory, `${digest(url)}.html`), "utf8");
   const file = path.join(cacheDir, `${digest(url)}.html`);
   if (!requestedPaths || (usePageCache && !new URL(url).pathname.startsWith("/products/"))) {
     try {
@@ -409,8 +605,21 @@ async function processPage(sourcePath, url) {
             : null;
         })
         .get();
-      const descriptionHtml = clean(attribute.description || "");
-      const detailsHtml = clean(detail.body_html || "");
+      const descriptionHtml = reviewedProductHtml(
+        clean(attribute.description || ""),
+        product.handle,
+      );
+      const detailsHtml = reviewedProductHtml(clean(detail.body_html || ""), product.handle);
+      if (stageDirectory && product.handle === "10838") {
+        withheldDetails.push({
+          sourceId: "10838",
+          sourceText: "ล้อแสตนเลส SUS304 Nylon ปลอดภัยสำหรับงานอาหาร",
+          reason:
+            "Source description calls the wheel PU and Nylon; material/food-contact claim needs owner confirmation.",
+        });
+        page.html = reviewedProductHtml(page.html, product.handle);
+        page.text = plain(page.html);
+      }
       const images = [
         ...new Set(
           [product.featuredImageUrl, ...(product.imagesUrl || [])].filter(
@@ -431,7 +640,7 @@ async function processPage(sourcePath, url) {
         images,
         imageAlt: product.imagesAlt || [],
         collectionIds: product.collectionIds || [],
-        specificationHtml: bodyHtml,
+        specificationHtml: reviewedProductHtml(bodyHtml, product.handle),
         specifications,
         price:
           product.productVariant?.find((item) => item.show_price && item.priceFull > 0)
@@ -589,6 +798,31 @@ function rewriteMedia(html) {
     }
   });
   return $.html();
+}
+if (stageDirectory) {
+  let manifest = [];
+  try {
+    manifest = JSON.parse(await readFile(path.join(stageDirectory, "asset-manifest.json"), "utf8"));
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  for (const [source, local] of assets) {
+    if (!local) continue;
+    const bytes = await readFile(path.join(assetDir, local.split("/").at(-1)));
+    manifest.push({
+      source,
+      path: local,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+    });
+  }
+  await writeFile(
+    path.join(stageDirectory, "asset-manifest.json"),
+    JSON.stringify([...new Map(manifest.map((asset) => [asset.source, asset])).values()], null, 2),
+  );
+  await writeFile(
+    path.join(stageDirectory, "withheld-details.json"),
+    JSON.stringify(withheldDetails, null, 2),
+  );
 }
 for (const product of products) {
   product.images = product.images.map((url) => assets.get(url) || "").filter(Boolean);

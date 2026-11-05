@@ -252,30 +252,20 @@
     {
       "id": "lot-serial",
       "path": "/solutions/lot-serial",
-      "sourceUrl": "https://www.sunford.co/การชั่งน้ำหนักเพร้อมสร้าง-Lot-No-และ-Serial-No-สำหรับกระบวนการผลิต",
-      "characters": 0,
-      "headings": [],
-      "images": 0,
-      "svg": 0,
-      "tables": 0,
-      "videos": 0,
-      "links": [],
+      "sourceUrl": "https://www.sunford.co/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%AB%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B9%80%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87-Lot-No-%E0%B9%81%E0%B8%A5%E0%B8%B0-Serial-No-%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%A7%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95",
+      "characters": 1174,
       "textPreserved": true,
-      "sourceEmpty": true
+      "sourceEmpty": false,
+      "importedSourceCss": false
     },
     {
       "id": "pos",
       "path": "/solutions/pos",
-      "sourceUrl": "https://www.sunford.co/การใช้เครื่องชั่งร่วมกับระบบขายหน้าร้าน-POS",
-      "characters": 0,
-      "headings": [],
-      "images": 0,
-      "svg": 0,
-      "tables": 0,
-      "videos": 0,
-      "links": [],
+      "sourceUrl": "https://www.sunford.co/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%8A%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%A3%E0%B9%88%E0%B8%A7%E0%B8%A1%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%82%E0%B8%B2%E0%B8%A2%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99-POS",
+      "characters": 809,
       "textPreserved": true,
-      "sourceEmpty": true
+      "sourceEmpty": false,
+      "importedSourceCss": false
     },
     {
       "id": "checkweighing",
@@ -402,7 +392,35 @@
       ],
       "textPreserved": true,
       "sourceEmpty": false
+    },
+    {
+      "id": "windows",
+      "path": "/solutions/windows",
+      "sourceUrl": "https://www.sunford.co/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9A%E0%B8%B1%E0%B8%99%E0%B8%97%E0%B8%B6%E0%B8%81%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%8A%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%AB%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%9A%E0%B8%99%E0%B8%AD%E0%B8%B8%E0%B8%9B%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B9%8C-Windows",
+      "characters": 752,
+      "textPreserved": true,
+      "sourceEmpty": false,
+      "importedSourceCss": false
+    },
+    {
+      "id": "driver",
+      "path": "/solutions/driver",
+      "sourceUrl": "https://www.sunford.co/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%9B%E0%B8%A5%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%99%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%AA%E0%B9%88%E0%B8%87%E0%B8%AD%E0%B8%AD%E0%B8%81%E0%B8%88%E0%B8%B2%E0%B8%81%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%8A%E0%B8%B1%E0%B9%88%E0%B8%87-%E0%B9%82%E0%B8%94%E0%B8%A2%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B9%81%E0%B8%81%E0%B8%A3%E0%B8%A1--Sunford-Driver",
+      "characters": 730,
+      "textPreserved": true,
+      "sourceEmpty": false,
+      "importedSourceCss": false
     }
   ],
-  "assets": []
+  "assets": [],
+  "lastTargetedRefresh": {
+    "checkedAt": "2026-11-05T02:34:56.661Z",
+    "ids": [
+      "lot-serial",
+      "pos",
+      "windows",
+      "driver"
+    ],
+    "importedSourceCss": false
+  }
 }

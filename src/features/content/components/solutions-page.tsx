@@ -40,7 +40,7 @@ export function SolutionsPage({ page }: { page: SourcePage }) {
         <>
           {page.text.trim() ? (
             <article
-              className={`container ${styles.article} solution-source--${solution?.id}`}
+              className={`container ${styles.article} solution-source--${solution?.id}${["lot-serial", "pos", "windows", "driver"].includes(solution?.id ?? "") ? " source-prose" : ""}`}
               dangerouslySetInnerHTML={{ __html: page.html }}
             />
           ) : (

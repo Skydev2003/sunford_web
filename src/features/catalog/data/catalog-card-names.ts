@@ -1,6 +1,15 @@
 import type { Product } from "../types";
 
 const sourceCardNames: Record<string, string> = {
+  "10732": "LP53",
+  "10733": "LP54",
+  "10838": "PU30M16 สแตนเลส",
+  "10839": "PU30M16 เหล็กขาว",
+  "10840": "NY30M12",
+  "10841": "PU20M08",
+  "10842": "PU20M10",
+  "10843": "NY20M12",
+  "10844": "NY25M12",
   "FCS-150-SW31": "FCS-150-SW31",
   "TSS-150-SW31S": "TSS-150-SW31S",
   "CSS-150-SW31": "CSS-150-SW31",

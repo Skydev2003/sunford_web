@@ -2463,3 +2463,111 @@ Approval: "Pending"
 
 - Deleted the global particle canvas implementation and its motion context, animation loop, observers/listeners and footer pause/play control. Site layout now renders the existing surface wrapper directly; retained white/paper surface colors and removed the unused homepage background-start marker. The surface stylesheet contains only base surface colors/layout.
 - Replaced obsolete animation expectations with absence checks. Real Chrome/Playwright passed across homepage, products, contact and service at desktop 1440x900 and mobile 390x844: main content visible, no particle canvas/control and no horizontal overflow. TypeScript, scoped ESLint, formatting and diff checks passed. Final Next.js feedback review: no qualifying framework issue.
+
+
+## Task: Legacy website content gap audit (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved for read-only audit/report only; implementation not approved"
+Progress: "Done — source and local runtime verified"
+
+### Goal / Scope
+
+Inspect the public information on https://www.sunford.co/ using the user's Browser, compare with the current project, and deliver a list of missing/partial content, intentional exclusions and unavailable source material. No application edits, automatic import, business-data writes or deployment.
+
+### Files / Plan
+
+Read applicable instructions, spec/memory, snapshots, routes and renderers. Inspect source Sitemap/public pages and local runtime. Compare source URLs with imported records, validate existing content, and deliver `output/legacy-content-audit-20261105/report.md`, `inventory.json` and `source-sitemap.xml`. Append this task record and matching `plan.md` entry, retaining history.
+
+### UI/UX Brand Alignment / Contracts
+
+The old website is the factual content reference, not approval to restore its design. English paths, public-only scope, approved mocks, retired category routes and no-calibration-service rule remain in effect. No UI, props, routes or data contracts changed.
+
+### Acceptance Criteria / Verification
+
+- [x] Browser inspection covers all 412 public source Sitemap URLs out of 421 entries, plus additional menu links; nine account/transaction/search/test paths excluded. Retried incomplete loads and checked all five service tabs.
+- [x] Read-only source URL comparison against 392 page records and 12 solutions identifies 15 unmapped URLs, classified by their actual current source contents in the report.
+- [x] Local `/api/products` contains 150 products and none of missing SKUs 10732,10733,10838–10844. Report lists product identities and source URLs.
+- [x] Verified missing live content for Lot/Serial, POS integration, Windows reporting, Driver and price-scale preparation information; distinguished forms, article covers, mock children/models and historical exclusions.
+- [x] `npm run content:validate` passes:392 pages,150 products,834 sanitized blocks,909 local images,20 video references. Rechecked 20 historically missing image URLs with HEAD:15 returned404,five403; no claim of permanent loss or successful binary download.
+- [x] Detailed report and complete Sitemap-to-import inventory written and inspected; no application files or business records changed.
+
+### Missing Information / Approval Record
+
+The user's request to inspect the entire old website and return a list authorizes this audit. No missing information blocks this report. Future implementation needs its own approved Spec/Plan; 18 exact-model mocks, blank source pages and form-processing contracts still need verified inputs for that future scope.
+
+### Current State
+
+Audit deliverables are under `output/legacy-content-audit-20261105/`. Existing imported content is substantial but incomplete against the live source. Findings do not authorize restoring retired category pages, account/checkout work, an import run or calibration-service advertising. Final Next.js feedback review found no qualifying framework issue during this read-only audit.
+
+
+## Task: Legacy content migration preserving current design (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — user authorized revised scope preserving all existing categories/design"
+Progress: "Done — verified imported content, database preservation, responsive browser checks and production build"
+
+### Goal
+
+นำข้อมูลที่ยืนยันได้จากเว็บเดิมมาใส่โปรเจกต์ปัจจุบัน โดยรักษารูปแบบ สี ฟอนต์ โลโก้ Header/Footer, Hero/Opening, layout, CSS, animation และ responsive เดิม ใช้ผล audit 412 URLs ของวันที่2026-11-05เป็นรายการตั้งต้น
+
+### Scope In
+
+- เพิ่ม9SKUs 10732/10733/10838–10844 พร้อมภาพจริง/รายละเอียดที่ยืนยันได้; คง150productsเดิมและการจัดกลุ่มเดิม ไม่ merge collection records
+- เติมLot/SerialและPOS integration; เพิ่มWindows/Driverในหน้ารวมโซลูชันเดิม; เติมDRVและบทความก่อนใช้เครื่องชั่งคำนวณราคา
+- ผูกภาพปกBiz Talkที่ตรวจสอบได้ และกู้รูปที่ขาดเฉพาะเมื่อพบไฟล์จริง
+- คงชื่อ/ID/ลำดับหมวดหลัก หมวดย่อย เมนู 4family mock children,8scale children,18exact-model mocks และการจัดกลุ่มสินค้าเดิม ผู้ใช้จะจัดหมวดใหม่เอง ข้อมูลหมวดต้นฉบับเก็บได้เฉพาะstaging; สินค้าใหม่ใช้เฉพาะหมวดหลักอุปกรณ์เสริมที่มีอยู่ตามsource ไม่สร้างหมวดย่อยใหม่
+- สำรอง/เพิ่มเฉพาะ9missing productsผ่านPrismaเพื่อให้runtimeที่ใช้DBเห็นข้อมูล โดยไม่update/deleteข้อมูลเดิม ต้องตรวจtargetและdiffก่อนwriteตามPlan
+
+### Scope Out
+
+ไม่เปลี่ยนหมวดหลัก/หมวดย่อย/ลำดับ/ชื่อ/สมาชิกหมวดของสินค้าเดิม ไม่เปลี่ยนดีไซน์/CSS/Global components ไม่คืนLegacy category pages ไม่เพิ่มdependency/schema/บริการสอบเทียบ/ระบบบัญชี/Checkout/backendฟอร์ม/ตัวกรองข่าวใหม่ ไม่Commit/Push/Deploy ไม่แต่งข้อมูลสำหรับ18Mocksหรือหน้าต้นฉบับที่ว่าง และพักค่าสเปกต้นฉบับที่ขัดกันไว้ให้ยืนยัน
+
+### UI/UX Brand Alignment
+
+- Reference: current project Product detail, CatalogProductCard, ContentDirectory, SolutionsPage, src/styles/base.css และรูปก่อนงาน ไม่ใช้ดีไซน์ต้นฉบับแทน
+- Design: ย้ายเฉพาะข้อมูลเข้าcomponents/typographyเดิม ห้ามคัดลอกCSS/fonts/scripts/widgetsของต้นฉบับ; จำนวนและเนื้อหาที่เพิ่มอาจเพิ่มความยาวหน้าได้
+- Responsive: baseline/afterที่320/390/768/1440px ตรวจoverflow/รูป/ข้อความ/เมนู/ค้นหา/เลื่อนหมวด/Grid–List/Compare
+
+### Input / Output / Contracts
+
+Inputคือsource URLs/recordsที่ระบุในoutput/legacy-content-audit-20261105/report.md และsourceปัจจุบันที่ตรวจสอบซ้ำ Outputคือproducts/pages/solutions/ภาพจริง โดยคงcollection recordsและการจัดกลุ่มสินค้าเดิมที่ใช้public contractsเดิม พร้อมsource/asset manifestsและผลตรวจ ไม่เพิ่มsubmission APIหรือเปลี่ยนProps/APIเดิม
+
+### Acceptance Criteria
+
+- [x] บันทึกการอนุมัติจริงก่อนแก้แอป; แก้เฉพาะไฟล์ในPlan
+- [x] 9productsใหม่เข้าถึงได้ในruntime/APIและหมวดถูกต้อง โดย150productsเดิม/hidden/deleted/CMS editsไม่ถูกทับหรือฟื้น
+- [x] เนื้อหาเป้าหมาย/ภาพที่ยืนยันได้แสดงในรูปแบบเดิม ไม่มีexecutable markup/CSSจากsource; ไม่ทำdataนอกscopeหาย
+- [x] Category definitions,collection records,4family mock children และการจัดกลุ่ม150productsเดิมตรงbaseline รักษาscale manifest18MocksและLegacy redirects
+- [x] รูปก่อนหลัง/Browserresponsiveและtests/buildตามPlanผ่าน ไม่มีการอ้างruntimeสำเร็จจากsnapshotอย่างเดียว
+- [x] มีbackup/receipt/source+asset manifests/diff auditและรายการข้อมูลที่ยังต้องยืนยัน
+
+### Missing Information
+
+ไม่มีข้อมูลที่ขวางการเริ่มงานเฉพาะverified-content scope; สเปกที่ขัดกัน/18Mocks/ไฟล์หาย/blank sourceและform contractsอยู่นอกส่วนที่จะเติมโดยการเดา รอข้อมูลยืนยันสำหรับส่วนนั้น Database targetต้องตรวจจากconfigurationและรายงานผลกระทบก่อนwriteตามPlan หากไม่ตรงscopeให้หยุดเฉพาะส่วนเขียนDB
+
+### Approval Record / Current State
+
+ผู้ใช้ถามให้ดึงข้อมูลมาใส่โปรเจกต์โดยรูปแบบไม่เสีย แผนimplementationฉบับนี้เพิ่งจัดทำ จึงยังไม่ถือว่าได้รับอนุมัติ รายละเอียดFile allowlist/ขั้นตอน/verification/R1 database impact/rollbackอยู่ในPlanท้ายplan.mdและoutput/legacy-content-migration-20261105/migration-plan.md ตรวจเฉพาะread-onlyและเขียนเอกสารแล้ว ยังไม่รันimporterหรือแก้application/data/DB Final Next.js feedback review: no qualifying framework issue during planning.
+
+### Scope Revision — category changes deferred (2026-11-05)
+
+ผู้ใช้ยืนยันให้คงหมวดหมู่เดิมไว้และจะจัดหมวดใหม่เอง จึงตัดงานเปลี่ยนหมวด/หมวดย่อย/การจัดกลุ่มสินค้าเดิมออกจากSpec/Plan คำสั่งนี้ยืนยันข้อจำกัดของงาน ไม่ถือเป็นการอนุมัติimplementationทั้งแผน ยังไม่มีการแก้แอป/ข้อมูลสินค้า/ฐานข้อมูล Final Next.js feedback review: no qualifying framework issue for this documentation-only scope revision.
+
+### Implementation Approval Record (2026-11-05)
+
+ผู้ใช้: “อนุมัติครับ เริ่มดึงข้อมูลมาใส่ตามแผนได้เลย โดยคงหมวดหมู่และรูปแบบของโปรเจกต์เดิมไว้ทั้งหมดครับ” อนุมัติแผนฉบับตัดงานเปลี่ยนหมวดออกแล้ว รวมการเพิ่มเฉพาะ9สินค้าใหม่ตามแผน ไม่ใช่การอนุมัติDeploy/Commit/Push
+
+### Completed State / Contracts / Verification (2026-11-05)
+
+นำเข้า9productsแล้ว:159published products,401page records,14solutions เติม4solutions/DRV/บทความเป้าหมาย/27Biz Talk covers ตรวจภาพจริง56ไฟล์ เพิ่มpublic47ไฟล์ คง150productsเดิม,112collections/สมาชิกหมวด,10solutionsนอกscopeและ295baseline filesนอกขอบเขตแก้ไขทุกค่า ไม่เปลี่ยนCSS/layout/navigation/category definitions/4family mock children/18model mocks API/Props/schemaเดิม สินค้าใหม่ใช้accessories familyที่มีอยู่เท่านั้น
+
+ฐานข้อมูลเพิ่ม9IDsแบบinsert-only transaction:152→161total,150→159published ตรวจ152แถวเดิมเท่ากับbackupทั้งในtransactionและread-onlyหลังงาน ไม่update/delete ไม่มีDeploy/Commit/Push; local production previewที่http://localhost:3000 ใช้Node24.22.1
+
+ผ่านcontent:validate,paths:check,TypeScript,ESLint,scopedPrettier,diffcheck,UAT27/27,Browser26/26และresponsive320/390/768/1440px รวมcatalog interactions/legacy redirects; layout metrics10กรณีเท่าbaseline Production buildผ่าน431/431static pages และHTTPsmoke10/10 API159products Catalogsuiteผ่าน65/65ในisolated current-code copyกับcanonical Git bytesของเอกสารหมวด ส่วนWindows worktreeเดิม64/65เพราะCRLF hashต่าง ไม่แก้เอกสาร/manifest/testหมวดนอกscope
+
+พักรูปต้นฉบับ1รูปที่TLScertificateหมดอายุ และประโยคPU/NylonของSKU10838ที่ขัดกัน ไม่เดาข้อมูล ข้อจำกัด6URLs/20imagesและ18Mocksเดิมยังคงอยู่ รายละเอียดหลักฐาน/rollbackอยู่ในoutput/legacy-content-migration-20261105/delivery.md Final Next.js feedback reporting pass: no verified qualifying framework issue.
+
+### Commit / Push Approval (2026-11-05)
+
+ผู้ใช้: “สองจุดนี้พักไว้ก่อนครับ และ commit/push” อนุมัติให้commit/pushงานนำเข้าที่ตรวจแล้ว โดยพักรูปประกอบSUNFORD INDUSในหน้าWindowsและประโยคPU/Nylon/งานอาหารของSKU10838ไว้ตามเดิม เป้าหมายคือbranchปัจจุบัน `safe` → `origin/safe` ไม่รวมproduction release ไม่มีการเปลี่ยนapplication/dataเพิ่มเติมในขั้นตอนนี้
