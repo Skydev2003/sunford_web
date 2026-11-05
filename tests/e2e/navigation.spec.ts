@@ -17,7 +17,7 @@ const labels = ["สินค้า", "โซลูชันตามธุร�
 const menus = [
   {
     label: "สินค้า",
-    groups: ["เครื่องชั่งดิจิทัล", "อินดิเคเตอร์และแท่นชั่ง", "ระบบ POS และอุปกรณ์"],
+    groups: ["เครื่องชั่ง", "อินดิเคเตอร์และโครงสร้างแท่นชั่ง", "ระบบ POS และอุปกรณ์เสริม"],
   },
   {
     label: "โซลูชันตามธุรกิจ",
@@ -285,12 +285,7 @@ test("wide menus fit the viewport and preserve the logo-aligned origin and hover
 
 test("product buying guides and responsive layouts remain available", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  await page.locator(".desktop-nav").getByRole("link", { name: "สินค้า", exact: true }).hover();
-  await page
-    .locator(".submenu-panel.is-active")
-    .getByRole("link", { name: "เปรียบเทียบ Android / Windows", exact: true })
-    .click();
+  await page.goto("/guides/pos#systems");
   await expect(page).toHaveURL(/\/guides\/pos#systems$/);
   await expect(page.locator("#systems h2")).toHaveText("เปรียบเทียบ Android / Windows");
   for (const width of [320, 390, 768, 1100, 1399, 1400, 1440]) {

@@ -10,52 +10,66 @@ const productLinks = [
   })),
 ];
 
+const productSubcategories: Record<
+  (typeof productCategoryDefinitions)[number]["id"],
+  { id: string; label: string }[]
+> = {
+  scales: [
+    { id: "scale-price", label: "คำนวณราคาหน้าร้าน" },
+    { id: "scale-industrial", label: "อุตสาหกรรมงานผลิต" },
+    { id: "scale-analytical", label: "งานวิเคราะห์ความแม่นยำสูง" },
+    { id: "scale-kitchen", label: "งานครัวและกาแฟ" },
+    { id: "scale-water-dust", label: "กันน้ำและกันฝุ่น 100%" },
+    { id: "scale-benchtop", label: "ตั้งโต๊ะ" },
+    { id: "scale-floor", label: "ตั้งพื้น" },
+    { id: "scale-pole", label: "มีเสา" },
+  ],
+  indicators: [
+    { id: "indicator-lcd", label: "LCD" },
+    { id: "indicator-led", label: "LED" },
+    { id: "indicator-waterproof", label: "กันน้ำ" },
+  ],
+  platforms: [
+    { id: "platform-carbon-steel", label: "เหล็กคาร์บอนพ่นอบสีกันสนิม" },
+    { id: "platform-sus304", label: "สแตนเลส SUS304" },
+    { id: "platform-sus201", label: "สแตนเลส SUS201" },
+    { id: "platform-abs", label: "พลาสติก ABS เหนียวพิเศษ" },
+  ],
+  pos: [
+    { id: "pos-ios", label: "iOS" },
+    { id: "pos-android", label: "Android" },
+    { id: "pos-windows", label: "Windows" },
+  ],
+  accessories: [
+    { id: "accessory-displays", label: "จอแสดงผลเสริมและระบบต่อพ่วง" },
+    { id: "accessory-cables", label: "สายสัญญาณและหัวต่อ" },
+    { id: "accessory-mechanical", label: "อุปกรณ์เคลื่อนย้ายและชิ้นส่วนแท่นชั่ง" },
+    { id: "accessory-pos", label: "อุปกรณ์ระบบหน้าร้านและต่อพ่วง POS" },
+    { id: "accessory-consumables", label: "วัสดุสิ้นเปลือง" },
+  ],
+};
+const productGroupDefinitions = [
+  { label: "เครื่องชั่ง", categories: ["scales"] },
+  { label: "อินดิเคเตอร์และโครงสร้างแท่นชั่ง", categories: ["indicators", "platforms"] },
+  { label: "ระบบ POS และอุปกรณ์เสริม", categories: ["pos", "accessories"] },
+] as const;
+const productGroups: NavigationGroup[] = productGroupDefinitions.map(({ label, categories }) => ({
+  label,
+  links: categories.flatMap((id) =>
+    productSubcategories[id].map((child) => ({
+      label: child.label,
+      href: `/products?category=${id}&subcategory=${child.id}`,
+    })),
+  ),
+}));
+
 export const defaultNavigation: NavigationItem[] = [
   {
     label: "สินค้า",
     submenuLabel: productSubmenuLabel,
     href: "/products",
     links: productLinks,
-    groups: [
-      {
-        label: "เครื่องชั่งดิจิทัล",
-        links: [
-          { label: "ห้องปฏิบัติการ", href: "/product/laboratory" },
-          { label: "อุตสาหกรรม", href: "/product/industrial" },
-          { label: "พาณิชยกรรมและบริการ", href: "/product/commercial" },
-          { label: "ไลฟ์สไตล์", href: "/product/lifestyle-scales" },
-          { label: "คำนวณราคา", href: "/collections/price-computing-scales" },
-          { label: "เครื่องชั่งกาแฟ", href: "/collections/coffee-scales" },
-          { label: "คู่มือเลือกเครื่องชั่ง", href: "/guides/scales" },
-        ],
-      },
-      {
-        label: "อินดิเคเตอร์และแท่นชั่ง",
-        links: [
-          { label: "อินดิเคเตอร์ห้องปฏิบัติการ", href: "/Indicator/laboratory" },
-          { label: "อินดิเคเตอร์อุตสาหกรรม", href: "/Indicator/industrial" },
-          { label: "อินดิเคเตอร์พาณิชยกรรม", href: "/Indicator/commercial" },
-          { label: "แท่นชั่งตั้งโต๊ะ", href: "/Product/benchtop-platforms" },
-          { label: "แท่นชั่งตั้งพื้น", href: "/Product/floor-platforms" },
-          { label: "คู่มืออินดิเคเตอร์", href: "/guides/indicators" },
-          { label: "คู่มือโครงสร้างแท่นชั่ง", href: "/guides/platforms" },
-        ],
-      },
-      {
-        label: "ระบบ POS และอุปกรณ์",
-        links: [
-          { label: "POS ระบบ Android", href: "/Product/POS/Android" },
-          { label: "POS ระบบ Windows", href: "/Product/POS/Windows" },
-          { label: "เครื่องพิมพ์", href: "/collections/printers" },
-          { label: "อุปกรณ์ส่งข้อมูล", href: "/product/data-interfaces" },
-          { label: "อุปกรณ์ต่อพ่วง", href: "/product/scale-peripherals" },
-          { label: "ชิ้นส่วนและอะไหล่", href: "/product/Scale-parts" },
-          { label: "วัสดุสิ้นเปลือง", href: "/product/Consumables" },
-          { label: "เปรียบเทียบ Android / Windows", href: "/guides/pos#systems" },
-          { label: "คู่มืออุปกรณ์เสริม", href: "/guides/accessories" },
-        ],
-      },
-    ],
+    groups: productGroups,
   },
   {
     label: "โซลูชันตามธุรกิจ",
@@ -190,12 +204,23 @@ export function resolveNavigationItems(items: NavigationItem[]): NavigationItem[
     products.links.every(
       (link, index) =>
         link.label === productLinks[index].label && link.href === productLinks[index].href,
+    ) &&
+    products.groups?.length === productGroups.length &&
+    products.groups.every(
+      (group, index) =>
+        group.label === productGroups[index].label &&
+        group.links.length === productGroups[index].links.length &&
+        group.links.every(
+          (link, linkIndex) =>
+            link.label === productGroups[index].links[linkIndex].label &&
+            link.href === productGroups[index].links[linkIndex].href,
+        ),
     )
   )
     return items;
   return items.map((item) =>
     item.href === "/products"
-      ? { ...item, submenuLabel: productSubmenuLabel, links: productLinks }
+      ? { ...item, submenuLabel: productSubmenuLabel, links: productLinks, groups: productGroups }
       : item,
   );
 }

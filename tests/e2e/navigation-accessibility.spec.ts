@@ -9,9 +9,9 @@ test("desktop keyboard reaches submenu destinations and Escape returns focus", a
   await products.focus();
   await page.keyboard.press("ArrowDown");
   const panel = page.locator(".submenu-panel.is-active");
-  await expect(panel.getByRole("link", { name: "สินค้าทั้งหมด", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(panel.getByRole("link", { name: "เครื่องชั่งดิจิทัล", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "เครื่องชั่ง", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(products).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
@@ -43,9 +43,14 @@ test("touch navigation expands products and follows the company coffee destinati
     await page.locator("#mobile-navigation summary").first().tap();
     await page
       .locator("#mobile-navigation")
-      .getByRole("link", { name: "เครื่องชั่งกาแฟ", exact: true })
+      .getByRole("link", { name: "งานครัวและกาแฟ", exact: true })
       .tap();
-    await expect(page).toHaveURL(/\/collections\/coffee-scales$/);
+    await expect(page).toHaveURL(/\/products\?category=scales&subcategory=scale-kitchen$/);
+    await expect(
+      page
+        .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
+        .getByRole("button", { name: "งานครัวและกาแฟ", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#mobile-navigation")).toHaveCount(0);
   } finally {
     await context.close();
