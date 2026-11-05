@@ -1213,8 +1213,10 @@ User approved: “สองจุดนี้พักไว้ก่อนค�
 Files: commit only the migration application/data/importer/test files and verified image assets already listed above, plus this approval record in `spec.md` and `plan.md`. Exclude output backups, database receipts and environment files.
 
 - [x] Inspect diff, current branch/upstream, existing verification evidence and remote state.
-- [ ] Stage the exact migration allowlist; inspect staged paths and whitespace.
-- [ ] Commit the verified migration and push normally to `origin/safe`.
-- [ ] Confirm remote commit matches local HEAD and working tree is clean.
+- [x] Stage the exact migration allowlist; inspect staged paths and whitespace.
+- [x] Commit the verified migration and push normally to `origin/safe`.
+- [x] Confirm remote commit matches local HEAD and working tree is clean.
 
 Rollback: use a normal revert of this migration commit if later requested; no history rewrite or database deletion. Verification: prior application Build/Browser tests remain applicable because follow-up changes only approval documentation; inspect exact staged diff before commit and remote hash after push. Final Next.js feedback review: no qualifying framework issue in this Git-only follow-up.
+
+Result: content commit `a00afc2` pushed to `origin/safe`; remote hash matched local HEAD and worktree was clean. Staged exactly66 approved files including47 verified images, excluding backups/environment/receipts. Two held items remain unchanged. This final documentation update records the verified push; it does not alter application content.

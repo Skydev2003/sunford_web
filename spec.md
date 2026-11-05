@@ -2571,3 +2571,5 @@ Inputคือsource URLs/recordsที่ระบุในoutput/legacy-conten
 ### Commit / Push Approval (2026-11-05)
 
 ผู้ใช้: “สองจุดนี้พักไว้ก่อนครับ และ commit/push” อนุมัติให้commit/pushงานนำเข้าที่ตรวจแล้ว โดยพักรูปประกอบSUNFORD INDUSในหน้าWindowsและประโยคPU/Nylon/งานอาหารของSKU10838ไว้ตามเดิม เป้าหมายคือbranchปัจจุบัน `safe` → `origin/safe` ไม่รวมproduction release ไม่มีการเปลี่ยนapplication/dataเพิ่มเติมในขั้นตอนนี้
+
+ผล: commit `a00afc2` นำเข้าข้อมูลพร้อมtests/ภาพ47ไฟล์ pushไป `origin/safe` สำเร็จ ตรวจremote hashตรงlocal HEADและworking treeสะอาดแล้ว ก่อนบันทึกผลเอกสารนี้ ไม่มีการเติมสองจุดที่พักไว้หรือสั่งproduction release
