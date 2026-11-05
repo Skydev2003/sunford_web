@@ -7,7 +7,7 @@ import { ContactBannerVisibility } from "@/components/contact/contact-banner-vis
 import { CustomerCoverage } from "@/features/customer-map/components/customer-coverage";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUp, ArrowUpRight, Globe, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUp, Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { sunford } from "@/features/home/data/brand";
 
@@ -26,7 +26,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
               </h2>
             </div>
             <a href={site.line} className="button button-white" target="_blank" rel="noreferrer">
-              คุยกับผู้เชี่ยวชาญ <ArrowUpRight size={18} />
+              คุยกับผู้เชี่ยวชาญ
             </a>
           </div>
         </div>
@@ -90,7 +90,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
             <Link href={sunford.erp}>ERP</Link>
             <Link href={sunford.mes}>MES</Link>
             <a href="https://www.sunford.co" target="_blank" rel="noreferrer">
-              เว็บไซต์ Sunford <ArrowUpRight size={15} />
+              เว็บไซต์ Sunford
             </a>
           </nav>
           <div className="footer-links footer-care">
@@ -99,7 +99,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
             <Link href={sunford.warranty}>ลงทะเบียนรับประกัน</Link>
             <Link href={sunford.downloads}>ดาวน์โหลดซอฟต์แวร์</Link>
             <a href={site.line} target="_blank" rel="noreferrer">
-              LINE @sunford <ArrowUpRight size={15} />
+              LINE @sunford
             </a>
             <div className="footer-socials" aria-label="ติดตาม Sunford">
               {site.messenger && (

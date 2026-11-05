@@ -2,7 +2,7 @@
 import { Tooltip } from "@/components/ui/tooltip";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ChevronDown, GitCompareArrows, Menu, Search, X } from "lucide-react";
+import { ChevronDown, GitCompareArrows, Menu, Search, X } from "lucide-react";
 import {
   type CSSProperties,
   useCallback,
@@ -353,14 +353,12 @@ export function Header({
                   onClick={() => setMenuOpen(false)}
                 >
                   {item.label}
-                  <ArrowUpRight size={15} />
                 </Link>
               ),
             )}
             {extras.mobileLinks.map((link, index) => (
               <Link key={index} href={link.href} onClick={() => setMenuOpen(false)}>
                 {link.label}
-                <ArrowUpRight size={15} />
               </Link>
             ))}
           </nav>

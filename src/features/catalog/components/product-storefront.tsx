@@ -2,7 +2,7 @@
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import Link from "next/link";
-import { ArrowUpRight, Check, ChevronRight, Plus } from "lucide-react";
+import { Check, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
@@ -159,11 +159,9 @@ export function ProductStorefront({
             สำหรับทุกธุรกิจของคุณ
           </p>
           <a href="https://line.me/R/ti/p/@sunford" target="_blank" rel="noreferrer">
-            ให้ผู้เชี่ยวชาญช่วยเลือก <ArrowUpRight size={14} />
+            ให้ผู้เชี่ยวชาญช่วยเลือก
           </a>
-          <Link href="/contact-us">
-            ติดต่อศูนย์บริการ Sunford <ArrowUpRight size={14} />
-          </Link>
+          <Link href="/contact-us">ติดต่อศูนย์บริการ Sunford</Link>
         </div>
       </header>
       <StoreShelf id="store-categories" className="store-category-shelf">
@@ -267,9 +265,7 @@ export function ProductStorefront({
                     <br />
                     เลือกเครื่องชั่งให้ตรงกับงาน.
                   </h3>
-                  <span className="store-card-link">
-                    ติดต่อเรา <ArrowUpRight size={16} />
-                  </span>
+                  <span className="store-card-link">ติดต่อเรา</span>
                 </div>
               </Link>
               <Link href="/warranty/register" className="store-editorial-card">

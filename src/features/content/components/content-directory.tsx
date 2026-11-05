@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import type { SourcePage } from "../types";
 
@@ -82,7 +82,6 @@ export function ContentDirectory({
             <div className="directory-card-copy">
               <span>{group(page)}</span>
               <h2>{page.title}</h2>
-              <ArrowUpRight size={20} />
             </div>
           </Link>
         ))}

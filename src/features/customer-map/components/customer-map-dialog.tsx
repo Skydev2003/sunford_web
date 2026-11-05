@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowLeft, ArrowUpRight, ChevronRight, MapPin, Search, X } from "lucide-react";
+import { ArrowLeft, ChevronRight, MapPin, Search, X } from "lucide-react";
 import {
   areaCustomerCount,
   customerShareLabel,
@@ -313,7 +313,7 @@ export default function CustomerMapDialog({ onClose }: { onClose: () => void }) 
               target="_blank"
               rel="noreferrer"
             >
-              CC BY 3.0 IGO <ArrowUpRight size={11} />
+              CC BY 3.0 IGO
             </a>
           </span>
           <span>

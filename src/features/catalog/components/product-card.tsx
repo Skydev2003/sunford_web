@@ -3,7 +3,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
-import { ArrowUpRight, Check, Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import type { ProductCardData } from "../types";
 
 import { useCatalogStore } from "@/stores/catalog-store";
@@ -60,9 +60,7 @@ export function ProductCard({
         <p>{product.subtitle}</p>
         <div className="product-card-bottom">
           <span>{product.capacity}</span>
-          <Link href={`/products/${product.slug}`}>
-            ดูรายละเอียด <ArrowUpRight size={15} />
-          </Link>
+          <Link href={`/products/${product.slug}`}>ดูรายละเอียด</Link>
         </div>
       </div>
     </article>

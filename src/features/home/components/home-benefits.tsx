@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, GitCompareArrows, Headphones, ShieldCheck, Truck } from "lucide-react";
+import { GitCompareArrows, Headphones, ShieldCheck, Truck } from "lucide-react";
 import styles from "./home-benefits.module.css";
 
 const benefits = [
@@ -39,7 +39,6 @@ export function HomeBenefits() {
                 <h3>{title}</h3>
                 <p>{detail}</p>
               </div>
-              <ArrowUpRight className={styles.arrow} size={18} aria-hidden="true" />
             </Link>
           ))}
         </div>

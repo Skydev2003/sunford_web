@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import { ArrowUpRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import type { SourcePage } from "../types";
 
@@ -59,9 +58,7 @@ export function SoftwareCatalog({
             <div className="software-card-copy">
               <h2>{item.title}</h2>
               <p>{item.description}</p>
-              <span>
-                ดูรายละเอียด <ArrowUpRight size={16} />
-              </span>
+              <span>ดูรายละเอียด</span>
             </div>
           </Link>
         ))}

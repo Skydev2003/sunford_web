@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowUpRight } from "lucide-react";
 import {
   getContentPage,
   getContentPages,
@@ -161,7 +160,7 @@ export default async function SourceContentPage({
         {sectionIntro && <p className="source-section-intro">{sectionIntro}</p>}
         {formPage && (
           <a className="button button-red" href={page.sourceUrl} target="_blank" rel="noreferrer">
-            เปิดแบบฟอร์ม Sunford <ArrowUpRight size={17} />
+            เปิดแบบฟอร์ม Sunford
           </a>
         )}
       </header>
@@ -308,7 +307,7 @@ export default async function SourceContentPage({
       )}
       <div className="container source-attribution">
         <a href={page.sourceUrl} target="_blank" rel="noreferrer">
-          ดูข้อมูลต้นฉบับจาก Sunford <ArrowUpRight size={14} />
+          ดูข้อมูลต้นฉบับจาก Sunford
         </a>
       </div>
     </main>

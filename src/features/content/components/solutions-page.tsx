@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { solutions } from "../data/solutions";
 import type { SourcePage } from "../types";
 import styles from "./solutions-page.module.css";
@@ -31,7 +31,6 @@ export function SolutionsPage({ page }: { page: SourcePage }) {
             {solutions.map((item) => (
               <Link key={item.id} href={item.path} prefetch={false}>
                 <h2>{item.title}</h2>
-                <ArrowUpRight size={20} aria-hidden="true" />
               </Link>
             ))}
           </div>
@@ -59,7 +58,6 @@ export function SolutionsPage({ page }: { page: SourcePage }) {
             </Link>
             <a href={page.sourceUrl} target="_blank" rel="noopener noreferrer">
               ข้อมูลต้นฉบับจาก Sunford
-              <ArrowUpRight size={16} />
             </a>
           </footer>
         </>

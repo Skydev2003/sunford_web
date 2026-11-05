@@ -1,15 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  ArrowUpRight,
-  ChevronRight,
-  MessageCircleMore,
-  Phone,
-  ShoppingBag,
-  Star,
-  X,
-} from "lucide-react";
+import { ChevronRight, MessageCircleMore, Phone, ShoppingBag, Star, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import type { SiteSettings } from "@/features/cms/types";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -184,11 +176,6 @@ export function SunfordMascot({
               <strong>Sunford Shop</strong>
               <small>เยี่ยมชมเว็บไซต์ร้านค้า</small>
             </span>
-            <ArrowUpRight
-              className={`${styles.channelArrow} ${styles.shopArrow}`}
-              size={21}
-              aria-hidden="true"
-            />
           </a>
         </section>
         <Tooltip content={open ? "ปิดช่องทางติดต่อ" : expertLabel}>

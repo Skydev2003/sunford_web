@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
-  ArrowUpRight,
   CalendarClock,
   ChevronRight,
   CircleHelp,
@@ -111,7 +110,6 @@ export function AfterSalesPage() {
           <a className={styles.helpLink} href={sunford.line} target="_blank" rel="noreferrer">
             <CircleHelp size={17} aria-hidden="true" />
             มีคำถาม? ดูคำแนะนำการใช้งาน
-            <ArrowUpRight size={14} aria-hidden="true" />
           </a>
         </header>
       </div>
@@ -311,14 +309,10 @@ export function AfterSalesPage() {
               <ShieldCheck size={17} aria-hidden="true" />
               ข้อมูลที่เกี่ยวข้อง
             </span>
-            <Link href={sunford.warrantyPolicy}>
-              นโยบายการรับประกัน <ArrowUpRight size={14} aria-hidden="true" />
-            </Link>
-            <Link href="/cancel-and-return/policy">
-              เงื่อนไขการเปลี่ยนและคืนสินค้า <ArrowUpRight size={14} aria-hidden="true" />
-            </Link>
+            <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link>
+            <Link href="/cancel-and-return/policy">เงื่อนไขการเปลี่ยนและคืนสินค้า</Link>
             <a href={afterSalesContact.sourceUrl} target="_blank" rel="noreferrer">
-              ข้อมูลต้นฉบับจากซันฟอร์ด <ArrowUpRight size={14} aria-hidden="true" />
+              ข้อมูลต้นฉบับจากซันฟอร์ด
             </a>
           </div>
         </div>
