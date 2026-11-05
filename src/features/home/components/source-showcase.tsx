@@ -45,7 +45,13 @@ export async function SunfordStories() {
             { x: 360, y: 180, width: 304, height: 206 },
           ][index];
           return (
-            <Link href={article.path} key={article.path} className={storyStyles.card}>
+            <Link
+              href={article.path}
+              key={article.path}
+              className={storyStyles.card}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className={storyStyles.photo}>
                 {crop ? (
                   <span
