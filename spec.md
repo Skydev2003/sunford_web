@@ -2573,3 +2573,39 @@ Inputคือsource URLs/recordsที่ระบุในoutput/legacy-conten
 ผู้ใช้: “สองจุดนี้พักไว้ก่อนครับ และ commit/push” อนุมัติให้commit/pushงานนำเข้าที่ตรวจแล้ว โดยพักรูปประกอบSUNFORD INDUSในหน้าWindowsและประโยคPU/Nylon/งานอาหารของSKU10838ไว้ตามเดิม เป้าหมายคือbranchปัจจุบัน `safe` → `origin/safe` ไม่รวมproduction release ไม่มีการเปลี่ยนapplication/dataเพิ่มเติมในขั้นตอนนี้
 
 ผล: commit `a00afc2` นำเข้าข้อมูลพร้อมtests/ภาพ47ไฟล์ pushไป `origin/safe` สำเร็จ ตรวจremote hashตรงlocal HEADและworking treeสะอาดแล้ว ก่อนบันทึกผลเอกสารนี้ ไม่มีการเติมสองจุดที่พักไว้หรือสั่งproduction release
+
+## Task: Homepage direct YouTube video links (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — user authorized12lateststaticlinks/newYouTubetab/preserveexistingdesign"
+
+### Goal / Scope
+
+ผู้ใช้: “เปลี่ยนรูปแบบครับเป็นการกดแล้วเปิดยูทูปในหน้าของยูทูปเลยเมื่อกี้ผมได้disgardchangesแล้ว ถ้าดึงแค่ลิงค์ของคลิปมาใส่ทำได้ไหมผมเปิดลิงค์ไว้ให้แล้ว” ตรวจworktreeสะอาดและAPIchangesถูกถอนจริง ไม่restoreงานนั้น เสนอ12latestwatchlinksจากแท็บVideos/Latestที่เปิดไว้ เป็นstaticlocaldataและภาพปกจริง ใช้หน้าตา/การเลื่อนเดิม กดเปิดYouTubewatchpageแท็บใหม่ เฉพาะhomepage ไม่ใช้APIkey/cache15minหรืออัปเดตอัตโนมัติ
+
+### UI / Contracts / Acceptance Criteria
+
+คงVideoGallery/FocusDragScrollmarkupclasses/CSS ขนาดสีฟอนต์/Playbutton/blurและresponsiveเดิม เพิ่มoptionalexternal-linkmode defaultfalseเพื่อรักษาหน้าอื่น API/CMS/DB/category/globalstyles/layoutไม่เปลี่ยน รายการหน้าแรกมาจากstatic12links ไม่เขียนทับCMSvideosเดิม
+
+- [x] 12canonicalwatchlinks/thumbnailตรงsourceและเปิดแท็บใหม่ พร้อมnoopener/noreferrer ไม่มีtracking/starttimeจากsource
+- [x] Homepageไม่มีiframe/modalplayerจากการกดวิดีโอ การลาก/แตะข้างเพื่อfocus/keyboardยังทำงาน
+- [x] VideoGallerydefaultในหน้าอื่นยังใช้modalเดิม category/CMSdata/CSS/globalfilesเดิมไม่เปลี่ยน
+- [x] Typecheck/lint/format/buildและBrowser320/390/768/1440ตามPlanผ่านพร้อมหลักฐาน
+
+### Plan / Approval / Current State
+
+ไฟล์และ12assetdestinations/ขั้นตอน/impactsharedgallery/rollbackอยู่ในoutput/youtube-direct-links-20261105/plan.mdและหัวข้อท้ายplan.md ตรวจ12ลิงก์จากBrowserแล้ว ยังไม่ได้แก้app/data/assets ไม่มีmissinginformationของsnapshotนี้ แต่รออนุมัติแผนใหม่ตามAGENTS.md การอนุมัติAPIก่อนหน้าไม่ใช้แทนงานที่ผู้ใช้discardแล้ว ไม่Commit/Push/Deploy Final Next.js feedback review: no qualifying framework issue in planning.
+
+### Approval record — implementation
+
+ผู้ใช้: “อนุมัติครับ ทำตามแผนได้เลย ใช้ 12 คลิปล่าสุด กดแล้วเปิด YouTube ในแท็บใหม่ โดยคงรูปแบบเดิมไว้ครับ” อนุมัติแผนdirectlinksฉบับนี้แล้ว รวมstatic12links/12localimages/optionalhomepageexternalmode/verificationfilesตามallowlist ไม่restorediscardedAPIcode ไม่Commit/Push/Deploy
+
+### Completed state / verification
+
+Progress: "Done — static12sourceclips/directYouTubetabs verified"
+
+เพิ่มhomepageYoutubeVideos12recordsตามBrowserVideos/Latest พร้อม12localAVIFthumbnailsที่เก็บsourcebytesตรงhash (.jpg sourceURLsตอบimage/avifจึงใช้extensionจริง ไม่มีconversion) หน้าแรกใช้VideoGallery openInYoutube=true เป็นanchorcanonicalwatchURL/targetblank/relnoopenernoreferrer ไม่rendermodal/iframeในmodeนี้ optionalpropdefaultfalseทำให้หน้าอื่นคงbutton/modalเดิม ไม่แก้CSS/globalUI/layout/config/env/CMS/product/categorydata
+
+ผ่านTypeScript/scopedESLint/finaltestlint/Prettier/diff/Node24Build431/431และBrowser9/9 รวม320/390/768/1440px,keyboard/popup/12imageURLs/dragไม่เปิดแท็บ/focusเดิม/defaultmodalที่sunford-pos-android ค่ารูปแบบ4baselineตรงกัน 308filesนอกscopehashเดิม APIfilesที่discardยังไม่มี กดBrowserจริงเปิดหมีปรุงบนYouTubeURL/ชื่อคลิปตรงsourceแล้ว
+
+ผลตรวจ/backup/sourceassetmanifest/screenshots/rollbackอยู่output/youtube-direct-links-20261105/delivery.md รายการเป็นsnapshot/manualupdate ไม่ใช้APIkey/auto15min ไม่มีDBwrites/Commit/Push/Deploy Localproductionpreview3000ยังเปิดอยู่ Final Next.js feedback reporting pass: no verified qualifying framework issue.

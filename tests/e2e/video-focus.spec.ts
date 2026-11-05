@@ -5,6 +5,13 @@ test.describe("mobile centered previews", () => {
 
   for (const selector of [".video-track", ".stories-track"]) {
     test(`${selector} focuses side previews before opening them`, async ({ page }) => {
+      if (selector === ".video-track") {
+        await page
+          .context()
+          .route("https://www.youtube.com/watch?*", (route) =>
+            route.fulfill({ contentType: "text/html", body: "YouTube destination" }),
+          );
+      }
       await page.goto("/", { waitUntil: "domcontentloaded" });
       await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
         timeout: 15000,
@@ -43,6 +50,7 @@ test.describe("mobile centered previews", () => {
         await expectFocused(index);
         await expect(page).toHaveURL(/\/$/);
         await expect(page.getByRole("dialog")).toBeHidden();
+        if (selector === ".video-track") expect(page.context().pages()).toHaveLength(1);
       }
 
       await expectFocused(1);
@@ -57,9 +65,13 @@ test.describe("mobile centered previews", () => {
       await track.screenshot({ path: test.info().outputPath("mobile-centered.jpg") });
 
       if (selector === ".video-track") {
-        await page.route("https://www.youtube-nocookie.com/**", (route) => route.abort());
+        const href = await cards.nth(2).getAttribute("href");
+        const opened = page.waitForEvent("popup");
         await cards.nth(2).tap();
-        await expect(page.getByRole("dialog")).toBeVisible();
+        const popup = await opened;
+        await expect(popup).toHaveURL(href!);
+        await expect(page.getByRole("dialog")).toBeHidden();
+        await popup.close();
       } else {
         const href = await cards.nth(2).getAttribute("href");
         await cards.nth(2).tap();
@@ -72,13 +84,18 @@ test.describe("mobile centered previews", () => {
 test("three videos stay sharp and the next video becomes gradually clearer without playing on drag", async ({
   page,
 }) => {
+  await page
+    .context()
+    .route("https://www.youtube.com/watch?*", (route) =>
+      route.fulfill({ contentType: "text/html", body: "YouTube destination" }),
+    );
   await page.setViewportSize({ width: 1440, height: 950 });
   await page.goto("/");
   await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
     timeout: 15000,
   });
   const track = page.locator(".video-track");
-  const cards = track.locator(':scope > button[data-focus-copy="1"]');
+  const cards = track.locator(':scope > a[data-focus-copy="1"]');
   await track.scrollIntoViewIfNeeded();
   for (const index of [0, 1, 2]) {
     await expect
@@ -109,19 +126,19 @@ test("three videos stay sharp and the next video becomes gradually clearer witho
   await page.mouse.up();
   await expect.poll(blur).toBeLessThan(0.1);
   expect(await track.evaluate((element) => element.scrollLeft)).toBeGreaterThan(before + 200);
+  expect(page.context().pages()).toHaveLength(1);
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(page).toHaveURL(/\/$/);
   await page
     .locator(".video-gallery")
     .screenshot({ path: test.info().outputPath("videos-three-clear.png"), animations: "disabled" });
 
-  await page.route("https://www.youtube-nocookie.com/**", (route) => route.abort());
+  const href = await cards.nth(3).getAttribute("href");
+  const opened = page.waitForEvent("popup");
   await cards.nth(3).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.locator(".video-player")).toHaveAttribute(
-    "src",
-    /youtube-nocookie.com\/embed\/.+\?autoplay=1/,
-  );
-  await page.keyboard.press("Escape");
+  const popup = await opened;
+  await expect(popup).toHaveURL(href!);
+  await popup.close();
+  await expect(page.locator(".video-player")).toHaveCount(0);
   await expect(page.getByRole("dialog")).toBeHidden();
 });

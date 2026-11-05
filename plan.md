@@ -1220,3 +1220,25 @@ Files: commit only the migration application/data/importer/test files and verifi
 Rollback: use a normal revert of this migration commit if later requested; no history rewrite or database deletion. Verification: prior application Build/Browser tests remain applicable because follow-up changes only approval documentation; inspect exact staged diff before commit and remote hash after push. Final Next.js feedback review: no qualifying framework issue in this Git-only follow-up.
 
 Result: content commit `a00afc2` pushed to `origin/safe`; remote hash matched local HEAD and worktree was clean. Staged exactly66 approved files including47 verified images, excluding backups/environment/receipts. Two held items remain unchanged. This final documentation update records the verified push; it does not alter application content.
+
+# Plan: Homepage direct YouTube video links (2026-11-05)
+
+User discarded automaticAPI implementation. Verified cleanworktree and currentoriginalcomponents, inspectedsharedgallery/focus/CSS, captured12latestcanonicalwatchlinks from the user's openBrowser channel. Revised concrete Spec/Plan awaits approval; no application/data/media edits.
+
+Exact proposed files: src/features/home/data/youtube-video-links.ts(new static12), src/features/home/components/source-showcase.tsx(homeonlywiring), src/features/content/components/video-gallery.tsx(optionalexternal-linkmode/default unchanged), tests/e2e/video-focus.spec.ts(homeexpectations), tests/e2e/youtube-video-links.spec.ts(new coverage), spec.md/plan.md and output/youtube-direct-links-20261105/. The12image destinations, source links, impact and rollback are enumerated in output/youtube-direct-links-20261105/plan.md. No globalUI/layout/styles/next.config/env changes.
+
+- [x] Inspectdiscard and sourceBrowser; specifyhomepage-onlyexternalclick/staticdata/defaultmodepreservation.
+- [x] ReceiveapprovalforthisrevisedSpec/Plan beforeapp edits underAGENTS.md.
+- Approval received: “อนุมัติครับ ทำตามแผนได้เลย ใช้ 12 คลิปล่าสุด กดแล้วเปิด YouTube ในแท็บใหม่ โดยคงรูปแบบเดิมไว้ครับ”. Proceed within the revised allowlist only.
+- [x] Baselineandverifiedsource/assetmanifest; addonly12approvedlocalimages.
+- [x] Addstaticlinksandhomepageexternal-linkmode withoutrestoringdiscardedAPIcode.
+- [x] VerifynewtabwatchURLs,images,absenceofhomepageiframe,drag/focus/keyboard/responsive320/390/768/1440 anddefaultmodalonotherpages.
+- [x] Runscopedtypecheck/lint/format/build/e2e; recordactualresults/screenshots.
+
+Rollback only scoped app/test/assetdiffs; do notresetotherwork orrestoreAPIimplementation. Snapshotdoesnotautomaticallyrefresh; updatinglinksismanual. NoAPIkey/DB/CMSwrites/commit/push/deploy. FinalNext.jsfeedbackreview:noqualifyingframeworkissue.
+
+## Direct-link implementation results
+
+Completed approved5app/testfiles+2docs+12images. SourceURLsending.jpgactuallyreturnedAVIF (includingJPEGAccept), so preserve12originalbinaries as.avif atthesameapprovedassetIDs; artifactplanlistsactualpaths. Noimageconversion/additionalassets.
+
+PassedTypeScript/scopedlint/finaltestlint/Prettier/diff, Node24productionbuild431/431, Browser9/9 including320/390/768/1440,12sourceURLs/images,newtab/keyboard,drag/focus/blur and non-homepage defaultmodal. Fourstyle/overflowbaselinesmatch;308unrelatedbaselinefilesunchanged. ActualBrowser openedthematchingYouTubeclip/channel, preserveduseroriginaltabs andleftlocalhomepagepreviewopen. NoAPI/config/env/CSS/category/CMS/DBchanges orcommit/push/deploy. Exactevidenceandrollback: output/youtube-direct-links-20261105/delivery.md. FinalNextfeedbackpass:noqualifyingframeworkissue.

@@ -4,11 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { getContentPages, getContentPage } from "@/features/content/server/content-repository";
+import { getContentPages } from "@/features/content/server/content-repository";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { storyCardContent } from "../data/story-cards";
 import storyStyles from "./stories-section.module.css";
 import { FocusDragScroll } from "@/components/ui/focus-drag-scroll";
+import { homepageYoutubeVideos } from "../data/youtube-video-links";
 
 export async function SunfordStories() {
   const copy = await getSettings("stories", storiesDefaults);
@@ -104,9 +105,13 @@ export async function SunfordStories() {
 }
 
 export async function SunfordVideos() {
-  const settings = await getSettings("videos", {
-    videos: (await getContentPage("/"))?.videos ?? [],
-  });
   const copy = await getSettings("stories", storiesDefaults);
-  return <VideoGallery videos={settings.videos} title={copy.videoTitle} focusCarousel />;
+  return (
+    <VideoGallery
+      videos={homepageYoutubeVideos}
+      title={copy.videoTitle}
+      focusCarousel
+      openInYoutube
+    />
+  );
 }
