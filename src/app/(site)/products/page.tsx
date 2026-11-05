@@ -4,27 +4,42 @@ import { getProducts } from "@/features/catalog/server/product-repository";
 import { getCatalogPage } from "@/features/catalog/server/catalog-page";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import { getScaleSubcategories } from "@/features/catalog/data/scale-subcategories";
+import { getPlatformSubcategories } from "@/features/catalog/data/platform-subcategories";
+import { getPosSubcategories } from "@/features/catalog/data/pos-subcategories";
+import { getIndicatorSubcategories } from "@/features/catalog/data/indicator-subcategories";
+import { deduplicateConsumableSizes } from "@/features/catalog/data/consumable-sizes";
+import { getAccessorySubcategories } from "@/features/catalog/data/accessory-subcategories";
 import { catalogCardName } from "@/features/catalog/data/catalog-card-names";
-import {
-  getMockSubcategories,
-  productCategoryDefinitions,
-} from "@/features/catalog/data/mock-categories";
+import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
 export const metadata: Metadata = { title: "ผลิตภัณฑ์ทั้งหมด" };
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const products = deduplicateConsumableSizes(await getProducts());
   const categories = await Promise.all(
     productCategoryDefinitions.map(async ({ id, label, path }) => {
       const catalog = await getCatalogPage(path, products);
-      const productIds = (catalog?.products ?? []).map((product) => product.id);
+      const indicatorSubcategories =
+        id === "indicators" ? getIndicatorSubcategories(products) : undefined;
+      const productIds = [
+        ...new Set([
+          ...(catalog?.products ?? []).map((product) => product.id),
+          ...(indicatorSubcategories?.flatMap((child) => child.productIds) ?? []),
+        ]),
+      ];
       return {
         id,
         label,
         productIds,
-        subcategoriesAreMock: id !== "scales",
+        subcategoriesAreMock: false,
         subcategories:
           id === "scales"
             ? getScaleSubcategories(catalog?.products ?? [])
-            : getMockSubcategories(id, productIds),
+            : id === "platforms"
+              ? getPlatformSubcategories(catalog?.products ?? [])
+              : id === "pos"
+                ? getPosSubcategories(catalog?.products ?? [])
+                : id === "indicators"
+                  ? indicatorSubcategories!
+                  : getAccessorySubcategories(catalog?.products ?? []),
       };
     }),
   );

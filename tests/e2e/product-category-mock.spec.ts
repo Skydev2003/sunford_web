@@ -2,6 +2,309 @@ import { expect, test, type Locator } from "@playwright/test";
 import { catalogProductGroup } from "../../src/features/catalog/data/catalog-supplements";
 import type { Product } from "../../src/features/catalog/types";
 import manifest from "../../src/features/catalog/data/scale-category-models.json";
+import { platformSubcategoryDefinitions } from "../../src/features/catalog/data/platform-subcategories";
+import { deduplicateConsumableSizes } from "../../src/features/catalog/data/consumable-sizes";
+import { accessorySubcategoryDefinitions } from "../../src/features/catalog/data/accessory-subcategories";
+
+const materialNames = platformSubcategoryDefinitions.map(({ label }) => label);
+const accessoryNames = accessorySubcategoryDefinitions.map(({ label }) => label);
+
+for (const width of [320, 390, 768, 1440]) {
+  test(`five accessory subcategories retain seven consumable sizes and explicit Mock models at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/products?category=accessories");
+    const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+    const track = region.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" });
+    await expect(track.getByRole("button")).toHaveText(["ทั้งหมด", ...accessoryNames]);
+    await expect(region.getByRole("status")).toHaveText("39 รายการ · 7 รุ่นตัวอย่าง (Mock)");
+    const stops = await subcategoryStops(track);
+    await region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางขวา", exact: true }).click();
+    await expectSubcategoryPosition(track, stops[1]);
+    await region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางซ้าย", exact: true }).click();
+    await expectSubcategoryPosition(track, 0);
+    await loadAll(region);
+    const allLinks = await hrefs(region);
+    expect(new Set(allLinks).size).toBe(39);
+    expect(allLinks).toContain("/products/TMS");
+    const allMockNames = await region
+      .locator('article[data-mock-product="true"] h3')
+      .allTextContents();
+    expect([...allMockNames].sort()).toEqual(
+      [
+        "LCDC1C5",
+        "RS2321M2F",
+        "LoadcellCable",
+        "CableConnector",
+        "PU20M12",
+        "PU25M12",
+        "LP42",
+      ].sort(),
+    );
+    for (const [index, name] of accessoryNames.entries()) {
+      const child = track.getByRole("button", { name, exact: true });
+      await child.focus();
+      await page.keyboard.press("Enter");
+      await expect(child).toHaveAttribute("aria-pressed", "true");
+      const real = [3, 0, 2, 4, 7][index];
+      const mocks = [1, 3, 2, 1, 0][index];
+      await expect(region.getByRole("status")).toHaveText(
+        `${real} รายการ${mocks ? ` · ${mocks} รุ่นตัวอย่าง (Mock)` : ""}`,
+      );
+      if (index < 4)
+        await expect(region.locator("article h3")).toHaveText(
+          accessorySubcategoryDefinitions[index].models.map(({ model }) => model),
+        );
+      expect((await hrefs(region)).every((href) => allLinks.includes(href))).toBe(true);
+      await expect(region.locator('article[data-mock-product="true"]')).toHaveCount(mocks);
+      await expect(
+        region.locator('article[data-mock-product="true"]').locator("a, button, img"),
+      ).toHaveCount(0);
+      if (index === 1) {
+        await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+        await expect(region.locator("article button")).toHaveCount(0);
+        await expect(page.locator(".compare-bar strong")).toHaveText("0/3");
+        await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
+      }
+      if (index === 2) {
+        await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("PU20M12");
+        await expect(region.locator("article h3")).toHaveText(["PU20M12"]);
+        await expect(region.locator('article[data-mock-product="true"]')).toHaveCount(1);
+        await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("");
+      }
+      if (index === 3)
+        await region.screenshot({ path: test.info().outputPath(`accessories-${width}.png`) });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+    await region.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
+    await expect(region.locator("article")).toHaveCount(7);
+    await region.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
+    await region.getByRole("button", { name: "ระบบ POS", exact: true }).click();
+    await region.getByRole("button", { name: "อุปกรณ์เสริม", exact: true }).click();
+    await expect(track.getByRole("button", { name: "ทั้งหมด", exact: true })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await expect(region.getByRole("status")).toHaveText("39 รายการ · 7 รุ่นตัวอย่าง (Mock)");
+    expect(await track.evaluate((element) => getComputedStyle(element).overflowX)).toBe("hidden");
+  });
+}
+
+for (const width of [320, 390, 768, 1440]) {
+  test(`consumables show one card per size while original variants remain at ${width}px`, async ({
+    page,
+    request,
+  }) => {
+    const { products } = (await (await request.get("/api/products")).json()) as {
+      products: Product[];
+    };
+    expect(products).toHaveLength(159);
+    const consumableSources = [
+      "Sticker_6040",
+      "Sticker_5330",
+      "Sticker_5320",
+      "Sticker_5750",
+      "Sticker_8080",
+      "10748",
+      "10740",
+      "10749",
+      "10750",
+      "10747",
+      "10742",
+      "10744",
+      "10743",
+      "10745",
+      "10746",
+      "10810",
+      "10809",
+      "10812",
+      "10811",
+      "10824",
+    ];
+    const representativeSources = [
+      "Sticker_6040",
+      "Sticker_5330",
+      "Sticker_5320",
+      "Sticker_5750",
+      "Sticker_8080",
+      "10748",
+      "10749",
+    ];
+    const pathsFor = (sources: string[]) =>
+      products
+        .filter((product) => sources.includes(product.sourceId ?? ""))
+        .map((product) => `/products/${product.slug}`);
+    const originalPaths = pathsFor(consumableSources);
+    const representatives = pathsFor(representativeSources);
+    expect(originalPaths).toHaveLength(20);
+    expect(representatives).toHaveLength(7);
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/products?category=accessories");
+    const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+    const track = region.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" });
+    await expect(region.getByRole("heading", { level: 2 })).toHaveText("อุปกรณ์เสริม");
+    await loadAll(region);
+    const sizeLinks = async () =>
+      (await hrefs(region)).filter((href) => originalPaths.includes(href ?? ""));
+    expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
+    const childLinks: (string | null)[] = [];
+    for (const name of accessoryNames) {
+      await track.getByRole("button", { name, exact: true }).focus();
+      await page.keyboard.press("Enter");
+      await loadAll(region);
+      childLinks.push(...(await sizeLinks()));
+    }
+    expect(childLinks.sort()).toEqual([...representatives].sort());
+    await track.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
+    await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("เลเบล");
+    await loadAll(region);
+    expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
+    await region.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
+    expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
+    await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+    expect(new Set(await sizeLinks()).size).toBe(7);
+    await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
+    await region.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await region.screenshot({ path: test.info().outputPath(`consumable-sizes-${width}.png`) });
+    await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("");
+    await region.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).click();
+    await expect(region.getByRole("status")).toHaveText("146 รายการ");
+    await loadAll(region);
+    expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
+    if (width === 1440) {
+      const retainedOriginal = await request.get("/products/10746");
+      expect(retainedOriginal.ok()).toBe(true);
+    }
+  });
+}
+
+for (const width of [320, 390, 768, 1440]) {
+  test(`indicator display and overlapping waterproof filters at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/products?category=indicators");
+    const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+    const track = region.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" });
+    await expect(track.getByRole("button")).toHaveText(["ทั้งหมด", "LCD", "LED", "กันน้ำ"]);
+    await expect(region.getByRole("status")).toHaveText("10 รายการ · 2 รุ่นตัวอย่าง (Mock)");
+    const allLinks = await hrefs(region);
+    expect(new Set(allLinks).size).toBe(10);
+    await expect(region.locator("article h3")).toContainText(["AC31S"]);
+    await expect(region.locator('article[data-mock-product="true"]')).toHaveCount(2);
+    for (const [name, models] of [
+      ["LCD", ["AW31", "AC31P", "SW31F", "WP31C", "LCDC1C5"]],
+      ["LED", ["SW31", "WP31E", "WP31EUSB", "LED-R1", "LED-R3", "LED-R5"]],
+      ["กันน้ำ", ["WP31C", "WP31E", "WP31EUSB"]],
+    ] as const) {
+      const button = track.getByRole("button", { name, exact: true });
+      await button.focus();
+      await page.keyboard.press("Enter");
+      await expect(button).toHaveAttribute("aria-pressed", "true");
+      await expect(region.getByRole("status")).toHaveText(
+        `${models.length - 1} รายการ · 1 รุ่นตัวอย่าง (Mock)`,
+      );
+      await expect(region.locator("article h3")).toHaveText([...models]);
+      expect((await hrefs(region)).every((href) => allLinks.includes(href))).toBe(true);
+      const mock = region.locator('article[data-mock-product="true"]');
+      await expect(mock).toHaveCount(1);
+      await expect(mock.getByRole("heading")).toHaveText(name === "LCD" ? "LCDC1C5" : "WP31EUSB");
+      await expect(mock.getByText("Mock", { exact: true })).toBeVisible();
+      await expect(mock.locator("a, button, img")).toHaveCount(0);
+      if (name === "LED") {
+        const links = await hrefs(region);
+        for (const model of ["LED-R1", "LED-R3", "LED-R5"])
+          expect(links.filter((href) => href === `/products/${model}`)).toHaveLength(1);
+        await region.screenshot({ path: test.info().outputPath(`indicators-led-${width}.png`) });
+      }
+    }
+    await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+    await expect(
+      region.locator('article[data-mock-product="true"]').locator("a, button, img"),
+    ).toHaveCount(0);
+    await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
+    await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("WP31C");
+    await expect(region.locator("article h3")).toHaveText(["WP31C"]);
+    await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("");
+    await track.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
+    expect((await hrefs(region)).sort()).toEqual([...allLinks].sort());
+    await region.getByRole("button", { name: "แสดงแบบรายการ" }).click();
+    await expect(region.locator("article")).toHaveCount(12);
+    await region.getByRole("button", { name: "แสดงแบบตาราง" }).click();
+    expect(await track.evaluate((element) => getComputedStyle(element).overflowX)).toBe("hidden");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await track.scrollIntoViewIfNeeded();
+    await track
+      .locator("..")
+      .screenshot({ path: test.info().outputPath(`indicators-${width}.png`) });
+    await region.getByRole("button", { name: "ระบบ POS", exact: true }).click();
+    await region.getByRole("button", { name: "อินดิเคเตอร์แท่นชั่ง", exact: true }).click();
+    await expect(track.getByRole("button", { name: "ทั้งหมด", exact: true })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await expect(region.locator("article")).toHaveCount(12);
+  });
+}
+
+for (const width of [320, 390, 768, 1440]) {
+  test(`platform material subcategories retain real products and ABS mock at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/products?category=platforms");
+    const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+    const track = region.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" });
+    await expect(track.getByRole("button")).toHaveText(["ทั้งหมด", ...materialNames]);
+    await expect(region.getByRole("status")).toHaveText("23 รายการ · 1 รุ่นตัวอย่าง (Mock)");
+    const allLinks = await hrefs(region);
+    expect(new Set(allLinks).size).toBe(23);
+    for (const [index, name] of materialNames.entries()) {
+      const child = track.getByRole("button", { name, exact: true });
+      await child.focus();
+      await page.keyboard.press("Enter");
+      await expect(child).toHaveAttribute("aria-pressed", "true");
+      await expect(region.getByRole("status")).toHaveText(
+        index === 3 ? "0 รายการ · 1 รุ่นตัวอย่าง (Mock)" : `${[12, 9, 2][index]} รายการ`,
+      );
+      expect((await hrefs(region)).every((href) => allLinks.includes(href))).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+    const mock = region.locator('article[data-mock-product="true"]');
+    await expect(mock).toHaveCount(1);
+    await expect(mock.getByRole("heading")).toHaveText(materialNames[3]);
+    await expect(mock.getByText("Mock", { exact: true })).toBeVisible();
+    await expect(mock.locator("a, button, img")).toHaveCount(0);
+    await region.getByRole("button", { name: "แสดงแบบรายการ" }).click();
+    await expect(mock).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await region.getByRole("button", { name: "แสดงแบบตาราง" }).click();
+    await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("ABS");
+    await expect(mock).toHaveCount(1);
+    await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+    await expect(mock.locator("button")).toHaveCount(0);
+    await expect(page.locator(".compare-bar strong")).toHaveText("0/3");
+    await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
+    await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("");
+    await track.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
+    await track.getByRole("button").first().focus();
+    await expect(track.getByRole("button").first()).toHaveAttribute("aria-pressed", "true");
+    await page.screenshot({
+      path: test.info().outputPath(`platform-materials-${width}.png`),
+      fullPage: true,
+    });
+  });
+}
 
 const categories = [
   { label: "เครื่องชั่ง", path: "/products" },
@@ -12,19 +315,44 @@ const categories = [
 ];
 const categoryName = (index: number) => categories[index - 1].label;
 const scaleNames = [
-  "เครื่องชั่งคำนวณราคาหน้าร้าน",
-  "เครื่องชั่งอุตสาหกรรมงานผลิต",
-  "เครื่องชั่งงานวิเคราะห์ความแม่นยำสูง",
-  "เครื่องชั่งงานครัวและกาแฟ",
-  "เครื่องชั่งกันน้ำและกันฝุ่น 100%",
-  "เครื่องชั่งตั้งโต๊ะ",
-  "เครื่องชั่งตั้งพื้น",
-  "เครื่องชั่งมีเสา",
+  "คำนวณราคาหน้าร้าน",
+  "อุตสาหกรรมงานผลิต",
+  "งานวิเคราะห์ความแม่นยำสูง",
+  "งานครัวและกาแฟ",
+  "กันน้ำและกันฝุ่น 100%",
+  "ตั้งโต๊ะ",
+  "ตั้งพื้น",
+  "มีเสา",
 ];
 const hrefs = (region: Locator) =>
   region
     .locator("article > a")
     .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+
+async function subcategoryStops(track: Locator) {
+  return track.evaluate((element) => {
+    const buttons = [...element.querySelectorAll("button")];
+    const maximum = element.scrollWidth - element.clientWidth;
+    return [
+      ...new Set([
+        0,
+        ...buttons.map((button) =>
+          Math.min(
+            maximum,
+            button.getBoundingClientRect().left - buttons[0].getBoundingClientRect().left,
+          ),
+        ),
+        maximum,
+      ]),
+    ];
+  });
+}
+
+async function expectSubcategoryPosition(track: Locator, target: number) {
+  await expect
+    .poll(() => track.evaluate((element, left) => Math.abs(element.scrollLeft - left), target))
+    .toBeLessThan(1);
+}
 
 async function loadAll(region: Locator) {
   const more = region.getByRole("button", { name: /ดูเพิ่มเติม/ });
@@ -46,7 +374,8 @@ test("five real families remain complete and eight children reproduce every docu
   const response = await request.get("/api/products");
   expect(response.ok()).toBe(true);
   const { products } = (await response.json()) as { products: Product[] };
-  const published = products.filter((product) => catalogProductGroup(product));
+  const visibleProducts = deduplicateConsumableSizes(products);
+  const published = visibleProducts.filter((product) => catalogProductGroup(product));
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
   await expect(region.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
   await expect(region.getByText("หมวดหมู่ย่อยบางหมวดยังเป็นตัวอย่าง")).toHaveCount(0);
@@ -75,8 +404,10 @@ test("five real families remain complete and eight children reproduce every docu
     ).toHaveCount(0);
     await loadAll(region);
     const parent = await hrefs(region);
-    const expected = products.filter(
-      (product) => catalogProductGroup(product) === categories[index - 1].path,
+    const expected = visibleProducts.filter(
+      (product) =>
+        catalogProductGroup(product) === categories[index - 1].path ||
+        (index === 2 && ["LED-R1", "LED-R3", "LED-R5"].includes(product.sourceId ?? "")),
     );
     expect([...parent].sort()).toEqual(
       expected.map((product) => `/products/${product.slug}`).sort(),
@@ -86,7 +417,16 @@ test("five real families remain complete and eight children reproduce every docu
     );
     parents.push(...parent);
     const children: (string | null)[] = [];
-    const childNames = index === 1 ? scaleNames : ["หมวดย่อย 01", "หมวดย่อย 02"];
+    const childNames =
+      index === 1
+        ? scaleNames
+        : index === 2
+          ? ["LCD", "LED", "กันน้ำ"]
+          : index === 3
+            ? materialNames
+            : index === 4
+              ? ["iOS", "Android", "Windows"]
+              : accessoryNames;
     await expect(
       region.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" }).getByRole("button"),
     ).toHaveText(["ทั้งหมด", ...childNames]);
@@ -97,8 +437,32 @@ test("five real families remain complete and eight children reproduce every docu
       await loadAll(region);
       const childHrefs = await hrefs(region);
       expect(childHrefs.every((href) => parent.includes(href))).toBe(true);
+      if (index === 3) {
+        const definition = platformSubcategoryDefinitions.find(({ label }) => label === name)!;
+        expect(await region.locator("article h3").allTextContents()).toEqual(
+          definition.models.map(({ model }) => model),
+        );
+        const mocks = region.locator('article[data-mock-product="true"]');
+        await expect(mocks.locator("a, button, img")).toHaveCount(0);
+        await expect(mocks).toHaveCount(name === materialNames[3] ? 1 : 0);
+        if (name === materialNames[3])
+          await expect(mocks.getByText("Mock", { exact: true })).toBeVisible();
+      }
+      if (index === 4) {
+        const expectedModels =
+          name === "Android" ? ["P1", "P4"] : name === "Windows" ? ["P1W"] : [];
+        expect((await region.locator("article h3").allTextContents()).sort()).toEqual(
+          expectedModels,
+        );
+        if (name === "iOS")
+          await expect(
+            region.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),
+          ).toBeVisible();
+      }
       if (index === 1) {
-        const definition = manifest.categories.find((item) => item.label === name)!;
+        const definition = manifest.categories.find(
+          (item) => item.label.replace(/^เครื่องชั่ง/, "") === name,
+        )!;
         const expectedModels = definition.groups
           .flatMap((group) => group.models)
           .flatMap((model) => (model === "WSS30KS" ? ["WSS30KS-LCD", "WSS30KS-LED"] : [model]))
@@ -126,13 +490,24 @@ test("five real families remain complete and eight children reproduce every docu
       expect(children.length).toBeGreaterThan(new Set(children).size);
       expect(children).toContain("/products/10624");
       expect(parent).toContain("/products/10624");
+    } else if (index === 2) {
+      expect(children.length).toBe(11);
+      expect([...new Set(children)].sort()).toEqual(
+        parent.filter((href) => href !== "/products/10776").sort(),
+      );
+    } else if (index === 5) {
+      expect(children.length).toBe(16);
+      expect(new Set(children).size).toBe(16);
     } else {
       expect(children.sort()).toEqual([...parent].sort());
       expect(new Set(children).size).toBe(parent.length);
     }
     expect(new URL(page.url()).pathname).toBe("/products");
   }
-  expect(parents.sort()).toEqual([...all].sort());
+  expect([...new Set(parents)].sort()).toEqual([...all].sort());
+  expect(parents.length).toBe(all.length + 3);
+  for (const model of ["LED-R1", "LED-R3", "LED-R5"])
+    expect(parents.filter((href) => href === `/products/${model}`)).toHaveLength(2);
   await region.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).click();
   await expect(region.locator("article")).toHaveCount(24);
   await expect(region.getByRole("button", { name: "ทั้งหมด", exact: true })).toHaveAttribute(
@@ -140,6 +515,96 @@ test("five real families remain complete and eight children reproduce every docu
     "true",
   );
   expect(errors).toEqual([]);
+});
+
+test("subcategory arrows advance one button even during rapid clicks, stop at edges and preserve selection", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 950 });
+  await page.goto("/products?category=scales");
+  const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+  const track = region.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" });
+  await expect(track.getByRole("button")).toHaveText(["ทั้งหมด", ...scaleNames]);
+  const originalResults = await region.getByRole("status").textContent();
+  const stops = await subcategoryStops(track);
+  expect(stops.length).toBeGreaterThan(3);
+  expect(stops[2] - stops[1]).not.toBeCloseTo(stops[1] - stops[0], 0);
+  const forward = region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางขวา", exact: true });
+  const backward = region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางซ้าย", exact: true });
+  await forward.dblclick({ delay: 30 });
+  await expectSubcategoryPosition(track, stops[2]);
+  await backward.dblclick({ delay: 30 });
+  await expectSubcategoryPosition(track, 0);
+  for (const target of stops.slice(1)) {
+    await forward.click();
+    await expectSubcategoryPosition(track, target);
+  }
+  await forward.click();
+  await expectSubcategoryPosition(track, stops.at(-1)!);
+  await expect(track.getByRole("button", { name: "ทั้งหมด", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(region.getByRole("status")).toHaveText(originalResults!);
+  for (const target of stops.slice(0, -1).reverse()) {
+    await backward.click();
+    await expectSubcategoryPosition(track, target);
+  }
+  await backward.click();
+  await expectSubcategoryPosition(track, 0);
+  await forward.click();
+  await expectSubcategoryPosition(track, stops[1]);
+  await page.setViewportSize({ width: 768, height: 950 });
+  const resizedStops = await subcategoryStops(track);
+  const current = await track.evaluate((element) => element.scrollLeft);
+  const previous = resizedStops.filter((left) => left < current - 1).at(-1) ?? 0;
+  await backward.click();
+  await expectSubcategoryPosition(track, previous);
+});
+
+test.describe("subcategory arrow-only touch navigation", () => {
+  test.use({ viewport: { width: 390, height: 950 }, hasTouch: true, isMobile: true });
+  test("horizontal wheel and swipe do not move the strip; vertical page scrolling remains available", async ({
+    page,
+    context,
+  }) => {
+    await page.goto("/products?category=scales");
+    const track = page.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" });
+    await expect(track.getByRole("button")).toHaveText(["ทั้งหมด", ...scaleNames]);
+    await track.scrollIntoViewIfNeeded();
+    expect(await track.evaluate((element) => getComputedStyle(element).overflowX)).toBe("hidden");
+    expect(await track.evaluate((element) => getComputedStyle(element).touchAction)).toBe("pan-y");
+    await page.bringToFront();
+    const session = await context.newCDPSession(page);
+    async function swipe(dx: number, dy: number) {
+      const bounds = (await track.boundingBox())!;
+      const x = bounds.x + bounds.width / 2;
+      const y = bounds.y + bounds.height / 2;
+      await session.send("Input.dispatchTouchEvent", {
+        type: "touchStart",
+        touchPoints: [{ x, y }],
+      });
+      for (let step = 1; step <= 8; step++) {
+        await session.send("Input.dispatchTouchEvent", {
+          type: "touchMove",
+          touchPoints: [{ x: x + (dx * step) / 8, y: y + (dy * step) / 8 }],
+        });
+        await page.waitForTimeout(16);
+      }
+      await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await page.waitForTimeout(250);
+    }
+    const before = await page.evaluate(() => scrollY);
+    await swipe(0, -120);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(before);
+    await swipe(-120, 0);
+    expect(await track.evaluate((element) => element.scrollLeft)).toBe(0);
+    await track.hover();
+    await page.mouse.wheel(250, 0);
+    await page.waitForTimeout(200);
+    expect(await track.evaluate((element) => element.scrollLeft)).toBe(0);
+    await session.detach();
+  });
 });
 
 test("parent changes reset children and search intersects with the selected demo group", async ({
@@ -163,7 +628,7 @@ test("parent changes reset children and search intersects with the selected demo
     "aria-pressed",
     "true",
   );
-  await expect(region.getByRole("button", { name: "หมวดย่อย 01", exact: true })).toHaveAttribute(
+  await expect(region.getByRole("button", { name: "LCD", exact: true })).toHaveAttribute(
     "aria-pressed",
     "false",
   );
@@ -181,7 +646,7 @@ test("parent changes reset children and search intersects with the selected demo
     products: Product[];
   };
   await expect(region.getByRole("status")).toHaveText(
-    `${products.filter((product) => catalogProductGroup(product)).length} รายการ`,
+    `${deduplicateConsumableSizes(products).filter((product) => catalogProductGroup(product)).length} รายการ`,
   );
   await expect(region.locator("article")).toHaveCount(24);
   await region.getByRole("button", { name: /ดูเพิ่มเติม/ }).click();
@@ -213,28 +678,24 @@ test("missing document models are explicit mocks with no product links or compar
   await expect(region.locator("article")).toHaveCount(0);
   await expect(region.getByRole("status")).toHaveText("0 รายการ");
   await region.getByRole("button", { name: "ล้างตัวกรองทั้งหมด" }).click();
-  await expect(region.getByRole("status")).toHaveText("159 รายการ");
+  await expect(region.getByRole("status")).toHaveText("146 รายการ");
   await expect(region.locator('article[data-mock-product="true"]')).toHaveCount(0);
 });
 
-test("sorting, featured filtering and list view retain real product data", async ({ page }) => {
+test("default order, featured filtering and list view retain real product data without a sort control", async ({
+  page,
+}) => {
   await page.goto("/products");
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+  await expect(region.getByRole("combobox", { name: "เรียงลำดับสินค้า" })).toHaveCount(0);
+  const recommended = await region.locator("article h3").allTextContents();
   await region.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
   const featured = await region.locator("article h3").allTextContents();
   expect(featured.length).toBeGreaterThan(0);
   expect(featured.length).toBeLessThan(24);
   expect(featured).toContain("WPS10KS");
   await region.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-  await region.getByRole("combobox", { name: "เรียงลำดับสินค้า" }).selectOption("name");
-  const names = await region.locator("article h3").allTextContents();
-  expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, "th", { numeric: true })));
-  await region.getByRole("combobox", { name: "เรียงลำดับสินค้า" }).selectOption("name-desc");
-  const descending = await region.locator("article h3").allTextContents();
-  expect(descending).toEqual(
-    [...descending].sort((a, b) => b.localeCompare(a, "th", { numeric: true })),
-  );
-  expect(descending).not.toEqual(names);
+  await expect(region.locator("article h3")).toHaveText(recommended);
   await region.getByRole("button", { name: "แสดงแบบรายการ" }).click();
   await expect(region.getByRole("button", { name: "แสดงแบบรายการ" })).toHaveAttribute(
     "aria-pressed",
@@ -363,10 +824,24 @@ for (const viewport of [
       };
     });
     expect(childGeometry).toEqual({ count: 9, rows: 1, singleLine: true });
+    expect(await children.evaluate((element) => getComputedStyle(element).overflowX)).toBe(
+      "hidden",
+    );
+    const firstStep = await children.evaluate((element) => {
+      const [first, second] = Array.from(element.children) as HTMLElement[];
+      return Math.min(
+        element.scrollWidth - element.clientWidth,
+        second.offsetLeft - first.offsetLeft,
+      );
+    });
     const forward = region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางขวา", exact: true });
     const backward = region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางซ้าย", exact: true });
     await forward.click();
-    await expect.poll(() => children.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+    await expect
+      .poll(() =>
+        children.evaluate((element, step) => Math.abs(element.scrollLeft - step), firstStep),
+      )
+      .toBeLessThan(1);
     await expect(children.getByRole("button", { name: "ทั้งหมด", exact: true })).toHaveAttribute(
       "aria-pressed",
       "true",
@@ -432,6 +907,37 @@ for (const viewport of [
         }),
       ).toBe(true);
     }
+    await region.getByRole("button", { name: "ระบบ POS", exact: true }).click();
+    await expect(children.getByRole("button")).toHaveText(["ทั้งหมด", "iOS", "Android", "Windows"]);
+    await expect(region.locator("article")).toHaveCount(3);
+    await children.getByRole("button", { name: "iOS", exact: true }).click();
+    await expect(region.locator("article")).toHaveCount(0);
+    await expect(
+      region.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),
+    ).toBeVisible();
+    await children.getByRole("button", { name: "Android", exact: true }).click();
+    expect((await region.locator("article h3").allTextContents()).sort()).toEqual(["P1", "P4"]);
+    await children.getByRole("button", { name: "Windows", exact: true }).click();
+    await expect(region.locator("article h3")).toHaveText(["P1W"]);
+    await children.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
+    await expect(region.locator("article")).toHaveCount(3);
+    expect(await children.evaluate((element) => getComputedStyle(element).overflowX)).toBe(
+      "hidden",
+    );
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await first.click();
+    await region.getByRole("button", { name: "ระบบ POS", exact: true }).click();
+    await expect(children.getByRole("button", { name: "ทั้งหมด", exact: true })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await expect(region.locator("article")).toHaveCount(3);
+    await children.scrollIntoViewIfNeeded();
+    await children
+      .locator("..")
+      .screenshot({ path: test.info().outputPath(`pos-platforms-${viewport.width}.png`) });
     expect(errors).toEqual([]);
   });
 }

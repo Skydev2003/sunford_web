@@ -52,13 +52,16 @@ function CatalogCategoryUrlSync({
   onSelect,
 }: {
   categories: ProductCategory[];
-  onSelect: (id: string) => void;
+  onSelect: (id: string, childId?: string) => void;
 }) {
   const searchParams = useSearchParams();
   const requestedCategory = searchParams.get("category");
+  const requestedSubcategory = searchParams.get("subcategory");
   useEffect(() => {
-    onSelect(categories.some((item) => item.id === requestedCategory) ? requestedCategory! : "all");
-  }, [requestedCategory, categories, onSelect]);
+    const parent = categories.find((item) => item.id === requestedCategory);
+    const child = parent?.subcategories.find((item) => item.id === requestedSubcategory);
+    onSelect(parent?.id ?? "all", child?.id ?? "all");
+  }, [requestedCategory, requestedSubcategory, categories, onSelect]);
   return null;
 }
 
@@ -74,10 +77,10 @@ export function ProductCategoryMock({
   const [category, setCategory] = useState("all");
   const [subcategory, setSubcategory] = useState("all");
   const [featured, setFeatured] = useState(false);
-  const [sort, setSort] = useState("recommended");
   const [mode, setMode] = useState<"grid" | "list">("grid");
   const [pagination, setPagination] = useState({ key: "", limit: 24 });
   const subcategoryTrack = useRef<HTMLDivElement>(null);
+  const subcategoryScrollTarget = useRef<{ track: HTMLDivElement; left: number } | null>(null);
   const query = useCatalogStore((state) => state.query);
   const setQuery = useCatalogStore((state) => state.setQuery);
   const compareMode = useCatalogStore((state) => state.compareMode);
@@ -90,7 +93,11 @@ export function ProductCategoryMock({
   const normalizedQuery = query.trim().toLowerCase();
   const productsById = new Map(products.map((product) => [product.id, product]));
   const missingModels =
-    !activeSubcategory && activeCategory?.id === "scales"
+    !activeSubcategory &&
+    (activeCategory?.id === "scales" ||
+      activeCategory?.id === "platforms" ||
+      activeCategory?.id === "indicators" ||
+      activeCategory?.id === "accessories")
       ? [
           ...new Map(
             activeCategory.subcategories
@@ -120,21 +127,18 @@ export function ProductCategoryMock({
           .includes(normalizedQuery),
     )
     .sort((a, b) =>
-      sort === "name"
-        ? a.model.localeCompare(b.model, "th", { numeric: true })
-        : sort === "name-desc"
-          ? b.model.localeCompare(a.model, "th", { numeric: true })
-          : activeSubcategory?.entries
-            ? 0
-            : Number(Boolean(b.product?.featured)) - Number(Boolean(a.product?.featured)),
+      activeSubcategory?.entries
+        ? 0
+        : Number(Boolean(b.product?.featured)) - Number(Boolean(a.product?.featured)),
     );
   const realCount = matching.filter((entry) => entry.product).length;
   const mockCount = matching.length - realCount;
-  const filterKey = `${category}:${subcategory}:${normalizedQuery}:${featured}:${sort}`;
+  const filterKey = `${category}:${subcategory}:${normalizedQuery}:${featured}`;
   const limit = pagination.key === filterKey ? pagination.limit : 24;
-  const applyCategory = useCallback((id: string) => {
+  const applyCategory = useCallback((id: string, childId = "all") => {
+    subcategoryScrollTarget.current = null;
     setCategory(id);
-    setSubcategory("all");
+    setSubcategory(childId);
     setPagination({ key: "", limit: 24 });
   }, []);
   const selectCategory = (id: string) => {
@@ -142,13 +146,38 @@ export function ProductCategoryMock({
     const url = new URL(window.location.href);
     if (id === "all") url.searchParams.delete("category");
     else url.searchParams.set("category", id);
+    url.searchParams.delete("subcategory");
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  };
+  const selectSubcategory = (id: string) => {
+    setSubcategory(id);
+    setPagination({ key: "", limit: 24 });
+    const url = new URL(window.location.href);
+    if (id === "all") url.searchParams.delete("subcategory");
+    else url.searchParams.set("subcategory", id);
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   };
   const scrollSubcategories = (direction: number) => {
     const track = subcategoryTrack.current;
     if (!track) return;
-    track.scrollBy({
-      left: direction * track.clientWidth * 0.8,
+    const buttons = Array.from(track.children) as HTMLElement[];
+    const maximum = Math.max(0, track.scrollWidth - track.clientWidth);
+    const positions = [
+      ...new Set([
+        0,
+        ...buttons.map((button) => Math.min(maximum, button.offsetLeft - buttons[0].offsetLeft)),
+        maximum,
+      ]),
+    ];
+    const pending = subcategoryScrollTarget.current;
+    const current = Math.min(maximum, pending?.track === track ? pending.left : track.scrollLeft);
+    const left =
+      direction > 0
+        ? (positions.find((position) => position > current + 1) ?? maximum)
+        : (positions.findLast((position) => position < current - 1) ?? 0);
+    subcategoryScrollTarget.current = { track, left };
+    track.scrollTo({
+      left,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "instant"
         : "smooth",
@@ -218,14 +247,17 @@ export function ProductCategoryMock({
             className={styles.subcategories}
             role="group"
             aria-label="หมวดหมู่ย่อยสินค้า"
+            onScroll={(event) => {
+              const track = event.currentTarget;
+              const pending = subcategoryScrollTarget.current;
+              if (pending?.track === track && Math.abs(track.scrollLeft - pending.left) < 1)
+                subcategoryScrollTarget.current = null;
+            }}
           >
             <button
               type="button"
               aria-pressed={subcategory === "all"}
-              onClick={() => {
-                setSubcategory("all");
-                setPagination({ key: "", limit: 24 });
-              }}
+              onClick={() => selectSubcategory("all")}
             >
               ทั้งหมด
             </button>
@@ -234,12 +266,9 @@ export function ProductCategoryMock({
                 type="button"
                 key={item.id}
                 aria-pressed={subcategory === item.id}
-                onClick={() => {
-                  setSubcategory(item.id);
-                  setPagination({ key: "", limit: 24 });
-                }}
+                onClick={() => selectSubcategory(item.id)}
               >
-                {item.label}
+                {category === "scales" ? item.label.replace(/^เครื่องชั่ง/, "") : item.label}
               </button>
             ))}
           </div>
@@ -302,15 +331,6 @@ export function ProductCategoryMock({
             <List size={19} aria-hidden="true" />
           </button>
         </div>
-        <select
-          aria-label="เรียงลำดับสินค้า"
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-        >
-          <option value="recommended">เรียงตาม: แนะนำ</option>
-          <option value="name">ชื่อรุ่น: A–Z</option>
-          <option value="name-desc">ชื่อรุ่น: Z–A</option>
-        </select>
       </div>
 
       <div

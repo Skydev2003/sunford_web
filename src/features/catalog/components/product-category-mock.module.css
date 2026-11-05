@@ -45,6 +45,9 @@
   background: transparent;
   color: var(--ink);
 }
+.search input:focus-visible {
+  outline: none;
+}
 .categories {
   display: grid;
   grid-template-columns: repeat(5, minmax(190px, 1fr));
@@ -114,7 +117,8 @@
   flex-wrap: nowrap;
   flex: 1;
   min-width: 0;
-  overflow-x: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
   gap: 8px;
   padding: 8px;
 }
