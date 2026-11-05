@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 import type { Product } from "@/features/catalog/types";
+import { relatedProducts } from "@/features/catalog/data/related-products";
+import { catalogProductGroup } from "@/features/catalog/data/catalog-supplements";
+import { buyingGuides } from "@/features/content/data/buying-guides";
+import { findCatalogProduct } from "@/features/catalog/data/product-lookup";
 
 test("detail rows combine repeated labels and use dark text", async ({ page }) => {
   for (const slug of ["10639", "feh5ks"]) {
@@ -40,6 +44,49 @@ test("detail rows combine repeated labels and use dark text", async ({ page }) =
   }
 });
 
+test("general guides and related products use actual content without section links", async ({
+  page,
+  request,
+}) => {
+  const { products } = (await (await request.get("/api/products")).json()) as {
+    products: Product[];
+  };
+  for (const family of new Set(products.map(catalogProductGroup))) {
+    const product = products.find((item) => catalogProductGroup(item) === family)!;
+    await page.goto(`/products/${product.slug}`);
+    await expect(page.getByRole("navigation", { name: "ส่วนต่าง ๆ ของสินค้า" })).toHaveCount(0);
+    const groups = page.locator(".product-spec-group");
+    await expect(groups.locator("dialog[open]")).toHaveCount(0);
+    for (const group of await groups.all()) {
+      await expect(group.locator("button small")).toHaveCount(0);
+    }
+    if (await groups.count()) {
+      await groups.first().locator("button").first().focus();
+      await page.keyboard.press("Enter");
+      await expect(groups.first().locator("dialog")).toHaveAttribute("open", "");
+      await page.keyboard.press("Escape");
+      await expect(groups.first().locator("dialog")).not.toHaveAttribute("open", "");
+    }
+    const guide = buyingGuides.find((item) => item.productHref === family);
+    if (guide) {
+      const aside = page.getByRole("complementary", { name: "คู่มือเลือกสินค้าทั่วไป" });
+      await expect(aside).toContainText(guide.title);
+      await expect(aside.getByRole("link")).toHaveAttribute("href", `/guides/${guide.slug}`);
+    }
+    const expected = relatedProducts(product, products);
+    const cards = page.locator(".related-products article");
+    await expect(cards).toHaveCount(expected.length);
+    for (const candidate of expected)
+      await expect(
+        page.locator(`.related-products a[href="/products/${candidate.slug}"]`).first(),
+      ).toBeVisible();
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/products/rls1100");
+  await expect(page.locator(".detail-copy p").filter({ hasText: "หน่วยย่อยที่สุด" })).toBeVisible();
+  await expect(page.locator("#product-specifications")).toHaveCount(1);
+});
+
 test("product content groups complete specifications into expandable two-column tables", async ({
   page,
 }) => {
@@ -64,6 +111,10 @@ test("product content groups complete specifications into expandable two-column 
     const value = (await table.getByRole("cell").first().boundingBox())!;
     expect(label.x + label.width).toBeLessThanOrEqual(value.x + 1);
     expect(label.width / (label.width + value.width)).toBeCloseTo(width <= 720 ? 0.38 : 0.34, 2);
+    const first = (await groups.first().boundingBox())!;
+    const second = (await groups.nth(1).boundingBox())!;
+    if (width >= 1024) expect(second.x).toBeGreaterThan(first.x + first.width);
+    else expect(second.x).toBe(first.x);
     await expect(details.locator(".product-introduction")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
@@ -82,11 +133,12 @@ test("each product category uses its own content in the shared detail layout", a
   const response = await request.get("/api/products");
   expect(response.ok()).toBe(true);
   const { products } = (await response.json()) as { products: Product[] };
-  const representatives = [
-    ...new Map(products.map((product) => [product.category, product])).values(),
-  ];
-  for (const product of representatives) {
-    await page.goto(`/products/${encodeURIComponent(product.slug)}`);
+  const representatives = [...new Set(products.map((product) => product.category))];
+  for (const category of representatives) {
+    const candidate = products.find((product) => product.category === category)!;
+    await page.goto(`/products/${encodeURIComponent(candidate.slug)}`);
+    const routedSlug = decodeURIComponent(new URL(page.url()).pathname.split("/").at(-1)!);
+    const product = findCatalogProduct(products, routedSlug)!;
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(product.name);
     const highlights = page.getByRole("list", { name: "จุดเด่นสินค้า" }).getByRole("listitem");
     expect(await highlights.count()).toBeLessThanOrEqual(6);
@@ -124,7 +176,7 @@ test("concise product preview shows source features and real capacity without em
   await page.goto("/products/10639");
   const preview = page.locator(".detail-copy");
   await expect(preview).toHaveCSS("background-color", "rgb(255, 255, 255)");
-  const highlights = preview.getByRole("list", { name: "จุดเด่นสินค้า" });
+  const highlights = page.getByRole("list", { name: "จุดเด่นสินค้า" });
   await expect(highlights).toContainText("10,000");
   await expect(highlights).toContainText("LCD");
   await expect(highlights).toContainText("2 ด้าน");
@@ -146,6 +198,52 @@ test("concise product preview shows source features and real capacity without em
   }
   await page.goto("/products/10792");
   await expect(page.locator(".detail-weighing")).toHaveCount(0);
+  await page.goto("/products/wps10ks");
+  await expect(page.locator(".detail-weighing td")).toHaveText(["10 กิโลกรัม", "0.5/1 กรัม"]);
+});
+
+test("existing videos open YouTube tabs and support keyboard activation", async ({ page }) => {
+  await page
+    .context()
+    .route("https://www.youtube.com/**", (route) => route.fulfill({ body: "YouTube destination" }));
+  await page.goto("/products/feh5ks");
+  const videos = page.locator("[data-product-videos]");
+  await expect(videos).toHaveAttribute("data-video-count", "2");
+  await expect(videos.locator("iframe")).toHaveCount(0);
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const media = (await videos.boundingBox())!;
+    const contact = (await page.locator("footer").boundingBox())!;
+    expect(media.y + media.height).toBeLessThan(contact.y);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+  }
+  for (const id of ["idpv9oLyQ4w", "sxB0Yz08Thk"]) {
+    const link = videos
+      .locator(`[data-video-id="${id}"]`)
+      .getByRole("link", { name: /^เล่นวิดีโอ/ });
+    const opened = page.waitForEvent("popup");
+    await link.click();
+    const tab = await opened;
+    await expect(tab).toHaveURL((await link.getAttribute("href"))!);
+    await tab.close();
+  }
+  await expect(videos.locator("iframe")).toHaveCount(0);
+  await videos
+    .locator('[data-video-id="idpv9oLyQ4w"]')
+    .getByRole("link", { name: /^เล่นวิดีโอ/ })
+    .focus();
+  const opened = page.waitForEvent("popup");
+  await page.keyboard.press("Enter");
+  const tab = await opened;
+  await expect(tab).toHaveURL(
+    (await videos
+      .locator('[data-video-id="idpv9oLyQ4w"]')
+      .getByRole("link", { name: /^เล่นวิดีโอ/ })
+      .getAttribute("href"))!,
+  );
+  await tab.close();
 });
 
 test("the reference product and long product names fit desktop, tablet and mobile", async ({
@@ -165,7 +263,7 @@ test("the reference product and long product names fit desktop, tablet and mobil
       await page.evaluate(() => document.fonts.ready);
       const image = (await page.locator(".detail-image").boundingBox())!;
       const copy = (await page.locator(".detail-copy").boundingBox())!;
-      if (width <= 720) expect(copy.y).toBeGreaterThan(image.y + image.height);
+      if (width <= 720) expect(copy.y + copy.height).toBeLessThan(image.y);
       else expect(copy.x).toBeGreaterThan(image.x + image.width);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
         width,
