@@ -20,7 +20,7 @@ test("first four owner lists preserve exact document identifiers and order; cons
   const groups = readFileSync("docs/sunford-accessory-categories.md", "utf8")
     .split(/^### /m)
     .slice(1)
-    .map((group) => [...group.matchAll(/^\* (.+)\r?$/gm)].map((match) => match[1].trim()));
+    .map((group) => [...group.matchAll(/^[-*] (.+)\r?$/gm)].map((match) => match[1].trim()));
   assert.deepEqual(
     children.slice(0, 4).map((child) => child.entries!.map((entry) => entry.documentModel)),
     groups.slice(0, 4),

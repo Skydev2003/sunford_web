@@ -364,13 +364,11 @@
 - Root cause: Keeping the old family-health exclusion as the current membership rule would contradict the newer explicit owner manifest.
 - Correct behavior: Use docs/sunford-scale-categories.md as the authoritative membership for these eight scale children. Explicit entries supersede prior heuristic exclusions, including Fitdays. Preserve the general Thai substring-matching lesson for unrelated classifiers. Resolve exact model codes and documented aliases; show missing codes as clearly labeled Mock cards rather than normalizing differing suffixes, capacity numbers or zeros. Do not copy unverified document footnotes into product specifications.
 
-
 ## Respect the existing reload policy when testing catalog query links
 
 - Observed: A new child-navigation regression expected #products to remain after reloading, even though the filter queries were restored correctly.
 - Root cause: The test assumed a URL-fragment invariant without checking src/components/layout/navigation-start.ts, which intentionally removes hashes on reload and resets scroll to the top.
 - Correct behavior: Verify local category/subcategory clicks preserve unrelated query/hash values before reload. After reload, assert that the category/subcategory queries still select the correct filter and that the hash follows the existing navigation-start policy. Do not change the global reload script to satisfy a catalog test.
-
 
 ## Encode unsafe local image pathname characters before image optimization
 
@@ -378,9 +376,20 @@
 - Root cause: The raw pathname references did not match the optimizer's internally served static URL. The same files returned optimized200 when the pathname characters were percent-encoded.
 - Correct behavior: Diagnose direct static delivery and raw-versus-encoded optimizer requests separately. For these existing local artwork references, percent-encode unsafe filename characters while preserving path separators and existing encodings. Keep the original image bytes and optimization; do not replace the artwork or change shared ProductImage fallback merely to hide this failure.
 
-
 ## Verify Git blob bytes when exporting hash-sensitive fixtures on Windows
 
 - Observed: The default archive export produced CRLF reference Markdown while its committed Git blob used LF, causing the reference SHA256 unit assertion to fail although all remaining cases passed.
 - Root cause: Windows core.autocrlf conversion affected exported fixture bytes; filesystem equality was assumed before checking the underlying Git blob.
 - Correct behavior: Export hash-sensitive candidate fixtures with `git -c core.autocrlf=false archive`, compare the exported reference bytes to `git show <tree>:<path>`, and run the existing test suite on that verified export. Do not change the reference hash, source document or test to disguise checkout/export conversion.
+
+## Check the full formatter scope before release handoff
+
+- Observed: Release formatting failed on6 Markdown/JSON files after delivery formatting had checked only changed code.
+- Root cause: The delivery check scope differed from the production release command, which runs prettier --check . across all non-ignored repository files.
+- Correct behavior: Before handing off a deploy-ready revision, run the exact full format:check script after updating project docs and generated reports. Scoped code formatting is useful while editing, but does not establish that the full release formatting gate passes. Verify the release --check implementation before treating it as a test/build preflight.
+
+## Keep Markdown reference tests compatible with canonical formatting
+
+- Observed: Prettier normalized a reference list from asterisks to dashes; an existing test parser returned empty model lists because it matched only asterisks.
+- Root cause: The parser treated one valid Markdown list marker as a data contract, while the release formatter uses another valid marker.
+- Correct behavior: Accept both standard dash and asterisk markers when parsing these reference lists, then retain strict comparison of every model and its order. For byte-hashed LF reference documents, set a path-specific Git eol=lf rule and keep the original Git blob/hash unchanged.

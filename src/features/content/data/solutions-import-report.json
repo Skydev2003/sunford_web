@@ -415,12 +415,7 @@
   "assets": [],
   "lastTargetedRefresh": {
     "checkedAt": "2026-11-05T02:34:56.661Z",
-    "ids": [
-      "lot-serial",
-      "pos",
-      "windows",
-      "driver"
-    ],
+    "ids": ["lot-serial", "pos", "windows", "driver"],
     "importedSourceCss": false
   }
 }
