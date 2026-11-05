@@ -2609,3 +2609,1030 @@ Progress: "Done — static12sourceclips/directYouTubetabs verified"
 ผ่านTypeScript/scopedESLint/finaltestlint/Prettier/diff/Node24Build431/431และBrowser9/9 รวม320/390/768/1440px,keyboard/popup/12imageURLs/dragไม่เปิดแท็บ/focusเดิม/defaultmodalที่sunford-pos-android ค่ารูปแบบ4baselineตรงกัน 308filesนอกscopehashเดิม APIfilesที่discardยังไม่มี กดBrowserจริงเปิดหมีปรุงบนYouTubeURL/ชื่อคลิปตรงsourceแล้ว
 
 ผลตรวจ/backup/sourceassetmanifest/screenshots/rollbackอยู่output/youtube-direct-links-20261105/delivery.md รายการเป็นsnapshot/manualupdate ไม่ใช้APIkey/auto15min ไม่มีDBwrites/Commit/Push/Deploy Localproductionpreview3000ยังเปิดอยู่ Final Next.js feedback reporting pass: no verified qualifying framework issue.
+
+## Task: Subcategory arrow navigation one item per click (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — combined one-item arrows and scales submenu display labels"
+
+Goal/Input: ผู้ใช้ขอ “เอา scroll ออก เหลือแค่ลูกศรและกดลูกศรจะไปทีละ1เมนูย่อย” ในภาพ/products พบลูกศรเดิมเลื่อน80%ของแถบ และCSS overflow-x:autoทำให้Scrollbarปรากฏ
+
+Scope/Output: เอาScrollbarหมวดย่อยออก จำกัดการเลื่อนแนวนอนให้ลูกศรทีละ1ปุ่มตามขอบDOMจริง รวมปุ่มความกว้างต่างกัน/ต้นท้าย/กดต่อเนื่อง/reducedmotion/reset รองรับkeyboardfocusและverticalpagescroll คงปุ่ม/ชื่อ/ลำดับ/สมาชิกหมวดและselection/filterเดิม ลูกศรไม่เปลี่ยนหมวดที่เลือกเอง ไม่แก้parentcategoryscroll/YouTube/globalUI/layout/globalCSS/data/DB/commit/push/deploy
+
+UI referenceคือภาพผู้ใช้และcomponent/CSSmoduleจริง คงสีฟอนต์ขนาด/spacing/ปุ่มลูกศร ใช้responsive320/390/768/844/1440ตามชุดตรวจเดิม ขอบเขตไฟล์3แอป/ทดสอบ+spec/plan และขั้นตอน/rollbackอยู่output/subcategory-arrow-navigation-20261105/plan.md
+
+Acceptance:ไม่มีScrollbarหรือmanualhorizontalwheel/touchในแถบ,ลูกศรหนึ่งคลิกเลื่อนหนึ่งเมนูไม่ใช่80%viewport,กดเร็ว/ต้นท้าย/reset/keyboardไม่เสีย,selectedcategory/filter/taxonomyและงานYouTubeเดิมไม่เปลี่ยน พร้อมTypeScript/lint/format/browserที่เกี่ยวข้อง
+
+Missing information:ไม่มีสำหรับขอบเขตนี้ รออนุมัติSpec/PlanตามAGENTS.md ยังไม่ได้แก้app Final Next.js feedback review:noqualifyingframeworkissue.
+
+### Additional requested display-label scope
+
+ผู้ใช้: “เมนูย่อยของเครื่องชั่ง เอาคำว่าเครื่องชั่งออก” เพิ่มในแผนเดียวกัน: ตัดprefixเครื่องชั่งเฉพาะข้อความปุ่มเมนูย่อยเมื่อcategory=scales ไม่แก้หมวดหลัก/manifestlabels/IDs/order/productmembership/filterdataหรือหมวดอื่น ตัวอย่างคำนวณราคาหน้าร้าน/อุตสาหกรรมงานผลิต/งานครัวและกาแฟ ใช้component/testสองไฟล์เดิมในallowlist ไม่เพิ่มappfiles Updateacceptanceให้ตรวจข้อความทั้ง8ปุ่มพร้อมselectionและmembershipsเดิม แผนรวมลูกศร+labelยังรอapproval ไม่มีappchanges
+
+### Approval record
+
+ผู้ใช้ตอบ “อนุมัติ” หลังแผนรวมเอาScrollbarออก/ลูกศรครั้งละ1เมนูและตัดprefixเครื่องชั่งจากscales submenu อนุมัติcombinedscopeแล้ว ใช้exact3app/testfiles+docs/outputตามแผน ไม่Commit/Push/Deployและไม่เปลี่ยนข้อมูลหมวดหรือคืนงานที่ผู้ใช้discard
+
+### Completed state / verification
+
+Progress: "Done — arrow-only one-item submenu steps and shortened scale labels verified"
+
+แก้เฉพาะ3app/testfilesในallowlist ลูกศรอิงขอบปุ่มDOM/จำกัดต้นท้าย/เก็บpendingtargetสำหรับกดต่อเนื่อง เคลียร์targetเมื่อจบscrollหรือเปลี่ยนหมวด ใช้smooth/instantตามreducedmotion CSSเฉพาะ.subcategoriesเป็นoverflow-x:hidden/touch-action:pan-y ตัดprefixเครื่องชั่งเฉพาะข้อความ8ปุ่มเมื่อcategory=scales ไม่แก้manifest/IDs/order/membership/selection/filter/parentcategoryscroll
+
+ผ่านTypeScript/scopedESLint/Prettier/diff/Node24Build431/431 และBrowser13/13 (`browser-pass.log`) ที่320/390/768/844/1440 รวมแต่ละstep/กดเร็ว/ต้นท้าย/resize/reset/keyboard/reducedmotion/nohorizontalwheel/touch/verticaltouchscroll/search/sort/Grid/List/Compare/Mocks/memberships/legacyredirects ตรวจBrowserจริงกดขวา79.2pxตรงระยะหนึ่งปุ่ม79pxภายในfractionalpixelโดยselectionเดิม
+
+273baselinefilesนอกscopehashเดิม รวมงานYouTubeที่เจ้าของcommitไว้และข้อมูลสินค้า/หมวด/CMS/globalUI/styles/config/env ไม่คืนdiscardedcode ไม่มีDBwrites/Commit/Push/Deploy หลักฐาน/รูป/backup/rollbackอยู่output/subcategory-arrow-navigation-20261105/delivery.md Localproductionpreview3000ยังเปิดอยู่ Final Next.js feedback reporting pass:noverifiedqualifyingframeworkissue.
+
+## Task: POS platform subcategories (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Confirmed — explicit owner platform/membership instruction after clarification"
+Progress: "Done — iOS empty, Android P1/P4 and Windows P1W verified"
+
+### Goal / Scope / Input
+
+ผู้ใช้ขอPOSIOS/Androidและหลังถามข้อมูลที่ขาดตอบว่า “เพิ่ม ios ว่างไว้ก่อน และ android ใส่ p1/p4 ส่วนp1w เพิ่มส่วนย่อย windows” ใช้คำสั่งยืนยันนี้เป็นขอบเขตทั้งหมด/iOS/Android/Windows โดยiOSว่าง,Android=P1(10802)+P4(10805),Windows=P1W(10801) SourcecollectionsและOSdescriptionในprojectยืนยันตรงกัน
+
+### UI / Contracts / Scope out
+
+คงrenderer/CSS/ลูกศรทีละ1เมนู/ไม่มีScrollbar/keyboard/responsiveเดิม เปลี่ยนเฉพาะPOSจากdemomodulo01/02เป็น3platformchildrenด้วยProductCategorycontractเดิม ไม่เพิ่มสินค้าMock ไม่แก้ข้อมูลสินค้า/หมวดอื่น/scales18Mocks/YouTube/DB/CMS/API/schema/globalUI/layout/styles ไม่Commit/Push/Deploy
+
+### Acceptance / Files / Approval
+
+รายการและลำดับตรงเจ้าของ;iOSempty-stateเดิม;Android2รุ่น/Windows1รุ่น/ทั้งหมด3รุ่น;ไม่ฟื้นhidden/deletedและไม่ย้ายparentmembership;categoryreset/search/Compare/arrow/keyboard/responsive320/390/768/844/1440คงเดิม พร้อมunit/typecheck/lint/format/build/browserตามแผน
+
+Exactfileallowlist/verification/rollbackอยู่output/pos-platform-subcategories-20261105/plan.md: newpos-subcategories.ts,products/page.tsx,newpos-subcategories.test.ts,existingproduct-category-mock.spec.tsและspec/plan/output คำสั่งเจ้าของข้างต้นยืนยันmappingใหม่โดยตรง ไม่มีmissinginformationที่ขวางงานนี้ ไม่ขออนุมัติซ้ำสำหรับmappingที่สั่งแล้ว FinalNextfeedbackreview:noqualifyingframeworkissue.
+### POS completion / verification
+
+เพิ่มpuregetPosSubcategoriesและต่อเฉพาะPOSbranch:ทั้งหมด/iOS/Android/Windows โดยiOSว่าง,Androidsource10802/10805,Windowssource10801 ใช้IDsจากcurrentparentinputเท่านั้น ไม่แก้ProductCategorycontract/metadata/style/arrowbehavior/DB/CMS ไม่สร้างiOSMock
+
+ผ่านunitใหม่3/3,TypeScript/scopedESLint/Prettier/diff/Node24Build431/431และcombinedBrowser17/17 รวมPOSfilters/empty/all3/categoryresetที่320/390/768/844/1440กับexistingarrow/search/Compare/redirectchecks Browserจริงยืนยันmodelsแต่ละแพลตฟอร์มตรงกัน
+
+ระหว่างทำมีexternalplatform-materialchangesในsharedpage/component/test/docs เก็บไว้และรวมPOSbranchร่วมกัน ไม่claimว่าexternalchangesเป็นงานPOS 273baselinefilesอื่นhashเดิม sourceproductrecords/CSS/YouTube/config/envและarrowfunctionเดิมไม่เปลี่ยนจากงานนี้ หลักฐาน/backup/screenshots/rollbackอยู่output/pos-platform-subcategories-20261105/delivery.md ไม่มีCommit/Push/Deploy FinalNextfeedbackpass:noverifiedqualifyingframeworkissue.
+
+## Task: Platform material subcategories (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — user replied อนุมัติ to the concrete platform material Spec/Plan"
+
+### Goal
+
+ปรับหมวดย่อยใน /products > โครงสร้างแท่นชั่ง เป็นวัสดุ 4 แบบตามคำขอ โดยจัดเฉพาะสินค้าโครงสร้างแท่นชั่งเดิม และใช้ Mock สำหรับ ABS ที่ยังไม่มี
+
+### Scope In
+
+- เปลี่ยนหมวดย่อยตัวอย่าง 2 รายการของ platforms เป็น 4 รายการตามลำดับ: เหล็กคาร์บอนพ่นอบสีกันสนิม, สแตนเลส SUS304, สแตนเลส SUS201, พลาสติก ABS เหนียวพิเศษ
+- ใช้หลักฐานช่องวัสดุโครงสร้างของสินค้าเดิม ไม่ใช้วัสดุจานชั่ง: snapshot มี Carbon Steel 12 / SUS304 9 / SUS201 2 รวม 23 รุ่น; เก็บ Source ID และรุ่นที่ตรวจจริงใน output/scale-material-subcategories-20261105/inspection.json
+- ผูกรุ่นเดิมด้วย Source ID กับสินค้าที่เผยแพร่และอยู่ใน platforms เท่านั้น; รุ่นตามรายการที่ไม่มีใน runtime ใช้ Mock เดิม ไม่ดึงสินค้าที่ไม่เผยแพร่กลับจาก snapshot
+- ABS มี Mock หนึ่งรายการชื่อ พลาสติก ABS เหนียวพิเศษ พร้อมป้าย Mock และไม่มีลิงก์สินค้า/Compare; ไม่สมมติรหัสรุ่น รูป หรือสเปก
+- platforms > ทั้งหมด ยังคงสินค้าจริงในหมวดเดิมครบ และรวม Mock ของรายการที่ขาดแบบเดียวกับ scales; ทุกสินค้าจริงยังแสดงครั้งเดียว
+
+### Scope Out
+
+- ไม่ใช้รายชื่อเครื่องชั่งทั้งเครื่องจากไฟล์แนบมาสร้างสมาชิก platforms; ไม่ย้ายสินค้าหรือแก้แปดหมวดย่อย scales/หมวดอื่น
+- ไม่แก้ข้อมูลสินค้า/สเปก/รูป/ราคา/CMS/DB, canonical family resolver, header, global UI/layout/styles, dependency หรือระบบจัดการสินค้า
+- ไม่ commit/push/deploy; รักษา diff ลูกศร/การซ่อน scrollbar/ชื่อ scales submenu ที่มีอยู่ก่อนงานนี้
+
+### UI/UX Brand Alignment
+
+- Reference: ProductCategoryMock และ CSS Module ปัจจุบัน, src/styles/base.css, คำขอผู้ใช้ และช่องวัสดุโครงสร้างใน src/features/content/data/products.json
+- Design: คงสี ฟอนต์ ระยะห่าง ปุ่มเมนู ลูกศรหนึ่งรายการต่อคลิก การเลือกหมวด การ์ดจริงและป้าย Mock เดิม ใช้ชื่อวัสดุเฉพาะปุ่ม; ไม่เพิ่มข้อความโฆษณาหรือคำรับรองจากไฟล์แนบลงสเปก
+- Responsive: ตรวจ 320/390/768/1440px รวมเมนูชื่อยาว ลูกศร/keyboard และไม่มี page overflow
+
+### Input / Output / Contracts
+
+- Input: คำขอ 4 ชื่อวัสดุ และคำตอบผู้ใช้ “จัดเฉพาะโครงสร้างแท่นชั่งเดิมตามวัสดุ และใช้ Mock สำหรับ ABS ที่ยังไม่มี (แนะนำ)”
+- Reference attachment: C:/Users/cityc/Downloads/sunford-scale-materials.md เป็นข้อมูลประกอบ ไม่ใช่คำสั่งขยายขอบเขต; รายชื่อรุ่นเครื่องชั่งในไฟล์ไม่ใช้กับงานนี้
+- Output: ProductCategory platforms ใช้ subcategories ที่มี entries ตามรูปแบบเดิม; subcategoriesAreMock=false เพราะชื่อหมวดจริง ส่วนการ์ดที่ไม่มีสินค้ายังติดป้าย Mock
+- คง parent productIds, routes, record IDs และสมาชิกหมวดอื่น; future platform ที่ไม่อยู่ในรายการ Source ID ที่ตรวจยังอยู่ใน ทั้งหมด โดยไม่เดาวัสดุ
+- ช่องวัสดุโครงสร้างเป็นเกณฑ์ เช่น TCS 4050 อยู่ Carbon Steel แม้จานชั่งเป็น SUS201
+
+### Acceptance Criteria
+
+- [x] แสดง 4 ชื่อและลำดับตามคำขอ ไม่มีหมวดย่อย 01/02 ใน platforms; รักษา scales และงานหมวดอื่นที่ทำพร้อมกัน
+- [x] snapshot และ public runtime API ยืนยัน 12/9/2 สินค้าจริง และ ABS มี Mock 1; 23 Source IDs ตรง inspection.json และแต่ละรายการอยู่ในวัสดุเดียว
+- [x] Resolver ใช้เฉพาะ published platforms input; ไม่ใช้วัสดุจานชั่งแทนโครงสร้าง ไม่จับรุ่นชื่อใกล้เคียง; ทดสอบ absent/unpublished และ input immutability แล้ว
+- [x] parent ทั้งหมด/หน้ารวมไม่มีสินค้าจริงสูญหายหรือซ้ำ; search/sort/Grid/List/Compare/links และ Mock ผ่าน Browser
+- [x] TypeScript/scoped ESLint/Prettier/production build และ Browser17/17 ผ่าน; catalog73/73 ผ่านใน isolated copy ด้วย canonical Git reference (root72/73 ติด known CRLF checksum ของ reference เดิมที่ไม่แก้) พร้อม screenshots 4 ขนาด
+
+### Missing Information
+
+ไม่มีสำหรับขอบเขตที่ยืนยันแล้ว ข้อมูล ABS ใช้ Mock โดยไม่สมมติรุ่นตามคำสั่งผู้ใช้ ต้องรับอนุมัติ Spec/Plan ก่อนแก้ application ตาม AGENTS.md
+
+### Approval Record
+
+- ผู้ใช้ยืนยันขอบเขตสินค้าเดิมและ ABS Mock ผ่านคำตอบข้างต้น แล้วตอบ “อนุมัติ” หลังแสดง Spec/Plan และไฟล์ที่เกี่ยวข้อง อนุมัติ implementation เฉพาะขอบเขต 23 platform เดิม + ABS Mock ตามแผนนี้ ไม่รวม commit/push/deploy
+
+### Current State
+
+ดำเนินการครบตามแผนแล้ว: 4 หมวดวัสดุใช้ Source ID ของ 23 platform เดิมและ ABS Mock 1; page wiring คง parent IDs, component เพิ่มเฉพาะ platforms missing-entry aggregation ไม่มีการแก้ CSS/รูป/สเปก/DB/CMS
+
+ตรวจ Node24.22.1/Next16.4.3 production build431/431, TypeScript/scoped lint/format, focused units5/5, isolated catalog73/73 และ Browser17/17 ที่320/390/768/844/1440 พร้อมตรวจภาพ ABS4ขนาดด้วยตา Public API159 สินค้า/platform23 ตรง12/9/2 ยืนยัน runtime-verification.json
+
+สำเนาแยกใช้ canonical Git bytes เฉพาะ reference เดิมเพื่อหลีกเลี่ยง known Windows CRLF checksum mismatch ไม่แก้ reference/test/manifest ของ scales ใน workspace และไม่ข้ามทดสอบ Root catalog72/73 เก็บผลไว้ตรงไปตรงมา
+
+1675baseline filesนอกงานเท่าเดิม; component ตรง backup ทุก byte-text หลังหักเพียง condition ที่อนุมัติ, CSS และ arrow/touch tests เดิมคงเดิม งาน POS ที่แก้พร้อมกันในหน้า/testเดียวกันถูกเก็บไว้ครบ หลักฐาน/backup/rollback: output/scale-material-subcategories-20261105/delivery.md ชุด server ทดสอบ3028หยุดแล้ว ไม่รบกวน preview เดิม ไม่มี commit/push/deploy Final Next.js feedback reporting pass:no verified qualifying framework issue
+
+
+## Task: Indicator display and waterproof subcategories (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — explicit owner instruction for LCD/LED/waterproof overlap and unchanged design"
+
+### Goal / Scope In
+
+User requests indicator children LCD / LED / กันน้ำ. Replace only current indicator demo submenus in /products, keeping All and the current renderer, styles and arrow behavior.
+
+### Input / Output / Data contract
+
+Proposed source-ID mapping: LCD=AW31(10777),SW31F(10784),AC31P(10781),AC31S(10776),WP31C(10779); LED=SW31(10778),WP31E(10780); waterproof=WP31C(10779),WP31E(10780). Waterproof overlaps display type. All retains seven unique parent products. Resolve only current parent input, never resurrect missing/hidden records or use arbitrary peripheral LED text. Existing ProductCategory props and product data remain unchanged.
+
+Primary descriptionHtml fields and existing waterproof collection support this mapping. WP31C detail copy conflicts with its primary LCD description; Sunford Shop's custom-scale comparison table and waterproof article corroborate LCD. No product-copy correction included. Evidence links and exact mapping are recorded in output/indicator-subcategories-20261105/plan.md.
+
+### UI/UX Brand Alignment / Scope Out
+
+Reference: owner's current /products screenshots, actual ProductCategoryMock/CSS module and src/styles/base.css. Preserve colors, fonts, spacing, cards, one-item arrows, hidden scrollbar and keyboard behavior. Verify320/390/768/1440px. No changes to other categories, shared/global UI/layout/styles, source product specifications/images, DB/CMS/schema/API/config/YouTube, or commit/push/deploy.
+
+### Acceptance Criteria
+
+- [x] All/LCD/LED/กันน้ำ labels and order match the proposal; LCD5/LED2/waterproof2 and All7 distinct existing indicators.
+- [x] WP31C appears under LCD and waterproof; WP31E under LED and waterproof; current parent membership and input-only publication boundaries remain.
+- [x] Existing category reset, search, Compare, keyboard, arrows and responsive layout remain; scoped units/static checks/build/browser and screenshots provide evidence.
+
+### Missing Information / Approval Record
+
+No missing information. Owner explicitly approved the concrete mapping, overlapping filters and unchanged design before application edits. Exact files, steps and rollback: output/indicator-subcategories-20261105/plan.md. Final Next.js feedback review: no verified qualifying framework issue.
+
+
+Approval record: User explicitly said to proceed with LCD / LED / waterproof according to the plan, keep waterproof models in their display categories too, and preserve the design. All proposed memberships and file scope are approved; no missing information.
+
+
+### Completed state / verification
+
+Progress: "Done — approved indicator LCD/LED/waterproof filters verified"
+
+Added a pure Source-ID resolver and indicators-only page branch using the existing contract. LCD5/LED2/waterproof2; WP31C is LCD+waterproof and WP31E is LED+waterproof. All retains seven distinct current parent records. No product-copy corrections, peripheral keyword classification, resurrected records, CSS/renderer changes or DB writes.
+
+Passed indicator units3/3 and combined indicator/POS/platform units11/11; TypeScript, scoped ESLint/Prettier, diff check; Node24 production build431/431; complete catalog Browser21/21 including indicator320/390/768/1440, overlap/unique All/search/reset/Grid/List plus existing arrow/touch/keyboard/Compare/POS/platform/scales/redirect checks at five viewports. Inspected all four indicator screenshots.1637 baseline files outside the exact shared page/test scope remain hash-identical; prior pending work preserved.
+
+Evidence and rollback: output/indicator-subcategories-20261105/delivery.md, logs, before-files.zip, page.diff and preservation-verification.json. Production preview localhost:3000 restarted with the current build (owned session22783). No commit/push/deploy requested or performed. Final Next.js feedback reporting pass: no verified qualifying framework issue; npm PowerShell argument parsing was corrected by running the installed Next CLI through Node24, not by application changes.
+
+
+## Task: Owner indicator model manifest (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — owner replied ใช่ to using the attached file instead of prior lists, Mock for missing models and unchanged design"
+
+### Goal / scope / contract
+
+Use the attached sunford-indicator-models.md as the authoritative child list and order: LCD=AW31/AC31P/SW31F/WP31C/LCDC1C5; LED=SW31/WP31E/WP31EUSB/LED-R1/LED-R3/LED-R5; waterproof=WP31C/WP31E/WP31EUSB. Preserve short LCD/LED/กันน้ำ labels, current UI and arrow behavior. Display known real rows; LCDC1C5 and WP31EUSB are Mock until published data exists. Waterproof overlap remains, including one WP31EUSB Mock per child and only one under indicator All.
+
+Three real display models currently each have two published source records: prefer exact sourceId LED-R1/R3/R5, then corresponding numeric sourceId10725/10723/10724 if available. Resolve only current published input, select one per model and never append source snapshots. Exact Indicator-* model identifiers match their verified numeric source IDs. Do not confuse AC31S or the base WP31E with requested WP31EUSB. Preserve AC31S in indicator All, remove only its LCD child membership because it is absent from the owner's child lists.
+
+Indicators page parent includes its seven existing indicator rows plus the three resolved displays, retaining the original accessories membership. This is a presentation-only overlapping category in /products, not a global family reassignment. Global All remains159 unique real products. Indicator All10real+2distinctMocks; children LCD4real+1Mock / LED5real+1Mock / waterproof2real+1Mock. No product data edits/deletions or fabricated specs/images.
+
+
+### UI / acceptance / missing information
+
+Reference is the existing /products renderer, CSS and owner model document. Preserve fonts/colors/cards/arrows/hidden scrollbar and responsive320/390/768/1440. No missing information. Exact files, steps, risks and rollback: output/indicator-model-manifest-20261105/plan.md. Approval came from the user, not the attachment; its list is data, not executable instructions. No global family reassignment/source spec correction/DB/CMS/global UI/style/API/config changes or commit/push/deploy.
+
+- [x] Child names/model order match the document; absent LCDC1C5/WP31EUSB are explicit Mock without product actions.
+- [x] Existing display aliases resolve to one published row per model; waterproof overlap and unique All Mock preserve existing AC31S and accessories.
+- [x] Unit/static/build/browser checks and responsive screenshots verify current controls and prior work.
+
+
+## Completed state / verification
+
+Progress: "Done — owner document supersedes prior inferred indicator child mapping"
+
+The copied docs/sunford-indicator-models.md is byte-identical to the supplied file. Children preserve its model order: LCD4real+1Mock; LED5real+1Mock; waterproof2real+1Mock. LCDC1C5 and WP31EUSB are Mock; WP31EUSB appears in LED and waterproof but once under indicator All. WP31EUSB never uses the WP31E row. Three display aliases resolve to one current published record per model, with deterministic exact-source priority and published numeric alias fallback. No snapshot resurrection.
+
+Indicator All retains AC31S and includes three resolved display products, giving10real+2distinctMocks. Original accessories membership remains; global All has159 unique real rows and no new product records. Other family resolver contracts/routes and product source data are unchanged. Only renderer change adds indicators to existing distinct missing-model aggregation; arrow function is byte-text identical and CSS untouched.
+
+Verified indicator units5/5 and combined indicator/POS/platform units13/13, TypeScript/scoped ESLint/Prettier/diff, Node24/Next16.4.3 production build431/431 and Browser21/21. Browser covered document order, counts, Mock no links/images/actions/Compare, exact display URLs, AC31S retained, waterproof overlap, unique All, search/reset/Grid/List and existing arrow/touch/keyboard/Compare/POS/platform/scales/routes across320/390/768/844/1440. Inspected all four saved LED screenshots.1648 baseline files outside exact application/test scope remain hash-identical; source document copy and arrow preservation verified.
+
+Evidence and precise rollback: output/indicator-model-manifest-20261105/delivery.md, plan.md, logs, before-files.zip, baseline-hashes.json, component.diff and preservation-verification.json. Current production preview localhost:3000 uses this build (owned session81054). No DB/CMS writes, global UI/style/config changes or commit/push/deploy. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: existing owner-manifest and exact-model matching lessons apply; no skill updates required.
+
+
+## Task: One catalog card per consumable size (2026-11-05)
+
+
+Status: "Ready to Code"
+Approval: "Authorized by owner's explicit request to reduce same-size items to one card"
+
+## Goal / scope
+
+In /products presentation only, reduce the20 known label/thermal-paper records to7 size cards (13 fewer). User screenshot includes same-size regular/waterproof labels and10/20-roll packs, so group by size across those variants. Preserve the first currently published row in input order for each known size, its real card/image/name/link, and all other input rows. No generic dimension matching and no fabricated group product.
+
+Verified source groups:
+- Label40×60mm: Sticker_6040,10750,10747,10742,10812,10811.
+- Label20×60mm:10748,10740,10810.
+- Label30×60mm:10749,10809.
+- Paper57×50mm:Sticker_5750,10743,10746.
+- Paper80×80mm:Sticker_8080,10744,10745,10824.
+- Label30×53mm (Sticker_5330) and20×53mm (Sticker_5320) are already unique; leave intact.
+
+Apply before page family/subcategory construction and before sending the page's visible products. This prevents duplicates split across accessory demo children and global All, search, sorting or Compare. Counts reflect146 visible real products instead of159. Original API/repository, DB/CMS, product detail URLs and159 published records remain; no deletion/unpublishing. All prior indicator/Mock/POS/platform/scales/arrow/YouTube behavior stays. This is a reversible page filter, not a category redesign.
+
+## Files
+
+- src/features/catalog/data/consumable-sizes.ts — pure known-source grouping and first-current-row filter.
+- src/app/(site)/products/page.tsx — apply the scoped filter to published input before current page logic; no repository mutation.
+- tests/catalog/consumable-sizes.test.ts — verified groups/counts, cm/mm source equivalence, current order/omitted record behavior, immutable original objects and unrelated dimensions/products untouched.
+- tests/e2e/product-category-mock.spec.ts — adjust page expectations only and add known-size uniqueness across All/accessories/children/search/sort/Grid/List/Compare and responsive320/390/768/1440; verify original API/detail URLs still exist and prior catalog tasks remain.
+- spec.md/plan.md and output/consumable-size-deduplication-20261105/ — plan/approval, source inspection, baseline/backup, logs/screenshots/delivery.
+
+No card renderer/name mapper/CSS/shared/global UI/layout/category resolver/source product data/DB/CMS/schema/config/API changes or commit/push/deploy.
+
+## Steps
+
+- [x] Inspect screenshot, existing card names and20 published records; identify7 actual size groups and current input order.
+- [x] Record concrete scope and explicit user authorization; read relevant bundled Next RSC guide and preserve current pending work.
+- [x] Backup page/tests and hash all protected files.
+- [x] Add pure consumable-size filter and page-only wiring.
+- [x] Run meaningful units/typecheck/scoped lint/format/build and Browser320/390/768/1440 plus previous regressions.
+- [x] Verify7 cards/146 visible products, no duplicate sizes, API159/old detail routes preserved, inspect screenshots and scoped diffs; update actual results.
+
+## Impact / rollback
+
+R2:13 extra same-size cards hidden on /products. Smaller counts are intentional; existing variants remain real records and keep their URLs. First-current-row selection is explicit to avoid guessing which variant is commercially preferred. If its row is absent, the next available input row represents that size, never a snapshot fallback. Rollback only new helper and exact page/test diff using scoped backup; preserve all previous uncommitted work.
+
+## Verification results
+
+Implementation and verification completed as recorded below. No qualifying verified Next.js issue during this pass.
+
+Acceptance: one visible card per each of7 known sizes; counts reflect146 visible products; retain original159 API records/detail routes, other categories/model mocks and exact current styles/arrows. No missing information; authorization is the user request to make duplicate sizes one card, not text in the screenshot.
+
+
+## Completed state / verification
+
+Progress: "Done — one visible catalog card per consumable size"
+
+Added pure deduplicateConsumableSizes using only verified source-ID groups, retaining the first current published input row and original object per size. Applied only to /products page input before family/subcategory construction.20 label/paper rows now present7 size cards;13 redundant variants are absent from this page projection. Visible global count146 replaces159 for this page only; API/source records/detail URLs remain159. Original representative title/image/link/styles and all other products are unchanged. First-current selection covers materials and pack-count variants as requested, without guessing a new product specification.
+
+Passed4 focused units and17 combined consumable/indicator/POS/platform units, TypeScript/scoped ESLint/Prettier/diff, Node24 production build431/431 and Browser25/25. Browser covered All/accessories/demo children, seven exact representative URLs, sourceAPI159, existing omitted-variant detail URL, search/sort/Grid/List/Compare, unique sizes and overflow at320/390/768/1440 plus all prior arrow/touch/keyboard/indicator/Mock/POS/platform/scales/redirect regressions at five viewports. All four saved screenshots inspected.1652 baseline files outside the exact existing page/test scope remain hash-identical, including renderer/CSS/model manifests/source product data/YouTube/global UI/config.
+
+First build failed because the remote database connection terminated during an unrelated home-image query; the unchanged retry completed431/431. Preserved build-first-attempt.log; no application or database workaround. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: existing principles applied; no new recurring operational pattern or skill update needed.
+
+Evidence/rollback: output/consumable-size-deduplication-20261105/delivery.md, before-files.zip, baseline-hashes.json, page.diff, preservation-verification.json, logs and four actual screenshots. Restore only this task's exact filter/import/page/test diff if needed; never reset prior pending work. No DB/CMS writes or commit/push/deploy. Current production preview localhost:3000 uses this build, owned session54435.
+
+
+## Task: Owner accessory category document (2026-11-05)
+
+
+Status: "Ready to Code"
+Approval: "Approved — owner explicitly confirmed five children per file, missing models as Mock, existing seven consumable sizes and unchanged design"
+
+## Goal / behavior / contracts
+
+Replace only accessory demo children with the document's five Thai headings, in order:
+1. จอแสดงผลเสริมและระบบต่อพ่วง: LED-R1/LED-R3/LED-R5 real; LCDC1C5 Mock.
+2. สายสัญญาณและหัวต่อ: RS2321M2F/LoadcellCable/CableConnector Mock.
+3. อุปกรณ์เคลื่อนย้ายและชิ้นส่วนแท่นชั่ง: NY30M12/PU20M10 real; PU20M12/PU25M12 Mock.
+4. อุปกรณ์ระบบหน้าร้านและต่อพ่วง POS: DRW-350/LP53/LP54/TRP-58B real; LP42 Mock. The document's DRW350-B/W annotation maps to one verified DRW-350 record; do not invent color products.
+5. วัสดุสิ้นเปลือง: preserve the seven size representatives and their existing names/order/images/links. The owner's latest explicit instruction overrides only the three consumable identifiers in the supplied file; no mapping or new Mock for those identifiers is needed.
+
+Published input only. Display aliases use LED-R1/R3/R5 first, numeric10725/10723/10724 if currently present, one entry per model. Wheels use10840/10842; POS10741/10732/10733/10726. Exact future source/model codes can resolve supplied current records; no snapshot resurrection or suffix substitution (PU is not NY, M10/M12 and LP42/LP50 are distinct).
+
+Existing accessories parent membership stays39 real products after the approved size filter; All also shows7 distinct Mock models through existing missing-entry aggregation. Unlisted accessories remain in All. Child real counts3/0/2/4/7 and Mock1/3/2/1/0. Global All146 unique real products and original API159 unchanged. Preserve all indicator/POS/platform/scales/size-filter/arrow/YouTube work, current ProductCategory/entries contract, source records/routes, fonts/colors/cards/layout/keyboard/one-item arrows/hidden scrollbar. No CSS/shared global UI/schema/DB/CMS/API/config changes or commit/push/deploy.
+
+## Files
+
+- docs/sunford-accessory-categories.md — exact byte copy of supplied reference; latest owner override for consumables recorded in Spec.
+- src/features/catalog/data/accessory-subcategories.ts — new five ordered definitions and current-parent-only entries resolver.
+- src/features/catalog/data/consumable-sizes.ts — expose an existing-source-only selector reusing current deduplication; leave first-current size grouping unchanged.
+- src/app/(site)/products/page.tsx — replace accessory demo branch; remove now-unused mock helper import and set all five real-child flags false; preserve page memberships/other branches.
+- src/features/catalog/components/product-category-mock.tsx — add accessories to existing distinct missing-entry aggregation under All; no renderer/style/arrow changes.
+- tests/catalog/accessory-subcategories.test.ts — document parity for first four lists, verified IDs, seven missing models, alias priority/fallback, no near-model substitution, omitted inputs/immutability and seven-size override.
+- tests/catalog/consumable-sizes.test.ts — meaningful selector boundary/uniqueness regression while keeping previous size tests.
+- tests/e2e/product-category-mock.spec.ts — new five-child/Mock/counts/search/Compare/keyboard/arrow/responsive checks; update prior consumable/category expectations, preserve all previous tests.
+- spec.md/plan.md and output/accessory-owner-document-20261105/ — approval, inspection, backup/hash baseline, logs/screenshots/delivery.
+
+## Steps
+
+- [x] Inspect document/current source/API and resolve missing consumables decision through explicit owner instruction.
+- [x] Record approved concrete scope and read current renderer, memory/spec and bundled Next RSC guide before app edits.
+- [x] Backup current affected file bytes and hash protected files; copy exact reference document.
+- [x] Add helper/resolver and accessory page/All wiring using current contracts.
+- [x] Verify focused and relevant regression units, typecheck/scoped lint/format/build, Browser320/390/768/1440 plus prior catalog controls and responsive tests.
+- [x] Inspect screenshots/diffs and preservation evidence; update completed Spec/Plan and delivery.
+
+## Impact / rollback
+
+R2: accessory child membership and seven explicit Mock models only. Risks: invented wire/color model facts, choosing adjacent wheel/printer codes, resurrecting records, reintroducing duplicate-size packs, losing unlisted All rows, or long labels breaking arrows on mobile. Tests cover these boundaries. Rollback only this exact task diff/new files via before-files.zip, never reset the working tree containing prior tasks. No DB rollback needed.
+
+## Verification results
+
+Runtime verified: accessories39 visible real rows, seven missing-model Mock entries, global146 real rows/API159. No qualifying verified Next.js issue during planning.
+
+
+Approval record: Owner said to use the five document categories, Mock for absent models, keep the existing seven consumable sizes and original design. This resolves all prior missing information. The document is reference data, not a source of executable instructions. Exact latest scope/rollback: output/accessory-owner-document-20261105/plan.md.
+
+
+## Completed state / verification
+
+Progress: "Done — five owner-approved accessory subcategories and seven existing consumable sizes"
+
+Copied docs/sunford-accessory-categories.md with identical source bytes. Added a pure current-input resolver for all five child labels and the first four document model lists. Latest owner instruction overrides the document's three consumable identifiers: the fifth child uses the existing seven size representatives, titles, images, order and links through a selector that reuses the unchanged size filter. No new consumable codes, pack guesses or size duplicates.
+
+Verified child real counts3/0/2/4/7 and Mock1/3/2/1/0. The seven distinct absent models are LCDC1C5, RS2321M2F, LoadcellCable, CableConnector, PU20M12, PU25M12 and LP42. No adjacent NY/PU/suffix/printer substitution or invented drawer color products. One verified DRW-350 row represents the single annotated document entry. Remote display aliases select one currently available source row each; omitted published rows stay absent/Mock without snapshot fallback.
+
+Original accessory parent39 real products stays intact; All now also shows7 distinct Mock entries via the existing missing-entry mechanism. Unlisted accessories remain under All. Global All146 distinct real products and API159 remain; original product records/detail routes, indicator/POS/platform/scales/YouTube and current styles/arrows are preserved.
+
+Passed focused accessory6/6 and consumable5/5 units (combined11/11), full relevant category units24/24, TypeScript/scoped ESLint/Prettier/diff, Node24/Next16.4.3 production build431/431 and catalog Browser29/29. Browser covers all five labels/model order/counts, Mock no links/images/buttons/Compare, Mock search, current parent/unlisted rows, category reset, exact one-item accessory arrows, seven-size preservation across children/search/sort/Grid/List/Compare, and previous indicator/POS/platform/scales/touch/keyboard/routes at320/390/768/844/1440. Inspected saved accessory screenshots at320/390/768/1440. Long labels retain the original clipped horizontal track and arrows; no page overflow or CSS changes.
+
+1651 baseline files outside the exact five pre-existing app/test paths remain hash-identical. Source document bytes, existing arrow function and previous consumable size projection verified identical. Public API read-only verification confirms159 records/global146/accessories39/seven Mock and exact child counts (runtime-verification.json).
+
+Evidence/rollback: output/accessory-owner-document-20261105/delivery.md, plan.md, before-files.zip, baseline-hashes.json, component.diff, preservation-verification.json, logs and four screenshots. Restore only this task's exact diff/new files, preserving prior uncommitted work. No DB/CMS writes, global UI/style/config changes or commit/push/deploy. Production preview localhost:3000 uses this build, owned session59926. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: existing exact-model and latest-owner-override lessons applied; no skill changes needed.
+
+
+## Task: Synchronize product menu with all real subcategories (2026-11-05)
+
+
+Status: "Ready to Code"
+Approval: "Authorized — owner explicitly requests synchronizing the pictured menu with all actual submenus"
+
+## Goal / input / output
+
+The product mega-menu currently exposes the old three mixed groups and legacy paths. The actual catalog now has five families and23 children (8scales/3indicators/4platform-materials/3POS/5accessories). Use the exact displayed labels, IDs and order exported by the current resolvers, captured in menu-contract.json. Scale labels retain the approved removal of the leading เครื่องชั่ง.
+
+Replace only product secondary groups with the five current family headings/23 child links. Keep the existing six primary product links (All plus five families). Each child href is /products?category=<familyId>&subcategory=<childId>. The same existing navigation data feeds desktop and mobile. Guide/comparison content and routes stay available, but old mixed guide/category links are replaced in this product submenu to match actual children. Other company menus and their CMS content remain.
+
+The lightweight navigation table contains only23 IDs/display labels; contract tests compare it against actual resolvers to catch drift without importing product/page snapshots into the client Header bundle. No Header renderer/props/styles or stack refactor.
+
+## URL / CMS contracts
+
+Extend the existing useSearchParams synchronization: validate a child within its requested parent, activate it on direct entry/refresh/Next navigation/history, otherwise fall back to that parent's All (invalid parent -> global All). Local child clicks update/remove subcategory using the existing native history pattern; parent/global All clicks clear stale subcategory while preserving unrelated query/hash values. No new state/effect is needed beyond the current synchronization callback/effect.
+
+resolveNavigationItems normalizes both primary product links and the23 secondary children even when saved CMS product groups are old or missing. Preserve saved top-level product label and all other company menu objects; do not mutate saved input or write the CMS/DB. Existing nav structural fallback remains.
+
+## Files
+
+- src/features/cms/data/navigation.ts — five product groups and child query URLs; normalize saved product groups as well as current primary links.
+- src/features/catalog/components/product-category-mock.tsx — extend existing URL selection for category+subcategory and local click query synchronization; preserve models/arrows/styles/filter logic.
+- tests/catalog/navigation.test.ts — actual resolver parity for all23 child IDs/labels/order, valid URLs, saved CMS normalization/nonmutation and other menu preservation.
+- tests/e2e/catalog-subcategory-navigation.spec.ts — new desktop/mobile click-through for every child and direct/refresh/same-parent/history/invalid/cross-parent URL behavior; responsive reachability/screenshots.
+- tests/e2e/navigation.spec.ts — update product group expectations and guide access expectation after replacing legacy product submenu links; keep other nav behavior checks.
+- tests/e2e/navigation-accessibility.spec.ts — align stale product labels/coffee destination with the current real menu and verify keyboard/touch navigation.
+- MEMORY.md — record the verified existing reload/hash policy after the new regression exposed a mistaken test assumption.
+- spec.md/plan.md and output/navigation-subcategory-sync-20261105/ — contract, approval, baseline/backup, logs/screenshots/delivery.
+
+No Header/layout/global CSS/shared UI implementation change, taxonomy/model counts/data edits, new dependency, API/schema/DB/CMS mutation or commit/push/deploy.
+
+## Steps
+
+- [x] Read current menu/CMS/header renderer, catalog child sources and routing behavior; identify23 actual children.
+- [x] Read relevant bundled Next useSearchParams/native history guides and record explicit requested scope before edits.
+- [x] Backup scoped files and hash protected files.
+- [x] Replace product submenu groups and normalize saved CMS navigation through the existing resolver.
+- [x] Implement validated child URL activation and local URL/reset behavior using existing hooks.
+- [x] Run navigation/category units, typecheck/scoped lint/format/build, all changed navigation and existing29 catalog browser regressions.
+- [x] Verify every desktop/mobile child link, five real groups/23children, empty iOS and Mock filters, refresh/history/invalid input, responsive320/390/768/1400/1440/1920, keyboard/touch/Escape and other menu integrity; inspect screenshots and preservation diff.
+- [x] Update actual results and delivery.
+
+## Impact / rollback
+
+R2 with shared visibility: product menu data changes on every page for desktop/mobile, but uses unchanged Header rendering, grid/motion/scroll/focus and styles. Existing panel height/viewport scrolling handles five groups. Risks: stale CMS groups overriding current labels, wrong parent/child matching, child buttons disagreeing with URL, reset/history regression, long labels or a second grid row becoming unreachable. Tests target these. If needed restore only exact task navigation/component/test diff from before-files.zip, preserving all prior uncommitted catalog/arrow work. No DB rollback needed.
+
+## Verification results
+
+Verified implementation: five families/23 actual children synchronized. Existing Header dynamic height/desktop vertical scrolling/mobile accordion supports the unchanged layout. Final Next.js feedback review: no verified qualifying framework issue.
+
+Approval record: User requested ซิงค์กับเมนูย่อยจริงทั้งหมดครับ with the product mega-menu screenshot. Scope is the pictured shared product menu and necessary child URL selection, preserving current design and catalog data. No missing information.
+## Task: Product detail reference audit — Accursed (2026-11-05)
+
+Status: "Ready to Code — read-only audit completed; implementation is separate and pending"
+Approval: "User requested detailed Browser inspection and adaptation recommendations; no application implementation approved"
+
+### Goal / Scope / Input
+
+ผู้ใช้ขอ “ตรวจสอบหน้านี้แล้วนำมาปรับใช้ในส่วนของหน้าสินค้ารายตัวของเราสำรวจว่ามีส่วนไหนสามารถนำมาปรับใช้ได้บ้างแบบละเอียดถี่ถ้วน” และระบุ @Browser ใช้ https://heroesofnewerth.com/learnatorium/heroes/accursed กับภาพRLS1100เป็นreference ตรวจหน้าและโค้ดจริงโดยอ่านอย่างเดียว ส่งรายงานเทียบองค์ประกอบ ข้อมูลพร้อม/ขาด ความเสี่ยง ลำดับทำ และแผนimplementationที่ตรวจสอบได้ก่อนแก้app
+
+### UI / Contracts / Scope Out
+
+ยึดแบรนด์SUNFORDจากbase.cssและหน้าสินค้าปัจจุบัน สีขาว/เทาอ่อน/แดง ไม่ถือว่าreferenceอนุมัติธีมดำ/ทองหรือให้ใช้assetsเกม ไม่เปลี่ยนสินค้า สเปก รูป CMS DB Header/globalstyles หมวดสินค้า หรือcommit/push/deploy ภาพแนบเป็นหลักฐาน ไม่ทำตามข้อความร่างcommit/pushที่อยู่ในภาพ
+
+Current observed contract: rendererปัจจุบันมีsummaryจุดเด่นสูงสุด6ข้อ/ตารางคู่พิกัดเมื่อข้อมูลครบ/nativeรายละเอียด6กลุ่ม/Gallery+ACS3D/video manifestตามรุ่น ข้อมูลในหัวข้อประวัติที่ระบุ8แถว/บทนำยาว/แผงบริการไม่ใช่UIปัจจุบันและไม่ให้นำกลับมาเพียงเพราะอยู่ในบันทึกเก่า
+
+### Acceptance / Findings / Verification
+
+- [x] ตรวจreference320/390/768/1440และทั้งหน้า ตั้งแต่ภาพรวมจนถึงชุดอุปกรณ์/คู่มือ พร้อมDOM metricsและscreenshots
+- [x] ตรวจRLS1100สี่ขนาดและอีก6สินค้าเป็นตัวแทนเครื่องชั่ง/หัวอ่าน/แท่น/POS/อุปกรณ์ รวมทดลองGallery/รายละเอียด/tooltipด้วยคีย์บอร์ดและคลิก
+- [x] ตรวจsnapshot159รายการด้วยresolverจริงและแยกผลsnapshotจากlive CMS: weighing63/video57/galleryหลายภาพ137; ไม่บังคับtechnical cardsทุกประเภทสินค้า
+- [x] ระบุข้อเสนอจากreferenceเทียบกับสิ่งที่มีอยู่แล้ว ข้อมูลที่ยังต้องยืนยัน และฟีเจอร์ที่เป็นข้อเสนอเพิ่มซึ่งไม่ได้พบในreference
+- [x] ส่งรายงานและแผนไฟล์/ผลกระทบ/rollback/วิธีตรวจระยะ1 โดยยังไม่แก้แอป
+
+RLS390×844พบชื่อเริ่ม683pxและCTA1158px; relatedใช้สามรายการแรกที่ไม่ใช่ตัวปัจจุบัน ไม่ใช่compatibility; clickคำอธิบายค่าละเอียดไม่เปิดแต่keyboardเปิดได้ตรงsourceTooltip ปัญหาเหล่านี้เป็นข้อเสนอปรับหน้าสินค้า ไม่ได้แก้ในงานauditนี้
+
+### Plan / Current State
+
+รายงาน: output/product-detail-reference-audit-20261105/report.md; ข้อเสนอระยะ1: implementation-plan.md ในโฟลเดอร์เดียวกัน; หลักฐานreference/product metrics, data-audit, runtime-provenanceและภาพประกอบอยู่ครบ ใช้productionQA3036ที่source/style/dataหน้าสินค้า13ไฟล์ตรงworkspaceเพราะlocalhost3000ไม่เปิดบริการ ชุดQAเป็นcached/fallback ไม่ใช่การยืนยันlive CMSหรือproductionทุกสินค้า หยุดserverQAแล้ว ปิดแท็บตรวจของSUNFORD คืนหน้าอ้างอิงและขนาดBrowserเดิม
+
+Missing Information: ไม่มีสำหรับauditและข้อเสนอระยะ1; คะแนน/compatibility/manualsเฉพาะรุ่นต้องมีข้อมูลใหม่และไม่อยู่ในขอบเขตเสนอระยะแรก Final Next.js feedback reporting pass:no verified qualifying framework issue
+
+## Task: Product detail adaptation from reference — phase 1 proposal (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — user: โอเคครับปรับตามแผนเลยอนุมัติ (2026-11-05)"
+
+Goal: ใช้ข้อมูลเดิมปรับลำดับmobileให้ชื่อ/ค่าหลัก/CTAเข้าถึงก่อนGallery รักษาdesktopสองคอลัมน์และfirst-screen requirement ปรับค่าพิกัดเป็นแผงอ่านเร็วเมื่อมี แสดงหมวดจริง/anchorเฉพาะsectionที่มี กลุ่มสเปกnativeแผง2คอลัมน์บนdesktopกว้าง/1คอลัมน์จอเล็ก เพิ่มmobileคำอธิบายค่าละเอียดโดยไม่แก้sharedTooltip เพิ่มguideทั่วไปตามหมวดและเลือกสินค้าอื่นcanonical familyเดียวกันสูงสุด3รายการ ไม่อ้างcompatibility
+
+Exact scope/acceptance/files/rollback: output/product-detail-reference-audit-20261105/implementation-plan.md — page.tsxของproducts/[slug], newrouteCSSModule, newrelated-products.ts, newcatalogrelatedtest และexistingproduct-detail/product-overviewBrowsertests รวม6app/testfiles+spec/plan/output ไม่แก้globalCSS/sharedUI/Gallery/3D/video/CMS/schema/data/dependencies
+
+Approval Record: ผู้ใช้อนุมัติ “โอเคครับปรับตามแผนเลยอนุมัติ” หลังดูwireframe ครอบคลุมระยะ1ตามallowlist ข้อมูลเดิมครบสำหรับระยะ1; ไม่รวมdarktheme/ratings/accessorycompatibility/manualsใหม่/zoom/stickyCTA/cartหรือCalibration service
+
+
+### Phase1 implementation delivery (2026-11-05)
+
+Progress: "Done — approved scope implemented and verified; existing failures disclosed"
+Approval: ผู้ใช้ “โอเคครับปรับตามแผนเลยอนุมัติ” หลังดูwireframe ครอบคลุม6app/testfilesตามแผนเดิม
+
+เปลี่ยนเฉพาะroute renderer+rootCSSModule,related helperและ3testfilesตามallowlist: mobile DOMชื่อ/ค่าที่มี/CTAก่อนGallery,H1เดียว;desktopfirstscreenคงเดิม;กลุ่มnativeรายละเอียด2คอลัมน์>=1024พร้อมrowcounts;conditionalanchor;mobileคำอธิบายค่าละเอียด;generalbuyingguideตามหมวด;relatedสูงสุด3published samecanonicalfamilyตัดself/ID/slugซ้ำและคงorder ไม่สร้างcompatibility
+
+Contracts: productSummary/presentation/detailGroups,product/media/CMS/DB,Gallery/3D/video/sharedTooltipและcanonicalresolverไม่เปลี่ยน หน้าใช้published candidatesจากgetProductsเท่านั้น related helperไม่เติมsnapshotrecords;แผงค่าหลักยังใช้semantic tableแต่ตกแต่งเป็นสองแผงเพื่อตรวจและอ่านค่ากับlabelsเดิมได้
+
+Verification: TypeScript/scopedESLint/Prettier/diffผ่าน;related3/3;QA catalog94/94(Gitcanonicalreference);Node24 production431/431;Browserล่าสุด19/19(detail/overview/model/tooltips)ผ่าน พร้อมexistingunmatchedvideoผ่านก่อนหน้า;before-after159/159contenthashesตรงทุกURL(2,551rows) รูป/จุดเด่น/ค่าชั่ง/วิดีโอ/ราคา/LINEเดิม
+
+Exceptions: rootcatalog93/94มีprotectedreferenceCRLFเดิม;2legacysuitesfailในbaselineproductionเช่นกัน(single-table/introductionและdetail-serviceเก่า);2case-only legacyURLsบนWindowsชนกัน/sourceaudit157/159;unknownproductionHTTP200+noindexก่อน/หลังเหมือนกัน ส่วนdevelopmentbaseline404 ไม่อ้างstrictproduction404ผ่าน ไม่แก้routing/globalนอกscope
+
+หลักฐาน/ภาพ/rollbackครบ: output/product-detail-reference-audit-20261105/implementation/delivery.md และ complete-preservation.log,content-verification.json,browser-verified.log,browser-baseline.log,final-build.log,preservation.json. คงงานพร้อมกันนอกscope ไม่DBwrites/commit/push/deploy;ปิดQAserversและลบenvironmentสำเนาก่อนhandoff
+
+## Completed state / verification
+
+Progress: "Done — pictured product mega-menu matches all five families and23 actual children"
+
+Updated only two application files: lightweight product navigation groups and the existing catalog URL synchronization. The five headers match the actual parent labels; child names/IDs/order match the real resolver outputs (8scales/3indicators/4platforms/3POS/5accessories). Primary All/family links remain. Product groups normalize correctly even when stored CMS secondary data is stale or absent, without mutating stored settings or other company menus.
+
+Each child link opens /products?category=<id>&subcategory=<id> and activates the matching parent+child, including empty iOS and Mock-only cable/ABS groups. Local buttons keep the query aligned, All/parent changes clear obsolete child IDs, invalid/cross-parent child IDs safely select the appropriate All. Refresh, same-family navigation and browser back/forward verified. Guide content remains available via its original route after obsolete mixed entries were replaced in the product menu.
+
+Passed navigation units6/6 and relevant category units30/30, TypeScript/scoped ESLint/Prettier/diff and Node24 production build431/431. Combined navigation/accessibility/catalog run passed49 of50; the single new test wrongly expected the site's existing reload-cleared hash to remain. Adjusted only that test's order to verify hash preservation before reload, then child-query persistence after reload; focused scenario passed1/1 (`browser-refresh-check.log`). All50 distinct browser cases therefore verified, with the first attempt preserved in browser-first-pass.log. No application changes after the successful build.
+
+Actual desktop and mobile clicks covered every23 child destination, correct aria selection and real/Mock counts. Responsive320/390/768/1400/1440/1920 screenshots inspected. Existing keyboard/touch/Escape, six company menus, logo alignment/motion, no-JS destinations, guide routes and all29 prior catalog regressions passed. Existing menu grid, panel-height/viewport scrolling and mobile accordion handle five groups with unchanged Header/props/CSS.
+
+1654 baseline files outside exact navigation/component/test scope unchanged. Header implementation/styles, all category/model/source data and current arrow function preserved. Other company navigation definitions are byte-text identical. Contract parity test avoids importing product/page snapshots into the client navigation bundle. Required project-memory note records the existing reload/hash policy; no framework issue or global script workaround.
+
+Evidence and precise rollback: output/navigation-subcategory-sync-20261105/delivery.md, menu-contract.json, before-files.zip, baseline-hashes.json, navigation.diff/component.diff, preservation-verification.json, logs and six screenshots. Restore exact task diff only, preserving prior pending work. No DB/CMS writes or commit/push/deploy. Current production preview localhost:3000 uses this build, owned session22935. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: project-specific verified reload policy recorded in MEMORY.md; no live skill changes.
+
+
+## Task: Remove catalog search red focus frame (2026-11-05)
+
+
+Status: "Ready to Code"
+Approval: "Authorized — explicit owner request to remove the red search frame in the screenshot"
+
+The catalog CSS focus-visible rule gives buttons, inputs and selects a red outline. Add a search-only override removing the inner input outline while preserving the original outer gray border, geometry, typography, keyboard editing, input search, and all other controls' focus styles. No other UI redesign.
+
+Files: src/features/catalog/components/product-category-mock.module.css (only scoped search input focus rule), spec.md/plan.md and output/catalog-search-focus-20261105/ (backup, browser evidence/screenshots, logs, delivery). Preserve the existing pending arrow-only CSS changes. No application TS/JS, global styles/Header/components/data/DB/config changes or commit/push/deploy.
+
+- [x] Read actual CSS/source/spec/memory and identify focus-visible as the source.
+- [x] Record explicit user scope and concrete plan before edit.
+- [x] Back up current CSS and protected-file hashes.
+- [x] Add only the scoped search input focus override.
+- [x] Check formatting/diff and Next build; verify focused search on desktop/mobile and tablet, unchanged outer box, working query/clear and other button focus rings. Inspect actual screenshots; no new permanent CI tests for this low-impact CSS change.
+- [x] Recheck unrelated files/previous CSS preservation and record actual results.
+
+R2: one CSS rule. Roll back only this rule from the current-file backup; never restore/reset the whole CSS file over the prior arrow changes. No DB rollback needed. Final Next feedback review: no verified framework issue during inspection.
+
+
+## Completed state / verification
+
+Progress: "Done — red inner search focus outline removed"
+
+The only CSS change is .search input:focus-visible { outline: none; }. The previous gray outer border, white background,10px corner radius, input height/width and all existing pending arrow CSS remain. Button/select focus rules and all application behavior/data remain.
+
+Captured focused baseline from the prior production build, then verified the current build at320/390/768/1440. Inner outline changed from solid red to none; outer border/background/radius/geometry are identical. Search zero-result, positive WPS10KS and clearing to146 visible products pass at all four sizes. Category button focus remains the same solid brand-red outline. Inspected all four focused after screenshots.
+
+Prettier/diff and Node24 production build431/431 passed.1659 protected files outside the CSS module are hash-identical; removing just the three-line new rule reproduces the prior CSS exactly. No new permanent CI tests for this low-impact CSS edit; output/verify.mjs is the read-only browser verification artifact.
+
+Evidence/rollback: output/catalog-search-focus-20261105/delivery.md, before-files.zip, before.json/after.json, before/after logs/screenshots, search-focus.diff and preservation-verification.json. Revert only this new rule, preserving prior arrow/subcategory styling. No DB/CMS writes or commit/push/deploy. Current production preview localhost:3000 uses this build, owned session25020. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: no new recurring pattern or skill change needed.
+
+
+## Task: Merge paired product menu groups (2026-11-05)
+
+
+Status: "Ready to Code"
+Approval: "Authorized — owner explicitly requests the two paired menu headings in the screenshot"
+
+## Goal / scope / contract
+
+Regroup the pictured shared product submenu from five secondary groups into three, using the existing Header display:
+- เครื่องชั่ง: existing8 scale links.
+- อินดิเคเตอร์และโครงสร้างแท่นชั่ง: existing3 indicator links followed by4 platform links.
+- ระบบ POS และอุปกรณ์เสริม: existing3 POS links followed by5 accessory links.
+
+Keep every23 child label/href and its actual category/subcategory filter destination and order. This is presentation grouping of the product mega-menu on desktop and mobile; primary All/five family links and actual catalog categories/models stay as they are. The existing four-column desktop grid (primary+three secondary groups) naturally returns to one row. Existing CMS product normalization applies the new three-group data without a DB write.
+
+## Files
+
+- src/features/cms/data/navigation.ts — group the same lightweight child definitions under the three headers above.
+- tests/catalog/navigation.test.ts — update presentation expectations while checking every real resolver child label/ID/order/URL and saved-menu normalization/nonmutation.
+- tests/e2e/catalog-subcategory-navigation.spec.ts — verify all23 links under merged groups and select links by actual destination/name rather than former family-column index; preserve filter/history/invalid cases.
+- tests/e2e/navigation.spec.ts — update only product secondary heading expectations.
+- spec.md/plan.md and output/merge-product-menu-groups-20261105/ — approved scope, baseline/backup, logs/screenshots/delivery.
+
+No Header/props/layout/CSS/global UI/catalog components/model data/query logic/DB/CMS/config change or commit/push/deploy. Preserve the recent search-focus override and all previous pending work.
+
+## Steps
+
+- [x] Inspect current five groups and23 links, existing header renderer/contract and tests.
+- [x] Record explicit owner scope and concrete plan; use previously verified bundled Next navigation conventions.
+- [x] Back up current navigation/test files and protected-file hashes.
+- [x] Merge only group presentation and update related expectations.
+- [x] Run navigation units/typecheck/scoped lint/format/build and relevant navigation/browser tests, clicking all23 on desktop/mobile and checking320/390/768/1400/1440/1920 reachability, keyboard/touch/history.
+- [x] Inspect screenshots, verify exact original child/primary links and protected files, update actual delivery.
+
+## Impact / rollback
+
+R2 with shared visibility: product menu grouping changes on every page, using unchanged Header styles/motion/focus. Labels/links/categorization stay intact; only two pairs of columns merge. Roll back just this task's navigation/test diff from before-files.zip, not the entire working tree or previous menu/search work. No database rollback needed.
+
+## Verification
+
+Implementation and verification completed as recorded below. No missing information for the pictured submenu grouping. Final Next feedback review: no verified framework issue.
+
+
+## Completed state / verification
+
+Progress: "Done — the two requested pairs are merged into three product presentation groups"
+
+Updated one application data file only. Product secondary groups are now เครื่องชั่ง(8 links), อินดิเคเตอร์และโครงสร้างแท่นชั่ง(3indicator+4platform links), ระบบ POS และอุปกรณ์เสริม(3POS+5accessory links). Their flattened23 child labels/IDs/order/hrefs are identical to before. Existing primary All/five-family links and actual catalog taxonomy remain; saved CMS product normalization adopts the current three groups without modifying storage.
+
+The unchanged desktop Header grid now fits primary navigation plus three secondary columns in one row; mobile uses the same merged group data. No Header renderer/style/props/catalog component/query/model/source record changes. Recent search-focus removal, seven-size filter, model Mock and arrow work remain intact.
+
+Verified navigation units6/6, TypeScript/scoped ESLint/Prettier/diff, Node24 production build431/431 and navigation Browser21/21. Actual clicks checked all23 children on desktop1440 and mobile390 with matching URLs/active filters/real-Mock counts. Responsive screenshots inspected at320/390/768/1400/1440/1920. Keyboard/touch/Escape, history/refresh/invalid IDs, other company menus, logo alignment/hover motion, no-JS routes and guide pages pass.
+
+1656 baseline files outside exact navigation/test scope remain hash-identical. Original primary links, child definition table and all other company menu definitions byte-text identical. Precise scope/backup/diff/verification/screenshots/delivery: output/merge-product-menu-groups-20261105/. Restore only this task's exact navigation/test diff if needed, preserving previous pending work.
+
+No DB/CMS writes or commit/push/deploy. Production preview localhost:3000 uses this build, owned session43760. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: no new recurring pattern or live skill changes.
+
+
+## Task: Open individual story cards in new tabs (2026-11-05)
+
+
+Status: "Ready to Code"
+Approval: "Authorized — owner explicitly requests clicking the pictured individual stories opens their corresponding story in a new tab"
+
+## Goal / scope / input
+
+The eight current published story cards already link to article.path in SunfordStories. Add target=_blank and rel=noopener noreferrer to the existing whole-card Next Link, so card image/title/body/read-more all open that corresponding current article in a new tab. Native keyboard activation remains available. Preserve the current source paths/title/image/date/summary, carousel clones/preview/drag handling and all styles. The separate all-stories listing CTA and homepage video links keep their existing behavior.
+
+Verified current eight paths/titles are recorded in inspection.json. No missing information. Use the existing Next Link anchor attributes per bundled docs; no shared carousel or event-handler changes.
+
+## Files
+
+- src/features/home/components/source-showcase.tsx — add only new-tab and rel attributes to individual story-card links in SunfordStories.
+- spec.md/plan.md and output/story-new-tabs-20261105/ — explicit scope/approval, current file backup/hash baseline, browser verification script/logs/screenshots/delivery.
+
+No CSS/shared Header/UI/carousel/content/data/DB/config/video change, dependency, new permanent CI tests, or commit/push/deploy.
+
+## Steps
+
+- [x] Read component, current eight live story paths, focus/drag event handling and bundled Next Link docs.
+- [x] Record explicit owner authorization and exact one-anchor scope before edit.
+- [x] Back up current file and protected-file hashes.
+- [x] Add target/rel attributes to the existing story-card anchor only.
+- [x] Check format/lint/build; verify all eight actual destination URLs open in separate tabs, card image/read-more/keyboard activation, original tab remains, opener isolation, no tab from dragging, responsive320/390/768/1440 and unchanged layout/screenshots. Run existing relevant story content/drag browser checks.
+- [x] Verify precise source diff/protected files and complete actual delivery.
+
+## Impact / rollback
+
+R2: two anchor attributes on story cards. Carousel's existing preview/drag suppression stays; clear/focused cards navigate using normal link behavior, with new tabs. Restore only these attributes from before-files.zip, preserving other source-showcase video work. No DB rollback needed. Final Next feedback review: no qualifying verified framework issue during inspection.
+## Task: Product detail wireframe mock preview (2026-11-05)
+
+Status: "Ready to Code — mock completed and verified"
+Approval: "Authorized for mock preview only — user requested ขอดูตัวอย่าง wire frameแบบmock ที่คุณแนะนำมา ให้ดูหน่อยครับ"
+
+Goal/Scope: แสดงโครงหน้าสินค้าRLS1100ตามข้อเสนอระยะ1ให้ดูเป็นภาพและลองโต้ตอบได้ ทั้งdesktopและmobile ใช้ภาพplaceholderแบบwireframeและข้อมูลเดิม30กิโลกรัม/5/10กรัม จุดเด่น6ข้อ กลุ่มสเปก6หัวข้อ วิดีโอและguideที่อ้างอิงได้ ไม่ใช่การอนุมัติimplementationหน้าสินค้าจริง
+
+Files: สร้างsunford-product-wireframe.htmlในthread visualization directory; preview wrapper/screenshots/verification/deliveryในoutput/product-detail-wireframe-20261105/; เพิ่มเฉพาะหัวข้องานในspec.md/plan.md ไม่แก้app/test/CSS/CMS/DBหรือdependency
+
+Acceptance/verification: สลับdesktop/mobileได้ ผ่านตัวควบคุมที่hostให้; desktopภาพซ้าย/ข้อมูลขวา มือถือชื่อ/ค่าหลัก/CTAก่อนGallery; เปิดกลุ่มสเปกและเลือกภาพ/รายการวิดีโอแล้วstateเปลี่ยนจริง ตรวจdesktop1024และmobile390/พื้นที่274ในviewport320 ไม่มีoverflow ปุ่มสอบถามอยู่332pxก่อนGallery421pxในmobileframe ภาพหลักเป็นplaceholderและแถวข้อมูลที่ไม่ได้จำลองครบแสดงเป็นเส้นwireframeอย่างชัดเจน ไม่สร้างราคาหรือสเปกเพิ่ม
+
+Current State: ตัวอย่างพร้อมแสดงในบทสนทนา; หลักฐานdesktop/mobile screenshots และverification.jsonอยู่outputของงาน Browserคืนหน้าreferenceและขนาด614×668; หยุดserverตรวจ3041แล้ว ข้อเสนอimplementationระยะ1ยังApproval Pending ไม่มีcommit/push/deploy FinalNextfeedbackpass:no qualifying framework issue
+
+
+## Completed state / verification
+
+Progress: "Done — individual homepage story cards open their matching article in a new tab"
+
+Added only target=_blank and rel=noopener noreferrer to the existing SunfordStories card Next Link. Whole-card/image/title/read-more and Enter use that same corresponding article.path. All eight current published titles/destinations match the pre-change live inspection. Carousel clones retain the attributes; shared focus-preview/drag suppression, source images/dates/summaries/styles and the separate all-stories CTA/video links are unchanged.
+
+Node24 production build431/431, scoped ESLint/Prettier/diff and existing story content/drag Browser2/2 passed. Additional real Chrome verification at320/390/768/1440 opened11 new tabs covering every8 distinct story destinations and image/title/read-more/keyboard activations. Each tab reached its matching article path and content/title; original homepage stayed, opener was null, all24 loop anchors had correct target/rel, and dragging created no popup. No page overflow; all four actual screenshots inspected.
+
+1659 protected files outside source-showcase.tsx are hash-identical. Replacing just the expanded anchor attributes with its previous one-line form reproduces the original file exactly; homepage video behavior/content/CSS/catalog/header/current search/menu work preserved. No new permanent CI tests for the low-impact anchor change; verification scripts/logs remain under output.
+
+Evidence and precise rollback: output/story-new-tabs-20261105/delivery.md, before-files.zip, inspection.json, story-links.diff, baseline-hashes.json, preservation-verification.json, browser-verification.json, build/lint/format/browser/regression logs and four screenshots. Restore only the two added story-card attributes, not the entire shared showcase file. No DB/CMS writes or commit/push/deploy. Current production preview localhost:3000 uses this build, owned session8621. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: no new recurring pattern or skill update needed.
+
+
+## Task: Remove catalog sort dropdown (2026-11-05)
+
+
+Status: "Ready to Code"
+Approval: "Authorized — owner explicitly says ลบ with the catalog sorting dropdown screenshot"
+
+Remove the pictured sort select (recommended/A-Z/Z-A) from /products. Remove only its now-unreachable sort state/name-order branches and constant sort suffix in the pagination key. Preserve the exact existing default ordering: model-entry children keep document order, other views keep featured-first stable input order. Existing search/category/subcategory URLs/featured toggle/Grid/List/Compare/pagination and all data/styles remain.
+
+Files:
+- src/features/catalog/components/product-category-mock.tsx — remove select and its dead sort state/branches; retain default comparator.
+- tests/e2e/product-category-mock.spec.ts — remove obsolete alphabetical-sort interactions, verify the absent sort control and recommended order after featured-toggle reset; keep existing model/membership/controls/responsive regressions.
+- spec.md/plan.md and output/remove-catalog-sort-20261105/ — approved scope, backup/baseline, verification logs/screenshots/delivery.
+
+- [x] Inspect exact select/state/comparator and affected tests; read current spec/memory and bundled component guide.
+- [x] Record explicit requested scope and concrete plan before edits.
+- [x] Back up current files and protected hashes.
+- [x] Remove only sort UI/state and keep the original default comparator semantics.
+- [x] Run typecheck/scoped lint/format/build and existing catalog browser suite; inspect mobile/tablet/desktop toolbar and default order/filter/Grid/List/Compare/pagination behavior.
+- [x] Verify scoped diff/protected files and complete actual delivery.
+
+R2: removing a reversible catalog control. No global/Header/CSS/category/content/model/API/DB/CMS/config changes, new tests/dependencies or commit/push/deploy. Restore this exact component/test diff only from before-files.zip; preserve prior URL/arrow/search work. No database rollback needed. Final Next feedback review: no verified framework issue during inspection.
+
+
+## Completed state / verification
+
+Progress: "Done — catalog sort dropdown removed; default order preserved"
+
+Removed the select and its unused sort state/name-order branches and constant pagination-key suffix. Retained the existing recommended comparator: explicit child entries stay in document order, other views keep featured-first stable source order. No CSS/header/category/source data/query logic changes.
+
+TypeScript/scoped ESLint/Prettier/diff and Node24 production build431/431 passed. Existing catalog Browser29/29 passed with only obsolete sort interactions removed from its expectations. Search, categories/children/Mock, seven consumable sizes, featured toggle, Grid/List, Compare, pagination, URLs, arrows/keyboard/touch and responsive behavior remain.
+
+Captured six live default-order snapshots before the change and compared exact ordered titles/hrefs/status after: all six match, covering global All and children in all five families. At320/390/768/1440 the toolbar has no combobox and no page overflow; all four actual toolbar screenshots inspected. Existing featured-toggle regression verifies default order returns after clearing that filter.
+
+Concurrent external product-detail work changed its page and two detail/overview browser tests during verification, and added related product-detail CSS/data/tests. Preserved those files, recorded their separate observed hashes/paths rather than attributing them to this task. Arrow function and catalog URL synchronization are byte-text unchanged. All other protected-file matches and concurrency details are recorded in preservation-verification.json.
+
+Evidence and precise rollback: output/remove-catalog-sort-20261105/delivery.md, before-files.zip, component.diff, before.json/after.json, baseline-hashes.json, preservation-verification.json, logs and four toolbar screenshots. Restore only this task's component/test diff, preserving existing shared component changes and concurrent detail work. No DB/CMS writes or commit/push/deploy. Current production preview localhost:3000 uses this build, owned session87221. Final Next.js feedback reporting pass: no verified qualifying framework issue. Observer review: known concurrent-work preservation applied; no skill changes needed.
+
+
+## Task: Restore homepage category artwork (2026-11-05)
+
+
+Status: "Ready to Code — completed and verified"
+Approval: "Authorized — owner asks why the pictured category image is missing and requests a fix"
+
+## Verified cause / goal
+
+The two approved original PNG files under public/videos still exist and are valid; direct percent-encoded static requests return200. Passing their raw filenames (spaces and commas) through the current production Next image optimizer returns404 with url parameter valid but internal response invalid. The same optimizer requests with encoded pathname return200 and image data. Controlled evidence for both files (existence/hash/raw404/encoded200): diagnosis.json.
+
+Restore the same supplied platform and indicator artwork by correcting only those two image URL literals to percent-encoded paths. Keep original files/bytes, Next image optimization and shared fallback behavior. Do not replace artwork, generate images or rename/copy assets. Digital/accessory CMS image settings, layout, icons, product belt and all other work remain.
+
+## Files
+
+- src/features/home/components/category-feature.tsx — percent-encode only the two existing static artwork src literals.
+- tests/e2e/category-feature.spec.ts — update those two expected URL strings and explicitly verify their optimized image response status/content type, retaining existing naturalWidth/layout/fallback/belt tests.
+- spec.md/plan.md/MEMORY.md and output/home-category-images-20261105/ — exact cause, approved scope, regression lesson, original backup/hash baseline, logs/screenshots/delivery and sanitized framework feedback if applicable.
+
+## Steps
+
+- [x] Trace the fallback/rendering and live requests; verify both physical originals still exist and reproduce raw404 versus encoded200 on the same optimizer.
+- [x] Record requested fix and exact scope; read bundled image documentation/source.
+- [x] Back up current affected files and protected hashes.
+- [x] Encode only the two artwork references and adjust their existing regression expectations.
+- [x] Run typecheck/scoped lint/format/build and existing category-feature browser tests; verify all four category images load at320/390/768/1440 with no placeholder/error while preserving geometry/navigation/belt/fallback.
+- [x] Inspect original-matching screenshots, confirm original file hashes/other work unchanged, record actual results and required final framework-feedback review.
+
+## Impact / rollback
+
+R2: two references to the same existing images, no design or asset changes. Revert only current task's exact component/test diff using before-files.zip; do not reset the working tree or modify shared ProductImage. No DB/CMS/config/dependency changes or commit/push/deploy.
+
+## Verification results
+
+Diagnosis verified for both original filenames. Digital/accessories are checked alongside the fix. No application edit made before this plan. A sanitized feedback candidate is retained for the verified optimizer behavior and will be reviewed after verification; no private paths/filenames/content are included in framework feedback.
+
+### Completed state / verification
+
+Completed and verified: encoded only the two existing artwork source paths and updated the existing category regression expectations. Original image files are byte-identical; shared rendering/fallback, CMS, design, layout and other work are preserved.
+
+TypeScript, scoped ESLint/Prettier and production build passed (431/431). Existing category browser suite passed 11/11. All four category previews loaded image responses with HTTP200 at320/390/768/1440 (16 selections), no placeholder or horizontal page overflow. Desktop media frame geometry matches the baseline. All eight original-artwork screenshots were visually inspected. The protected-file hash check confirms1661 files outside the two scoped source/test files unchanged.
+
+Evidence: output/home-category-images-20261105/delivery.md, diagnosis.json, post-restart-diagnosis.json, preservation-verification.json, browser-verification.json, category-browser.log and eight after screenshots. No commit/push/deploy or DB/CMS writes. Preview remains on localhost:3000. Feedback: one sanitized draft prepared under the required Next.js protocol; a review-form opening is attempted at handoff, and the user alone can submit it. Observer lesson is recorded in MEMORY.md; no skill edits.
+
+
+## Task: Align solutions menu spacing (2026-11-05)
+
+Status: "Ready to Code — completed and verified"
+Approval: "Approved — owner explicitly approves prepared solutions spacing plan, retaining3 groups and original links"
+
+### Goal
+
+ปรับตำแหน่ง/ระยะวางเมนูโซลูชันให้สอดคล้องกับเมนูสินค้าในภาพอ้างอิงล่าสุด โดยคง3กลุ่มเดิมและเนื้อหา/ลิงก์ทั้งหมด
+
+### Scope In
+
+แก้เฉพาะ2rulesของโซลูชันในsrc/styles/header.css: ใช้shared panel left/available width, คอลัมน์3ช่องgap28px, secondary link line-height1.6/padding-block5px คงขนาดฟอนต์/น้ำหนัก/สี/common panel paddingเดิม รายละเอียดค่าจริงและผลกระทบอยู่output/solutions-menu-spacing-20261105/plan.md
+
+### Scope Out
+
+ไม่เพิ่มprimary column/เมนู/ข้อมูล ไม่แก้Header TSX/navigation/เมนูสินค้า/ซอฟต์แวร์/บริการ/เกี่ยวกับ/ติดต่อ/Mobile CSS/animation/Routes/CMS/DB/assets/dependencies ไม่commit/push/deploy
+
+### UI/UX Brand Alignment
+
+Reference: ภาพเมนูโซลูชันและสินค้า2ภาพล่าสุด และเมนูจริงบนlocalhost:3000/products; base.css/header.cssปัจจุบัน แก้เฉพาะspacing/placementตามเมนูสินค้า คง3กลุ่มโซลูชัน ไม่คัดลอกจำนวนคอลัมน์4ของสินค้ามาเปลี่ยนเนื้อหา
+Responsive: ตรวจ320/390/768/1399/1400/1440/1920หลังimplementation โดยเมนูมือถือเดิมอยู่ต่ำกว่า1400
+
+### Input / Output
+
+Input: คำสั่งล่าสุดให้ส่วนโซลูชันมีระยะวางเหมือนส่วนอื่นและภาพอ้างอิง2ภาพ
+Output: เมนูโซลูชันเริ่มแนวเดียวกับเมนูสินค้า ใช้gapและระยะบรรทัดเดียวกัน คงกลุ่ม/ลิงก์เดิม Contract/props/data/routesไม่เปลี่ยน
+
+### Acceptance Criteria
+
+- [x] แนวซ้าย/ความกว้างแผงตรงเมนูสินค้าในdesktopเดียวกัน gap28px และsecondary link rhythmตรงกัน
+- [x] คง3กลุ่ม/ทุกชื่อ/ทุกURL/ลำดับ/interactionเดิม ไม่มีoverflowหรือข้อความถูกตัดใกล้breakpoint
+- [x] เมนูอื่นและMobile accordionคงเดิม; navigation/accessibility regressionsและproduction buildผ่าน
+- [x] ตรวจภาพจริงมือถือ/tablet/desktopและบันทึกหลักฐานก่อนส่งมอบ
+
+### Missing Information
+
+ไม่มี ขอบเขตได้รับอนุมัติโดยตรงแล้วและตรวจเสร็จ
+
+### Approval Record
+
+ผู้ใช้อนุมัติแผนเมนูโซลูชันโดยตรงในข้อความล่าสุด โดยคง3กลุ่มและลิงก์เดิม ก่อนลงมือแก้CSSตามขอบเขต
+
+### Current State
+
+Progress: "Done — solutions menu spacing matches the product menu;3 groups/18 original links preserved"
+
+Changed only the two approved solutions-specific CSS rules in src/styles/header.css: shared left anchor/available panel width,1120px width,3 equal columns with28px gap, and secondary link line-height1.6/padding-block5px. Existing font-size/weight/colors/padding/motion/hidden primary group retained. No Header TSX/navigation data/mobile CSS/other menu rules changed.
+
+Formatting/diff and TypeScript passed. Node24 production build431/431 passed. Existing navigation/accessibility Browser13/13 passed on the confirmed sequential run. An initial run alongside the visual probe failed one keyboard destination assertion; the isolated unchanged test passed and the complete unchanged suite then passed. Exact cause of the initial transient failure was not established; no application behavior or tests were modified to hide it. Both initial and confirmed logs are retained.
+
+Before/after real Chrome comparison covers24 menu states at8 widths: desktop1400/1440/1796/1920 and mobile320/390/768/1399. All3 groups/18 solution destinations/names/order match exactly; desktop panel left/width/padding/gap and secondary link spacing match products, every solution link lies within the panel, and four unrelated desktop menus retain identical measured geometry. Mobile solution link list/width match the baseline; Escape and layout-mode behavior pass. No page overflow or client errors. All8 actual after screenshots visually inspected.
+
+Source verification proves only the exact2 approved CSS rules changed.1659 protected files remain hash-identical; concurrent product-detail/popup updates in its page/CSS/dialog and existing detail test are recorded separately in source-verification.json and preserved. The successful build/Browser checks verify this task's stylesheet; later concurrent detail source updates were not attributed to this task or overwritten. Current localhost:3000 preview was restarted from the successful build (owned exec session40588). No commit/push/deploy, database/CMS writes, dependencies or assets changed.
+
+Pending-work audit:21 tracked lists reviewed including closed items; this was the only active ready approval-waiting task. Historical plan-v2 implementation still lacks design/content/integration facts, and the older generic brief is explicitly superseded by that record. The current blanket authorization is recorded, but no facts or rebuild scope were invented. Existing phase1/detail-popup tasks are completed; no other ready-to-code approval-only work remains. Previously deferred image/spec issues remain deferred and are not approval-waiting work. Audit is recorded in pending-approval-audit.json.
+
+Evidence/rollback: output/solutions-menu-spacing-20261105/delivery.md, before-files.zip, baseline-hashes.json, spacing.diff, source-verification.json, before-live.json/after-live.json, build/typecheck/format/regression/keyboard logs and8 after screenshots. Revert only spacing.diff to restore the previous solutions spacing; preserve unrelated working-tree changes. No database rollback required.
+
+Final Next.js feedback reporting review: no new qualifying verified framework issue; the one transient browser assertion is not established as framework friction. No feedback command/report required for this request. Observer review: applied concurrent-work preservation; no skill updates needed.
+
+## Task: Remove pictured diagonal CTA arrows (2026-11-05)
+
+Status: "Ready to Code — completed and verified"
+Approval: "Approved — user explicitly replied อนุมัติ to the27-site/14-file removal plan"
+
+### Goal
+
+ลบลูกศรเฉียงขึ้นขวาแบบภาพล่าสุดทุกตำแหน่งในเว็บ โดยรักษาข้อความ/ลิงก์/การกดและไอคอนควบคุมชนิดอื่น
+
+### Scope In
+
+ลบArrowUpRight27 JSX sitesใน14TSX filesและunused importsตามoutput/remove-diagonal-arrows-20261105/locations.jsonและplan.md ครอบคลุมShared Header/Footer/contact mascot, catalog/storefront/product detail/video, home benefits, content/solutions/software/after-sales/source links และmap credit
+
+### Scope Out
+
+ไม่ลบลูกศรเลื่อน/ย้อนกลับ/เปิดปิด/compareหรือไอคอนชนิดอื่น ไม่เปลี่ยนข้อความ/URL/target/rel/click handlers/data/CSS/stack ไม่ถือว่าอนุมัติแผนsolutions-spacingที่ยังPending ไม่commit/push/deploy
+
+### UI/UX Brand Alignment
+
+Reference: cropped diagonal arrow white pill/red background supplied by owner; Footer CTA uses this exact ArrowUpRight icon. Keep current base.css typography/color/button padding and all component styles. Removal naturally centers remaining text; no added spacer or substitute icon. Responsive320/390/768/1440/1920
+
+### Input / Output
+
+Input: “ส่วนไหนที่มีลูกศรแบบนี้ลบลูกศรออกให้หมด” with screenshot
+Output: no matching diagonal CTA arrows rendered, existing text/destinations/control behavior preserved. No props/data/routes/API contract changes
+
+### Acceptance Criteria
+
+- [x] ไม่มีArrowUpRight render/importเหลือในsrcจาก27sitesที่ตรวจพบ
+- [x] ทุกlink text/href/target/rel/click handlersและcontrol arrowsอื่นยังคงเดิม
+- [x] ไม่มีปุ่ม/ลิงก์ว่าง ไม่มีhorizontal overflow ตรวจภาพจริงmobile/tablet/desktop
+- [x] scoped format/lint/typecheck/buildและexisting affected Browser checksผ่าน
+
+### Missing Information
+
+ไม่มีข้อกำหนดขาด ต้องรออนุมัติแผนที่ระบุshared Header/Footer/contact filesตามAGENTS.md
+
+### Approval Record
+
+User requests global matching arrow removal. Owner explicitly replied อนุมัติ to the exact27-site/14-file plan before application edits.
+
+### Current State
+
+Progress: "Done — removed27 diagonal ArrowUpRight JSX sites across14 approved application files"
+
+Only matching JSX icons and now-unused imports were removed. Source verification reconstructs and formats the exact approved transformation from before-files.zip and matches all14 current files byte-for-byte after line-ending normalization. This proves remaining text, href/target/rel/aria, click handlers, wrappers and unrelated arrow/control code are unchanged. All1650 protected source/test/asset/data/script/document files outside the14 scoped files match their baseline hashes. No CSS, content, taxonomy, API, CMS/DB, assets or dependencies changed. Concurrent product-detail/popup work is preserved.
+
+TypeScript, scoped ESLint/Prettier/diff and Node24 production build431/431 passed. Existing navigation, navigation-accessibility, after-sales and software Browser19/19 passed; targeted detail guide/related/section links, video behavior and responsive long-name Browser3/3 passed (22 total). Additional real Chrome verification passed25 route/viewport checks at320/390/768/1440/1920 with zero matching diagonal SVGs, no page overflow or client errors. Existing solution links navigate, source form retains its original URL, software/content cards render, mobile chevrons remain and the contact CTA retains text/destination/new-tab attributes. Five CTA screenshots, two solution screenshots and one mobile-navigation screenshot were visually inspected.
+
+Runtime limits recorded honestly: current site layout does not mount the mascot and the current Footer renders a non-interactive coverage div because its map setting is disabled. Their diagonal icons were removed from source and the exact remaining code/credit/shop text and link attributes are verified unchanged. No runtime mascot/map popup assertion is claimed, and neither feature was enabled or mounted just for this task. Preview scripts initially assumed these dormant features were active; checks were corrected against the existing layout and rendered footer rather than changing application behavior.
+
+The prior owned preview process was restarted using this successful production build atlocalhost:3000 (owned exec session72076); smoke200 confirms the actual preview contains the contact label and zero diagonal SVGs. The temporary3016 verification server was stopped. No commit/push/deploy. Separate solutions-spacing plan remains Pending.
+
+Evidence and rollback: output/remove-diagonal-arrows-20261105/delivery.md, locations.json, before-files.zip, removal.diff, baseline-hashes.json, source-verification.json, browser-verification.json, preview-smoke.json, build/typecheck/lint/format/regression/detail-regression/browser logs and eight actual after screenshots. Roll back only this task's exact JSX/import diff, preserving all prior user changes; no database rollback.
+
+Final Next.js feedback reporting pass: no new qualifying verified framework issue during this request; no report draft/CLI pass needed. Observer review: no new skill update. The temporary preview harness mistakes were corrected without application changes.
+
+## Task: Popup รายละเอียดสินค้าแต่ละกลุ่ม (2026-11-05)
+
+Status: "Complete"
+Approval: "Approved — user: ปรับให้เป็นการกดแล้ว popup detail"
+
+### Goal
+
+ปรับการกดการ์ดหัวข้อรายละเอียดสินค้าให้เปิดข้อมูลของกลุ่มนั้นใน native modal dialog; คงการ์ด ชื่อกลุ่ม จำนวนแถว และข้อมูลเดิมไว้
+
+### Scope In
+
+- เปลี่ยนแถวกลุ่มที่ขยาย inline ให้เป็นปุ่มเปิด popup
+- popup ใช้ native `<dialog>.showModal()` มีชื่อกลุ่ม ตารางข้อมูลครบ และปุ่มปิด; Escape/keyboard ใช้งานตาม native dialog
+- ทำ CSS เฉพาะ route responsive โดยใช้ tokens SUNFORD เดิม
+- แก้เฉพาะ page, component dialog ใหม่, CSS Module ของหน้านี้ และบันทึก spec/plan/output
+
+### Scope Out
+
+- เปลี่ยนข้อมูลสินค้าและการจัดกลุ่ม, รูป/วิดีโอ, ราคา, routing/DB/CMS, global styles/layout/shared components
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพผู้ใช้ของการ์ดรายละเอียดสินค้า พร้อม component/token ของ SUNFORD เดิม
+- Design: คงพื้นเทาอ่อน/เส้นขอบ/ตัวอักษรและแดงสำหรับลูกศร ใช้ native top-layer dialog/backdrop
+- Responsive: dialog จำกัดความกว้าง/สูง viewport และเลื่อนเนื้อหาภายใน; ตรวจ 320/390/768/1440 px
+
+### Input / Output
+
+- Input: `detailGroups` ที่ route สร้างจากรายละเอียดที่ render อยู่แล้ว
+- Output: แตะ/คลิกปุ่มชื่อกลุ่มแล้วเปิด popup ของกลุ่มนั้น ปิดด้วยปุ่มหรือ Escape
+
+### Acceptance Criteria
+
+- [x] กลุ่มทั้งหกยังแสดงเป็นการ์ดพร้อมจำนวนแถวและไม่แสดงตาราง inline
+- [x] คลิก/Enter/Space เปิด modal ของกลุ่มนั้น; ปุ่มปิดและ Escape ปิดได้
+- [x] ตารางใน popup คงข้อความ label/value/HTML/link เดิม
+- [x] ใช้งานได้ที่ 320/390/768/1440px โดยไม่มี modal ล้น viewport หรือหน้าแนวนอนล้น
+
+### Missing Information
+
+- ไม่มี; ภาพระบุการ์ดและคำสั่งระบุ interaction เป็น popup
+
+### Approval Record
+
+- ผู้ใช้อนุมัติขอบเขตด้วยข้อความ “ปรับให้เป็นการกดแล้ว popup detail” (2026-11-05)
+
+
+ผลจริง: ปุ่มกลุ่มเปิดnative modal; ปุ่มปิด/Escapeทำงาน ตารางข้อมูลเดิมอยู่ในdialog. Browser manual確認ที่320×800/390×844/768×900/1440×1000; เก็บภาพ320/390/1440. TypeScript/Prettier/scoped ESLint TSX/git diff checkผ่าน. ไม่รัน test suites ตามกฎ turnนี้. ดูหลักฐานใน output/product-detail-reference-audit-20261105/implementation/delivery.md และ popup-verification.json.
+
+## Task: ลบแถบนำทางภายในหน้าสินค้า (2026-11-05)
+
+Status: "Complete"
+Approval: "Approved — user: ภาพรวม / รายละเอียดสินค้า / วิดีโอการใช้งาน อนุมิตลบ"
+
+### Goal
+
+นำแถบลิงก์ “ภาพรวม”, “รายละเอียดสินค้า” และ “วิดีโอการใช้งาน” ที่แสดงตามภาพออกจากหน้าสินค้ารายตัว
+
+### Scope In
+
+- ลบ `<nav>` ภายในหน้าสินค้าที่แสดงลิงก์สามรายการนี้
+- ลบ CSS Module ของแถบนำทางและ responsive override ที่ใช้กับแถบนี้
+- ปรับเฉพาะ assertion เดิมใน product detail browser spec ที่อ้างการมีอยู่/คลิกแถบนำทาง ให้สอดคล้องกับการไม่มีแถบ
+
+### Scope Out
+
+- คง section ภาพรวม, รายละเอียด, วิดีโอ และเนื้อหาทั้งหมดไว้
+- คง section IDs `product-overview`, `product-specifications`, `product-videos` เพื่อรักษา deep links เดิม
+- ไม่เปลี่ยนลำดับ/รูปแบบหน้า, popup รายละเอียด, วิดีโอ, anchor ภายนอก, shared UI, global styles, routing, CMS หรือข้อมูลสินค้า
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพผู้ใช้ที่แสดงแถบสามลิงก์บนพื้นเทาอ่อน
+- Design: เอาเฉพาะแถบตามภาพออก; ปล่อยให้ section เนื้อหาต่อเนื่องตาม layout ปัจจุบัน
+- Responsive: ตรวจหน้าไม่มีแถบที่ 320/390/768/1440px และ section เดิมยังอยู่
+
+### Input / Output
+
+- Input: คำสั่ง “ลบ” พร้อมภาพแถบนำทางสามรายการ
+- Output: ไม่มีแถบนำทางสามรายการในหน้าสินค้ารายตัว; เนื้อหาปลายทางและ deep links เดิมยังอยู่
+
+### Acceptance Criteria
+
+- [x] แถบและลิงก์ทั้งสามไม่ render ในหน้าสินค้ารายตัว
+- [x] section ภาพรวม/รายละเอียด/วิดีโอและ IDs เดิมยังคงอยู่ตามเงื่อนไขข้อมูลของแต่ละสินค้า
+- [x] CSS ที่เป็นของแถบนี้และ assertion เดิมที่พึ่งพาแถบถูกนำออก/ปรับเฉพาะจุด
+- [x] ตรวจหน้าใน 320/390/768/1440px และ scoped formatting/typecheck ผ่าน
+
+### Missing Information
+
+- ไม่มี; ภาพระบุตำแหน่งและป้ายของแถบที่ต้องการลบ
+
+### Approval Record
+
+- ผู้ใช้ระบุ “ลบ” พร้อมภาพแถบสามลิงก์ (2026-11-05); อนุมัติแล้วด้วยข้อความ “ภาพรวม / รายละเอียดสินค้า / วิดีโอการใช้งาน อนุมิตลบ”
+
+## Task: การ์ดรายละเอียด 3 คอลัมน์และไม่มีจำนวนรายการ (2026-11-05)
+
+Status: "Complete"
+Approval: "Approved — direct user request: จัดกลุ่มใหม่เป็น 3 columm และเอาส่วนของรายการออก"
+
+Goal: การ์ดหัวข้อรายละเอียดแสดง 3 คอลัมน์บน desktop >=1024px และไม่มีข้อความจำนวนรายการ; คง single column ด้านล่าง breakpoint เดิมและ popup รายละเอียด
+Scope: product-specification-dialogs.tsx ลบ small จำนวนรายการ; product-detail.module.css เปลี่ยน grid เป็น3และลบ style จำนวนที่ไม่ใช้; spec.md/plan.md บันทึกผล
+Reference: ภาพการ์ด6หัวข้อและภาพจำนวนรายการที่ผู้ใช้ส่ง; ใช้ token/typography/card/popup เดิม
+Input/Output: กลุ่มและแถวข้อมูลเดิม → การ์ด3คอลัมน์2แถวเมื่อมี6กลุ่ม; มีชื่อและลูกศร เปิด popup ข้อมูลเดิม
+Out of scope: แถบทางลัดที่ยังรอคำตอบ, เปลี่ยนกลุ่ม/ข้อมูล/แถวในpopup, shared styles, dependencies
+Acceptance: desktop3คอลัมน์, narrow1คอลัมน์, ไม่แสดงจำนวนรายการ, ข้อมูลpopupครบ; scoped format/typecheck และตรวจภาพ responsive
+Missing Information: ไม่มี
+Approval Record: คำสั่งตรงตามภาพของผู้ใช้ครอบคลุมการแก้ route component/CSS นี้
+
+ผลส่งมอบงานแถบนำทางและการ์ด3คอลัมน์: Complete — ผู้ใช้อนุมัติลบแถบแล้ว. Browser1440/768/390/320ผ่าน: desktop3columns/narrow1column, ไม่มีจำนวนรายการ/แถบนำทาง/overflow, popupเปิดและEscapeปิดได้. TypeScript/scoped ESLint/Prettier/diffผ่าน. หลักฐาน output/product-cards-three-columns/delivery.md และ verification.json. QA3044ปิด; preview3000ยังเป็นproduction buildก่อนแก้. ไม่commit/push/deploy.
+
+## Task: Build และรีสตาร์ต preview3000 (2026-11-05)
+Status: "Ready to Code"
+Approval: ผู้ใช้สั่ง Build ใหม่แล้วรีสตาร์ต preview พอร์ต3000 ให้แสดงหน้าล่าสุด
+Scope/Plan: ใช้ Node24 และ bun run build ของโปรเจกต์; หยุดเฉพาะ process preview3000 ที่ตรวจ identity แล้วก่อน build; รัน bun run start ที่127.0.0.1:3000; ตรวจHTTPและBrowserว่าการ์ด3columns ไม่มีจำนวน/แถบนำทาง และpopupทำงาน
+Files: spec.md/plan.md และ output/product-cards-three-columns/ สำหรับผลตรวจ; ไม่แก้ application source
+Impact/Rollback: local previewหยุดชั่วคราวระหว่างbuild; ใช้ sourceเดิมหากbuildล้มเหลวและแก้เฉพาะสาเหตุที่ขวางงาน ไม่deploy/commit/push
+
+### ผล Build และ restart preview3000 — Complete
+
+Node24.22.1 + bun run build ผ่าน: compilation/TypeScript/static pages431/431. รีสตาร์ตด้วย bun run start --hostname127.0.0.1 --port3000 (owned exec41815). HTTP200. Browserจริงบนพอร์ต3000ผ่าน1440/768/390/320: desktop3columns, narrow1column,6cards, no counts/no section nav/no page overflow, popupเปิดและEscapeปิดได้. ภาพproduction1440/390ตรวจแล้ว. หลักฐาน output/product-cards-three-columns/production-verification.json, preview-restart.json และ production-cards-*.png. บันทึกนี้แทนข้อจำกัดก่อนหน้าที่preview3000ยังเป็นbuildเก่า. ไม่มีcommit/push/deployและไม่มีapplication source changesในขั้นตอนrestartนี้. ไม่พบปัญหาNext.jsใหม่ที่ต้องส่งfeedback
+
+## Task: วิดีโอหน้าสินค้าเปิด YouTube แท็บใหม่ (2026-11-05)
+Status: "Complete"
+Approval: คำสั่งตรงของผู้ใช้ วิดิโอแนะนำกดแล้วเปิดแท็บใหม่เป็นหน้ายูทูปตามลิงก์เลย
+Goal/Contract: คลิกภาพวิดีโอหรือกดEnterเปิด video.url เดิมด้วยtarget=_blank/rel=noopener noreferrer; เอา inline iframe/state/ปิดวิดีโอออก. คงรูป/ชื่อ/จำนวน/URL/drag-scroll/layout/ช่องYouTubeเดิม
+Files/Plan: src/features/catalog/components/product-usage-videos.tsx เปลี่ยน posterเป็นa; product-usage-videos.module.css ลบเฉพาะiframe/close-button selectorsที่ไม่ใช้; tests/e2e/product-usage-videos.spec.ts และ product-detail.spec.ts ปรับexisting playback assertionsเป็นnew-tab; spec.md/plan.md/output/product-video-new-tabs บันทึกผล. ไม่แก้shared DragScroll หรือdata
+Acceptance: คลิก/Enterเปิดแท็บที่ตรงvideo.url;ไม่มีiframe/close;dragไม่เปิดtab;responsive320/390/768/1440;unmatchedยังลิงก์channelเดิม
+Verification: scoped lint/format/typecheck; existing focused browser specและproduction previewจริง. Buildและrestart3000หลังแก้ตามการอนุมัติpreviewก่อนหน้า
+Impact/Rollback: R2 เฉพาะproduct videos;คืนcomponent/CSS/testdiff. ไม่มีdata/DBwrites/commit/push/deploy
+
+### ส่งมอบวิดีโอเปิดYouTubeแท็บใหม่ — Complete
+
+ปรับภาพวิดีโอเป็นanchorไปvideo.urlเดิมด้วย_blank/noopener noreferrer;ลบstate/iframe/ปุ่มปิดและCSSเฉพาะของมัน. drag-scrollเดิมยังทำงาน. BuildNode24ผ่าน431/431รวมTypeScript;scopedESLint/Prettier/diffผ่าน. Existing focused Browser3/3ผ่านบนproduction3000:สองคลิปตรงURL,click/Enter/newtab/opener-null,dragไม่เปิดtab,similar-model/unmatchedเดิม. การทดสอบปลายทางใช้stubYouTubeเพื่อยืนยันURLและแท็บ ไม่อ้างเนื้อหาภายนอก. รูปRLSตรวจ1440/768/390/320ไม่มีoverflow/iframeและ7posterURLsตรง;ภาพ1440/390ตรวจด้วยตาแล้ว
+
+รีสตาร์ตpreview3000ล่าสุดด้วยbun run start (owned exec51243). หลักฐาน output/product-video-new-tabs/build.log, browser.log, responsive.json และ videos-*.png. ไม่มีcommit/push/deploy. ไม่พบframework issueใหม่ที่ต้องส่งfeedback;observerไม่มีบทเรียนใหม่
+
+## Task: Reuse new catalog cards for related products (2026-11-05)
+
+Status: "Ready to Code — completed and verified"
+Approval: "Authorized — direct current request plus standing authorization to proceed without repeated permission"
+
+### Goal / Scope
+
+เปลี่ยนการ์ดสินค้าในหมวดเดียวกันให้เป็นรูป+ชื่อรุ่นกึ่งกลางแบบ/products ใช้CatalogProductCard modelOnlyและcatalogCardNameเดิม คง3รายการ/ลำดับ/URLs/CTAและgrid desktop3/mobile2 ไม่เปลี่ยนสินค้าหรือshared card
+
+### UI/UX Brand Alignment
+
+Reference: ภาพrelated-productsล่าสุดและการ์ดจริงใน/products; ใช้ฟอนต์/ภาพ/border/radius/padding/compareเดิมของCatalogProductCard เพิ่ม2selectorsในroute CSSเพื่อcenter/titleตามcatalog โดยไม่แก้global/shared CSS ตรวจ320/390/768/1440
+
+### Input / Output / Acceptance
+
+Input: ผู้ใช้ระบุให้การ์ดเดิมใช้การ์ดใหม่ของหน้าproducts. Output: relatedแสดงเฉพาะภาพและชื่อรุ่น ไม่มีSUNFORDบรรทัดซ้ำ/คำโปรย/ป้ายcapacity/categoryแบบเดิม
+- [x] same3 selected products/order/URLs/categoryCTA and original3/2 responsive grid
+- [x] modelOnly/image/title styles match/products; images loaded, title/keyboard links work, no overflow
+- [x] scoped format/lint/typecheck/build and targeted existing browser regression pass; actual screenshots inspected
+
+### Missing Information / Approval Record
+
+ไม่มีข้อมูลที่ขาด ผู้ใช้ขอใช้การ์ดที่มีอยู่ชัดเจน และก่อนหน้าระบุ “หากมีส่วนไหนรออนุมัติอีกจัดการเลย” ใช้authorizationต่อเนื่องสำหรับขอบเขตนี้โดยไม่ขอซ้ำ Files/steps/rollbackตามoutput/related-product-card-sync-20261105/plan.md
+
+### Current State
+
+Progress: "Done — related products use the current /products compact image/model card"
+
+The existing CatalogProductCard is reused with modelOnly and the existing catalogCardName label helper. Two route-local CSS rules mirror the catalog's centered copy/title behavior. The shared card implementation, catalog CSS and card-name helper remain unchanged. Original3 related records/order/image sources/destinations/category CTA and original3-column desktop/2-column narrow grid remain. No product content, selection algorithm, popup/detail/video behavior or compare control logic was altered.
+
+Scoped Prettier/ESLint/diff and TypeScript passed; Node24 production build431/431 passed. Existing focused Browser4/4 passed: catalog default order/featured/List; global comparison; actual related products/guide across product families; responsive product/long names. No new permanent CI tests for this low-impact visual reuse.
+
+Real Chrome before/after at320/390/768/1440 verifies the same3 products/order/URLs/CTA and retained column counts, loaded images, no duplicated brand/subtitle/tags and no page overflow or client errors. Card padding/radius/background/copy alignment/title typography/minimum height/display/overflow/image height exactly match the existing /products modelOnly card at the same viewport. Image clicks and title Enter activation navigate to the same existing product URL in all4 widths (8 activations). All4 final screenshots visually inspected.
+
+Source verification reconstructs only the exact approved two-file transformation from before-files.zip, preserving the rest of the route and CSS. All1662 protected source/test/asset/data files outside those2 route files match baseline hashes. Existing popup and YouTube new-tab work are preserved. First baseline browser harness needed to scroll the lazy-loaded section into view and use the actual existing900px grid breakpoint; corrected verification setup without changing application behavior. No new framework feedback candidate.
+
+The identified prior local preview process was checked against this workspace's Next start command/port3000 before stopping. Current preview restarted from the successful build (owned session79851); actual3000 HTTP200 includes all3 compact related cards. Temporary3016 QA server stopped. No commit/push/deploy or DB/CMS writes, dependencies, shared/global style changes.
+
+Evidence and rollback: output/related-product-card-sync-20261105/delivery.md, plan.md, before-files.zip, baseline-hashes.json, card.diff, source-verification.json, before-browser.json/after-browser.json, preview-smoke.json, logs and four after-related screenshots. Revert only this task's exact route import/props/wrapper-class diff and two relatedGrid CSS rules; preserve other pending user work. No database rollback needed.
+
+Final Next.js feedback review: no qualifying verified framework issue in this request; no feedback command/report needed. Observer review: no new skill updates.
+
+
+## Task: Separate completed changes and push safe (2026-11-05)
+
+Status: "Ready to Code"
+Approval: "Approved — direct user request แยกไฟล์และคอมมิต/พุท"
+
+Goal: แยก50ไฟล์ที่เสร็จและอนุมัติแล้วเป็น8กลุ่ม commit แล้วpushorigin/safeตามสาขาปัจจุบัน รวมcommit60c023bที่อยู่localและยังไม่push ไม่แก้ฟีเจอร์/ข้อมูล/ดีไซน์/main/uatหรือdeploy
+Exact scope: groups.jsonและplan.mdในoutput/commit-push-separated-20261105/ระบุทุกpathและลำดับ Catalog→navigation→detail/dialog/video→remainingarrows→artwork→storytabs→solutionsspacing→docs ส่วนspec.md/plan.md/MEMORY.mdอยู่กลุ่มเอกสารสุดท้าย
+Reference/contracts: คงผลลัพธ์และcontractที่ตรวจแล้วของทุกfeature ไม่เปลี่ยนUI/data/API/DBในงานGitนี้
+Acceptance: manifestครบไม่มีartifact/secret; scopedformat/lint/typecheck/unitและdiffผ่านตามหลักฐาน;8commitsแยกกลุ่ม;ordinarypushorigin/safeและremoteSHAตรงHEAD;ไม่ทิ้งงานที่ผู้ใช้ขอไว้
+Missing Information: ไม่มี upstreamorigin/safeและremoteheadตรวจแล้ว
+Approval Record: คำสั่งผู้ใช้ตรงอนุมัติจัดcommitและpushสาขาที่ทำงาน; ไม่ตีความเป็นproductionrelease
+Current State: เตรียม8groups50pathsและbackup/sourcehashesแล้ว ผลchecks/commitIDs/remoteverificationจะบันทึกก่อนส่งมอบ
+
+
+## Verified source commits / delivery state
+
+All47 non-root-document paths committed in7 coherent groups, and every Git blob matches the isolated tested candidate tree. Three root project-document files form the final8th commit. Source implementation is unchanged during this Git task. Current branchsafe; ordinary push targetorigin/safe includes the existing previously unpushed YouTube commit60c023b. No main/uat/production mutation.
+
+- f469df7 — feat(catalog): synchronize subcategories and catalog filters (17 paths)
+- 0a8d256 — feat(navigation): match product menus to catalog subcategories (4 paths)
+- fe1aa7d — feat(products): update detail dialogs cards and YouTube links (10 paths)
+- 1991ec4 — style(ui): remove remaining diagonal link arrows (12 paths)
+- 0d572b7 — fix(home): encode local category artwork URLs (2 paths)
+- 91ce38e — feat(home): open individual stories in new tabs (1 paths)
+- 1773f7b — style(navigation): align solutions menu spacing with products (1 paths)
+
+Changed TS/TSX/CSS formatting, changed TS/TSX ESLint, TypeScript and Git diff checks passed. All94 catalog unit cases passed against the exact candidate Git bytes in an isolated export using existing dependencies, with no env/credentials copied. Default Windows archive conversion initially produced a reference-file hash mismatch; Git blob bytes were correct, and exporting with core.autocrlf=false made the exact Git-byte suite pass94/94. No application/test/reference source was altered to hide the mismatch. Candidate tree/export settings and both logs are retained.
+
+The latest unchanged-source production build431/431 and scoped Browser evidence are retained in related-product-card-sync-20261105 (4/4), solutions-menu-spacing-20261105 (13/13) and prior approved feature deliveries. Source hashes were frozen before Git delivery and checked before each source commit; no extra feature code or redundant Browser/build changes were introduced. All50 paths are explicitly assigned, no ignored output/media/env files staged. Binary working patch, untracked ZIP, exact source hashes, tested candidate index/tree and source commit receipts are local under output/commit-push-separated-20261105/.
+
+Final Git operations: commit the3 root documents, then ordinary git pushorigin safe. The post-commit/post-push receipt at output/commit-push-separated-20261105/delivery.md and push-receipt.json records the final documentation commit ID, final local/remote SHA, complete commit manifest, command results and clean working-tree verification. Those values are deliberately recorded after the operations rather than claiming a remote result inside a commit that precedes its push. If push fails, preserve local commits and report the actual reason without force push.
+
+Rollback: existing work preserved in7 source commits and8th documentation group; use follow-up revert commits for shared history. No reset/rebase/force push, delete or DB rollback. Original ignored output/local media remain. Final Next.js feedback review has no new qualifying framework issue; the known Windows Git export conversion is not a Next.js issue. A concrete archive instruction is appended to MEMORY.md; no skill edits.
