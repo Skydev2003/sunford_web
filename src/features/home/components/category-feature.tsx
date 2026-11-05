@@ -41,14 +41,14 @@ export async function CategoryFeature({
       path: "/product/scale-platforms",
       title: "โครงสร้างแท่นชั่ง",
       description: "แท่นชั่งตั้งโต๊ะ แท่นชั่งตั้งพื้น แท่นชั่งขนาดใหญ่",
-      image: "/videos/ChatGPT Image Nov 4, 2026, 01_57_30 PM.png",
+      image: "/videos/ChatGPT%20Image%20Nov%204%2C%202026%2C%2001_57_30%20PM.png",
     },
     {
       id: "indicators",
       path: "/Indicator",
       title: "อินดิเคเตอร์แท่นชั่ง",
       description: "ห้องปฏิบัติการ อุตสาหกรรม พาณิชยกรรมและบริการ",
-      image: "/videos/ChatGPT Image Nov 4, 2026, 01_57_44 PM.png",
+      image: "/videos/ChatGPT%20Image%20Nov%204%2C%202026%2C%2001_57_44%20PM.png",
     },
   ] as const;
   const items = await Promise.all(
