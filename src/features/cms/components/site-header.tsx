@@ -1,4 +1,4 @@
-import { Header } from "@/components/layout/header";
+import { PrimaryNavigation } from "@/components/layout/primary-navigation";
 import { getSettings } from "../server/documents";
 import {
   defaultNavigation,
@@ -13,17 +13,5 @@ export async function SiteHeader() {
     getSettings("site", defaultSite),
   ]);
   const items = resolveNavigationItems(navigation.items);
-  return (
-    <Header
-      items={items}
-      extras={{
-        exploreLabel: navigation.exploreLabel,
-        exploreLinks: navigation.exploreLinks,
-        helpLabel: navigation.helpLabel,
-        helpLinks: navigation.helpLinks,
-        mobileLinks: defaultNavigationExtras.mobileLinks,
-      }}
-      site={site}
-    />
-  );
+  return <PrimaryNavigation navigation={items} site={site} />;
 }

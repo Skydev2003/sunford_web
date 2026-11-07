@@ -3,7 +3,6 @@
   position: relative;
   min-height: 100vh;
   background: #fff;
-  padding-top: var(--site-header-height);
 }
 
 .surface:has([data-page-surface="paper"]) {

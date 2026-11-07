@@ -1,37 +1,80 @@
+.page {
+  background: white;
+  color: var(--ink);
+}
+.browser.embedded {
+  max-width: none;
+  padding: 8px 0 100px;
+}
+.embedded .categoryArt {
+  display: none;
+}
+.embedded .categories {
+  grid-template-columns: repeat(5, minmax(130px, 1fr));
+  gap: 12px;
+}
+.embedded .categories button {
+  min-height: 64px;
+  align-content: center;
+}
+.embedded .finder {
+  margin-top: 28px;
+}
 .browser {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 44px 20px 64px;
+  padding: 36px 20px 72px;
   color: var(--ink);
 }
 .browser :is(button, input, select) {
   font: inherit;
 }
-.browser :is(button, input, select):focus-visible {
+.browser :is(button, a, input):focus-visible,
+.guides a:focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 4px;
 }
 .heading {
-  display: grid;
-  justify-items: center;
-  gap: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
   margin-bottom: 32px;
 }
 .heading h1 {
-  font-size: clamp(28px, 3.5vw, 42px);
-  line-height: 1.4;
-  text-align: center;
+  font-size: clamp(34px, 4.5vw, 64px);
+  line-height: 1.3;
   font-weight: 600;
+}
+.categoryPage {
+  background: white;
+}
+.categoryPage .heading > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--red);
+}
+.categoryPage .finderHeading {
+  justify-content: flex-end;
+}
+.searchShortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--red);
 }
 .search {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: min(100%, 760px);
+  width: 100%;
   padding: 0 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: white;
+  border-radius: 28px;
+  background: var(--paper);
   color: var(--muted);
 }
 .search svg {
@@ -44,65 +87,179 @@
   border: 0;
   background: transparent;
   color: var(--ink);
+  scroll-margin-top: 120px;
 }
 .search input:focus-visible {
   outline: none;
 }
 .categories {
   display: grid;
-  grid-template-columns: repeat(5, minmax(190px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(5, 150px);
+  gap: 20px;
   overflow-x: auto;
-  padding: 8px;
-  margin-bottom: 20px;
+  padding: 8px 6px;
+  scrollbar-width: none;
+}
+.categories::-webkit-scrollbar,
+.showcaseTrack::-webkit-scrollbar {
+  display: none;
 }
 .categories button {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  align-items: center;
-  align-content: center;
-  gap: 2px 10px;
-  min-height: 76px;
+  justify-items: center;
+  align-content: start;
+  gap: 12px;
+  min-height: 126px;
   min-width: 0;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: white;
-  color: var(--muted);
+  padding: 8px 6px 12px;
+  border-bottom: 2px solid transparent;
+  scroll-margin-inline: 6px;
+  background: transparent;
+  color: var(--ink);
+}
+.categoryArt {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 72px;
+}
+.categoryArt img {
+  object-fit: contain;
 }
 .categories svg {
   width: 24px;
   height: 24px;
 }
 .categories strong {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ink);
   max-width: 100%;
-  text-align: left;
-  white-space: nowrap;
+  text-align: center;
+  line-height: 1.6;
 }
 .categories button:hover,
 .categories button[aria-pressed="true"] {
   border-color: var(--red);
-  background: #fff0f3;
   color: var(--red);
 }
 .categories button[aria-pressed="true"] strong {
   color: var(--red);
 }
+.categoryControls,
+.galleryControls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 4px 4px;
+}
+.categoryControls button,
+.galleryControls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+}
+.categoryControls button:hover,
+.galleryControls button:hover {
+  background: var(--line);
+}
+.showcase {
+  margin-top: 28px;
+  margin-bottom: 64px;
+}
+.showcaseTrack {
+  display: flex;
+  gap: 18px;
+  margin: 0;
+  padding: 6px 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  scrollbar-width: none;
+  list-style: none;
+}
+.showcaseSlide {
+  flex: 0 0 calc(100% - 24px);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.showcaseCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px;
+  padding: 28px 20px 20px;
+  border-radius: 28px;
+  background: var(--paper);
+  text-align: center;
+}
+.showcaseCopy {
+  width: 100%;
+}
+.showcaseName {
+  font-size: clamp(26px, 4vw, 52px);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.showcaseSubtitle {
+  max-width: 46ch;
+  margin: 10px auto 0;
+  font-size: 15px;
+  line-height: 1.65;
+  text-wrap: balance;
+}
+.showcaseCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 18px;
+  padding: 10px 22px;
+  border-radius: 24px;
+  background: var(--red);
+  color: white;
+}
+.showcaseArt {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  max-width: 760px;
+  min-height: 0;
+  margin-top: 24px;
+  border-radius: 20px;
+  background: white;
+}
+.showcaseArt img {
+  padding: 20px;
+  object-fit: contain;
+}
+.finder {
+  scroll-margin-top: 100px;
+}
+.finderHeading {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.finderHeading h2,
+.guides h2 {
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 600;
+  line-height: 1.45;
+}
 .selection {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 18px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--line);
-}
-.selection h2 {
-  font-size: clamp(22px, 2.5vw, 30px);
-  font-weight: 600;
-  line-height: 1.5;
+  gap: 12px;
+  padding-bottom: 12px;
 }
 .subcategoryScroller {
   display: flex;
@@ -196,6 +353,7 @@
 }
 .grid > article {
   min-width: 0;
+  border: 1px solid var(--line);
 }
 .grid article[data-model-only] > div {
   padding: 0;
@@ -263,9 +421,85 @@
   margin-top: 20px;
   color: var(--red);
 }
+.guides {
+  padding: 56px 20px 64px;
+  background: var(--paper);
+}
+.guidesInner {
+  max-width: 1344px;
+  margin-inline: auto;
+}
+.guideGrid {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.guideGrid li {
+  min-width: 0;
+}
+.guideCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  padding: 28px;
+  border-radius: 24px;
+  background: white;
+}
+.guideCard h3 {
+  font-size: 22px;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+.guideCard p {
+  margin: 14px 0 24px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.guideCard span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: auto;
+  color: var(--red);
+}
+.guideCard:hover h3 {
+  color: var(--red);
+}
 @media (min-width: 700px) {
   .browser {
     padding: 56px 32px 80px;
+  }
+  .categories {
+    grid-template-columns: repeat(5, 190px);
+  }
+  .categoryArt {
+    width: 140px;
+    height: 88px;
+  }
+  .showcaseSlide {
+    flex-basis: calc(100% - 64px);
+  }
+  .showcaseCard {
+    height: 620px;
+    padding: 36px 40px 28px;
+    border-radius: 36px;
+  }
+  .showcaseSubtitle {
+    font-size: 18px;
+  }
+  .showcase {
+    margin-bottom: 88px;
+  }
+  .guides {
+    padding: 72px 32px 80px;
+  }
+  .guideGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
   }
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -282,6 +516,34 @@
   .browser {
     padding-inline: 48px;
   }
+  .categories {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .categoryControls {
+    display: none;
+  }
+  .showcase {
+    margin-top: 40px;
+  }
+  .showcaseSlide {
+    flex-basis: calc(100% - 96px);
+  }
+  .finderHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .search {
+    max-width: 380px;
+  }
+  .guides {
+    padding-inline: 48px;
+  }
+  .guideGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
   .grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 24px;
@@ -293,9 +555,14 @@
 @media (max-width: 699px) {
   .subcategoryScroller {
     flex-basis: 100%;
-    order: 1;
   }
-  .all {
-    margin-left: 0;
+  .views {
+    margin-left: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .browser :is(a, button),
+  .guides a {
+    transition: none;
   }
 }

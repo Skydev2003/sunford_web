@@ -5,6 +5,7 @@ import manifest from "../../src/features/catalog/data/scale-category-models.json
 import { platformSubcategoryDefinitions } from "../../src/features/catalog/data/platform-subcategories";
 import { deduplicateConsumableSizes } from "../../src/features/catalog/data/consumable-sizes";
 import { accessorySubcategoryDefinitions } from "../../src/features/catalog/data/accessory-subcategories";
+import { buyingGuides } from "../../src/features/content/data/buying-guides";
 
 const materialNames = platformSubcategoryDefinitions.map(({ label }) => label);
 const accessoryNames = accessorySubcategoryDefinitions.map(({ label }) => label);
@@ -21,7 +22,7 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(region.getByRole("status")).toHaveText("39 รายการ · 7 รุ่นตัวอย่าง (Mock)");
     const stops = await subcategoryStops(track);
     await region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางขวา", exact: true }).click();
-    await expectSubcategoryPosition(track, stops[1]);
+    await expectSubcategoryPosition(track, stops[1] ?? 0);
     await region.getByRole("button", { name: "เลื่อนหมวดย่อยไปทางซ้าย", exact: true }).click();
     await expectSubcategoryPosition(track, 0);
     await loadAll(region);
@@ -371,13 +372,14 @@ test("five real families remain complete and eight children reproduce every docu
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/products");
+  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
   const response = await request.get("/api/products");
   expect(response.ok()).toBe(true);
   const { products } = (await response.json()) as { products: Product[] };
   const visibleProducts = deduplicateConsumableSizes(products);
   const published = visibleProducts.filter((product) => catalogProductGroup(product));
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
-  await expect(region.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+  await expect(region.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
   await expect(region.getByText("หมวดหมู่ย่อยบางหมวดยังเป็นตัวอย่าง")).toHaveCount(0);
   const navigation = region.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true });
   await expect(navigation.getByRole("button")).toHaveText(categories.map((item) => item.label));
@@ -594,9 +596,11 @@ test.describe("subcategory arrow-only touch navigation", () => {
       await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
       await page.waitForTimeout(250);
     }
-    const before = await page.evaluate(() => scrollY);
+    const before = await track.evaluate((element) => element.closest("dialog")!.scrollTop);
     await swipe(0, -120);
-    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(before);
+    await expect
+      .poll(() => track.evaluate((element) => element.closest("dialog")!.scrollTop))
+      .toBeGreaterThan(before);
     await swipe(-120, 0);
     expect(await track.evaluate((element) => element.scrollLeft)).toBe(0);
     await track.hover();
@@ -612,6 +616,7 @@ test("parent changes reset children and search intersects with the selected demo
   request,
 }) => {
   await page.goto("/products");
+  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
   await region.getByRole("button", { name: categoryName(1), exact: true }).click();
   await region.getByRole("button", { name: scaleNames[0], exact: true }).click();
@@ -661,6 +666,7 @@ test("missing document models are explicit mocks with no product links or compar
   page,
 }) => {
   await page.goto("/products");
+  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
   await region.getByRole("button", { name: "เครื่องชั่ง", exact: true }).click();
   await region.getByRole("button", { name: scaleNames[3], exact: true }).click();
@@ -686,6 +692,7 @@ test("default order, featured filtering and list view retain real product data w
   page,
 }) => {
   await page.goto("/products");
+  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
   await expect(region.getByRole("combobox", { name: "เรียงลำดับสินค้า" })).toHaveCount(0);
   const recommended = await region.locator("article h3").allTextContents();
@@ -718,6 +725,7 @@ test("comparison remains global across demo groups and enforces three products",
   page,
 }) => {
   await page.goto("/products");
+  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
   await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
   const add = region.getByRole("button", { name: /^เพิ่มเพื่อเปรียบเทียบ/ });
@@ -735,7 +743,8 @@ test("comparison remains global across demo groups and enforces three products",
   await dialog.getByRole("button", { name: "ปิด", exact: true }).click();
   await expect(page.locator(".compare-bar")).toHaveCount(0);
   await region.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).click();
-  await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
+  await page.getByRole("button", { name: "ปิดแคตตาล็อกสินค้า", exact: true }).click();
+  await page.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }).click();
   const search = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
   await expect(search).toBeVisible();
   await search.getByRole("textbox").fill("WPS10KS");
@@ -750,8 +759,9 @@ test("comparison remains global across demo groups and enforces three products",
 test("existing category routes redirect to the replacement catalog", async ({ page }) => {
   await page.goto("/product/industrial");
   await expect(page).toHaveURL(/\/products$/);
+  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
-  await expect(region.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+  await expect(region.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
   await expect(region.getByRole("combobox", { name: "เลือกตามหัวข้อ" })).toHaveCount(0);
   await expect(
     region.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }),
@@ -763,7 +773,9 @@ for (const viewport of [
   { width: 390, height: 844, products: 2 },
   { width: 768, height: 1024, products: 3 },
   { width: 844, height: 390, products: 3 },
+  { width: 1024, height: 900, products: 3 },
   { width: 1440, height: 1000, products: 4 },
+  { width: 1920, height: 1080, products: 4 },
 ]) {
   test(`responsive controls, focus and product grid at ${viewport.width}x${viewport.height}`, async ({
     page,
@@ -772,6 +784,7 @@ for (const viewport of [
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/products");
+    await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
     await page.evaluate(() => document.fonts.ready);
     const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     const categories = region.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true });
@@ -785,23 +798,23 @@ for (const viewport of [
       const buttons = [...element.querySelectorAll("button")];
       return {
         rows: new Set(buttons.map((button) => Math.round(button.getBoundingClientRect().y))).size,
-        compact: buttons.every((button) => button.getBoundingClientRect().height <= 80),
+        targets: buttons.every((button) => button.getBoundingClientRect().height >= 44),
         readable: buttons.every((button) => {
           const name = button.querySelector("strong")!;
           return name.scrollWidth <= name.clientWidth + 1;
         }),
-        icons: buttons.every(
-          (button) => button.querySelector("svg")!.getBoundingClientRect().width === 24,
+        compact: buttons.every(
+          (button) => getComputedStyle(button.querySelector("span")!).display === "none",
         ),
         scrollable: element.scrollWidth > element.clientWidth + 1,
       };
     });
     expect(geometry).toEqual({
       rows: 1,
-      compact: true,
+      targets: true,
       readable: true,
-      icons: true,
-      scrollable: viewport.width < 1100,
+      compact: true,
+      scrollable: viewport.width < 1024,
     });
     for (let index = 0; index < 4; index++) await page.keyboard.press("Tab");
     const last = categories.getByRole("button").last();
@@ -867,7 +880,7 @@ for (const viewport of [
     expect(await children.evaluate((element) => element.scrollLeft)).toBe(0);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await forward.click();
-    expect(await children.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+    await expectSubcategoryPosition(children, firstStep);
     await backward.click();
     expect(await children.evaluate((element) => element.scrollLeft)).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -941,3 +954,118 @@ for (const viewport of [
     expect(errors).toEqual([]);
   });
 }
+
+test("featured hero uses existing records, tabs and original product destinations", async ({
+  page,
+  request,
+}) => {
+  const { products } = (await (await request.get("/api/products")).json()) as {
+    products: Product[];
+  };
+  const expected = deduplicateConsumableSizes(products)
+    .filter((product) => catalogProductGroup(product) && product.featured && product.image)
+    .slice(0, 2);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/products");
+  const hero = page.locator('[data-overview-section="hero"]');
+  await expect(hero.locator("li")).toHaveCount(expected.length);
+  expect(
+    await hero
+      .locator('li a[href^="/products/"]')
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+  ).toEqual(expected.map((product) => `/products/${product.slug}`));
+  for (const [index, product] of expected.entries())
+    await expect(hero.locator("li").nth(index)).toContainText(product.subtitle);
+  const tabs = hero.getByRole("tab");
+  await tabs.nth(1).click();
+  await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+  await expect
+    .poll(() => hero.locator("ul").evaluate((element) => element.scrollLeft))
+    .toBeGreaterThan(0);
+  await tabs.first().click();
+  await expect.poll(() => hero.locator("ul").evaluate((element) => element.scrollLeft)).toBe(0);
+  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
+  const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
+  const search = finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true });
+  await search.fill("WPS10KS");
+  await expect(finder.locator("#mock-product-results article h3")).toHaveText(["WPS10KS"]);
+  await finder.getByRole("button", { name: "ปิดแคตตาล็อกสินค้า" }).click();
+  await hero.locator('li a[href^="/products/"]').first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(new RegExp(`/products/${expected[0].slug}$`));
+});
+
+test("all five server-rendered buying guides retain complete content in feature popups", async ({
+  page,
+  request,
+}) => {
+  const html = await (await request.get("/products")).text();
+  expect(html).toContain('id="products-features-title"');
+  await page.goto("/products");
+  const gallery = page.locator("#products-features");
+  await expect(gallery.locator("li")).toHaveCount(6);
+  for (const [index, guide] of buyingGuides.entries()) {
+    expect(html).toContain(guide.introduction);
+    expect(html).toContain(`href="/guides/${guide.slug}"`);
+    const card = gallery.locator("li").nth(index);
+    await expect(card.getByRole("heading", { level: 3 })).toHaveText(guide.title);
+    await card.getByRole("button").click();
+    const modal = page.getByRole("dialog", { name: guide.title, exact: true });
+    await expect(modal).toBeVisible();
+    await expect(modal.getByText(guide.introduction, { exact: true })).toBeVisible();
+    for (const section of guide.sections) {
+      await expect(modal.getByRole("heading", { name: section.title, exact: true })).toBeVisible();
+      for (const paragraph of section.paragraphs)
+        await expect(modal.getByText(paragraph, { exact: true })).toHaveCount(1);
+    }
+    if (index === buyingGuides.length - 1) {
+      await modal.getByRole("link", { name: "ดูเพิ่มเติม", exact: true }).click();
+      await expect(page).toHaveURL(/\/guides\/accessories$/);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(guide.title);
+    } else await page.keyboard.press("Escape");
+  }
+});
+
+test("hero stays usable during slow images and mobile tablet desktop resizing", async ({
+  page,
+}) => {
+  let releaseImages!: () => void;
+  const imagesReady = new Promise<void>((resolve) => {
+    releaseImages = resolve;
+  });
+  await page.route("**/_next/image?*", async (route) => {
+    await imagesReady;
+    await route.continue();
+  });
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  try {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/products", { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => document.fonts.ready);
+    for (const width of [390, 768, 1440, 320, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      const card = page.locator('[data-overview-section="hero"] li').first();
+      await expect(card).toBeVisible();
+      expect(
+        await card.evaluate((element) => {
+          const r = element.getBoundingClientRect();
+          return r.height >= 440 && r.width >= 240 && r.width < innerWidth;
+        }),
+      ).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+  } finally {
+    releaseImages();
+  }
+  const image = page.locator('[data-overview-section="hero"] img').first();
+  await image.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth))
+    .toBeGreaterThan(0);
+  expect(errors).toEqual([]);
+});

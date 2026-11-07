@@ -5,22 +5,29 @@ import styles from "@/components/layout/site-background.module.css";
 import { CatalogOverlays } from "@/features/catalog/components/catalog-overlays";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import { getPageSearchIndex } from "@/features/content/server/content-repository";
+import { CatalogRouteFrame } from "@/features/catalog/components/catalog-route-frame";
 async function Overlays() {
   const [products, pages] = await Promise.all([getClientProducts(), getPageSearchIndex()]);
   return <CatalogOverlays products={products} pages={pages} />;
 }
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
+  const header = <SiteHeader />;
+  const footer = <Footer />;
+  const overlays = (
+    <Suspense fallback={null}>
+      <Overlays />
+    </Suspense>
+  );
   return (
-    <div className={styles.surface}>
-      <a href="#main-content" className="skip-link">
-        ข้ามไปยังเนื้อหา
-      </a>
-      <SiteHeader />
-      {children}
-      <Footer />
-      <Suspense fallback={null}>
-        <Overlays />
-      </Suspense>
-    </div>
+    <Suspense fallback={null}>
+      <CatalogRouteFrame
+        className={styles.surface}
+        header={header}
+        footer={footer}
+        overlays={overlays}
+      >
+        {children}
+      </CatalogRouteFrame>
+    </Suspense>
   );
 }
