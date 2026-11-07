@@ -1,5 +1,29 @@
 # Project Memory
 
+## Update regressions after approved shared-navigation changes
+
+- Observed: The combined pre-commit browser run failed on retired “สินค้า”, `.desktop-nav` and `.site-header` selectors and a former heading level after the approved five-category navigation and category-page changes.
+- Root cause: New feature suites matched the final design, while earlier navigation and full-page regressions still described the previous shared markup.
+- Correct behavior: When a shared navigation or category-route contract changes, search affected tests for old labels, chrome selectors, URLs and heading levels. Keep checks for every child destination, product membership, reload/history, keyboard focus and one visible header/footer, then run the affected suites together before committing.
+
+## Gate decorative CSS entrance motion and measure the heading's actual paint
+
+- Observed: With JavaScript disabled, Chrome exposed initial opacity0 while returning no active CSS animations; a title could remain hidden. Separately, a zero-opacity title became the final mobile LCP candidate after its fade, while an otherwise identical15%-opacity start painted the title earlier in a controlled4xCPU experiment.
+- Root cause: A reduced-motion check alone did not cover disabled scripting. Starting critical text fully transparent also delayed its eligibility as visible painted content.
+- Correct behavior: Apply decorative entrance CSS only under both prefers-reduced-motion:no-preference and scripting:enabled. Keep base styles visible and non-filling finite animations. Start critical headings at a visible nonzero opacity, leave Hero imagery unanimated, and compare actual LCP candidates, CLS and geometry under identical CPU throttling. Verify disabled JavaScript and reduced motion separately; unsupported scripting media queries must fall back to static content.
+
+## Validate HTTP status before serving a cached route fallback
+
+- Observed: An unknown category rendered the not-found page with HTTP200 even though the page checked its params before catalog reads and used instant=false.
+- Root cause: Cache Components served the dynamic route's fallback shell before notFound() ran. instant=false controls validation, and dynamicParams is unavailable with Cache Components.
+- Correct behavior: For finite catalog category pages whose full server output is cached, pair complete generateStaticParams with ensureStatic="navigation" so unknown parameters resolve before serving output. Verify the production request actually returns404 as well as showing not-found UI. Keep this setting local to suitable routes; do not disable streaming or add proxy guards across the app to fix one category route.
+
+## Count active headers separately from cached route markup
+
+- Observed: A navigation regression counted two shared headers after leaving Products for software and warranty pages, while only one header was visible.
+- Root cause: The router retained the inactive Products subtree under a display:none ancestor. Counting all matching DOM nodes confused cached route markup with duplicate active navigation; runtime inspection confirmed the inactive header had zero width and height.
+- Correct behavior: After client navigation, scope header interactions and uniqueness checks to visible headers, assert exactly one visible header and no visible menu left open, and inspect inactive header geometry before changing application code to remove cached content. Keep fresh-page structure assertions separate.
+
 ## Exclude archived source snapshots from TypeScript checks
 
 - Observed: Removing an unused component caused typecheck to fail on an old `.tsx` backup inside `output`, although application imports had been removed.
@@ -393,3 +417,21 @@
 - Observed: Prettier normalized a reference list from asterisks to dashes; an existing test parser returned empty model lists because it matched only asterisks.
 - Root cause: The parser treated one valid Markdown list marker as a data contract, while the release formatter uses another valid marker.
 - Correct behavior: Accept both standard dash and asterisk markers when parsing these reference lists, then retain strict comparison of every model and its order. For byte-hashed LF reference documents, set a path-specific Git eol=lf rule and keep the original Git blob/hash unchanged.
+
+## Isolate generated source writes and check free disk before QA builds
+
+- Observed: A QA production build stopped with ENOSPC. A subsequent Prisma generation through a generated-source junction truncated the workspace client file, so previously passing TypeScript checks then failed.
+- Root cause: The isolated build shared writable generated source with the workspace, and code generation was retried while the disk remained nearly full.
+- Correct behavior: Check available disk space before isolated builds and stop generation after ENOSPC. Give QA its own generated-source copy whenever a command can regenerate it; do not junction that writable directory to the workspace. After space is restored, run the existing Prisma generation on Node24, verify that the client is nonempty, and rerun TypeScript/build before relying on earlier results. Clean only verified task-owned generated caches or ask the owner to free space; preserve source, credentials and prior build evidence.
+
+## Keep client-only controls disabled until hydration
+
+- Observed: A cold production click on a visible server-rendered popup launcher did nothing, while the same check passed after the client files were cached. The trace placed a required client chunk after the first click.
+- Root cause: Visible, enabled server HTML was treated as proof that its client event handlers were ready.
+- Correct behavior: Render client-only controls natively disabled until their component is hydrated, then enable them without a timer. Verify the first interaction on a fresh browser context as well as warm navigation. Before programmatically focusing a gated control, assert that it is enabled; focus does not wait for readiness like a click does.
+
+## Apply the QA directory guard to dev servers too
+
+- Observed: A setup command copied QA files but launched the dev server from the workspace. Its telemetry-disabled startup removed a generated agent-feedback block from the workspace instructions. The process was stopped and the exact baseline bytes restored and hash-verified.
+- Root cause: Copying files was mistaken for changing the working directory of the following process.
+- Correct behavior: Launch every dev server, build and generator in a separate command with an explicit absolute QA workdir. Verify that directory before starting and verify that live environment files are not loaded. If a framework updates a protected instruction file, compare the exact diff and restore verified baseline bytes without overwriting unrelated changes.
