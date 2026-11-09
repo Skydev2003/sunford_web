@@ -1,0 +1,178 @@
+.page {
+  padding-bottom: 100px;
+}
+.page h1 {
+  overflow-wrap: anywhere;
+}
+.page .chapterTrack > li {
+  flex-basis: 160px;
+}
+.chapterLink {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 120px;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+.chapterLink:hover {
+  color: var(--red);
+}
+.chapterArt {
+  display: grid;
+  place-items: center;
+  width: 90px;
+  height: 58px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--paper);
+  border-radius: 28px;
+  overflow: hidden;
+  margin-top: 32px;
+}
+.heroCopy {
+  padding: 32px 28px;
+  align-self: center;
+}
+.page .heroCopy h2 {
+  font-size: clamp(30px, 3.6vw, 56px);
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.heroCopy h2 span {
+  display: block;
+}
+.page .heroCopy p {
+  margin-block: 24px;
+  font-size: 17px;
+  line-height: 1.7;
+}
+.heroCopy > a {
+  gap: 8px;
+  max-width: 100%;
+}
+.heroArt {
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+}
+.heroArt img {
+  object-fit: contain;
+}
+.page .solutions {
+  padding-block: 96px;
+}
+.page .introduction {
+  margin-top: 16px;
+  max-width: 65ch;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.page .solutionTrack {
+  display: flex;
+  gap: 24px;
+  padding: 8px var(--overview-gutter) 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--overview-gutter);
+  list-style: none;
+  scrollbar-width: thin;
+}
+.solutionTrack > li {
+  flex: 0 0 min(82vw, 340px);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.solutionCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 36px;
+  padding: 32px 28px;
+  min-height: 340px;
+  height: 100%;
+  border-radius: 28px;
+  background: var(--paper);
+}
+.page .solutionCard h3 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.solutionCard > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red);
+  font-size: 14px;
+}
+.solutionCard:hover h3 {
+  color: var(--red);
+}
+.businessGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+.businessCard {
+  min-width: 0;
+  padding: 32px 28px;
+  border-radius: 28px;
+  background: var(--paper);
+  scroll-margin-top: 80px;
+}
+.page .businessCard h3 {
+  font-size: 26px;
+  line-height: 1.4;
+  font-weight: 600;
+  margin-bottom: 24px;
+  overflow-wrap: anywhere;
+}
+.businessCard li + li {
+  border-top: 1px solid var(--line);
+}
+.businessCard a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding-block: 12px;
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.businessCard a:hover {
+  color: var(--red);
+}
+.businessCard svg {
+  flex-shrink: 0;
+  color: var(--red);
+}
+@media (min-width: 834px) {
+  .businessGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1069px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .heroCopy {
+    padding: 48px;
+  }
+  .page .solutionCard h3 {
+    font-size: 28px;
+  }
+  .solutionTrack > li {
+    flex-basis: 380px;
+  }
+}
