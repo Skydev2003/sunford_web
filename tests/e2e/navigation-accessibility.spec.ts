@@ -5,13 +5,15 @@ test.use({ reducedMotion: "reduce" });
 test("desktop keyboard reaches submenu destinations and Escape returns focus", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const products = page.locator(".desktop-nav").getByRole("link", { name: "สินค้า", exact: true });
+  const products = page
+    .locator(".desktop-nav")
+    .getByRole("link", { name: "เครื่องชั่ง", exact: true });
   await products.focus();
   await page.keyboard.press("ArrowDown");
   const panel = page.locator(".submenu-panel.is-active");
-  await expect(panel.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "คำนวณราคาหน้าร้าน", exact: true })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(panel.getByRole("link", { name: "เครื่องชั่ง", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "อุตสาหกรรมงานผลิต", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(products).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
@@ -45,7 +47,7 @@ test("touch navigation expands products and follows the company coffee destinati
       .locator("#mobile-navigation")
       .getByRole("link", { name: "งานครัวและกาแฟ", exact: true })
       .tap();
-    await expect(page).toHaveURL(/\/products\?category=scales&subcategory=scale-kitchen$/);
+    await expect(page).toHaveURL(/\/products\/category\/scales\?subcategory=scale-kitchen$/);
     await expect(
       page
         .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
@@ -67,12 +69,20 @@ test("software menu category links select the real filter on first entry and sam
     ["ซอฟต์แวร์สำหรับอุตสาหกรรม", "industrial-software"],
     ["ซอฟต์แวร์สำหรับครัวเรือน", "household-software"],
   ]) {
+    if (new URL(page.url()).pathname === "/")
+      await page
+        .locator(".desktop-nav")
+        .getByRole("link", { name: "ซอฟต์แวร์", exact: true })
+        .hover();
+    else
+      await page
+        .locator("[data-products-header]:visible")
+        .getByRole("button", { name: "ซอฟต์แวร์", exact: true })
+        .click();
     await page
-      .locator(".desktop-nav")
-      .getByRole("link", { name: "ซอฟต์แวร์", exact: true })
-      .hover();
-    await page
-      .locator(".desktop-submenu.is-open .submenu-panel.is-active")
+      .locator(
+        ".desktop-submenu.is-open .submenu-panel.is-active:visible, #products-navigation-panel:visible",
+      )
       .getByRole("link", { name: label, exact: true })
       .click();
     await expect(page).toHaveURL(new RegExp(`/software/download#${hash}$`));

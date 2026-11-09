@@ -19,7 +19,7 @@ for (const viewport of [
       await page.goto("/", { waitUntil: "commit" });
       const hero = page.locator("[data-hero-scene]");
       await expect(hero.locator("h1")).toBeAttached();
-      await expect(hero).toHaveCSS("background-color", "rgb(17, 17, 17)");
+      await expect(hero).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await expect(hero.locator("h1")).toBeVisible({ timeout: 500 });
       await expect(hero.locator("p")).toBeVisible();
       await expect(page.locator(".site-header .brand")).toBeVisible();
@@ -113,5 +113,6 @@ test("consultation works during the logo and the contact page gets its own Heade
   await cta.click();
   await expect(page).toHaveURL(/\/contact-us$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("ติดต่อเรา");
-  await expect(page.locator(".site-header")).toHaveAttribute("data-nav-tone", "light");
+  await expect(page.locator(".site-header:visible")).toHaveCount(0);
+  await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
 });

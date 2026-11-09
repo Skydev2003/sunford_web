@@ -263,7 +263,7 @@ test("product content separates line breaks, headings and lists while retaining 
 test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {
   const products = getSnapshotProducts();
   assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/acs30-jc21");
-  assert.equal(resolveHomeLink("digital", undefined, products), "/Product/Digital-weighing");
+  assert.equal(resolveHomeLink("digital", undefined, products), "/products/category/scales");
   const target = { productId: "wps10ks" };
   assert.equal(resolveHomeLink("digital", target, products), "/products/wps10ks");
   assert.equal(

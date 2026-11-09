@@ -79,9 +79,9 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
           </div>
           <nav className="footer-links" aria-label="ผลิตภัณฑ์ Sunford">
             <h3>ผลิตภัณฑ์</h3>
-            <Link href="/products">เครื่องชั่งดิจิทัล</Link>
-            <Link href={sunford.accessories}>อุปกรณ์เสริม</Link>
-            <Link href="/products">ระบบ POS และอุปกรณ์</Link>
+            <Link href="/products/category/scales">เครื่องชั่งดิจิทัล</Link>
+            <Link href="/products/category/accessories">อุปกรณ์เสริม</Link>
+            <Link href="/products/category/pos">ระบบ POS และอุปกรณ์</Link>
             <Link href={sunford.software}>แอปพลิเคชันและซอฟต์แวร์</Link>
           </nav>
           <nav className="footer-links" aria-label="เกี่ยวกับ Sunford">

@@ -1,5 +1,5 @@
 .site-header {
-  --header-height: 58px;
+  --header-height: 48px;
   --nav-ease: cubic-bezier(0.4, 0, 0.6, 1);
   --line: #0000001a;
   --nav-ink: #273142;
@@ -46,39 +46,39 @@
   backdrop-filter: blur(12px);
   transition: background-color 180ms ease;
 }
-.header-inner {
+.site-header[data-category-navigation] .header-inner {
   position: relative;
   z-index: var(--z-nav-controls);
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: calc(100% - 96px);
-  max-width: 1120px;
+  width: 100%;
+  max-width: 1024px;
   min-height: var(--header-height);
-  padding-inline: 0;
-  gap: 24px;
+  padding-inline: 16px;
+  margin-inline: auto;
+  gap: 22px;
 }
 .brand {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
-.brand img {
-  width: 108px;
+.site-header[data-category-navigation] .brand img {
+  width: 82px;
   height: auto;
 }
-.desktop-nav {
-  display: flex;
+.site-header .desktop-nav {
+  display: none;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  flex: 0 1 auto;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
 }
-.desktop-nav a {
+.site-header .desktop-nav a {
   display: flex;
   align-items: center;
   min-height: var(--header-height);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   white-space: nowrap;
   color: var(--nav-ink);
@@ -88,15 +88,21 @@
 .desktop-nav a:focus-visible {
   color: var(--nav-hover);
 }
-.header-actions {
+.site-header .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-inline-start: 0;
+  gap: 5px;
+  margin-inline-start: auto;
   flex-shrink: 0;
 }
 .header-actions .icon-button {
-  width: 32px;
+  width: 42px;
+  height: 44px;
+  padding: 8px;
+}
+.header-actions .icon-button svg {
+  width: 20px;
+  height: 20px;
 }
 .header-actions .icon-button:hover {
   color: var(--nav-hover);
@@ -127,7 +133,7 @@
   border-radius: 50%;
 }
 .menu-toggle {
-  display: none;
+  display: flex;
 }
 /* Reference: apple.com/th global navigation. The surface expands; it does not fade. */
 .desktop-submenu {
@@ -372,6 +378,30 @@
 .mobile-nav summary::-webkit-details-marker {
   display: none;
 }
+.mobile-nav-category {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+.mobile-nav .mobile-nav-category-link {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 1;
+  width: calc(100% - 44px);
+  height: 60px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  border: 0;
+}
+.mobile-nav-category > .mobile-nav-group > summary {
+  width: 44px;
+  min-height: 60px;
+  margin-inline-start: auto;
+  justify-content: center;
+  padding-block: 0;
+  border-bottom: 0;
+}
 .mobile-nav summary svg {
   flex-shrink: 0;
   transition: transform 180ms ease;
@@ -406,34 +436,30 @@
 .site-header:has(.mobile-nav) {
   z-index: var(--z-nav-open);
 }
-@media (max-width: 1399.98px) {
+@media (min-width: 834px) {
   .site-header {
-    --header-height: 56px;
+    --header-height: 44px;
   }
-  .header-inner {
-    justify-content: space-between;
-    width: calc(100% - 64px);
-    padding-inline: 0;
-    min-height: var(--header-height);
+  .site-header[data-category-navigation] .header-inner {
+    gap: 24px;
   }
-  .header-actions {
-    margin-inline-start: 0;
+  .site-header .desktop-nav {
+    display: flex;
   }
-  .desktop-nav,
+  .site-header .header-actions {
+    gap: 0;
+  }
+  .header-actions .icon-button {
+    width: 38px;
+  }
+  .header-actions .menu-toggle {
+    display: none;
+  }
+}
+@media (max-width: 833.98px) {
   .desktop-submenu,
   .nav-backdrop {
     display: none;
-  }
-  .menu-toggle {
-    display: flex;
-  }
-}
-@media (max-width: 720px) {
-  .site-header {
-    --header-height: 58px;
-  }
-  .header-inner {
-    width: calc(100% - 40px);
   }
 }
 @media (prefers-reduced-motion: reduce) {

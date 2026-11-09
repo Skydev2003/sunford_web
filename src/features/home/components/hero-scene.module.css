@@ -1,5 +1,5 @@
 .scene:global(.hero.hero-cinematic) {
-  --hero-header-height: var(--site-header-height, 58px);
+  --hero-header-height: var(--site-header-height, 48px);
   position: relative;
   isolation: isolate;
   height: 100dvh;
@@ -116,12 +116,6 @@
 .scene a:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 5px;
-}
-
-@media (min-width: 721px) and (max-width: 1399.98px) {
-  .scene:global(.hero.hero-cinematic) {
-    --hero-header-height: 56px;
-  }
 }
 
 @media (max-width: 576px) {

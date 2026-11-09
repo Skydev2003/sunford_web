@@ -44,13 +44,17 @@ for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const path of ["/", "/contact-us", "/products/acs30-jc21", "/products"]) {
       await page.goto(path);
-      await expect(page.locator("[data-products-header]")).toHaveCount(1);
-      await expect(page.locator(".site-header")).toHaveCount(0);
+      await expect(page.locator("[data-products-header]")).toHaveCount(path === "/" ? 0 : 1);
+      await expect(page.locator(".site-header")).toHaveCount(path === "/" ? 1 : 0);
+      if (path === "/") {
+        await expect(page.locator(".site-header")).toHaveAttribute("data-nav-tone", "dark");
+        await expect(page.locator(".site-header")).toHaveCSS("position", "fixed");
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
     }
-    await page.goto("/");
+    await page.goto("/contact-us");
     const header = page.locator("[data-products-header]");
     if (width === 390) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     for (const [label, id, count, relatedHrefs] of [
@@ -59,10 +63,10 @@ for (const width of [390, 1440]) {
         "scales",
         9,
         [
-          "/product/commercial",
-          "/collections/coffee-scales",
-          "/product/industrial",
-          "/product/laboratory",
+          "/products/category/scales?subcategory=scale-price",
+          "/products/category/scales?subcategory=scale-kitchen",
+          "/products/category/scales?subcategory=scale-industrial",
+          "/products/category/scales?subcategory=scale-analytical",
         ],
       ],
       [
@@ -80,7 +84,11 @@ for (const width of [390, 1440]) {
         "โครงสร้างแท่นชั่ง",
         "platforms",
         5,
-        ["/product/industrial", "/solutions/checkweighing", "/solutions/wet-environments"],
+        [
+          "/products/category/scales?subcategory=scale-industrial",
+          "/solutions/checkweighing",
+          "/solutions/wet-environments",
+        ],
       ],
       [
         "ระบบ POS",
@@ -276,7 +284,15 @@ for (const width of [390, 1440]) {
       await expect(
         catalog.getByRole("heading", {
           name: label,
-          level: ["เครื่องชั่ง", "อินดิเคเตอร์แท่นชั่ง"].includes(label) ? 2 : 1,
+          level: [
+            "เครื่องชั่ง",
+            "อินดิเคเตอร์แท่นชั่ง",
+            "โครงสร้างแท่นชั่ง",
+            "ระบบ POS",
+            "อุปกรณ์เสริม",
+          ].includes(label)
+            ? 2
+            : 1,
           exact: true,
         }),
       ).toBeVisible();
@@ -291,7 +307,15 @@ for (const width of [390, 1440]) {
           .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
           .getByRole("button", { name: expectedLabel, exact: true }),
       ).toHaveAttribute("aria-pressed", "true");
-      if (["เครื่องชั่ง", "อินดิเคเตอร์แท่นชั่ง"].includes(label))
+      if (
+        [
+          "เครื่องชั่ง",
+          "อินดิเคเตอร์แท่นชั่ง",
+          "โครงสร้างแท่นชั่ง",
+          "ระบบ POS",
+          "อุปกรณ์เสริม",
+        ].includes(label)
+      )
         await page
           .getByRole("dialog", { name: `ดู${label}ทั้งหมด`, exact: true })
           .getByRole("button", { name: "ปิดแคตตาล็อกสินค้า" })

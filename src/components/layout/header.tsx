@@ -2,12 +2,13 @@
 import { Tooltip } from "@/components/ui/tooltip";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, GitCompareArrows, Menu, Search, X } from "lucide-react";
+import { ChevronDown, Menu, Search, X } from "lucide-react";
 import {
   type CSSProperties,
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -20,6 +21,7 @@ import {
   defaultNavigationGroups,
 } from "@/features/cms/data/navigation";
 import { defaultSite } from "@/features/cms/data/settings";
+import { getPrimaryNavigationItems } from "@/features/cms/data/primary-navigation";
 import type { NavigationItem, SiteSettings } from "@/features/cms/types";
 
 function navigateSamePageHash(event: { preventDefault: () => void }, href: string) {
@@ -44,21 +46,25 @@ export function Header({
   site?: SiteSettings;
   extras?: typeof defaultNavigationExtras;
 }) {
-  const navigation = items.map((item) => {
-    const groups =
-      item.href === "/#support"
-        ? [
-            { label: extras.exploreLabel, links: extras.exploreLinks },
-            { label: extras.helpLabel, links: extras.helpLinks },
-          ]
-        : (item.groups ?? defaultNavigationGroups[item.href] ?? []);
-    return {
-      ...item,
-      links: item.links.map((link) => [link.label, link.href]),
-      groups,
-      hasSubmenu: item.links.length > 0 || groups.length > 0,
-    };
-  });
+  const navigation = useMemo(
+    () =>
+      getPrimaryNavigationItems(items).map((item) => {
+        const groups =
+          item.href === "/#support"
+            ? [
+                { label: extras.exploreLabel, links: extras.exploreLinks },
+                { label: extras.helpLabel, links: extras.helpLinks },
+              ]
+            : (item.groups ?? defaultNavigationGroups[item.href] ?? []);
+        return {
+          ...item,
+          links: item.links.map((link) => [link.label, link.href]),
+          groups,
+          hasSubmenu: item.links.length > 0 || groups.length > 0,
+        };
+      }),
+    [items, extras],
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [displayMenu, setDisplayMenu] = useState(0);
@@ -100,9 +106,6 @@ export function Header({
     closeTimer.current = setTimeout(closeDesktopMenu, 120);
   };
   const setSearchOpen = useCatalogStore((state) => state.setSearchOpen);
-  const startCompare = useCatalogStore((state) => state.startCompare);
-  const compareMode = useCatalogStore((state) => state.compareMode);
-  const compareCount = useCatalogStore((state) => state.compareIds.length);
   useLayoutEffect(() => {
     const panel = panelRef.current;
     const header = headerRef.current;
@@ -127,7 +130,7 @@ export function Header({
     "--nav-flyout-duration": `${Math.round(menuHeight * 0.5)}ms`,
   } as CSSProperties;
   useEffect(() => {
-    const desktop = matchMedia("(min-width: 1400px)");
+    const desktop = matchMedia("(min-width: 834px)");
     const closeOnLayoutChange = () => {
       closeDesktopMenu();
       setMenuOpen(false);
@@ -150,6 +153,9 @@ export function Header({
     <>
       <header
         ref={headerRef}
+        data-category-navigation={
+          navigation.some((item) => item.href.startsWith("/products/category/")) || undefined
+        }
         className={`site-header ${activeMenu !== null ? "is-menu-open" : ""} ${switchingMenu ? "is-menu-switching" : ""}`}
         style={menuStyle}
         onMouseEnter={() => {
@@ -221,18 +227,27 @@ export function Header({
               </button>
             </Tooltip>
             <Tooltip>
-              <button
-                className="icon-button header-compare"
-                aria-label="เปรียบเทียบสินค้า"
-                aria-pressed={compareMode}
-                onClick={() => {
-                  startCompare();
-                  closeDesktopMenu();
-                }}
+              <a
+                className="icon-button header-shop"
+                href="https://sunfordshop.com/"
+                aria-label="ร้านค้า SUNFORD"
+                onClick={closeDesktopMenu}
               >
-                <GitCompareArrows size={22} strokeWidth={1.5} />
-                {compareCount > 0 && <span>{compareCount}</span>}
-              </button>
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M8 6a4 4 0 0 1 8 0" />
+                  <rect x="4" y="6" width="16" height="16" rx="2" />
+                </svg>
+              </a>
             </Tooltip>
             <Tooltip>
               <button
@@ -262,12 +277,16 @@ export function Header({
               <div
                 key={`${index}:${item.href}`}
                 ref={displayMenu === index ? panelRef : undefined}
-                className={`submenu-panel ${item.href === "/solutions" ? "submenu-panel--solutions" : ""} ${item.href === "/products" || item.href === "/applications-and-softwares" ? "submenu-panel--wide" : ""} ${displayMenu === index ? "is-active" : ""}`}
+                className={`submenu-panel ${item.href === "/solutions" ? "submenu-panel--solutions" : ""} ${item.href === "/products" || item.href.startsWith("/products/category/") || item.href === "/applications-and-softwares" ? "submenu-panel--wide" : ""} ${displayMenu === index ? "is-active" : ""}`}
                 aria-hidden={activeMenu === null || displayMenu !== index}
                 inert={activeMenu === null || displayMenu !== index}
               >
                 <div className="submenu-group submenu-group-primary">
-                  <p className="submenu-item">สำรวจ {item.submenuLabel || item.label}</p>
+                  <p className="submenu-item">
+                    {item.href.startsWith("/products/category/")
+                      ? item.submenuLabel
+                      : `สำรวจ ${item.submenuLabel || item.label}`}
+                  </p>
                   <div className="submenu-links">
                     {item.links.map(([label, href], linkIndex) => (
                       <Link
@@ -313,39 +332,61 @@ export function Header({
           <nav id="mobile-navigation" className="mobile-nav" aria-label="เมนูมือถือ">
             {navigation.map((item, index) =>
               item.hasSubmenu ? (
-                <details key={`${index}:${item.href}`} className="mobile-nav-group">
-                  <summary>
-                    {item.label}
-                    <ChevronDown size={17} aria-hidden="true" />
-                  </summary>
-                  <div className="mobile-nav-panel">
-                    {item.links.map(([label, href]) => (
-                      <Link
-                        key={href}
-                        href={href}
-                        onClick={() => setMenuOpen(false)}
-                        onNavigate={(event) => navigateSamePageHash(event, href)}
-                      >
-                        {label}
-                      </Link>
-                    ))}
-                    {item.groups.map((group) => (
-                      <div key={group.label} className="mobile-nav-section">
-                        <p>{group.label}</p>
-                        {group.links.map((link) => (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            onClick={() => setMenuOpen(false)}
-                            onNavigate={(event) => navigateSamePageHash(event, link.href)}
-                          >
-                            {link.label}
-                          </Link>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </details>
+                <div
+                  key={`${index}:${item.href}`}
+                  className={
+                    item.href.startsWith("/products/category/") ? "mobile-nav-category" : undefined
+                  }
+                >
+                  {item.href.startsWith("/products/category/") && (
+                    <Link
+                      className="mobile-nav-category-link"
+                      href={item.href}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                  <details className="mobile-nav-group">
+                    <summary
+                      aria-label={
+                        item.href.startsWith("/products/category/")
+                          ? `เปิดเมนูย่อย${item.label}`
+                          : undefined
+                      }
+                    >
+                      {!item.href.startsWith("/products/category/") && item.label}
+                      <ChevronDown size={17} aria-hidden="true" />
+                    </summary>
+                    <div className="mobile-nav-panel">
+                      {item.links.map(([label, href]) => (
+                        <Link
+                          key={href}
+                          href={href}
+                          onClick={() => setMenuOpen(false)}
+                          onNavigate={(event) => navigateSamePageHash(event, href)}
+                        >
+                          {label}
+                        </Link>
+                      ))}
+                      {item.groups.map((group) => (
+                        <div key={group.label} className="mobile-nav-section">
+                          <p>{group.label}</p>
+                          {group.links.map((link) => (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              onClick={() => setMenuOpen(false)}
+                              onNavigate={(event) => navigateSamePageHash(event, link.href)}
+                            >
+                              {link.label}
+                            </Link>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                </div>
               ) : (
                 <Link
                   key={`${index}:${item.href}`}
