@@ -25,7 +25,10 @@ export function CatalogRouteFrame({
   const productsPage =
     pathname === "/products" ||
     pathname === "/products/category/scales" ||
-    pathname === "/products/category/indicators";
+    pathname === "/products/category/indicators" ||
+    pathname === "/products/category/platforms" ||
+    pathname === "/products/category/pos" ||
+    pathname === "/products/category/accessories";
   const [overlayHost, setOverlayHost] = useState<HTMLDivElement | null>(null);
   return (
     <OverlayHostContext.Provider value={setOverlayHost}>

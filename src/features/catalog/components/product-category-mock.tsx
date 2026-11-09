@@ -16,7 +16,8 @@ import {
 import { CategoryFeatureIcon } from "@/features/home/components/category-feature-icons";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
-import type { CatalogProduct } from "../types";
+import type { ClientProduct } from "../types";
+import { getCatalogDecisionFacts } from "../data/catalog-decision-facts";
 import type { ProductCategory } from "../data/mock-categories";
 import { catalogModelLabel } from "../data/catalog-card-names";
 import { CatalogProductCard, catalogProductPhoto } from "./catalog-product-card";
@@ -76,7 +77,7 @@ export function ProductCategoryMock({
   presentation = "overview",
   categoryId,
 }: {
-  products: CatalogProduct[];
+  products: ClientProduct[];
   categories: ProductCategory[];
   cardNames: Record<string, string>;
   presentation?: "overview" | "finder" | "category";
@@ -121,7 +122,7 @@ export function ProductCategoryMock({
           ).values(),
         ]
       : [];
-  const entries: { model: string; product?: CatalogProduct }[] = activeSubcategory?.entries
+  const entries: { model: string; product?: ClientProduct }[] = activeSubcategory?.entries
     ? activeSubcategory.entries.map((entry) => ({
         model: catalogModelLabel(entry.model),
         product: productsById.get(entry.productId ?? ""),
@@ -246,8 +247,29 @@ export function ProductCategoryMock({
         </header>
       )}
 
+      <div className={styles.entrySearch}>
+        <label className={styles.searchField}>
+          <span className={styles.selectionLabel}>ค้นหารุ่นสินค้า</span>
+          <span className={styles.search}>
+            <Search size={21} aria-hidden="true" />
+            <input
+              ref={searchInput}
+              id="catalog-search"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setPagination({ key: "", limit: 24 });
+              }}
+              placeholder="พิมพ์ชื่อรุ่นที่ต้องการ"
+              aria-label="ค้นหารุ่นสินค้า"
+            />
+          </span>
+        </label>
+      </div>
+
       {presentation !== "category" && (
         <div className={styles.categoryRail}>
+          <p className={styles.selectionLabel}>ยังไม่ทราบรุ่น เลือกจากหมวดสินค้า</p>
           <nav
             ref={categoryTrack}
             id="catalog-categories"
@@ -364,23 +386,12 @@ export function ProductCategoryMock({
       )}
 
       <div id="catalog-finder" className={styles.finder}>
-        <div className={styles.finderHeading}>
-          {presentation !== "category" && <h2>{activeCategory?.label ?? "ผลิตภัณฑ์ทั้งหมด"}</h2>}
-          <label className={styles.search}>
-            <Search size={21} aria-hidden="true" />
-            <input
-              ref={searchInput}
-              id="catalog-search"
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setPagination({ key: "", limit: 24 });
-              }}
-              placeholder="ค้นหารุ่นสินค้า"
-              aria-label="ค้นหารุ่นสินค้า"
-            />
-          </label>
-        </div>
+        {presentation !== "category" && (
+          <div className={styles.finderHeading}>
+            <h2>{activeCategory?.label ?? "ผลิตภัณฑ์ทั้งหมด"}</h2>
+          </div>
+        )}
+        {activeCategory && <p className={styles.selectionLabel}>เลือกประเภทสินค้า</p>}
         <div className={styles.selection}>
           <div className={styles.subcategoryScroller}>
             {activeCategory && (
@@ -454,39 +465,44 @@ export function ProductCategoryMock({
           <p role="status" className={styles.count}>
             {realCount} รายการ{mockCount > 0 && ` · ${mockCount} รุ่นตัวอย่าง (Mock)`}
           </p>
-          <button
-            type="button"
-            aria-pressed={featured}
-            onClick={() => {
-              setFeatured(!featured);
-              setPagination({ key: "", limit: 24 });
-            }}
-          >
-            <Star size={17} aria-hidden="true" />
-            สินค้าแนะนำ
-          </button>
-          <button type="button" aria-pressed={compareMode} onClick={startCompare}>
-            <GitCompareArrows size={17} aria-hidden="true" />
-            เปรียบเทียบสินค้า
-          </button>
-          <div className={styles.views} role="group" aria-label="รูปแบบรายการสินค้า">
+          <div className={styles.tools} role="group" aria-label="เครื่องมือรายการสินค้า">
             <button
               type="button"
-              aria-label="แสดงแบบตาราง"
-              aria-pressed={mode === "grid"}
-              onClick={() => setMode("grid")}
+              aria-pressed={featured}
+              onClick={() => {
+                setFeatured(!featured);
+                setPagination({ key: "", limit: 24 });
+              }}
             >
-              <Grid2X2 size={18} aria-hidden="true" />
+              <Star size={17} aria-hidden="true" />
+              สินค้าแนะนำ
             </button>
-            <button
-              type="button"
-              aria-label="แสดงแบบรายการ"
-              aria-pressed={mode === "list"}
-              onClick={() => setMode("list")}
-            >
-              <List size={19} aria-hidden="true" />
+            <button type="button" aria-pressed={compareMode} onClick={startCompare}>
+              <GitCompareArrows size={17} aria-hidden="true" />
+              เลือกสินค้าเพื่อเปรียบเทียบ
             </button>
+            <div className={styles.views} role="group" aria-label="รูปแบบรายการสินค้า">
+              <button
+                type="button"
+                aria-label="แสดงแบบตาราง"
+                aria-pressed={mode === "grid"}
+                onClick={() => setMode("grid")}
+              >
+                <Grid2X2 size={18} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                aria-label="แสดงแบบรายการ"
+                aria-pressed={mode === "list"}
+                onClick={() => setMode("list")}
+              >
+                <List size={19} aria-hidden="true" />
+              </button>
+            </div>
           </div>
+          {compareMode && (
+            <p className={styles.compareHint}>เลือกได้สูงสุด 3 รุ่น จากนั้นกดดูการเปรียบเทียบ</p>
+          )}
         </div>
 
         <div
@@ -500,6 +516,10 @@ export function ProductCategoryMock({
                 key={`${product.id}:${model}`}
                 modelOnly
                 product={{ ...product, name: model }}
+                decisionFacts={getCatalogDecisionFacts(
+                  product,
+                  activeCategory ?? categories.find((item) => item.productIds.includes(product.id)),
+                )}
                 categoryLabel={
                   activeCategory?.label ??
                   categories.find((item) => item.productIds.includes(product.id))?.label

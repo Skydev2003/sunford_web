@@ -278,7 +278,12 @@ export function ProductsOverview({
   categoryId?: string;
 }) {
   const activeCategory = categories.find((category) => category.id === categoryId);
-  const categoryEntrance = categoryId === "scales" || categoryId === "indicators";
+  const categoryEntrance =
+    categoryId === "scales" ||
+    categoryId === "indicators" ||
+    categoryId === "platforms" ||
+    categoryId === "pos" ||
+    categoryId === "accessories";
   const chapterItems = activeCategory?.subcategories ?? categories;
   const [finderOpen, setFinderOpen] = useState(false);
   const hydrated = useHydratedControls();
@@ -559,9 +564,13 @@ export function ProductsOverview({
                     </div>
                     <div className={styles.heroActions}>
                       <Link className={styles.primaryButton} href={`/products/${product.slug}`}>
-                        ดูเพิ่มเติม
+                        ดูรายละเอียดรุ่น
                       </Link>
-                      <Link className={styles.textLink} href={sunford.contact}>
+                      <Link
+                        className={styles.textLink}
+                        href={sunford.contact}
+                        aria-label={`สอบถามสินค้า ${cardNames[product.id] ?? product.name}`}
+                      >
                         สอบถาม <ChevronRight size={15} aria-hidden="true" />
                       </Link>
                     </div>
@@ -690,9 +699,13 @@ export function ProductsOverview({
                   )}
                   <div className={styles.tileActions}>
                     <Link href={`/products/${product.slug}`} className={styles.primaryButton}>
-                      ดูเพิ่มเติม
+                      ดูรายละเอียดรุ่น
                     </Link>
-                    <Link href={sunford.contact} className={styles.textLink}>
+                    <Link
+                      href={sunford.contact}
+                      className={styles.textLink}
+                      aria-label={`สอบถามสินค้า ${cardNames[product.id] ?? product.name}`}
+                    >
                       สอบถาม <ChevronRight size={15} aria-hidden="true" />
                     </Link>
                   </div>
@@ -917,7 +930,7 @@ export function ProductsOverview({
                   className={styles.indexCompare}
                   onClick={compare}
                 >
-                  เปรียบเทียบสินค้า
+                  เลือกสินค้าเพื่อเปรียบเทียบ
                 </button>
               </div>
               <div>

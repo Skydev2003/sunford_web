@@ -112,7 +112,7 @@ for (const width of [390, 1440]) {
       catalog.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),
     ).toBeVisible();
     await catalog.getByRole("button", { name: "ล้างตัวกรองทั้งหมด", exact: true }).click();
-    await catalog.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+    await catalog.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
     const compare = catalog.locator("article[data-model-only]").first().getByRole("button");
     await compare.click();
     await expect(compare).toHaveAttribute("aria-pressed", "true");
@@ -171,12 +171,12 @@ test("indicator cache navigation preserves a single active chrome and overlay ho
     .click();
   const finder = page.getByRole("dialog", { name: title, exact: true });
   await expect(finder).toBeVisible();
-  await finder.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+  await finder.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   const controls = finder.locator("article[data-model-only]").getByRole("button");
   await controls.nth(0).click();
   await controls.nth(1).click();
   await finder.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true }).click();
-  const comparison = page.getByRole("dialog", { name: "เปรียบเทียบสิ่งที่ใช่", exact: true });
+  const comparison = page.getByRole("dialog", { name: "เปรียบเทียบสินค้า", exact: true });
   await expect(comparison).toBeVisible();
   await expect(comparison.locator("table thead th")).toHaveCount(3);
   await comparison.getByRole("button", { name: "ปิด", exact: true }).click();

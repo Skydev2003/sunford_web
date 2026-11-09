@@ -6,7 +6,7 @@ const children = defaultNavigation[0].groups!.flatMap((group) => group.links);
 const catalogName = "แคตตาล็อกสินค้า Sunford";
 
 async function categoryCatalog(page: Page, id: string) {
-  if (["scales", "indicators"].includes(id)) {
+  if (["scales", "indicators", "platforms", "pos", "accessories"].includes(id)) {
     const title = `ดู${productCategoryDefinitions.find((category) => category.id === id)!.label}ทั้งหมด`;
     const finder = page.getByRole("dialog", { name: title, exact: true });
     if (!new URL(page.url()).searchParams.has("subcategory") && !(await finder.isVisible()))
@@ -61,7 +61,9 @@ for (const width of [390, 1440]) {
       const catalog = await categoryCatalog(page, id);
       await expect(
         catalog.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }),
-      ).toHaveCount(["scales", "indicators"].includes(id) ? 1 : 0);
+      ).toHaveCount(
+        ["scales", "indicators", "platforms", "pos", "accessories"].includes(id) ? 1 : 0,
+      );
       await expect(catalog.getByRole("group", { name: "สินค้าเด่น", exact: true })).toHaveCount(0);
       await expect(
         page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true }),
@@ -83,12 +85,12 @@ for (const width of [390, 1440]) {
         oldCatalog.getByRole("heading", { level: 2, name: label, exact: true }),
       ).toBeVisible();
       expect(await catalogState(catalog)).toEqual(await catalogState(oldCatalog));
-      if (["scales", "indicators"].includes(id))
+      if (["scales", "indicators", "platforms", "pos", "accessories"].includes(id))
         await page
           .getByRole("dialog", { name: `ดู${label}ทั้งหมด`, exact: true })
           .getByRole("button", { name: "ปิดแคตตาล็อกสินค้า" })
           .click();
-      const allProducts = ["scales", "indicators"].includes(id)
+      const allProducts = ["scales", "indicators", "platforms", "pos", "accessories"].includes(id)
         ? page
             .locator('[data-overview-section="chapters"]')
             .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
@@ -222,7 +224,7 @@ test("category filters, refresh, navigation history and comparison stay inside t
     "true",
   );
   await catalog.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-  await catalog.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+  await catalog.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   const compare = catalog.locator("article[data-model-only]").first().getByRole("button");
   await expect(compare).toHaveAttribute("aria-pressed", "false");
   await compare.click();
@@ -236,7 +238,7 @@ for (const width of [320, 768, 834, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const { id, label } of productCategoryDefinitions) {
       await page.goto(`/products/category/${id}`);
-      if (["scales", "indicators"].includes(id)) {
+      if (["scales", "indicators", "platforms", "pos", "accessories"].includes(id)) {
         await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
         await expect(
           page

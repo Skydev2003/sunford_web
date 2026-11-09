@@ -5,6 +5,9 @@ import { getProductCategories } from "@/features/catalog/server/product-categori
 import { ProductCategoryMock } from "@/features/catalog/components/product-category-mock";
 import { ScalesOverview } from "@/features/catalog/components/scales-overview";
 import { IndicatorsOverview } from "@/features/catalog/components/indicators-overview";
+import { PlatformsOverview } from "@/features/catalog/components/platforms-overview";
+import { POSOverview } from "@/features/catalog/components/pos-overview";
+import { AccessoriesOverview } from "@/features/catalog/components/accessories-overview";
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -26,6 +29,9 @@ export default async function ProductCategoryPage({ params }: Props) {
   if (!productCategoryDefinitions.some(({ id }) => id === categoryId)) notFound();
   if (categoryId === "scales") return <ScalesOverview />;
   if (categoryId === "indicators") return <IndicatorsOverview />;
+  if (categoryId === "platforms") return <PlatformsOverview />;
+  if (categoryId === "pos") return <POSOverview />;
+  if (categoryId === "accessories") return <AccessoriesOverview />;
   const { products, categories, cardNames } = await getProductCategories();
   const category = categories.find(({ id }) => id === categoryId)!;
   const productIds = new Set(category.productIds);

@@ -233,25 +233,27 @@ test("cached client navigation preserves one correct header/footer on products h
   const baseline = await page.context().newPage();
   for (const path of ["/contact-us", "/guides/scales", detailPath!, "/"]) {
     await baseline.goto(path, { waitUntil: "domcontentloaded" });
-    await expect(baseline.locator("[data-products-header]:visible")).toHaveCount(1);
+    await expect(baseline.locator(":is([data-products-header], .site-header):visible")).toHaveCount(
+      1,
+    );
     await expect
       .poll(() =>
         baseline
-          .locator("[data-products-header]:visible")
-          .evaluate((header) => header.parentElement!.parentElement!.className),
+          .locator(":is([data-products-header], .site-header):visible")
+          .evaluate((header) => header.closest('[class*="surface"]')!.className),
       )
       .toContain("surface");
     await expect
       .poll(() =>
         baseline
-          .locator("[data-products-header]:visible")
-          .evaluate((header) => getComputedStyle(header.parentElement!.parentElement!).paddingTop),
+          .locator(":is([data-products-header], .site-header):visible")
+          .evaluate((header) => getComputedStyle(header.closest('[class*="surface"]')!).paddingTop),
       )
       .not.toBe("");
     const frameStyle = await baseline
-      .locator("[data-products-header]:visible")
+      .locator(":is([data-products-header], .site-header):visible")
       .evaluate((header) => {
-        const style = getComputedStyle(header.parentElement!.parentElement!);
+        const style = getComputedStyle(header.closest('[class*="surface"]')!);
         return { background: style.backgroundColor, padding: style.paddingTop };
       });
     const destination =
@@ -260,12 +262,12 @@ test("cached client navigation preserves one correct header/footer on products h
         : page.locator(`[data-products-overview] a[href='${path}']`).first();
     await destination.click();
     await expect(page).toHaveURL(new URL(path, page.url()).href);
-    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
     await expect(page.locator(".site-footer:visible")).toHaveCount(1);
     await expect
       .poll(() =>
-        page.locator("[data-products-header]:visible").evaluate((header) => {
-          const style = getComputedStyle(header.parentElement!.parentElement!);
+        page.locator(":is([data-products-header], .site-header):visible").evaluate((header) => {
+          const style = getComputedStyle(header.closest('[class*="surface"]')!);
           return { background: style.backgroundColor, padding: style.paddingTop };
         }),
       )
@@ -273,13 +275,13 @@ test("cached client navigation preserves one correct header/footer on products h
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
     await page.goBack({ waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/products$/);
-    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
     await expect(page.locator(".site-header:visible, .site-footer:visible")).toHaveCount(0);
     await page.goForward({ waitUntil: "domcontentloaded" });
-    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
     await page.goBack({ waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/products$/);
-    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
     await expect(page.locator(".site-header:visible, .site-footer:visible")).toHaveCount(0);
   }
   await baseline.close();

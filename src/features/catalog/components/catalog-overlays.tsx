@@ -1,7 +1,7 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/cms/components/categories-provider";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ArrowRight, GitCompareArrows, Search, X } from "lucide-react";
@@ -9,6 +9,8 @@ import { Modal } from "@/components/ui/modal";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { type OverlayProduct } from "../types";
 import type { SearchPage } from "@/features/content/types";
+import { getCatalogComparisonRows } from "../data/catalog-decision-facts";
+import styles from "./catalog-overlays.module.css";
 
 export function CatalogOverlays({
   products,
@@ -27,12 +29,26 @@ export function CatalogOverlays({
   const clearCompare = useCatalogStore((s) => s.clearCompare);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
   const [search, setSearch] = useState("");
+  const comparisonTable = useRef<HTMLDivElement>(null);
+  const finderSearch = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (compareOpen) {
+      const finder = comparisonTable.current
+        ?.closest("dialog")
+        ?.parentElement?.closest("dialog[open]");
+      finderSearch.current = finder?.querySelector<HTMLInputElement>("#catalog-search") ?? null;
+    } else {
+      finderSearch.current?.focus({ preventScroll: true });
+      finderSearch.current = null;
+    }
+  }, [compareOpen]);
   const found = products.filter((p) =>
     `${p.name} ${p.subtitle} ${p.description} ${categories.find((c) => c.id === p.category)?.label}`
       .toLowerCase()
       .includes(search.trim().toLowerCase()),
   );
   const selected = products.filter((p) => ids.includes(p.id));
+  const comparisonRows = getCatalogComparisonRows(selected);
   const pageResults = search.trim()
     ? pages
         .filter((page) =>
@@ -125,15 +141,24 @@ export function CatalogOverlays({
       <Modal
         open={compareOpen}
         onClose={() => setCompareOpen(false)}
-        title="เปรียบเทียบสิ่งที่ใช่"
+        title="เปรียบเทียบสินค้า"
         wide
       >
         {selected.length ? (
           <>
-            <p className="compare-hint">
-              เปรียบเทียบรายละเอียดเบื้องต้น · กรุณายืนยันสเปกล่าสุดกับทีม Sunford ก่อนสั่งซื้อ
+            <p className={styles.selectionSummary}>
+              เลือกไว้ {selected.length} รุ่น
+              {selected.length > 1 && (
+                <span className={styles.scrollHint}>เลื่อนตารางไปด้านข้างเพื่อดูรุ่นอื่น</span>
+              )}
             </p>
-            <div className="comparison-scroll">
+            <p className="compare-hint">
+              แถวที่ระบุ “ข้อมูลต่างกัน” ช่วยให้เห็นจุดต่างของข้อมูลที่มีครบทุกรุ่น ส่วน —
+              หมายถึงยังไม่มีข้อมูลในแคตตาล็อก
+              <br />
+              กรุณายืนยันสเปกล่าสุดกับทีม Sunford ก่อนสั่งซื้อ
+            </p>
+            <div className="comparison-scroll" ref={comparisonTable}>
               <table className="comparison-table">
                 <thead>
                   <tr>
@@ -158,18 +183,19 @@ export function CatalogOverlays({
                   </tr>
                 </thead>
                 <tbody>
-                  {(
-                    [
-                      { label: "การใช้งาน", key: "subtitle" },
-                      { label: "พิกัดน้ำหนัก", key: "capacity" },
-                      { label: "ความละเอียด", key: "readability" },
-                      { label: "การเชื่อมต่อ", key: "connection" },
-                    ] as const
-                  ).map((row) => (
-                    <tr key={row.key}>
-                      <th scope="row">{row.label}</th>
-                      {selected.map((p) => (
-                        <td key={p.id}>{p[row.key]}</td>
+                  {comparisonRows.map((row) => (
+                    <tr
+                      key={row.key}
+                      className={row.different ? styles.different : undefined}
+                      data-comparison-key={row.key}
+                      data-different={row.different || undefined}
+                    >
+                      <th scope="row">
+                        {row.label}
+                        {row.different && <span className={styles.difference}>ข้อมูลต่างกัน</span>}
+                      </th>
+                      {selected.map((p, index) => (
+                        <td key={p.id}>{row.values[index] ?? "—"}</td>
                       ))}
                     </tr>
                   ))}

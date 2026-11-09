@@ -63,7 +63,9 @@ for (const width of [320, 390, 768, 1440]) {
         region.locator('article[data-mock-product="true"]').locator("a, button, img"),
       ).toHaveCount(0);
       if (index === 1) {
-        await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+        await region
+          .getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true })
+          .click();
         await expect(region.locator("article button")).toHaveCount(0);
         await expect(page.locator(".compare-bar strong")).toHaveText("0/3");
         await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
@@ -165,7 +167,7 @@ for (const width of [320, 390, 768, 1440]) {
     expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
     await region.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
     expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
-    await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+    await region.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
     expect(new Set(await sizeLinks()).size).toBe(7);
     await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
     await region.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
@@ -223,7 +225,7 @@ for (const width of [320, 390, 768, 1440]) {
         await region.screenshot({ path: test.info().outputPath(`indicators-led-${width}.png`) });
       }
     }
-    await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+    await region.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
     await expect(
       region.locator('article[data-mock-product="true"]').locator("a, button, img"),
     ).toHaveCount(0);
@@ -292,7 +294,7 @@ for (const width of [320, 390, 768, 1440]) {
     await region.getByRole("button", { name: "แสดงแบบตาราง" }).click();
     await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("ABS");
     await expect(mock).toHaveCount(1);
-    await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+    await region.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
     await expect(mock.locator("button")).toHaveCount(0);
     await expect(page.locator(".compare-bar strong")).toHaveText("0/3");
     await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
@@ -675,7 +677,7 @@ test("missing document models are explicit mocks with no product links or compar
   const mock = region.locator('article[data-mock-product="true"]');
   await expect(mock.getByRole("heading", { name: "VL15000S", exact: true })).toBeVisible();
   await expect(mock.locator("a, button, img")).toHaveCount(0);
-  await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+  await region.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   await expect(mock.locator("button")).toHaveCount(0);
   await expect(page.locator(".compare-bar strong")).toHaveText("0/3");
   await expect(page.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true })).toBeDisabled();
@@ -727,7 +729,7 @@ test("comparison remains global across demo groups and enforces three products",
   await page.goto("/products");
   await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
   const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
-  await region.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+  await region.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   const add = region.getByRole("button", { name: /^เพิ่มเพื่อเปรียบเทียบ/ });
   for (let index = 0; index < 3; index++) await add.first().click();
   await expect(add.first()).toBeDisabled();
@@ -736,7 +738,7 @@ test("comparison remains global across demo groups and enforces three products",
     region.getByRole("button", { name: /^เพิ่มเพื่อเปรียบเทียบ/ }).first(),
   ).toBeDisabled();
   await page.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "เปรียบเทียบสิ่งที่ใช่" });
+  const dialog = page.getByRole("dialog", { name: "เปรียบเทียบสินค้า" });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("table")).toContainText("WPS10KS");
   await expect(dialog.getByRole("table")).toContainText("ACS-30-JC21");

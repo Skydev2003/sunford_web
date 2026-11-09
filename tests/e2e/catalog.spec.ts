@@ -97,7 +97,7 @@ test("comparison uses selected product data and clears selections", async ({ pag
     .getByRole("button", { name: "เพิ่มเพื่อเปรียบเทียบ ACS-30-JC21", exact: true })
     .click();
   await page.getByRole("button", { name: "ดูการเปรียบเทียบ" }).click();
-  const dialog = page.getByRole("dialog", { name: "เปรียบเทียบสิ่งที่ใช่" });
+  const dialog = page.getByRole("dialog", { name: "เปรียบเทียบสินค้า" });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("table")).toContainText("WPS10KS");
   await expect(dialog.getByRole("table")).toContainText("ACS-30-JC21");

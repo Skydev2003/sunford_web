@@ -34,6 +34,9 @@ async function seekIntro(page: Page, time: number) {
 for (const [id, count, label] of [
   ["scales", 8, "เครื่องชั่ง"],
   ["indicators", 3, "อินดิเคเตอร์แท่นชั่ง"],
+  ["platforms", 4, "โครงสร้างแท่นชั่ง"],
+  ["pos", 3, "ระบบ POS"],
+  ["accessories", 5, "อุปกรณ์เสริม"],
 ] as const) {
   for (const width of [390, 1440]) {
     test(`${id} entrance is finite, staggered and stable at ${width}px`, async ({ page }) => {

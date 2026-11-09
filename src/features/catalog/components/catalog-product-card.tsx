@@ -6,6 +6,7 @@ import { ProductImage } from "@/components/ui/product-image";
 import { useCategories } from "@/features/cms/components/categories-provider";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { ProductCardData } from "../types";
+import type { CatalogDecisionFact } from "../data/catalog-decision-facts";
 import styles from "./product-browser.module.css";
 
 const productPhotos: Record<string, string> = {
@@ -22,11 +23,13 @@ export function CatalogProductCard({
   categoryLabel,
   headingLevel = 3,
   modelOnly = false,
+  decisionFacts,
 }: {
   product: ProductCardData;
   categoryLabel?: string;
   headingLevel?: 2 | 3;
   modelOnly?: boolean;
+  decisionFacts?: readonly CatalogDecisionFact[];
 }) {
   const categories = useCategories();
   const compareIds = useCatalogStore((s) => s.compareIds);
@@ -35,7 +38,11 @@ export function CatalogProductCard({
   const selected = compareIds.includes(product.id);
   const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
-    <article className={styles.card} data-model-only={modelOnly || undefined}>
+    <article
+      className={styles.card}
+      data-model-only={modelOnly || undefined}
+      data-decision-facts={decisionFacts ? true : undefined}
+    >
       <Link href={`/products/${product.slug}`} className={styles.image}>
         <ProductImage
           src={catalogProductPhoto(product)}
@@ -60,6 +67,20 @@ export function CatalogProductCard({
         <Link href={`/products/${product.slug}`}>
           <Heading>{product.name}</Heading>
         </Link>
+        {decisionFacts && decisionFacts.length > 0 && (
+          <dl
+            className={styles.decisionFacts}
+            aria-label={`ข้อมูลช่วยเลือก ${product.name}`}
+            data-product-facts
+          >
+            {decisionFacts.map((fact) => (
+              <div key={fact.label}>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
         {!modelOnly && (
           <>
             <p>{product.subtitle}</p>

@@ -1,0 +1,26 @@
+.selectionSummary {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.scrollHint {
+  display: none;
+}
+@media (max-width: 767px) {
+  .scrollHint {
+    display: block;
+    color: var(--muted);
+  }
+}
+.different > th,
+.different > td {
+  background: var(--paper);
+}
+.difference {
+  display: block;
+  margin-top: 6px;
+  color: var(--red);
+  font-size: 12px;
+  line-height: 1.5;
+}

@@ -87,7 +87,9 @@ for (const width of [1440, 390]) {
         const catalog = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
         await expect(
           catalog.getByRole("heading", {
-            level: ["scales", "indicators"].includes(parent.id) ? 2 : 1,
+            level: ["scales", "indicators", "platforms", "pos", "accessories"].includes(parent.id)
+              ? 2
+              : 1,
           }),
         ).toHaveText(parent.label);
         await expect(
@@ -201,7 +203,14 @@ test("child URLs support refresh, same-family links, local changes, clearing and
     "aria-pressed",
     "true",
   );
-  await catalog.getByRole("link", { name: "สินค้าทั้งหมด", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: "ดูระบบ POSทั้งหมด", exact: true })
+    .getByRole("button", { name: "ปิดแคตตาล็อกสินค้า", exact: true })
+    .click();
+  await page
+    .locator('[data-overview-section="chapters"]')
+    .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/products\?catalog=all$/);
   await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
 });

@@ -262,12 +262,12 @@ test("scales and full catalog keep the right overlay host across cached navigati
     .click();
   const local = page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true });
   await expect(local).toBeVisible();
-  await local.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
+  await local.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   const controls = local.locator("article[data-model-only]").getByRole("button");
   await controls.nth(0).click();
   await controls.nth(1).click();
   await local.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true }).click();
-  const compare = page.getByRole("dialog", { name: "เปรียบเทียบสิ่งที่ใช่", exact: true });
+  const compare = page.getByRole("dialog", { name: "เปรียบเทียบสินค้า", exact: true });
   await expect(compare).toBeVisible();
   await expect(compare.locator("table thead th")).toHaveCount(3);
   await compare.getByRole("button", { name: "ปิด", exact: true }).click();

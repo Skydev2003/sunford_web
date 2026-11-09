@@ -442,6 +442,32 @@
   height: 14px;
   flex-shrink: 0;
 }
+.decisionFacts {
+  align-self: stretch;
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.decisionFacts > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+}
+.decisionFacts dt {
+  color: var(--muted);
+}
+.decisionFacts dd {
+  margin: 0;
+  color: var(--ink);
+}
+.card[data-decision-facts] .compare {
+  width: 44px;
+  height: 44px;
+}
 .browser :is(button, a, select):focus-visible {
   outline: 2px solid #e60032;
   outline-offset: 3px;

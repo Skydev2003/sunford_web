@@ -56,8 +56,24 @@
   justify-content: center;
   color: var(--red);
 }
-.categoryPage .finderHeading {
-  justify-content: flex-end;
+.entrySearch {
+  width: 100%;
+  margin-bottom: 24px;
+}
+.searchField {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+.selectionLabel {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+.categoryRail > .selectionLabel {
+  margin-bottom: 12px;
 }
 .searchShortcut {
   display: inline-flex;
@@ -318,7 +334,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  padding: 20px 0;
+  margin-top: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
 }
 .count {
   flex: 1 0 100%;
@@ -329,6 +347,22 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
+  border-color: transparent;
+  background: var(--paper);
+  color: var(--ink);
+}
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.compareHint {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 .toolbar button[aria-pressed="true"] {
   color: var(--red);
@@ -534,8 +568,8 @@
     align-items: center;
     justify-content: space-between;
   }
-  .search {
-    max-width: 380px;
+  .entrySearch {
+    max-width: 560px;
   }
   .guides {
     padding-inline: 48px;
