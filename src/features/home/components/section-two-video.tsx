@@ -6,7 +6,7 @@ import { ProductImage } from "@/components/ui/product-image";
 import styles from "./section-two-video.module.css";
 
 const title = "แข็งแรงทนทาน ใช้งานง่าย มีประสิทธิภาพ";
-const videoTitle = `${title} | SUNFORD Biz Talk EP.16`;
+const videoTitle = `${title} | SUNFORD SHOWROOM TOUR 2022`;
 
 export function SectionTwoVideo() {
   const [playing, setPlaying] = useState(false);
@@ -27,7 +27,7 @@ export function SectionTwoVideo() {
         <div className={styles.media}>
           {playing ? (
             <iframe
-              src="https://www.youtube-nocookie.com/embed/szRD6aOQL_Y?autoplay=1&rel=0"
+              src="https://www.youtube-nocookie.com/embed/UF7QJSq4Qw4?autoplay=1&rel=0"
               title={videoTitle}
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
@@ -41,7 +41,7 @@ export function SectionTwoVideo() {
               onClick={() => setPlaying(true)}
             >
               <ProductImage
-                src="https://i.ytimg.com/vi/szRD6aOQL_Y/maxresdefault.jpg"
+                src="https://i.ytimg.com/vi/UF7QJSq4Qw4/maxresdefault.jpg"
                 alt=""
                 fill
                 unoptimized

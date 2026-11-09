@@ -28,7 +28,7 @@ test("section two follows the full-screen Hero and keeps its YouTube preview res
   await expect(section.locator("button")).toHaveCount(0);
   await expect(section.locator("iframe")).toHaveAttribute(
     "src",
-    "https://www.youtube-nocookie.com/embed/szRD6aOQL_Y?autoplay=1&rel=0",
+    "https://www.youtube-nocookie.com/embed/UF7QJSq4Qw4?autoplay=1&rel=0",
   );
   await expect(section.locator("iframe")).toHaveAttribute("allowfullscreen", "");
   await expect(section.getByRole("link", { name: "ดูบน YouTube" })).toHaveCount(0);
