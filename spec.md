@@ -1,5 +1,572 @@
 # Project state
 
+## Task: Group existing changes, commit and push UAT (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: จัดกลุ่มแยกไฟล์ changes แล้ว commit and push"
+
+Scope: group existing source/tests into navigation and category destinations, catalog overviews and comparison, homepage video, solutions overview, and project documentation commits. Push the current `uat` branch to `origin/uat`. No new application behavior or production release. Verify current checks and remote revision; preserve unrelated local artifacts. Undo published changes with revert commits.
+
+Verification: full format check, ESLint, TypeScript and catalog unit tests110/110 pass. Implementation commits77a5620,6a9679c,888dce2,dbf80ae pushed to origin/uat; git ls-remote confirms dbf80ae4d803a10da221dd9b6a4ccf935b75b5ff matches local HEAD. Documentation is committed separately afterward; final publication confirmation is reported in chat. No application code changed during grouping. Build/browser suites were not rerun in this Git-only task; earlier task-specific evidence and known limitations remain recorded. No new Next.js feedback candidate.
+
+## Task: Separate-page architecture proposal and review wireframe (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Direct owner request authorizes recommendation and simple wireframes only; future application routes are not approved for implementation"
+Progress: "Done — interactive proposal delivered, live website unchanged"
+
+### Goal / Scope / Proposed Contracts
+
+Recommend clear pages for overall products,5product category overviews, current subcategory listings, product details,3business solution groups, software groups and service procedures. Existing8menus/23child labels are the source; an all-products entry is explicitly proposed per owner's example. Each navigation destination has a page/breadcrumb and direct shortcuts; list search/filter/compare remain local controls. Keep product/detail/article data canonical rather than duplicate by business group. Existing emptyiOS stays disabled pending real data.
+
+Proposed (not implemented): /products/category/:category/:group, /solutions/business/:business, /software/category/:category and /service/:procedure. Current category overview/detail paths reused in proposal; merge duplicate software indexes into one canonical entry is a recommendation only. Product photos/names/specs are structural placeholders in wireframe, not invented product facts. No app source, shared UI, styles, routing, database or deployment change.
+
+### Output / Verification
+
+- [x] Thai proposal records all main flows, page types, direct shortcuts, overlapping group membership and staged industrial-category pilot.
+- [x] Interactive low-fidelity wireframe covers5categories/22available child choices, all-products, product details, business groups/solution details, software groups/program details, service procedures, guides/company/contact.
+- [x] Chrome8theme-width combinations1024/736/390/320;22available child choices and core forward/back routes pass, iOS disabled, no JavaScript errors or horizontal overflow. Native source/screenshot inspected.
+- [x] All340application/test/config/lockfile snapshots unchanged. No application build or restart required. No qualifying Next feedback issue.
+
+Proposal/evidence: output/site-section-wireframes-20261109/proposal.md and verification.json. Inline fragment resides in this thread's visualization directory as sunford-page-wireframes.html. R2 proposal-only artifacts; remove task artifacts/notes to undo. Application implementation requires a future approved concrete Spec/Plan; no missing input for this review draft.
+
+## Task: Correct category links from Home, Solutions and guides (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Authorized directly by owner: แก้ลิงก์ที่พาไปผิดหมวดให้ถูกต้องก่อน…ให้ลิงก์จากหน้าแรก โซลูชัน และคู่มือ ไปยังหน้าหมวดเดียวกับ Navbar โดยคงโครงหน้าและแอนิเมชันเดิม"
+Progress: "Done — verified on configured preview3000; structure and animation preserved"
+
+### Goal / Scope / Brand
+
+Correct existing category destinations to /products/category/scales, indicators, platforms, pos, accessories. Keep page structure, copy, imagery, CSS, animation profiles, product data, category-preview buttons and menu interaction unchanged. Existing specific equivalents use current Navbar subcategory query; ambiguous old groupings go to the parent rather than inventing a new category. All-products /products remains the all-products page. No new homepage CTA.
+
+Normalize known legacy category paths at HomeLinkTarget and resolved Solutions navigation boundaries, preserving CMS labels/custom URLs and avoiding database writes. Correct guide return/body links, including exact POS Android/Windows and accessories consumables; replace product-related Navbar link matching with equivalent normalized matching so the existing columns remain populated. No shared layout/component/style change. Fourteen solution article bodies and software destinations remain unchanged.
+
+Scope clarification from source inspection: the shared Footer visible on the requested3surfaces also contains3misdirected category links. The direct owner instruction to correct links from these surfaces covers replacing those3hrefs with current scales/accessories/POS parent routes. No shared Footer structure, content, CSS or animation change; the same corrected destinations apply to its other consumers. This file is explicitly listed in plan.md before its edit.
+
+### Acceptance Criteria
+
+- [x] Every changed link uses a current Navbar category or an existing exact subcategory; no loss of category through /products redirects.
+- [x] Home product/detail targets and safe custom targets retain semantics; homepage preview buttons remain previews.
+- [x] Resolved CMS/default Solutions navigation preserves labels/order/other links; related Navbar columns retain their entries.
+- [x] Five guides return to their own category; body links target the corresponding category, with exact current subcategories only when available.
+- [x] Desktop/mobile clicks and before/after structural/content/geometry comparison pass; animation/shared CSS sources unchanged.
+- [x] Scoped tests/static checks/production build pass; actual results and exceptions documented.
+
+### Approval / Impact / Rollback
+
+Direct current owner instruction authorizes this concrete correction following the read-only audit; no additional permission needed. R2: only href resolution/data changes in files listed by plan.md; possible blast radius is related navigation destinations across menu consumers, addressed by preserving full resolved link lists and testing CMS data. Snapshot exact starting files and compare protected hashes; restore task deltas only. Missing information: none for existing equivalent destinations. No release, dependency or database changes.
+
+### Current State / Verification
+
+Configured Node24 production build437/437 passes; final TypeScript/scoped ESLint/Prettier pass. Catalog110/110 and Chromium37/37 pass, including6new desktop/mobile click cases, existing POS7, sitewide12 and Solutions12. Home preview buttons retain their original in-page role; current Footer3category links and Navbar parent links match canonical categories. Default/CMS legacy and already-corrected destinations project equivalently without mutating inputs. All5guide returns and category body links verified by actual clicks; four business links open their exact existing scale filters. All-products, product detail, software and external/custom links retain their semantics.
+
+Twenty-four route/width signatures at390/1440 preserve text/images/geometry/static DOM/link labels/order. Initial literal DOM comparison found one mobile chapter-arrow ResizeObserver timing difference (3nodes); normalized that existing transient control only, retaining raw evidence and separate interaction coverage. Shared animation/styles and14solution source bodies remain byte-identical. Source audit:328protected baseline files unchanged,9planned existing paths changed plus3new app/test files. Footer proven exactly3href replacements; guide data proven href-only after formatter normalization. Final screenshots inspected. Concurrent Figma notes preserved; full git diff --check flags only its unrelated spec.md trailing blank, while scoped application/plan checks pass.
+
+Environment: three installed directories were again empty; restored exact locked @prisma/client7.10.1, pg8.23.1 and nested postcss8.5.31 archives after SHA512 integrity checks. No manifest/lockfile/version/database changes. Initial standalone typecheck raced with archiving .next; final rerun after build passes without source workaround. Previous preview safely archived; current preview3000session40917 retained. No commit/push/deploy. Software hash sync, guide-section anchors, menu interaction and grouping redesign remain outside this link-only task. Reporting review: no new qualifying Next.js issue. Evidence: output/category-link-destinations-20261109/delivery.md.
+
+## Task: Current primary-menu and page-section map (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Direct owner request for read-only inventory and navigation analysis; implementation not authorized by this inventory"
+Progress: "Done — report verified against source and running preview; no application change"
+
+### Goal / Scope
+
+Owner asks to list current sections and click destinations by primary menu because navigation does not consistently reach the intended group. Inspect8resolved menus,5category overviews, solutions/software/service and related links. Produce a Thai current-state report; no routing/grouping fix, new design, build or release.
+
+### Findings / Verification
+
+- Runtime inventory:27pages,8desktop menu projections,9section/filter/reload actions;7additional controlled click checks. Five product pages each have7content sections; Products index8; Solutions index4. Product children total23 (8/3/4/3/5).
+- Confirmed four business-related menu labels route through legacy paths to unfiltered /products. Old category URLs likewise lose their category. Same-page software Navbar hash changes but remains all8items; in-page control correctly filters4industrial items. Guide-section labels all point to the category guide without a fragment; measured example lands at scroll0. Guide return links retain old category paths. Primary product parents navigate, other3parents disclose menus. POSiOS is a valid empty group,0items.
+- Source/runtime distinguish pages, in-page sections, popups and filters. Report includes all current menu destinations and separates verified misdirection from grouping ambiguity. Desktop1440audit; mobile interaction not independently retested in this read-only pass. No new framework-feedback candidate.
+
+### Acceptance / Output
+
+- [x] Every current primary menu has section counts, entry behavior, child grouping and downstream destinations.
+- [x] Concrete problematic clicks verified without application changes; evidence distinguishes facts and proposed next steps.
+- [x] Full report and raw evidence in output/navigation-section-map-20261109/; entry report navigation-section-map.md.
+
+No application contracts changed. Future fixes require their own concrete approved Spec/Plan. This audit is authorized directly by the owner's inventory request.
+
+## Task: Business solutions index in the approved overview style (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติครับ ปรับหน้าโซลูชันตามธุรกิจตามแผนได้เลย"
+Progress: "Done — verified on configured preview3000; independent not-found status and pre-existing no-JavaScript visibility limitations documented"
+
+### Goal
+
+ปรับหน้า `/solutions` ซึ่งเข้าจากเมนู “โซลูชันตามธุรกิจ” ให้ใช้รูปแบบเดียวกับหน้าเครื่องชั่งและหมวดที่ปรับแล้ว โดยแสดงเนื้อหาโซลูชันตามธุรกิจและใช้แอนิเมชันล่าสุด ตามคำขอผู้ใช้ “ต่อไปปรับหน้าโซลูชันตามธุรกิจให้ใช้รูปแบบเดียวกันครับ แสดงข้อมูลของโซลูชันตามธุรกิจ และใช้แอนิเมชันล่าสุดด้วยครับ”
+
+### Scope In
+
+- เปลี่ยนเฉพาะ index `/solutions` ที่ปัจจุบันเป็นรายการลิงก์; ใช้ SolutionsOverview ฝั่ง server พร้อม CSS Module เฉพาะหน้า และ reuse class/tokens/entrance จาก products-overview.module.css แบบอ่านอย่างเดียว
+- โครงหน้า: ribbonปรึกษาผู้เชี่ยวชาญเดิม → H1 “โซลูชันตามธุรกิจ” → chapter3กลุ่มธุรกิจ → Heroภาพรวมขนาดใหญ่ → การ์ดโซลูชันทั้งหมด → ส่วนข้อมูล3กลุ่มธุรกิจพร้อมลิงก์เดิม → Footerของหน้าเนื้อหาปัจจุบัน
+- Chapter/ส่วนกลุ่มธุรกิจใช้ resolved CMS navigation ของ `/solutions` ที่ Header ใช้อยู่; fallbackจากโค้ดมี3กลุ่ม: ค้าปลีก อาหารและกาแฟ / อุตสาหกรรมและการผลิต / ห้องแล็บและข้อมูลธุรกิจ รวม18ลิงก์เดิม. Chapter เป็นลิงก์ anchor ไปยังส่วนกลุ่มในหน้า ไม่สร้างหมวดธุรกิจใหม่หรือเปลี่ยนปลายทางที่มีอยู่
+- เก็บการ์ด/ลิงก์โซลูชันครบ14หัวข้อจาก solutions.json ตามลำดับเดิม รวม Windows และ Driver ที่ไม่ได้อยู่ใน3กลุ่ม Navbar; ชื่อและข้อมูลต้นฉบับยังอยู่ครบ กดอ่านรายละเอียดที่ `/solutions/<id>` เดิม
+- ใช้ข้อความภาพรวมจาก solutionsIndex/หน้า index ปัจจุบันและ BusinessSolutionsTemplate ที่มีอยู่ ไม่สร้างคุณสมบัติสินค้า สถิติ กรณีลูกค้า หรือข้อความบริการรับสอบเทียบใหม่
+- ใช้ภาพภาพรวมที่มีอยู่ใน solutionImages และตรวจดูแล้ว เป็นภาพประกอบภาพรวมธุรกิจ ไม่ระบุว่าอุปกรณ์ในภาพรองรับฟังก์ชัน/รุ่นใดโดยไม่มีข้อมูล. ทั้ง14solution records มี imagesว่าง จึงไม่สร้างภาพเฉพาะหัวข้อหรือภาพสินค้าสมมติ
+- ใช้พื้นขาว Typography/ระยะ/cardทรงมน/ช่องไฟและสีแดงSUNFORD ตาม overview ปัจจุบัน; แถวการ์ดเลื่อนแนวนอนด้วย native overflow/scroll-snap และลิงก์ปกติ รองรับtouch/keyboard/เปิดแท็บใหม่ โดยไม่มี autoplayหรือstate animationใหม่
+- ใช้ categoryEntrance ของ CSS ปัจจุบันกับ heading/chapter/ribbon โดยคงค่าล่าสุด: headingเริ่ม15% opacity, reveal800ms, chapter delay180ms/stagger140ms, ribbon3000ms, cubic-bezier(0.4,0,0.2,1), reduced-motion/scripting guards. ไม่แก้ shared motion CSS
+- Navbar และ Footer ใช้ของ site layout ปัจจุบันเพียงชุดเดียว; คงการค้นหา เปรียบเทียบ และshop linkของ Header ที่มีอยู่ ไม่เปลี่ยน CatalogRouteFrame หรือ product-category ownership
+
+### Scope Out
+
+ไม่แก้รายละเอียด `/solutions/*`, solutions.json/source HTML, routes/aliases/metadata/data contracts เดิม, product overview/category pages, Navbar spacing/menus/shop icon, Footer, Heroหน้าแรก, global CSS, database/API/dependencies. ไม่เพิ่ม product finder/filter/compare controlsในเนื้อหาโซลูชัน ไม่แต่ง FAQ/บริการ/ข้อมูลสินค้า ไม่ commit/push/deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ScalesOverview/ProductsOverview และ CSSล่าสุด, `/solutions` indexและ14source records, resolved CMS navigation3business groups, BusinessSolutionsTemplate/solutionImages และ src/styles/base.css
+- Design: ใช้โครงหัวเรื่อง/chapter/Hero/cards/section index ในภาษาภาพเดียวกับหมวดสินค้า โดยเนื้อหาเป็นลิงก์โซลูชันและกลุ่มธุรกิจ. Native anchors และเลื่อนการ์ดได้; ไม่มีขั้นตอนซื้อหรืออ้างความเข้ากันได้ของสินค้าใหม่
+- Responsive:320/390/768/834/1440; ตรวจข้อความชื่อหัวข้อยาว ขอบเขตลูกในcard/track, keyboard/touch/focus, reduced/static fallback และ scroll/history/cache
+
+### Input / Output
+
+- Input: solutionsIndex,14solutionsจาก solutions.json, existing business-solutions copy/assets, resolved CMS navigation/site settings และ current shared overview CSS
+- Output: หน้า `/solutions` overview พร้อม3business chapters/14solution destinations/ข้อมูลกลุ่มเดิม และ latest entrance โดยรายละเอียดปลายทางยังเหมือนเดิม
+
+### Acceptance Criteria
+
+- [x] หน้า index มีโครง/สี/ระยะ/Typography ตาม reference และเนื้อหาเฉพาะโซลูชันตามธุรกิจ; ไม่มีข้อมูลหรือภาพสมมติ
+- [x] ครบ14solution paths/titlesตามลำดับเดิม รวมWindows/Driver; resolved group labels/linksตรงกับNavbar ไม่มีการจัดหมวดเพิ่มเอง
+- [x] Chapter anchors/ทุกลิงก์/keyboard/native touch/scroll/history/reloadทำงาน; Header/Footerที่ใช้งานจริงชุดเดียว และไม่มีproduct finderเปิดจากเนื้อหา
+- [x] HTML/text/linksของ14detail pagesและหน้าอื่นที่เลือกตรวจเท่ากับbaseline; Navbar/source data/shared stylesคงเดิม
+- [x] latest motion timing/easing/reduced/static CSS fallbackและ4xCPU geometry/CLS/animation cleanupมีหลักฐาน; scoped static/build/browser checksพร้อมscreenshotsผ่าน (whole-page no-JS visibility limitation below)
+
+### Missing Information
+
+ไม่มีสำหรับขอบเขตที่เสนอนี้ ใช้ข้อมูลและassetsที่มีอยู่ทั้งหมด; แผนไม่ต้องมีภาพเฉพาะบทความที่ข้อมูลเดิมไม่มี
+
+### Approval Record
+
+ผู้ใช้อนุมัติ concrete solutions-index Spec/Plan นี้ว่า “อนุมัติครับ ปรับหน้าโซลูชันตามธุรกิจตามแผนได้เลย” ครอบคลุมไฟล์และการตรวจตาม plan.md
+
+### Impact / Rollback
+
+R2. เพิ่ม overview/CSSเฉพาะหน้าและเปลี่ยนเฉพาะ index branch ใน SolutionsPage; ไม่ทำ ProductsOverviewให้เป็นcomponentใหม่แบบgenericหรือเปลี่ยนshared layout. ความเสี่ยงคือเผลอเปลี่ยนdetail rendering, ทำลิงก์Windows/Driverหาย และชื่อยาวล้นcard. Snapshotก่อนแก้, strict baselineของ14detailsและเมนู, source hashes และย้อนเฉพาะtask delta. QAใช้outputแยกและระบุdata provider; ตรวจconfigured previewก่อนส่งมอบ
+
+### Current State / Verification
+
+Delivered after the owner's explicit approval. Index uses a Server Component with existing14records, resolved3CMS groups/18links, native anchors/scroll-snap cards and read-only shared entrance CSS. No client animation state, finder, new dependency version, global layout or detail-page change. Configured and isolated Node24builds437/437; final TypeScript, scoped Prettier/ESLint and git diff --check pass. Final Chromium12/12 covers320/390/768/834/1440, native touch, keyboard throughDriver, all14detail/history routes, cache chrome and latest800ms/140ms stagger/3000ms ribbon/reduced/static CSS. Existing sitewide-navigation12/12 passes in QA. Strict configured comparison confirms14detail HTML/text/links/images/frames and5unaffected main signatures identical. Final four4xCPU cases CLS0, no active entrance aftersettle, equal reduced/normal geometry/content; lab LCP464/764/276/540ms (not field measurements). Final screenshots visually inspected.
+
+Environment repair only: four installed package directories were empty; restored @prisma/client7.10.1, pg8.23.1, postcss8.5.23 and nested postcss8.5.31 from exact lockfile archives after SHA512 integrity verification. Package manifests/lockfiles unchanged. MEMORY records diagnostic rule. Source audit:320protected paths unchanged; only existing SolutionsPage and MEMORY changed among322baseline paths, plus2new application files and2new tests. Concurrent completed Figma documentation preserved. Preview3000 runs the configured current build; previous build safely archived. No commit/push/deploy.
+
+Known limits: the existing noncatalog regression passes its5valid pages but still fails the unknown-route HTTP404 expectation (receives200 with not-found/noindex in candidate builds; old archived preview returned404). Installed Next docs describe streamed not-found200; no unrelated route/global change or weakened assertion. With JavaScript disabled, raw14links/static CSS are present but the whole page stays inside a hidden streamed ancestor, reproduced before/after. This is the same previously drafted framework-feedback issue; reporting protocol reviewed once, no duplicate draft/form/submission. Full no-JS visibility is not claimed. Evidence and exact results: output/solutions-apple-overview-20261109/delivery.md.
+
+## Task: Replace homepage section-two video with showroom tour (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ, following this concrete showroom-video replacement Spec/Plan"
+Progress: "Implemented and verified on final preview3000; pre-existing no-JavaScript visibility regression remains"
+
+### Goal
+
+เปลี่ยนวิดีโอหน้าแรกใต้หัวข้อ “แข็งแรงทนทาน ใช้งานง่าย มีประสิทธิภาพ” ตาม screenshotผู้ใช้ เป็นคลิป https://youtu.be/UF7QJSq4Qw4?si=4pz6-F1URhHZphx4
+
+### Scope In
+
+- ใน src/features/home/components/section-two-video.tsx เปลี่ยน embedและposterจาก ID szRD6aOQL_Y เป็น UF7QJSq4Qw4 และเปลี่ยนชื่อกำกับคลิปจาก SUNFORD Biz Talk EP.16 เป็น SUNFORD SHOWROOM TOUR 2022 ตาม YouTube oEmbed ที่ตรวจแล้ว
+- คง headingสามสี, CSS, sectionตำแหน่งหลังHero, id/anchors, aspect16:9, poster click/keyboard-to-load และ youtube-nocookie/autoplay/rel/allowFullscreen/referrerPolicy เดิม
+- ปรับ ID ที่คาดหวังใน tests/e2e/section-two-video.spec.ts ให้ตรงคลิปใหม่ โดยรักษา responsive/keyboard/no-JS assertions เดิม
+
+### Scope Out
+
+- ไม่เปลี่ยน Navbar/ลิงก์กระเป๋าที่เพิ่งเสร็จ, Hero, วิดีโอส่วนอื่น, CMS/database, สี/ข้อความหัวข้อ/layout/shared styles, dependency หรืองาน accessories ที่กำลังทำคู่กัน; ไม่ download/re-encode clip และไม่ release
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพผู้ใช้ระบุ SectionTwoVideo และ stylesเดิมใน section-two-video.module.css; SUNFORD tokensจาก src/styles/base.css
+- Design: คง typography/สีขาว-เงิน-แดง/พื้นดำ/กรอบวิดีโอ/ปุ่มเล่นเดิม; posterใช้ภาพจริงจากคลิปใหม่เท่านั้น
+- Responsive: ตรวจ1440/768/390/320pxตาม regressionเดิม พร้อมภาพdesktop/mobile
+
+### Input / Output
+
+- Input: URLจากผู้ใช้, YouTube oEmbedยืนยันชื่อ SUNFORD SHOWROOM TOUR 2022/channel Sunfordthai และ maxresdefault poster https://i.ytimg.com/vi/UF7QJSq4Qw4/maxresdefault.jpg ตอบ200 image/jpeg
+- Output: หน้าแรกแสดงภาพปกคลิปใหม่และเมื่อกดเล่นสร้าง iframe https://www.youtube-nocookie.com/embed/UF7QJSq4Qw4?autoplay=1&rel=0 พร้อมชื่อกำกับตรงคลิป
+
+### Acceptance Criteria
+
+- [x] poster/iframeใช้UF7QJSq4Qw4 และชื่อกำกับไม่มี Biz Talk EP.16; ก่อนกดไม่โหลดiframe
+- [x] ข้อความheading/ตำแหน่งหลังHero/geometry/สีเดิม; ภาพปกโหลดจริง,16:9และไม่ล้นครบ4widths
+- [x] คลิกและkeyboardสร้างiframeใหม่ถูกต้อง; fullscreenและno-JS preview contractเดิมผ่านหรือระบุข้อจำกัดจริง
+- [ ] Scoped format/lint/type/buildและexisting section-two-video regressionsผ่าน; ตรวจscreenshotsและรักษาไฟล์อื่นที่อยู่นอกงาน — static/build/normal-JSผ่าน แต่ no-JS visibility testยังล้มเหมือนbaselineก่อนแก้ ดูผลจริงด้านล่าง
+
+### Missing Information
+
+ไม่มี — แหล่งคลิปและตำแหน่งชัดเจน, metadata/thumbnailตรวจแล้ว; ผู้ใช้อนุมัติ Spec/Planแล้ว
+
+### Approval Record
+
+ผู้ใช้ตอบ “อนุมัติ” หลังแสดง Spec/Planเปลี่ยนคลิปส่วนนี้เป็น SUNFORD SHOWROOM TOUR 2022; ครอบคลุม component, expected embed IDในtest และการตรวจตามแผน
+
+### Current State / Impact / Rollback
+
+ส่งมอบคลิปและภาพปกใหม่บน http://localhost:3000/ แล้ว. Source auditยืนยันcomponentเปลี่ยนเพียง3จุดและtestเพียงexpected ID; heading/section anchor/CSS/interactionเดิมคงอยู่. Scoped Prettier/ESLintผ่าน, isolated Node24 bun run build437/437รวมTypeScript. ภาพปกจริง1280x720โหลด, geometry/text/colorsตรงbaseline1440/768/390/320และไม่overflow. Enter/clickสร้างiframeใหม่พร้อมtitle/fullscreen/referrerPolicyถูกต้องทั้งQA3008และfinal3000; ไม่มีiframeก่อนกด. ตรวจภาพdesktop/mobileแล้ว. Existing suiteได้1pass/1failทั้งbaselineก่อนแก้, candidateและfinal: กรณีปิดJavaScriptส่วนนี้อยู่ใต้ancestor hidden/display:none แม้heading/posterอยู่ในDOM (HTTP200, heading1/poster1/iframe0); คงfailed assertionและหลักฐาน ไม่แก้ระบบrenderingทั้งเว็บในงานเปลี่ยนคลิป. บันทึกบทเรียนในMEMORYและเตรียมanonymous Next.js feedback reviewตามคำสั่งagentFeedback. ไม่มีการยืนยันการเล่นสื่อจนจบจากYouTubeภายนอก; ตรวจการสร้างplayerและposterจริงตามcontract. Audit214app-source filesตรงQA snapshotก่อนนำbuildขึ้นpreview จึงคงaccessories/Navbarล่าสุด. เก็บbuildเดิมสำหรับrollback; preview3000session96526 ใช้0.0.0.0เดิมและQA3008หยุดแล้ว. ไม่commit/push/deploy. หลักฐาน output/home-section-two-showroom-video-20261107/delivery.md.
+
+## Task: Accessories category overview with latest entrance motion (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ, following the concrete accessories-only Spec/Plan"
+Progress: "Done — accessories-only overview and latest motion verified on final preview3000"
+
+### Goal
+
+ปรับ `/products/category/accessories` ให้ใช้โครงหน้าเครื่องชั่งปัจจุบัน แสดงเฉพาะข้อมูล/สินค้าหมวดอุปกรณ์เสริม และใช้แอนิเมชันล่าสุด ตามคำขอผู้ใช้ “ต่อไปปรับหน้าอุปกรณ์เสริมให้ใช้รูปแบบเดียวกับหน้าเครื่องชั่งครับ แสดงเฉพาะข้อมูลและสินค้าของหมวดนี้ และใช้แอนิเมชันล่าสุดด้วยครับ”
+
+### Scope In
+
+- เพิ่ม AccessoriesOverview ฝั่ง server ตาม pattern ScalesOverview/POSOverview ใช้ ProductsOverview เดิม กรอง products ด้วย category.productIds จาก getProductCategories เท่านั้น; คงชื่อ ลำดับ featured รูป รายละเอียด ลิงก์ และข้อมูลจำแนกสินค้าเดิม ไม่จัดหมวดใหม่หรือ deduplicate เพิ่ม
+- Runtime ที่ตรวจแล้ว:39รายการจริงและ7รุ่นตัวอย่าง (Mock); รักษาข้อมูลปัจจุบัน รวมสินค้าในหมวดที่ไม่ได้อยู่ใน5child definitions ไม่ตัดออกโดยอนุมาน
+- Chapters ใช้5หมวดจาก accessorySubcategoryDefinitions ตามลำดับเดิม: จอแสดงผลเสริมและระบบต่อพ่วง / สายสัญญาณและหัวต่อ / อุปกรณ์เคลื่อนย้ายและชิ้นส่วนแท่นชั่ง / อุปกรณ์ระบบหน้าร้านและต่อพ่วง POS / วัสดุสิ้นเปลือง
+- สถานะ child ที่ตรวจจาก runtime:3จริง+1Mock /0จริง+3Mock /2จริง+2Mock /4จริง+1Mock /7จริง ตามลำดับ; คงรายการ Mock และการเปรียบเทียบ/เอกสารเดิม ไม่สร้างภาพ รุ่น สเปก หรือคำกล่าวอ้างใหม่
+- Hero/lineup แสดงเฉพาะสินค้าอุปกรณ์เสริมที่มีภาพจริง ตาม existing featured-first/จำนวนสูงสุดเดิม; chapter ที่มีเฉพาะMock ไม่ใส่ภาพแต่งเพิ่ม
+- Stories/accordion ใช้ buyingGuides slug accessories ทั้ง3หัวข้อ: ตรวจสอบรุ่นที่รองรับ, เลือกเครื่องพิมพ์, เลือกวัสดุสิ้นเปลือง พร้อมข้อความ/ลิงก์เดิม; ภาพใช้สินค้าในหมวดที่มีอยู่เท่านั้น
+- Services ใช้ pattern เดิมของ wrappers และข้อความจัดส่ง/ปรึกษา/หลังการขาย/เปรียบเทียบ/รับประกันที่มีอยู่ โดยคำแนะนำเป็นเนื้อหาคู่มือ accessories; ไม่มีบริการรับสอบเทียบ
+- Local finder ล็อก accessories;5child URLs เปิดหมวดย่อยตรงกัน; intentional click/fresh deep link/history ทำงาน ส่วน document reload ไม่เปิด popup อัตโนมัติและล้าง popup query ตาม ProductsOverview เดิม
+- คงปุ่มสินค้าทั้งหมดไป `/products?catalog=all` และ Navbar parent เป็นลิงก์เข้าหน้า overview โดยตรง; เพิ่ม exact accessories route ใน CatalogRouteFrame เพื่อรักษา Header/Footer/overlay host ชุดเดียว
+- เพิ่ม accessories ใน categoryEntrance opt-in เท่านั้น ใช้ CSS ล่าสุดเดิม: headingเริ่ม15% opacity, reveal800ms, chapter delay180ms/stagger140ms, ribbon3000ms, cubic-bezier(0.4,0,0.2,1), reduced-motion/scripting guards; ไม่เพิ่ม state/timer/library สำหรับ animation
+
+### Scope Out
+
+ไม่เปลี่ยนหน้า Products/เครื่องชั่ง/อินดิเคเตอร์/โครงสร้าง/POS, Navbar/ระยะ/ไอคอนกระเป๋าหน้าแรก, shared motion CSS, ข้อมูลสินค้า/child definitions/backend/database/dependencies; ไม่ refactor wrappers หรือแก้ software hash/filter นอกงาน ไม่ commit/push/deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ScalesOverview/POSOverview/ProductsOverview และ CSS ล่าสุด, accessorySubcategoryDefinitions, buyingGuides accessories และ SUNFORD tokens ใน src/styles/base.css
+- Design: โครง Hero/chapter/lineup/services/story/accordion/index/Footer เดิม สีแดงSUNFORD/Typography/ระยะ/controls เดิม; category overview ไม่มี Essentials ข้ามหมวด
+- Responsive:390/768/834/1440 พร้อม keyboard/native touch, reduced motion/server HTML/static fallback, child bounds/overflow และ cached navigation
+
+### Input / Output
+
+- Input: getProductCategories/getAccessorySubcategories, existing39products/7Mock entries/real images, accessories guide และ CMS site/navigation ปัจจุบัน
+- Output: accessories-only overview พร้อม5chapters/3guide sections/local finder/latest entrance และ all-products access โดย data contracts เดิมคงอยู่
+
+### Acceptance Criteria
+
+- [x] โครงและ interaction เหมือน scales; สินค้า/ภาพ Hero/lineup เป็นสมาชิก accessories และ3guide sections มาจากข้อมูลเดิม
+- [x] All/5child catalogue states ตรง baseline ทั้งชื่อ/ลำดับ/จำนวน/รูป/ลิงก์/Mock/document names/decision facts; ไม่มีภาพหรือสินค้าสมมติ
+- [x] Parent/5child links, search/filter/empty/compare/close/Escape/reload/history และ all-products access ทำงาน; cached routes มี Header/Footer/overlay host ที่ใช้งานจริงชุดเดียว
+- [x] latest motion timing/easing ตรงหมวดเดิม; reduced/static fallback อ่านได้;4xCPU measurements ไม่มี motion layout shift และไม่มี entrance ค้างหลังจบ
+- [x] Scoped static/catalog units/build/browser responsive พร้อม screenshots และ source/data protection evidence ผ่าน; Navbar/หมวดอื่นคงเดิม
+
+### Missing Information
+
+ไม่มีสำหรับ implementation นี้; ใช้ข้อมูลที่ตรวจได้ทั้งหมดและคง Mock เดิม ไม่เพิ่มข้อมูลแทนรายการที่ยังไม่มี
+
+### Approval Record
+
+ผู้ใช้ตอบ “อนุมัติ” หลังแสดง concrete accessories-only Spec/Plan นี้ ครอบคลุม wrapper, exact-route frame, latest entrance opt-in และ affected browser assertions ตามรายการใน plan.md
+
+### Impact / Rollback
+
+R2. เพิ่ม wrapper/exact route/entrance opt-in เท่านั้นใน shared feature components. ความเสี่ยงคือสินค้าข้ามหมวด, Mock/consumable entries เปลี่ยน, chrome/overlay ซ้ำใน cached navigation. Snapshot source/data ก่อนแก้และเปรียบเทียบ6selected catalogue statesกับ combined catalogue;ย้อนเฉพาะ task delta โดยรักษางานค้างอื่น. ใช้ QA build output แยกจาก preview เพื่อป้องกัน stale-manifest failure ที่พบก่อนหน้า ไม่แก้ global Navbar/style
+
+### Current State / Verification
+
+AccessoriesOverview reuses the existing ProductsOverview with39real products,7existing noninteractive Mock models,5chapters and3accessories-guide sections. Exact route/frame ownership and entrance opt-in added; other wrappers, shared motion CSS, catalogue/child data and Navbar sources untouched by this task.
+
+Isolated QA and configured Node24 production builds both437/437; units105/105; final TypeScript/scoped ESLint/Prettier/whitespace pass.69current browser cases have latest passing results, including final10/10on3000 (8accessories+2family navigation). Initial tests assumed nonexistent Mock comparison controls and the last category's previous inline all-products link; corrected to unchanged noninteractive Mock behavior and the approved overview link, with original failure logs retained.13catalogue states and5unaffected main signatures match the configured final preview baseline exactly. QA uses static fallback rather than the configured database, so its unrelated Products/scales ordering differs;12selected accessories states are exact there, and the final configured strict check passes without sorting/data changes.
+
+Four4xCPU normal/reduced observations preserve content/geometry exactly, CLS0/no remaining entrance; lab LCP672/716/640/688ms, not field guarantees. Native touch357px swipe/no overflow; desktop/mobile top screenshots inspected.309protected paths unchanged;9planned existing app/test/MEMORY paths changed and2planned files created. Independent concurrent homepage video source/test changes are separately identified and preserved; no accessories edits to those files. Preview3000session41347 retains0.0.0.0 binding; previous build archived within task output before refresh, isolated QA3009 stopped at delivery. No commit/push/deploy, database/dependency changes or qualifying verified framework feedback issue. Full receipts: output/accessories-apple-overview-20261107/delivery.md.
+
+## Task: Link homepage shopping bag to SUNFORD shop (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Authorized direct follow-up — owner: https://sunfordshop.com/ ลิงก์ไปยังเว็บนี้ด้วยครับ"
+
+### Goal
+
+ให้ไอคอนกระเป๋าที่เพิ่งอนุมัติและส่งมอบบนหน้าแรกพาไป https://sunfordshop.com/ ตาม URL ที่ผู้ใช้ระบุ
+
+### Scope In
+
+- เปลี่ยนปุ่มกระเป๋าใน src/components/layout/header.tsx เป็น native anchor ไป URL ดังกล่าวในแท็บเดิม; Tooltip/accessibility label เป็น “ร้านค้า SUNFORD”
+- คง SVG สี ขนาด และตำแหน่งเดิม; ถอด compare action/pressed state/count และ subscriptions ที่ปุ่มนี้ไม่ใช้งานแล้ว
+- คำสั่งใหม่นี้แทนที่ข้อกำหนดคง action เปรียบเทียบของงานไอคอนก่อนหน้าเฉพาะปุ่มกระเป๋าบน Home
+- ปรับ selector ใน geometry regression เดิมหนึ่งจุดให้วัดลิงก์กระเป๋าควบคู่กับปุ่ม โดยคง assertions เปรียบเทียบระยะทั้งหมด
+
+### Scope Out
+
+- ไม่เปลี่ยน comparison store/overlays, PrimaryNavigation ของหน้าอื่น, CSS, Hero, ข้อมูลสินค้า หรือระบบร้านค้าปลายทาง; ไม่เพิ่ม dependency หรือ release
+
+### UI/UX Brand Alignment
+
+- Reference: รูปกระเป๋าที่อนุมัติและ Header/styles ที่เพิ่งตรวจจริง; URL จากผู้ใช้
+- Design: คง currentColor/outline20px/ตำแหน่งเดิม; native link ใช้ .icon-button เดิม จึงไม่แก้ stylesheet ส่วนกลาง
+- Responsive:390/768/834/1440px; ตรวจภาพและเรขาคณิตปุ่มเทียบก่อนแก้
+
+### Input / Output
+
+- Input: URL https://sunfordshop.com/ จากผู้ใช้; ตรวจเข้าถึง endpoint ผ่าน web แล้ว
+- Output: คลิกหรือ Enter ที่กระเป๋าพาไป URL นี้ และไม่เริ่ม compare mode
+
+### Acceptance Criteria
+
+- [x] Home มีกระเป๋าเป็นลิงก์ href ตรง URL ผู้ใช้ พร้อม accessible name/Tooltip ร้านค้า และไม่มี compare state/count
+- [x] คลิก/Enter นำทางไป URL ถูกต้องในแท็บเดิม; ขนาด สี ตำแหน่งเดิมครบ4widthsและไม่ overflow
+- [x] หน้า scales ไอคอน/compare behavior คงเดิม; app delta อยู่เฉพาะ header.tsx
+- [x] Scoped formatter/ESLint, buildรวม TypeScript และ browser verification ผ่าน; บันทึกหลักฐานและอัปเดต preview3000
+
+### Missing Information
+
+ไม่มี — ใช้ native same-tab navigation เป็นค่าเริ่มต้นตามลิงก์ปกติ
+
+### Approval Record
+
+ผู้ใช้สั่งต่อจากงานไอคอนที่อนุมัติแล้ว: “[https://sunfordshop.com/](https://sunfordshop.com/) ลิงก์ไปยังเว็บนี้ด้วยครับ”. เป็น authorization ตรงสำหรับการเปลี่ยน action ของปุ่มเดิมในไฟล์เดิม ไม่ต้องถามอนุมัติซ้ำ
+
+### Current State / Impact / Rollback
+
+Done. Home bag เป็น native same-tab anchor href=https://sunfordshop.com/ พร้อม Tooltip/accessible name “ร้านค้า SUNFORD”; ถอด compare action/pressed/count และ3unused subscriptions เฉพาะHeader. SVGและHeadermarkupอื่นตรงsnapshotตามexacttransform. Scoped Prettier/ESLintผ่านทั้งHeaderและgeometry test; Node24 bun run buildผ่าน437/437รวมTypeScript. Chrome8route/width checks (Home/scales390/768/834/1440) ยืนยัน geometry/color/stroke/SVGตรงbaseline, ไม่overflow; href/name/Tooltip/stateถูกต้อง, native click3ขนาดและEnterที่1440ไป URLเดิมในแท็บเดิม (interceptเฉพาะdestination documentเพื่อทดสอบnavigationแน่นอน ไม่อ้างว่าได้ตรวจcheckoutของเว็บปลายทาง). Scalesยังเปิดfinder/compare modeได้. Existing geometry regression8/8ผ่าน390–1920พร้อมselectorรวมanchorโดยไม่ลดassertion. ตรวจภาพdesktop/mobileแล้ว. เก็บpreviousbuildในoutput, preview3000session85819แสดงbuildล่าสุด. ไม่commit/push/deploy; ไม่มีqualifying verified framework feedback issue. หลักฐาน output/home-shopping-bag-shop-link-20261107/delivery.md.
+
+## Task: Homepage shopping bag icon (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ, following this concrete homepage icon Spec/Plan"
+
+### Goal
+
+เปลี่ยนไอคอนใน Navbar หน้าแรกจากรูปเปรียบเทียบเป็นกระเป๋าช้อปปิ้งตามภาพผู้ใช้: “หน้าแรกส่วนของไอคอนเปลี่ยนเป็นกระเป๋าช้อปตามภาพ”
+
+### Scope In
+
+- เปลี่ยนเฉพาะ import และ SVG ของ GitCompareArrows เป็นกระเป๋าทรงสี่เหลี่ยมหูโค้งตามภาพ ใน src/components/layout/header.tsx; ใช้ inline SVG เพราะ ShoppingBag ใน lucide-react1.61.0 เป็นทรงพับปากถุง/หูด้านหน้าซึ่งต่างจาก reference (รายละเอียด implementation ภายในขอบเขตเดิม)
+- คงขนาด เส้น สี ตำแหน่ง ปุ่ม จำนวนสินค้า Tooltip และการกดเปรียบเทียบเดิมทั้ง desktop/mobile; คำขอนี้เป็นการเปลี่ยนรูปไอคอนเท่านั้น
+
+### Scope Out
+
+- ไม่เพิ่มตะกร้าหรือระบบสั่งซื้อ ไม่เปลี่ยน PrimaryNavigation ของหน้าอื่น, CSS, Header geometry, Hero, ข้อมูลสินค้า หรือ pending catalog/POS work
+- ไม่เพิ่ม dependency และไม่ commit/push/deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพกระเป๋า codex-clipboard-31d1416d-caab-464c-baaa-a6233a23bcfa.png และภาพไอคอนเดิม codex-clipboard-59ac7097-9a56-4409-ae6e-f91d04fe0a67.png ที่ผู้ใช้แนบ
+- Design: ใช้กระเป๋าเส้น outline สี่เหลี่ยมมุมมนและหูโค้งด้านบนตามภาพ; คง SVG22px, strokeWidth={1.5}, CSS rendered20px และ currentColor ตาม Header เดิมที่ตรวจจาก src/styles/header.css กับ tokens ใน src/styles/base.css
+- Responsive: ตรวจ390/768/834/1440px ครอบคลุมมือถือ แท็บเล็ต และ desktop breakpoint ปัจจุบัน
+
+### Input / Output
+
+- Input: ภาพผู้ใช้และ Header ปัจจุบัน; SiteNavigation เลือก Header เฉพาะ pathname=/ ส่วนหน้าอื่นใช้ PrimaryNavigation
+- Output: Navbar หน้าแรกแสดงกระเป๋าช้อปปิ้ง outline ในปุ่มเดิม โดยพฤติกรรมเดิมยังทำงาน
+
+### Acceptance Criteria
+
+- [x] หน้าแรกแสดงกระเป๋าแทน GitCompareArrows ตรงปุ่มในภาพทั้ง desktop/mobile พร้อม screenshot ที่ตรวจด้วยตา
+- [x] สี/ขนาด/ตำแหน่งและ Header geometry คงเดิม ไม่มีปุ่มซ้อน; การกดเปรียบเทียบและจำนวนสินค้ายังทำงาน
+- [x] หน้าอื่นยังใช้ไอคอน/พฤติกรรมเดิม; application diff มีเพียง import และ icon component ใน header.tsx
+- [x] Scoped formatter/ESLint, typecheck และ browser checks ตามแผนผ่าน หรือระบุข้อจำกัดจริง
+
+### Missing Information
+
+ไม่มีสำหรับการเปลี่ยนรูปไอคอน — คง action เดิมตามขอบเขตคำขอ; ผู้ใช้อนุมัติแผนแล้ว
+
+### Approval Record
+
+ผู้ใช้ตอบ “อนุมัติ” หลังแสดง Spec/Plan ของงาน Homepage shopping bag icon; ครอบคลุมการเปลี่ยนรูปไอคอนใน header.tsx และการตรวจตามแผน
+
+### Current State / Impact / Rollback
+
+Done. ปุ่ม .header-compare หน้าแรกใช้ SVG กระเป๋าสี่เหลี่ยมหูโค้งตามภาพ; import และ SVG เป็นสองจุดเดียวที่ต่างจาก Header snapshot. คง startCompare, accessible label, count, Tooltip และ CSS เดิม. Node24 isolated build และ bun run build ของ preview จริงผ่าน437/437รวม TypeScript; scoped Prettier/ESLint ผ่าน. Chrome บน QA3008 และ refreshed3000 ตรวจ8route/width combinations (Home/scales390/768/834/1440): header/button/icon geometry, color และstrokeตรง baseline ทุกค่า; scales SVG คงเดิม, ไม่ overflow, Homeกดเปิด/ยกเลิก compareผ่าน4ขนาด, เลือกสินค้าจริงผ่านfinderแล้วกลับHomeแสดงbadge1และล้างได้. ภาพ desktop/mobile ตรวจด้วยตาแล้ว. Audit350baseline paths ยืนยัน applicationเปลี่ยนเฉพาะHeaderตามexacttransform; concurrent POS/navigation test editsไม่ถูกย้อนทับ. Initial badge checkใช้ชื่อปุ่มปิดเก่าจึงtimeout; ปรับเฉพาะevidence selectorเป็นชื่อจริงแล้วrerunผ่าน. R2 rollbackเฉพาะHeader delta; เก็บbuildเดิมในoutput. Preview http://localhost:3000/ session57066, QA3008หยุดแล้ว. ไม่commit/push/deploy และไม่มีqualifying verified Next.js feedback candidate. หลักฐาน output/home-shopping-bag-icon-20261107/delivery.md.
+
+## Task: POS category overview with latest entrance motion (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ, following the concrete POS-only Spec/Plan"
+Progress: "Done — POS-only overview and latest motion verified on final preview3000"
+
+### Goal
+
+ปรับ `/products/category/pos` ให้ใช้รูปแบบเดียวกับหน้าเครื่องชั่งปัจจุบัน แสดงเฉพาะข้อมูล/สินค้าในหมวดระบบ POS และใช้แอนิเมชันล่าสุด ตามคำขอผู้ใช้ “ต่อไปปรับหน้าระบบ POS ให้ใช้รูปแบบเดียวกับหน้าเครื่องชั่งครับ แสดงเฉพาะข้อมูลและสินค้าของหมวดนี้ และใช้แอนิเมชันล่าสุดด้วยครับ”
+
+### Scope In
+
+- เพิ่ม POSOverview ฝั่ง server ตาม pattern PlatformsOverview/ScalesOverview ใช้ ProductsOverview เดิมและกรอง products ตาม category.productIds จาก getProductCategories เท่านั้น
+- ข้อมูล runtime ที่ตรวจแล้วมี3รุ่น: P1W (`/products/10801`), P1 (`/products/10802`), P4 (`/products/10805`) พร้อมภาพเดิมทั้งหมด; คงชื่อ รูป สเปก ลิงก์ ลำดับ featured/lineup ตามข้อมูลจริง
+- Chapters ใช้3หมวดจาก getPosSubcategories: iOS, Android, Windows ตามลำดับปัจจุบัน; iOS ไม่มีสินค้า ให้แสดงสถานะว่างเดิมใน finder ไม่แต่งรุ่น/รูป/Mock ใหม่
+- Hero/lineup เป็นสินค้า POS เท่านั้น; stories/accordion ใช้ buyingGuides slug pos ทั้ง3หัวข้อ: เปรียบเทียบ Android / Windows, ตัวอย่างการใช้งาน, การเชื่อมต่อเครื่องชั่ง พร้อมข้อความและลิงก์เดิม ภาพเลือกจากสินค้า POS ที่มีอยู่
+- Services ใช้ข้อความจัดส่ง/ปรึกษา/ดูแลหลังการขาย/เปรียบเทียบ/รับประกันที่มีอยู่ตาม wrapper เดิม โดยเนื้อหาคำแนะนำมาจากคู่มือ POS เท่านั้น ไม่มีบริการรับสอบเทียบ
+- Finder ล็อกหมวด pos;3child query เปิดตัวกรองตรงกัน; reload ไม่เปิด popup อัตโนมัติและล้าง popup query ตาม ProductsOverview policy เดิม; intentional click/fresh deep link/history ยังคงทำงาน
+- คงปุ่มสินค้าทั้งหมดไป `/products?catalog=all`; Navbar parent เข้าหน้า overview โดยตรง; เพิ่ม exact POS route ใน CatalogRouteFrame เพื่อให้มี Header/Footer/overlay host ที่ใช้งานจริงเพียงชุดเดียว
+- เพิ่ม pos ใน categoryEntrance opt-in โดยใช้ CSS ล่าสุดเดิม: headingเริ่ม15% opacity, fade800ms, chapter delay180ms/stagger140ms, ribbon3000ms, cubic-bezier(0.4,0,0.2,1), reduced-motion/scripting guards; ไม่เพิ่ม animation JS/timer/library
+
+### Scope Out
+
+ไม่แก้ Navbar/ระยะ/โทนสีหน้าแรกที่เพิ่งปรับ ไม่เปลี่ยน scales/indicators/platforms/accessories/Products, ข้อมูลสินค้า, shared motion CSS, backend/database/dependencies หรือแก้ปัญหา software hash/filter ที่บันทึกไว้ ไม่ refactor wrappers เดิม ไม่ commit/push/deploy
+
+### UI/UX Brand Alignment
+
+- Reference: ScalesOverview/PlatformsOverview/ProductsOverview และ CSS ล่าสุด, POS data/guide ที่มีอยู่, SUNFORD tokens ใน src/styles/base.css
+- Design: รักษาโครง Hero/chapter/lineup/services/story/accordion/index/Footer, สีแดงSUNFORD/Typography/ระยะและ interaction เดิม; category overview ไม่มี Essentials ข้ามหมวด
+- Responsive:390/768/834/1440 พร้อม native touch/keyboard, reduced motion, server HTML/static fallback และตรวจ child bounds/overflow
+
+### Input / Output
+
+- Input: getProductCategories, getPosSubcategories, buyingGuides pos, current CMS navigation/site settings และ3ภาพสินค้าที่ตรวจจากหน้า POS ปัจจุบัน
+- Output: POS-only overview,3chapters,3guide stories/accordion และ local finder ตามข้อมูลจริง พร้อม latest entrance; other-page contracts คงเดิม
+
+### Acceptance Criteria
+
+- [x] โครงหน้าและ interaction เทียบเท่า scales; ทุกสินค้า/ภาพใน Hero/lineup เป็นสมาชิก POS และ3guide sections ตรงกับข้อมูลปัจจุบัน
+- [x] POS all/Android/Windows/iOS-empty catalogue signatures ตรง baseline ทั้งชื่อ/ลำดับ/จำนวน/รูป/ลิงก์/decision facts; ไม่มีสินค้าแต่งเพิ่ม
+- [x] Parent/3child navigation, finder/search/filter/empty/compare/close/Escape/reload/history และปุ่มสินค้าทั้งหมดทำงาน; cached navigation มี Header/Footer/overlay host เพียงชุดเดียว
+- [x] latest timing/easing ตรงกับหมวดเดิม; reduced/static fallback อ่านได้; ไม่มี motion layout shift และไม่เหลือ entrance animation หลังจบ พร้อม4xCPU observations
+- [x] Typecheck/scoped lint/format/catalog units/build และ browser responsive มีหลักฐาน; หน้าอื่นและ Navbar spacing/source hashes ไม่เปลี่ยน
+
+### Missing Information
+
+ไม่มีสำหรับ implementation นี้ ใช้ข้อมูลเดิมที่ตรวจได้ทั้งหมด; iOS ไม่มีสินค้าเป็นสถานะข้อมูลปัจจุบัน ไม่ใช่เหตุให้สร้างข้อมูลใหม่
+
+### Approval Record
+
+ผู้ใช้ตอบ “อนุมัติ” หลังแสดง concrete POS-only Spec/Plan นี้ ครอบคลุม POS wrapper, exact-route frame, latest entrance opt-in และ affected browser assertions ใน plan.md
+
+### Impact / Rollback
+
+R2. เพิ่ม wrapper และ exact route/entrance opt-in เท่านั้นใน shared feature components. ความเสี่ยงหลักคือ chrome ซ้ำ/overlay host ผิดหลัง cached navigation และเผลอดึงสินค้าข้ามหมวด; ตรวจเทียบ baseline และ source hashes. Snapshot ก่อนแก้และย้อนเฉพาะ delta งานนี้โดยรักษางานค้างอื่น ไม่มี global Navbar/style เปลี่ยน
+
+### Current State / Verification
+
+POSOverview uses existing ProductsOverview with3real POS products,3OS chapters and3existing POS-guide sections; iOS remains empty without a fabricated image/model. Exact POS frame ownership and existing entrance opt-in added. Shared motion CSS, other wrappers, catalogue data and Navbar spacing are unchanged by this task.
+
+Node24build437/437, catalog105/105, final TypeScript/scoped ESLint/Prettier/whitespace pass.64distinct browser cases have latest passing results:25POS/motion plus39category/navigation cases, with the initially stale all-products link and POS heading/finder-dismissal assertions corrected and rerun. Final POS7/7 passes on preview3000.9catalogue signatures and5unaffected main signatures equal baseline on final preview. Four4xCPU normal/reduced cases preserve geometry/content exactly, CLS0 and no remaining entrance animations; single-run LCP704/700/596/656ms, lab observations rather than field guarantees. Native touch swipes357px with no overflow; desktop/mobile top, lineup and feature screenshots inspected.
+
+308protected paths unchanged;9planned existing app/test/MEMORY paths changed and2planned files created. An independent concurrent Header shopping-bag SVG/import edit was verified separately and preserved; this task did not change Header or Navbar CSS. Another build replaced shared output while QA3006 retained an old manifest, causing a stale client-chunk error and unhydrated disabled controls; restarting QA against current output restored cold hydration and both support-link cases passed. Final preview3000 was already refreshed by that concurrent work and verified with current POS and shopping-bag icon, so no additional build/restart overwrote it. Temporary3006 stopped at delivery. No commit/push/deploy, database/dependency changes or qualifying verified Next.js feedback candidate. Evidence: output/pos-apple-overview-20261107/delivery.md.
+
+## Task: Match homepage Navbar spacing to other pages (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Authorized direct spacing correction — owner: nav bar หน้าแรกกับส่วนที่เหลือไม่ตรงกัน; clarification: ระยะไม่ตรงกัน"
+Progress: "Done — shared spacing verified across8widths/3routes on refreshed preview3000"
+
+Goal/Scope: Correct spacing only on the incumbent dark homepage Header to match existing PrimaryNavigation. Use its1024px maximum row width/16px side padding,82px logo,12px menu type,24px row gap, distributed links,38px desktop tool cells and42px mobile tool cells with5px gap. Use the same834px desktop breakpoint and44px desktop/48px mobile row heights. Match surface fixed-header compensation to these heights, preserving Hero top0 and existing dynamic logo docking. Keep approved menu data, links, dark glass, hover/opening animations and all other-page source behavior. No software/filter work, no new dependencies, no navigation rewrite.
+
+Reference/Input: Actual PrimaryNavigation/products-overview.module.css and measured scale/contact geometry. Output: equal header/nav/logo/parent/tool rectangles at matching widths; dark homepage appearance retained. Responsive:390/768/833/834/1024/1400/1440/1920; compare component child bounds, native touch/keyboard and normal opening/delayed fonts/cached navigation.
+
+Acceptance: [x] Header row/nav/logo/menu/tool geometry matches scales/contact reference; [x] mobile/desktop change at834px with no overlap; [x] Home dark glass, Hero top0, native navigation/search/compare/opening remain correct; [x] unaffected source hashes preserved and scoped format/build/browser checks recorded.
+
+Impact/Rollback: R2. Only Header CSS, owning surface compensation and Hero's static Header-height fallback change in application code. This direct request replaces the prior task's retained58/56px geometry with the current other-page44/48px spacing reference. Shared CSS risk is Hero offset and logo opening docking; verify actual geometry before/after and normal-motion behavior. Snapshot exact current files and restore only this delta. No commit/push/deploy.
+
+Evidence: output/home-navbar-spacing-20261107/. No missing requirements; no product/content changes. Existing Header resize listener also changes1400→834px to match CSS and close open menus correctly when switching layout; all other handlers remain unchanged.
+
+Current State / Verification: Home row now matches PrimaryNavigation's1024px/16px gutters,82px logo,44px desktop/48px mobile height, font/menu/tool spacing and834px breakpoint.16paired measurements across8widths match every Header/row/logo/menu/tool rectangle within1px.14other-page before/after signatures exact; Hero top0 at every width and at833/834 before hydration with external JS held. Node24 production build437/437, TypeScript, scoped ESLint/Prettier/whitespace pass. Chrome39/39: Home16, navigation10, normal/delayed-font opening6, platforms/cache7. Screenshots Home/scales at1440 inspected.310protected paths unchanged;4app paths,3test paths and required MEMORY note changed. Source audit confirms Header TS differs only in the resize breakpoint. Preview3000session17492 uses final build; temporary3005 stopped. No commit/push/deploy or qualifying verified Next.js feedback candidate. Prior software same-page filter issue remains outside scope and untouched.
+
+## Task: Restore five category menus on the dark homepage Header (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Authorized correction — previously approved sitewide five-category/direct-link navigation; owner now reports homepage regression: nav หน้าแรกทำไมเหลือแค่นี้ครับ"
+Progress: "Done — five homepage category menus restored and verified on preview3000; separate existing software-filter regression documented"
+
+Goal/Root cause: Homepage tone restoration selected legacy Header, which renders raw six-item CMS navigation; PrimaryNavigation alone projects that same data into the approved five product menus and merged Services. Keep the incumbent dark glass/fixed Header/Hero integration but restore the approved menu content/parent links on Home too. This corrects the approved navigation scope rather than proposing a new design.
+
+Scope In: Extract the existing PrimaryNavigation projection unchanged into a pure shared helper. Both Header/PrimaryNavigation consume it. Home top-level order is เครื่องชั่ง / อินดิเคเตอร์แท่นชั่ง / โครงสร้างแท่นชั่ง / ระบบ POS / อุปกรณ์เสริม / โซลูชันตามธุรกิจ / ซอฟต์แวร์ / บริการ. All23child labels/order/category URLs and existing related/support links retained; About/Contact remain inside Services. Parent names link directly to category overviews; do not add all-products items to submenus. Retain existing Home hover/Escape/search/compare/surface tracking and58/56px responsive height. Give mobile category names native links and separate native details/summary submenu controls. Adjust only scoped Header inner spacing/width if necessary for the longer desktop menu and mobile row layout.
+
+Scope Out: No Home Hero/opening/surface hook/route-frame changes, no global CMS data rewrite, no category/catalogue/data changes, no new library or unrelated fixes. Other-page PrimaryNavigation output must equal its prior projection exactly. No commit/push/deploy.
+
+Brand/Responsive: Current dark Home Header/header.css and approved five-category structure are references. Preserve dark rgba(17,17,17,0.5) glass, logo size, fixed responsive height/offset and flyout behavior. Check390/768/1280/1400/1440/1920 plus short touch viewport, keyboard, native prehydration links and normal-motion opening/font docking. Broader desktop menu may use more horizontal space; validate child bounds rather than document overflow alone.
+
+Input/Output: Existing resolved CMS navigation/settings in; identical approved projected menus for both Header consumers out. No missing content; shared projection keeps existing destinations only.
+
+Acceptance: [x] Home visibly shows5direct category links and approved8-item order on desktop/mobile, no old combined Products/About/Contact top entries; [x] all23children and existing support/software/Services destinations retained; [x] native mobile names navigate while arrows expand; [x] dark theme/Header height/Hero/opening/search/compare/focus and cached navigation remain correct; [x] extracted projection matches prior implementation for default/custom CMS cases and no other navigation output changes; [x] scoped Home/build/unit/static/source-protection checks pass, with broader software limitation explicitly recorded below.
+
+Impact/Rollback: Shared Header/header.css and PrimaryNavigation are explicitly in this correction. Main risks are long-menu overlap and Home opening logo docking after its horizontal target shifts. Keep height and surface hooks unchanged, verify delayed-font/opening behavior, snapshot before edits and revert only this correction's deltas. Evidence: output/home-category-navbar-fix-20261107/.
+
+Current State / Verification: Both Header consumers now share the unchanged pure category projection. Node24 production build437/437, catalog105/105, TypeScript, scoped ESLint/Prettier and whitespace checks pass. Latest results across39distinct browser cases:38pass,1fails on the separate existing software same-page hash/filter synchronization. Home8/8, sitewide12/12, normal-opening6/6, legacy navigation10/10 and accessibility2/3. Software first entry works; moving to another software hash while already on that page changes the URL without selecting its filter. PrimaryNavigation from hydrated-state setup through event handlers/render remains byte-identical to the snapshot, and projection output equals prior implementation in3CMS cases; no software fix or test suppression included. Legacy assertions adapted to current category menus, route-specific Header ownership and existing ProductsOverview server HTML; history checks retained using actual document navigation because local filters replace history. Fully disabled scripting can leave streamed root content hidden; raw server HTML is checked separately, and native Home links pass before hydration with external bundles held. No claim of fully script-disabled interactivity. Header height/glass/position/logo width/Hero top exactly match baseline at390/1280/1440/1920; desktop/mobile screenshots inspected.308protected paths unchanged,7planned existing paths changed plus3planned new source/test files. Preview3000 updated, temporary3005 stopped at delivery; no commit/push/deploy or qualifying verified framework feedback candidate.
+
+## Task: Platforms category overview with latest entrance motion (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ, following the concrete platforms Spec/Plan"
+Progress: "Done — platforms overview and latest motion verified on refreshed preview3000"
+
+### Goal
+
+ปรับ `/products/category/platforms` ให้ใช้รูปแบบหน้าเครื่องชั่งปัจจุบัน แสดงเฉพาะข้อมูล/สินค้าโครงสร้างแท่นชั่ง และใช้แอนิเมชันล่าสุด ตามคำสั่งผู้ใช้ “ต่อไปปรับหน้าโครงสร้างแท่นชั่งให้ใช้รูปแบบเดียวกับหน้าเครื่องชั่งครับ แสดงเฉพาะข้อมูลและสินค้าของหมวดนี้ และใช้แอนิเมชันแบบล่าสุดด้วยครับ”
+
+### Scope In
+
+- เพิ่ม PlatformsOverview ฝั่ง server ใช้ ProductsOverview เดิม พร้อม products ที่อยู่ใน platform productIds จาก getProductCategories เท่านั้น; คงชื่อ รูป ลำดับ featured/lineup รายละเอียดสินค้าและ Mock ตามข้อมูลปัจจุบัน
+- Chapters ใช้4หมวดจาก platformSubcategoryDefinitions ตามลำดับเดิม: เหล็กคาร์บอนพ่นอบสีกันสนิม / สแตนเลส SUS304 / สแตนเลส SUS201 / พลาสติก ABS เหนียวพิเศษ
+- Hero/lineup แสดงเฉพาะสินค้าที่มีอยู่ในหมวดนี้; stories/accordion ใช้ buyingGuides slug platforms ทั้ง4หัวข้อ: พื้นที่เปียก / ขนาดแท่น / พิกัดน้ำหนัก / การเลือกหัวอ่านที่ใช้ร่วมกัน ไม่แต่งรูป สเปก หรือคำโฆษณาใหม่
+- ใช้ข้อมูลบริการจัดส่ง/ปรึกษา/รับประกันที่มีอยู่ตาม pattern scales; ไม่มีบริการรับสอบเทียบ คำแนะนำตั้งค่าในคู่มือไม่ใช่การเสนอบริการ
+- Local finder ล็อก platforms;4child query เปิดหมวดย่อยที่ตรงกัน ปุ่มสินค้าทั้งหมดไป /products?catalog=all ตามเดิม; Navbar parent ยังคงเป็นลิงก์ตรงเข้าหน้า overview
+- Reload policy เหมือน scales/indicators: ไม่เปิด finder อัตโนมัติหลัง document reload และล้าง popup query โดยรักษา unrelated params/นโยบายhashเดิม; intentional controls/fresh child URL/history ยังทำงาน
+- เพิ่ม exact platforms route ใน CatalogRouteFrame เพื่อให้ overview เป็นเจ้าของ Header/Footer/overlay host; เพิ่ม platforms ใน categoryEntrance opt-in เท่านั้น
+- Reuse CSS ล่าสุดโดยไม่เปลี่ยนค่า: heading starts15% opacity, fade800ms, chapter delay180ms/stagger140ms, ribbon3000ms, cubic-bezier(0.4,0,0.2,1), reduced-motion/no-JS guards. ไม่มี animation JS/state/timer/library ใหม่
+
+### Scope Out
+
+ไม่เปลี่ยนหน้าเครื่องชั่ง/อินดิเคเตอร์/Products/อีก2หมวด ไม่ refactor wrappers เดิม ไม่แก้ Navbar/global layout/global styles/CSS timing/data/backend/dependencies. รักษา homepage Header ที่เพิ่งคืนแบบเดิม และการปรับ Hick’s law ของ catalog เช่นข้อมูลจำแนกสินค้า ลำดับ controls คำปุ่มและการคืน focus ของ compare. ไม่ commit/push/deploy หรือเขียน DB
+
+### UI/UX Brand Alignment
+
+- Reference: ScalesOverview/ProductsOverview/CSS module ปัจจุบัน, platform-subcategories.ts และ buying-guides.ts slug platforms, SUNFORD tokens src/styles/base.css
+- Design: ใช้โครงสร้าง Hero/chapter/lineup/services/story/accordion/index/Footer เดิม สีแดงSUNFORD/Typography/ระยะ/ปุ่มเดิม; ไม่มี Essentials ข้ามหมวดตาม pattern category overview
+- Responsive: Chrome390/768/834/1440, touch390x844, keyboard, reduced motion และปิด JavaScript; ตรวจทั้ง document overflow และขอบเขต/การซ้อนกันของ chapter/control เด็กใน parent
+
+### Input / Output
+
+- Input: getProductCategories, platformSubcategoryDefinitions, buyingGuides platforms, current site/navigation settings และภาพสินค้าที่มีอยู่
+- Output: platforms overview พร้อม local catalog/4child filters และ latest entrance; existing original combined catalog/query/data contracts คงเดิม
+
+### Acceptance Criteria
+
+- [x] Section/interaction เหมือน scales และสินค้าที่แสดงทุกจุดเป็นสมาชิก platforms; guide4หัวข้อจากข้อมูลจริง
+- [x] Parent/4child URLs, search/filter/empty/compare/close/Escape/reload/history ทำงานตาม contract ปัจจุบัน และมี visible Header/Footer เพียงชุดเดียวระหว่าง cached navigation
+- [x] Platform all/4child states เท่ากับ baseline ที่เลือก filter แล้ว ทั้งชื่อ/ลำดับ/จำนวน/รูป/ลิงก์/Mock/decision facts; combined catalog และหน้าอื่นคงเดิม
+- [x] Actual latest motion timing/easing เฉพาะ platforms ตรงกับ scales/indicators; reduced motion/no-JS readable, geometryไม่เปลี่ยนจาก motion และบันทึก4xCPU CLS/LCP/remaining animations จริง
+- [x] Static/unit/build และ Browser responsive พร้อม screenshots ผ่าน มี source protection receipts และไม่มี homepage/Header/catalog regression
+
+### Missing Information
+
+ไม่มีสำหรับแผนนี้ ใช้ข้อมูล/ภาพและ interaction ที่มีอยู่ทั้งหมด ไม่สร้างเนื้อหาสินค้าใหม่
+
+### Approval Record
+
+ผู้ใช้ตอบ “อนุมัติ” หลังแสดง concrete Spec/Plan นี้ ครอบคลุม platforms wrapper, exact-route frame, existing latest entrance opt-in และ affected browser assertions ตามรายการใน plan.md
+
+### Current State / Verification
+
+PlatformsOverview now reuses current ProductsOverview with23real products and1existing Mock entry;4material chapters and4platform-guide stories/accordion sections. Exact platforms frame ownership and entrance opt-in added; no motion CSS/global/Homepage/catalog-data changes. ABS remains Mock-only with no invented image. Latest fade800ms/delay180ms/stagger140ms/ribbon3000ms and existing reduced/scripting guards are reused.
+
+Node24 production build437/437 and catalog102/102 pass. Latest passing results cover58distinct browser cases across scoped runs:14motion,7platform,8Hick’s law,29category/navigation; final15/15 on refreshed3000 includes corrected responsive Header test and200%zoom.11selected catalogue states and5unaffected route signatures match baseline exactly. Native touch390x844 passes with357px lineup swipe. Four4xCPU normal/reduced cases have CLS0, unchanged content/geometry, contained chapter controls and no remaining intro animations; lab LCP684–828ms, not field guarantees.303protected paths unchanged; only approved app/test deltas plus documented test-only Hicks adaptation. No commit/push/deploy or qualifying Next.js feedback candidate. Evidence: output/platforms-apple-overview-20261107/delivery.md.
+
+## Task: Restore original homepage Navbar (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved direct correction — owner: nav หน้าแรกปรับกลับเหมือนเดิมครับตอนแรกไม่ใช่สีขาว"
+Progress: "Done — original homepage Navbar verified on refreshed preview3000"
+
+Goal/Scope: Restore the incumbent homepage Header from before f0e9092, including its transparent dark glass over Hero, original navigation, fixed-header offset and existing surface tracking. Route-aware selection uses that unchanged Header only at pathname=/; other public/catalog routes keep PrimaryNavigation. Reuse existing CMS navigation/site/extras. Restore the original surface padding only when that fixed Header is its direct child. Keep all pending Hick–Hyman catalog changes intact. No Hero, global stylesheet, shared Header implementation, routes, product data or dependencies change.
+
+Reference/Plan: Previous SiteHeader wiring in f0e9092^, existing src/components/layout/header.tsx, use-header-surface.ts and src/styles/header.css are the source of truth. Add a small pathname-aware client selector and supply existing CMS props from SiteHeader. This direct restore request authorizes the required header wiring. Impact is limited to choosing the original homepage component; revert these two wiring changes to return to the current shared header.
+
+Acceptance: [x] Homepage has the original dark transparent/fixed Navbar and Hero tracking on mobile/tablet/desktop; [x] search/compare/menu and normal-motion opening remain usable; [x] non-home pages retain the current Navbar, including client back/forward and only one active header; [x] pending catalog changes remain byte-identical, build/static/browser checks pass and preview3000 is refreshed. No missing input or new design decision.
+
+Verification: Node24 normal-environment production build437/437, final TypeScript, scoped ESLint/Prettier and Git whitespace pass. Final affected Chromium22/22 pass across original header/scroll tests390/768/1280/1440, normal-motion opening, pre-hydration content, delayed fonts, shared navigation and cached back/forward. Rendered390/1440 confirm dark glass rgba(17,17,17,0.5), fixed58px Header,58px owning-surface offset and Hero top0. Original Hero/global styles/Header code and prior catalog changes remain unchanged. Initial inspection found the removed offset; restored it conditionally. Two pre-existing Hero-background assertions are aligned to the unchanged black theme from1e2243e. Evidence: output/restore-home-navbar-20261107/delivery.md. No new qualifying Next.js feedback candidate, commit/push or release.
+
+## Task: Hick–Hyman catalog decision clarity (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner goal: เริ่มและทำให้เสร็จตามที่แนะนำอนุมัติ"
+Progress: "Done — verified on rebuilt preview3000"
+
+Goal: Help both known-model and exploratory shoppers choose SUNFORD products with clearer evidence and fewer ambiguous actions, applying the preceding approved six-part proposal to the incumbent design.
+
+Scope In: Preserve the five-category Navbar, grouped links and existing route/query behavior. Label and prioritize the existing model search and category/subcategory browsing; keep narrow-screen search full-width. Add opt-in compact facts to real catalog cards from current public product fields/category membership, without changing other shared-card consumers. Prioritize discovery over the existing featured/comparison/view tools; clarify product-detail and comparison actions. Preserve the three-product comparison cap and four consistent comparison fields; clearly distinguish known textual differences and missing values. No forced wizard, new library, invented specification, backend write or production release.
+
+Brand/Responsive: Current SUNFORD components and src/styles/base.css are the authority: existing red/ink/paper, fonts, 2/3/4-column catalog, card imagery and approved entrance motion. Verify320/390/768/834/1440,200%zoom, keyboard, touch, grid/list, empty/Mock states and nested overlays. Keep Navbar/layout/global styles unchanged; shared catalog-card changes are opt-in. Comparison overlay changes intentionally apply to its existing public consumers.
+
+Data contract: Existing ClientProduct payload already includes capacity/readability/connection; no new DB field or serialized projection. Catalog cards show at most three facts and omit blank/dash placeholders. Weight facts apply only to relevant scale/platform/POS families; do not label external indicator displays with a weighing capacity merely because legacy data contains one. Indicator LCD/LED/waterproof, platform material, POS operating system and accessory type descriptors come only from existing matching subcategory membership. Use existing subtitle as a factual fallback when specifications are absent. Optional card fact props preserve all other consumers. Missing comparison values are not evidence of a product difference. The existing comparison table adds a selected count and a small-screen horizontal-scroll hint. Closing a nested comparison restores focus to its owning finder search, since the existing clear-on-close contract removes the comparison trigger; keep that clearing behavior and the shared Modal unchanged.
+
+Acceptance: [x] Known-model search, category/subcategory discovery and two-product comparison remain direct and usable; [x] verified decision facts and clear hierarchy/labels render without overflow or clipped text; [x] all29catalog states retain products/order/links/Mock membership and all23child destinations remain valid; [x] three-product cap, shared rows, missing-data handling and focus restoration work; [x] static/unit/build/browser checks and source-scope audit pass; [x] baseline/final screenshots and scripted journey receipts delivered. Script timings measure automation only; no claim of human decision-time improvement without a human usability study.
+
+Approval/Information: The user's explicit approval covers the preceding recommendation and these scoped refinements. No missing input is filled with invented product facts. The original stale preview3000 was replaced with a complete Node24 build using the existing normal environment; hydration and finder controls are verified on the refreshed runtime.
+
+Verification: Final Chromium118/118 across nine affected browser files on the exact isolated final app, plus8/8 focused regressions and native touch/keyboard checks on rebuilt preview3000. Catalog102/102, UAT27/27, full lint/formatting, Prisma schema, TypeScript and credential-free/normal-environment437-page builds pass. Both matched-environment before/after pairs preserve all29states/537ordered entries, including image URLs, links and Mock flags; all23child destinations remain valid. Fixture and live data differ in order on two parent states, so these are compared separately. Normal-environment baseline source matches248HEAD files after Git line-ending normalization. At390px, the search input expands168→283px without page overflow. Existing scripts still require1/1/4actions for known-model, waterproof-indicator and two-product-comparison journeys; no human task-time improvement is established. Mechanical layout scan returns[]. Nested-comparison focus loss was reproduced on the baseline and corrected only in CatalogOverlays; the shared Modal/store contracts remain unchanged. Final scope:8app,7test and3project-note files;372protected baseline files unchanged. Evidence: output/hicks-law-20261107/delivery.md. No qualifying new Next.js feedback candidate and no production release.
+
+Impact/Rollback: R2 restore only this task's Git diff from the clean78bbd71 baseline. Preserve routes, memberships, navigation, data, original images and unrelated shared consumers. No automatic commit/push or production publication is part of this task. Evidence: output/hicks-law-20261107/.
+
 ## Task: Review and prepare catalog commits (2026-11-07)
 
 Status: "Ready to Code"
@@ -4271,3 +4838,106 @@ Approval: "Approved — owner explicitly approved the current alignment Spec/Pla
 ### Current State / Verification
 
 Done. CSS-only flex column / auto margin จัดแถวปุ่มลงท้ายการ์ด โดยคงความสูงรูปด้วย flex-shrink:0. Production Node24 build437/437 และ TypeScript ผ่าน; Chrome headless ตรวจ6route/viewport combinations รวม36การ์ด ทุกแถวspread0px ไม่มีtext overlap/document overflow/pageerror และ72action link instancesตรงbaseline. Exact CSS deltaเทียบbefore.cssผ่าน. ภาพ/geometry/build logอยู่ output/lineup-action-alignment/. Preview3000ใช้buildใหม่session40777. ไม่commit/push/deploy; ไม่มีqualifying Next.js feedback candidateจากงานนี้
+
+## Task: SUNFORD floating-scale reference design in Figma (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Authorized by the owner's direct Figma creation request and clarification"
+Progress: "Done — static desktop Figma design; application implementation and motion are future work"
+
+### Goal / Scope / Approval Record
+
+Owner requested: “ช่วยสร้างแบบนี้ให้เหมือนแบบ100%ในหน้าโปรเจก sunford_web ที่ผมเปิดไว้หน่อยครับ” and then clarified: “ทำเป็นเครื่องชั่งของโปรเจกนี้ รูปและฟ้อนเอาแบบโปรเจกนี้เลย เพราะในอนาคตผมจะให้คุณทำ motion and animetion เพิ่มหน้านี้ด้วยครับ”. The approved deliverable is an additive Figma design using the supplied floating-product reference composition with existing SUNFORD product content and fonts. No application-code change, website release, animation or new product facts are included.
+
+### UI/UX Brand Alignment / Inputs
+
+- Reference: owner's 494x301 perspective photograph, adapted according to the explicit SUNFORD clarification. Exact pixel identity is not claimed because content/font differ and source geometry is photographed.
+- Fonts: local TTF name table verifies Noto Sans Thai; Figma Regular/SemiBold are available and used throughout. Colors come from src/styles/base.css and the original SUNFORD logo is reused.
+- Images: existing WPS10KS, ACS-30-JC21 and FEH5KS transparent carousel cutouts in public/images/hero/. Three models repeat across five independent carousel positions.
+- Names/subtitle/capacities: src/features/catalog/data/products.ts; original hero mapping: src/features/home/data/hero-slides.ts. No price invented.
+- Responsive: one desktop frame matching the supplied desktop composition. Mobile/tablet variants and interactive motion remain outside this Figma task.
+
+### Output / Contracts
+
+- File 5fi6F4BqTzMfZTQUkJQ1lc, Page 0:1. New 1440x900 frame 139:241 and separate local-component area 139:242.
+- Native header, copy, selector and progress layers. Five independent orbit-slot frames each contain a product instance and a separate shadow. Three product components plus navigation and selector components retain source images and editable text properties for later motion work.
+- Existing website props/data/routes/contracts remain unchanged. Plan, construction script, final screenshot, delivery and verification are in output/figma-floating-scales-20261109/.
+
+### Acceptance Criteria / Verification
+
+- [x] New reference-based SUNFORD desktop composition created and visually inspected in two rounds; final proportions and active model indicator refined.
+- [x] Native readback: 58 descendants, including 14 frames, 8 rectangles, 14 instances, 17 text nodes and 5 ellipses.
+- [x] Exactly five product instances use the three original uploaded content images; sixth image-filled node is the original logo. No complete-UI raster in the deliverable.
+- [x] All text reads back as Noto Sans Thai Regular/SemiBold; no blank product artwork.
+- [x] All 38 pre-existing top-level nodes retain original names, positions and dimensions.
+- [x] Final preview.png and verification.json retained. No application build/tests run because application source was not changed. Final Next.js reporting review found no qualifying framework issue during this Figma-only task.
+
+### Impact / Rollback / Missing Information
+
+R2: additive Figma work. Remove only frame 139:241 and component area 139:242 to undo. No missing content for the clarified static design; future motion behavior and responsive variants have not been specified or implemented.
+
+## Task: Curved looping scale carousel motion in Figma (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Owner directly requested the motion continuation"
+Progress: "Done — desktop Figma motion/prototype verified"
+
+### Goal / Scope / Approval Record
+
+Owner: “ช่วยเพิ่ม motion และ animation ให้หน้านี้ต่อเลยครับ ให้เครื่องชั่งเลื่อนวนตามแนวโค้ง แล้วขยายรุ่นที่เลือกมาอยู่ตรงกลางเหมือนตัวอย่างครับ”. This authorizes motion on the existing Figma design. It does not request application implementation, new product content or mobile/tablet variants.
+
+### UI/UX / Inputs / Output
+
+Preserve the white composition, original SUNFORD images/logo and Noto Sans Thai from the preceding task. Entry frame139:241 now starts a three-state carousel: WPS10KS, ACS-30-JC21 and FEH5KS. Five visible positions and one off-stage incoming copy make each curved move; artwork and shadows have independent native tracks. The incoming model grows to320px width in the main position. Verified product name/subtitle/capacity, active underline and progress change with it.
+
+Autoplay holds2.4s, moves1.1s, and hands off after50ms; full cycle10.65s. Model-name selectors and visible non-active products navigate through six directional curved transitions. Each trajectory uses25 Catmull-Rom samples with quintic progress easing. Existing Store flows are preserved and a SUNFORD / Curved scales carousel flow is added.
+
+Selected states:139:241 /143:568 /143:627. Transition frames:143:696 /143:2192 /143:3688 /143:5184 /143:6680 /143:8176. Static backup143:509 retains the pre-motion design.
+
+### Acceptance Criteria / Verification
+
+- [x] Three selected states, six directional native transitions and selector routing read back correctly; fonts remain Noto Sans Thai and images remain original source assets.
+- [x] Autoplay graph returns to its entry point after the three model changes.
+- [x] Thirty visible endpoint comparisons match target product images and geometry:0image mismatches,max0.000018px error. Six outgoing copies are completely outside the clipped stage. Incoming paths deviate12.67–13.86px from a straight line and scale to the main size.
+- [x] Native render768x480/10fps produced21frames/2.1s for WPS10KS → ACS-30-JC21. Six samples across start/middle/settle were visually inspected. This preview is one transition; the full interactive loop lives in Figma.
+- [x] Figma Present showed autoplay and all three selected-model states. Actual WPS→ACS and WPS→FEH selector clicks reached the correct motion frames. A browser resize offset cleared on reload; final prototype loaded and its tab was retained.
+- [x] All39 unrelated pre-existing top-level nodes retain original names/geometry; both original store flows are preserved.
+
+### Contracts / Impact / Rollback / Missing Information
+
+Figma-only R2 change. Application routes, components, data and dependencies are unchanged; application tests/build were not run. Plan, construction script, native MP4 preview, frame samples, delivery and verification are in output/figma-floating-scales-motion-20261109/. Remove the new flow/motion frames and restore entry-frame contents from backup143:509 to undo. No missing information for this motion scope. The earlier static-only restriction is superseded by this explicit motion request; responsive variants and website implementation remain future work. Final Next.js reporting review found no qualifying framework issue.
+
+## Task: Selected-product detail preview from the curved carousel (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Owner directly requested the selected-product reference view"
+Progress: "Done — desktop Figma detail views and navigation verified"
+
+### Goal / Approval / Scope
+
+Owner: “ต่อไปเมื่อกดคลิกเลือกสินค้าสักตัวต้องขึ้นแบบนี้”, with a reference showing a large product on the left, information/action on the right and thumbnail/return controls below. Continue the confirmed SUNFORD adaptation in Figma. This request supersedes product-image clicks selecting within the curve: image clicks now open that product detail; model-name selectors retain the existing curved-selection behavior.
+
+### UI/UX / Inputs / Output
+
+Three native1440x900 detail frames reuse the original SUNFORD logo/product-artwork components and Noto Sans Thai:154:430 WPS10KS,154:487 ACS-30-JC21,154:544 FEH5KS. Component area154:417 contains source-image thumbnail cells and the return control, using the original arrow vector.
+
+The reference's shoe-size cells are adapted to read-only capacity/readability facts from src/features/catalog/data/products.ts, with the existing connection information. No price or unsupported product variant is invented. The inquiry action uses the existing project LINE URL; full-details links use product-sources.ts URLs. External destinations were checked in native reactions, not opened or messaged during QA.
+
+### Navigation Contract
+
+- All51 product-artwork instances across3 steady and6 motion frames open the matching model detail, including the currently centered product.
+- The3 steady-state top detail actions also open that active model detail.
+- Detail screens have no autoplay timer. Thumbnails switch between the3 model details; return control/text opens the corresponding centered carousel state and its existing autoplay resumes.
+- All prior model-name selector reactions, native motion tracks, frame timers and existing prototype flows remain intact. A separate Selected product preview flow is added.
+
+### Acceptance Criteria / Verification
+
+- [x] All3 complete screenshots visually inspected, with large front-facing scale imagery, right-side information/action and lower thumbnail/return controls.
+- [x] Each frame reads back54 native descendants:15 frames,5 rectangles,14 instances,18 editable texts,1 ellipse and1 vector. Five image fills per frame are the logo/main product/three content thumbnails; fonts are Noto Sans Thai Regular/SemiBold.
+- [x] All51 product routes,6 non-active thumbnail routes,3 return routes and stored inquiry/source URLs match their expected models.
+- [x] Existing108 animated-node track fingerprints,27 model-selector reactions and9 timers match baseline. All49 original top-level names/positions/dimensions and3 previous flows are preserved.
+- [x] Actual Figma Present test: center WPS image opens154:430; ACS thumbnail opens154:487; return control reaches centered ACS143:568. Final WPS detail was left visibly loaded and its tab retained. A viewport-offset coordinate miss cleared after a centered reload; a transient browser wait timeout was followed by confirmed loaded content. No design workaround was required.
+
+### Impact / Rollback / Current State
+
+Figma-only R2 work. Plan, construction script, three preview PNGs, delivery and verification are in output/figma-carousel-selected-detail-20261109/. verification.json includes the54 original modified reactions for rollback. Restore those reactions, remove the3 detail frames/component area and the added preview flow to undo. No required content is missing for this scope. Website implementation, mobile/tablet variants, application data/dependencies and deployment are outside this task. No application tests/build run because application source was not changed; final Next.js reporting review found no qualifying framework issue.

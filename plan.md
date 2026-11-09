@@ -1,3 +1,270 @@
+# Plan: Group existing changes, commit and push UAT (2026-11-09)
+
+Authorized directly by the owner's commit/push instruction. Existing application changes only; no application edits planned.
+
+## Files / Groups
+
+- Existing modified/new navigation, category-destination, Header, Footer, homepage navigation sources and their tests — navigation commit.
+- Existing modified/new catalog components, category route, decision facts and catalog tests — catalog commit.
+- `src/features/home/components/section-two-video.tsx`, `tests/e2e/section-two-video.spec.ts` — homepage video commit.
+- Existing modified/new solutions overview components and solutions tests — solutions commit.
+- `spec.md`, `plan.md`, `MEMORY.md` — accumulated project notes and current verification; normalize documentation formatting if needed.
+
+## Steps
+
+- [x] Inspect changes, instructions and remote branch; group related files with tests.
+- [x] Run format, lint, typecheck and catalog unit checks; inspect staged groups.
+- [x] Create grouped implementation commits and push `uat` to `origin/uat`.
+- [x] Confirm implementation remote revision; only the3project documentation files remain for the final documentation commit.
+
+## Impact / Rollback
+
+Publishes existing changes to UAT. Production release remains a separate command. Use revert commits if rollback is required; preserve local source and artifacts.
+
+## Verification Results
+
+Full format check, ESLint, TypeScript and catalog unit tests110/110 pass; git diff --check passes after removing the extra EOF blank in spec.md. Four implementation commits77a5620,6a9679c,888dce2,dbf80ae are published; git ls-remote confirms dbf80ae4d803a10da221dd9b6a4ccf935b75b5ff. Final documentation commit and its remote/clean-tree confirmation follow, reported in chat. No build/browser rerun or production release in this Git-only task. Existing verification evidence and limitations retained; no new Next.js feedback candidate.
+
+---
+
+# Plan: Separate-page architecture proposal and review wireframe (2026-11-09)
+
+Scope: owner directly requested advice/simple review wireframes; no application changes authorized by the prototype.
+
+## Files
+
+- Thread visualization directory `sunford-page-wireframes.html` — inline interactive proposal, local state only
+- `output/site-section-wireframes-20261109/` — proposal, preview wrapper, browser evidence and protected hashes
+- `spec.md`, `plan.md` — proposed contracts and actual validation, explicitly separated from implemented routes
+
+## Steps / Results
+
+- [x] Read applicable visualization/mockup workflow and current instructions/spec/memory; use current menu labels/known emptyiOS without inventing product details
+- [x] Recommend page hierarchy, shared detail records, shortcuts and staged industrial pilot; create clickable gray wireframes with SUNFORD accents
+- [x] Check22available children, core business/software/service/product-return paths and8theme/width combinations; inspect desktop/mobile screenshots
+- [x] Confirm340protected app/test/config/lockfiles unchanged; record proposal and delivery. No source/build/server/DB/dependency/deployment change; no Next framework feedback candidate
+
+## Impact / Rollback
+
+R2 artifact-only work. Proposed URLs and layout templates are not live routes. Remove only this draft and task notes to undo. No implementation approval inferred.
+
+---
+
+# Plan: Correct category links from Home, Solutions and guides (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Owner's direct current link-repair instruction, following verified menu audit"
+
+## Files
+
+- `src/features/catalog/data/category-destinations.ts` — create small explicit legacy-to-current href map; leave unknown/external/product-detail/all-products hrefs unchanged
+- `src/features/home/data/link-targets.ts` — normalize valid configured/default category destinations only; preserve disabled/deleted/product selection and security checks
+- `src/features/content/components/solutions-overview.tsx` — normalize existing business-group hrefs without changing rendered structure/labels
+- `src/features/cms/data/primary-navigation.ts` — normalize final existing link projections so related/Solutions columns share corrected destinations; no menu/UI changes
+- `src/features/content/data/buying-guides.ts` — replace guide return/body category hrefs with existing current parent/exact-subcategory destinations; preserve content and IDs
+- `src/components/layout/footer.tsx` — correct only3hardcoded category hrefs visible on Home/Solutions/guides (scales, accessories, POS). The owner's direct request covers these category links too; preserve shared Footer markup/styles/content. Impact: same destinations on other consumers of this Footer. Snapshot/revert only3href replacements.
+- `tests/catalog/category-destinations.test.ts` — add focused normalization, CMS/default projection, Home safety/product targets and guide destination regression checks
+- `tests/e2e/category-destinations.spec.ts` — add desktop/mobile source-to-destination click coverage and unchanged controls/structure
+- `tests/e2e/solutions-overview.spec.ts`, `tests/e2e/sitewide-navigation.spec.ts`, `tests/e2e/pos-overview.spec.ts` — update expected hrefs only to corrected contract
+- `tests/catalog/management.test.ts` — update the one expected Home default category destination; retain its product/deleted-target/security coverage
+- `spec.md`, `plan.md` — current approval/contracts/results; `output/category-link-destinations-20261109/` — snapshots, parity/build/browser evidence and delivery
+- `node_modules/@prisma/client/`, `node_modules/pg/`, `node_modules/sanitize-html/node_modules/postcss/` — environment recovery only if verified empty: restore exact locked7.10.1/8.23.1/8.5.31 archive contents with integrity checks; no package version/manifest changes
+
+## Steps
+
+- [x] Confirm direct authorization, existing routes/child definitions, source links and local Next Link documentation; inspect existing CSS/tokens read-only
+- [x] Snapshot current source and configured preview at390/1440; preserve concurrent changes
+- [x] Implement only href resolution and explicit guide target corrections in listed files
+- [x] Run catalog unit suite, scoped static checks and production build without replacing a live build
+- [x] Verify Home/Nav/Solutions/guide clicks at390/1440, exact child filtering and parent pages; compare content/structure/geometry and all protected styles/motion sources
+- [x] Refresh main preview safely, record final checks and deliver without release
+
+## Impact / Rollback
+
+R2 link-only delta. Existing Navbar projections' hrefs change consistently, while their labels/order/columns and shared UI files remain unchanged. Do not change homepage preview buttons or source data used to select their product belts. No inferred material/function subgroup where the current Navbar has no exact equivalent. Rollback only task deltas from snapshots; preserve existing uncommitted work. Keep the old preview build until final verification. No software filter fix, new guide anchor behavior, legacy-route-wide redirect changes, dependency or database writes.
+
+## Verification Results
+
+Done. Owner's direct request covers this narrowly scoped href correction, including3Footer hrefs on the named surfaces; no additional permission needed. Final configured Node24build437/437, TypeScript/scoped ESLint/Prettier pass. Catalog110/110; Chromium37/37 (new6, POS7, sitewide12, Solutions12).24route/width content/image/geometry/static-structure signatures equal and link labels/order retained; one transient mobile chapter arrow differed due baseline hydration timing and was explicitly normalized, with raw evidence retained.328protected files unchanged;9planned existing deltas plus3new app/test files. Guide data href-only; Footer exact3href replacements. Main preview3000session40917 runs final build; old build archived safely. Three verified-empty dependency directories restored from exact locked/integrity-checked archives without version/manifest changes. Initial typecheck/archive race corrected by final sequential rerun. Scoped whitespace checks pass; full check flags only unrelated concurrent Figma spec EOF blank, preserved. No new qualifying Next feedback candidate; no release. Delivery and evidence: output/category-link-destinations-20261109/delivery.md.
+
+---
+
+# Plan: Replace homepage section-two video with showroom tour (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ"
+
+## Files
+
+- `src/features/home/components/section-two-video.tsx` — replace embed/poster ID with UF7QJSq4Qw4 and the verified video series/title; preserve heading/layout/player behavior
+- `tests/e2e/section-two-video.spec.ts` — update expected embed ID only, preserving responsive/keyboard/no-JS assertions
+- `MEMORY.md` — required reusable diagnostic note: distinguish streamed hidden ancestors from a media-only regression in no-JavaScript checks
+- `spec.md`, `plan.md` — approval, superseded clip contract and actual verification
+- `output/home-section-two-showroom-video-20261107/` — ignored source/geometry snapshots, metadata receipt, browser screenshots/logs and delivery
+
+## Steps
+
+- [x] Identify exact section from screenshot; inspect component/CSS/existing tests and verify supplied YouTube metadata/thumbnail
+- [x] Obtain approval for this concrete replacement Spec/Plan before application edits — owner: “อนุมัติ”
+- [x] Snapshot component/test and geometry; read relevant installed Next.js guidance, then replace only clip IDs/title and test expectation
+- [x] Run scoped Prettier/ESLint and Node24 project build including TypeScript; use isolated QA output without competing with concurrent preview/build work
+- [x] Run existing section-two-video tests, check new thumbnail/accessible title and iframe source, click/Enter/fullscreen/no-JS preview and1440/768/390/320px geometry; inspect screenshots — normal-JS passes; original no-JS failure retained and diagnosed
+- [x] Audit exact source delta and preserve unrelated Navbar/accessories work; update preview and actual results, without commit/push/deploy
+
+## Impact / Rollback
+
+R2. One homepage component and its focused existing regression test; no shared styles/layout/data changes. Preserve section id and heading so existing anchors remain valid. Snapshot and restore only this task's ID/title delta. YouTube availability is external; report actual player/network verification limits without changing the player design.
+
+## Verification Results
+
+Implemented after explicit approval. Exactly3component replacements (video ID twice and title) and1test expected-ID replacement verified. Scoped Prettier/ESLint pass; isolated Node24 bun run build437/437 including TypeScript. QA uses the existing configured data environment in process without copying environment files. QA3008 and final3000 each match all4baseline section/heading/poster rectangles, text/colors and overflow at1440/768/390/320; actual1280x720 poster loads, no iframe before interaction, Enter/click create correct new iframe/title/fullscreen/referrerPolicy, shop link retained. Screenshots inspected. Existing suite:1pass/1fail on stable unchanged baseline3009, candidate3008 and final3000. The no-JS test fails because its heading/poster exist under a hidden display:none ancestor; final diagnostic confirms HTTP200, heading1, poster1, iframe0. This pre-existing whole-page visibility issue was not fixed or suppressed in a video-only task. It is a verified recurring framework-feedback candidate; reporting instructions were read for one anonymized review draft before final delivery. All214current app-source files match the built QA snapshot before promotion, preserving completed accessories work. Guarded promotion archives previous build and retains0.0.0.0:3000; final preview session96526, QA3008 stopped. No commit/push/deploy. Evidence: output/home-section-two-showroom-video-20261107/delivery.md.
+
+# Plan: Link homepage shopping bag to SUNFORD shop (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Authorized direct follow-up — owner supplies shop URL and requests linking this icon"
+
+## Files
+
+- `src/components/layout/header.tsx` — replace the bag button with a native shop link, update accessible label/Tooltip, remove that button's unused comparison subscriptions/state/count; retain SVG/CSS/layout
+- `tests/e2e/home-category-navigation.spec.ts` — include the new shop anchor alongside buttons in the existing geometry regression; preserve every previous rectangle comparison
+- `spec.md`, `plan.md` — follow-up authorization, superseded action contract and actual results
+- `output/home-shopping-bag-shop-link-20261107/` — Header snapshot, before/after geometry/screenshots, browser/static receipts and previous preview build
+
+## Steps
+
+- [x] Read current contracts/styles/Tooltip, installed Next.js Link guidance and supplied URL; record explicit follow-up authorization
+- [x] Snapshot Header and Home/scales geometry; change only approved Header markup/subscriptions
+- [x] Run scoped Prettier/ESLint; use project build command on Node24 (includes TypeScript) and preserve previous local build for rollback
+- [x] Refresh preview3000 and verify native href/label, click/Enter navigation, no comparison activation, Home390/768/834/1440 geometry/colors/overflow and unchanged scales comparison control; inspect screenshots
+- [x] Run the existing8width Home Navbar geometry regressions with the semantic link included in their control selection
+- [x] Update actual verification and deliver without commit/push/deploy
+
+## Impact / Rollback
+
+R2. Only Home's bag changes function; other-page comparison remains. Shared .icon-button styles already support anchors, so no CSS edit. The new direct owner instruction supersedes the earlier bag's retained compare action. Snapshot and restore only this delta; keep prior navigation/POS edits. Local preview can restart from its archived build if the build fails.
+
+## Verification Results
+
+Passed. Native same-tab shop anchor has the supplied href and correct accessible name/Tooltip, no compare state or badge. Exact Header transform preserves SVG and all unrelated markup. Prettier/ESLint pass for Header/test; Node24 bun run build437/437 including TypeScript. Final3000 Chrome8Home/scales route/width comparisons retain exact geometry/color/stroke/SVG with no overflow;3native clicks plus keyboard Enter navigate to the exact shop URL in the same tab. Destination document interception makes navigation deterministic; no checkout behavior was tested or changed. Other-page scales compare still opens its finder/bar. Existing8geometry regressions pass at390–1920; only their selector includes the new anchor. Screenshots inspected. Previous preview build retained, preview3000session85819 refreshed with original0.0.0.0 binding. No release or qualifying verified framework feedback issue. Evidence: output/home-shopping-bag-shop-link-20261107/delivery.md.
+
+# Plan: Homepage shopping bag icon (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ"
+
+## Files
+
+- `src/components/layout/header.tsx` — ลบ import GitCompareArrows และแทน SVG ของปุ่มเดิมด้วยกระเป๋า outline ตามภาพ; คงขนาด/handlers/labels/count และ pending edits เดิม. ใช้ inline SVG แทน ShoppingBag1.61.0 ที่มีทรงต่างจากภาพ โดยไม่ขยายขอบเขตไฟล์หรือพฤติกรรม
+- `spec.md`, `plan.md` — เพิ่มเฉพาะหัวข้องานนี้ บันทึก approval จริงและผลตรวจ
+- `output/home-shopping-bag-icon-20261107/` — ignored evidence: source snapshot, screenshots และผลตรวจ; ไม่สร้าง test file สำหรับการเปลี่ยนไอคอนสองจุด
+
+## Steps
+
+- [x] ตรวจภาพ, Header consumer, current CSS/tokens, package/lockfile และ ShoppingBag export ที่ติดตั้งอยู่
+- [x] รับอนุมัติ Spec/Plan นี้ก่อนแก้ไฟล์แอปตาม AGENTS.md — ผู้ใช้: “อนุมัติ”
+- [x] Snapshot header.tsx และข้อมูล geometry ที่ใช้เทียบ; อ่าน installed Next.js client-component guide ก่อนแก้
+- [x] ลบ GitCompareArrows import และแทน SVG ด้วยกระเป๋าตามภาพเฉพาะ header.tsx
+- [x] ตรวจ scoped Prettier/ESLint และ typecheck; ตรวจ diff ว่าคง pending edits และเปลี่ยนแอปเพียงสองจุด
+- [x] ใช้ isolated preview ตรวจ Home390/768/834/1440: รูปกระเป๋า สี/ขนาด/ตำแหน่งเดิม จำนวนสินค้า และปุ่มเปิดเปรียบเทียบ; ตรวจหน้า scales ว่าไอคอนเดิมไม่เปลี่ยน; เก็บและดู screenshots จริง
+- [x] อัปเดต local preview3000 ด้วยคำสั่ง build ของโปรเจกต์หลัง isolated checks ผ่าน; เก็บ build เดิมให้ย้อนกลับได้และตรวจ runtime ใหม่ก่อนหยุด QA3008
+- [x] อัปเดตผลตรวจใน spec.md/plan.md และส่งมอบ โดยไม่ release
+
+## Impact / Rollback
+
+R2: header.tsx เป็นไฟล์ส่วนกลางที่มี pending navigation edits อยู่แล้ว แต่ SiteNavigation ใช้ Header เฉพาะหน้าแรก. ความเสี่ยงจำกัดที่รูป SVG/การ import; คง CSS, state, action, accessibility label, Tooltip และ layout เดิม. ย้อนเฉพาะสองจุดของงานนี้จาก snapshot โดยไม่คืนทั้งไฟล์ทับงานก่อนหน้า. PrimaryNavigation และหน้าอื่นไม่แก้.
+
+## Verification Results
+
+Done after explicit approval. Inline SVG matches the supplied top-handle reference; installed ShoppingBag1.61.0 has a different folded-bag shape, so the implementation stays within the approved one-file/two-location scope with no dependency change. Scoped Prettier/ESLint pass. Node24 isolated production build and actual bun run build both437/437 including TypeScript. QA3008 and final3000 Chrome checks each pass8route/width comparisons, exact geometry/color/stroke/other-page SVG parity,4Home compare start/cancel interactions and actual selected-product badge1/clear behavior. Desktop/mobile screenshots inspected. Initial evidence-only close selector assumed the generic Modal label; corrected to the actual finder label and reran successfully without application changes. Exact Header transform verified;350baseline hashes checked, only Header changes in src,3concurrent POS/navigation test changes retained. Original preview build archived before refreshing3000 with0.0.0.0 binding; QA3008 stopped. No release or qualifying verified framework feedback candidate. Receipts: output/home-shopping-bag-icon-20261107/delivery.md.
+
+# Plan: Restore original homepage Navbar (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved direct restoration request"
+
+## Files
+
+- `src/features/cms/components/site-navigation.tsx` — create pathname-aware selection between the existing homepage Header and current PrimaryNavigation
+- `src/features/cms/components/site-header.tsx` — pass existing CMS navigation/site/extras into the selector
+- `src/components/layout/site-background.module.css` — restore original fixed-header offset only on the surface containing the restored Header; leave all other route surfaces unchanged
+- `tests/e2e/sitewide-navigation.spec.ts` — assert the restored homepage header, retain five-category tests on other public routes
+- `tests/e2e/products-full-overview.spec.ts` — preserve cached-navigation checks with the appropriate active header and owning surface for each route
+- `tests/e2e/nonblocking-opening.spec.ts` — align the existing Hero background assertion with the unchanged black homepage theme from1e2243e; retain pre-hydration content/link/scroll checks
+- `spec.md`, `plan.md` — approval, scope and verification; `MEMORY.md` — record the verified homepage Hero/header preservation lesson
+- `output/restore-home-navbar-20261107/` — ignored initial hashes, screenshots, logs and delivery receipt
+
+## Steps
+
+- [x] Inspect current/previous header wiring, original Hero contracts, source tokens and user authorization
+- [x] Reuse original homepage Header through route-aware CMS wiring; preserve other pages and pending catalog work
+- [x] Align affected regression expectations without weakening interaction/history checks
+- [x] Run scoped lint/formatting, production build, original homepage header/opening tests and relevant shared-navigation regressions
+- [x] Refresh preview3000; verify mobile/desktop screenshots and protected source hashes; update project notes
+
+## Impact / Rollback
+
+Homepage-only component selection and conditional surface padding restore its original navigation/tone/geometry. Other routes retain PrimaryNavigation and their current spacing. Header/global CSS/Hero implementations stay untouched. The scoped surface rule is necessary because f0e9092 removed the original fixed-header offset; risk is homepage vertical positioning, verified at390/768/1280/1440 and through cached navigation. Roll back only this task's selector, server wiring and conditional padding, preserving prior pending work. No commit/push, deployment or DB write.
+
+## Verification Results
+
+Node24 build437/437, final TypeScript, scoped ESLint/Prettier and Git whitespace pass. Chromium22/22 pass in browser-verified.log: original header/scroll390/768/1280/1440, cold normal-motion logo, pre-hydration/native links, delayed fonts, non-home five-category menus and cached navigation/back/forward. Final390/1440 screenshots show original fixed dark glass,58px offset and Hero top0; other route surfaces retain current spacing. Original Header/Hero/global CSS and pending Hick–Hyman changes are preserved by hash audit.
+
+Initial restored-header inspection exposed the previously removed fixed offset; the scoped surface rule fixes it. Two old pre-hydration tests expected Hero#111 despite the unchanged homepage theme from1e2243e overriding it to#000; only that literal is aligned, keeping visibility/link/scroll assertions. Initial failures and final passing evidence are retained. Project MEMORY records the route-specific integration lesson. Preview3000 remains available. No qualifying new Next.js feedback candidate or publication. Delivery: output/restore-home-navbar-20261107/delivery.md.
+
+---
+
+# Plan: Hick–Hyman catalog decision clarity (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner goal: เริ่มและทำให้เสร็จตามที่แนะนำอนุมัติ"
+
+## Files
+
+- `src/features/catalog/data/catalog-decision-facts.ts` — create pure verified card-fact and comparison-row derivation
+- `src/features/catalog/components/catalog-product-card.tsx` — optional decision facts for catalog consumers only
+- `src/features/catalog/components/product-browser.module.css` — opt-in fact wrapping and catalog comparison hit area
+- `src/features/catalog/components/product-category-mock.tsx` — use existing ClientProduct fields; visible search/browse labels, tool grouping and explicit comparison action
+- `src/features/catalog/components/product-category-mock.module.css` — primary/secondary hierarchy and full-width narrow-screen search
+- `src/features/catalog/components/catalog-overlays.tsx` — consistent comparison terminology, known differences, missing-value presentation and scoped nested-finder focus restoration after the original trigger is cleared
+- `src/features/catalog/components/catalog-overlays.module.css` — create scoped comparison refinement without editing global styles
+- `src/features/catalog/components/products-overview.tsx` — clarify existing product-detail and comparison actions
+- `src/features/catalog/components/products-overview.module.css` — only if the longer approved product CTA requires wrapping/spacing to preserve responsive action rows
+- `tests/catalog/catalog-decision-facts.test.ts` — meaningful derivation/missing-data/category tests
+- `tests/e2e/hicks-law-catalog.spec.ts` — create focused responsive, decision-evidence and journey regressions
+- `tests/e2e/product-category-mock.spec.ts`, `tests/e2e/scales-overview.spec.ts` — align affected comparison action names while preserving existing behavioral assertions
+- `tests/e2e/product-category-pages.spec.ts` — align the category-history regression's existing comparison-button name with the approved action label; no behavioral assertion changes
+- `tests/e2e/products-full-overview.spec.ts`, `tests/e2e/indicators-overview.spec.ts`, `tests/e2e/catalog.spec.ts` — only affected product-action/comparison copy assertions if required
+- `spec.md`, `plan.md` — scope, actual approval, contract and evidence; `MEMORY.md` only for a verified repeatable operational lesson
+- `output/hicks-law-20261107/` — ignored baseline/final signatures, scripted journey timings, screenshots and delivery report; isolated QA copies remain outside the source tree
+
+## Steps
+
+- [x] Read current source, project state, tokens and applicable skills; verify clean78bbd71 baseline and actual field availability
+- [x] Record explicit approval and scoped Spec/Plan; independent layout assessment completed
+- [x] Verify a complete credential-free isolated baseline with matching source and independent generated Prisma source; capture29state catalog signatures and three representative journeys
+- [x] Implement all approved clarity refinements using incumbent components and verified data
+- [x] Run focused derivation tests/static checks and isolated production build
+- [x] Batch desktop/mobile/zoom/keyboard/touch inspection and journey/data parity checks; run the mechanical detector once after layout implementation
+- [x] Correct observed defects and stale copy assertions; run final affected browser regressions
+- [x] Refresh a verified working preview; update acceptance evidence and deliver
+
+## Impact / Rollback
+
+Five-category Navbar, data, route contracts and stack remain untouched. Shared card facts are optional and affect only opted-in catalog cards; the existing shared comparison overlay receives consistent copy/row treatment. Keep44px targets and the existing maximum of three selections. No added persistence, wizard, global style edits, migrations or release. Revert only this task's diff if required.
+
+## Verification Results
+
+Final Chromium118/118 across all nine affected browser files passes against the final isolated build (browser-verified.log). Rebuilt normal-environment preview3000 passes8/8 focused cases, native touch comparison scrolling182px and keyboard focus checks390/1440, with no page errors. Catalog102/102, UAT27/27, full ESLint/Prettier, schema validation, final TypeScript and credential-free/normal-environment production builds437/437 pass. Compare29states/537ordered entries exactly, including product links, image URLs, Mock membership and order; all23child destinations remain valid. Search input168→283px at390px; tested320/390/768/834/1440 and wider layouts,200%zoom, grid/list, missing/Mock/empty states, history/reload and nested overlays.
+
+Independent source/rendered assessment preceded the changes; one layout detector run returned[]. Observed refinement batch adds verified material/type facts and a mobile table-scroll cue. Additional keyboard testing reproduced baseline focus loss when clear-on-close removes the comparison trigger; the scoped overlay now restores its owning finder search, leaving shared Modal and store behavior unchanged. Existing keyboard tooltips consume the first Escape, and the check now verifies each dismissal layer. One combined run failed only on a stale comparison-button name in product-category-pages.spec.ts; that assertion is aligned without weakening behavior. Initial evidence and final passing receipts are retained.
+
+Application changes are confined to8scoped catalog files; original Navbar, routes, assets, dependencies, global styles and shared UI remain unchanged. Project MEMORY records the repeatable layered-dismissal/focus verification lesson. No human study has been performed, so scripted elapsed times and unchanged1/1/4action counts do not establish a human usability gain. Final scope audit, screenshots and delivery report are in output/hicks-law-20261107/. No qualifying new Next.js feedback candidate; no commit/push or production release performed.
+
+Supplementary normal-environment parity also passes29states/537ordered entries against a rebuilt pre-change baseline, whose248source/config files matchHEAD after Git line-ending normalization. Fixture and database order differ in two parent states; compare within each environment rather than treating that data difference as a UI regression. Both before/after pairs now have separate JSON/screenshot receipts. Final scope is18files:8app,7tests,3project notes;372protected files remain byte-identical. Preview3000 stays available; temporary QA servers are stopped after verification.
+
+---
+
 # Plan: Review and prepare catalog commits (2026-11-07)
 
 Status: "Ready to Code"
@@ -2780,3 +3047,241 @@ Files: `src/features/catalog/components/products-overview.module.css` — timing
 - [x] Refresh preview3000, update actual results and deliver; no release
 
 R2: only timing/easing within existing media/route scope. Restore this delta from snapshot without overwriting other work. No layout/data/library/JS changes. Verified Node24build437/437 inclTypeScript, scoped lint/formatter, Chrome10/10 and four4xCPU comparisons. Content/geometry exact, CLS0, remaining intro0; final LCP816/688/604/596ms. Timing/easing CSS delta verified;304protected files unchanged. Desktop intermediate screenshot inspected. Preview3000session99404; no release or qualifying framework feedback candidate.
+
+# Plan: Platforms category overview with latest entrance motion (2026-11-07)
+
+## Files
+
+- `src/features/catalog/components/platforms-overview.tsx` — create server wrapper for platforms-only products and existing platforms guide/service content
+- `src/app/(site)/products/category/[category]/page.tsx` — select wrapper only for platforms; preserve static params/metadata/404 and other routes
+- `src/features/catalog/components/catalog-route-frame.tsx` — add exact platforms overview route for existing chrome/overlay-host ownership
+- `src/features/catalog/components/products-overview.tsx` — add platforms to existing categoryEntrance opt-in only; no new animation mechanism
+- `tests/e2e/platforms-overview.spec.ts` — new category ownership/4chapters/guide/local finder/reload/cache/responsive coverage using current catalogue labels
+- `tests/e2e/product-category-pages.spec.ts`, `tests/e2e/sitewide-navigation.spec.ts`, `tests/e2e/catalog-subcategory-navigation.spec.ts` — adapt platforms local-finder heading/locator expectations while keeping all catalogue/23child assertions
+- `tests/e2e/hicks-law-catalog.spec.ts` — open the approved new platforms local finder before existing narrow-search/zoom geometry assertions; retain the search/facts assertions themselves. Required test-only adaptation, no application scope expansion
+- `tests/e2e/category-intro-motion.spec.ts` — include platforms with4chapters in existing latest-timing/reduced/no-JS motion cases
+- `spec.md`, `plan.md` — approval, contracts, checklist and actual verification
+- `output/platforms-apple-overview-20261107/` — source/hash snapshots, selected-filter catalogue baseline, final browser/performance screenshots/logs/delivery
+
+## Steps
+
+- [x] Read current project instructions/memory, live source contracts, brand tokens, platform models/guide and installed Next.js page guidance
+- [x] Obtain approval for this concrete new-category Spec/Plan before editing application files
+- [x] Snapshot scoped/protected files; capture platforms all/4selected-child states and unaffected route signatures on the current verified preview, waiting for actual filter selection
+- [x] Add scoped wrapper/route/frame/entrance opt-in, retaining existing page/data/control/CSS contracts
+- [x] Adapt affected browser expectations and add platform-specific coverage without dropping catalogue membership, focus or history checks
+- [x] Run scoped formatter/ESLint/typecheck/catalog units/Node24 production build
+- [x] Browser:390/768/834/1440, touch, keyboard, popup/search/compare/reload/history/cache, latest motion/reduced/no-JS; inspect screenshots and control bounds
+- [x] Verify baseline catalogue parity, original Products/scales/indicators/POS/accessories and homepage Header preservation; record4xCPU motion observations and protected-source audit
+- [x] Update docs/evidence/preview3000; deliver actual results/limitations without release
+
+## Impact / Rollback
+
+R2. CatalogRouteFrame and ProductsOverview are shared feature components; add exact platforms selection/opt-in only. Main regression risk is duplicate active chrome or wrong overlay host during cached navigation; verify actual active Header/Footer and nested compare/search/focus. Preserve all current Hick’s law catalogue work and homepage Header, global files, wrappers and motion CSS byte-for-byte. Restore only task deltas from source snapshots; no database/dependency/global styling changes or release.
+
+## Verification Results
+
+Completed after explicit approval. Node24build437/437, catalog102/102, final TypeScript/scoped ESLint/formatter/whitespace pass.58distinct cases have latest passing results (browser-summary.json); final platform/Hicks15/15 pass on3000. Initial regression failures were old inline-catalog assumptions and a new Header test using1280px while asserting the1440px58px breakpoint; assertions corrected using current source, without changing application Header/CSS.11catalogue states and5unaffected main signatures exact. Native touch357px and4xCPU fourcase CLS0/geometry/content/child bounds/animation cleanup pass; snapshots inspected.303protected paths unchanged;8existing planned source/test files changed and2planned files created, including the documented Hicks test-only addition. Preview3000session49155 preserves existing0.0.0.0 binding; its initial conservative restart guard was updated only after verifying the actual project executable/hostname arguments. Temporary3006 stopped. No release or qualifying framework feedback candidate.
+
+# Plan: Restore five category menus on the dark homepage Header (2026-11-07)
+
+## Files
+
+- `src/features/cms/data/primary-navigation.ts` — create pure helper by moving existing PrimaryNavigation projection/constants unchanged
+- `src/components/layout/primary-navigation.tsx` — consume helper; all current behavior/data preserved
+- `src/components/layout/header.tsx` — consume helper, correct category column caption, expose native category links and separate mobile disclosure, preserve surface/Hero/header behavior
+- `src/styles/header.css` — scoped expanded desktop menu spacing and separate mobile category row/link/disclosure dimensions; preserve color/height/blur/animation rules
+- `tests/catalog/primary-navigation.test.ts` — approved order/23children/Services/CMS preservation tests
+- `tests/e2e/home-category-navigation.spec.ts` — desktop/mobile5parents/23children/Services/theme/bounds/native-link verification
+- `tests/e2e/navigation.spec.ts`, `tests/e2e/navigation-accessibility.spec.ts` — adapt affected legacy Header assertions to approved category structure while retaining catalog/software/history/keyboard checks
+- `tests/e2e/nonblocking-opening.spec.ts` — retain consultation-during-opening coverage and assert the current contact-page PrimaryNavigation ownership instead of the obsolete legacy Header selector
+- `spec.md`, `plan.md`, `MEMORY.md` — record correction, verification and reusable theme-versus-menu integration safeguard
+- `output/home-category-navbar-fix-20261107/` — snapshots/hashes/old-projection equality/actual browser images/static logs/delivery
+
+## Steps
+
+- [x] Read current menu consumers, restoration record, approved contracts and source; identify raw-versus-projected data as cause
+- [x] Snapshot scoped/protected files and capture existing dark Header geometry; save prior projection output for independent equality checks
+- [x] Share exact existing projection, restore category content on Home and preserve native mobile parent navigation
+- [x] Adapt affected Header checks and add direct regression for actual Home menu contents
+- [x] Run formatter/ESLint/typecheck/catalog units/Node24 production build
+- [x] Verify Home390–1920, short native touch, all5parents/23children, hover/keyboard/Escape/search/compare, normal opening/delayed fonts, Header tone/height/child bounds and other-page navigation; record separate software failure
+- [x] Audit source preservation, update records and preview3000; deliver without release
+
+## Impact / Rollback
+
+R2 scoped correction inside the approved sitewide Navbar work. Header/styles are shared but currently used for Home; PrimaryNavigation projection extraction touches all other routes, so verify equality to snapshot before runtime tests. Preserve Header heights and global surface padding; allow bounded horizontal expansion for8menus. Snapshot every edited path; restore only task delta without reverting pending work. No CMS/default-source rewrite, package changes or release.
+
+## Verification Results
+
+Completed scoped correction. Node24build437/437, catalog105/105, TypeScript/scoped ESLint/Prettier/whitespace pass. Home8/8, sitewide12/12, nonblocking opening6/6, legacy navigation10/10, accessibility2/3:38latest passing cases of39distinct. One remaining software same-page hash/filter test fails on unchanged other-page navigation behavior; retained as a visible failure, no software scope expansion. Projection equals archived implementation for3CMS cases; PrimaryNavigation state/events/render exact after extraction. Header geometry/glass/logo/Hero exact at4widths; screenshots inspected.308protected hashes unchanged,7planned existing files changed and3planned files created. Raw no-JS server HTML verified separately from native prehydration links because fully disabled scripting can leave streamed root content hidden. Preview3000 serves final built app; temporary3005 stopped. No release or qualifying verified Next.js feedback issue. Full receipts/limitations: output/home-category-navbar-fix-20261107/delivery.md.
+
+# Plan: Match homepage Navbar spacing to other pages (2026-11-07)
+
+## Files
+
+- `src/styles/header.css` — scoped current category Header row/logo/menu/tool geometry and834px breakpoint to match PrimaryNavigation; preserve tone/flyout behavior
+- `src/components/layout/header.tsx` — change existing resize listener's breakpoint from1400px to834px alongside CSS, with no other interaction change
+- `src/components/layout/site-background.module.css` — match fixed-header compensation48/44px so Hero retains top0
+- `src/features/home/components/hero-scene.module.css` — remove obsolete56px medium-width Header fallback and use the owning surface height at every width, including before hydration
+- `tests/e2e/home-category-navigation.spec.ts` — update explicit Home height expectations and add direct route-to-route geometry comparison
+- `tests/e2e/navigation.spec.ts` — update Home mode-switch breakpoint to834px; preserve current interaction tests
+- `tests/e2e/sitewide-navigation.spec.ts`, `tests/e2e/platforms-overview.spec.ts` — update Home responsive-height expectations only where needed
+- `spec.md`, `plan.md`, `MEMORY.md` — correction, results and geometry safeguard
+- `output/home-navbar-spacing-20261107/` — baseline hashes/snapshots,21geometry measurements, browser/static evidence and delivery
+
+## Steps
+
+- [x] Confirm user's spacing-only correction, inspect actual CSS and measure both components before editing
+- [x] Snapshot allowed and protected sources; align only Home geometry and surface compensation
+- [x] Update related geometry assertions; compare actual rectangles and responsive bounds
+- [x] Run scoped formatting/typecheck/build and browser geometry/navigation/opening/cache checks; inspect screenshots
+- [x] Record verified results/source protection; refresh preview3000 and deliver without release
+
+## Impact / Rollback
+
+R2. Application scope is three CSS files and the existing Header resize-listener breakpoint only. Keep normal Home opening, surface tracking and dark glass. Hero reads Header row height dynamically; its prehydration fallback and owning surface padding must track the same height. Restore only current task deltas from snapshot, preserving all pending work.
+
+## Verification Results
+
+Completed. Before measurements confirmed Home's108/118px logo, centered menu group,58/56px height and1400px breakpoint differed from other pages. After:16paired comparisons across390/768/833/834/1024/1400/1440/1920 match all Header/row/logo/parent/tool rectangles within1px;14other-page signatures unchanged; Hero top0, including prehydration833/834. Node24build437/437, TypeScript/scoped lint/format/whitespace pass. Chrome39/39 on QA3005; final24measurements and prehydration checks on refreshed3000. Desktop screenshots inspected; touch, keyboard, opening/delayed fonts and cached platform navigation pass.310protected paths unchanged, only8planned existing paths changed. No sitewide-navigation test edit was necessary. Temporary3005 stopped; preview3000session17492 retained. No release or qualifying verified framework feedback issue. Prior software hash/filter issue untouched. Evidence: output/home-navbar-spacing-20261107/delivery.md.
+
+# Plan: POS category overview with latest entrance motion (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ after concrete POS Spec/Plan"
+
+## Files
+
+- `src/features/catalog/components/pos-overview.tsx` — create POS-only server wrapper using existing3products/3guide sections and incumbent services pattern
+- `src/app/(site)/products/category/[category]/page.tsx` — select POS wrapper only; preserve metadata/static params/404 and other category branches
+- `src/features/catalog/components/catalog-route-frame.tsx` — add exact POS overview ownership for Header/Footer/overlay host
+- `src/features/catalog/components/products-overview.tsx` — add pos to existing entrance opt-in only; no new motion system
+- `tests/e2e/pos-overview.spec.ts` — new POS content/membership/3chapters/iOS-empty/guide/local finder/reload/cache/responsive checks
+- `tests/e2e/product-category-pages.spec.ts`, `tests/e2e/catalog-subcategory-navigation.spec.ts`, `tests/e2e/sitewide-navigation.spec.ts`, `tests/e2e/navigation.spec.ts` — adapt POS inline-catalog expectations to the local finder while retaining all catalogue/child-link/history assertions
+- `tests/e2e/category-intro-motion.spec.ts` — add pos with3chapters to existing latest-timing/reduced/static-fallback checks
+- `spec.md`, `plan.md` — approval/current contracts/checklist/actual verification; `MEMORY.md` only if a new repeatable failure pattern is discovered
+- `output/pos-apple-overview-20261107/` — snapshots/hashes, POS all/3selected-child signatures, unaffected route baseline, browser/performance screenshots/logs/delivery
+
+## Steps
+
+- [x] Read current spec/memory, actual wrappers/route frame/entrance CSS and POS product/guide data; verify runtime3products and iOS-empty data
+- [x] Obtain owner approval for this concrete POS Spec/Plan before editing application files
+- [x] Read applicable installed Next.js page guidance; snapshot allowed/protected sources and capture4POS states plus unaffected route/Navbar signatures
+- [x] Implement scoped POS wrapper/route/frame/entrance opt-in using existing data, controls and CSS
+- [x] Adapt affected browser expectations and add POS checks without dropping catalogue membership, focus or history coverage
+- [x] Run scoped formatter/ESLint/typecheck/catalog units/Node24 production build
+- [x] Verify390/768/834/1440, native touch/keyboard, search/filter/empty/compare/focus/reload/history/cache, latest motion/reduced/static fallback; inspect screenshots and4xCPU geometry/CLS/remaining motion
+- [x] Audit source/data preservation, update actual results and final preview3000; deliver without release
+
+## Impact / Rollback
+
+R2. Shared CatalogRouteFrame/ProductsOverview changes are exact POS route selection and entrance opt-in only. Preserve current Navbar spacing, all category wrappers, catalog/Hick's law work and motion CSS. Snapshot scoped files and compare protected hashes; restore only task deltas if needed. No dependency/database/global CSS or release work.
+
+## Verification Results
+
+Completed after explicit approval. Node24build437/437, catalog105/105 and final TypeScript/scoped lint/format/whitespace pass.64distinct browser cases have latest passing results, including corrected3legacy assertions; final POS7/7 on3000.9catalogue states/5unaffected signatures exact. Four4xCPU cases: geometry/content exact, CLS0, no remaining entrance, lab LCP704/700/596/656ms; touch357px swipe/no overflow. Images inspected.308protected files unchanged,9planned existing paths changed,2created; independent Header shopping-bag SVG/import delta preserved separately. Shared-output replacement from a concurrent build invalidated QA's old manifest; stale chunk response and disabled prehydration controls resolved after QA restart, without application workarounds. Final preview3000 already serves current build and was verified; QA3006 stopped. No release or qualifying verified framework feedback candidate. Full receipts: output/pos-apple-overview-20261107/delivery.md.
+
+---
+
+# Plan: Accessories category overview with latest entrance motion (2026-11-07)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติ after concrete accessories Spec/Plan"
+
+## Files
+
+- `src/features/catalog/components/accessories-overview.tsx` — create server wrapper using accessories-only products, existing3guide sections and services pattern
+- `src/app/(site)/products/category/[category]/page.tsx` — add accessories wrapper selection only; preserve metadata/static params/404 and other branches
+- `src/features/catalog/components/catalog-route-frame.tsx` — add exact accessories route to existing Header/Footer/overlay ownership
+- `src/features/catalog/components/products-overview.tsx` — add accessories to entrance opt-in only; preserve CSS/state/other behavior
+- `tests/e2e/accessories-overview.spec.ts` — new content/membership/5chapters/Mock/finder/guide/reload/cache/keyboard/responsive coverage
+- `tests/e2e/product-category-pages.spec.ts`, `tests/e2e/catalog-subcategory-navigation.spec.ts`, `tests/e2e/sitewide-navigation.spec.ts`, `tests/e2e/navigation.spec.ts` — adapt accessories inline-catalog expectations to the overview/finder, keeping all destination/history/membership/document checks
+- `tests/e2e/category-intro-motion.spec.ts` — add accessories with5chapters to latest timing/reduced/static-fallback checks
+- `spec.md`, `plan.md` — approval/contracts/checklist/results; `MEMORY.md` only if a new repeatable failure pattern is found
+- `output/accessories-apple-overview-20261107/` — source/hash snapshots,13catalogue signatures (6accessories states in category+combined and full catalogue),5unaffected route signatures, isolated QA/build/browser/performance evidence and delivery
+
+## Steps
+
+- [x] Inspect current spec/memory/wrappers, accessories data/guide and runtime39real/7Mock/5child states
+- [x] Obtain approval for this concrete accessories Spec/Plan before application edits
+- [x] Read applicable installed Next.js page guidance; snapshot scoped/protected sources and capture category/combined/unaffected baselines
+- [x] Implement scoped accessories wrapper/route/frame/entrance opt-in using existing data/controls/CSS
+- [x] Adapt affected assertions and add focused accessories coverage, retaining Mock/documents/consumables/compare/focus/history contracts
+- [x] Run scoped formatter/ESLint/typecheck/catalog units and Node24 production build with separate QA output; preserve live preview artifacts until refreshed
+- [x] Verify390/768/834/1440, native touch/keyboard, finder/search/filter/empty/compare/focus/reload/history/cache and latest motion/reduced/static fallback; inspect screenshots and4xCPU geometry/CLS/animation cleanup
+- [x] Audit source/data preservation, refresh final preview3000 after verification, update actual results and deliver without release
+
+## Impact / Rollback
+
+R2. Application scope is one new server wrapper and exact selection/ownership/entrance additions in3existing feature files. Do not refactor all-category branches or global Navbar, rewrite catalogue data, or generate absent Mock photos. Snapshot and restore only this task delta. Isolate QA output/server from any concurrent build to avoid mismatched manifests; verify cold hydration after final preview refresh.
+
+## Verification Results
+
+Done after explicit approval. Isolated/configured Node24builds437/437, units105/105, final TypeScript/scoped lint/format/whitespace pass.69current browser cases have latest passing results; final10/10on3000. Mock-test assumptions were corrected after source inspection (existing Mock cards have no comparison controls); family-navigation final all-products locator now uses the overview. Original failed attempts retained; browser-summary.json maps the corrected Mock case to its current contract rather than counting the obsolete name as another case.13catalogue signatures/5unaffected main signatures exact on configured preview. QA fallback data causes unrelated Products/scales ordering differences;12accessories states exact in QA and final full configured comparison passes without data/sorting edits. Four4xCPU CLS0/geometry+content exact/no remaining entrance, lab LCP672/716/640/688ms; native touch357px/no overflow; screenshots inspected.309protected files unchanged,9planned existing paths changed and2new files; independent homepage video source/test delta preserved separately. Preview3000session41347 refreshed after archiving previous .next; QA3009 stopped. No release or qualifying verified framework feedback candidate. Evidence: output/accessories-apple-overview-20261107/delivery.md.
+
+---
+
+# Plan: Business solutions index in the approved overview style (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved — owner: อนุมัติครับ ปรับหน้าโซลูชันตามธุรกิจตามแผนได้เลย"
+
+## Files
+
+- `src/features/content/components/solutions-overview.tsx` — create server overview using existing14solutions/CMS business groups/copy/assets; native anchors and scrollable cards; read-only reuse of overview layout/motion classes
+- `src/features/content/components/solutions-overview.module.css` — create scoped business-card/group/long-title responsive rules only; reuse existing design tokens and imported entrance class, no new keyframe profile
+- `src/features/content/components/solutions-page.tsx` — route index rendering to new overview while preserving all detail-page output and existing source CSS
+- `tests/e2e/solutions-overview.spec.ts` — new14destination/3group/all existing links/long-title bounds/keyboard/touch/anchor/reload/history/Header+Footer/detail-parity coverage
+- `tests/e2e/solutions-intro-motion.spec.ts` — new scoped latest-timing/stagger/reduced/static-fallback checks for3business chapters, without changing product-category tests
+- `tests/e2e/sitewide-navigation.spec.ts`, `tests/e2e/catalog-category-audit.spec.ts` — adapt index heading expectations only if required; preserve all navigation and noncatalog assertions
+- `spec.md`, `plan.md` — approval/contracts/checklist/actual results; `MEMORY.md` only if a new repeatable failure pattern is discovered
+- `output/solutions-apple-overview-20261109/` — source/hash snapshots,14detail/current-index/link baselines, isolated QA/build/browser/performance/screenshot evidence and delivery
+- `node_modules/@prisma/client/`, `node_modules/pg/` — restore files into verified empty installation directories from the exact existing lockfile versions/integrities (7.10.1/8.23.1); environment repair required by the configured build, with no manifest/lockfile/version changes
+- `node_modules/postcss/`, `node_modules/sanitize-html/node_modules/postcss/` — same verified-empty-directory recovery for the exact locked 8.5.23/8.5.31 archives; no dependency version or configuration changes
+
+## Steps
+
+- [x] Read instructions/current spec/memory, trace `/solutions` route and14records, inspect3CMS navigation groups, verify available business assets and latest motion values
+- [x] Obtain owner approval for this concrete solutions-index Spec/Plan before application edits
+- [x] Read applicable installed Next.js guidance; snapshot protected/scoped sources, all14detail signatures and current resolved group/destination list
+- [x] Implement only new index overview/scoped CSS and its index branch, preserving details/shared Navbar/Footer/product sources
+- [x] Add focused destination/group/long-title/responsive/keyboard/native-touch checks and latest-motion/reduced/static checks
+- [x] Run scoped formatter/ESLint/typecheck and Node24 project build in isolated QA; retain configured-data parity boundary and existing preview artifacts
+- [x] Verify320/390/768/834/1440, anchors/history/reload/focus, oneactive Header/Footer,14detail equality and unchanged selected pages; inspect screenshots and4xCPU CLS/geometry/animation cleanup
+- [x] Audit source protection, refresh configured preview only after verification, update results/docs and deliver without release
+
+## Impact / Rollback
+
+R2. New page-specific files plus existing SolutionsPage index branch only. Preserve14detail source records/rendering,18default business-menu links and all product/Nav/global source. No invented FAQ, compatibility claims, new library or shared-component refactor. Restore only this task delta from snapshot. QA output must be separate from the live build and data-provider differences documented.
+
+## Verification Results
+
+Done after explicit approval. Final12/12 scoped browser cases pass; existing sitewide navigation12/12 passes in isolated QA. Both Node24 production builds437/437 pass. Final TypeScript/scoped ESLint/Prettier/git diff --check pass. Strict configured comparison: all14detail outputs and5unaffected pages identical. Final4xCPU scenarios CLS0, settled entrance0, reduced/normal content and geometry identical; lab LCP464/764/276/540ms. Screenshots inspected at desktop/mobile, with320–1440bounds verified.320protected baseline files unchanged,2existing changes (SolutionsPage/MEMORY) and4new source/test files. Package/lockfiles unchanged after exact-version/integrity-verified recovery of four empty installed-package directories. Preview3000session88754 runs current configured build; previous build archived. QA3009 stopped at delivery. No release.
+
+Limits retained: noncatalog audit's5valid-page checks pass, but unknown-route expected404 receives200 in candidate environments (old preview404); streamed not-found200 is documented. No route change or weakened assertion. No-JS raw server content/static motion fallback passes, while full-page visibility remains blocked by a streamed hidden ancestor on baseline/candidate. Prior feedback draft already covers this issue; protocol reviewed once without duplicate form/submission. Reload resets hash/scroll via unchanged global navigation policy. QA fallback Products/scales ordering differed from configured data; final configured full parity passes. Delivery/evidence: output/solutions-apple-overview-20261109/delivery.md.
+
+---
+
+# Plan: Current primary-menu and page-section map (2026-11-09)
+
+Authorized directly as a read-only inventory; no application edits or approved fix scope.
+
+## Files
+
+- `output/navigation-section-map-20261109/` — audit helpers, current DOM/menu/section snapshots, controlled click results and Thai report
+- `spec.md`, `plan.md` — record actual findings and completed audit only
+
+## Steps / Results
+
+- [x] Read current instructions/spec/memory and trace resolved navigation, product overviews, solutions, software, services, guides and homepage composition.
+- [x] Inspect27pages/8desktop menus/9actions on configured preview and retain raw results.
+- [x] Confirm four misdirected business-menu clicks, same-page software filter vs working in-page control, and guide destination;7additional actions retained.
+- [x] Produce all8menu maps, shared7section anatomy, current child labels/paths and distinct routing vs grouping findings.
+- [x] Record evidence/limits; desktop1440audit, no independent mobile interaction retest. No app build/release/source changes. Source readback and final git diff --check pass. No qualifying new Next.js feedback issue.
+
+## Impact / Rollback
+
+Read-only application analysis. Only audit artifacts and project notes written; remove this task's report/notes if unwanted. Existing application work and preview retained.
+
+---

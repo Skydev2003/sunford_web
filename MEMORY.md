@@ -435,3 +435,51 @@
 - Observed: A setup command copied QA files but launched the dev server from the workspace. Its telemetry-disabled startup removed a generated agent-feedback block from the workspace instructions. The process was stopped and the exact baseline bytes restored and hash-verified.
 - Root cause: Copying files was mistaken for changing the working directory of the following process.
 - Correct behavior: Launch every dev server, build and generator in a separate command with an explicit absolute QA workdir. Verify that directory before starting and verify that live environment files are not loaded. If a framework updates a protected instruction file, compare the exact diff and restore verified baseline bytes without overwriting unrelated changes.
+
+## Verify layered comparison dismissal and surviving keyboard focus
+
+- Observed: Keyboard-opened comparison shows a focused close-button tooltip; the first Escape dismisses that tooltip. Closing the comparison also clears its original trigger, and baseline focus could then fall to the document body.
+- Root cause: Tooltip and dialog are separate dismissal layers, and native dialog focus restoration cannot return to a button removed by the existing clear-on-close behavior.
+- Correct behavior: In keyboard checks, dismiss a visible tooltip before asserting dialog dismissal. Preserve clear-on-close, restore nested comparison focus to the owning finder search, and verify both keyboard input and native touch on the final runtime. Do not weaken assertions or change the shared Modal to work around a test assumption.
+
+## Preserve homepage Header and Hero geometry when sharing navigation
+
+- Observed: Replacing the homepage Header with the catalog Navbar changed its dark glass to a pale surface and removed Hero/header integrations. Restoring the fixed Header alone also left Hero58px too high because its original surface offset had been removed.
+- Root cause: Shared navigation was treated as interchangeable despite the homepage depending on `.site-header`, `.header-inner`, surface tracking and fixed-header padding.
+- Correct behavior: Keep the original Header on the homepage unless a homepage redesign is explicitly approved. Restore its fixed-header offset only on its owning surface, retain the current navigation elsewhere, and verify dark glass, Hero top position, normal-motion opening, scroll controls and cached back/forward navigation together.
+
+## Preserve approved navigation content when restoring a Header theme
+
+- Observed: Restoring the dark homepage Header also restored the old six-entry CMS menu instead of the approved five product categories and three company menus.
+- Root cause: Only PrimaryNavigation applied the category projection; the restored Header consumed raw CMS navigation. Theme and geometry checks missed the actual menu labels.
+- Correct behavior: Apply the same existing navigation projection to both consumers. When restoring appearance, verify the visible parent labels, every category child destination, native parent navigation and separate mobile disclosure alongside theme, height and Hero opening behavior.
+
+## Compare actual Navbar geometry across routes
+
+- Observed: Both Navbars showed the approved labels, but the homepage retained a different row width, logo size, menu distribution and mobile breakpoint.
+- Root cause: Verifying menu content and page overflow did not establish matching spacing between separate Header implementations.
+- Correct behavior: When the owner requests consistent spacing, compare header, row, logo, each menu item and tool rectangles across routes at the same viewport. Align the CSS and resize-listener breakpoint together, and update both the owning surface offset and Hero's static height fallback when row height changes. Verify prehydration and normal opening after the geometry change.
+
+## Restart production QA servers after a shared build changes
+
+- Observed: A previously healthy QA server kept client-only controls disabled after another build replaced the shared output; a fresh context received an error for an old client chunk.
+- Root cause: The running server retained its previous build manifest while the shared build directory contained a newer revision. The disabled control was an unhydrated server render, rather than a new navigation defect.
+- Correct behavior: Give concurrent builds separate output directories. If an existing shared output is replaced, finish or stop affected browser runs, restart their production servers against the verified current build, and check cold hydration before retrying UI assertions. Record independent source changes separately and preserve them; do not fix application handlers or weaken disabled-state checks to mask stale runtime assets.
+
+## Compare equivalent data environments in isolated QA
+
+- Observed: A QA build without live environment files used fallback product ordering, so a strict comparison against the configured preview reported unrelated catalogue and featured-product differences.
+- Root cause: The baseline and candidate used different data providers even though the protected data and unrelated application sources were unchanged.
+- Correct behavior: Record the data provider for each baseline and candidate. Compare matching fixture states in isolated QA, then retain the full strict catalogue and unaffected-route comparison on the configured final preview. Do not copy production credentials into QA or alter application sorting to force unrelated data environments to match.
+
+## Inspect streamed ancestors in no-JavaScript visibility failures
+
+- Observed: A video section's no-JavaScript visibility test failed before and after changing only its clip ID/title. The heading and poster existed in the DOM under an ancestor marked hidden with display:none.
+- Root cause: The role-based visibility failure came from the streamed ancestor's hidden state, independently of the media source; JavaScript-enabled preview and keyboard checks passed.
+- Correct behavior: Reproduce no-JavaScript failures against the unchanged baseline, then inspect raw DOM presence and hidden ancestors before attributing them to a scoped component edit. Preserve the visibility assertion and report the existing limitation; do not weaken the test or expand a media-only change into a whole-page rendering fix.
+
+## Inspect installed package contents before changing build configuration
+
+- Observed: A configured build could not resolve declared database and CSS dependencies even though their installation directories existed. Four lockfile package directories were empty.
+- Root cause: Missing installed package contents, rather than the page change or bundler root configuration.
+- Correct behavior: Inspect each failing package directory and runtime resolution first. Restore only verified missing contents from the exact lockfile version, validate archive integrity before extraction, and preserve manifests and lockfiles. Re-run the configured build and equivalent-data parity checks; do not change bundler configuration or dependency versions to hide an incomplete installation.
