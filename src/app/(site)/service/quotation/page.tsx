@@ -14,12 +14,14 @@ async function WarehouseQuotation() {
   await connection();
   let catalog;
   let products;
+  let capturedAt;
   try {
     const [publishedCatalog, official] = await Promise.all([
       getProducts(),
       getOfficialProducts(true),
     ]);
     catalog = publishedCatalog;
+    capturedAt = official.capturedAt;
     const published = new Set(catalog.map((product) => product.warehouseSku));
     products = pricedProducts(
       official.items.flatMap((item) =>
@@ -47,7 +49,16 @@ async function WarehouseQuotation() {
           .map(([head]) => head)
       : undefined,
   }));
-  return <QuotationFromSelection products={products} presets={presets} />;
+  const priceNote = capturedAt
+    ? "ใช้ราคาที่บันทึกไว้ ณ " +
+      new Intl.DateTimeFormat("th-TH", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Asia/Bangkok",
+      }).format(new Date(capturedAt)) +
+      " น."
+    : undefined;
+  return <QuotationFromSelection products={products} presets={presets} priceNote={priceNote} />;
 }
 
 export default function QuotationPage() {

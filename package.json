@@ -19,6 +19,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "content:import": "node scripts/import-sunford.mjs",
+    "warehouse:snapshot": "tsx scripts/snapshot-warehouse.ts",
     "content:validate": "node scripts/validate-import.mjs",
     "paths:check": "node scripts/audit-paths.mjs",
     "uat:local": "node scripts/uat-local.mjs",

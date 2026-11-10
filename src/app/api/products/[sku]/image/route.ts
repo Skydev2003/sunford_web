@@ -1,5 +1,5 @@
 import { isPublicWarehouseSku } from "@/features/catalog/data/warehouse-products";
-import { getOfficialProducts } from "@/features/services/warehouse-product.server";
+import { getOfficialProducts, savedWarehouseImage } from "@/features/services/warehouse-product.server";
 
 const maxImageBytes = 10 * 1024 * 1024;
 
@@ -9,6 +9,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ sku
   try {
     const item = (await getOfficialProducts()).items.find((item) => item.sku === sku);
     if (!item?.image_url) return new Response(null, { status: 404 });
+    const localImage = savedWarehouseImage(item);
+    if (localImage) return new Response(null, { status: 307, headers: { Location: localImage } });
     const origin = new URL(process.env.WAREHOUSE_API_URL!);
     const source = new URL(item.image_url, origin);
     const loopback = new Set(["localhost", "127.0.0.1", "[::1]"]);

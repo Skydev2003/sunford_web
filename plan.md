@@ -4351,3 +4351,9 @@ Verified the public API, product index cards and quotation options each contain 
 # Warehouse category review
 
 Updated the existing mapping for 38 of 101 reviewed SKUs. The owner chose to keep all 63 remaining rows in “รายการอื่น ๆ”. The review table is in docs/warehouse/category-review-101.md.
+
+# Warehouse snapshot
+
+Verified: the 101-row owner review workbook and Markdown table each split into 38 assigned and 63 pending. Online counts sum to 355 unique public SKUs. Offline production build (664 pages), a browser check of the API, image and dated printable quotation, full TypeScript, scoped ESLint and 136 catalog tests passed. Update the checked-in-ready snapshot with `npm run warehouse:snapshot` while the upstream is available.
+
+Update the existing SKU mapping in place, document each reviewed item in docs/warehouse/category-review-101.md, add a repeatable snapshot command, and use its bundled data on upstream unavailability. Verify eligibility, unchanged IDs, category counts and offline catalog/quotation/image responses in an isolated server configuration. Restore only this change if rolling back.

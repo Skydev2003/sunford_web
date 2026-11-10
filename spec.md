@@ -4,6 +4,12 @@
 
 Completed: 23 scale, 14 POS and one accessory assignment reuse existing SKU records. The owner confirmed the remaining 63 SKUs stay in “รายการอื่น ๆ”.
 
+## Retain Warehouse data locally
+
+Verified the same 355 distinct public SKUs online and with Warehouse disconnected. Snapshot holds 359 unique records and 75 image references to 74 distinct local files.
+
+Owner requests category assignment from existing evidence, a review table for uncertain rows, and persistent Warehouse data that works when local port 3000 is closed. Keep the existing SKU identities, exclusions and live API priority. Store the validated catalog snapshot with its capture time and locally available product images. Show the saved price date when issuing a quotation from the snapshot.
+
 ## Publish Warehouse products except X-prefixed SKUs
 
 Status: "Implemented". Owner requested all non-X SKUs, preserved existing data and selected Warehouse-only visibility for four calibration service charges. Exact duplicate feed rows collapse by SKU; conflicting versions of the same SKU fail validation. Verified legacy associations reuse their existing IDs and URLs. New SKUs are projected from the live response. Unclassified rows are reachable through “รายการอื่น ๆ”, search and quotations. Source data stays in Warehouse. Verified live counts: 380 raw, 359 retained, 355 public, with 355 distinct IDs and URLs.

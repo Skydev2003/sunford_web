@@ -7,6 +7,9 @@ import {
   type WarehouseItem,
 } from "../../src/features/catalog/data/warehouse-products";
 import { getSnapshotProducts } from "../../src/features/content/data/catalog-snapshot";
+import snapshot from "../../data/warehouse/products.json";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { getWeighingOptions } from "../../src/features/content/data/weighing-options";
 import { getScaleSubcategories } from "../../src/features/catalog/data/scale-subcategories";
 import { getIndicatorSubcategories } from "../../src/features/catalog/data/indicator-subcategories";
@@ -16,6 +19,31 @@ import { getAccessorySubcategories } from "../../src/features/catalog/data/acces
 
 const editorial = getSnapshotProducts();
 
+test("saved Warehouse data supplies unique public products and local images without the API", () => {
+  const feed = parseWarehouseProducts(snapshot);
+  assert.equal(feed.total_count, snapshot.total_count);
+  assert.equal(new Set(feed.items.map((i) => i.sku)).size, feed.total_count);
+  for (const item of snapshot.items) {
+    if (item.localImage) {
+      assert.match(
+        item.localImage,
+        /^\/images\/warehouse-cache\/[0-9a-f]{64}\.(?:png|jpg|webp|gif|avif)$/,
+      );
+      assert(existsSync(path.join(process.cwd(), "public", item.localImage)));
+    }
+  }
+  const catalog = warehouseCatalog(feed.items, editorial);
+  for (const [sku, category] of [
+    ["G-SET03", "scales"],
+    ["PCS60FC11NDT", "scales"],
+    ["POSP1SETPCS60FC11Drawer", "pos"],
+    ["RYGPole_Buzzer", "accessories"],
+  ]) {
+    assert.equal(catalog.find((i) => i.warehouseSku === sku)?.warehouseCategoryId, category);
+  }
+  assert(!catalog.find((i) => i.warehouseSku === "G-SET03")?.warehouseModelCodes?.length);
+  assert.equal(catalog.find((i) => i.warehouseSku === "G-SET03")?.id, "warehouse-G-SET03");
+});
 const items: WarehouseItem[] = approvedWarehouseMappings.map((entry) => ({
   sku: entry.sku,
   product_name: entry.name,

@@ -69,21 +69,32 @@ function Totals({ total }: { total: NonNullable<ReturnType<typeof quotationTotal
 export function QuotationFromSelection({
   products,
   presets,
+  priceNote,
 }: {
   products: QuoteProduct[];
   presets: QuotePreset[];
+  priceNote?: string;
 }) {
   const models = useSearchParams().getAll("model");
   const initial = selectedQuoteItems(models, presets);
-  return <QuotationForm key={JSON.stringify(initial)} products={products} initial={initial} />;
+  return (
+    <QuotationForm
+      key={JSON.stringify(initial)}
+      products={products}
+      initial={initial}
+      priceNote={priceNote}
+    />
+  );
 }
 
 export function QuotationForm({
   products,
   initial = { ids: [], pending: [] },
+  priceNote,
 }: {
   products: QuoteProduct[];
   initial?: ReturnType<typeof selectedQuoteItems>;
+  priceNote?: string;
 }) {
   const [rows, setRows] = useState<Selection[]>(() =>
     (initial.ids.length ? initial.ids : [""]).map((id, key) => ({ key, id, quantity: "1" })),
@@ -132,6 +143,7 @@ export function QuotationForm({
       <div className={styles.editor}>
         <div className={styles.heading}>
           <h1>ใบเสนอราคา</h1>
+          {priceNote && <p role="status">{priceNote}</p>}
           <p>กรอกข้อมูลผู้ซื้อและเลือกสินค้า เพื่อพิมพ์ใบเสนอราคาหรือบันทึกเป็น PDF</p>
         </div>
         <SellerDetails />
@@ -308,6 +320,7 @@ export function QuotationForm({
           <>
             <div className={styles.printTitle}>
               <h1>ใบเสนอราคา</h1>
+              {priceNote && <p>{priceNote}</p>}
               <p>วันที่ออก {buyer.date}</p>
             </div>
             <SellerDetails />
