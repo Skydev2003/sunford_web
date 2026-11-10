@@ -1,4 +1,5 @@
 import type { Product } from "../types";
+import { warehouseSubcategories } from "./warehouse-categories";
 import type { ProductCategory } from "./mock-categories";
 
 const platforms: { id: string; label: string; sourceIds: string[] }[] = [
@@ -8,11 +9,14 @@ const platforms: { id: string; label: string; sourceIds: string[] }[] = [
 ];
 
 export function getPosSubcategories(products: Product[]): ProductCategory["subcategories"] {
-  return platforms.map(({ id, label, sourceIds }) => ({
-    id,
-    label,
-    productIds: products
-      .filter((product) => sourceIds.includes(product.sourceId ?? ""))
-      .map((product) => product.id),
-  }));
+  return warehouseSubcategories(
+    platforms.map(({ id, label, sourceIds }) => ({
+      id,
+      label,
+      productIds: products
+        .filter((product) => sourceIds.includes(product.sourceId ?? ""))
+        .map((product) => product.id),
+    })),
+    products,
+  );
 }

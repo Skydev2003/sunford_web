@@ -1,4 +1,5 @@
 import type { Product } from "../types";
+import { warehouseSubcategories } from "./warehouse-categories";
 import type { ProductCategory } from "./mock-categories";
 
 type IndicatorModel = { model: string; sourceIds: string[]; documentModel?: string };
@@ -47,24 +48,27 @@ const modelCode = (value: string) =>
 
 export function getIndicatorSubcategories(products: Product[]): ProductCategory["subcategories"] {
   const bySourceId = new Map(products.map((product) => [product.sourceId, product]));
-  return subcategories.map(({ id, label, models }) => {
-    const entries = models.map(({ model, documentModel, sourceIds }) => {
-      const product =
-        sourceIds.map((sourceId) => bySourceId.get(sourceId)).find(Boolean) ??
-        products.find((product) => modelCode(product.name) === modelCode(model));
+  return warehouseSubcategories(
+    subcategories.map(({ id, label, models }) => {
+      const entries = models.map(({ model, documentModel, sourceIds }) => {
+        const product =
+          sourceIds.map((sourceId) => bySourceId.get(sourceId)).find(Boolean) ??
+          products.find((product) => modelCode(product.name) === modelCode(model));
+        return {
+          model,
+          documentModel: documentModel ?? model,
+          ...(product ? { productId: product.id } : {}),
+        };
+      });
       return {
-        model,
-        documentModel: documentModel ?? model,
-        ...(product ? { productId: product.id } : {}),
+        id,
+        label,
+        productIds: [
+          ...new Set(entries.flatMap((entry) => (entry.productId ? [entry.productId] : []))),
+        ],
+        entries,
       };
-    });
-    return {
-      id,
-      label,
-      productIds: [
-        ...new Set(entries.flatMap((entry) => (entry.productId ? [entry.productId] : []))),
-      ],
-      entries,
-    };
-  });
+    }),
+    products,
+  );
 }

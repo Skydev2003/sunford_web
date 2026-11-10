@@ -7,19 +7,24 @@ import { defaultNavigation } from "../../src/features/cms/data/navigation";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
 
 test("known category links retain their category and exact current subcategory", () => {
+  for (const href of [
+    "/products/category/scales?subcategory=scale-industrial",
+    "/products?category=scales&subcategory=scale-industrial",
+  ])
+    assert.equal(resolveCategoryHref(href), "/products/category/scales/industrial");
   for (const [old, expected] of [
     ["/Product/Digital-weighing", "/products/category/scales"],
     ["/Indicator/", "/products/category/indicators"],
     ["/product/scale-platforms", "/products/category/platforms"],
     ["/Product/POS", "/products/category/pos"],
     ["/product/scale-accessories", "/products/category/accessories"],
-    ["/product/commercial", "/products/category/scales?subcategory=scale-price"],
-    ["/collections/coffee-scales", "/products/category/scales?subcategory=scale-kitchen"],
-    ["/product/industrial", "/products/category/scales?subcategory=scale-industrial"],
-    ["/product/laboratory", "/products/category/scales?subcategory=scale-analytical"],
-    ["/Product/POS/Android", "/products/category/pos?subcategory=pos-android"],
-    ["/Product/POS/Windows", "/products/category/pos?subcategory=pos-windows"],
-    ["/product/Consumables", "/products/category/accessories?subcategory=accessory-consumables"],
+    ["/product/commercial", "/products/category/scales/price"],
+    ["/collections/coffee-scales", "/products/category/scales/kitchen"],
+    ["/product/industrial", "/products/category/scales/industrial"],
+    ["/product/laboratory", "/products/category/scales/analytical"],
+    ["/Product/POS/Android", "/products/category/pos/android"],
+    ["/Product/POS/Windows", "/products/category/pos/windows"],
+    ["/product/Consumables", "/products/category/accessories/consumables"],
   ])
     assert.equal(resolveCategoryHref(old), expected);
   assert.equal(
@@ -47,7 +52,7 @@ test("unrelated links stay unchanged and a corrected category cannot retain stal
     resolveCategoryHref(
       "/Product/POS/Android?category=scales&subcategory=wrong&catalog=all&ref=guide#details",
     ),
-    "/products/category/pos?subcategory=pos-android&ref=guide#details",
+    "/products/category/pos/android?ref=guide#details",
   );
 });
 
@@ -83,16 +88,16 @@ test("CMS legacy and corrected links project identically with all related column
   assert.deepEqual(getPrimaryNavigationItems(corrected), legacy);
   assert.deepEqual(defaultNavigation, before);
   assert.deepEqual(
-    legacy.slice(0, 5).map((item) => item.groups![0].links.length),
+    legacy.slice(1, 6).map((item) => item.groups![0].links.length),
     [4, 4, 3, 4, 4],
   );
-  const solutions = legacy.find((item) => item.href === "/solutions")!;
+  const services = legacy.find((item) => item.href === "/service")!;
+  assert.ok(services.links.some((link) => link.href === "/solutions"));
+  const solutions = corrected.find((item) => item.href === "/solutions")!;
   assert.equal(solutions.groups!.flatMap((group) => group.links).length, 18);
   assert.ok(
     solutions.groups![0].links.some(
-      (link) =>
-        link.label === "ร้านกาแฟ" &&
-        link.href === "/products/category/scales?subcategory=scale-kitchen",
+      (link) => link.label === "ร้านกาแฟ" && link.href === "/products/category/scales/kitchen",
     ),
   );
 });

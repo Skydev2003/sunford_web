@@ -176,6 +176,12 @@
   min-height: 44px;
   align-content: center;
 }
+@media (max-width: 833px) {
+  .menuContent[data-all-products] a {
+    min-height: 44px;
+    align-content: center;
+  }
+}
 .menuBack {
   display: inline-flex;
   align-items: center;
@@ -1322,7 +1328,7 @@
   .menuContent {
     max-width: 1024px;
     margin: auto;
-    padding: 40px 22px 56px;
+    padding: 40px 16px 56px;
     grid-template-columns: 1.35fr repeat(3, 1fr);
     gap: 32px;
   }
@@ -1332,6 +1338,18 @@
   .menuGroup a {
     font-size: 12px;
     line-height: 1.6;
+  }
+  .menuContent[data-all-products] {
+    grid-template-columns: repeat(3, max-content);
+    align-items: start;
+    gap: clamp(38px, 5vw, 80px);
+    padding-bottom: 74px;
+  }
+  .menuContent[data-all-products] .menuPrimary a {
+    font-size: clamp(24px, 2vw, 30px);
+  }
+  .menuContent[data-all-products] .menuGroup a {
+    font-size: 14px;
   }
   .productMenuContent {
     grid-template-columns: minmax(0, 1.55fr) repeat(2, minmax(0, 1fr));
@@ -1343,6 +1361,20 @@
   .productMenuContent .menuGroup a {
     min-height: 0;
     font-size: 14px;
+  }
+}
+
+@media (min-width: 834px) and (max-width: 1023px) {
+  .nav {
+    gap: 10px;
+  }
+
+  .navLinks {
+    gap: 5px;
+  }
+
+  .navLinks > :is(button, a) {
+    font-size: 11px;
   }
 }
 @media (min-width: 1069px) {
@@ -1459,26 +1491,8 @@
 }
 @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
   .categoryEntrance {
-    --category-reveal-duration: 800ms;
-    --category-chapter-delay: 180ms;
-    --category-chapter-stagger: 140ms;
     --category-ribbon-duration: 3000ms;
     --category-entrance-easing: cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .categoryEntrance .chapters h1,
-  .categoryEntrance [data-overview-section="lineup"] .sectionHeading > h2 {
-    animation: categoryTitleReveal var(--category-reveal-duration) var(--category-entrance-easing)
-      backwards;
-  }
-  .categoryEntrance .chapterTrack > li {
-    animation: categoryReveal var(--category-reveal-duration) var(--category-entrance-easing)
-      backwards;
-    animation-delay: calc(
-      var(--category-chapter-delay) + var(--chapter-index) * var(--category-chapter-stagger)
-    );
-  }
-  .categoryEntrance .chapterTrack > li:focus-within {
-    opacity: 1 !important;
   }
   .categoryEntrance .ribbon {
     position: relative;
@@ -1500,22 +1514,6 @@
   .categoryEntrance .ribbon a {
     animation: categoryRibbonLink var(--category-ribbon-duration) var(--category-entrance-easing)
       backwards;
-  }
-}
-@keyframes categoryTitleReveal {
-  from {
-    opacity: 0.15;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes categoryReveal {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 @keyframes categoryRibbonHighlight {

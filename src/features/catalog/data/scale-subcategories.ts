@@ -1,4 +1,5 @@
 import manifest from "./scale-category-models.json";
+import { warehouseSubcategories } from "./warehouse-categories";
 import { catalogProductGroup } from "./catalog-supplements";
 import type { Product } from "../types";
 import type { ProductCategory, ScaleModelEntry } from "./mock-categories";
@@ -14,7 +15,7 @@ const tokenMatch = (value: string, model: string) => {
   return new RegExp(`(?:^|[^A-Z0-9-])${escaped}(?=$|[^A-Z0-9-])`, "i").test(value);
 };
 
-function findModel(products: Product[], model: string): Product | undefined {
+export function findScaleModel(products: Product[], model: string): Product | undefined {
   if (aliases[model]) {
     const matches = products.filter(
       (product) => normalize(product.name) === normalize(aliases[model]),
@@ -31,24 +32,27 @@ function findModel(products: Product[], model: string): Product | undefined {
 
 export function getScaleSubcategories(products: Product[]): ProductCategory["subcategories"] {
   const scales = products.filter((product) => catalogProductGroup(product) === "/products");
-  return manifest.categories.map((category) => {
-    const entries: ScaleModelEntry[] = category.groups
-      .flatMap((group) => group.models)
-      .flatMap((documentModel) => {
-        const variants =
-          documentModel === "WSS30KS" ? ["WSS30KS-LCD", "WSS30KS-LED"] : [documentModel];
-        return variants.map((model) => {
-          const product = findModel(scales, model);
-          return { model, documentModel, ...(product ? { productId: product.id } : {}) };
+  return warehouseSubcategories(
+    manifest.categories.map((category) => {
+      const entries: ScaleModelEntry[] = category.groups
+        .flatMap((group) => group.models)
+        .flatMap((documentModel) => {
+          const variants =
+            documentModel === "WSS30KS" ? ["WSS30KS-LCD", "WSS30KS-LED"] : [documentModel];
+          return variants.map((model) => {
+            const product = findScaleModel(scales, model);
+            return { model, documentModel, ...(product ? { productId: product.id } : {}) };
+          });
         });
-      });
-    return {
-      id: category.id,
-      label: category.label,
-      productIds: [
-        ...new Set(entries.flatMap((entry) => (entry.productId ? [entry.productId] : []))),
-      ],
-      entries,
-    };
-  });
+      return {
+        id: category.id,
+        label: category.label,
+        productIds: [
+          ...new Set(entries.flatMap((entry) => (entry.productId ? [entry.productId] : []))),
+        ],
+        entries,
+      };
+    }),
+    products,
+  );
 }

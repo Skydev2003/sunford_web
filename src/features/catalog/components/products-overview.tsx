@@ -16,7 +16,12 @@ import {
 } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { resolveCategoryHref } from "../data/category-destinations";
+import {
+  getProductSubcategoryPage,
+  getProductSubcategoryPageByHref,
+} from "../data/product-subcategory-pages";
 import {
   ChevronDown,
   ChevronLeft,
@@ -216,13 +221,31 @@ function ReferenceModal({
   );
 }
 
-function FinderQuerySync({ onOpen, categoryId }: { onOpen: () => void; categoryId?: string }) {
+function FinderQuerySync({
+  onOpen,
+  onClose,
+  categoryId,
+}: {
+  onOpen: () => void;
+  onClose?: () => void;
+  categoryId?: string;
+}) {
   const params = useSearchParams();
+  const router = useRouter();
   const checkedNavigation = useRef(false);
   const category = params.get("category");
   const subcategory = params.get("subcategory");
   const catalog = params.get("catalog");
   useEffect(() => {
+    const current = new URL(window.location.href);
+    const destination = resolveCategoryHref(`${current.pathname}${current.search}${current.hash}`);
+    if (
+      destination !== `${current.pathname}${current.search}${current.hash}` &&
+      getProductSubcategoryPageByHref(destination)
+    ) {
+      router.replace(destination);
+      return;
+    }
     if (categoryId) {
       const url = new URL(window.location.href);
       if (url.pathname !== `/products/category/${categoryId}`) return;
@@ -250,7 +273,8 @@ function FinderQuerySync({ onOpen, categoryId }: { onOpen: () => void; categoryI
       return;
     }
     if (category || subcategory || catalog === "all") onOpen();
-  }, [category, subcategory, catalog, onOpen, categoryId]);
+    else onClose?.();
+  }, [category, subcategory, catalog, onOpen, onClose, categoryId, router]);
   return null;
 }
 
@@ -265,6 +289,7 @@ export function ProductsOverview({
   services,
   accordion,
   categoryId,
+  indexContent,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
@@ -276,9 +301,12 @@ export function ProductsOverview({
   services: Service[];
   accordion: AccordionItem[];
   categoryId?: string;
+  indexContent?: ReactNode;
 }) {
+  const router = useRouter();
   const activeCategory = categories.find((category) => category.id === categoryId);
   const categoryEntrance =
+    Boolean(indexContent) ||
     categoryId === "scales" ||
     categoryId === "indicators" ||
     categoryId === "platforms" ||
@@ -329,6 +357,7 @@ export function ProductsOverview({
     setFinderOpen(true);
   };
   const openFinder = useCallback(() => setFinderOpen(true), [setFinderOpen]);
+  const closeFinder = useCallback(() => setFinderOpen(false), [setFinderOpen]);
   const syncChapters = useCallback(() => {
     const track = chapterTrack.current;
     if (track)
@@ -343,6 +372,14 @@ export function ProductsOverview({
     return () => observer.disconnect();
   }, [syncChapters]);
   const openCategory = (id: string) => {
+    const page = activeCategory ? getProductSubcategoryPage(id, activeCategory.id) : undefined;
+    if (page) {
+      const current = new URL(window.location.href);
+      ["category", "subcategory", "catalog"].forEach((key) => current.searchParams.delete(key));
+      window.history.replaceState(null, "", `${current.pathname}${current.search}${current.hash}`);
+      router.push(page.href);
+      return;
+    }
     const url = new URL(window.location.href);
     if (activeCategory) {
       url.searchParams.delete("category");
@@ -363,13 +400,17 @@ export function ProductsOverview({
       if (`${url.search}${url.hash}` !== `${window.location.search}${window.location.hash}`)
         window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
       openFinder();
-    } else if (!activeCategory && url.pathname === "/products") {
+    } else if (!activeCategory && url.pathname === "/products" && (!indexContent || url.search)) {
       event.preventDefault();
       if (
         url.search &&
         `${url.search}${url.hash}` !== `${window.location.search}${window.location.hash}`
       )
-        window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
+        window.history[indexContent ? "replaceState" : "pushState"](
+          null,
+          "",
+          `${url.pathname}${url.search}${url.hash}`,
+        );
       openFinder();
     }
   };
@@ -428,7 +469,11 @@ export function ProductsOverview({
       data-controls-ready={hydrated}
     >
       <Suspense fallback={null}>
-        <FinderQuerySync onOpen={openFinder} categoryId={activeCategory?.id} />
+        <FinderQuerySync
+          onOpen={openFinder}
+          onClose={indexContent ? closeFinder : undefined}
+          categoryId={activeCategory?.id}
+        />
       </Suspense>
       <PrimaryNavigation
         navigation={navigation}
@@ -436,522 +481,548 @@ export function ProductsOverview({
         onOpenFinder={openFinder}
         onMenuChange={setMobileMenu}
       />
-      <main id="main-content" inert={mobileMenu}>
+      <main
+        id="main-content"
+        inert={mobileMenu}
+        onClick={
+          indexContent
+            ? (event) => {
+                const anchor = (event.target as HTMLElement).closest("a[href]");
+                const href = anchor?.getAttribute("href");
+                if (href) activateLink(event, href);
+              }
+            : undefined
+        }
+      >
         <div className={styles.ribbon}>
           ปรึกษาผู้เชี่ยวชาญ เลือกให้ตรงกับงานของคุณ {link(sunford.contact, "ให้เราช่วยเลือก ›")}
         </div>
-        <section
-          className={styles.chapters}
-          aria-labelledby="products-title"
-          data-overview-section="chapters"
-        >
-          <div className={`${styles.sectionInner} ${activeCategory ? styles.categoryHeading : ""}`}>
-            <h1 id="products-title">{activeCategory?.label ?? "ผลิตภัณฑ์"}</h1>
-            {activeCategory && <Link href="/products?catalog=all">สินค้าทั้งหมด</Link>}
-          </div>
-          <div className={styles.chapterRail}>
-            <ul
-              ref={chapterTrack}
-              className={styles.chapterTrack}
-              id="products-chapters"
-              onScroll={syncChapters}
+        {indexContent ?? (
+          <>
+            <section
+              className={styles.chapters}
+              aria-labelledby="products-title"
+              data-overview-section="chapters"
             >
-              {chapterItems.map((category, index) => (
-                <li
-                  key={category.id}
-                  style={
-                    categoryEntrance ? ({ "--chapter-index": index } as CSSProperties) : undefined
-                  }
+              <div
+                className={`${styles.sectionInner} ${activeCategory ? styles.categoryHeading : ""}`}
+              >
+                <h1 id="products-title">{activeCategory?.label ?? "ผลิตภัณฑ์"}</h1>
+                {activeCategory && <Link href="/products">สินค้าทั้งหมด</Link>}
+              </div>
+              <div className={styles.chapterRail}>
+                <ul
+                  ref={chapterTrack}
+                  className={styles.chapterTrack}
+                  id="products-chapters"
+                  onScroll={syncChapters}
                 >
+                  {chapterItems.map((category, index) => (
+                    <li
+                      key={category.id}
+                      style={
+                        categoryEntrance
+                          ? ({ "--chapter-index": index } as CSSProperties)
+                          : undefined
+                      }
+                    >
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        onClick={() => openCategory(category.id)}
+                      >
+                        <span className={styles.chapterArt}>
+                          {categoryPhotos[index] && (
+                            <ProductImage
+                              src={catalogProductPhoto(categoryPhotos[index])}
+                              alt=""
+                              fill
+                              sizes="96px"
+                            />
+                          )}
+                        </span>
+                        <span>{category.label}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                {!chapterEdges.start && (
                   <button
                     disabled={!hydrated}
                     type="button"
-                    onClick={() => openCategory(category.id)}
+                    className={`${styles.chapterNext} ${styles.chapterPrevious}`}
+                    aria-label="หมวดหมู่สินค้าก่อนหน้า"
+                    aria-controls="products-chapters"
+                    onClick={() =>
+                      chapterTrack.current?.scrollBy({
+                        left: -220,
+                        behavior: reducedMotion ? "instant" : "smooth",
+                      })
+                    }
                   >
-                    <span className={styles.chapterArt}>
-                      {categoryPhotos[index] && (
-                        <ProductImage
-                          src={catalogProductPhoto(categoryPhotos[index])}
-                          alt=""
-                          fill
-                          sizes="96px"
-                        />
-                      )}
-                    </span>
-                    <span>{category.label}</span>
+                    <ChevronLeft size={20} aria-hidden="true" />
                   </button>
-                </li>
-              ))}
-            </ul>
-            {!chapterEdges.start && (
-              <button
-                disabled={!hydrated}
-                type="button"
-                className={`${styles.chapterNext} ${styles.chapterPrevious}`}
-                aria-label="หมวดหมู่สินค้าก่อนหน้า"
-                aria-controls="products-chapters"
-                onClick={() =>
-                  chapterTrack.current?.scrollBy({
-                    left: -220,
-                    behavior: reducedMotion ? "instant" : "smooth",
-                  })
-                }
-              >
-                <ChevronLeft size={20} aria-hidden="true" />
-              </button>
-            )}
-            {!chapterEdges.end && (
-              <button
-                disabled={!hydrated}
-                type="button"
-                className={styles.chapterNext}
-                aria-label="หมวดหมู่สินค้าถัดไป"
-                aria-controls="products-chapters"
-                onClick={() =>
-                  chapterTrack.current?.scrollBy({
-                    left: 220,
-                    behavior: reducedMotion ? "instant" : "smooth",
-                  })
-                }
-              >
-                <ChevronRight size={20} aria-hidden="true" />
-              </button>
-            )}
-          </div>
-        </section>
+                )}
+                {!chapterEdges.end && (
+                  <button
+                    disabled={!hydrated}
+                    type="button"
+                    className={styles.chapterNext}
+                    aria-label="หมวดหมู่สินค้าถัดไป"
+                    aria-controls="products-chapters"
+                    onClick={() =>
+                      chapterTrack.current?.scrollBy({
+                        left: 220,
+                        behavior: reducedMotion ? "instant" : "smooth",
+                      })
+                    }
+                  >
+                    <ChevronRight size={20} aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+            </section>
 
-        <section
-          className={styles.priority}
-          aria-label="สินค้าเด่น SUNFORD"
-          data-overview-section="hero"
-        >
-          <ul
-            ref={heroTrack}
-            className={styles.heroTrack}
-            onPointerDown={() => setPaused(true)}
-            onWheel={(event) => {
-              if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) setPaused(true);
-            }}
-            onScroll={(event) => {
-              const track = event.currentTarget;
-              const first = track.children[0] as HTMLElement | undefined;
-              const second = track.children[1] as HTMLElement | undefined;
-              if (first && second)
-                setHeroIndex(
-                  Math.max(
-                    0,
-                    Math.min(
-                      heroes.length - 1,
-                      Math.round(track.scrollLeft / (second.offsetLeft - first.offsetLeft)),
-                    ),
-                  ),
-                );
-            }}
-          >
-            {heroes.map((product, index) => {
-              const video = product.id === defaultSpotlightProductId;
-              return (
-                <li
-                  key={product.id}
-                  id={`products-hero-${index}`}
-                  data-slide={index}
-                  className={`${styles.heroSlide} ${video ? styles.heroDark : ""}`}
-                >
-                  <div className={styles.heroCopy}>
-                    <div>
-                      <h2>{cardNames[product.id] ?? product.name}</h2>
-                      <p>{product.subtitle}</p>
-                    </div>
-                    <div className={styles.heroActions}>
-                      <Link className={styles.primaryButton} href={`/products/${product.slug}`}>
-                        ดูรายละเอียดรุ่น
-                      </Link>
-                      <Link
-                        className={styles.textLink}
-                        href={sunford.contact}
-                        aria-label={`สอบถามสินค้า ${cardNames[product.id] ?? product.name}`}
+            <section
+              className={styles.priority}
+              aria-label="สินค้าเด่น SUNFORD"
+              data-overview-section="hero"
+            >
+              <ul
+                ref={heroTrack}
+                className={styles.heroTrack}
+                onPointerDown={() => setPaused(true)}
+                onWheel={(event) => {
+                  if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) setPaused(true);
+                }}
+                onScroll={(event) => {
+                  const track = event.currentTarget;
+                  const first = track.children[0] as HTMLElement | undefined;
+                  const second = track.children[1] as HTMLElement | undefined;
+                  if (first && second)
+                    setHeroIndex(
+                      Math.max(
+                        0,
+                        Math.min(
+                          heroes.length - 1,
+                          Math.round(track.scrollLeft / (second.offsetLeft - first.offsetLeft)),
+                        ),
+                      ),
+                    );
+                }}
+              >
+                {heroes.map((product, index) => {
+                  const video = product.id === defaultSpotlightProductId;
+                  return (
+                    <li
+                      key={product.id}
+                      id={`products-hero-${index}`}
+                      data-slide={index}
+                      className={`${styles.heroSlide} ${video ? styles.heroDark : ""}`}
+                    >
+                      <div className={styles.heroCopy}>
+                        <div>
+                          <h2>{cardNames[product.id] ?? product.name}</h2>
+                          <p>{product.subtitle}</p>
+                        </div>
+                        <div className={styles.heroActions}>
+                          <Link className={styles.primaryButton} href={`/products/${product.slug}`}>
+                            ดูรายละเอียดรุ่น
+                          </Link>
+                          <Link
+                            className={styles.textLink}
+                            href={sunford.contact}
+                            aria-label={`สอบถามสินค้า ${cardNames[product.id] ?? product.name}`}
+                          >
+                            สอบถาม <ChevronRight size={15} aria-hidden="true" />
+                          </Link>
+                        </div>
+                      </div>
+                      <div className={styles.heroArt}>
+                        {video ? (
+                          <video
+                            src={defaultSpotlightVideo}
+                            poster={defaultSpotlightPoster}
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            aria-label={`SUNFORD ${cardNames[product.id] ?? product.name}`}
+                          />
+                        ) : (
+                          <ProductImage
+                            src={catalogProductPhoto(product)}
+                            alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
+                            fill
+                            preload={index === 0}
+                            sizes="(max-width: 734px) 82vw, 87.5vw"
+                          />
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              {heroes.length > 1 && (
+                <div className={styles.heroPlayback} data-playing={playing}>
+                  <div
+                    className={styles.heroTabs}
+                    role="tablist"
+                    aria-label="เลือกสินค้าเด่น"
+                    onKeyDown={(event) => {
+                      const keys = ["ArrowRight", "ArrowLeft", "Home", "End"];
+                      if (!keys.includes(event.key)) return;
+                      event.preventDefault();
+                      const index =
+                        event.key === "Home"
+                          ? 0
+                          : event.key === "End"
+                            ? heroes.length - 1
+                            : (heroIndex + (event.key === "ArrowRight" ? 1 : -1) + heroes.length) %
+                              heroes.length;
+                      showHero(index);
+                      (event.currentTarget.children[index] as HTMLButtonElement)?.focus();
+                    }}
+                  >
+                    {heroes.map((product, index) => (
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        role="tab"
+                        key={product.id}
+                        aria-label={cardNames[product.id] ?? product.name}
+                        aria-selected={heroIndex === index}
+                        tabIndex={heroIndex === index ? 0 : -1}
+                        aria-controls={`products-hero-${index}`}
+                        onClick={() => showHero(index)}
                       >
-                        สอบถาม <ChevronRight size={15} aria-hidden="true" />
-                      </Link>
-                    </div>
+                        <span />
+                      </button>
+                    ))}
                   </div>
-                  <div className={styles.heroArt}>
-                    {video ? (
-                      <video
-                        src={defaultSpotlightVideo}
-                        poster={defaultSpotlightPoster}
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        aria-label={`SUNFORD ${cardNames[product.id] ?? product.name}`}
-                      />
+                  <button
+                    disabled={!hydrated}
+                    type="button"
+                    className={styles.playButton}
+                    aria-label={playing ? "หยุดแกลเลอรีสินค้าเด่น" : "เล่นแกลเลอรีสินค้าเด่น"}
+                    onClick={() => {
+                      if (playing) setPaused(true);
+                      else {
+                        setPaused(false);
+                        setMotionEnabled(true);
+                      }
+                    }}
+                  >
+                    {playing ? (
+                      <Pause fill="currentColor" size={21} aria-hidden="true" />
                     ) : (
+                      <Play fill="currentColor" size={21} aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
+              )}
+            </section>
+
+            <section
+              className={`${styles.section} ${styles.paper} ${styles.lineup}`}
+              aria-labelledby="products-lineup-title"
+              data-overview-section="lineup"
+            >
+              <div className={styles.sectionHeading}>
+                <h2 id="products-lineup-title">
+                  {activeCategory
+                    ? `ดูข้อมูล${activeCategory.label}`
+                    : "ดูข้อมูลผลิตภัณฑ์ตระกูลนี้"}
+                </h2>
+                <button
+                  disabled={!hydrated}
+                  type="button"
+                  className={styles.textLink}
+                  onClick={() => (activeCategory ? openCategory(activeCategory.id) : openFinder())}
+                >
+                  {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}{" "}
+                  <ChevronRight size={16} aria-hidden="true" />
+                </button>
+              </div>
+              <Gallery id="products-lineup" label="เลื่อนผลิตภัณฑ์">
+                {lineup.map((product) => (
+                  <li key={product.id} className={styles.productTile}>
+                    <Link href={`/products/${product.slug}`} className={styles.lineupArt}>
                       <ProductImage
                         src={catalogProductPhoto(product)}
                         alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                         fill
-                        preload={index === 0}
-                        sizes="(max-width: 734px) 82vw, 87.5vw"
+                        sizes="(max-width: 734px) 260px, 372px"
                       />
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          {heroes.length > 1 && (
-            <div className={styles.heroPlayback} data-playing={playing}>
-              <div
-                className={styles.heroTabs}
-                role="tablist"
-                aria-label="เลือกสินค้าเด่น"
-                onKeyDown={(event) => {
-                  const keys = ["ArrowRight", "ArrowLeft", "Home", "End"];
-                  if (!keys.includes(event.key)) return;
-                  event.preventDefault();
-                  const index =
-                    event.key === "Home"
-                      ? 0
-                      : event.key === "End"
-                        ? heroes.length - 1
-                        : (heroIndex + (event.key === "ArrowRight" ? 1 : -1) + heroes.length) %
-                          heroes.length;
-                  showHero(index);
-                  (event.currentTarget.children[index] as HTMLButtonElement)?.focus();
-                }}
-              >
-                {heroes.map((product, index) => (
-                  <button
-                    disabled={!hydrated}
-                    type="button"
-                    role="tab"
-                    key={product.id}
-                    aria-label={cardNames[product.id] ?? product.name}
-                    aria-selected={heroIndex === index}
-                    tabIndex={heroIndex === index ? 0 : -1}
-                    aria-controls={`products-hero-${index}`}
-                    onClick={() => showHero(index)}
-                  >
-                    <span />
-                  </button>
+                    </Link>
+                    <div className={styles.lineupCopy}>
+                      {product.badge && <p className={styles.productBadge}>{product.badge}</p>}
+                      <h3>{cardNames[product.id] ?? product.name}</h3>
+                      <p>{product.subtitle}</p>
+                      {typeof product.price === "number" && product.price > 0 && (
+                        <p className={styles.price}>{product.price.toLocaleString("th-TH")} บาท</p>
+                      )}
+                      <div className={styles.tileActions}>
+                        <Link href={`/products/${product.slug}`} className={styles.primaryButton}>
+                          ดูรายละเอียดรุ่น
+                        </Link>
+                        <Link
+                          href={sunford.contact}
+                          className={styles.textLink}
+                          aria-label={`สอบถามสินค้า ${cardNames[product.id] ?? product.name}`}
+                        >
+                          สอบถาม <ChevronRight size={15} aria-hidden="true" />
+                        </Link>
+                      </div>
+                    </div>
+                  </li>
                 ))}
-              </div>
-              <button
-                disabled={!hydrated}
-                type="button"
-                className={styles.playButton}
-                aria-label={playing ? "หยุดแกลเลอรีสินค้าเด่น" : "เล่นแกลเลอรีสินค้าเด่น"}
-                onClick={() => {
-                  if (playing) setPaused(true);
-                  else {
-                    setPaused(false);
-                    setMotionEnabled(true);
-                  }
-                }}
-              >
-                {playing ? (
-                  <Pause fill="currentColor" size={21} aria-hidden="true" />
-                ) : (
-                  <Play fill="currentColor" size={21} aria-hidden="true" />
-                )}
-              </button>
-            </div>
-          )}
-        </section>
+              </Gallery>
+            </section>
 
-        <section
-          className={`${styles.section} ${styles.paper} ${styles.lineup}`}
-          aria-labelledby="products-lineup-title"
-          data-overview-section="lineup"
-        >
-          <div className={styles.sectionHeading}>
-            <h2 id="products-lineup-title">
-              {activeCategory ? `ดูข้อมูล${activeCategory.label}` : "ดูข้อมูลผลิตภัณฑ์ตระกูลนี้"}
-            </h2>
-            <button
-              disabled={!hydrated}
-              type="button"
-              className={styles.textLink}
-              onClick={() => (activeCategory ? openCategory(activeCategory.id) : openFinder())}
+            <section
+              className={`${styles.section} ${styles.paper} ${styles.services}`}
+              aria-labelledby="products-services-title"
+              data-overview-section="services"
             >
-              {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}{" "}
-              <ChevronRight size={16} aria-hidden="true" />
-            </button>
-          </div>
-          <Gallery id="products-lineup" label="เลื่อนผลิตภัณฑ์">
-            {lineup.map((product) => (
-              <li key={product.id} className={styles.productTile}>
-                <Link href={`/products/${product.slug}`} className={styles.lineupArt}>
-                  <ProductImage
-                    src={catalogProductPhoto(product)}
-                    alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
-                    fill
-                    sizes="(max-width: 734px) 260px, 372px"
-                  />
+              <div className={styles.sectionHeading}>
+                <h2 id="products-services-title">เลือก SUNFORD พร้อมเคียงข้างทุกธุรกิจ</h2>
+                <Link className={styles.textLink} href={sunford.contact}>
+                  ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={16} aria-hidden="true" />
                 </Link>
-                <div className={styles.lineupCopy}>
-                  {product.badge && <p className={styles.productBadge}>{product.badge}</p>}
-                  <h3>{cardNames[product.id] ?? product.name}</h3>
-                  <p>{product.subtitle}</p>
-                  {typeof product.price === "number" && product.price > 0 && (
-                    <p className={styles.price}>{product.price.toLocaleString("th-TH")} บาท</p>
-                  )}
-                  <div className={styles.tileActions}>
-                    <Link href={`/products/${product.slug}`} className={styles.primaryButton}>
-                      ดูรายละเอียดรุ่น
-                    </Link>
-                    <Link
-                      href={sunford.contact}
-                      className={styles.textLink}
-                      aria-label={`สอบถามสินค้า ${cardNames[product.id] ?? product.name}`}
-                    >
-                      สอบถาม <ChevronRight size={15} aria-hidden="true" />
-                    </Link>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </Gallery>
-        </section>
+              </div>
+              <Gallery id="products-services" label="เลื่อนบริการ">
+                {services.map((item, index) => {
+                  const Icon = serviceIcons[index];
+                  return (
+                    <li key={item.title} className={styles.serviceCard}>
+                      <Icon size={42} strokeWidth={1.5} aria-hidden="true" />
+                      <h3>{item.title}</h3>
+                      <p>{item.detail}</p>
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        className={styles.cardOpen}
+                        aria-label={`ดูเพิ่มเติม ${item.title}`}
+                        onClick={() => setService(item)}
+                      >
+                        <Plus size={21} aria-hidden="true" />
+                      </button>
+                    </li>
+                  );
+                })}
+              </Gallery>
+            </section>
 
-        <section
-          className={`${styles.section} ${styles.paper} ${styles.services}`}
-          aria-labelledby="products-services-title"
-          data-overview-section="services"
-        >
-          <div className={styles.sectionHeading}>
-            <h2 id="products-services-title">เลือก SUNFORD พร้อมเคียงข้างทุกธุรกิจ</h2>
-            <Link className={styles.textLink} href={sunford.contact}>
-              ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
-          <Gallery id="products-services" label="เลื่อนบริการ">
-            {services.map((item, index) => {
-              const Icon = serviceIcons[index];
-              return (
-                <li key={item.title} className={styles.serviceCard}>
-                  <Icon size={42} strokeWidth={1.5} aria-hidden="true" />
-                  <h3>{item.title}</h3>
-                  <p>{item.detail}</p>
-                  <button
-                    disabled={!hydrated}
-                    type="button"
-                    className={styles.cardOpen}
-                    aria-label={`ดูเพิ่มเติม ${item.title}`}
-                    onClick={() => setService(item)}
-                  >
-                    <Plus size={21} aria-hidden="true" />
-                  </button>
-                </li>
-              );
-            })}
-          </Gallery>
-        </section>
-
-        <section
-          className={`${styles.section} ${styles.features}`}
-          aria-labelledby="products-features-title"
-          data-overview-section="features"
-        >
-          <div className={styles.sectionHeading}>
-            <h2 id="products-features-title">
-              {activeCategory ? `รู้จัก${activeCategory.label} SUNFORD` : "รู้จักผลิตภัณฑ์ SUNFORD"}
-            </h2>
-          </div>
-          <Gallery id="products-features" label="เลื่อนเรื่องราวผลิตภัณฑ์">
-            {stories.map((item) => (
-              <li className={styles.storyCard} key={item.id}>
-                <div className={styles.storyCopy}>
-                  <p>SUNFORD</p>
-                  <h3>{item.title}</h3>
-                </div>
-                <div className={styles.storyArt}>
-                  <ProductImage
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 734px) 260px, 372px"
-                  />
-                </div>
-                <button
-                  disabled={!hydrated}
-                  type="button"
-                  className={styles.cardOpen}
-                  aria-label={`ดูเพิ่มเติม ${item.title}`}
-                  onClick={() => setStory(item)}
-                >
-                  <Plus size={21} aria-hidden="true" />
-                </button>
-              </li>
-            ))}
-          </Gallery>
-        </section>
-
-        {!activeCategory && (
-          <section
-            className={`${styles.section} ${styles.essentials}`}
-            aria-labelledby="products-essentials-title"
-            data-overview-section="essentials"
-          >
-            <div className={styles.sectionHeading}>
-              <h2 id="products-essentials-title">สิ่งที่เติมเต็มการทำงาน</h2>
-              <Link href={sunford.accessories} className={styles.textLink}>
-                ดูอุปกรณ์เสริมทั้งหมด <ChevronRight size={16} aria-hidden="true" />
-              </Link>
-            </div>
-            <Gallery id="products-essentials" label="เลื่อนอุปกรณ์และซอฟต์แวร์">
-              {[
-                {
-                  title: "อุปกรณ์เสริม",
-                  detail:
-                    "เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS เพื่อขยายการใช้งานให้เหมาะกับธุรกิจ",
-                  image: solutionImages.accessories,
-                  href: sunford.accessories,
-                },
-                {
-                  title: "แอปพลิเคชันและซอฟต์แวร์",
-                  detail: "สำหรับงานค้าปลีก การผลิตอุตสาหกรรม และการดูแลครัวเรือนกับสุขภาพ",
-                  image: solutionImages.software,
-                  href: sunford.software,
-                },
-              ].map((item) => (
-                <li key={item.title} className={styles.essentialCard}>
-                  <div className={styles.essentialCopy}>
-                    <h3>{item.title}</h3>
-                    <p>{item.detail}</p>
-                    <Link href={item.href} className={styles.textLink}>
-                      ดูเพิ่มเติม <ChevronRight size={16} aria-hidden="true" />
-                    </Link>
-                  </div>
-                  <div className={styles.essentialArt}>
-                    <ProductImage
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      sizes="(max-width: 734px) 260px, 44vw"
-                    />
-                  </div>
-                </li>
-              ))}
-            </Gallery>
-          </section>
-        )}
-
-        <section
-          className={`${styles.section} ${styles.accordionSection}`}
-          aria-labelledby="products-accordion-title"
-          data-overview-section="accordion"
-        >
-          <div className={styles.sectionHeading}>
-            <h2 id="products-accordion-title">
-              {activeCategory
-                ? `เลือก${activeCategory.label}ให้เหมาะกับงาน`
-                : "เมื่อทุกอย่างเชื่อมถึงกัน ธุรกิจก็ไปได้ไกลขึ้น"}
-            </h2>
-          </div>
-          <div className={styles.accordionCard}>
-            <div className={styles.accordionRows}>
-              {accordion.map((item, index) => (
-                <div className={styles.accordionRow} key={item.title}>
-                  <h3>
+            <section
+              className={`${styles.section} ${styles.features}`}
+              aria-labelledby="products-features-title"
+              data-overview-section="features"
+            >
+              <div className={styles.sectionHeading}>
+                <h2 id="products-features-title">
+                  {activeCategory
+                    ? `รู้จัก${activeCategory.label} SUNFORD`
+                    : "รู้จักผลิตภัณฑ์ SUNFORD"}
+                </h2>
+              </div>
+              <Gallery id="products-features" label="เลื่อนเรื่องราวผลิตภัณฑ์">
+                {stories.map((item) => (
+                  <li className={styles.storyCard} key={item.id}>
+                    <div className={styles.storyCopy}>
+                      <p>SUNFORD</p>
+                      <h3>{item.title}</h3>
+                    </div>
+                    <div className={styles.storyArt}>
+                      <ProductImage
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 734px) 260px, 372px"
+                      />
+                    </div>
                     <button
                       disabled={!hydrated}
-                      id={`products-accordion-button-${index}`}
                       type="button"
-                      aria-expanded={accordionIndex === index}
-                      aria-controls={`products-accordion-panel-${index}`}
-                      onClick={() => setAccordionIndex(index)}
+                      className={styles.cardOpen}
+                      aria-label={`ดูเพิ่มเติม ${item.title}`}
+                      onClick={() => setStory(item)}
                     >
-                      {item.title}
-                      <ChevronDown
-                        className={accordionIndex === index ? styles.chevronOpen : ""}
-                        size={22}
-                        aria-hidden="true"
-                      />
+                      <Plus size={21} aria-hidden="true" />
                     </button>
-                  </h3>
-                  <div
-                    id={`products-accordion-panel-${index}`}
-                    role="region"
-                    aria-labelledby={`products-accordion-button-${index}`}
-                    hidden={accordionIndex !== index}
-                  >
-                    {item.content}
-                    <div className={styles.mobileAccordionArt}>
-                      <ProductImage src={item.image} alt={item.title} fill sizes="80vw" />
+                  </li>
+                ))}
+              </Gallery>
+            </section>
+
+            {!activeCategory && (
+              <section
+                className={`${styles.section} ${styles.essentials}`}
+                aria-labelledby="products-essentials-title"
+                data-overview-section="essentials"
+              >
+                <div className={styles.sectionHeading}>
+                  <h2 id="products-essentials-title">สิ่งที่เติมเต็มการทำงาน</h2>
+                  <Link href={sunford.accessories} className={styles.textLink}>
+                    ดูอุปกรณ์เสริมทั้งหมด <ChevronRight size={16} aria-hidden="true" />
+                  </Link>
+                </div>
+                <Gallery id="products-essentials" label="เลื่อนอุปกรณ์และซอฟต์แวร์">
+                  {[
+                    {
+                      title: "อุปกรณ์เสริม",
+                      detail:
+                        "เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS เพื่อขยายการใช้งานให้เหมาะกับธุรกิจ",
+                      image: solutionImages.accessories,
+                      href: sunford.accessories,
+                    },
+                    {
+                      title: "แอปพลิเคชันและซอฟต์แวร์",
+                      detail: "สำหรับงานค้าปลีก การผลิตอุตสาหกรรม และการดูแลครัวเรือนกับสุขภาพ",
+                      image: solutionImages.software,
+                      href: sunford.software,
+                    },
+                  ].map((item) => (
+                    <li key={item.title} className={styles.essentialCard}>
+                      <div className={styles.essentialCopy}>
+                        <h3>{item.title}</h3>
+                        <p>{item.detail}</p>
+                        <Link href={item.href} className={styles.textLink}>
+                          ดูเพิ่มเติม <ChevronRight size={16} aria-hidden="true" />
+                        </Link>
+                      </div>
+                      <div className={styles.essentialArt}>
+                        <ProductImage
+                          src={item.image}
+                          alt={item.title}
+                          fill
+                          sizes="(max-width: 734px) 260px, 44vw"
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </Gallery>
+              </section>
+            )}
+
+            <section
+              className={`${styles.section} ${styles.accordionSection}`}
+              aria-labelledby="products-accordion-title"
+              data-overview-section="accordion"
+            >
+              <div className={styles.sectionHeading}>
+                <h2 id="products-accordion-title">
+                  {activeCategory
+                    ? `เลือก${activeCategory.label}ให้เหมาะกับงาน`
+                    : "เมื่อทุกอย่างเชื่อมถึงกัน ธุรกิจก็ไปได้ไกลขึ้น"}
+                </h2>
+              </div>
+              <div className={styles.accordionCard}>
+                <div className={styles.accordionRows}>
+                  {accordion.map((item, index) => (
+                    <div className={styles.accordionRow} key={item.title}>
+                      <h3>
+                        <button
+                          disabled={!hydrated}
+                          id={`products-accordion-button-${index}`}
+                          type="button"
+                          aria-expanded={accordionIndex === index}
+                          aria-controls={`products-accordion-panel-${index}`}
+                          onClick={() => setAccordionIndex(index)}
+                        >
+                          {item.title}
+                          <ChevronDown
+                            className={accordionIndex === index ? styles.chevronOpen : ""}
+                            size={22}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </h3>
+                      <div
+                        id={`products-accordion-panel-${index}`}
+                        role="region"
+                        aria-labelledby={`products-accordion-button-${index}`}
+                        hidden={accordionIndex !== index}
+                      >
+                        {item.content}
+                        <div className={styles.mobileAccordionArt}>
+                          <ProductImage src={item.image} alt={item.title} fill sizes="80vw" />
+                        </div>
+                      </div>
                     </div>
+                  ))}
+                </div>
+                <div className={styles.accordionArt}>
+                  <ProductImage
+                    key={accordionIndex}
+                    src={accordion[accordionIndex].image}
+                    alt={accordion[accordionIndex].title}
+                    fill
+                    sizes="60vw"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section
+              className={`${styles.section} ${styles.index}`}
+              aria-labelledby="products-index-title"
+              data-overview-section="index"
+            >
+              <div className={styles.sectionInner}>
+                <h2 id="products-index-title">{activeCategory?.label ?? "ผลิตภัณฑ์"}</h2>
+                <div className={styles.indexColumns}>
+                  <div className={styles.indexPrimary}>
+                    <p>{activeCategory ? `สำรวจ${activeCategory.label}` : "สำรวจผลิตภัณฑ์"}</p>
+                    <button
+                      disabled={!hydrated}
+                      type="button"
+                      onClick={() =>
+                        activeCategory ? openCategory(activeCategory.id) : openFinder()
+                      }
+                    >
+                      {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
+                    </button>
+                    {chapterItems.map((category) => (
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        key={category.id}
+                        onClick={() => openCategory(category.id)}
+                      >
+                        {category.label}
+                      </button>
+                    ))}
+                    <button
+                      disabled={!hydrated}
+                      type="button"
+                      className={styles.indexCompare}
+                      onClick={compare}
+                    >
+                      เลือกสินค้าเพื่อเปรียบเทียบ
+                    </button>
+                  </div>
+                  <div>
+                    <p>เลือกให้ตรงกับงาน</p>
+                    {stories.map((item) => (
+                      <div key={item.id}>{link(item.href, item.title)}</div>
+                    ))}
+                    {!activeCategory && link(sunford.accessories, "อุปกรณ์เสริม")}
+                    {!activeCategory && link(sunford.software, "แอปพลิเคชันและซอฟต์แวร์")}
+                  </div>
+                  <div>
+                    <p>พร้อมดูแลคุณ</p>
+                    {link(sunford.service, "บริการหลังการขาย")}
+                    {link(sunford.warranty, "ลงทะเบียนรับประกัน")}
+                    {link(sunford.warrantyPolicy, "นโยบายการรับประกัน")}
+                    {!activeCategory && link(sunford.downloads, "ดาวน์โหลดซอฟต์แวร์")}
+                    {link(sunford.contact, "ติดต่อเรา")}
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className={styles.accordionArt}>
-              <ProductImage
-                key={accordionIndex}
-                src={accordion[accordionIndex].image}
-                alt={accordion[accordionIndex].title}
-                fill
-                sizes="60vw"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section
-          className={`${styles.section} ${styles.index}`}
-          aria-labelledby="products-index-title"
-          data-overview-section="index"
-        >
-          <div className={styles.sectionInner}>
-            <h2 id="products-index-title">{activeCategory?.label ?? "ผลิตภัณฑ์"}</h2>
-            <div className={styles.indexColumns}>
-              <div className={styles.indexPrimary}>
-                <p>{activeCategory ? `สำรวจ${activeCategory.label}` : "สำรวจผลิตภัณฑ์"}</p>
-                <button
-                  disabled={!hydrated}
-                  type="button"
-                  onClick={() => (activeCategory ? openCategory(activeCategory.id) : openFinder())}
-                >
-                  {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
-                </button>
-                {chapterItems.map((category) => (
-                  <button
-                    disabled={!hydrated}
-                    type="button"
-                    key={category.id}
-                    onClick={() => openCategory(category.id)}
-                  >
-                    {category.label}
-                  </button>
-                ))}
-                <button
-                  disabled={!hydrated}
-                  type="button"
-                  className={styles.indexCompare}
-                  onClick={compare}
-                >
-                  เลือกสินค้าเพื่อเปรียบเทียบ
-                </button>
               </div>
-              <div>
-                <p>เลือกให้ตรงกับงาน</p>
-                {stories.map((item) => (
-                  <div key={item.id}>{link(item.href, item.title)}</div>
-                ))}
-                {!activeCategory && link(sunford.accessories, "อุปกรณ์เสริม")}
-                {!activeCategory && link(sunford.software, "แอปพลิเคชันและซอฟต์แวร์")}
-              </div>
-              <div>
-                <p>พร้อมดูแลคุณ</p>
-                {link(sunford.service, "บริการหลังการขาย")}
-                {link(sunford.warranty, "ลงทะเบียนรับประกัน")}
-                {link(sunford.warrantyPolicy, "นโยบายการรับประกัน")}
-                {!activeCategory && link(sunford.downloads, "ดาวน์โหลดซอฟต์แวร์")}
-                {link(sunford.contact, "ติดต่อเรา")}
-              </div>
-            </div>
-          </div>
-        </section>
+            </section>
+          </>
+        )}
       </main>
 
       <footer className={styles.footer} data-products-footer inert={mobileMenu}>
@@ -1088,7 +1159,7 @@ export function ProductsOverview({
       </ReferenceModal>
       <ReferenceModal
         open={finderOpen}
-        onClose={() => setFinderOpen(false)}
+        onClose={closeFinder}
         title={activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
         large
         finder

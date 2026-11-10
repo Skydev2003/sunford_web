@@ -57,7 +57,7 @@ for (const width of [390, 1440]) {
     await expect(story).toContainText(guide.sections[0].paragraphs[1]);
     await expect(
       story.getByRole("link", { name: "ดูอุปกรณ์ต่อพ่วง ›", exact: true }),
-    ).toHaveAttribute("href", "/product/scale-peripherals");
+    ).toHaveAttribute("href", "/products/category/accessories");
     await page.keyboard.press("Escape");
     await page
       .locator('[data-overview-section="lineup"]')
@@ -102,43 +102,22 @@ for (const width of [390, 1440]) {
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     for (const [id, name] of chapters) {
       await page.locator("#products-chapters").getByRole("button", { name, exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`subcategory=${id}`));
-      await expect(
-        catalog.getByRole("heading", { name: label, exact: true, level: 2 }),
-      ).toBeVisible();
-      await expect(
-        catalog
-          .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-          .getByRole("button", { name, exact: true }),
-      ).toHaveAttribute("aria-pressed", "true");
-      await expect(catalog.getByRole("status")).toHaveText(statuses[id]);
-      if (id === "accessory-cables") {
-        await expect(catalog.locator("article img")).toHaveCount(0);
-        await expect(catalog.locator("article h3")).toHaveText([
-          "RS2321M2F",
-          "LoadcellCable",
-          "CableConnector",
-        ]);
-      }
-      await expect(
-        catalog
-          .getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true })
-          .getByRole("button"),
-      ).toHaveCount(1);
-      await page.keyboard.press("Escape");
+      await expect(page).toHaveURL(new RegExp(path + "/" + id.replace("accessory-", "") + "$"));
+      const listing = page.locator(`[data-product-subcategory-page="${id}"]`);
+      await expect(listing.locator("h1")).toHaveText(`${label} ${name}`);
+      await expect(listing.getByRole("status")).toHaveText(statuses[id]);
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await page.goBack();
+      await expect(page).toHaveURL(new RegExp(path + "$"));
     }
     await page.goto(`${path}?subcategory=accessory-cables&trace=keep`);
-    await expect(finder).toBeVisible();
-    await expect(
-      catalog
-        .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-        .getByRole("button", { name: "สายสัญญาณและหัวต่อ", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await expect(page).toHaveURL(new RegExp(path + "/cables\\?trace=keep$"));
     await page.reload();
-    await expect.poll(() => new URL(page.url()).searchParams.get("subcategory")).toBeNull();
+    await expect(page.locator('[data-product-subcategory-page="accessory-cables"]')).toBeVisible();
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
     await expect(finder).not.toBeVisible();
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
+    await page.goto(path);
     await page
       .locator('[data-overview-section="lineup"]')
       .getByRole("button", { name: title, exact: true })
@@ -170,20 +149,17 @@ for (const width of [768, 834]) {
   });
 }
 
-test("accessories finder retains noninteractive mock-only cable models in comparison mode", async ({
+test("accessory cable listing retains noninteractive Mock models in comparison mode", async ({
   page,
 }) => {
   await page.goto(`${path}?subcategory=accessory-cables`);
-  const finder = page.getByRole("dialog", { name: title, exact: true });
-  await expect(finder.locator("article img")).toHaveCount(0);
-  await finder.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
-  await expect(finder.locator("article[data-mock-product]")).toHaveCount(3);
-  await expect(finder.locator("article[data-mock-product] :is(button, a, img)")).toHaveCount(0);
-  await expect(
-    finder.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true }),
-  ).toBeDisabled();
-  await page.keyboard.press("Escape");
-  await expect(finder).not.toBeVisible();
+  const listing = page.locator('[data-product-subcategory-page="accessory-cables"]');
+  await expect(listing).toBeVisible();
+  await expect(listing.locator("article img")).toHaveCount(0);
+  await listing.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
+  await expect(listing.locator("article[data-mock-product]")).toHaveCount(3);
+  await expect(listing.locator("article[data-mock-product] :is(button,a,img)")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true })).toBeDisabled();
 });
 
 test("accessory cache navigation preserves a single active chrome and overlay host", async ({
@@ -197,6 +173,7 @@ test("accessory cache navigation preserves a single active chrome and overlay ho
     .locator('[data-overview-section="chapters"]')
     .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
     .click();
+  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await page.goBack();

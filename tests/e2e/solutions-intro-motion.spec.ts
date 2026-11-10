@@ -1,72 +1,54 @@
-import { expect, test, type Page } from "@playwright/test";
-
-type MotionWindow = Window & { solutionAnimations: CSSAnimation[] };
-
-async function seek(page: Page, time: number) {
-  await page.evaluate((time) => {
-    for (const animation of (window as unknown as MotionWindow).solutionAnimations)
-      animation.currentTime = time;
-  }, time);
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(null))));
-}
+import { expect, test } from "@playwright/test";
+import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 
 for (const width of [390, 1440]) {
-  test(`solutions reuse the latest finite entrance and stagger at ${width}px`, async ({ page }) => {
+  test(`solutions use shared finite bounce and retain ribbon at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
+    await recordStaggerMotion(page);
     await page.addInitScript(() => {
-      const state = window as unknown as MotionWindow;
-      state.solutionAnimations = [];
-      document.addEventListener("animationstart", () => {
-        for (const animation of document.getAnimations()) {
-          if (
-            animation instanceof CSSAnimation &&
-            animation.animationName.includes("category") &&
-            !state.solutionAnimations.includes(animation)
-          ) {
-            state.solutionAnimations.push(animation);
-            animation.pause();
-            animation.currentTime = 0;
-          }
+      const native = Element.prototype.animate;
+      Element.prototype.animate = function (frames, options) {
+        const animation = native.call(this, frames, options);
+        if (typeof options === "object" && options.id === "sunford-stagger-bounce") {
+          animation.pause();
+          animation.currentTime = 0;
         }
-      });
+        return animation;
+      };
     });
     await page.goto("/solutions");
     const title = page.locator("#solutions-title");
-    await expect(title).toHaveCSS("opacity", "0.15");
     const chapters = page.locator('nav[aria-label="สำรวจกลุ่มธุรกิจ"] li');
     await expect(chapters).toHaveCount(3);
+    await expectStaggerMotion(title);
+    await expect(title).toHaveCSS("opacity", "0");
+    await expect(title).toHaveCSS("scale", "0.8");
+    await expectStaggerMotion(chapters.first());
     const timings = await chapters.evaluateAll((items) =>
-      items.map((item) => {
-        const style = getComputedStyle(item);
-        return {
-          duration: style.animationDuration,
-          delay: style.animationDelay,
-          easing: style.animationTimingFunction,
-          iterations: style.animationIterationCount,
-        };
-      }),
+      items.flatMap((item) =>
+        item
+          .getAnimations()
+          .filter((a) => a.id === "sunford-stagger-bounce")
+          .map((a) => ({
+            duration: a.effect!.getTiming().duration,
+            delay: a.effect!.getTiming().delay,
+            iterations: a.effect!.getTiming().iterations,
+          })),
+      ),
     );
+    expect(timings.length).toBeGreaterThan(0);
     expect(timings).toEqual(
-      [0.18, 0.32, 0.46].map((delay) => ({
-        duration: "0.8s",
-        delay: `${delay}s`,
-        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        iterations: "1",
-      })),
+      timings.map((_, i) => ({ duration: 800, delay: 100 + i * 150, iterations: 1 })),
     );
-    await seek(page, 300);
-    expect(
-      Number(await chapters.first().evaluate((el) => getComputedStyle(el).opacity)),
-    ).toBeGreaterThan(0);
-    await expect(chapters.last()).toHaveCSS("opacity", "0");
-    await seek(page, 3400);
+    await page.evaluate(() => {
+      for (const animation of document.getAnimations()) animation.currentTime = 3500;
+    });
     await expect(title).toHaveCSS("opacity", "1");
-    for (const chapter of await chapters.all()) await expect(chapter).toHaveCSS("opacity", "1");
     const ribbon = page.locator("[data-solutions-overview] > div").first();
     await expect(ribbon).toHaveCSS("animation-duration", "3s");
     await expect(ribbon).toHaveCSS("color", "rgb(29, 29, 31)");
-    await page.screenshot({ path: test.info().outputPath(`solutions-motion-${width}.png`) });
+    await page.screenshot({ path: test.info().outputPath(`solutions-bounce-${width}.png`) });
   });
 }
 

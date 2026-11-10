@@ -18,6 +18,8 @@ import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { AboutPage } from "@/features/content/components/about-page";
 import { SolutionsPage } from "@/features/content/components/solutions-page";
 import { getProductSection } from "@/features/content/data/product-sections";
+import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
+import { getProductSubcategoryPageByHref } from "@/features/catalog/data/product-subcategory-pages";
 import {
   resolveContentPath,
   staticContentParams,
@@ -61,6 +63,8 @@ export default async function SourceContentPage({
 }) {
   const { path } = await params;
   const pathname = resolveContentPath(`/${path.join("/")}`);
+  const subcategoryDestination = resolveCategoryHref(pathname);
+  if (getProductSubcategoryPageByHref(subcategoryDestination)) redirect(subcategoryDestination);
   if (path.includes("products")) {
     const product = await getProduct(path.at(-1)!);
     if (product) redirect(`/products/${product.slug}`);

@@ -1,4 +1,6 @@
 import styles from "./product-detail.module.css";
+import { Suspense } from "react";
+import { ProductReturnLink } from "@/features/catalog/components/product-return-link";
 import { relatedProducts } from "@/features/catalog/data/related-products";
 import { catalogProductGroup } from "@/features/catalog/data/catalog-supplements";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
@@ -34,6 +36,7 @@ import { ProductSpecificationDialogs } from "./product-specification-dialogs";
 // Resolve the product before streaming so unknown URLs retain an HTTP 404.
 // Catalogue reads remain cached; this route deliberately allows URL resolution.
 export const instant = false;
+export const ensureStatic = "navigation";
 
 export async function generateStaticParams() {
   return (await getProducts()).map((p) => ({ slug: p.slug }));
@@ -79,9 +82,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   return (
     <main id="main-content" className={`product-detail container ${styles.page}`}>
       <section id="product-overview" className="product-overview" aria-label="ภาพรวมสินค้า">
-        <Link href="/products" className="text-link back-link">
-          <ArrowLeft size={16} /> ผลิตภัณฑ์ทั้งหมด
-        </Link>
+        <Suspense
+          fallback={
+            <Link href="/products" className="text-link back-link">
+              <ArrowLeft size={16} /> ผลิตภัณฑ์ทั้งหมด
+            </Link>
+          }
+        >
+          <ProductReturnLink />
+        </Suspense>
         <div className="detail-grid">
           <div className="detail-copy">
             {category && (

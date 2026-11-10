@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { defaultNavigation } from "../../src/features/cms/data/navigation";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
 import { scaleSubcategoryDefinitions } from "../../src/features/catalog/data/scale-subcategories";
@@ -16,39 +17,20 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const width of [390, 1440]) {
-  test(`scales reload shows the overview and keeps intentional popup actions at ${width}px`, async ({
+  test(`scale child URLs reload as listings and intentional all-model actions stay available at ${width}px`, async ({
     page,
   }) => {
-    test.slow();
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(`${scalePath}?subcategory=scale-kitchen&trace=keep#scale-section`);
-    const local = page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true });
-    await expect(local).toBeVisible();
-    expect(new URL(page.url()).hash).toBe("#scale-section");
+    await expect(page).toHaveURL(
+      /\/products\/category\/scales\/kitchen\?trace=keep#scale-section$/,
+    );
     await page.reload();
-    await expect.poll(() => new URL(page.url()).searchParams.get("subcategory")).toBeNull();
-    await expect(local).not.toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "เครื่องชั่ง", level: 1, exact: true }),
-    ).toBeVisible();
+    await expect(page.locator('[data-scale-subcategory-page="scale-kitchen"]')).toBeVisible();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
-    expect(new URL(page.url()).hash).toBe("");
-    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
-    await page
-      .locator("#products-chapters")
-      .getByRole("button", { name: scaleSubcategoryDefinitions[0].label, exact: true })
-      .click();
-    await expect(local).toBeVisible();
-    await expect(
-      local
-        .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-        .getByRole("button", { name: "คำนวณราคาหน้าร้าน", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
-    await local.getByRole("button", { name: "ปิดแคตตาล็อกสินค้า", exact: true }).click();
-    await page.reload();
-    await expect.poll(() => new URL(page.url()).searchParams.get("subcategory")).toBeNull();
-    await expect(local).not.toBeVisible();
-    await page.screenshot({ path: test.info().outputPath(`scales-reloaded-${width}.png`) });
+    await page.goto(scalePath);
+    const local = page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true });
     await page
       .locator('[data-overview-section="lineup"]')
       .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })
@@ -56,27 +38,9 @@ for (const width of [390, 1440]) {
     await expect(local).toBeVisible();
     await expect(local.getByRole("status")).toHaveText("74 รายการ · 18 รุ่นตัวอย่าง (Mock)");
     await page.keyboard.press("Escape");
-    await page.goto("/products/category/indicators");
-    await page.reload();
-    const header = page.locator("[data-products-header]:visible");
-    if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-    if (width < 834)
-      await header.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true }).click();
-    else await header.getByRole("link", { name: "เครื่องชั่ง", exact: true }).hover();
-    await header
-      .locator("#products-navigation-panel")
-      .getByRole("link", { name: "งานครัวและกาแฟ", exact: true })
-      .click();
-    await expect(local).toBeVisible();
-    await expect(
-      local
-        .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-        .getByRole("button", { name: "งานครัวและกาแฟ", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
     await page.goto("/products?catalog=all");
-    const full = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
-    await expect(full).toBeVisible();
     await page.reload();
+    const full = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
     await expect(full).toBeVisible();
     await expect(
       full.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }).getByRole("button"),
@@ -174,7 +138,7 @@ for (const width of [390, 1440]) {
     expect(errors).toEqual([]);
   });
 
-  test(`eight scale chapters open the right local catalog at ${width}px`, async ({ page }) => {
+  test(`eight scale chapters open the matching listing at ${width}px`, async ({ page }) => {
     test.slow();
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(scalePath);
@@ -185,23 +149,14 @@ for (const width of [390, 1440]) {
         exact: true,
       });
       await button.click();
-      const finder = page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true });
-      await expect(finder).toBeVisible();
       const childId = new URL(child.href, page.url()).searchParams.get("subcategory")!;
-      expect(new URL(page.url()).pathname).toBe(scalePath);
-      expect(new URL(page.url()).searchParams.get("subcategory")).toBe(childId);
-      await expect(
-        finder
-          .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-          .getByRole("button", { name: child.label, exact: true }),
-      ).toHaveAttribute("aria-pressed", "true");
-      await expect(
-        finder.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }).getByRole("button"),
-      ).toHaveText(["เครื่องชั่ง"]);
-      await page.keyboard.press("Escape");
-      await expect(finder).not.toBeVisible();
-      await expect(button).toBeFocused();
-      expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
+      await expect(page).toHaveURL(
+        new URL(getScaleSubcategoryPage(childId)!.href, page.url()).href,
+      );
+      await expect(page.locator(`[data-scale-subcategory-page="${childId}"]`)).toBeVisible();
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await page.goBack();
+      await expect(rail).toBeVisible();
     }
   });
 }
@@ -246,6 +201,7 @@ test("scales and full catalog keep the right overlay host across cached navigati
     .locator('[data-overview-section="chapters"]')
     .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
     .click();
+  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
   const full = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
   await expect(full).toBeVisible();
   await expect(

@@ -80,29 +80,19 @@ for (const width of [390, 1440]) {
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     for (const [id, name] of chapters) {
       await page.locator("#products-chapters").getByRole("button", { name, exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`subcategory=${id}`));
-      await expect(
-        catalog.getByRole("heading", { name: label, exact: true, level: 2 }),
-      ).toBeVisible();
-      await expect(
-        catalog
-          .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-          .getByRole("button", { name, exact: true }),
-      ).toHaveAttribute("aria-pressed", "true");
-      await expect(
-        catalog
-          .getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true })
-          .getByRole("button"),
-      ).toHaveCount(1);
-      await page.keyboard.press("Escape");
+      await expect(page.locator(`[data-indicator-subcategory-page="${id}"]`)).toBeVisible();
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await page.goBack();
+      await expect(page).toHaveURL(new RegExp(path + "$"));
     }
     await page.goto(`${path}?subcategory=indicator-led&trace=keep`);
-    await expect(finder).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(path + "/led\\?trace=keep$"));
     await page.reload();
-    await expect.poll(() => new URL(page.url()).searchParams.get("subcategory")).toBeNull();
+    await expect(page.locator('[data-indicator-subcategory-page="indicator-led"]')).toBeVisible();
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
     await expect(finder).not.toBeVisible();
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
+    await page.goto(path);
     await page
       .locator('[data-overview-section="lineup"]')
       .getByRole("button", { name: title, exact: true })
@@ -144,6 +134,7 @@ test("indicator cache navigation preserves a single active chrome and overlay ho
     .locator('[data-overview-section="chapters"]')
     .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
     .click();
+  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await page.goBack();

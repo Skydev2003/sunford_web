@@ -19,6 +19,7 @@ import { useCatalogStore } from "@/stores/catalog-store";
 import type { ClientProduct } from "../types";
 import { getCatalogDecisionFacts } from "../data/catalog-decision-facts";
 import type { ProductCategory } from "../data/mock-categories";
+import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
 import { catalogModelLabel } from "../data/catalog-card-names";
 import { CatalogProductCard, catalogProductPhoto } from "./catalog-product-card";
 import cardStyles from "./product-browser.module.css";
@@ -54,19 +55,23 @@ function CatalogCategoryUrlSync({
   categories,
   onSelect,
   categoryId,
+  subcategoryId,
 }: {
   categories: ProductCategory[];
   onSelect: (id: string, childId?: string) => void;
   categoryId?: string;
+  subcategoryId?: string;
 }) {
   const searchParams = useSearchParams();
   const requestedCategory = searchParams.get("category");
   const requestedSubcategory = searchParams.get("subcategory");
   useEffect(() => {
     const parent = categories.find((item) => item.id === (categoryId ?? requestedCategory));
-    const child = parent?.subcategories.find((item) => item.id === requestedSubcategory);
+    const child = parent?.subcategories.find(
+      (item) => item.id === (subcategoryId ?? requestedSubcategory),
+    );
     onSelect(parent?.id ?? "all", child?.id ?? "all");
-  }, [requestedCategory, requestedSubcategory, categories, onSelect, categoryId]);
+  }, [requestedCategory, requestedSubcategory, categories, onSelect, categoryId, subcategoryId]);
   return null;
 }
 
@@ -76,15 +81,17 @@ export function ProductCategoryMock({
   cardNames,
   presentation = "overview",
   categoryId,
+  subcategoryId,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
   cardNames: Record<string, string>;
-  presentation?: "overview" | "finder" | "category";
+  presentation?: "overview" | "finder" | "category" | "listing";
   categoryId?: string;
+  subcategoryId?: string;
 }) {
   const [category, setCategory] = useState(categoryId ?? "all");
-  const [subcategory, setSubcategory] = useState("all");
+  const [subcategory, setSubcategory] = useState(subcategoryId ?? "all");
   const [featured, setFeatured] = useState(false);
   const [mode, setMode] = useState<"grid" | "list">("grid");
   const [pagination, setPagination] = useState({ key: "", limit: 24 });
@@ -93,8 +100,11 @@ export function ProductCategoryMock({
   const showcaseTrack = useRef<HTMLUListElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
   const subcategoryScrollTarget = useRef<{ track: HTMLDivElement; left: number } | null>(null);
-  const query = useCatalogStore((state) => state.query);
-  const setQuery = useCatalogStore((state) => state.setQuery);
+  const catalogQuery = useCatalogStore((state) => state.query);
+  const setCatalogQuery = useCatalogStore((state) => state.setQuery);
+  const [listingQuery, setListingQuery] = useState("");
+  const query = presentation === "listing" ? listingQuery : catalogQuery;
+  const setQuery = presentation === "listing" ? setListingQuery : setCatalogQuery;
   const compareMode = useCatalogStore((state) => state.compareMode);
   const startCompare = useCatalogStore((state) => state.startCompare);
   const activeCategory = categories.find((item) => item.id === category);
@@ -137,7 +147,7 @@ export function ProductCategoryMock({
     .filter(
       ({ model, product }) =>
         (!featured || product?.featured) &&
-        `${model} ${product?.name ?? ""} ${product?.subtitle ?? ""} ${product?.description ?? ""}`
+        `${model} ${product?.warehouseSku ?? ""} ${product?.name ?? ""} ${product?.subtitle ?? ""} ${product?.description ?? ""}`
           .toLowerCase()
           .includes(normalizedQuery),
     )
@@ -154,10 +164,10 @@ export function ProductCategoryMock({
     (id: string, childId = "all") => {
       subcategoryScrollTarget.current = null;
       setCategory(categoryId ?? id);
-      setSubcategory(childId);
+      setSubcategory(subcategoryId ?? childId);
       setPagination({ key: "", limit: 24 });
     },
-    [categoryId],
+    [categoryId, subcategoryId],
   );
   const selectCategory = (id: string) => {
     applyCategory(id);
@@ -222,9 +232,10 @@ export function ProductCategoryMock({
           categories={categories}
           onSelect={applyCategory}
           categoryId={categoryId}
+          subcategoryId={subcategoryId}
         />
       </Suspense>
-      {presentation !== "finder" && (
+      {presentation !== "finder" && presentation !== "listing" && (
         <header className={styles.heading}>
           <h1>{presentation === "category" ? activeCategory?.label : "ผลิตภัณฑ์ทั้งหมด"}</h1>
           {presentation === "category" ? (
@@ -267,7 +278,7 @@ export function ProductCategoryMock({
         </label>
       </div>
 
-      {presentation !== "category" && (
+      {presentation !== "category" && presentation !== "listing" && (
         <div className={styles.categoryRail}>
           <p className={styles.selectionLabel}>ยังไม่ทราบรุ่น เลือกจากหมวดสินค้า</p>
           <nav
@@ -386,81 +397,84 @@ export function ProductCategoryMock({
       )}
 
       <div id="catalog-finder" className={styles.finder}>
-        {presentation !== "category" && (
+        {presentation !== "category" && presentation !== "listing" && (
           <div className={styles.finderHeading}>
             <h2>{activeCategory?.label ?? "ผลิตภัณฑ์ทั้งหมด"}</h2>
           </div>
         )}
-        {activeCategory && <p className={styles.selectionLabel}>เลือกประเภทสินค้า</p>}
-        <div className={styles.selection}>
-          <div className={styles.subcategoryScroller}>
-            {activeCategory && (
-              <button
-                type="button"
-                className={styles.subcategoryArrow}
-                aria-label="เลื่อนหมวดย่อยไปทางซ้าย"
-                aria-controls="catalog-subcategory-options"
-                onClick={() => scrollSubcategories(-1)}
-              >
-                <ChevronLeft size={20} aria-hidden="true" />
-              </button>
-            )}
-            <div
-              key={category}
-              ref={subcategoryTrack}
-              id="catalog-subcategory-options"
-              className={styles.subcategories}
-              role="group"
-              aria-label="หมวดหมู่ย่อยสินค้า"
-              onScroll={(event) => {
-                const track = event.currentTarget;
-                const pending = subcategoryScrollTarget.current;
-                if (pending?.track === track && Math.abs(track.scrollLeft - pending.left) < 1)
-                  subcategoryScrollTarget.current = null;
-              }}
-            >
-              <button
-                type="button"
-                aria-pressed={subcategory === "all"}
-                onClick={() => selectSubcategory("all")}
-              >
-                ทั้งหมด
-              </button>
-              {activeCategory?.subcategories.map((item) => (
+        {presentation !== "listing" && (
+          <>
+            {activeCategory && <p className={styles.selectionLabel}>เลือกประเภทสินค้า</p>}
+            <div className={styles.selection}>
+              <div className={styles.subcategoryScroller}>
+                {activeCategory && (
+                  <button
+                    type="button"
+                    className={styles.subcategoryArrow}
+                    aria-label="เลื่อนหมวดย่อยไปทางซ้าย"
+                    aria-controls="catalog-subcategory-options"
+                    onClick={() => scrollSubcategories(-1)}
+                  >
+                    <ChevronLeft size={20} aria-hidden="true" />
+                  </button>
+                )}
+                <div
+                  key={category}
+                  ref={subcategoryTrack}
+                  id="catalog-subcategory-options"
+                  className={styles.subcategories}
+                  role="group"
+                  aria-label="หมวดหมู่ย่อยสินค้า"
+                  onScroll={(event) => {
+                    const track = event.currentTarget;
+                    const pending = subcategoryScrollTarget.current;
+                    if (pending?.track === track && Math.abs(track.scrollLeft - pending.left) < 1)
+                      subcategoryScrollTarget.current = null;
+                  }}
+                >
+                  <button
+                    type="button"
+                    aria-pressed={subcategory === "all"}
+                    onClick={() => selectSubcategory("all")}
+                  >
+                    ทั้งหมด
+                  </button>
+                  {activeCategory?.subcategories.map((item) => (
+                    <button
+                      type="button"
+                      key={item.id}
+                      aria-pressed={subcategory === item.id}
+                      onClick={() => selectSubcategory(item.id)}
+                    >
+                      {category === "scales" ? item.label.replace(/^เครื่องชั่ง/, "") : item.label}
+                    </button>
+                  ))}
+                </div>
+                {activeCategory && (
+                  <button
+                    type="button"
+                    className={styles.subcategoryArrow}
+                    aria-label="เลื่อนหมวดย่อยไปทางขวา"
+                    aria-controls="catalog-subcategory-options"
+                    onClick={() => scrollSubcategories(1)}
+                  >
+                    <ChevronRight size={20} aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+              {presentation !== "category" && (
                 <button
                   type="button"
-                  key={item.id}
-                  aria-pressed={subcategory === item.id}
-                  onClick={() => selectSubcategory(item.id)}
+                  className={styles.all}
+                  aria-pressed={category === "all"}
+                  onClick={() => selectCategory("all")}
                 >
-                  {category === "scales" ? item.label.replace(/^เครื่องชั่ง/, "") : item.label}
+                  ดูสินค้าทั้งหมด
                 </button>
-              ))}
+              )}
             </div>
-            {activeCategory && (
-              <button
-                type="button"
-                className={styles.subcategoryArrow}
-                aria-label="เลื่อนหมวดย่อยไปทางขวา"
-                aria-controls="catalog-subcategory-options"
-                onClick={() => scrollSubcategories(1)}
-              >
-                <ChevronRight size={20} aria-hidden="true" />
-              </button>
-            )}
-          </div>
-          {presentation !== "category" && (
-            <button
-              type="button"
-              className={styles.all}
-              aria-pressed={category === "all"}
-              onClick={() => selectCategory("all")}
-            >
-              ดูสินค้าทั้งหมด
-            </button>
-          )}
-        </div>
-
+          </>
+        )}
         <div className={styles.toolbar}>
           <p role="status" className={styles.count}>
             {realCount} รายการ{mockCount > 0 && ` · ${mockCount} รุ่นตัวอย่าง (Mock)`}
@@ -513,6 +527,11 @@ export function ProductCategoryMock({
           {matching.slice(0, limit).map(({ product, model }) =>
             product ? (
               <CatalogProductCard
+                returnContext={
+                  presentation === "listing"
+                    ? getProductSubcategoryPage(subcategoryId, categoryId)?.returnContext
+                    : undefined
+                }
                 key={`${product.id}:${model}`}
                 modelOnly
                 product={{ ...product, name: model }}

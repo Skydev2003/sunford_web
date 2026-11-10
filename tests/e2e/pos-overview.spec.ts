@@ -62,7 +62,7 @@ for (const width of [390, 1440]) {
     await expect(story).toContainText(guide.sections[0].paragraphs[1]);
     await expect(
       story.getByRole("link", { name: "POS ระบบ Android ›", exact: true }),
-    ).toHaveAttribute("href", "/products/category/pos?subcategory=pos-android");
+    ).toHaveAttribute("href", "/products/category/pos/android");
     await page.keyboard.press("Escape");
     await page
       .locator('[data-overview-section="lineup"]')
@@ -97,41 +97,24 @@ for (const width of [390, 1440]) {
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     for (const [id, name] of chapters) {
       await page.locator("#products-chapters").getByRole("button", { name, exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`subcategory=${id}`));
-      await expect(
-        catalog.getByRole("heading", { name: label, exact: true, level: 2 }),
-      ).toBeVisible();
-      await expect(
-        catalog
-          .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-          .getByRole("button", { name, exact: true }),
-      ).toHaveAttribute("aria-pressed", "true");
-      await expect(catalog.getByRole("status")).toHaveText(
+      await expect(page).toHaveURL(new RegExp(path + "/" + id.replace("pos-", "") + "$"));
+      const listing = page.locator(`[data-product-subcategory-page="${id}"]`);
+      await expect(listing.locator("h1")).toHaveText(`${label} ${name}`);
+      await expect(listing.getByRole("status")).toHaveText(
         id === "pos-ios" ? "0 รายการ" : id === "pos-android" ? "2 รายการ" : "1 รายการ",
       );
-      if (id === "pos-ios")
-        await expect(
-          catalog.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),
-        ).toBeVisible();
-      await expect(
-        catalog
-          .getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true })
-          .getByRole("button"),
-      ).toHaveCount(1);
-      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await page.goBack();
+      await expect(page).toHaveURL(new RegExp(path + "$"));
     }
     await page.goto(`${path}?subcategory=pos-android&trace=keep`);
-    await expect(finder).toBeVisible();
-    await expect(
-      catalog
-        .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-        .getByRole("button", { name: "Android", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await expect(page).toHaveURL(new RegExp(path + "/android\\?trace=keep$"));
     await page.reload();
-    await expect.poll(() => new URL(page.url()).searchParams.get("subcategory")).toBeNull();
+    await expect(page.locator('[data-product-subcategory-page="pos-android"]')).toBeVisible();
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
     await expect(finder).not.toBeVisible();
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
+    await page.goto(path);
     await page
       .locator('[data-overview-section="lineup"]')
       .getByRole("button", { name: title, exact: true })
@@ -172,6 +155,7 @@ test("POS cache navigation preserves a single active chrome and overlay host", a
     .locator('[data-overview-section="chapters"]')
     .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
     .click();
+  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await page.goBack();

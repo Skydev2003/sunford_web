@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
+import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
 
 const categories = [
@@ -18,7 +20,7 @@ for (const width of [390, 1440]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 1000 });
-    for (const [label, child, filter] of [
+    for (const [label, child] of [
       ["ร้านค้าและตลาดสด", "scale-price", "คำนวณราคาหน้าร้าน"],
       ["ร้านกาแฟ", "scale-kitchen", "งานครัวและกาแฟ"],
       ["เครื่องชั่งสำหรับโรงงาน", "scale-industrial", "อุตสาหกรรมงานผลิต"],
@@ -28,16 +30,12 @@ for (const width of [390, 1440]) {
       const link = page
         .locator("main[data-solutions-overview]")
         .getByRole("link", { name: label, exact: true });
-      await expect(link).toHaveAttribute("href", `/products/category/scales?subcategory=${child}`);
+      const href = getScaleSubcategoryPage(child)!.href;
+      await expect(link).toHaveAttribute("href", href);
       await link.click();
-      await expect(page).toHaveURL(new RegExp(`/products/category/scales\\?subcategory=${child}$`));
-      const dialog = page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true });
-      await expect(dialog).toBeVisible();
-      await expect(dialog.getByRole("button", { name: filter, exact: true })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      await expect(dialog).not.toContainText("ยังไม่พบสินค้าที่คุณค้นหา");
+      await expect(page).toHaveURL(new URL(href, page.url()).href);
+      await expect(page.locator(`[data-scale-subcategory-page="${child}"]`)).toBeVisible();
+      await expect(page.getByRole("dialog")).toHaveCount(0);
     }
   });
 
@@ -58,8 +56,8 @@ for (const width of [390, 1440]) {
           .locator("main#main-content:visible article")
           .getByRole("link", { name: link.label, exact: true })
           .click();
-        await expect(page).toHaveURL(new URL(link.href, page.url()).href);
-        const target = new URL(link.href, page.url());
+        const target = new URL(resolveCategoryHref(link.href), page.url());
+        await expect(page).toHaveURL(target.href);
         if (target.searchParams.has("subcategory"))
           await expect(page.getByRole("dialog")).toBeVisible();
         else await expect(page.getByRole("dialog")).toHaveCount(0);

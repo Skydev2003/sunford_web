@@ -1,4 +1,5 @@
 import type { Product } from "../types";
+import { warehouseSubcategories } from "./warehouse-categories";
 import type { ProductCategory } from "./mock-categories";
 import { catalogCardName } from "./catalog-card-names";
 import { getConsumableSizeProducts } from "./consumable-sizes";
@@ -65,31 +66,34 @@ const modelCode = (value: string) =>
 
 export function getAccessorySubcategories(products: Product[]): ProductCategory["subcategories"] {
   const bySourceId = new Map(products.map((product) => [product.sourceId, product]));
-  return accessorySubcategoryDefinitions.map(({ id, label, models }) => {
-    const entries =
-      id === "accessory-consumables"
-        ? getConsumableSizeProducts(products).map((product) => ({
-            model: catalogCardName(product),
-            documentModel: catalogCardName(product),
-            productId: product.id,
-          }))
-        : models.map(({ model, documentModel, sourceIds }) => {
-            const product =
-              sourceIds.map((sourceId) => bySourceId.get(sourceId)).find(Boolean) ??
-              products.find((product) => modelCode(product.name) === modelCode(model));
-            return {
-              model,
-              documentModel: documentModel ?? model,
-              ...(product ? { productId: product.id } : {}),
-            };
-          });
-    return {
-      id,
-      label,
-      entries,
-      productIds: [
-        ...new Set(entries.flatMap((entry) => (entry.productId ? [entry.productId] : []))),
-      ],
-    };
-  });
+  return warehouseSubcategories(
+    accessorySubcategoryDefinitions.map(({ id, label, models }) => {
+      const entries =
+        id === "accessory-consumables"
+          ? getConsumableSizeProducts(products).map((product) => ({
+              model: catalogCardName(product),
+              documentModel: catalogCardName(product),
+              productId: product.id,
+            }))
+          : models.map(({ model, documentModel, sourceIds }) => {
+              const product =
+                sourceIds.map((sourceId) => bySourceId.get(sourceId)).find(Boolean) ??
+                products.find((product) => modelCode(product.name) === modelCode(model));
+              return {
+                model,
+                documentModel: documentModel ?? model,
+                ...(product ? { productId: product.id } : {}),
+              };
+            });
+      return {
+        id,
+        label,
+        entries,
+        productIds: [
+          ...new Set(entries.flatMap((entry) => (entry.productId ? [entry.productId] : []))),
+        ],
+      };
+    }),
+    products,
+  );
 }

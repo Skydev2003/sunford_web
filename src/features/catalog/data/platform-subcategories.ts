@@ -1,4 +1,5 @@
 import { catalogProductGroup } from "./catalog-supplements";
+import { warehouseSubcategories } from "./warehouse-categories";
 import type { Product } from "../types";
 import type { ProductCategory } from "./mock-categories";
 
@@ -62,16 +63,19 @@ export function getPlatformSubcategories(products: Product[]): ProductCategory["
     (product) => catalogProductGroup(product) === "/product/scale-platforms",
   );
   const bySourceId = new Map(platforms.map((product) => [product.sourceId, product]));
-  return platformSubcategoryDefinitions.map(({ id, label, models }) => {
-    const entries = models.map(({ model, sourceId }) => {
-      const product = sourceId ? bySourceId.get(sourceId) : undefined;
-      return { model, documentModel: model, ...(product ? { productId: product.id } : {}) };
-    });
-    return {
-      id,
-      label,
-      productIds: entries.flatMap((entry) => (entry.productId ? [entry.productId] : [])),
-      entries,
-    };
-  });
+  return warehouseSubcategories(
+    platformSubcategoryDefinitions.map(({ id, label, models }) => {
+      const entries = models.map(({ model, sourceId }) => {
+        const product = sourceId ? bySourceId.get(sourceId) : undefined;
+        return { model, documentModel: model, ...(product ? { productId: product.id } : {}) };
+      });
+      return {
+        id,
+        label,
+        productIds: entries.flatMap((entry) => (entry.productId ? [entry.productId] : [])),
+        entries,
+      };
+    }),
+    products,
+  );
 }
