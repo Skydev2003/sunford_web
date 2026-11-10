@@ -37,6 +37,17 @@ function originalProduct(product: Product) {
 
 /** The hardware family is independent of stale database category defaults. */
 export function catalogProductGroup(product: Product): CatalogGroup | undefined {
+  if (product.warehouseCategoryId) {
+    return (
+      {
+        scales: "/products",
+        indicators: "/Indicator",
+        platforms: "/product/scale-platforms",
+        pos: "/Product/POS",
+        accessories: "/product/scale-accessories",
+      } as Record<string, CatalogGroup>
+    )[product.warehouseCategoryId];
+  }
   const source = originalProduct(product);
   if (
     ["10732", "10733", "10838", "10839", "10840", "10841", "10842", "10843", "10844"].includes(

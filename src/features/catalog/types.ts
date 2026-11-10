@@ -37,6 +37,12 @@ export type Product = {
   sourceId?: string;
   sourceUrl?: string;
   price?: number | null;
+  warehouseSku?: string;
+  warehouseUnit?: string;
+  warehouseNetUnitSatang?: number | null;
+  warehouseCategoryId?: string;
+  warehouseSubcategoryIds?: string[];
+  warehouseModelCodes?: string[];
   imageOverridden?: boolean;
   media?: import("@/features/cms/types").ProductMedia;
 };
@@ -45,8 +51,17 @@ export type ProductCardData = Pick<
   Product,
   "id" | "slug" | "name" | "category" | "subtitle" | "image" | "capacity" | "badge"
 >;
-export type CatalogProduct = ProductCardData & Pick<Product, "description" | "featured" | "topics">;
-export type StorefrontProduct = CatalogProduct & Pick<Product, "price" | "imageOverridden">;
+export type CatalogProduct = ProductCardData & Pick<Product, "description" | "featured" | "topics" | "warehouseSku">;
+export type StorefrontProduct = CatalogProduct &
+  Pick<
+    Product,
+    | "price"
+    | "imageOverridden"
+    | "warehouseSku"
+    | "warehouseModelCodes"
+    | "warehouseCategoryId"
+    | "warehouseSubcategoryIds"
+  >;
 export type OverlayProduct = Pick<
   Product,
   | "id"
@@ -59,5 +74,6 @@ export type OverlayProduct = Pick<
   | "capacity"
   | "readability"
   | "connection"
+  | "warehouseSku"
 >;
 export type ClientProduct = StorefrontProduct & OverlayProduct;

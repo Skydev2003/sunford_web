@@ -36,7 +36,9 @@ export function ProductCatalog({
   const filtered = products.filter(
     (p) =>
       (scoped || category === "all" || p.category === category) &&
-      `${p.name} ${p.subtitle} ${p.description}`.toLowerCase().includes(query.toLowerCase().trim()),
+      `${p.warehouseSku ?? ""} ${p.name} ${p.subtitle} ${p.description}`
+        .toLowerCase()
+        .includes(query.toLowerCase().trim()),
   );
   const matching =
     !full && category === "all" && !query

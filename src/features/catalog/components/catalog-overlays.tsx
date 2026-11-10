@@ -43,7 +43,7 @@ export function CatalogOverlays({
     }
   }, [compareOpen]);
   const found = products.filter((p) =>
-    `${p.name} ${p.subtitle} ${p.description} ${categories.find((c) => c.id === p.category)?.label}`
+    `${p.warehouseSku ?? ""} ${p.name} ${p.subtitle} ${p.description} ${categories.find((c) => c.id === p.category)?.label}`
       .toLowerCase()
       .includes(search.trim().toLowerCase()),
   );

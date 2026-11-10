@@ -71,6 +71,10 @@ export function catalogModelLabel(name: string) {
     .trim();
 }
 
-export function catalogCardName(product: Pick<Product, "name" | "sourceId">) {
+export function catalogCardName(
+  product: Pick<Product, "name" | "sourceId"> & Partial<Pick<Product, "warehouseModelCodes">>,
+) {
+  if (product.warehouseModelCodes?.[0])
+    return catalogModelLabel(product.warehouseModelCodes[0].replace(/^Indicator-/, "Indicator "));
   return sourceCardNames[product.sourceId ?? ""] ?? catalogModelLabel(product.name);
 }

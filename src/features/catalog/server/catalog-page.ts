@@ -84,6 +84,8 @@ export async function getCatalogPage(path: string, allProducts: Product[]) {
     ...rootSection.links.filter((link) => key(link.href) !== key(group.root)),
   ];
   const members = async (href: string) => {
+    if (key(href) === key(group.root) && allProducts.some((product) => product.warehouseSku))
+      return allProducts.filter((product) => catalogProductGroup(product) === group.root);
     const section = getProductSection(key(href) === key(group.root) ? group.source : href);
     const paths = section?.collectionPaths.length ? section.collectionPaths : [href];
     const pages = await Promise.all(paths.map(getContentPage));

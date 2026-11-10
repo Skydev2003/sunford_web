@@ -24,12 +24,14 @@ export function CatalogProductCard({
   headingLevel = 3,
   modelOnly = false,
   decisionFacts,
+  returnContext,
 }: {
   product: ProductCardData;
   categoryLabel?: string;
   headingLevel?: 2 | 3;
   modelOnly?: boolean;
   decisionFacts?: readonly CatalogDecisionFact[];
+  returnContext?: import("../data/product-subcategory-pages").ProductReturnContext;
 }) {
   const categories = useCategories();
   const compareIds = useCatalogStore((s) => s.compareIds);
@@ -37,13 +39,14 @@ export function CatalogProductCard({
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
   const selected = compareIds.includes(product.id);
   const Heading = headingLevel === 2 ? "h2" : "h3";
+  const href = `/products/${product.slug}${returnContext ? `?from=${returnContext}` : ""}`;
   return (
     <article
       className={styles.card}
       data-model-only={modelOnly || undefined}
       data-decision-facts={decisionFacts ? true : undefined}
     >
-      <Link href={`/products/${product.slug}`} className={styles.image}>
+      <Link href={href} className={styles.image}>
         <ProductImage
           src={catalogProductPhoto(product)}
           alt={`SUNFORD ${product.name}`}
@@ -64,7 +67,7 @@ export function CatalogProductCard({
       )}
       <div className={styles.copy}>
         {!modelOnly && <span className={styles.brand}>SUNFORD</span>}
-        <Link href={`/products/${product.slug}`}>
+        <Link href={href}>
           <Heading>{product.name}</Heading>
         </Link>
         {decisionFacts && decisionFacts.length > 0 && (

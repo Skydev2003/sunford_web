@@ -8,6 +8,10 @@ export function findCatalogProduct(products: Product[], slug: string) {
   // record remains individually editable/hideable without changing old URLs.
   const exact = products.find((product) => product.slug === target);
   if (exact) return exact;
+  const sku = products.find(
+    (product) => product.warehouseSku?.toLowerCase() === target.toLowerCase(),
+  );
+  if (sku) return sku;
   const legacy = getSnapshotProducts().find(
     (product) => product.slug === target || product.sourceId === target,
   );

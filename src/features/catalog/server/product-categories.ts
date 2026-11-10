@@ -16,7 +16,9 @@ export const getProductCategories = cache(async () => {
   const products = deduplicateConsumableSizes(await getProducts());
   const categories = await Promise.all(
     productCategoryDefinitions.map(async ({ id, label, path }) => {
-      const catalog = await getCatalogPage(path, products);
+      const catalog = products.some((product) => product.warehouseSku)
+        ? { products: products.filter((product) => product.warehouseCategoryId === id) }
+        : await getCatalogPage(path, products);
       const indicatorSubcategories =
         id === "indicators" ? getIndicatorSubcategories(products) : undefined;
       const productIds = [
