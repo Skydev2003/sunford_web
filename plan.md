@@ -1,3 +1,711 @@
+# Plan: ใบเสนอราคาที่ลูกค้าจัดทำและพิมพ์เอง
+
+- [x] ตรวจใบตัวอย่าง ยืนยันขั้นตอนของลูกค้า และตรวจแหล่งราคาสินค้าเดิม
+- [x] ยืนยันฐาน VAT ของราคาแค็ตตาล็อกและบันทึกการอนุมัติแผน
+- [x] เพิ่มลิงก์ “ใบเสนอราคา” ในเมนูบริการผ่าน `src/features/cms/data/primary-navigation.ts` และสร้างหน้า `src/app/(site)/service/quotation/page.tsx` โดยอ่านแค็ตตาล็อกบนเซิร์ฟเวอร์
+- [x] สร้าง `src/features/catalog/components/quotation-form.tsx`, `src/features/catalog/components/quotation-form.module.css` และ `src/features/catalog/data/quotation.ts` สำหรับข้อมูลผู้ขายคงที่ ฟอร์มผู้ซื้อ รายการสินค้า จำนวน การคำนวณเป็นสตางค์ และหน้า A4
+- [x] ตรวจยอด ปัดเศษ ราคาที่หายไป และหลายรายการใน `tests/catalog/quotation.test.ts` ตรวจลิงก์บริการทั้งสอง Navbar ใน `tests/catalog/primary-navigation.test.ts` และตรวจกรอกฟอร์ม มือถือ และ PDF หลายหน้าใน `tests/e2e/quotation.spec.ts`
+- [x] ตรวจ typecheck, lint, build และบันทึกผลใน spec.md และ plan.md
+
+ผลตรวจ: production build 467 หน้า ผ่าน TypeScript และ scoped ESLint ชุดแค็ตตาล็อกผ่าน 127 ข้อ เมนูหน้าแรก หน้าภายใน และสถานะมือถือผ่านทั้ง 3 ข้อใน production build. ข้อมูลจริงมี 159 รายการที่ยังไม่มีราคายืนยัน จึงข้ามกรณีพิมพ์ที่ต้องอาศัยราคาบน production และรันทดแทนผ่านฟอร์มเดียวกันในสำเนา QA ตรวจไฟล์ A4 จริงทั้ง 1 หน้าและหลายหน้า ยอดรวมตัวอย่าง 1,973.75 = 1,844.63 + 129.12 บาท
+
+ผลกระทบส่วนกลางคือปลายทางใหม่ในเมนูบริการทั้งสองแบบ ย้อนกลับด้วยการนำลิงก์และหน้าใบเสนอราคาของงานนี้ออก ข้อมูลลูกค้าอยู่ในหน้าเบราว์เซอร์
+
+# Plan: Align the remaining Navbar flyouts with the logo
+
+Browser trial on Home and /contact-us: at 834 and 1024px all six other Home flyouts began 62px to the right of the logo. At 1440px they already aligned. Internal flyouts had a 6px offset at each width. With temporary desktop CSS, all seven submenu headings aligned at all three widths on both routes (42 measurements, 0px difference).
+
+- [x] Compare the Home flyout positioning and the internal menu padding with the approved products menu.
+- [x] Record owner approval of the shared CSS scope.
+- [x] In `src/styles/header.css`, give the desktop stage the full Header width. Position the other panels using the logo offset and remove their extra leading padding.
+- [x] In `src/features/catalog/components/products-overview.module.css`, use the desktop Navbar's 16px horizontal inset for the common menu content.
+- [x] In `tests/e2e/navigation.spec.ts`, measure the first visible heading and link in each flyout against the logo for both Headers. Verify 834, 1024 and 1440px, horizontal overflow, and mobile disclosure at 390px.
+- [x] Record actual verification in `spec.md` and `plan.md`.
+
+Verified with six browser cases in development and six against the production build. All passed, including 84 alignment checks per run and mobile interaction at 390px. Build: 466 pages. Scoped lint and formatting passed. Screenshots: `output/nav-logo-alignment/`.
+
+Impact and rollback: shared desktop flyout geometry across the two Header variants. The CSS changes can be reverted independently of navigation data, event handlers and mobile styles.
+
+# Plan: Logo-aligned all-products mega menu (2026-11-10)
+
+## Current plan — owner-supplied Navbar screenshot
+
+Approval: "Approved — อนุมัติครับ ใช้เมนู “ผลิตภัณฑ์ทั้งหมด” ตามภาพล่าสุดทั้งหน้าแรกและหน้าภายในได้เลยครับ"
+
+- [x] Review the visual reference, identify six existing secondary destinations, render the proposal at 390/834/1440 and check logo alignment.
+- [x] Record owner approval of the revised design in `spec.md`.
+- [x] Update `src/features/cms/data/primary-navigation.ts` using existing links for the large column and two existing-format groups for the smaller columns.
+- [x] Update `src/components/layout/header.tsx` and `src/components/layout/primary-navigation.tsx` for the /products trigger, mobile disclosure and the three groups.
+- [x] Scope panel spacing, logo alignment, primary typography and mobile stacking in `src/styles/header.css` and `src/features/catalog/components/products-overview.module.css`.
+- [x] Update `tests/catalog/primary-navigation.test.ts` and the affected browser suites in `tests/e2e/` (all-products-navbar, navigation, sitewide-navigation and navigation-hover-intent). Verify eleven destinations, desktop alignment, mobile groups, direct links, hover and keyboard.
+- [x] Run the type, lint, build and affected browser checks. Record results in spec.md and plan.md.
+
+Both shared Headers are affected. Isolate the new layout to the products panel and roll back its data, render and style edits together if required. Review artifact: `output/all-products-mega-menu-20261110/reference-1440.png`. Browser measurements on the standalone mock place the logo and first link at 16px on 390/834 and 224px on 1440.
+
+Verified on the production build (466 generated pages): 45 browser tests passed for menu behavior, navigation, logo alignment and responsive controls. Eight additional category navigation checks passed. Development checks confirmed the logo edge on both Headers at 834, 930, 1023, 1024 and 1440px. Catalog tests passed 124/124, with TypeScript and scoped ESLint passing. Desktop and mobile screenshots are under `output/all-products-mega-menu-20261110/verified/`.
+
+## Archived five-column plan (superseded)
+
+Status: "Ready to Code"
+Approval: "Pending — five equal columns, clickable category headings, shared Header behavior/styles"
+
+## Files
+
+- `src/features/cms/types.ts` — เพิ่มoptional `href` ให้NavigationGroup heading contract;existinggroupsยังcompatible
+- `src/features/cms/data/primary-navigation.ts` — project all-productsเป็น5groupsจากcurrentcategory outputs: clickablecategory heading + existing23children;ไม่mutateCMS/defaultdata
+- `src/components/layout/header.tsx` — renderoptionalgroupheadinglinksและให้/products mobileใช้directlink+disclosureแบบcategory;คง300mstimers/route cleanup
+- `src/components/layout/primary-navigation.tsx` — classify/productsเป็นlink triggerทั้งdesktop/mobile,rendergroupheadinglinksและall-products panel class;คงhandlersเดิม
+- `src/styles/header.css` — Home all-products5equalcolumns,logo-aligned start,gap24/16และscopedheading/child styles
+- `src/features/catalog/components/products-overview.module.css` — Internal all-products5equalcolumnsในsame1024/16Navcontainer,logo alignmentและmobile stacked styles
+- `tests/catalog/primary-navigation.test.ts` — assert5groupheadings/categoryhrefs/23children/order/dedup/nonmutationพร้อมรักษาexistingnavcontracts
+- `tests/e2e/all-products-navbar.spec.ts` — replaceplain-link expectationsด้วยdesktop/mobile submenu/directlink/modifiedlink/same-route/geometry/equal-column/logo-alignment checksทั้ง2variants
+- `tests/e2e/navigation.spec.ts` — update9menu/Home mobile summary/group expectationsและall real destination coverage
+- `tests/e2e/sitewide-navigation.spec.ts` — verify five heading+child destinations/internal mobile/desktop panels without weakeningexistingcategory menu checks
+- `tests/e2e/navigation-hover-intent.spec.ts` — add all-products300ms/cancel/rearm/keyboard/pointer/history coverage while preserving24existing cases
+- `spec.md`, `plan.md`, `MEMORY.md` — approval,contracts,actual verification and any repeatable lesson;preserve other tasks
+- `output/all-products-mega-menu-20261110/` — reviewedstandalonemock,owned snapshots,privateQA,logs,screenshots/delivery;noenvironment files
+
+`/products` page content,category data/routes,Footer,motion hook,global base/layout and dependencies are read-only. Pending compatibility-guide work is separate;implementation must preserve any separately approved shared projection delta instead of overwriting it
+
+## Steps
+
+- [x] อ่านcurrentbuilder/types/Header renderers/styles/testsและpreviousNav contracts;ยืนยัน5categoryoutputs/23children
+- [x] เลือกrecommendation:5clickablecategory headings+existingchildren,no duplicatedsolutions/support;mobile directlink+disclosure
+- [x] สร้างstandalone834/1440mockและวัดlogo/firsttextleft,5equal widths/nooverflow
+- [ ] รับownerapprovalของconcreteSpec/Planและvisualproposalก่อนapplication/test edits
+- [ ] Snapshotownedfiles/coherentcurrentruntime;read relevantlocalNext16 guide and prepareprivateNode24QA without stopping user servers
+- [ ] Extendoptionalgroupheading contractและproject5all-products groups without input mutation/destination change
+- [ ] Extendonly/products trigger/render classification in both Headers;preserve300ms timers,click/keyboard/touch/route cleanup
+- [ ] Add scoped5-column/logo-aligned styles at834/1024/1440 and stacked mobile sections;preserve9-item compact Navbar geometry
+- [ ] Update listed unit/browser contracts;retainall existing navigation/functionality assertions
+- [ ] Verify exact5headings/23children,heading/child hrefs,dedup,desktop equal widths/logo alignment and mobile directlink/disclosure at320–1920
+- [ ] Verify originalhover/rearm/cache/history/search/compare/category/service/Home/Footer/motion and actualdevelopmenthydration/console behavior
+- [ ] RunscopedPrettier/ESLint,fullTypeScript,catalogunits,Node24build,affectedbrowser suites/source audit/screenshots;updateactualresults and deliverpreview withoutcommit/push/deploy
+
+## Impact / Rollback
+
+R1 sharedNavbar. Main risk is converting `/products` fromplainlink to submenu trigger in both renderers without losing direct navigation or misaligning other menus. The plan reuses existing category link+disclosure interaction path and adds an all-products-only grid class. Optional group href is backward-compatible; no persistence. Rollback exactowned delta from snapshots;do not reset current all-products page,approvedgutter,otherNavbar behavior or unrelated pending work
+
+## Verification Results
+
+Planning only. Current source output verified asplain `/products` item plus5category items and23children. Mock geometry passes:834 logo/first16px,five widths147.59–147.61px;1440 logo/first224px,five widths179.19–179.20px;no body overflow. Screenshots visually reviewed. Application/testfiles unchanged;no candidate build/browser runtime claim. Awaiting owner approval
+
+---
+
+# Plan: Indicator and platform compatibility guide in Navbar (2026-11-10)
+
+Status: "Ready to Code"
+Approval: ดำเนินการตามคำขอเพิ่มหน้าและคำย้ำ “หน้าจัดสเปคผมละครับ” ใช้ชื่อเมนู “จัดสเปคเครื่องชั่ง” ในกลุ่มข้อมูลและความช่วยเหลือ
+
+## Files
+
+- `src/app/(site)/guides/indicator-platform-compatibility/page.tsx` — สร้าง explicit RSC route และ metadata; render guide component โดยไม่ fetch/mutate
+- `src/features/content/data/indicator-platform-compatibility.ts` — สร้าง typed content จากเอกสารแนบ: 4 groups + accessories; exact codes เป็น text และไม่มี inferred URLs
+- `src/features/content/components/indicator-platform-compatibility-page.tsx` — สร้าง semantic hero, 4 native disclosure cards, accessories disclosure และ contact CTA
+- `src/features/content/components/indicator-platform-compatibility-page.module.css` — scoped mobile-first layout/tokens/focus/disclosure/model wrapping;ไม่แก้ global styles
+- `src/features/cms/data/primary-navigation.ts` — inject link “คู่มือเลือกชุดชั่ง” เพียงครั้งเดียวใน Services › ข้อมูลและความช่วยเหลือสำหรับทั้ง2 Header variants โดยไม่ mutate CMS; build on the approved all-products delta without overwriting it
+- `tests/catalog/primary-navigation.test.ts` — ตรวจตำแหน่ง/ปลายทาง/dedup/nonmutationของ guide link พร้อมรักษา category/23-child/current pending-nav contracts
+- `tests/catalog/indicator-platform-compatibility.test.ts` — new exact data-contract checks: 4 groups, indicator/platform/accessory codes, no model URLs and required source facts
+- `tests/e2e/indicator-platform-compatibility.spec.ts` — new Home/internal/mobile Navbar access, page hierarchy, native disclosure, keyboard/touch/no-JS/responsive/overflow/content/no-console checks
+- `spec.md`, `plan.md` — record owner approval, actual implementation/verification and affected contracts without overwriting history
+- `output/indicator-platform-compatibility-20261110/` — owned snapshots, source audit, logs, screenshots and delivery report; no environment files
+
+Existing Header/PrimaryNavigation renderers, header CSS, global styles, motion hook, Footer, catalog data/routes and database are read-only for this Plan
+
+## Steps
+
+- [x] อ่านเอกสารแนบเต็มฉบับ, `spec.md`, `MEMORY.md`, existing Navbar/page patterns, tokens, package versions and relevant tests
+- [x] แยก attached content ออกเป็น 4 primary decisions + 1 secondary accessories disclosure;กำหนด visible/expanded/omitted content และ no-inferred-link rule
+- [x] ตรวจ Navbar capacity evidence: approved all-products task already requires compact 9-item layout at 834–1023px; choose Services submenu to avoid unapproved 10-item responsive change
+- [x] ตรวจ model-code presence against repository; only `TIS-150-AW31` is absent and must remain unlinked plain text
+- [ ] รับ owner approval ของ concrete Spec/Plan, route และ submenu placement ก่อน application/test edits
+- [ ] ก่อนเขียนโค้ด อ่าน Next.js 16.4.3 guide ที่เกี่ยวข้องจาก `node_modules/next/dist/docs/`; snapshot owned files and establish coherent baseline without stopping user servers
+- [ ] เพิ่ม typed data, static route/metadata and RSC semantic page; use native `<details>` only and exact supplied content
+- [ ] Add deduplicated Services-submenu link in shared nav projection; preserve the approved all-products delta, CMS inputs, 300ms hover/rearm and mobile behavior
+- [ ] Add/update listed unit and browser contracts; do not weaken existing navigation/catalog assertions
+- [ ] Verify 320/390/600/768/834/1024/1440/1920 layout, all closed/expanded states, code wrapping, 44px targets, keyboard/touch/no-JS and body overflow
+- [ ] Verify both Header variants, mobile accordion, direct/reload/history/modified-link navigation, Home motion exclusion, non-Home stagger/reduced fallback and Footer
+- [ ] Run scoped Prettier/ESLint, full TypeScript, relevant catalog units, Node24 build, affected browser suites and actual-development hydration/console checks
+- [ ] Audit source scope and screenshots at 390/834/1440; update actual results/checklists, review Next.js feedback candidates, and deliver verified preview without commit/push/deploy
+
+## Impact / Rollback
+
+R1 shared-navigation projection, R2 new route/data/component/CSS/tests. Blast radius if nav injection is wrong: both Home/internal desktop and mobile menus can duplicate or lose a support link; protect with exact order/dedup/nonmutation and browser coverage. The page itself has no persistence. Rollback the exact guide-link delta and remove only new guide-owned files/tests from the task snapshot; preserve the approved all-products work and all unrelated changes. No database rollback is required
+
+## Verification Results
+
+ส่งมอบพรีวิวพอร์ต 3023 จาก production build บน Node 24 (466/466 routes) ตรวจรหัสเอกสารครบ 53 รายการ, catalog tests 124/124, browser 12/12 รวม desktop/mobile navigation ทั้งสอง Header และจอ 320–1920px ภาพอยู่ใน output/indicator-platform-compatibility-20261110/browser
+
+รายละเอียดเปิดด้วย native details แต่เมื่อปิด JavaScript ทั้งหมด site layout ที่ใช้ streaming ไม่แสดง summary ในการตรวจ Chrome. TypeScript ของ snapshot ที่ build ผ่าน ส่วน typecheck ใน workspace รอบหลังพบ TS2307 ใน products-index-content.tsx จาก import products-index-carousel ที่ยังไม่มีในขณะตรวจ
+
+---
+
+# Plan: All-products Navbar entry and nine mock card sections (2026-11-10)
+
+Status: "Complete"
+Approval: "Approved — base scope and revised 32/48/container-1180 left gutter"
+
+## Files
+
+- `src/features/cms/data/primary-navigation.ts` — เพิ่มplain/productslinkก่อนscalesผ่านsharedbuilderที่2Headerใช้;ไม่mutateCMSหรือเปลี่ยน23children
+- `src/features/catalog/components/products-index-content.tsx` — แทน5categorydirectoryด้วยRSC9Mocksections/4cardsต่อsection;คงH1และexplicitfinderlink;ไม่สร้างfakeproductdata/CTA
+- `src/features/catalog/components/products-index-content.module.css` — newscopedcardrailstylesตามapprovedprototype/responsive/keyboardfocus/scrollsnapgutteralignment
+- `src/app/(site)/products/page.tsx` — ปรับProductsIndexContentcallsiteเลิกส่งpropsnavigation/categories/photosที่Mockไม่ใช้;คงroute/metadata/catalogdata/finder/shellcontracts
+- `src/styles/header.css` — HomeNavbarcompactgap/fontเฉพาะ834–1023เพื่อให้เมนู9รายการfit;ไม่เปลี่ยนheight/breakpoint/interactions
+- `src/features/catalog/components/products-overview.module.css` — matchinginternalNavbarcompactgap/fontเฉพาะ834–1023;ไม่แก้styleส่วนcontentอื่น
+- `tests/catalog/primary-navigation.test.ts` — order/plainlink/dedup/nonmutation/CMSlabels assertionsและcategorysliceoffsetใหม่ โดยคง23children/companygroupchecks
+- `tests/catalog/category-destinations.test.ts` — ปรับcategorysliceoffsetที่ได้รับผลโดยตรงจากplainlinkใหม่;คงlegacy/correctedprojectionและrelated-column assertionsเดิม (พบจากcatalog regressionหลังimplementation)
+- `tests/e2e/all-products-navbar.spec.ts` — newdesktop/mobile/native-touch/keyboard/direct/modifiedlink/same-routeclose/order/no-submenu/no-overlapchecksของnewmenuทั้ง2Header
+- `tests/e2e/products-full-overview.spec.ts` — migrate/productsdirectoryassertionsเป็น9Mocksections/36cards/rails/staticfallback/nativebounce;รักษาexplicitfinder/history/chromeและexistingcategoryherochecks
+- `tests/e2e/scales-subcategory-pages.spec.ts` — migrateonlyretireddirectory-entryflowไปexistingNavbarchildlink;คงsearch/cache/membership/returnassertions
+- `tests/e2e/indicator-subcategory-pages.spec.ts` — sameentry-onlymigration
+- `tests/e2e/platform-subcategory-pages.spec.ts` — sameentry-onlymigration
+- `tests/e2e/pos-subcategory-pages.spec.ts` — sameentry-onlymigration
+- `tests/e2e/accessory-subcategory-pages.spec.ts` — sameentry-onlymigration
+- `spec.md`, `plan.md`, `MEMORY.md` — actualapproval/contracts/resultsและnewmockpurpose โดยรักษางานก่อนหน้า
+- `output/all-products-navbar-nine-sections-20261110/` — prototype/readonlymeasurements,beforehashes/privateQA/logs/screenshots/report;ไม่copyenvironmentfiles
+
+ExistingHeader/PrimaryNavigationeventhandlers,ProductsOverview,motionhook,ProductsdirectorysharedstylesและFooterเป็นread-onlyในแผนนี้;ไม่deleteunusedfiles/cleanupนอกscope
+
+## Steps
+
+- [x] อ่านsource/spec/memory/AGENTSและuserclarification/reference;ยืนยันexisting/productsroute/sharedbuilderและ9Mockcontentsectionsแทน9categories
+- [x] ตรวจreadonlyNavbargeometry:9linksหลุดviewport834;compactgap14/linkgap8/font11fitทั้ง2variantsโดยคง834breakpoint
+- [x] เตรียมstandalone9sectionMockwith4cardsและcapture390/1440;ยืนยัน9sections/36cards/no-body-overflowและgutteralignment
+- [x] รับownerapprovalของconcreteSpec/PlanและMockก่อนapplication/testedits — ผู้ใช้ตอบ “อนุมัติ” เมื่อ2026-11-10
+- [x] รับownerfeedbackว่าcontentชิดขอบซ้ายเกินไป;หยุดCSSrevisionและกำหนดconcretecontainer-alignedgutter32/48/1180ก่อนแก้ต่อ
+- [x] รับownerconfirmationของrevisedgutter:32pxที่≤600 และ `max(48px, calc((100vw - 1180px) / 2))` เมื่อกว้างกว่านั้น (130pxที่1440) — ผู้ใช้ตอบ “อนุมัติ” เมื่อ2026-11-10
+- [x] Snapshotownedfiles/coherentruntimeและจัดprivateNode24QA/dev/build outputโดยไม่หยุดuserserversหรือcopyenvfiles
+- [x] เพิ่มsharedNavplainlinkและ2CSScompactrangesตามmeasuredproposal;คง300ms/navigation/focus/mobilecleanup
+- [x] ปรับ/productsRSCMockcontent+newCSSmodule/callsite;คงexplicitfinder/legacyqueries/Header/Footer/othercategoryroutes
+- [x] ปรับlistedunit/browsercontractsที่retireddirectoryentryโดยรักษาfunctionalassertionsทั้งหมด;เพิ่มnewmenu/railcounts/keyboard/native-touchchecks
+- [x] ตรวจ320/390/600/768/834/930/1024/1440/1920,noNav/bodyoverflow,cardrailkeyboard/touch/focus,Mock36cards/9sectionsและoneH1;assert leftedge32px@390,48px@834/1024,130px@1440และcardpeekคงอยู่
+- [x] ตรวจoriginalNavhover/rearm/cache/search/compare/categorysubgroups/finder/returns/Homebypass/800msbounce/staticFooterและactualdevhydration
+- [x] Runscopedformat/lint/fulltypecheck/catalogunits/productionbuildและaffectedbrowserregressions;source-preservationaudit/screenshots
+- [x] อัปเดตactualresults/contracts/checklists/report,reviewNextfeedbackและส่งverifiedpreviewโดยไม่commit/push/deploy
+
+## Impact / Rollback
+
+R1: sharedNav1file+2sharedCSSfiles;live/productscontent1component/callsite. Newplainlinkไม่เปลี่ยนhandlers/menuURLsอื่น. CompactCSSเฉพาะ834–1023(font11,gap14/8)ยืนยันด้วยbrowserexperimentแล้ว;ทำresponsive/interactionregressionหลังintegration. Revisedcontentgutterเปลี่ยนเฉพาะlocalCSSModule variableและไม่แตะshared `--overview-gutter` นอกProductsIndexContent. Replacingdirectoryต้องmigrate5entryflowsอย่างตรงไปตรงมาไม่เก็บhiddenoldcontentเพื่อหลบtestfailure. Restoreเฉพาะowneddeltaจากsnapshot ไม่resetunrelatedwork
+
+## Verification Results
+
+Done. Sharedbuilderเพิ่มplain `/products` linkก่อน5หมวดเดิมและส่ง `groups: []` เพื่อไม่ให้Home fallbackสร้างsubmenu;ไม่แก้Header event handlers. `/products` เป็นRSC9sections×4Mockcards,newscopedCSS,explicitfinderเดิมและnativefocusable scroll-snap rails. CompactNavbarCSSทำงานเฉพาะ834–1023. Revisedgutter32/48/container1180ถูกใช้กับH1/intro/section/cardfirst edgeทั้งหมด
+
+Verification: Node24build465/465และsource `src/` ทั้ง245ไฟล์ตรงisolatedbuild;catalog122/122;fullTypeScript,scopedESLint/Prettier/diff-checkผ่าน. Production33/33all-products/Navbar/page casesและ129/129existingNavbar+5subgroup suitesผ่าน. Isolateddevcoldrunผ่าน32/33;finderfocus assertionที่missครั้งเดียวผ่านimmediatererun1/1 และresponsive casesไม่มีpageerror. 9responsivepage casesยืนยัน9×4/H1เดียว/no fake facts/no bodyoverflow/rail scroll;10Header geometry casesยืนยันbothvariantsfit834/930/1023/1024/1440. Exactleftedges32@390,48@834/1024,130@1440และfinalscreenshotsตรวจแล้ว
+
+Finder/search/focus/legacyquery,23categorychildren,all5subgroupreturns,300mshover/rearm/keyboard/touch/modified tabs,referencebounce/reduced,Home/Footer static pass. RawserverresponseมีcompleteMockmarkup/no leaf motion marker;browser JS-disabled CacheComponents streaming remains an inherited limitation and was not changed. Final6appfilesmatchprivateQA;4protectedsharedruntimefilesbyte-matchpriorverifiedsnapshot. Noenvcopy/DBwrite/dependency/commit/push/deploy/user-serverstop. Verifiedpreview3021;delivery `output/all-products-navbar-nine-sections-20261110/delivery.md`
+
+---
+
+# Plan: Keep the final category index and Footers static (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved owner-directed exception — สองส่วนสุดท้ายไม่ต้องใส่เอฟเฟกนี้"
+
+## Files
+
+- `src/components/ui/use-stagger-bounce.ts` — เพิ่ม3existingwrapperselectorsในexcluded;ไม่เปลี่ยนprofile/lifecycle/DOMbookkeeping
+- `tests/e2e/sitewide-stagger-bounce.spec.ts` — ปรับpositive/negativecoverageตามfinalsectionexclusion;ย้ายoffscreen/late-callbacktargetไปmaincontent;ตรวจ5overviewindexes/Footersและcontrols
+- `spec.md`, `plan.md`, `MEMORY.md` — บันทึกlatestexclusion/approval/resultsโดยรักษาประวัติเดิม
+- `output/stagger-final-sections-exclusion-20261109/` — 2ownedfilesnapshot,sourcehashes,privateQA/logs/screenshots/report;ไม่copyenvfiles
+
+## Steps
+
+- [x] ใช้ข้อความแก้ไขล่าสุดแทนturnที่ยกเลิก;ตรวจภาพ/selector/source/memoryและapprovedhookscope
+- [x] ระบุconcrete2-fileplanและบันทึกคำสั่งยกเว้นที่ผู้ใช้ให้ชัดเจนก่อนapplicationedits
+- [x] Snapshotcoherent3016baselineและ2ownedfiles;privateNode24dev/prodQAโดยไม่หยุดuserpreviews
+- [x] เพิ่มspecificexcludedwrappersในhook;ปรับsitewidesuiteโดยรักษาcontentpositiveassertionsและnativeprofile/triggerchecks
+- [x] ตรวจ95template/widthcombinationsและ5categoryindexesที่390/1440ว่ามีnativecreations0ในstaticregions แต่contentอื่นยังanimate;ตรวจfinder/Footernativemobilecontrolsและcache/reentry
+- [x] ตรวจexistingdevelopmenthydration5cases,profile/focus/dynamic/reduced/API/no-JS/Homeและsource/settledgeometryparity
+- [x] Runformat/lint/typecheck/buildตามscope;บันทึกผลจริงและdelivery,reviewNextfeedback,คงpreviewโดยไม่commit/push/deploy
+
+## Impact / Rollback
+
+เปลี่ยนเฉพาะknownfinalwrapperselectionในsharedhookเดิม ไม่มีUI/props/routes/CSSchange. Snapshot2ownedfilesและrollbackเฉพาะdelta ไม่resetworkingtree. Preserve800msreferenceprofileและส่วนที่ยังรับmotionทั้งหมด
+
+## Verification Results
+
+Done. ใช้existing3specificwrapperselectorsในexcludedlistเท่านั้น;runtimeprofileและlifecycleส่วนที่เหลือbyte-identicalหลังตัดsuffixselectorออกเทียบbefore. Sitewidesuiteตรวจpositivecontentและnegativefinalregions,ใช้maincontentแทนFooterในoffscreen/late-callbackfixtures. ไม่ใช้blanketHTMLfooterexclusion
+
+Singleproductionrun66/66pass(4.7m):95template/widthcombinations,all5categoryindex/Footersที่390/1440มีrecorded/active nativecreations0และbaseCSSreadable,realindexfinder+mobileFooterdetailsทำงาน,24Navbarcases,referencepaint/once/dynamic/focus/reduced/API/no-JS/Home/cachechecks. ActualdevCPU4x+1200msdelayedchunks5/5pass(3.2m),0hydration/pageerrors/leafmarkerwrites
+
+Node24build465/465,fulltypes/scopedlint/format/whitespacepass. Responsive15/15baseline3016vs3018text/links/images/geometrymatchesat320/390/768/834/1440(Home/Scalesreduced,Aboutnormalsettled). Screenshotfinalindex390/1440ตรวจแล้ว;redfocusringเป็นexistingkeyboardfocusหลังfinderEscape ไม่ใช่designchange. Coherentbaseline0srcmismatches. Sourceaudit404paths402unchanged,only2approvedchanges,0added/unexpected;livehookตรงกับprivateQAทั้ง2
+
+NoCSS/layout/widget/Navbar/data/dependencychange,environmentfilecopy,DBwrite,user-serverstopหรือcommit/push/deploy. FinalNextfeedbackreviewไม่มีqualifyingissue. Previewprod3018/dev3017คงไว้. Evidence/limitations: `output/stagger-final-sections-exclusion-20261109/delivery.md`
+
+---
+
+# Plan: Reference stagger bounce-pop on first viewport entry (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved — อนุมัติ"
+
+## Files
+
+- `src/components/ui/use-stagger-bounce.ts` — เปลี่ยน2framesเป็นopacity/translate/scaleตามreference,800ms/easingและ100+150ms stagger;รักษาobserver/grouping/focus/cleanup/Home bypassและhydration-safe state
+- `tests/e2e/sitewide-stagger-bounce.spec.ts` — ปรับnativeprofile/paint checksและเพิ่มoffscreen→entry→scroll-reentry/long-listตรวจจริง;รักษาexistingcontent/Home/focus/dynamic/fallback assertions
+- `tests/e2e/category-intro-motion.spec.ts` — ปรับopacity,scale,timing/delay assertionsเท่านั้น;รักษาribbon/finder/URL/reload/history/static checks
+- `tests/e2e/solutions-intro-motion.spec.ts` — ปรับ3chapter timings/profileตาม100/250/400ms;รักษาribbon/reduced/no-JS checks
+- `spec.md`, `plan.md`, `MEMORY.md` — ข้อกำหนด/approval/actualresultsและบทเรียนการใช้exact motion referenceโดยรักษาประวัติเดิม
+- `output/stagger-bounce-reference-20261109/` — owned source snapshot,privateQA,logs/native paint samples/screenshots/verification report;ไม่copyenvironmentfiles
+
+## Steps
+
+- [x] อ่านreference,trigger clarification,currenthook,version/lockfile,design tokensและhydration/pointer-focus memory
+- [x] บันทึกexactnumeric profile,scope,first-entry/once-per-visit contractและshared impact;ทำconcretefile plan
+- [x] รับอนุมัติSpec/Planที่เปลี่ยนprofileนี้และบันทึกข้อความจริงก่อนruntime/test edits
+- [x] Snapshotownedsourceและcoherentbaseline;ใช้privateNode24dev/build outputและportที่ว่างโดยไม่หยุดuser servers
+- [x] ปรับเฉพาะhookและ3motion suitesตามprofile;ไม่แตะNavbar/CSS/layout/child DOM bookkeeping
+- [x] ตรวจnativeframes/timingและactualpaintเทียบreference:3ชิ้นdelay100/250/400,overshoot/settle/scale;ตรวจรายการยาวที่ไม่มีcapเดิม
+- [x] ตรวจoffscreen0→enter1→reenterยัง1,dynamic insertion,keyboard/pointer/reduced/API/no-JSและHomebypass
+- [x] Runexistingdevelopmenthydrationregressionด้วยCPU4x/delayedchunksและactualchildreadiness;ห้ามใช้marker-strippingหรือwarningsuppression
+- [x] ตรวจresponsive320/390/768/834/1440และNavbarregressions,settledgeometry/sourceparity;scopedformat/lint/fulltypecheck/relevantbuild
+- [x] อัปเดตSpec/Plan/evidenceตามผลจริง,reviewNextfeedbackหนึ่งครั้ง,ส่งมอบpreviewโดยไม่commit/push/deploy
+
+## Impact / Rollback
+
+Sharedruntimefile1file ส่งผลเฉพาะexistingnon-homecontenttargets. Motionเปลี่ยนจาก650ms/80ms/no-scaleไปเป็นexact800ms/150ms/scaleprofile;กลุ่มยาวอาจรอมากขึ้นและopacity0อาจเปลี่ยนheadingpaint จึงตรวจจริงก่อนส่ง. ไม่มีAPI/route/DOM-interfacechange. เก็บownedsnapshotและrestoreเฉพาะdeltaงานนี้ ไม่resetworkingtreeหรือหยุดpreviewของผู้ใช้
+
+## Verification Results
+
+Done after explicit “อนุมัติ”.1runtimehookและ3scopedsuitesเปลี่ยนตามapprovedprofile;selection/grouping/lifecycle/Home/Navbar/hydrationbookkeepingคงเดิม. Native2keyframes800ms,easingตรงreference,100/250/400msstagger;3cards×10times×3computedpropertiesต่างจากCSSreference0. Overshoottranslate−3.73938px/scale1.0187แล้วsettle. Offscreen0→enter1→reenter1และdynamic/focus/reduced/static/API/Homechecksผ่าน. Long-listScales8chapterdelays100…1150ms;Explore6visiblecards1600…2350ms(รวมprecedingtargetsinexistinggroup)ตามnocapที่อนุมัติ
+
+Production69distinctcasesมีpassingevidence:initial59/64pass;category+heading27/27และnative3/3rerunsresolveall5initialfailures.4mobilefixturesfrozeใหม่offscreenbuttonsตลอดจนค้างใต้gallery;ปรับtest-onlyfreezeให้ครอบคลุมprofilemeasurementแล้วปล่อยlaterrevealเล่นปกติ ยังคงrecording/realclick/finder/reload/onceassertions. อีก1fixtureอ่านexplicitoffsetที่ไม่ได้กำหนด แก้เป็นcomputedOffsetตามbrowserAPI. ไม่มีappchangesหลังcandidatebuildหรือwarning/functionalassertionsuppression
+
+ActualNode24developmentCPU4x+1200msdelayedchunks5/5passรวมcold/reload/controls/gallery/clientnavigation/cachedhistory;0hydration/pageerrors/markerwrites. Node24build465/465,finaltypes/lint/format/whitespacepass. Responsive15/15baselineparityที่320/390/768/834/1440(Home/Scalesreduced,Aboutnormalsettled);normalizeเฉพาะQAimageorigins.4settledscreenshotsเก็บแล้วและmobileScales/desktopSolutionsตรวจด้วยสายตา พร้อมmid-bounce3chapterimage
+
+Coherentbaseline3014sourcematchesbefore0mismatches. Finalaudit404paths400unchanged,4approvedchanges,0new/0unexpected;bothprivateQAhooksตรงกับlive. Ownprivate.next/generatedoutput,ไม่copyenvfiles/แก้Navbar/CSS/layout/data/dependencies/DB/หยุดuserpreviews/commit/push/deploy. FinalNextfeedbackreviewไม่มีqualifyingframeworkissue. รายละเอียดและlimits: `output/stagger-bounce-reference-20261109/delivery.md`. Previewprod3016/dev3015ยังพร้อมใช้งาน
+
+---
+
+# Plan: Hydration-safe stagger animation bookkeeping (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved — อนุมัติครับ แก้ hydration warning ตามแผนได้เลย โดยคงแอนิเมชันและ Navbar เดิมไว้ครับ"
+
+## Files
+
+- `src/components/ui/use-stagger-bounce.ts` — retire descendant DOM state attributes, use existing managed/seen/animations for bookkeeping and focus ancestor lookup; retainrootmarker/native animation/grouping/cleanup/home bypass
+- `tests/e2e/helpers/stagger-motion.ts` — new test-only native animation recording/query helper so assertions read actual keyframes/timing/targets without adding production DOM markers
+- `tests/e2e/stagger-hydration.spec.ts` — new cold development+delayed child hydration regression, console/pageerror capture, real motion and reload/navigation checks
+- `tests/e2e/sitewide-stagger-bounce.spec.ts` — move marker-based section/dynamic/focus/late-callback checks to observable native animation behavior; preserve allwidth/Home/cleanup assertions
+- `tests/e2e/category-intro-motion.spec.ts` — update title/chapter marker assertions only; retain timing/keyframe/ribbon/focus/reload/finder/history/static checks
+- `tests/e2e/solutions-intro-motion.spec.ts` — update marker assertions; retain3chapters/native timing/ribbon/reduced/static coverage
+- `tests/e2e/industrial-scales-page.spec.ts` — replaceheadingmarkercheck with actual native animation evidence; keepdata/controls/return checks
+- `tests/e2e/scales-subcategory-pages.spec.ts` — same nativeheading verification for allknown groups, retainingallfunctional assertions
+- `tests/e2e/indicator-subcategory-pages.spec.ts` — same nativeheading verification, retainingoverlapping memberships/returns
+- `tests/e2e/platform-subcategory-pages.spec.ts` — same nativeheading verification, preserving4materials/ABS Mock behavior
+- `tests/e2e/accessory-subcategory-pages.spec.ts` — same nativeheading verification, preserving5groups/Mock/consumable dedup/returns
+- `spec.md`, `plan.md`, `MEMORY.md` — approval/contracts/results and verified development-hydration failure lesson; preserve all other tasks
+- `output/stagger-hydration-mismatch-20261109/` — diagnostic recordings, before/after snapshots, own private dev/build, logs/parity/screenshots and delivery; no liveenvironment files copied
+
+ไม่แก้ CatalogRouteFrame, ProductsOverviewหรือwidget/page components, Navbar/CSS/data/dependenciesในแผนนี้ หากหลักฐาน implementationแสดงว่าต้องเพิ่ม runtime filesให้เสนอ scope deltaก่อนแก้
+
+## Steps
+
+- [x] Read attachment and current source/memory; inspect existingmarker users and actualClient owner boundaries; review official React hydration contract and local Nextguide
+- [x] Reproduce clean Chrome CPU4x+1200ms child chunk delay onscales and3current templates; record extra markerswhileowner readiness=false and hydrationwarnings1/1/1
+- [x] Browser-only causal experiment removes onlydescendant markers: warning0/0/0 with native animation counts19/10/25unchanged; no application/test changes
+- [x] Prepare concrete1runtime-file fix + test migration scope and explicitapprovalPending record
+- [x] Receive ownerapproval of this Spec/Plan before application/test edits and record actualmessage
+- [x] Freeze coherent latestsource and baseline dev/prod artifacts; record private QA workdirs/ports and preserve current dev3000 and all production previews
+- [x] Remove descendant DOM state writes/cleanup and use managed ancestor lookup; retainroot-owned state marker, native animation ID/timing/grouping/preference/lifecycle behavior
+- [x] Add test-only native recorder and new dev hydration regression; migrate8marker-based motion suites without weakening existing functional assertions
+- [x] Verify unmodified clean browser oncandidate development with delayed chunks/CPU4x and explicitchild hydration completion; nowarning suppression/injected stripping/fixed delay asproof
+- [x] Verify production465/currentcount build, types/lint/format/catalog units and relevantbrowser regressions: cold/reload/navigation/cache, dynamic content, keyboard/reduced/API/static fallback and wholehomepage bypass
+- [x] Compare responsive text/links/images/settledgeometry and protectedsources; preserve Navbar300ms/mobile/click behavior and existing source work
+- [x] Update actualresults/contracts/checklists/delivery, reviewNextfeedback once afterverification and preserve ownpreview/reversibility; no commit/push/deploy
+
+## Impact / Rollback
+
+R1 sharedmotion metadata lifecycle. Retire internal leaf markers rather than adding readiness fields across allwidgets or guessing a globalhydration timeout. Changes confined to1hook andlisted testfiles; visual/userflow contracts unchanged. Keep exactsource snapshots and own .next/generated output. Restore only owned deltas ifneeded, never reset global working tree or stop a user/other task server
+
+## Verification Results
+
+Done after explicitowner approval.1runtime hook drops childmetadata writes while preservingnative timing/lifecycle/Home exclusion;8existing suites migrated andnative recorder+development suite added. Baseline1/1/1hydrationwarnings become0/0/0 withsame19/10/25native creations onlive dev. Private Node24dev3013 CPU4x/delayed chunks passes3cold+reload cases and2gallery/clientcached-history cases. No warning suppression orattribute stripping in candidate checks.
+
+Production Node24build465/465,catalog122/122 andfinal TypeScript/ESLint/Prettier/whitespace pass.161distinct browser cases havepassing evidence:153initial plus1platform and7targeted retries. Initialrun retains2worker-exit errors and8failed cases; retry evidence resolvesall8, includingtest-onlymulti-footer selector andcached active-animation assertion fixes. Earlierdevelopment fixture usedan unescapedqueryURLregex andcold readiness bound; corrected URL/realreadiness checks, keptallfunctional assertions. Transientdata-load/timeouts retained, no unrelatedappfixes.
+
+Responsive15/15baseline/candidate text/links/images/settledgeometry matches at320/390/768/834/1440; image URLs normalizeonlydifferentQA origins.4settled screenshots saved, mobileScales/desktopSoftware inspected. Sourceaudit402existingpaths:393unchanged,9approvedchanges(1hook+8tests),2testfilesadded. Navbar/CSS/layout/data/dependencies andgeneratedclient unchanged. PrivateQA ownsits .next/client, noenvironmentfilescopied, nodatabasewrites/serverstops/commit/push/deploy. Nextfeedback reviewed once, noqualifyingframeworkcandidate.
+
+Delivery/evidence/limitations: `output/stagger-hydration-mismatch-20261109/delivery.md`. Productionpreview `http://127.0.0.1:3014/`; development `http://127.0.0.1:3013/`.
+
+---
+
+# Plan: Navbar hover intent and post-click submenu rearming (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved — อนุมัติครับ ปรับ Navbar ทั้งหน้าแรกและหน้าภายในตามแผนได้เลยครับ"
+
+## Files
+
+- `src/components/layout/primary-navigation.tsx` — scoped desktop hover timer300ms, pointer/keyboard distinction, click-only toggle, post-click rearming, pending timer/route/resize cleanup; preserve mobile/link semantics
+- `src/components/layout/header.tsx` — scoped Home desktop hover80→300ms and matching pointer-focus/post-click suppression; reuse existing timers, preserve current Header structure/measurement/mobile/opening/style contracts
+- `tests/e2e/navigation-hover-intent.spec.ts` — new behavior-level timer/cancellation, fixed-pointer click/route transition, click-toggle, keyboard, panel hit targets/native touch/breakpoint checks for both Header variants
+- `spec.md`, `plan.md` — scopedproposal, actualapproval, actualresultsและknownlimits โดยรักษาหัวข้องานอื่น
+- `MEMORY.md` — บันทึกบทเรียนตาม AGENTS: native Ctrl+click new-tab ต้องรอ browser-context page event ไม่สมมติ opener popup
+- `output/nav-hover-intent-20261109/` — task-owned baseline/source/geometry evidence, browser screenshots/traces/logsและdelivery; no liveenvironment files copied
+
+ไม่มีapplication/test editก่อนอนุมัติ รายการนี้ไม่รวม CSS/global layout/new dependency/helper abstraction หรือ test rewritesอื่น หากต้องเพิ่มไฟล์implementationนอก2componentsนี้ ให้เสนอ scope deltaก่อนแก้
+
+## Steps
+
+- [x] อ่าน currentSpec/memory,2Navbar sources/styles/breakpoints และ existing navigation tests; review original UX research/W3C pointer+keyboard guidance
+- [x] ตรวจcategory clicksบน2Header variantsโดยคงpointerเดิม (ทั้งสองsampleปิดปกติ) และทดสอบปุ่มโซลูชันhoverแล้วคลิกสองครั้งยังexpandedทั้งคู่ ตรงกับsourceที่ไม่มีtoggleclose; ไม่เหมารวมอาการทุกroute
+- [x] จัด concrete300ms hover + post-click suppression/click-only toggle proposal พร้อม file scope/shared impact
+- [x] รับอนุมัติข้อเสนอและ2shared-component scopeนี้ก่อนapplication/test edits; บันทึกข้อความจริง
+- [x] Snapshot latest2componentsและreference runtimeที่sourceตรงกัน แยก concurrentaccessory/motion work; baseline realhover/click-only/differentroute/focus/geometry
+- [x] แก้desktop interactionใน2componentsตามapprovedcriteria ยกเลิกpending timerเมื่อleave/click/Escape/route/resize/unmount; ไม่ให้pointer focus bypass delay
+- [x] เพิ่ม newbrowser suite ตรวจ <300ms/no-open, >=300ms/open, oldtimercancel, clicknavigateทันที, repeatedbuttonclick, fixedpointerthroughroute/Headerchange และrearmเมื่อleave/reenter
+- [x] ตรวจkeyboard ArrowDown/Enter/Tab/Escape, submenu travel/click/backdrop, modified/new-tab links, native mobiletouchและ320/390/768/834/1440 geometry; Headerหน้าแรก/openingและstaggerbypassยังเดิม
+- [x] Run scopedPrettier/ESLint/TypeScript, relevantunit/buildและnavigation/cache/browser regressionsในisolatedsnapshot ไม่หยุดpreview/QAของงานอื่น
+- [x] อัปเดตจริงในSpec/Plan+delivery/preservation audit; reviewNextfeedbackหนึ่งครั้งหลังตรวจ และส่งมอบverifiedpreview โดยไม่commit/push/deploy
+
+## Impact / Rollback
+
+R1 sharednavigation behavior acrossallroutes plushomepageHeader. เปลี่ยนเฉพาะ2event/timer lifecycles ไม่เปลี่ยนCSS/DOM/links แยกpointerfocusจากkeyboardและตรวจroutecache/keyboard/mobileอย่างเจาะจง เก็บexactbaseline2files+build rollbackเฉพาะown delta ไม่resetงานอื่น หากactual click-only behaviorต้องปรับต่างจากproposal ให้รับอนุมัติbehaviorที่เปลี่ยนก่อนcode
+
+## Verification Results
+
+Done. Two approved components implement300ms hover, post-click leave/reentry gating, pointer/keyboard focus distinction, click-only toggle and timer/route/breakpoint cleanup. Full workspace TypeScript and scoped ESLint/Prettier/whitespace pass. Node24.22.1 configured isolated build465/465; catalog122/122pass.
+
+24new browser behavior cases have latest passing evidence. Combined new+existing navigation run42/44passed;2new-tab fixtures waited for opener-popup instead of native context-page events and targeted2/2pass after test-only correction. Home native summary selector was corrected without application markup changes. Existing12sitewide+8subcategory cases and14active Home/Hero/opening/bounce regressions pass:58distinct relevant cases have passing coverage, no claim of a full-repository browser run.
+
+299msclosed/300msopen, early leave/switch/Escape/resize cancellation, click navigation/toggle, pointer-focus non-bypass, keyboard immediate focus/ArrowDown/Enter/Escape, stationary cursor across Header/route changes, cached Back/Forward, Ctrl-click new-tab URLs and native touch pass.15responsive Header/logo/control/label/href signatures match baseline3007 exactly at320/390/768/834/1440. Settled normal-motion Home/internal submenu screenshots inspected.
+
+Source audit401paths:399unchanged,only2approved app changes+1new suite,0unexpected; own live files match builtQA. No CSS/global layout/data/dependency/route changes. MEMORY+observer record native modified-link test event lesson. Next feedback reviewed once: no new qualifying framework issue.
+
+Delivery: `output/nav-hover-intent-20261109/delivery.md`. Preview `http://localhost:3012/` / `/contact-us` runs Node24production server; previous previews3000/3010/3007 and other QA preserved. No environment files copied, commit/push/deploy or database write.
+
+---
+
+# Plan: Accessory subcategory separate pages (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Direct owner request for5accessory groups using approved subgroup pattern"
+
+## Files
+
+- `src/features/catalog/data/product-subcategory-pages.ts` —5source accessory page/title/return records; preserve18existing records
+- `src/app/(site)/products/category/accessories/[group]/page.tsx` —5bounded static params/metadata using unchanged shared template
+- `src/features/catalog/data/category-destinations.ts` — exact consumables alias to own page; broader accessory aliases unchanged
+- `src/features/content/data/buying-guides.ts` — one consumables href only
+- `tests/catalog/product-subcategory-pages.test.ts`, `category-destinations.test.ts` — exact5paths/contexts/parent boundary/alias, retaining prior coverage
+- `tests/e2e/accessory-subcategory-pages.spec.ts` —5groups membership/order/count/Mock/dedup, controls/return/overlap, entries/history/native touch/responsive/shared-motion
+- `tests/e2e/accessories-overview.spec.ts`, `catalog-subcategory-navigation.spec.ts`, `sitewide-navigation.spec.ts` — update promoted accessory expectations and final23-page contract; preserve parent finder/search/category/reset/comparison coverage
+- `spec.md`, `plan.md`; `output/accessory-subcategory-pages-20261109/` — approval/baseline/private QA/runtime evidence/delivery
+- `MEMORY.md` — record regression-test cloning/import and complete typecheck lesson; no application behavior change
+
+## Steps
+
+- [x] Inspect instructions/spec/memory,5source groups/dedup and existing shared template/tokens/local Next routing docs; record direct authorization and isolated verification boundary
+- [x] Snapshot live source and coherent reference3010 source/runtime,24older pages and5old accessory finder orders/photos
+- [x] Add5records/route and exact consumables targets without editing template/style/motion/data
+- [x] Run scoped formatting/lint/catalog units and configured isolated Node24build/TypeScript on private QA; preserve all other servers/output
+- [x] Verify5groups/cables Mock/dedup, all23menus/guide/query/alias/returns/history/cache/native touch, responsive/shared-motion/performance and protected-source/runtime parity
+- [x] Record actual results, update docs and deliver verified Preview3007 without release
+
+## Impact / Rollback
+
+R2 additive registry/route plus exact consumables links. Existing generic consumers handle the5new records. All known child queries now canonicalize to pages; parent finder remains intentional. Snapshot and restore only task deltas. Independent motion/Figma source and servers3000/3006/3010 are preserved. No dependency/database/global style edits.
+
+## Verification Results
+
+Done. Final configured QA3007 session40976 build465/465 and complete TypeScript pass. Initial build exposed a duplicated test import; fixed test-only and retained build-initial.log. Scoped final formatting/lint and122/122catalog units pass. Initial52/52pilot and47/48regression pass. One unchanged older directory CSS0.8s expectation also fails identically against reference3010; preserve it and the trace rather than edit unrelated coverage. Final accessory24/24 and affected motion/cache9/9pass:103distinct scoped browser cases have passing coverage across runs, alongside the documented baseline failure.
+
+QA has private source/generated/.next and loads original workspace environment transiently without copying credential files. During testing the independent motion task completed a verified stale-observer cleanup guard without changing its motion profile. Synced its verified hook into this private QA only, rebuilt, and reran affected accessory/motion/cache behavior. All3motion app hashes match current verified root/motion QA. Root shared source and other servers remain untouched; only the owned initial3007listener was stopped/replaced.
+
+Final strict parity passes24prior page text/image signatures and5old-finder-to-inline models/order/photos/detail paths, normalizing only added return context. Ten CPU4x cases at390/1440wait for heading completion/no running main animation: CLS0/no overflow. Three screenshots inspected; responsive320–1440/native touch and controls/returns/shared models/query/alias/guide/history/cache pass. Initial/final logs retained separately.
+
+Preservation:352unchanged,8owned existing deltas,2concurrent motion deltas,no unexpected paths;2new owned files. All10owned QA/live paths match. Source data/dedup/manifests/template/global CSS/locks remain unchanged. MEMORY and sanitized observer79record the test-cloning/typecheck correction. Main3000/POS3006/motion3010 kept running unchanged. Existing no-JS limitation and one unrelated baseline test mismatch remain explicit. Final feedback review found no qualifying Next.js issue. No commit/push/deploy or database/dependency actions.
+
+---
+
+# Plan: POS platform subcategory separate pages (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Direct owner request for3POS groups using approved scales subgroup pattern"
+
+## Files
+
+- `src/features/catalog/data/product-subcategory-pages.ts` — add3POS records/titles/paths/return contexts using source labels; preserve existing15records
+- `src/app/(site)/products/category/pos/[group]/page.tsx` —3known static parameters/metadata/unknown guard using current server template
+- `src/features/catalog/components/products-index-content.tsx` — link existing iOS label/status to its actual empty page; preserve other directory markup/design
+- `src/features/catalog/data/category-destinations.ts` — exact Android/Windows legacy destinations become canonical child pages
+- `src/app/(site)/[...path]/page.tsx` — existing bounded subcategory-alias redirect guard accepts known POS children as well as scales; no other catch-all behavior change
+- `src/features/content/data/buying-guides.ts` — two POS platform hrefs only; preserve guide copy/images/structure
+- `tests/catalog/product-subcategory-pages.test.ts`, `category-destinations.test.ts` — POS route/context/parent guard/legacy expectations, retaining prior coverage
+- `tests/e2e/pos-subcategory-pages.spec.ts` — exact3platform membership/order/count/empty behavior, controls/return/entry/history/native touch/responsive/motion
+- `tests/e2e/pos-overview.spec.ts`, `catalog-subcategory-navigation.spec.ts`, `sitewide-navigation.spec.ts`, `products-full-overview.spec.ts` — only affected POS/active-directory/history expectations; retain accessory local filters and explicit all-model finder
+- `spec.md`, `plan.md`; `output/pos-subcategory-pages-20261109/` — approval, snapshots, actual verification and delivery; MEMORY only for a new reusable lesson
+
+## Steps
+
+- [x] Inspect instructions/spec/memory,3source groups, current template/tokens/local Next page/static-params docs; record direct authorization and concurrent motion-planning boundary
+- [x] Snapshot source/configured3POS finder orders and15existing subgroup/unaffected page signatures
+- [x] Add3bounded pages and canonical/empty-directory/guide/legacy return wiring without changing motion/layout/styles/data
+- [x] Run scoped format/lint/typecheck/catalog units and configured production build; preserve previous owned preview build and avoid concurrent build output conflicts
+- [x] Verify all3POS groups, empty iOS, menu/guide/story/legacy/old query/return/history/cache/native touch, responsive/motion/performance and protected-source/page parity
+- [x] Update docs/evidence/local preview and deliver without commit/push/deploy
+
+## Impact / Rollback
+
+R2. Shared registry/catch-all guard expands only to known POS groups; iOS directory affordance changes to a real link with existing empty annotation. No template/global layout/CSS/motion edits. Preserve prior uncommitted work and concurrent bounce/Figma notes. Snapshot and restore task-only deltas if needed; no database/dependency action.
+
+## Verification Results
+
+Verification isolation applied. The stagger-bounce task was approved concurrently and began shared frame/CSS edits. Preserve those files. Build/run a private QA source copy under output/pos-subcategory-pages-20261109/qa on port3006 with its own generated source/.next and protected pre-bounce frame/CSS. Load original workspace environment in process only, without copying environment files or emitting values, for the same configured read-only data provider. Protect main preview3000session9713 and the other task's build. New POS motion coverage compares the existing subgroup profile rather than hardcoding a future-incompatible timing. Delivery identifies this preview/isolation boundary.
+
+Result: Done. Scoped format/lint and catalog120/120pass; configured isolated Node24build459/459 and TypeScript pass. An obsolete unit expected URL separator was corrected, without app changes; initial log retained. Browser47pilot pass; broad46pass/1initial existing desktop price-menu navigation failure, unchanged all23desktop targeted rerun1/1pass. No HTTP failures in initial trace; root cause unproven, logs retained. Latest passing94scoped cases, not the whole suite or a claim of a green first batch.
+
+All3POSgroups,0iOS/2Android/1Windows, no invented Mock, source order/photos, search/reset/view/featured, available single/two-product comparison, same/fresh/default returns, directory/chapters/old queries/exact aliases/guide/story/native touch/history/cache and320–1440/shared-profile/reduced fallback pass.21original page text/images and3old-finder-to-inline signatures exact. Six CPU4x cases CLS0/no overflow/settled motion;3screenshots inspected.
+
+Workspace audit:341unchanged,11owned existing deltas,7known concurrent motion deltas, no unexpected paths;1new route+1new browser test. Owned QA/live files match; current motion/global CSS/source generation was not overwritten. Frozen source uses pre-bounce frame/CSS only in the private copy. No environment files copied. Main preview3000 and other build output remain untouched; QA3006session82934 is the verified POS preview. Future combined build must include current3POSroutes as well as the independent bounce changes; that combined motion is not claimed verified here. No commit/push/deploy/database/dependency changes or new verified Next feedback candidate.
+
+---
+
+# Plan: Sitewide stagger bounce excluding the entire homepage (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Approved — อนุมัติครับ เริ่มทำตามแผนได้เลย เว้นหน้าแรกทั้งหน้าไว้เหมือนเดิมครับ"
+
+## Files
+
+- `src/components/ui/use-stagger-bounce.ts` — สร้าง shared client hook สำหรับ active main/footer, semantic content groups, viewport stagger/bounce, streamed/new content, focus/reduced-motion/route cleanup และ hard bypass `/`; ใช้ native WAAPI ไม่เพิ่ม dependency/wrapper
+- `src/features/catalog/components/catalog-route-frame.tsx` — ผูก ref/hook กับ div เดิม ใช้ pathname ที่มีอยู่แล้ว; รักษา Header/Footer ownership, className, overlay portal และ children structure เดิม
+- `src/features/catalog/components/products-overview.module.css` — เปลี่ยนเฉพาะ title/chapter opacity entrance ที่ถูกแทนด้วย shared bounce; รักษา ribbon highlight/text color3s, component layout/tokens, carousel/hover/reduced-motion behavior อื่น
+- `tests/e2e/sitewide-stagger-bounce.spec.ts` — สร้าง coverage ทุก route template/section, item ordering/overshoot/settle, first and late mounted content, Footer, whole-homepage exclusion, reduced/static/focus, navigation during reveal และ responsive geometry/content parity
+- `tests/e2e/category-intro-motion.spec.ts` — ปรับ expectation จาก CSS opacity-only title/chapter เป็น shared bounce โดยคง ribbon/focus/reload/popup/static assertions
+- `tests/e2e/solutions-intro-motion.spec.ts` — ปรับ shared entrance expectation ของ solutions โดยคงธุรกิจ/ลิงก์/เนื้อหาและ ribbon coverage
+- `tests/e2e/industrial-scales-page.spec.ts` — ปรับเฉพาะ old0.8s CSS title assertion ให้ตรวจ native bounce/reduced motion; รักษา membership/controls/navigation checks
+- `tests/e2e/scales-subcategory-pages.spec.ts` — ปรับเฉพาะ old title-motion assertions; คงทุกกลุ่ม/return/membership checks
+- `tests/e2e/indicator-subcategory-pages.spec.ts` — ปรับเฉพาะ old title-motion assertions; คงทุกกลุ่ม/overlapping membership/return checks
+- `tests/e2e/platform-subcategory-pages.spec.ts` — ปรับเฉพาะ old title-motion assertions; คง4materials/ABS Mock-only/search/return checks และรอไม่ให้ชนการแก้ของงาน platform ที่ยังเปิดอยู่
+- `spec.md`, `plan.md` — บันทึกขอบเขต/approval จริง/contracts/checklists/results โดยเพิ่มหัวข้องานและรักษาประวัติ/งานอื่น
+- `MEMORY.md` — บันทึกบทเรียนตาม AGENTS: อย่าจบ translation จาก pointer focus ก่อน click dispatch เพราะเปลี่ยน hit rectangle; keyboard focus ใช้ `:focus-visible` และทดสอบ trusted click ระหว่าง reveal
+- `output/sitewide-stagger-bounce-20261109/` — task-owned baseline hashes, route/template/section inventory, screenshots, animation samples, parity/performance/build/test logs และ delivery report; ignored verification artifacts เท่านั้น
+
+ไม่แก้ไฟล์อื่นโดยเงียบ ๆ หากพบว่าต้องเพิ่ม explicit marker ใน template นอก3application paths นี้ ให้เสนอ file/scope delta ก่อนแก้; การอ่านและทดสอบไฟล์เดิมอื่นทำได้ ไม่มีการแก้ `src/app/(site)/page.tsx`, Hero/HomeMotion, Header/Footer templates หรือ global stylesheet
+
+## Steps
+
+- [x] อ่าน applicable instructions, current spec/memory, design tokens, shared frame, active route templates และ existing motion/tests; อ่าน local Next Client Components/usePathname guidance
+- [x] ยืนยันจากผู้ใช้ว่าเว้นหน้าแรก `/` ทั้งหน้า จัด Spec/Plan พร้อม file list และผลกระทบต่อส่วนกลาง
+- [x] รับการอนุมัติ concrete Spec/Plan และบันทึกข้อความจริงก่อนแก้ application/test files
+- [x] Snapshot latest source และ configured baseline หลังงาน platform ที่ทับซ้อนนิ่ง; map ทุก existing public route/template/visible section→target group; เก็บหน้าแรกทั้งหน้าเป็น protected baseline ใช้ data provider เดียวกัน
+- [x] สร้าง hook และผูกกับ root div เดิมโดยไม่เปลี่ยน SSR markup/layout; target inner content/card/media/CTA groups ตาม DOM และไม่เลือก ancestor/descendant ซ้อนกัน; skip existing interactive effect owners/hidden subtrees
+- [x] ใช้650ms/80ms stagger capped320ms/16→-3→1→0px finite bounce; เพิ่ม preference/focus/route visibility cleanup และการรับ streamed/new content โดยไม่ replay item เดิม; hard bypass ทั้ง main/footer เมื่อ pathname `/`
+- [x] แทนเฉพาะ title/chapter CSS reveal เดิม รักษา ribbon และ motion อื่น; ปรับเจ็ด existing/new motion test files ตาม final behavior โดยไม่ลด functional assertions
+- [x] Run scoped `bunx prettier --check`, `bunx eslint`, `bun run typecheck`, `bun run test:catalog`; ใช้ Node24 และ configured production build กับ isolated task-owned output/workdir ไม่แย่ง .next/dev/build หรือ QA process ของงานอื่น
+- [x] ตรวจ browser ทุก template และ existing child route ที่รู้จัก; ตรวจ every visible section มี target, frame samples0/mid/overshoot/end และ final parity ที่320/390/768/834/1440; keyboard/native touch, after-sales tabs, product list/return/gallery/comparison, reload/cache/Back ระหว่าง reveal; unchanged legacy cases รายงานแยก
+- [x] ตรวจหน้าแรก direct/Home→other→Back/other→Home ว่าไม่มี animation/style ใหม่ รวม shared Footer; run existing home-motion-cleanup/home-motion/hero-scene/brand-opening และ sitewide-navigation regressions ที่ตรง active scene
+- [x] ตรวจ reduced motion ก่อน/ระหว่าง reveal, no-JS/API fallback เทียบ baseline, cleanup/error/console, overflow/section seam/target hit bounds,4xCPU CLS/LCP/long-task comparison ใน common observation window โดยไม่อ้างผล lab เป็น field metric
+- [x] อัปเดต actual results/checklists/contracts ใน Spec/Plan และ evidence report; ตรวจ protected files/concurrent work, ทบทวน Next feedback candidates หนึ่งครั้ง และส่งมอบ local preview3010 หลัง build/test ผ่าน โดยรักษา shared3000 ไม่ commit/push/deploy
+
+## Impact / Rollback
+
+R1: เพิ่มพฤติกรรมใน shared frame และ shared category entrance CSS กระทบทุกหน้า public ที่ไม่ใช่ `/`; ส่วนกลางที่ขออนุมัติมี new UI hook + existing CatalogRouteFrame + feature CSS3pathsเท่านั้น ไม่มี wrapper/stacking context/route/data change และไม่แก้ homepage source
+
+ความเสี่ยงหลัก: target inference ไม่ครบทุก template หรือเลือกทั้ง card และ copy ซ้อน, transform ของ carousel/gallery, fixed/sticky descendants, หน้าเก่าที่ cache ซ่อนอยู่, shared Footer ที่กลับเข้าหน้าแรก และ focus ระหว่าง reveal การตรวจต้องรวม intermediate frames และ navigation lifecycle จริง ไม่ใช้ settled screenshots อย่างเดียว
+
+เก็บ source/build baseline แล้ว rollback เฉพาะ3application-file delta และ test expectation ของงานนี้ รักษางาน platform/indicator/scales/Figma และ uncommitted changes เดิมทุกส่วน ห้ามใช้ whole-tree reset ห้ามรีสตาร์ตหรือหยุด QA process ที่ไม่ได้เป็นเจ้าของ การ refresh preview ต้องใช้ build ที่ตรวจแล้วและไม่ชนการตรวจของงานอื่น
+
+## Verification Results
+
+- Delivered650ms/80ms capped320ms/16→-3→1→0px native bounce on existing main/footer inner content, excluding entire homepage; ribbon3s and existing effect owners retained. No dependency/wrapper/layout change
+- Node24.22.1 configured isolated build459/459, catalog120/120, TypeScript/scoped ESLint/Prettier/whitespace pass; verified frozen candidate contains230app-source files outside generated client; its3motion files match delivered source, later accessory work excluded
+- Core113distinct browser cases have latest passing verification: initial110passed/2old expectation failures; corrected current directory ribbon and closed-finder cached-history expectations, targeted7/7passed.19templates×5widths =95route-width audits including3concurrent POS children
+- Additional12navigation+5current product-detail+3service+15active homepage/Hero/opening cases pass;148distinct relevant cases with passing coverage. Three unrelated legacy cases fail identically on matched baseline and candidate; assertions preserved and exact evidence retained in delivery report
+- Foursoftware filters retain keyboard/hash/current state and exact8/3/4/1models versus baseline; not-found UI receives motion targets, with existing streamed HTTP200 status unchanged and documented
+- Strict37page text/links/logical images/settled main-and-section geometry parity exact. Baseline POS QA3006/candidate3010 source SHA256 differ only in3approved motion paths. Normalize local image origin and existing carousel mirror copies symmetrically; no product data normalization
+- Twelve4xCPU initial-viewport samples with equal minimum4s window: all CLS0/no overflow/no remaining bounce; candidate LCP212–692ms is a lab sample only. Inspected all four390/1440mid/settled screenshots
+- 396baseline paths:377unchanged,8planned existing changes (2app+6tests),11concurrent POS-owned changes,0unexpected; new hook/new motion suite only for this implementation. Homepage/Hero/HomeMotion/Header/Footer/global styles/data/assets/manifests/locks/schema preserved
+- Preserved original test assertions outside scope. Two old product-detail selector cases and direct `/#stories` viewport case fail on both builds. Static service-position check passes under reduced motion on both; normal interactive tabs pass. No claim to fix existing no-JavaScript streamed-hidden ancestors or to pass the whole repo suite
+- Reviewed Next feedback once: no new qualifying framework issue; transient external DB build failure recovered. MEMORY/observer record pointer-focus hit-geometry lesson
+- Preview: `http://localhost:3010/products/category/scales`, Node24production server; shared3000/.next and other QA unchanged. Evidence: `output/sitewide-stagger-bounce-20261109/delivery.md`; no commit/push/deploy/database change
+
+---
+
+Final cleanup audit: native observer callbacks ignore disposed effects and unmanaged targets. Final guard build459/459 and targeted17/17motion/history/HomeMotion checks pass, including replaying a queued Footer notification after returning Home. Scoped TypeScript10entry files with transitive imports and scoped ESLint pass. Full workspace typecheck was previously passing; the latest run is blocked by duplicate `accessorySubcategoryPages` imports at lines7/8 of the concurrent accessory catalog test. That file is outside this task and was preserved. Evidence: `build-delivery.log`, `delivery-tests.log`, `types-scope.log`, `types-delivery.log`, `delivery-source.json`.
+
+# Plan: Platform material subcategory separate pages (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Direct owner request for4platform groups using approved scales subgroup pattern"
+
+## Files
+
+- `src/features/catalog/data/product-subcategory-pages.ts` — add4source material definitions, canonical routes/titles and safe return contexts; preserve existing11records
+- `src/app/(site)/products/category/platforms/[group]/page.tsx` — new4known static parameters, metadata and unknown-group guard using current shared server template
+- `tests/catalog/product-subcategory-pages.test.ts` — extend exact platform paths/parent-boundary/return checks without removing existing coverage
+- `tests/e2e/platform-subcategory-pages.spec.ts` — new material membership/order/count/Mock, controls/returns, ABS-only behavior, entries/history/native touch/responsive/motion coverage
+- `tests/e2e/platforms-overview.spec.ts`, `catalog-subcategory-navigation.spec.ts`, `sitewide-navigation.spec.ts` — update only promoted platform expectations; retain explicit finder and non-promoted filter regression
+- `spec.md`, `plan.md`; `output/platform-subcategory-pages-20261109/` — approval/baseline/evidence/delivery; MEMORY only if a new reusable lesson arises
+
+## Steps
+
+- [x] Read current instructions/spec/memory,4source material groups and existing generic template/tokens; read local Next page/static-params guidance and record direct authorization
+- [x] Capture configured memberships, source snapshots and11existing listings/unaffected-page signatures
+- [x] Add4registry records and one bounded dynamic route; preserve shared template and existing integrations
+- [x] Run scoped format/lint/typecheck/catalog units and configured production build; safely preserve previous preview build
+- [x] Verify all4materials/ABS, old query/menu/chapter/detail/history/cache/native touch, responsive/motion/performance and protected-source/page parity
+- [x] Record actual results, update local preview and deliver without commit/push/deploy
+
+## Impact / Rollback
+
+R2 registry extension. Existing generic consumers automatically resolve the4new groups, so cover their navigation/return behavior while leaving global/shared styles and component markup untouched. Keep snapshots/build archive; revert only task deltas. Preserve previous uncommitted source, data and concurrent unrelated Figma work. No dependency/database changes.
+
+## Verification Results
+
+Done. Configured Node24build455/455 and catalog118/118pass. Scoped format/lint/typecheck pass. Chromium47/47pilot and47/47navigation/overview cases pass first time, totaling94scoped cases. Pilot covers19new material cases plus existing17indicator/11industrial cases; other7scale listings are covered by page parity, registry units and all23submenu navigation. No claim to run the whole project suite.
+
+Exact material entries/order/count remain12carbon,9SUS304,2SUS201 real products and one ABS Mock. Real-group controls/comparison/same/fresh-tab/default return, ABS search/featured/view/reset/no product link or selection, all4old queries/direct/reload/Back/cache/local-search isolation/native touch and responsive320/390/768/834/1440/latest/reduced motion pass. Non-promoted local-filter history now uses accessory groups because specific platform queries intentionally became listing pages. Explicit all-model finder and broader platform-parent aliases retain their behavior.
+
+All17baseline page text/image signatures exact, including11scale/indicator listings and5category overviews/directory.351protected paths unchanged,5planned existing deltas+1new app route+1new browser test; no global/template/style/motion/data/dependency changes. Eight CPU4x checks report CLS0/no overflow/settled entrance;3desktop/mobile screenshots inspected. Existing whole-page no-JavaScript limitation unchanged. No new qualifying Next feedback issue or reusable observer lesson.
+
+Final preview3000session9713 runs verified build; previous-indicator-build safely archived after verifying/stopping owned listener. Evidence/delivery: output/platform-subcategory-pages-20261109/delivery.md. Prior uncommitted implementation and concurrent Figma notes preserved. No commit/push/deploy/database change.
+
+---
+
+# Plan: Indicator subcategory separate pages (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Direct owner request for existing indicator groups using the approved scales subgroup pattern"
+
+## Files
+
+- `src/features/catalog/data/product-subcategory-pages.ts` — new known-page/return registry combining existing8scale pages and3source indicator groups
+- `src/features/catalog/components/product-subcategory-page.tsx` — shared RSC markup extracted from current scale template; same classes/structure/motion
+- `src/features/catalog/components/scale-subcategory-page.tsx` — retain existing public wrapper/default behavior through shared template
+- `src/app/(site)/products/category/indicators/[group]/page.tsx` — new3known static parameters, metadata and unknown-group guard
+- `src/features/catalog/data/category-destinations.ts`, `src/features/cms/data/primary-navigation.ts` — include canonical indicator child destinations without losing label/order/role or cross-family boundaries
+- `src/features/catalog/components/products-overview.tsx` — generic known-group chapter/old-query routing with existing history cleanup; explicit finder unchanged
+- `src/features/catalog/components/product-category-mock.tsx`, `catalog-product-card.tsx`, `product-return-link.tsx` — exact indicator detail-return context, preserving scale aliases/default details/local-search behavior
+- `tests/catalog/product-subcategory-pages.test.ts` — new indicator route/context/parent-boundary checks; existing primary-navigation canonical projection tests retained
+- `tests/e2e/indicator-subcategory-pages.spec.ts` — new3group exact membership/order/count/Mock, controls/return, entries/reload/history/native touch/responsive/motion coverage
+- `tests/e2e/indicators-overview.spec.ts`, `catalog-subcategory-navigation.spec.ts`, `sitewide-navigation.spec.ts` — update only promoted indicator expectations; preserve explicit finder/non-promoted family coverage
+- `spec.md`, `plan.md`; `output/indicator-subcategory-pages-20261109/` — approval, snapshots, actual verification and delivery; MEMORY only for a new reusable lesson
+
+## Steps
+
+- [x] Inspect current instructions/spec/memory,3authoritative groups, tokens/template and local Next page/static-params docs; record direct authorization
+- [x] Snapshot current source/configured memberships/all8scale and unaffected page signatures
+- [x] Share identical server template; implement3known routes and indicator-only entry/return extension
+- [x] Run scoped static checks/catalog units/production build while preserving previous preview build
+- [x] Verify3new groups and8scale regressions, navigation/history/cache/native touch/responsive/reduced-motion, data/style preservation and page parity
+- [x] Update spec/plan/evidence, refresh local preview and deliver without release
+
+## Impact / Rollback
+
+R2. Shared catalog guards and template expand to3indicator children. No global components/layout/styles edited. Compare source hashes and all8scale page signatures; restore only task changes from snapshot if needed. Preserve previous uncommitted pilot/scales work, product membership and concurrent unrelated task notes. No dependency or database changes.
+
+## Verification Results
+
+Done. Node24 configured build450/450 and catalog116/116pass. Chromium56/56pilot and47/47navigation/overview cases pass in first runs;103scoped browser cases, not the entire project suite. Scope includes3new indicator groups and all8scale listings, same/fresh-tab/default/overlapping-WP31C detail returns, search/featured/view/comparison, exact memberships/order/count/Mock, old query/direct/reload/history/cache, native Home touch and responsive320–1440/latest motion/reduced-motion. Existing intentional all-model finder and unpromoted family controls remain tested; local child-filter history now exercises platform groups because indicator query destinations intentionally became listings.
+
+Fourteen existing page text/image signatures exact;341protected paths byte-identical,10planned existing deltas+3new app files+2new tests. Global components/layout/styles/animation values, product data, manifests/locks and unrelated prior work unchanged. Six CPU4x checks show CLS0/no overflow/settled entrance; desktop/mobile screenshots inspected. Scoped format/lint/typecheck and configured whitespace results are recorded. Existing whole-page no-JavaScript limitation remains outside scope; no new qualifying Next feedback candidate or reusable observer lesson.
+
+Final preview3000session41047 runs verified build; previous-scales-build archive retained. Evidence/delivery: output/indicator-subcategory-pages-20261109/delivery.md. No dependency/database changes, commit/push/deploy. Concurrent Figma task notes preserved.
+
+---
+
+# Plan: Remaining seven scales subcategory pages (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Direct owner request extends the existing industrial template to all remaining scales children; no design change"
+
+## Files
+
+- `src/features/catalog/data/scale-subcategory-pages.ts` — new whitelist mapping existing8scale IDs to paths and source labels/return context
+- `src/features/catalog/components/scale-subcategory-page.tsx` — shared server markup extracted from current industrial page without changing its appearance
+- `src/app/(site)/products/category/scales/industrial/page.tsx` — retain route/metadata, render shared template
+- `src/app/(site)/products/category/scales/[group]/page.tsx` — seven statically enumerated known groups with metadata/unknown-group guard
+- `src/features/catalog/data/category-destinations.ts` — canonicalize all known scale-child queries/recognized old thematic URLs while preserving unrelated query/hash
+- `src/features/cms/data/primary-navigation.ts` — retain canonical scale-child links in legacy/already-projected CMS data; keep labels/order/role separation
+- `src/features/catalog/components/products-overview.tsx` — all known scales chapters/old queries navigate to listings with current history cleanup; other families unchanged
+- `src/features/catalog/components/product-category-mock.tsx`, `catalog-product-card.tsx`, `product-return-link.tsx` — correct whitelisted per-group detail context; preserve industrial alias and ordinary detail behavior
+- `src/app/(site)/[...path]/page.tsx` — recognized legacy scale-child redirects only
+- `tests/catalog/scale-subcategory-pages.test.ts` — new whitelist/destination coverage
+- `tests/catalog/category-destinations.test.ts`, `primary-navigation.test.ts` — update affected canonical destination expectations and preserve role/label projection checks
+- `tests/e2e/scales-subcategory-pages.spec.ts` — new exact membership/order/count, responsive, entry/reload/history, local controls/return/motion coverage for7new groups
+- `tests/e2e/catalog-subcategory-navigation.spec.ts`, `scales-overview.spec.ts`, `products-full-overview.spec.ts`, `category-destinations.spec.ts`, `sitewide-navigation.spec.ts`, `industrial-scales-page.spec.ts` — adapt only affected scale-child expectations; retain other families and industrial regression assertions
+- `spec.md`, `plan.md`; `output/scales-subcategory-pages-20261109/` — approval/baseline/evidence/delivery; MEMORY only if a new repeatable lesson arises
+
+## Steps
+
+- [x] Inspect instructions/spec/memory, authoritative8groups and delivered industrial template; read local Next page/static-params/notFound guidance; record direct authorization and concrete scope
+- [x] Snapshot current source and configured preview memberships/unaffected signatures; preserve prior uncommitted pilot
+- [x] Extract identical shared template; implement7known routes and extend only scale entry/return mapping
+- [x] Run scoped formatting/lint/typecheck/catalog units and configured production build; archive live build only after stopping its owned server
+- [x] Verify all8scale groups,7new group controls/returns, legacy/menu/guide/history/cache, responsive/native touch/reduced-motion and protected-source parity
+- [x] Record actual results and refresh local preview; deliver without commit/push/deploy
+
+## Impact / Rollback
+
+R2. Shared catalog feature branches expand from one known scale group to8; non-scale families and explicit all-products finder stay intact. No global components/layout/styles edited. Snapshot and compare before/after; restore only this task delta, keeping prior pilot and unrelated notes. No new library or data migration.
+
+## Verification Results
+
+Done. Node24 configured build446/446 and catalog113/113pass. Final scoped Prettier/ESLint/TypeScript and whitespace checks pass. Chromium39/39pilot cases pass. Broad regression53passed/2stale guide-popup assertions failed; after canonical final-URL expectation updates, targeted guide rerun2/2passes. Latest passing coverage94distinct cases, not a claim that the entire project suite ran together. No application edit was needed after the successful build.
+
+All7new groups have exact source membership/order/count, including38benchtop/26floor pagination and existing Mock cards. At320/390/768/834/1440, controls/search isolation/comparison/contextual detail returns, old queries/legacy paths, directory/Navbar/scales chapters/guide links, refresh/Back, latest motion/reduced-motion and all7Home native-touch detail/return paths pass. Existing industrial11cases remain intact. Screenshots inspected at390/1440. Fourteen CPU4x checks report CLS0/no overflow/settled animations.
+
+Seven prior-page text/image signatures exact, including industrial, directory, scales parent and4other category overviews. Preservation:331baseline paths unchanged,15planned existing deltas+3new app files+2new tests; global layout/components/styles/animation/data/manifests/locks untouched. Prior uncommitted pilot and unrelated Figma notes preserved. Existing whole-page no-JavaScript limitation unchanged; no new qualifying Next feedback candidate. A whitespace-check attempt with a per-command core.autocrlf override produced CRLF-only diagnostics; the ordinary repository-configured check passes. Concrete correction recorded in MEMORY.md without rewriting unrelated sources.
+
+Final preview3000session39590 runs verified build; previous-pilot-build archive retained. Evidence/delivery: output/scales-subcategory-pages-20261109/delivery.md. No commit/push/deploy, dependency or database changes.
+
+---
+
+# Plan: Products index and industrial-scales separate-page pilot (2026-11-09)
+
+Status: "Ready to Code"
+Approval: "Owner explicitly approved these two pages from the reviewed wireframe; preserve existing design and animation"
+
+## Files
+
+- `src/features/catalog/components/products-index-content.tsx`, `product-directory.module.css` — new server directory and scoped layout using existing overview tokens/motion,5CMS categories/current children/photos
+- `src/app/(site)/products/page.tsx` — supply directory content to existing shell; retain existing shell data/explicit finder contracts
+- `src/app/(site)/products/category/scales/industrial/page.tsx` — new metadata/server route, exact membership, breadcrumbs and fixed inline list
+- `src/features/catalog/components/product-category-mock.tsx` — optional fixed subcategory and listing presentation only; preserve default finder/category behavior
+- `src/features/catalog/components/catalog-product-card.tsx`, `product-return-link.tsx` — optional industrial detail context and Suspense-safe whitelisted back link
+- `src/app/(site)/products/[slug]/page.tsx` — replace only ordinary back-link rendering with context-aware component/fallback; preserve detail content/data
+- `src/features/catalog/data/category-destinations.ts` — existing specific industrial links/old queries resolve to the pilot route; unrelated destinations unchanged
+- `src/features/cms/data/primary-navigation.ts` — retain the industrial child when CMS input already uses its canonical path, preserving all23menu children before/after normalization; preserve separate product-child and business/support label ownership when equivalent URLs collide
+- `src/features/catalog/components/products-overview.tsx` — optional server directory slot, latest entrance opt-in, industrial chapter/old-query navigation and directory all-link; preserve remaining overview shell/interactions
+- `src/features/content/data/buying-guides.ts` — add direct industrial entry with existing category label
+- `src/app/(site)/[...path]/page.tsx` — industrial legacy path redirect only
+- `tests/catalog/category-destinations.test.ts`, `tests/e2e/category-destinations.spec.ts`, `sitewide-navigation.spec.ts`, `home-category-navigation.spec.ts`, `products-full-overview.spec.ts`, `scales-overview.spec.ts`, `catalog-subcategory-navigation.spec.ts` — adapt affected destination/index contracts only where exercised; retain other category/filter assertions
+- `tests/e2e/industrial-scales-page.spec.ts` — new exact membership/Mock/search/compare/detail-return/entry/reload/history/responsive/motion coverage
+- `tests/catalog/primary-navigation.test.ts` — retain full projection equality with the intentionally promoted industrial destination
+- `tests/e2e/indicators-overview.spec.ts`, `platforms-overview.spec.ts`, `pos-overview.spec.ts`, `accessories-overview.spec.ts` — update the all-products navigation step to enter the new directory first, then explicitly open the retained finder; preserve comparison/cache assertions
+- `spec.md`, `plan.md`; `output/products-industrial-pages-20261109/` — approval, baseline snapshots, verification and delivery; MEMORY only for a new repeatable lesson
+
+## Steps
+
+- [x] Read current spec/memory/instructions, supplied wireframe and installed Next page/Link/search-param guidance; inspect real taxonomy, tokens and existing shell/filter contracts
+- [x] Snapshot source/current browser; capture industrial ordered entries and unaffected categories/details before app edits
+- [x] Implement additive directory and industrial pilot with optional default-preserving props and canonical entry/return links
+- [x] Run scoped format/lint/typecheck, catalog units and configured production build; preserve previous preview while testing
+- [x] Verify320/390/768/834/1440, native touch/keyboard, all pilot entries, detail return, direct/reload/history, finder/search/compare, reduced motion and protected data/UI parity
+- [x] Update docs/evidence and preview; deliver without commit/push/deploy
+
+## Impact / Rollback
+
+R2. Changes to shared catalog feature components are limited optional props/industrial branches. Existing global Header/Footer/CSS/animation values remain read-only; no general refactor. Revert only approved task changes from snapshots. Keep old preview build available until candidate passes. Other23-child route rollout is outside scope.
+
+## Verification Results
+
+Done. Final configured Node24build438/438; catalog111/111; final Chromium43/43 pilot/destination/sitewide plus11/11 focused cache/history/native-mobile cases pass. Scoped Prettier/ESLint/TypeScript and git diff --check pass after the last source change. Earlier full regression attempts and their failures remain in logs; the final two runs are the current focused evidence, not a claim that every suite was rerun together.
+
+All21industrial entries/order/count match the original15real+6Mock set. Responsive320–1440, entry/reload/Back, local search/featured/view/load/comparison, native mobile and contextual detail returns pass. Four4xCPU cases at390/1440 show CLS0/no overflow/settled entrance; new directory gutters match existing headings. Ten unaffected-page signatures match except approved href/guide changes; Home images/links/source match with offscreen streamed text explicitly excluded. Header390/1440 geometry exact;320protected baseline files unchanged,20planned existing deltas+4new app files+1new test; no unexpected paths. Existing shared motion/style/data sources unchanged.
+
+Verification caught and fixed cached finder state on plain /products, stale closed-finder queries before industrial Back, and duplicate mobile labels caused by canonical URL collisions across semantic menu roles. Explicit finder query persistence remains intact. Shared Hero keyboard/native-swipe coverage moved to scales after the index content changed. New reusable navigation-role lesson recorded in MEMORY.md. No new qualifying Next feedback issue; pre-existing whole-page no-JavaScript visibility remains outside scope.
+
+Final preview3000session19296 runs the verified build; earlier build archives retained safely. Delivery/evidence: output/products-industrial-pages-20261109/delivery.md. Independent UAT publication preserved; this pilot is not committed, pushed or deployed. No dependency/database changes.
+
+---
+
 # Plan: Group existing changes, commit and push UAT (2026-11-09)
 
 Authorized directly by the owner's commit/push instruction. Existing application changes only; no application edits planned.
@@ -3285,3 +3993,353 @@ Authorized directly as a read-only inventory; no application edits or approved f
 Read-only application analysis. Only audit artifacts and project notes written; remove this task's report/notes if unwanted. Existing application work and preview retained.
 
 ---
+
+# Plan: Balanced 18-working-day launch plan (2026-11-09)
+
+Authorized directly for a planning deliverable; future application work and production release require their own concrete scope/approval. Overall implementation is Need Information; the relative-day document does not require a guessed start date or extra user confirmation.
+
+## Files
+
+- `docs/launch-plan-18-working-days.md` — create the daily schedule, checklists, launch gates, deferrable work, dependencies and release notes
+- `spec.md` — append planning-only scope, actual user request, assumptions and implementation information gaps; preserve existing history
+- `plan.md` — append this documentation task and actual verification evidence; preserve existing plans
+
+## Steps
+
+- [x] Read current project state and original weekly plan; retain confirmed catalog + contact-sales scope
+- [x] Inspect existing catalog/release/UAT evidence and distinguish source presence from live integration verification
+- [x] Draft18daily goals/checklists, reviews6/12/15, target release16 and reserve17–18; balance work/testing/contingency
+- [x] Separate required launch checks from deferrable enhancements and record company dependencies/unknown capacity
+- [x] Verify structure, internal schedule consistency, formatting and own scoped diff
+- [x] Record final results and attach the Markdown deliverable to work state
+
+## Impact / Rollback
+
+R2 documentation only. No application/shared UI/schema/dependency/environment/DNS changes and no deployment commands. Remove only the new plan file and this task's appended notes to undo; preserve pre-existing modified content in `spec.md` and `plan.md`.
+
+## Verification Results
+
+Structural inspection passes:18sequential overview rows and18daily sections across3weeks, each with4unchecked tasks (72total), evidence perday, company reviews6/12/15, targetrelease16 andreserve17–18. Relative dates/capacity assumptions and conditional launch gates are explicit. Markdown formatting is verified for the new deliverable and this task's appended notes, preserving pre-existing document content. Scoped git diff --check passes. No application tests/build/browser run required for this planning-only task; future checklists remain unchecked and are not acceptance evidence for the live website. No new Next.js feedback candidate.
+
+## วงสินค้าในส่วนที่ 01 ของ /products (2026-11-10)
+
+- [x] ตรวจหน้าใช้งานจริงและต้นแบบรุ่นแก้ภาพค้าง เปรียบเทียบไฟล์รูป 36 รายการตาม SHA256 พบรูปใน public เดิมตรงกัน 23 รายการ อีก 13 รายการใช้ภาพหน้าตรงจากต้นแบบ ดูชื่อปลายทางทุกรูปใน output/products-carousel-section-01-review/images.json
+- [x] ตรวจภาพประกอบการตัดสินใจบน desktop 1440px และ mobile 390px ด้วย output/products-carousel-section-01-review/review.mjs ในการทดสอบเฉพาะเบราว์เซอร์
+- [x] รับการอนุมัติ Spec/Plan สำหรับการเปลี่ยนหน้าเว็บ
+- [x] แก้ src/features/catalog/components/products-index-content.tsx ให้หัวข้อ ผลิตภัณฑ์ทั้งหมด และตัวค้นหารุ่นนำเข้าสู่วงสินค้าแทนการ์ดส่วน 01 ตามด้วยส่วน 02–09
+- [x] สร้าง src/features/catalog/components/products-index-carousel.tsx และ products-index-carousel.module.css สำหรับวงสินค้าและ dialog โหมดเต็มหน้า ใช้ React client component เฉพาะส่วนโต้ตอบ ตัดแถบเมนูที่ซ้ำกับเว็บ ให้ใช้ scroll บนวงและมีทางไปส่วนถัดไปได้ด้วยเมาส์ ทัช และคีย์บอร์ด
+- [x] สร้าง src/features/catalog/data/products-index-carousel.json จากต้นแบบที่ตรวจแล้ว ใช้รูปเดิมตามรายการและเพิ่มไฟล์ที่ขาดใน public/images/products-index-carousel/ ตาม images.json ตรวจปลายทางรายละเอียดกับข้อมูลสินค้าจริง
+- [x] ปรับ tests/e2e/products-full-overview.spec.ts ให้ตรวจวงสินค้า 1 ส่วนและส่วนการ์ดอีก 8 ส่วน เพิ่ม tests/e2e/products-index-carousel.spec.ts ตรวจภาพตรงรุ่น การเปลี่ยนหมวด วนหัวท้าย เปิด/กลับรายละเอียด focus ลด motion และเลื่อนออกจากวงไปส่วนถัดไป
+- [x] ตรวจ lint/typecheck และ browser tests ที่เกี่ยวข้อง ตรวจผลบน desktop/tablet/mobile และอัปเดต spec.md / plan.md
+
+ผลกระทบจำกัดที่เนื้อหาส่วนแรกของ /products ย้อนกลับโดยคืน markup และ assertion ส่วน 01 และถอด component/ข้อมูล/รูปใหม่ที่ระบุไว้
+
+# Plan: ย้ายจัดสเปคขึ้น Navbar
+
+- [x] ปรับ `src/features/cms/data/primary-navigation.ts` และระยะช่องไฟที่ 834–1023px ใน `src/styles/header.css` และ `src/features/catalog/components/products-overview.module.css`
+- [x] ปรับสัญญาเมนูใน `tests/catalog/primary-navigation.test.ts`, `tests/e2e/navigation.spec.ts`, `tests/e2e/indicator-platform-compatibility.spec.ts` และตรวจการกดจริงทั้งสอง Header รวมถึงมือถือ
+- [x] Production build ผ่าน 466 routes, catalog ผ่าน 124 tests, browser ผ่าน 22 cases รวมการกดลิงก์ตรง 4 กรณีและการวัดขอบเขตปุ่มทั้งสอง Header 10 กรณี พรีวิวที่พอร์ต 3024
+
+# Plan: จัดชุดเครื่องชั่งและย่อเมนูบริการ
+
+ตรวจผ่าน production build, catalog 124/124 และ browser 19/19 ตรวจหน้าจริงช่วง 320–1920px รวมการเลือกรุ่น เปลี่ยนชุด ลบอุปกรณ์ ลิงก์คู่มือ การใช้คีย์บอร์ด และทางเข้าหน้าหลักทั้งสองจากบริการ หลักฐานภาพอยู่ใน output/weighing-builder-preview/browser
+
+ปรับหน้า guide และ CSS Module ใน src/features/content/components เพิ่มส่วนเลือกชุดและสรุปผล รับภาพจาก product repository ฝั่ง server ใช้ข้อมูล compatibility เดิม ปรับ src/features/cms/data/primary-navigation.ts และชุดทดสอบเมนูและหน้าจัดสเปค ตรวจการเลือก เปลี่ยน ลบ ค้นหา กรอง และทั้งสองหน้าหลักจาก Navbar บนมือถือและเดสก์ท็อป
+
+ผลตรวจ 10 พ.ย. 2026: Chromium ผ่าน 20/20 บน http://localhost:3000/products ทดสอบครบ 36 รุ่นที่ 390/834/1440px และตรวจหน้าโดยรวม 9 ขนาดจอ ลิงก์รายละเอียดเปิด /products/acs30-jc21 ได้จริง ESLint และ TypeScript ผ่าน ภาพหน้าจอ implemented-1440.png และ implemented-390.png อยู่ใน output/products-carousel-section-01-review/
+
+## /products section 01 wheel area and title strip
+
+- [x] Update products-index-carousel.tsx wheel targeting and hint, remove visible title strip in products-index-content.tsx and replace obsolete header rules in products-index-content.module.css.
+- [x] Update products-index-carousel.spec.ts and products-full-overview.spec.ts to cover blank space, page structure and direct finder entry. Verify the running route, lint and types. Rollback is limited to these scoped changes.
+
+Verified 12 Chromium cases at localhost, including real reverse/forward wheel on a hit-tested background point with stable page scroll. Nine responsive layout widths, direct finder entry, mobile detail return, scoped ESLint and TypeScript passed.
+
+## Mobile background swipes on /products section 01
+
+- [x] Add passive directional touch handling and touch-specific hint in src/features/catalog/components/products-index-carousel.tsx and products-index-carousel.module.css.
+- [x] Exercise native touch input in tests/e2e/products-index-carousel.spec.ts, including reverse swipes, vertical page scrolling and the existing detail tap. Check scoped lint and types. Rollback consists of removing this gesture, hint and its regression case.
+
+# Plan: จัดสเปคทีละส่วน
+
+ปรับปุ่มบนการ์ดใน weighing-builder.tsx และสีสถานะใน weighing-builder.module.css ตรวจการแสดงทั้ง 9 รุ่น ปุ่มปิด 3 รุ่น และการเลือกเปลี่ยนชุดที่ยืนยันแล้วใน indicator-platform-compatibility.spec.ts
+
+ผลตรวจพรีวิวพอร์ต 3028 ผ่านทั้ง 390px และ 1440px เห็นปุ่มปิดทั้งสามรุ่น ค้นหา WP31EUSB ได้โดยชุดเดิมยังอยู่ และเลือก AW31 เพื่อเปิดรายการแท่นได้ ผ่าน build, scoped lint และการทดสอบข้อมูลคู่รุ่นทั้งสองกรณี
+
+ผลตรวจพรีวิวพอร์ต 3027 ผ่าน build, TypeScript, scoped ESLint, catalog 125/125 และ browser 17/17 รวมการเลือกครบสามขั้นและเปลี่ยนตัวเลือกต้นทางบน 390px และ 1440px ภาพขั้นเลือกแท่นอยู่ใน output/weighing-head-first/browser
+
+เพิ่มตารางคู่รุ่นใน indicator-platform-compatibility.ts ปรับการเตรียมตัวเลือกใน indicator-platform-compatibility-page.tsx และขั้นตอนใน weighing-builder.tsx กับ CSS Module ของหน้านี้ ตรวจการกรองรายรุ่น การล็อกขั้น การย้อนกลับและล้างชุดด้วย indicator-platform-compatibility tests และตรวจบนมือถือ/เดสก์ท็อป
+
+Verified with Chromium mobile touch emulation on localhost. Horizontal left/right, slight jitter, native up/down page scroll, and tap-to-detail passed. The four existing carousel cases, scoped lint and typecheck passed.
+
+## Product photo touch input in section 01
+
+- [x] Extend the existing gesture in src/features/catalog/components/products-index-carousel.tsx to photo buttons and update its mobile hint. Suppress the compatibility click only upon a recognized horizontal swipe.
+- [x] Extend tests/e2e/products-index-carousel.spec.ts to hit-test photo touches in both directions, native page scrolling and an ordinary tap. Check existing carousel cases, lint and types. Rollback scope is the carousel gesture and its regression.
+
+Photo swipe verification: six carousel browser cases passed on localhost including emulated mobile photo and background gestures, vertical page scrolling, and tap to open. Scoped ESLint and TypeScript exited 0.
+
+# Plan: ลิงก์ดูหัวอ่านรายรุ่น
+
+ปรับ indicator-platform-compatibility-page.tsx เพื่อส่งปลายทางจากสินค้าและสร้างการ์ดในคู่มือสำหรับรุ่นที่ไม่มีหน้าสินค้า ปรับ weighing-builder.tsx และ CSS Module ให้คลิกรูป ชื่อ และลิงก์ดูรุ่นได้ ทดสอบปลายทางตรงรุ่นและการเลือกชุดแยกจากกันใน indicator-platform-compatibility.spec.ts
+
+ตรวจพรีวิวพอร์ต 3029 ผ่าน browser 18/18 และตรวจคลิกชื่อและรูป AC31P บนมือถือแยกกัน ทั้งสองตำแหน่งเปิดหัวข้อ Indicator AC31P และปุ่มเลือกยังปิดอยู่ Build, TypeScript, scoped ESLint และข้อมูลคู่รุ่นผ่าน
+
+# Plan: เปิดรุ่นแท่นชั่งและอุปกรณ์เสริม
+
+ผ่าน production build, catalog 127/127, browser 20/20 รวมคลิกตำแหน่งรูปและชื่อของ TMS-60-AW31 กับ NY30M12 บน 390px/1440px และตรวจปลายทางเมื่อไม่มีหน้าสินค้า
+
+ใช้ตัวจับคู่รหัสเดิมใน scale-subcategories และ accessory-subcategories เตรียม URL ใน indicator-platform-compatibility-page ขยายลิงก์การ์ดใน weighing-builder และ CSS Module ตรวจรูป ชื่อ ปุ่มเลือก และการดูหัวอ่านแยกจากลิงก์แท่นใน browser tests
+
+# Plan: เลือกหัวอ่านหรือแท่นก่อน
+
+ตรวจผ่าน production build, TypeScript, scoped ESLint, unit tests ตารางคู่รุ่น และ browser 22/22 ตรวจเพิ่มโดยคลิกแท่นทุกตัวเลือก 26 รหัสบนพรีวิวพอร์ต 3031
+
+ปรับ weighing-builder.tsx และข้อความใน indicator-platform-compatibility-page.tsx ให้เลือกสองฝั่งสลับลำดับได้ ตรวจทั้งสองเส้นทาง การเปลี่ยนและถอดรุ่น การปิดขั้นอุปกรณ์เสริม และลิงก์รุ่นเดิมใน tests/e2e/indicator-platform-compatibility.spec.ts
+
+# Plan: ตัดแถบหัวเรื่องหน้าจัดสเปค
+
+ตรวจพรีวิวพอร์ต 3032 ผ่านครบ 8 ขนาดตั้งแต่ 320 ถึง 1920px ส่วนจัดชุดเริ่มใต้ Navbar 24px ทุกขนาด ภาพมือถือยืนยันว่าเห็นกล่องชุดที่เลือกเป็นส่วนแรก
+
+แก้ indicator-platform-compatibility-page.tsx และ CSS Module เฉพาะส่วนหัวและระยะบน ตรวจระยะจาก Navbar ถึงตัวเลือกใน indicator-platform-compatibility.spec.ts บนมือถือจนถึงจอกว้าง
+
+# Plan: ลบข้อความดูรายละเอียดรุ่น
+
+ย้ายลิงก์ใน weighing-builder.tsx ไปที่ชื่อรุ่น ใช้พื้นที่คลิกรูปเดิม ตรวจว่าข้อความตามภาพหายและรูปกับชื่อยังเปิดปลายทางในเบราว์เซอร์
+
+# Plan: ส่งชุดที่เลือกเข้าใบเสนอราคา
+
+ปรับเงื่อนไขและสถานะปุ่มใน weighing-builder.tsx และ CSS Module ตรวจ quotation.spec.ts ทั้งสองลำดับ ตั้งแต่ชุดว่างจนถึงการส่งคู่หลักโดยไม่มีอุปกรณ์เสริมและการนำชิ้นหลักออก
+
+ตรวจพรีวิว 3035 ผ่าน browser 3/3 เริ่มจากหัวอ่านที่ 1440px และจากแท่นที่ 390px เปิดใบเสนอราคาด้วยสองรายการได้ รวมอุปกรณ์เมื่อเลือก และปิดปุ่มอีกครั้งเมื่อถอดชิ้นหลัก
+
+ผลตรวจบนพอร์ต 3034 ผ่าน build, TypeScript, scoped lint, catalog 128/128 และ browser 8 กรณี อีก 1 กรณีพิมพ์เอกสารมีราคาข้ามเนื่องจากแคตตาล็อกพรีวิวยังไม่มีราคาขายยืนยัน
+
+เพิ่มลิงก์ใน weighing-builder และ CSS ส่งเฉพาะรหัสที่เลือก ใช้รายการตัวเลือกจากข้อมูลกลางร่วมกับ indicator-platform-compatibility-page และหน้า /service/quotation เติมรายการใน quotation-form และตรวจปลายทางทั้งรายการมีราคาและรอยืนยัน
+
+ผลการลบป้าย “ดูรายละเอียดรุ่น ↗” รอบก่อน ผ่าน browser 5/5 บน production preview ทั้งมือถือและเดสก์ท็อป
+
+# Plan: Warehouse quotation-item read RPC
+
+## Files
+
+- `docs/warehouse/search-quotation-item.sql` — create the reviewed read-only RPC definition, examples, privilege lockdown and rollback statement.
+- `spec.md` — record the verified data contract, scope, risks and approval.
+- `plan.md` — record the implementation checklist and actual validation results.
+
+## Steps
+
+- [x] Confirm the Warehouse quotation-item RPC Spec/Plan is approved.
+- [x] Write `ecommerce.search_quotation_item` using only the verified master, saleable-warehouse stock and active-reservation sources.
+- [x] Add bounded parameters, raw-price output, explicit `PUBLIC` revoke, usage examples and exact rollback SQL.
+- [x] Validate create/calls/privileges inside one database transaction and roll it back; compare results with the verified reference query.
+- [x] Check SQL/document formatting and update actual results in `spec.md` / `plan.md`.
+
+## Impact / Rollback
+
+Preparing the local SQL file is R2. Installing it in Warehouse would be R1 because it creates a PostgREST-visible database contract; installation is excluded until separately approved with an execution role. Transaction validation must end with `ROLLBACK`. A later authorized installation can be reversed with the exact `DROP FUNCTION` signature included in the deliverable. Existing `master_data.search_master_item` and all Warehouse data remain unchanged.
+
+## Verification Results
+
+Approved local SQL delivery is complete. PostgreSQL 16.13 transaction validation successfully ran `CREATE OR REPLACE` twice, queried default, exact item, text search, saleable/non-saleable warehouse scopes and both limit bounds, inspected function metadata/ACL, then rolled back. Default result IDs are 796/801/799; formulas, positive price/availability and uniqueness pass. Service search, inactive item 109 and non-saleable warehouse 24 return zero; saleable warehouse 88 returns three. Limits clamp to 1/100. Metadata confirms `STABLE`, `SECURITY INVOKER` and no `PUBLIC` execute grant. The function did not exist before validation and does not exist after rollback.
+
+The exploratory all-warehouse reference had five positive-stock items. The final approved saleable-location scope correctly excludes TGS1000M because its positive stock is only in non-saleable warehouse 24, and VR5000 because its positive stock is in that same non-saleable warehouse while saleable warehouse 88 is -139. The initial strict test used empty saleable warehouse 21 as a positive fixture and failed; switching the fixture to verified warehouse 88 made the unchanged SQL pass. No database object or data mutation remains. Final scoped whitespace/document checks are recorded at delivery.
+
+# Plan: Warehouse product API for configurator quotations
+
+Approval: Approved by the user with “อนุมัติ Spec/Plan” on 2026-11-10. The first checklist gate remains open until the required VAT, mapping and website-database inputs are resolved.
+Status: Superseded by the sitewide plan below after the owner's expanded request. Preserve this historical approval; do not use it as approval of the expanded file list.
+
+## Files
+
+- `src/features/services/warehouse-product.server.ts` — validate and fetch the server-only official-product API contract without stock assumptions or raw upstream error leakage.
+- `src/features/catalog/data/quotation.ts` — convert validated Warehouse items into quotation rows and implement the approved deterministic configurator-code mapping.
+- `src/app/(site)/service/quotation/page.tsx` — use Warehouse items/prices for the quotation product list while retaining the current Prisma-backed catalog only for existing site/content relationships.
+- `src/features/catalog/components/quotation-form.tsx` — preserve the form/print layout while presenting the Warehouse unit where needed and keeping unresolved selections non-printable.
+- `tests/catalog/quotation.test.ts` — cover Warehouse price conversion, uniqueness, invalid data rejection, mapping and VAT arithmetic.
+- `tests/e2e/quotation.spec.ts` — cover manual Warehouse selection, configurator handoff, pending safeguards, printing and responsive behavior.
+- `.env.example` — document `WAREHOUSE_API_URL` separately from the website `DATABASE_URL`, without credentials.
+- `spec.md` — record the approved data contract, scope and actual outcome.
+- `plan.md` — record the approved checklist and verification evidence.
+
+## Steps
+
+- [ ] Resolve the three items in `Missing Information`, set the Spec to `Ready to Code`, and record explicit approval of this concrete plan.
+- [ ] Read the relevant local Next.js 16 data-fetching/caching guide before implementation.
+- [ ] Harden the server-only API reader and validate the response without adding dependencies.
+- [ ] Map Warehouse products to quotation rows and map configurator codes only by the approved contract.
+- [ ] Replace quotation prices with Warehouse prices; preserve pending/print safeguards and show the returned unit without redesigning the page.
+- [ ] Document the split database/API environment variables without editing or committing `.env.local`.
+- [ ] Run scoped catalog tests, TypeScript, ESLint, a production build and mobile/desktop quotation browser regressions.
+- [ ] Update verification results and task state in `spec.md` / `plan.md`.
+
+## Impact / Rollback
+
+The website code/config-documentation change is R2 and is limited to quotation reads. It makes no Warehouse writes and can be reverted by restoring the four application files and related tests/docs. The primary risks are quoting the wrong SKU, interpreting VAT incorrectly, or breaking the site while `DATABASE_URL` still points at Warehouse. The plan therefore blocks implementation until mapping/VAT are approved and the website Prisma connection is restored. No secret value will be written to tracked files.
+
+## Verification Results
+
+Pre-implementation audit only: the configured endpoint returns HTTP 200 with 380 unique products and positive prices, but no stock fields (now intentionally unnecessary). The current configurator has 49 unique codes; 2 are literal SKU matches and 11 match after case/hyphen normalization. Name-based candidates are ambiguous. Application code, `.env.local`, Warehouse objects and data have not been changed under this task.
+
+# Plan: Sitewide Warehouse products in existing website categories
+
+Approval: Approved by the user on 2026-11-10. The whole-site file plan and the mapping/setup-guide work are authorized; unresolved product/variant associations remain a data dependency.
+Approval update: User explicitly approved the whole-site plan and requested SKU mapping plus step-by-step `.env.local` instructions on 2026-11-10. Approval is resolved; required live-source configuration and unproven product associations remain separate data dependencies.
+
+## Files
+
+- `docs/warehouse/sitewide-product-integration.md` — created source/consumer audit, verified taxonomy, price basis, proposed data flow and unresolved inputs.
+- `docs/warehouse/sku-category-mapping.csv` — export every currently queried SKU with draft category/model associations and explicit unresolved status for spreadsheet review.
+- `docs/warehouse/sku-category-mapping.md` — explain the source scope, evidence rules, coverage and limitations with concrete mapped examples.
+- `docs/warehouse/runtime-product-status.csv` — record the actual enabled/parked SKU set and reasons at verification time.
+- `docs/warehouse/runtime-integration-delivery.md` — record the implemented catalog contract, verified routes, test/build evidence, known parked records and rollback.
+- `docs/warehouse/local-env-setup.md` — provide sequential local configuration, safe read-only checks and expected outcomes without secrets or migrations.
+- `src/features/services/warehouse-product.server.ts` — validate the live API contract, complete result coverage, timeout and safe upstream failure handling.
+- `src/app/warehouse-products-test/page.tsx` — keep the diagnostic page on the same published catalog, SKU/unit and gross-price contract as the site, rather than publicly listing raw service/calibration/shipping rows from the complete upstream API.
+- `src/app/api/products/[sku]/image/route.ts` — read-only image forwarding for approved SKUs whose verified API image is on the Warehouse origin and observed `/api/store/products/image` endpoint. This avoids exposing localhost image URLs to LAN clients; do not allow arbitrary URLs or hosts. Verify status/content type and bound response size.
+- `src/features/catalog/data/warehouse-product-mapping.json` — create reviewed SKU associations for categories, subcategories, legacy/model identities and public eligibility; do not populate with guessed matches.
+- `src/features/catalog/data/warehouse-products.ts` — create the pure mapping/validation adapter joining current Warehouse items to proven website metadata and deriving display/net price fields.
+- `src/features/catalog/data/warehouse-categories.ts` — small public-data-only helper projecting explicit subgroup memberships; do not bundle the full SKU review manifest into Client Components.
+- `src/features/catalog/types.ts` — extend public product contracts with Warehouse identity, unit, net price and explicit taxonomy membership while retaining existing fields.
+- `src/features/catalog/server/product-repository.ts` — switch the shared catalog to validated Warehouse membership/prices; preserve verified CMS/editorial associations and current hidden/deleted-content rules.
+- `src/features/catalog/server/client-products.ts` — retain the request-shared projection if the new data contract requires adjustment.
+- `src/features/catalog/data/client-products.ts` — project public Warehouse identity/unit/net-price fields only where consumers need them.
+- `src/features/catalog/components/product-category-mock.tsx`, `src/features/catalog/components/product-catalog.tsx`, `src/features/catalog/components/catalog-overlays.tsx` — include the new public Warehouse SKU in the existing search text for category/finder/catalog/navbar searches; preserve search and comparison UI.
+- `src/features/catalog/data/catalog-supplements.ts` — prefer explicit reviewed website family memberships over legacy heuristics.
+- `src/features/catalog/server/catalog-page.ts` — use the reviewed family/subgroup memberships for legacy collection routes and counters.
+- `src/features/catalog/server/product-categories.ts` — calculate existing category/subgroup products from the common catalog.
+- `src/features/catalog/data/scale-subcategories.ts` — associate the eight scale groups through explicit mappings while retaining existing model metadata.
+- `src/features/catalog/data/indicator-subcategories.ts` — associate the three indicator groups through explicit mappings.
+- `src/features/catalog/data/platform-subcategories.ts` — associate the four platform groups through explicit mappings.
+- `src/features/catalog/data/pos-subcategories.ts` — associate the three POS groups through explicit mappings.
+- `src/features/catalog/data/accessory-subcategories.ts` — associate the five accessory groups through explicit mappings.
+- `src/features/catalog/data/product-lookup.ts` — preserve approved legacy slugs/aliases when resolving Warehouse-backed products.
+- `src/app/(site)/products/[slug]/page.tsx` — resolve correct same-product editorial content and display the derived public gross price consistently.
+- `src/app/(site)/products/page.tsx` — pass shared actual products/categories into the index content.
+- `src/features/catalog/components/products-index-content.tsx` — replace eight mock rails with the proposed five category rails using real cards, images and existing category links.
+- `src/features/catalog/components/products-index-content.module.css` — preserve the approved card geometry while fitting real linked product images within the existing media area.
+- `src/features/catalog/components/products-index-carousel.tsx` — receive server-resolved products as props, retain the approved interactions and handle zero/one product safely.
+- `src/features/content/data/weighing-options.ts` — bind configurator model options to reviewed SKU associations without inferring compatibility.
+- `src/features/content/components/weighing-builder.tsx` — use a complete kit total once when its verified included head is selected; retain existing compatibility and selection behavior.
+- `src/features/content/components/indicator-platform-compatibility-page.tsx` — keep the builder tied to actual mapped options; retain the supplied guide as reference content.
+- `src/app/(site)/guides/indicator-platform-compatibility/page.tsx` — allow this Warehouse-backed route to wait for its cached source data, matching the existing quotation/detail route policy and preventing development instant-navigation validation loops.
+- `src/features/catalog/data/catalog-card-names.ts` — display explicit mapped model codes in compact cards without matching raw API names heuristically.
+- `src/app/(site)/service/quotation/page.tsx` — use the common Warehouse-backed catalog and source net prices for presets and manual selections.
+- `src/features/catalog/data/quotation.ts` — use integer net prices, document VAT and total calculation; retain unresolved selection safeguards.
+- `src/features/catalog/components/quotation-form.tsx` — show source units, VAT-exclusive unit-price labels and correct net/VAT/gross totals in editor and print output.
+- `tests/catalog/warehouse-products.test.ts` — create boundary tests for identity, taxonomy, variant collisions, metadata joins, coverage, net/gross conversion and invalid source data.
+- `tests/catalog/quotation.test.ts` — verify confirmed net-price arithmetic, rounding and unresolved kit/component selections.
+- `tests/e2e/warehouse-catalog.spec.ts` — create cross-consumer checks covering Home, all five families, search, comparison, detail/legacy links, prices, source updates and API failure.
+- `tests/e2e/products-full-overview.spec.ts` — update approved real-rail expectations and verify responsive category links.
+- `tests/e2e/products-index-carousel.spec.ts` — verify dynamic source membership, zero/one/multiple results and existing wheel/touch/detail behavior.
+- `tests/e2e/quotation.spec.ts` — verify Warehouse selection, builder handoff, units, net-price totals and actual print/PDF output.
+- `.env.example` — document the separate server-only product API and website CMS database settings without credentials.
+- `spec.md`, `plan.md` — record the contract, approval, coverage and actual verification.
+- `MEMORY.md` — append the operational lesson about preserving CSV BOMs and chunking large generated-file reads; preserve all prior notes.
+
+Existing Home, layout, Header, search and comparison consumers already use the repository/projection entry point. Their public data changes through that boundary; shared layout/Header/style edits are not proposed. Root styles, navigation destinations, Prisma schema and deployment scripts remain outside this file plan. Any additional required application file must be explained and added to the reviewable plan before editing it.
+
+## Steps
+
+- [x] Trace the central repository, public consumers and static product-list bypasses; enumerate existing category IDs and subgroup definitions.
+- [x] Record owner confirmation that source prices exclude VAT 7% and that stock is irrelevant.
+- [x] Create the source/consumer audit and expanded file plan; mark the quotation-only plan superseded.
+- [x] Record whole-site plan approval and the owner's choice to create the website SKU mapping.
+- [x] Produce the draft mapping JSON/CSV/report from the actual configured product API and existing taxonomy after the independent env update; keep ambiguous variants/bundles unresolved. Verification evidence follows below.
+- [x] Deliver the setup guide and `.env.example` documentation; do not edit `.env.local` or run migrations. The guide's SELECT checks were executed successfully after the env update.
+- [x] Verify independently updated local configuration: complete live API response (HTTP 200, 380/380) and minimum CMS schema-presence checks pass without printing secrets. Full application verification remains a later gate.
+- [x] Resolve the authoritative category/model association source through the approved explicit mapping and parking policy; account for every actual API SKU, including ambiguous bundles/variants and unsupported public categories.
+- [x] Set Spec `Ready to Code` and record the owner's expanded approval, including five real category rails.
+- [x] Set Spec `Ready to Code` using the owner's explicit instruction to park unclear mappings and proceed with the approved whole-site implementation. Include only unambiguous preferred-group rows; quote a verified complete kit once with its included head.
+- [x] Read the relevant local Next.js cache/data-fetching guide, snapshot only owned application files and preserve the dirty worktree.
+- [x] Implement and verify the pure adapter/mapping and API boundary before changing the shared repository.
+- [x] Switch the repository and category associations together, retaining legacy public IDs/URLs, CMS relationships and shared client object projections.
+- [x] Connect the carousel, real category rails, configurator and net-price quotation workflow to that common catalog.
+- [x] Verify API list completeness/uniqueness, category membership, source price updates, failed/invalid API reads and exact same-product metadata enrichment.
+- [x] Run catalog tests, TypeScript, scoped ESLint and a production build against the compatible CMS database. Do not substitute a snapshot-only pass for live-source integration verification.
+- [x] Run cross-consumer browser checks and existing carousel/quotation regressions on mobile/tablet/desktop; inspect screenshots, URLs, HTTP statuses and PDF totals.
+- [x] Update the coverage report, acceptance checklist, work state and actual verification; prepare the required anonymous Next.js feedback review draft for user review without submitting it, and hand off without deployment.
+
+## Impact / Rollback
+
+R1: the shared catalog switch affects all public product identities, links, prices and category counts. The principal risks are an incorrect SKU/variant join, loss of existing content/URLs, a bundle charged as a component and inconsistent VAT arithmetic. Reuse existing public IDs for proven mappings, preserve raw net prices, validate complete mapping coverage and test the adapter before changing the repository. Roll back only the owned repository/adapter/mapping and consumer delta from the task snapshot; preserve unrelated user changes. No Warehouse mutation or database migration is proposed.
+
+## Verification Results
+
+Audit-only verification succeeded for consumer tracing, the five-category/23-subcategory enumeration and read-only Warehouse schema/group inspection. The website snapshot has 159 rows. The earlier configured product API returned 380 unique SKUs and 75 image fields. The later environment read found `WAREHOUSE_API_URL` absent and the API recheck failed with `ERR_INVALID_URL`; this has not been presented as an upstream outage. No application tests/build/browser verification has been run for an unimplemented sitewide change, and no application/environment/database files were changed by this audit.
+
+Mapping/setup milestone update: the user approved the whole plan and chose the website mapping. Initial preparation read 355 active/saleable/non-service Warehouse rows. When env values changed independently, the configured API returned 380/380 unique rows; the deliverables were reconciled to that API list, not to the earlier database subset. Of the API rows, 267 also had identical SKU/name in the earlier read-only query. API-based results are 161 family/subgroup matches, 93 family-only and 126 unresolved; 23 service/customization/calibration/shipping lines are explicitly flagged. `products.slug` and `cms_documents` checks both returned true. Agent did not modify `.env.local`, run migrations or switch runtime consumers. Final formatting, mapping/CSV structural verification and scoped whitespace results are recorded at delivery; application build/browser checks are not applicable to an unimplemented runtime switch.
+
+Final milestone verification: JSON and CSV each contain 380 distinct SKUs matching the captured live API set exactly; CSV rows/names/units/category memberships agree with JSON. All memberships use the existing five families/23 subgroups. Status counts are 161 mapped, 93 category-only, 126 unresolved. The user confirmed G-prefix sales codes as the preferred group (233 rows); other codes are review alternatives (147), without automatically publishing unsupported preferred rows. Both guide JavaScript commands parse, local document links resolve, scoped Prettier and `git diff --check` pass. No runtime import of the new mapping exists yet. Next.js feedback review found no qualifying framework issue during this mapping/documentation work.
+
+# Final sitewide runtime delivery
+
+## Current sitewide runtime verification (2026-11-10)
+
+The audit/mapping-only statements above are historical and superseded by the approved runtime integration. All 380 upstream SKUs are accounted for: 89 enabled and 291 deliberately parked. Enabled category counts are scales 41, indicators 6, platforms 21, POS 3 and accessories 18. `docs/warehouse/runtime-product-status.csv` contains actual publication paths/reasons; `runtime-integration-delivery.md` records the current contract and maintenance procedure.
+
+Verification passed: catalog tests 134/134; scoped ESLint zero warnings; Node 24 / Next 16.4.3 build/typecheck 398/398 pages; 35 production browser regressions across Home/search/comparison, five categories/detail/images, carousel gestures/responsive checks, builder, quotation and real PDF output. Source-failure simulation gave API 503 and a safe non-printable quotation error state. Production parked URLs return 404. After the final guide-route-only setting, another build completed 398/398 pages and the targeted two production cases passed. Root TypeScript and the added route's ESLint pass.
+
+Development qualification: isolated Node 24 Webpack builder-to-quotation/PDF passed twice. The existing user dev server failed HMR handshake/hydration and was not stopped. Development emits a streamed not-found response with HTTP 200; production 404 remains the release check. Private Turbopack QA dev under a widened symlink dependency root repeatedly refreshed, so it is not reported as passing. See delivery notes for the verified Webpack startup command. The guide route now explicitly allows blocking navigation according to the installed Next documentation.
+
+No Warehouse writes, migration, `.env.local` edit, commit, push or deployment. All unrelated dirty files are retained. Owned development servers are stopped; the verified production preview is left available for review at `http://127.0.0.1:3061`.
+
+# Historical Warehouse quotation delivery
+
+Production verification: 468 routes built with two prerender workers after the first CMS connection timed out at higher concurrency. All seven quotation browser tests passed against this build, including mobile and multipage PDF checks.
+
+Implement the authorized quotation reader, SKU adapter, VAT calculation, form/PDF and regression checks in the files listed under “Warehouse product API for configurator quotations”. Verify the live endpoint, browser selections and generated PDF. Sitewide category mapping remains a separate task.
+Verified: all 380 selector values matched live Warehouse SKUs. SKU 11 at THB 1,990 × 2 produced THB 3,980 net, 278.60 VAT and 4,258.60 gross in the print view. One-line and multipage A4 PDFs generated. All seven quotation browser cases passed across the development run and navigation rerun. Scoped lint, TypeScript and 128 catalog tests passed. Sample: `output/warehouse-quote-live/sample.pdf`.
+
+# Plan: Repair localhost development HMR
+
+## Files
+
+- `next.config.ts` — add exact `127.0.0.1` development-origin allowance while preserving LAN/UAT configuration.
+- `tests/e2e/localhost-hmr.spec.ts` — add a dev-only regression for local/loopback HMR, actual products and hydrated builder; skip on production.
+- `src/features/content/components/weighing-builder.tsx` — temporary marker-only source probe to verify actual hot update and state retention; restore exact bytes immediately after the probe. No retained application edit.
+- `docs/warehouse/localhost-hmr-delivery.md` — record cause, restart command/runtime, actual browser/HMR evidence and remaining limitations.
+- `docs/warehouse/runtime-integration-delivery.md` — supersede the earlier unresolved-dev/Webpack workaround with the verified local HMR repair.
+- `spec.md`, `plan.md`, `MEMORY.md` — maintain approved scope, actual verification and repeatable operational lesson.
+
+## Steps
+
+- [x] Reproduce the loopback-origin rejection and inspect the existing process/runtime and local Next.js guide.
+- [x] Record the concrete scope under the user's explicit HMR repair/restart authorization.
+- [x] Capture baseline and task-owned file snapshots; add the exact hostname and regression.
+- [x] Stop only the verified port-3000 project dev CLI/child, restart with Node 24; no cache isolation was necessary.
+- [x] Validate both local HMR origins and unrelated-origin rejection; perform an actual temporary-source HMR/state-retention probe with exact restoration.
+- [x] Test real products/categories/detail/images and builder → quotation/PDF on localhost:3000 at mobile/desktop sizes; check browser errors and request failures.
+- [x] Run scoped checks, update documentation/results and leave the verified dev server running.
+
+## Impact / Rollback
+
+No shared layout/style/UI changes. Only the exact development allowlist entry persists. Preserve unrelated dirty source and other running servers. Restore the one config delta to undo it; do not delete caches recursively or restart any process without confirming its project/port identity.
+
+## Verification Results
+
+Before fix: loopback WebSocket regression failed 1/1 with `connected=false`; localhost handshake and initial builder worked. After exact allowlist change and the authorized Node24 restart: HMR tests 3/3, Warehouse browsers 5/5 and carousel browsers 6/6 pass on localhost:3000 (14 total). The HMR mutation probe restored every byte and retained head selection through both hot updates. External-origin control remains blocked. Actual API returns 89 SKUs; proxy image 200 WebP; quotation PDF created. Responsive 390/834/1440px tests passed, and dedicated products/builder captures at 390/1440 had no console/page errors and were visually inspected.
+
+Root TypeScript, scoped ESLint, 134 catalog tests, scoped Prettier and diff whitespace checks pass. Only config/test/docs persist; no production rebuild was needed for this development-origin-only change. Server listener 11892 uses Node24.22.1 and remains running with CLI24412. No dependency/runtime upgrade, environment/data edits, cache deletion, deployment or other-server stop. Next.js feedback review found expected origin rejection documented by the installed guide, not a new qualifying framework issue; no report was submitted. Observer lesson85 records comparing real origins before changing bundlers.
+# Plan: Carousel model-row overflow bug
+
+## Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` — bound the existing model row, allow horizontal scrolling and prevent label compression/wrapping.
+- `src/features/catalog/components/products-index-carousel.tsx` — identify the row accessibly, keep active labels visible through horizontal-only scrolling and exclude native row gestures from scene navigation.
+- `tests/e2e/products-index-carousel.spec.ts` — add row geometry/reachability/active visibility and native touch/wheel regressions, preserving existing scene gesture/detail tests.
+- `docs/warehouse/carousel-model-row-delivery.md` — record the reproduction, scoped fix and browser evidence.
+- `spec.md`, `plan.md`, `MEMORY.md` — record authorization, verification and the catalog-size overflow lesson.
+
+## Steps
+
+- [x] Reproduce the supplied screenshot with actual Warehouse rows and record the owner's bug-fix authorization.
+- [x] Read current tokens/styles/client-component guide; snapshot owned carousel files and test native row scrolling in a reversible browser experiment.
+- [ ] Add and run failing geometry/reachability regressions before the fix.
+- [ ] Apply the scoped row layout/active-follow/gesture-isolation fix.
+- [ ] Run row and full existing carousel tests on localhost:3000 at mobile/tablet/desktop widths; inspect screenshots and source restoration safety.
+- [ ] Run TypeScript/lint/format checks, document actual results and leave dev running.
+
+## Impact / Rollback
+
+Only the existing carousel model-selector row changes. Images, source identities, timing and detail transitions remain as before. Restore just the task-owned carousel delta from its snapshot to undo it; keep unrelated dirty files and dev/Warehouse processes intact. No shared style, dependency, data, environment or deployment change.

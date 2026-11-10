@@ -1,5 +1,60 @@
 # Project Memory
 
+## Logo alignment in the Home Navbar flyout
+
+- At tablet widths the all-products links started 32px to the right of the logo. The panel used a header-relative offset inside a narrower, centered stage.
+- Keep the stage full width while positioning this panel from the header's logo offset. Measure the first actual link against the logo at both sides of the 1024px breakpoint.
+
+## Scope rail spacing above shared list resets
+
+- Observed: The first implementation applied horizontal padding to the new card rail, but the shared ProductsOverview `ul` reset had greater selector specificity. The cards rendered at the viewport edge while the section heading retained its gutter.
+- Root cause: A local single-class rail rule did not beat the shared `.overview ul` reset, so visual inspection exposed a mismatch that structure and overflow checks could not detect.
+- Correct behavior: Scope the rail rule through its owning page wrapper and measure the rendered left edges of the H1, intro, section heading and first card at representative widths. Keep the horizontal rail scrollable and verify body overflow separately. For the approved all-products layout, the four edges are32pxat390,48pxat834/1024and130pxat1440.
+
+## Check Navbar hit boxes against the viewport
+
+- Observed: A read-only browser experiment adding a ninth Navbar label moved search/compare controls beyond the834pxviewport. The Home page still reported no document overflow because an ancestor clipped the excess.
+- Root cause: document.scrollWidth alone did not show clipped Header controls outside the visible viewport.
+- Correct behavior: Check everyvisibleNavbar/control bounding box against the viewport and against neighboringitems, alongside documentoverflow. Test the desktopbreakpoint and adjacentwidths; any sharedfont/gap adjustment needs explicitSpec/Plan scope. The approved compact834–1023style is now integrated and verified for both Header variants at834/930/1023px, with the original spacing retained at1024/1440px.
+
+## Keep final navigation and Footers outside stagger motion
+
+- Owner correction: The final category link index and Footer shown in the latest image must stay static. This supersedes earlier coverage that included allnon-home main/footer content.
+- Current contract: Exclude `[data-overview-section="index"]`, `[data-products-footer]` and `.site-footer`, including descendants, using the existing hook selectors. Keep the800msreference profile on othercontent,whole-homepage exclusion andNavbar unchanged. Do not exclude everyHTMLfooter or alterlayout/markup to implement this exception.
+- Verified:66productioncases,5developmenthydrationcases and15responsiveparitycases pass. Native records remain0in excludedregions whilefinder/mobileFooterdetails work;othercontent still reveals. Use maincontent foroffscreen/late-callback motionfixtures becausefinalFooters no longer animate.
+
+## Extract the full contract from a supplied motion reference
+
+- Observed: The user clarified stagger bounce with runnable code specifying a stronger translate/scale pop; the existing implementation used a smaller translation without scale. They also confirmed page-open/viewport-entry activation.
+- Root cause: A shared animation name did not specify its numeric movement, scale, easing, cadence or activation rules.
+- Correct behavior: Extract duration, delay, easing, opacity, translation, scale and activation from the supplied reference before changing motion. Preserve previously agreed route exclusions and hydration/focus safeguards; record which behavior is proposed versus implemented and verified.
+- Verified reference profile:800ms,100+150ms stagger,opacity0→1,translate40→0px,scale0.8→1,cubic-bezier(0.34,1.56,0.64,1);3cards×10times×3computedproperties match the supplied CSS reference exactly. Play only on first viewport entry per visit, keeping Home excluded and hydration-safe state.
+
+## Freeze only the animation phase under inspection
+
+- Observed: Mobile intro tests held newly encountered offscreen buttons at their invisible translated first frame; a neighboring gallery intercepted the trusted click indefinitely.
+- Root cause: A test instrumentation wrapper froze every future reveal even after the entrance measurement had ended. The browser correctly reported the artificial overlap.
+- Correct behavior: Keep recording native animations, but end test-only freezing after sampling the intended entrance. Let later offscreen reveals run normally before testing real pointer interaction; retain the click, dialog, reload and once-per-visit assertions. Read computedOffset when keyframe offsets are implicit.
+
+## Keep animation bookkeeping outside child hydration markup
+
+- Observed: Cold development loads showed hydration warnings for stagger attributes on scales, software and service content. The layout motion effect had written descendant markers while the page Client Component was still unhydrated.
+- Root cause: A committed ancestor effect was treated as proof that all streamed or selectively hydrated children were ready. Production-only browser checks did not expose the development attribute diagnostic.
+- Correct behavior: Keep imperative animation bookkeeping in JavaScript rather than injecting attributes that child React components do not render. Verify fresh development hydration with delayed child chunks, CPU throttling and console/page-error capture until the child is actually ready, alongside production motion checks. Do not use a fixed delay or warning suppression as a hydration guarantee.
+- Verified repair: Removing leaf markers and using the managed set for keyboard ancestor lookup eliminates all3reproduced warnings while retaining native animation counts19/10/25. Test completed motion through recorded native Animation objects; for cached reentry inspect active animations rather than requiring a lifetime count of1on a DOM node that the router may reuse.
+
+## Observe native modified-link tabs through the browser context
+
+- Observed: Ctrl-clicking a real navigation link opened its destination in a new tab, but an opener-specific `page.waitForEvent("popup")` check timed out for both Header variants.
+- Root cause: Native modified-link browsing does not guarantee the opener popup event assumed by the test.
+- Correct behavior: For native Ctrl-click navigation, wait for the browser context's `page` event, then verify the new page URL and that the original page URL is unchanged. Use the opener's popup event when that opener relationship is part of the behavior being tested.
+
+## Preserve pointer hit geometry when completing an entrance animation
+
+- Observed: Clicking a breadcrumb during a paused entrance reveal focused the link, canceled its translation and moved it before pointer release; the click then failed to navigate.
+- Root cause: A focus handler treated pointer focus like keyboard focus and changed the target's hit rectangle between pointerdown and click.
+- Correct behavior: Complete entrance motion immediately for keyboard focus using the focused target's `:focus-visible` state. Preserve pointer-focused target geometry through click dispatch. Verify real trusted clicks and cached Back/Forward while a reveal is actively paused, separately from programmatic keyboard-focus checks.
+
 ## Update regressions after approved shared-navigation changes
 
 - Observed: The combined pre-commit browser run failed on retired “สินค้า”, `.desktop-nav` and `.site-header` selectors and a former heading level after the approved five-category navigation and category-page changes.
@@ -483,3 +538,96 @@
 - Observed: A configured build could not resolve declared database and CSS dependencies even though their installation directories existed. Four lockfile package directories were empty.
 - Root cause: Missing installed package contents, rather than the page change or bundler root configuration.
 - Correct behavior: Inspect each failing package directory and runtime resolution first. Restore only verified missing contents from the exact lockfile version, validate archive integrity before extraction, and preserve manifests and lockfiles. Re-run the configured build and equivalent-data parity checks; do not change bundler configuration or dependency versions to hide an incomplete installation.
+
+## Preserve navigation roles when normalizing equivalent destinations
+
+- Observed: Promoting an industrial subgroup to a canonical page made its product-child URL equal a related business link. The lookup selected the earlier product-child label, duplicating the industrial label in the mobile menu.
+- Root cause: Matching the first normalized URL across unrelated navigation groups lost the semantic role and original label of the link.
+- Correct behavior: Resolve related/support links from their owning non-product navigation sources, while projecting product children separately. Verify labels, order and unique primary destinations for both legacy and already-normalized CMS inputs; URL equality and total link counts alone are insufficient.
+
+## Check native multipart path interpretation on Windows
+
+- Observed: A Figma import upload failed locally before transferring data. OpenSSL read the archive through Git Bash's /tmp mapping, while native Windows curl could not open the same path embedded in its multipart file argument.
+- Root cause: MSYS converted the ordinary OpenSSL path argument but did not convert the quoted path embedded in curl's -F argument. The native executable interpreted /tmp on the current drive instead.
+- Correct behavior: Verify that both checksum and multipart executables resolve the exact same archive bytes before uploading. On this host, preserve the tool's exact command and continuation, provide matching bytes at the verified native temporary path, obtain fresh instructions after a definite local failure, and resume only after upload exits0. Never retry an ambiguous transfer or expose signed upload fields in deliverables.
+
+## Respect workspace line-ending conversion during whitespace checks
+
+- Observed: Running diff --check with core.autocrlf=false reported CRLF endings across existing files as trailing whitespace, while the repository-configured check passed.
+- Root cause: An override suitable for byte-sensitive Git exports disabled the workspace's normal index-to-working-tree conversion during diff validation.
+- Correct behavior: Run ordinary git diff --check with the repository's line-ending settings for workspace validation. Reserve core.autocrlf=false for intentional byte-preserving exports, and bound diagnostic output before inspecting broad failures. Do not rewrite unrelated files to satisfy a check using different line-ending semantics.
+
+## Own the child process behind a temporary QA server
+
+- Observed: Terminating a wrapped PowerShell/Python exec session left its HTTP-server child listening. Subsequent helper starts and browser runs saw port conflicts or empty image responses.
+- Root cause: The session wrapper exited while the actual server child retained its listening socket; a session exit was treated as proof of server cleanup.
+- Correct behavior: Prefer an in-process ephemeral HTTP server for isolated static browser verification and close its connections in finally. For separately launched helpers, record the server child PID and verify its exact command, start time and owned port before stopping it. Confirm the listener is gone; do not stop a process based only on a port number.
+
+## Match isolated QA source to its actual reference runtime
+
+- Observed: A parallel motion task changed shared source while the configured preview still ran the preceding verified build. A snapshot of the current directory could therefore combine different source/runtime generations.
+- Root cause: Current filesystem contents were mistaken for the exact source of an already-running production preview.
+- Correct behavior: Freeze QA from a known runtime-matched source version, overlay only the current task's changes, and keep its source/generated/build output and port private. Preserve and classify concurrent deltas instead of restoring them in the workspace. Verify owned source hashes and matching configured page signatures, and explicitly identify combined changes that remain outside that isolated verification.
+
+## Verify the destination of Figma Code Layer file uploads
+
+- Observed: The Files multiple-upload action created new image files at the project root even while an existing assets image was selected.
+- Root cause: The upload action does not use the selected image's parent directory as its destination.
+- Correct behavior: Inspect the resulting file path before adding image URLs to catalog data. Use the actual uploaded root filenames or a verified supported move operation, and mirror those paths in local QA. Do not upload duplicate copies or re-import an already successful Code Layer merely to fix an assumed asset directory. Verify all image loads after reloading the saved preview.
+
+## Reset a shifted Figma Present viewport before changing design geometry
+
+- Observed: Repeated automated clicks in a scaled Code Layer preview shifted the outer Present viewport and clipped content, while the same source passed responsive browser checks.
+- Root cause: Browser automation's scroll-into-view behavior around the scaled preview changed the outer viewport independently of the source layout.
+- Correct behavior: Reload the Present tab, select the category through its native dropdown and inspect the full product before diagnosing a design regression. Preserve the source geometry when reload restores the expected view; do not add layout offsets to compensate for automation viewport state.
+
+## Verify trusted clicks when wrapping a Code Layer in a native Figma Flow
+
+- Observed: A native Frame starting point appeared in the left Flows list and rendered the Code Layer, but its canvas snapshot intercepted pointer input over the live iframe. Programmatic selectOption changed the iframe's accessible state while the visible snapshot stayed unchanged.
+- Root cause: Readback, selected Flow state and visual rendering were treated as enough evidence for a runnable Flow. The wrapper's iframe was behind the native canvas in this Present mode.
+- Correct behavior: Test a trusted click from the actual Flow entry and confirm a visible product/detail state change before calling that Flow interactive. Do not bypass interception with forced clicks or DOM style changes. When the wrapper is static, explicitly distinguish its discovery/render result from interactive Code Layer Play, verify the direct Code Layer URL, and provide that working link. Preserve source and geometry rather than adding compensating layout offsets.
+
+## Refresh both Figma live preview and cached playback after Files edits
+
+- Observed: The three saved Files readbacks matched the new source, but the first Code Layer Play reload had the new markup/styles and the preceding script. The new runtime-generated tick elements were absent until the live Files Browser preview was reloaded, followed by Code Layer Play.
+- Root cause: Saved editor content and cached playback were at different runtime generations; source readback alone did not establish that playback loaded the final script.
+- Correct behavior: After the last Files save, reload its live Browser preview and then the direct Code Layer Play tab. Verify a concrete runtime-generated element count and a trusted interaction before claiming the update is running. Preserve the saved source when this refresh resolves the mismatch; do not rewrite working code to compensate for stale playback.
+
+## Keep product photo identity stable through carousel movement
+
+- Observed: Recycled image slots changed their product metadata while their newly assigned image was still loading/decoding. Delayed-load frame sampling caught invalid visible images, including the centered title's image; the reported Figma preview showed repeated/stale photos.
+- Root cause: Preloading through separate Image objects was treated as proof that a visible image element was ready after changing its src. Slot reuse let the displayed photo and current model become temporarily inconsistent.
+- Correct behavior: Keep each model bound to its own image element, await that actual element's decode before display, and move/hide the model rather than reassigning photo sources during motion. Test every visible neighbor as well as the selected image under rapid input and delayed/no-cache loading, then visually verify Figma after detail returns and both wraps. Source attributes or a correct title alone are insufficient evidence of correct pictures.
+
+## Inspect cloned regression specs and run complete type checking
+
+- Observed: A cloned subgroup browser spec retained the preceding family's parent-return path, and a generated unit import appeared twice. Transpile-only catalog tests passed, while the production typecheck rejected the duplicate import.
+- Root cause: Text-based test migration inserted family names and imports without checking the complete generated file or repeat execution.
+- Correct behavior: After cloning a family spec, inspect imports, every route/title and native parent-return assertion before execution. Make migration helpers idempotent or reject already-applied input. Run the full configured build/typecheck in addition to transpile-only unit tests; preserve initial failure evidence when fixing test-only mistakes.
+
+## Preserve exact text when patching generated exports
+
+- Observed: A generated CSV replacement failed because the PowerShell read omitted its UTF-8 BOM; a subsequent full JSON read exceeded the tool output limit before the update could be prepared.
+- Root cause: Decoded shell text and truncated tool output were treated as exact file contents for an apply_patch replacement.
+- Correct behavior: Preserve BOMs with an explicit UTF-8 file read and JSON-encoded output. Read large exports in bounded chunks and verify the concatenated character count before constructing a replacement patch, or use small unique-context hunks. Reconcile row counts, SKU sets and CSV/JSON values after generating the final artifacts; never use truncated output as edit input.
+
+## Warehouse catalog publication and quotation source
+
+- Owner decision: Public product consumers use actual Warehouse G-prefix SKUs. Keep unclear subgroup, model/content collisions, non-G alternatives and service/shipping records parked. Prisma remains the source of existing website/CMS metadata; never migrate the Warehouse schema to satisfy website queries.
+- Correct behavior: Use the shared product repository and explicit SKU/model memberships for every product consumer. Preserve verified legacy IDs/URLs, honor CMS hidden/deleted records, and do not revive snapshot products when the API removes an item or fails. Read prices net of VAT from Warehouse, derive gross public prices, and quote an exact complete kit once rather than adding the included head again.
+
+## Load isolated Next build environments without forwarding startup flags
+
+- Observed: A Node environment-file startup flag was propagated into a Next build worker option that Node rejects, aborting page-data collection after compilation/typecheck succeeded.
+- Root cause: Loading environment variables through the build process startup arguments also exposed that startup flag to worker creation.
+- Correct behavior: Load the local environment in a wrapper process, then spawn a fresh Node process for the Next build with an explicit inherited environment and no environment-file startup flag in the child arguments. Keep secrets out of the QA copy and logs. Verify the production build fully completes before starting its server.
+
+## Warehouse runtime development verification (2026-11-10)
+
+Production catalog and builder/quotation checks passed, but the pre-existing development server had failed HMR WebSocket handshakes and did not hydrate the builder. An isolated Node 24 Webpack dev server passed the complete builder-to-quotation/PDF path twice. Use Node 24 as specified by package.json; when checking development, confirm hydration before assuming an SSR-visible button has handled a click. Keep production HTTP 404 checks separate from streamed development not-found status. Do not stop a user's existing server to repair a task-owned QA environment.
+
+## Localhost HMR root cause and repair (2026-11-10)
+
+- Observed: earlier checks used `127.0.0.1` and had HMR handshake failures, while direct `localhost` HMR and builder selection worked. The dev log explicitly recorded cross-origin rejection of the IP alias.
+- Root cause: Next implicitly permits localhost but the existing exact LAN/UAT `allowedDevOrigins` list omitted `127.0.0.1`. The previous bundler workaround did not isolate this hostname difference.
+- Correct behavior: compare the actual hostname/origin handshakes before changing bundlers or clearing caches. Keep `127.0.0.1` explicitly allowed, preserve exact LAN/UAT entries, and use the project's Node 24 runtime. After authorized restart, default Turbopack HMR passed on both names and a real source-update/restoration probe retained builder state. The earlier unresolved-dev/Webpack workaround is superseded. Verify current listener/CLI identity again after config saves because Next may restart the child with a new PID.
