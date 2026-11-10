@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import catalog from "../../src/features/catalog/data/products-index-carousel.json";
-import { catalogCardName } from "../../src/features/catalog/data/catalog-card-names";
 
 for (const width of [320, 390, 834, 1440, 1887]) {
   test(`model row stays contained and every label remains selectable at ${width}px`, async ({
@@ -18,7 +17,9 @@ for (const width of [320, 390, 834, 1440, 1887]) {
     const initial = await scene.locator("h2").first().innerText();
     await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
     await page.mouse.wheel(320, 0);
-    await expect.poll(() => row.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+    await expect(row.getByRole("button")).toHaveCount(3);
+    if (await row.evaluate((el) => el.scrollWidth > el.clientWidth))
+      await expect.poll(() => row.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
     await expect(scene.locator("h2").first()).toHaveText(initial);
     await row.evaluate((el) => {
       el.scrollLeft = el.scrollWidth;
@@ -69,7 +70,8 @@ test.describe("mobile carousel gestures", () => {
           touchPoints: [{ x: 320 - step * 25, y }],
         });
       await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
-      await expect.poll(() => row.evaluate((el) => el.scrollLeft)).toBeGreaterThan(80);
+      if (await row.evaluate((el) => el.scrollWidth > el.clientWidth))
+        await expect.poll(() => row.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
       await expect(scene.locator("h2").first()).toHaveText(model);
     } finally {
       await session.detach();
@@ -159,12 +161,13 @@ test.describe("mobile carousel gestures", () => {
 });
 
 for (const width of [390, 834, 1440]) {
-  test(`live catalog carousel and detail return at ${width}px`, async ({ page, request }) => {
+  test(`curated 36-model carousel and detail return at ${width}px`, async ({ page, request }) => {
     test.setTimeout(120000);
     await page.setViewportSize({ width, height: 960 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    const { products } = await (await request.get("/api/products")).json();
-    const shown = products.filter((product: { image: string }) => product.image);
+    const shown = catalog.products;
+    expect(shown).toHaveLength(36);
+    expect(catalog.categories).toHaveLength(12);
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
     const current = scene.locator("[data-product-photo][aria-current=true]");
@@ -177,26 +180,23 @@ for (const width of [390, 834, 1440]) {
     );
     for (const product of shown) {
       await expect(current).toHaveAttribute("data-product-photo", product.id);
-      await expect(current.locator("img")).toHaveAttribute(
-        "src",
-        catalog.products.find((old) => old.id === product.id)?.image ?? product.image,
-      );
-      await expect(scene.locator("h2").first()).toHaveText(catalogCardName(product));
+      await expect(current.locator("img")).toHaveAttribute("src", product.image);
+      await expect(scene.locator("h2").first()).toHaveText(product.model);
       await scene.getByRole("button", { name: "สินค้ารุ่นถัดไป", exact: true }).click();
     }
     await expect(current).toHaveAttribute("data-product-photo", shown[0].id);
-    await scene.getByLabel("หมวดสินค้า", { exact: true }).selectOption("accessories");
     await current.click();
     const modal = page.getByRole("dialog");
     await expect(modal).toBeVisible();
     const href = await modal
       .getByRole("link", { name: "ดูรายละเอียดทั้งหมด" })
       .getAttribute("href");
-    expect(shown.some((product: { slug: string }) => `/products/${product.slug}` === href)).toBe(
-      true,
-    );
+    expect(href).toBe("/products/warehouse-G106094");
+    expect((await request.get(href!)).status()).toBe(200);
     await page.keyboard.press("Escape");
     await expect(current).toBeFocused();
+    await scene.getByLabel("หมวดสินค้า", { exact: true }).selectOption("accessories");
+    await expect(scene.locator("h2").first()).toHaveText("LED-R1");
     await scene.getByRole("link", { name: /ส่วนถัดไป/ }).click();
     await expect(page).toHaveURL(/#products-category-scales$/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(

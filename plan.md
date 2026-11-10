@@ -4357,3 +4357,8 @@ Updated the existing mapping for 38 of 101 reviewed SKUs. The owner chose to kee
 Verified: the 101-row owner review workbook and Markdown table each split into 38 assigned and 63 pending. Online counts sum to 355 unique public SKUs. Offline production build (664 pages), a browser check of the API, image and dated printable quotation, full TypeScript, scoped ESLint and 136 catalog tests passed. Update the checked-in-ready snapshot with `npm run warehouse:snapshot` while the upstream is available.
 
 Update the existing SKU mapping in place, document each reviewed item in docs/warehouse/category-review-101.md, add a repeatable snapshot command, and use its bundled data on upstream unavailability. Verify eligibility, unchanged IDs, category counts and offline catalog/quotation/image responses in an isolated server configuration. Restore only this change if rolling back.
+# Restore the curated /products carousel
+
+Verified: 36 local photos in 12 groups of three, 355 public directory cards, TypeScript, scoped ESLint and all 12 carousel browser tests passed on localhost:3002. Screenshot: `output/restore-curated-carousel-desktop.png`.
+
+Use products-index-carousel.json for the carousel only, resolve confirmed detail links in products-index-content.tsx, and render the optional link in products-index-carousel.tsx. Verify with products-index-carousel.spec.ts, typecheck and browser measurement of carousel versus directory counts.

@@ -1,5 +1,9 @@
 # Project state
 
+## Restore the curated /products carousel
+
+Owner requested the pictured carousel use its former lineup. The carousel reads the saved 36 models across 12 groups in their original order with their curated photos, names and specs. Detail links resolve to published catalog identities; six retained models have explicit Warehouse SKU links. Models without a confirmed page still open the carousel detail dialog. Category rails and quotations continue using the public Warehouse catalog.
+
 ## Review the 101 uncategorized SKUs
 
 Completed: 23 scale, 14 POS and one accessory assignment reuse existing SKU records. The owner confirmed the remaining 63 SKUs stay in “รายการอื่น ๆ”.

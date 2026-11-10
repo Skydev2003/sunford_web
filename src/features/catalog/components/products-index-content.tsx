@@ -14,41 +14,25 @@ export function ProductsIndexContent({
   products: ClientProduct[];
   categories: ProductCategory[];
 }) {
-  const photos = new Map(curatedCarousel.products.map((product) => [product.id, product.image]));
   const otherIds = products
     .filter((p) => p.warehouseSku && !p.warehouseCategoryId)
     .map((p) => p.id);
   const sections = otherIds.length
     ? [...categories, { id: "uncategorized", label: "รายการอื่น ๆ", productIds: otherIds }]
     : categories;
-  const carousel = products
-    .filter((product) => product.image)
-    .map((product) => ({
-      id: product.id,
-      model: catalogCardName(product),
-      categoryId: product.warehouseCategoryId ?? "uncategorized",
-      categoryLabel:
-        sections.find(
-          (category) => category.id === (product.warehouseCategoryId ?? "uncategorized"),
-        )?.label ?? "",
-      subtitle: product.subtitle,
-      capacity: product.capacity,
-      readability: product.readability,
-      connection: product.connection,
-      image: photos.get(product.id) ?? product.image,
-      href: `/products/${product.slug}`,
-    }));
+  const carousel = curatedCarousel.products.map((item) => {
+    const current = products.find(
+      (product) =>
+        product.id === item.id || (item.warehouseSku && product.warehouseSku === item.warehouseSku),
+    );
+    return { ...item, href: current ? `/products/${current.slug}` : undefined };
+  });
   return (
     <div className={styles.index} data-products-directory aria-labelledby="products-title">
       <h1 id="products-title" className={styles.pageTitle}>
         ผลิตภัณฑ์ทั้งหมด
       </h1>
-      <ProductsIndexCarousel
-        products={carousel}
-        categories={sections.filter((category) =>
-          carousel.some((product) => product.categoryId === category.id),
-        )}
-      />
+      <ProductsIndexCarousel products={carousel} categories={curatedCarousel.categories} />
       {sections.map((category) => {
         const members = products.filter((product) => category.productIds.includes(product.id));
         return (

@@ -16,7 +16,7 @@ export type CarouselProduct = {
   readability: string;
   connection: string;
   image: string;
-  href: string;
+  href?: string;
 };
 type CarouselProps = { products: CarouselProduct[]; categories: { id: string; label: string }[] };
 type PosePoint = [number, number, number];
@@ -590,7 +590,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
               >
                 สอบถามสินค้า
               </a>
-              <Link href={product.href}>ดูรายละเอียดทั้งหมด</Link>
+              {product.href && <Link href={product.href}>ดูรายละเอียดทั้งหมด</Link>}
             </article>
             <div className={styles.thumbs}>
               {group.map((p) => (

@@ -53,6 +53,7 @@
     {
       "id": "acs30-jc21",
       "model": "ACS-30-JC21",
+      "warehouseSku": "G106094",
       "categoryId": "scale-price",
       "categoryLabel": "เครื่องชั่งคำนวณราคาหน้าร้าน",
       "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
@@ -65,6 +66,7 @@
     {
       "id": "sunford-10612",
       "model": "ACS-30-FC31",
+      "warehouseSku": "G106124",
       "categoryId": "scale-price",
       "categoryLabel": "เครื่องชั่งคำนวณราคาหน้าร้าน",
       "subtitle": "หน้าจอใหญ่ จานชั่งใหญ่ ชั่งไว!",
@@ -113,6 +115,7 @@
     {
       "id": "sunford-10672",
       "model": "KBS6000S",
+      "warehouseSku": "G106728",
       "categoryId": "scale-industrial",
       "categoryLabel": "เครื่องชั่งอุตสาหกรรมงานผลิต",
       "subtitle": "เที่ยงตรงแม่นยำสำหรับส่วนผสมระดับช้อนชา!",
@@ -173,6 +176,7 @@
     {
       "id": "sunford-10625",
       "model": "KAH5000S",
+      "warehouseSku": "G106254",
       "categoryId": "scale-kitchen",
       "categoryLabel": "เครื่องชั่งงานครัวและกาแฟ",
       "subtitle": "เที่ยงตรงแม่นยำสำหรับส่วนผสมระดับช้อนชา ",
@@ -185,6 +189,7 @@
     {
       "id": "sunford-10617",
       "model": "VR5000",
+      "warehouseSku": "G106179",
       "categoryId": "scale-kitchen",
       "categoryLabel": "เครื่องชั่งงานครัวและกาแฟ",
       "subtitle": "คู่หูสายเบเกอรี่และครัวบ้าน อร่อยทุกจาน แม่นยำทุกสูตร!",
@@ -233,6 +238,7 @@
     {
       "id": "sunford-10628",
       "model": "VC5000",
+      "warehouseSku": "G106285",
       "categoryId": "scale-benchtop",
       "categoryLabel": "เครื่องชั่งตั้งโต๊ะ",
       "subtitle": "คู่หูสายเบเกอรี่และครัวบ้าน อร่อยทุกจาน แม่นยำทุกสูตร!",
