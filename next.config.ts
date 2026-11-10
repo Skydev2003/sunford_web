@@ -18,7 +18,11 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   // Allow both direct LAN IPs and their UAT hostnames; keep the allowlist exact.
   allowedDevOrigins: [
-    ...new Set([...lanOrigins, ...(process.env.UAT_DEV_HOSTS ?? "").split(",").filter(Boolean)]),
+    ...new Set([
+      "127.0.0.1",
+      ...lanOrigins,
+      ...(process.env.UAT_DEV_HOSTS ?? "").split(",").filter(Boolean),
+    ]),
   ],
   experimental: {
     agentFeedback: true,
