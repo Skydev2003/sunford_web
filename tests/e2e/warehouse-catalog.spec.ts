@@ -4,6 +4,22 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
+test("saved Warehouse photo decodes on the product card and detail page", async ({ page }) => {
+  await page.goto("/products");
+  const card = page.locator('[data-warehouse-sku="G107169"]');
+  await card.scrollIntoViewIfNeeded();
+  const photo = card.locator("img").first();
+  await expect
+    .poll(() => photo.evaluate((img) => (img as HTMLImageElement).naturalWidth))
+    .toBeGreaterThan(0);
+  await card.getByRole("link").first().click();
+  const gallery = page.locator(".detail-image img");
+  await expect
+    .poll(() => gallery.evaluate((img) => (img as HTMLImageElement).naturalWidth))
+    .toBeGreaterThan(0);
+  await expect(gallery).toHaveAttribute("src", /warehouse-cache/);
+});
+
 test("Home search and comparison reuse the published Warehouse identities", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");

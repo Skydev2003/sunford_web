@@ -4362,3 +4362,8 @@ Update the existing SKU mapping in place, document each reviewed item in docs/wa
 Verified: 36 local photos in 12 groups of three, 355 public directory cards, TypeScript, scoped ESLint and all 12 carousel browser tests passed on localhost:3002. Screenshot: `output/restore-curated-carousel-desktop.png`.
 
 Use products-index-carousel.json for the carousel only, resolve confirmed detail links in products-index-content.tsx, and render the optional link in products-index-carousel.tsx. Verify with products-index-carousel.spec.ts, typecheck and browser measurement of carousel versus directory counts.
+# Warehouse photo display
+
+Verified on localhost:3002: 103 products with images, including all 75 with saved Warehouse photos. The Next.js optimizer returned image data for all 102 distinct catalog image URLs. Chromium decoded G107169 on its directory card and detail gallery. TypeScript and 137 catalog tests passed.
+
+Pass the existing server-side saved-image resolver into the shared catalog projection. Test the resulting image URLs in the directory and detail gallery, including G107169, and check saved image coverage.

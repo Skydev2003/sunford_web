@@ -90,7 +90,11 @@ export const approvedWarehouseMappings = candidates.filter((item) =>
 const bySku = new Map(mapping.items.map((entry) => [entry.sku, entry]));
 const verifiedBySku = new Map(approvedWarehouseMappings.map((entry) => [entry.sku, entry]));
 
-export function warehouseCatalog(items: WarehouseItem[], editorial: Product[]): Product[] {
+export function warehouseCatalog(
+  items: WarehouseItem[],
+  editorial: Product[],
+  savedImage?: (item: WarehouseItem) => string | null,
+): Product[] {
   const content = new Map(editorial.map((item) => [item.id, item]));
   return items
     .filter((item) => isPublicWarehouseSku(item.sku))
@@ -119,6 +123,7 @@ export function warehouseCatalog(items: WarehouseItem[], editorial: Product[]): 
           description: existing?.description ?? "",
           image:
             existing?.image ||
+            savedImage?.(item) ||
             (item.image_url ? `/api/products/${encodeURIComponent(item.sku)}/image` : ""),
           capacity: existing?.capacity ?? "—",
           readability: existing?.readability ?? "—",

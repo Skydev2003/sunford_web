@@ -12,7 +12,10 @@ import type { ProductMedia } from "@/features/cms/types";
 import { publicPath } from "@/features/content/data/public-paths.mjs";
 import { attachProductTopics } from "./product-topics";
 import { catalogProductCategory } from "../data/catalog-supplements";
-import { getOfficialProducts } from "@/features/services/warehouse-product.server";
+import {
+  getOfficialProducts,
+  savedWarehouseImage,
+} from "@/features/services/warehouse-product.server";
 import { warehouseCatalog } from "../data/warehouse-products";
 
 export async function getProducts(): Promise<Product[]> {
@@ -20,7 +23,7 @@ export async function getProducts(): Promise<Product[]> {
   cacheLife({ stale: 30, revalidate: 60, expire: 300 });
   cacheTag("products");
   const [official, editorial] = await Promise.all([getOfficialProducts(), getEditorialProducts()]);
-  return attachProductTopics(warehouseCatalog(official.items, editorial));
+  return attachProductTopics(warehouseCatalog(official.items, editorial, savedWarehouseImage));
 }
 
 async function getEditorialProducts(): Promise<Product[]> {

@@ -19,6 +19,14 @@ import { getAccessorySubcategories } from "../../src/features/catalog/data/acces
 
 const editorial = getSnapshotProducts();
 
+test("catalog uses the saved photo directly and proxies an unsaved Warehouse photo", () => {
+  const item = snapshot.items.find((row) => row.sku === "G107169")!;
+  assert.ok(item.localImage);
+  assert.equal(warehouseCatalog([item], [], () => item.localImage)[0].image, item.localImage);
+  assert.equal(warehouseCatalog([item], [], () => null)[0].image, "/api/products/G107169/image");
+  assert.equal(warehouseCatalog([{ ...item, image_url: null }], [], () => null)[0].image, "");
+});
+
 test("saved Warehouse data supplies unique public products and local images without the API", () => {
   const feed = parseWarehouseProducts(snapshot);
   assert.equal(feed.total_count, snapshot.total_count);
