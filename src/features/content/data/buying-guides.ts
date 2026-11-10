@@ -26,7 +26,10 @@ export const buyingGuides: BuyingGuide[] = [
           "จดน้ำหนักของสินค้าที่เบาที่สุดและหนักที่สุดที่ต้องชั่ง รวมภาชนะหรือบรรจุภัณฑ์ที่วางบนจานชั่งด้วย จากนั้นตรวจพิกัดสูงสุดและช่วงน้ำหนักที่ผู้ผลิตระบุในเอกสารของรุ่นนั้น",
           "เลือกจากงานที่เกิดขึ้นจริง เช่น ชั่งวัตถุดิบครั้งละน้อย ชั่งสินค้าทั้งลัง หรือชั่งกระสอบ พร้อมตรวจขนาดจานชั่งและพื้นที่ติดตั้งให้รองรับภาชนะได้เหมาะสม",
         ],
-        links: [{ label: "ดูเครื่องชั่งทั้งหมด", href: "/products/category/scales" }],
+        links: [
+          { label: "ดูเครื่องชั่งทั้งหมด", href: "/products/category/scales" },
+          { label: "อุตสาหกรรมงานผลิต", href: "/products/category/scales/industrial" },
+        ],
       },
       {
         id: "resolution",
@@ -149,8 +152,8 @@ export const buyingGuides: BuyingGuide[] = [
           "นำทั้งสองทางเลือกมาเทียบเรื่องการจัดการสินค้าและราคา การพิมพ์เอกสาร การสำรองข้อมูล การเชื่อมต่อเครื่องชั่ง และเงื่อนไขการใช้ซอฟต์แวร์ตามรุ่นที่สนใจ",
         ],
         links: [
-          { label: "POS ระบบ Android", href: "/products/category/pos?subcategory=pos-android" },
-          { label: "POS ระบบ Windows", href: "/products/category/pos?subcategory=pos-windows" },
+          { label: "POS ระบบ Android", href: "/products/category/pos/android" },
+          { label: "POS ระบบ Windows", href: "/products/category/pos/windows" },
         ],
       },
       {
@@ -207,7 +210,7 @@ export const buyingGuides: BuyingGuide[] = [
         links: [
           {
             label: "ดูวัสดุสิ้นเปลือง",
-            href: "/products/category/accessories?subcategory=accessory-consumables",
+            href: "/products/category/accessories/consumables",
           },
         ],
       },

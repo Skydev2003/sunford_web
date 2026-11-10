@@ -1,0 +1,264 @@
+.page {
+  background: var(--paper);
+  color: var(--ink);
+  padding: clamp(32px, 6vw, 80px) 16px;
+}
+.editor {
+  max-width: 960px;
+  margin: auto;
+}
+.heading {
+  margin-bottom: 24px;
+}
+.heading h1 {
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.25;
+  margin: 0 0 8px;
+}
+.heading p,
+.seller p {
+  color: var(--muted);
+}
+.seller {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px 28px;
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+}
+.seller img {
+  object-fit: contain;
+}
+.seller p,
+.sheet p {
+  margin: 4px 0;
+}
+.editor form {
+  margin-top: 18px;
+  border-radius: 20px;
+  padding: clamp(16px, 4vw, 40px);
+  background: white;
+}
+.editor fieldset {
+  border: 0;
+  min-width: 0;
+  margin: 0 0 28px;
+  padding: 0;
+}
+.editor legend,
+.sheet h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 600;
+}
+.fields,
+.line {
+  display: grid;
+  gap: 14px;
+}
+.editor label,
+.line > div {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-width: 0;
+}
+.editor :is(input, textarea, select) {
+  border: 1px solid #c7c7cc;
+  border-radius: 8px;
+  padding: 9px 12px;
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  background: white;
+  color: inherit;
+}
+.editor textarea {
+  resize: vertical;
+}
+.editor :is(input, textarea, select, button):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.line {
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.line > label:first-child {
+  grid-column: 1/-1;
+}
+.line small {
+  color: var(--muted);
+}
+.remove,
+.add,
+.printButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+}
+.remove,
+.add {
+  background: var(--paper);
+  color: var(--ink);
+}
+.remove {
+  width: 44px;
+}
+.add,
+.printButton {
+  padding: 8px 16px;
+  font-weight: 600;
+}
+.printButton {
+  background: var(--red);
+  color: white;
+}
+.totals {
+  width: min(100%, 355px);
+  margin: 16px 0 16px auto;
+  font-variant-numeric: tabular-nums;
+}
+.totals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+.totals div:last-child {
+  border-top: 1px solid var(--line);
+  font-weight: 600;
+  font-size: 18px;
+}
+.totals dd {
+  margin: 0;
+}
+.actions {
+  text-align: right;
+}
+.sheet {
+  display: none;
+}
+@media (min-width: 640px) {
+  .fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  .full {
+    grid-column: 1/-1;
+  }
+  .line {
+    grid-template-columns: minmax(140px, 1fr) 84px minmax(95px, auto) minmax(85px, auto) 44px;
+  }
+  .line > label:first-child {
+    grid-column: auto;
+  }
+}
+@page quotation {
+  size: A4;
+  margin: 15mm;
+}
+@media print {
+  :global(body):has(.page) {
+    page: quotation;
+  }
+  :global(body):has(.page) > :not(:has(.page)):not(.page),
+  :global(body) :has(.page) > :not(:has(.page)):not(.page),
+  .editor {
+    display: none !important;
+  }
+  :global(body) :has(.page),
+  .page {
+    padding: 0 !important;
+    margin: 0;
+    min-height: 0;
+    background: white;
+  }
+  .sheet {
+    display: block;
+    font-size: 10pt;
+    color: #171719;
+    overflow-wrap: anywhere;
+  }
+  .printTitle {
+    text-align: right;
+  }
+  .printTitle h1 {
+    font-size: 22pt;
+    margin: 0;
+  }
+  .sheet .seller {
+    padding: 0 0 4mm;
+    border-radius: 0;
+    border-bottom: 1px solid #bbb;
+  }
+  .sheet .seller p {
+    color: inherit;
+  }
+  .customer,
+  .payment {
+    padding: 5mm 0;
+    white-space: pre-line;
+  }
+  .sheet h2 {
+    font-size: 12pt;
+    margin: 0 0 2mm;
+  }
+  .sheet table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .sheet :is(th, td) {
+    text-align: right;
+    padding: 2.5mm 1.5mm;
+    border-bottom: 1px solid #ccc;
+  }
+  .sheet :is(th, td):first-child {
+    text-align: left;
+    width: 48%;
+  }
+  .sheet thead {
+    display: table-header-group;
+  }
+  .sheet tr,
+  .totals,
+  .payment {
+    break-inside: avoid;
+  }
+  .sheet .totals div:last-child {
+    font-size: 12pt;
+  }
+}
+.pending {
+  margin-bottom: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--paper);
+}
+.pending h2 {
+  font-size: 18px;
+}
+.pending ul {
+  list-style: none;
+  margin-top: 8px;
+  padding: 0;
+}
+.pending li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+.pending button {
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}

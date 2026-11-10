@@ -1,0 +1,247 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(215px, 1fr) minmax(0, 3fr);
+  gap: 24px;
+  align-items: start;
+}
+.sidebar,
+.toolbar,
+.cards article {
+  background: white;
+  border-radius: 18px;
+  border: 1px solid #e4e4e8;
+}
+.sidebar,
+.toolbar {
+  padding: 24px;
+}
+.sidebar {
+  position: sticky;
+  top: 68px;
+}
+.layout h2 {
+  font-size: 21px;
+  line-height: 1.4;
+}
+.steps {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+}
+.steps button,
+.cards button,
+.selection button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.steps button {
+  padding: 10px 12px;
+  text-align: left;
+  background: var(--paper);
+}
+.steps button[aria-pressed="true"],
+.cards button[aria-pressed="true"] {
+  background: #fcecef;
+  color: #a60e21;
+}
+.selection {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e4e4e8;
+  font-size: 14px;
+}
+.selection p,
+.count,
+.copy p,
+.copy small {
+  color: #595960;
+}
+.selection ul {
+  list-style: none;
+  padding: 0;
+}
+.selection li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+.selection button {
+  min-width: 44px;
+  justify-content: center;
+  background: transparent;
+}
+.fields {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.search,
+.fields select {
+  background: #fff;
+  border: 1px solid #c9c9d0;
+  border-radius: 10px;
+  padding: 0 12px;
+  min-height: 44px;
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.search input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  font: inherit;
+}
+.fields select {
+  max-width: 100%;
+  font: inherit;
+}
+.count {
+  margin: 18px 0 8px;
+  font-size: 14px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+}
+.cards article {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.photo {
+  position: relative;
+  aspect-ratio: 4/3;
+}
+.photo img {
+  object-fit: contain;
+}
+.copy {
+  display: grid;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+.copy h3 {
+  font-size: 17px;
+}
+.copy p {
+  font-size: 15px;
+}
+.cards button {
+  margin-top: auto;
+  justify-content: center;
+  background: var(--ink);
+  color: white;
+}
+.layout :is(button, input, select):focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+.cards button:disabled {
+  color: #595960;
+  background: var(--paper);
+  cursor: not-allowed;
+}
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .sidebar {
+    position: static;
+  }
+  .sidebar,
+  .toolbar {
+    padding: 18px;
+  }
+  .steps {
+    grid-template-columns: 1fr 1fr;
+  }
+  .fields {
+    flex-direction: column;
+  }
+  .search input {
+    min-height: 44px;
+  }
+}
+.guideLink {
+  color: #a51728;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.steps button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.toolbar h2 {
+  scroll-margin-top: 72px;
+}
+@media (max-width: 767px) {
+  .sidebar .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sidebar .steps button {
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 3px;
+  }
+}
+.reference {
+  display: block;
+  color: var(--muted);
+}
+.cards article {
+  position: relative;
+}
+.cardLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.cardLink:focus-visible::after {
+  outline: 2px solid var(--red);
+}
+.cards article button {
+  position: relative;
+  z-index: 1;
+}
+.cards .headLink {
+  position: relative;
+  z-index: 1;
+  justify-self: start;
+}
+.quoteLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 14px;
+  border-radius: 10px;
+  background: var(--red);
+  color: #fff;
+  font-weight: 600;
+}
+.selection .quoteLink:disabled {
+  width: 100%;
+  background: var(--paper);
+  color: var(--muted);
+  cursor: not-allowed;
+}

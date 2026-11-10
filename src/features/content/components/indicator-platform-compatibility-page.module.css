@@ -1,0 +1,161 @@
+.page {
+  padding: 24px max(48px, calc((100% - 1180px) / 2)) 84px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.screenReaderTitle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.grid {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+.card,
+.accessories {
+  min-width: 0;
+  background: white;
+  border-radius: 22px;
+}
+.page summary {
+  position: relative;
+  cursor: pointer;
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  padding: 26px 62px 26px 26px;
+}
+.page summary::-webkit-details-marker {
+  display: none;
+}
+.page summary::after {
+  content: "+";
+  position: absolute;
+  right: 20px;
+  top: 24px;
+  border-radius: 50%;
+  background: var(--paper);
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 22px;
+  color: var(--red);
+}
+.page details[open] > summary::after {
+  content: "−";
+}
+.page summary:focus-visible,
+.contact:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+  border-radius: 16px;
+}
+.page summary strong {
+  font-size: clamp(19px, 2vw, 27px);
+  line-height: 1.35;
+}
+.page summary span {
+  color: #55555a;
+}
+.page summary .meta {
+  color: #a51728;
+  font-size: 14px;
+  font-weight: 600;
+}
+.body {
+  margin: 0 26px;
+  padding: 22px 0 26px;
+  border-top: 1px solid #dedee3;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+.body h2,
+.body dt {
+  font-weight: 600;
+  font-size: 16px;
+}
+.body p,
+.body dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: #545458;
+}
+.body .models {
+  color: var(--ink);
+}
+.body h2:not(:first-child),
+.body dl > div,
+.accessories dl > div + div {
+  margin-top: 16px;
+}
+.accessories {
+  margin-top: 24px;
+}
+.accessories summary strong {
+  font-size: 18px;
+}
+.contact {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 16px;
+  color: #a51728;
+}
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .page {
+    padding-inline: 32px;
+  }
+  .page summary {
+    padding-left: 20px;
+  }
+  .body {
+    margin-inline: 20px;
+  }
+}
+.guideTitle {
+  margin: 56px 0 18px;
+  font-size: clamp(22px, 3vw, 32px);
+}
+.anchor {
+  scroll-margin-top: 72px;
+}
+.headModels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.headModels > a {
+  text-decoration: underline;
+  color: var(--red);
+}
+.headCard {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--paper);
+  scroll-margin-top: 80px;
+}
+.headCard h3 {
+  font-size: 16px;
+}
+.headCard:target {
+  outline: 2px solid var(--red);
+}
+.modelTarget {
+  scroll-margin-block: 100px;
+}
+.modelTarget:target {
+  outline: 2px solid var(--red);
+  border-radius: 3px;
+}
