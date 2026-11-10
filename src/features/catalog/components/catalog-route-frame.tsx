@@ -1,8 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
+import { useStaggerBounce } from "@/components/ui/use-stagger-bounce";
 import styles from "./products-overview.module.css";
 
 const OverlayHostContext = createContext<(host: HTMLDivElement | null) => void>(() => {});
@@ -22,6 +23,8 @@ export function CatalogRouteFrame({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const root = useRef<HTMLDivElement>(null);
+  useStaggerBounce(root, pathname);
   const productsPage =
     pathname === "/products" ||
     pathname === "/products/category/scales" ||
@@ -32,7 +35,7 @@ export function CatalogRouteFrame({
   const [overlayHost, setOverlayHost] = useState<HTMLDivElement | null>(null);
   return (
     <OverlayHostContext.Provider value={setOverlayHost}>
-      <div className={productsPage ? styles.routeSurface : className}>
+      <div ref={root} className={productsPage ? styles.routeSurface : className}>
         <a href="#main-content" className="skip-link">
           ข้ามไปยังเนื้อหา
         </a>
