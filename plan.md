@@ -4321,6 +4321,7 @@ No shared layout/style/UI changes. Only the exact development allowlist entry pe
 Before fix: loopback WebSocket regression failed 1/1 with `connected=false`; localhost handshake and initial builder worked. After exact allowlist change and the authorized Node24 restart: HMR tests 3/3, Warehouse browsers 5/5 and carousel browsers 6/6 pass on localhost:3000 (14 total). The HMR mutation probe restored every byte and retained head selection through both hot updates. External-origin control remains blocked. Actual API returns 89 SKUs; proxy image 200 WebP; quotation PDF created. Responsive 390/834/1440px tests passed, and dedicated products/builder captures at 390/1440 had no console/page errors and were visually inspected.
 
 Root TypeScript, scoped ESLint, 134 catalog tests, scoped Prettier and diff whitespace checks pass. Only config/test/docs persist; no production rebuild was needed for this development-origin-only change. Server listener 11892 uses Node24.22.1 and remains running with CLI24412. No dependency/runtime upgrade, environment/data edits, cache deletion, deployment or other-server stop. Next.js feedback review found expected origin rejection documented by the installed guide, not a new qualifying framework issue; no report was submitted. Observer lesson85 records comparing real origins before changing bundlers.
+
 # Plan: Carousel model-row overflow bug
 
 ## Files
@@ -4343,11 +4344,13 @@ Root TypeScript, scoped ESLint, 134 catalog tests, scoped Prettier and diff whit
 ## Impact / Rollback
 
 Only the existing carousel model-selector row changes. Images, source identities, timing and detail transitions remain as before. Restore just the task-owned carousel delta from its snapshot to undo it; keep unrelated dirty files and dev/Warehouse processes intact. No shared style, dependency, data, environment or deployment change.
+
 # Non-X Warehouse catalog
 
 Owner-approved inclusion and fee visibility. Update the common Warehouse adapter and image lookup, the product category projection and products index, and their unit/browser contracts. Compare live SKU sets in the catalog and quotation with Warehouse, check detail/image/category behavior and filtered audit output. Rollback is limited to the site projection and its consumers.
 
 Verified the public API, product index cards and quotation options each contain the same 355 distinct SKUs. The four service fee IDs are retained only in the 359-row filtered audit. The existing Excel/CSV report was refreshed in place. TypeScript, the 135 catalog tests and the production build (664 generated pages) passed.
+
 # Warehouse category review
 
 Updated the existing mapping for 38 of 101 reviewed SKUs. The owner chose to keep all 63 remaining rows in “รายการอื่น ๆ”. The review table is in docs/warehouse/category-review-101.md.
@@ -4357,11 +4360,13 @@ Updated the existing mapping for 38 of 101 reviewed SKUs. The owner chose to kee
 Verified: the 101-row owner review workbook and Markdown table each split into 38 assigned and 63 pending. Online counts sum to 355 unique public SKUs. Offline production build (664 pages), a browser check of the API, image and dated printable quotation, full TypeScript, scoped ESLint and 136 catalog tests passed. Update the checked-in-ready snapshot with `npm run warehouse:snapshot` while the upstream is available.
 
 Update the existing SKU mapping in place, document each reviewed item in docs/warehouse/category-review-101.md, add a repeatable snapshot command, and use its bundled data on upstream unavailability. Verify eligibility, unchanged IDs, category counts and offline catalog/quotation/image responses in an isolated server configuration. Restore only this change if rolling back.
+
 # Restore the curated /products carousel
 
 Verified: 36 local photos in 12 groups of three, 355 public directory cards, TypeScript, scoped ESLint and all 12 carousel browser tests passed on localhost:3002. Screenshot: `output/restore-curated-carousel-desktop.png`.
 
 Use products-index-carousel.json for the carousel only, resolve confirmed detail links in products-index-content.tsx, and render the optional link in products-index-carousel.tsx. Verify with products-index-carousel.spec.ts, typecheck and browser measurement of carousel versus directory counts.
+
 # Warehouse photo display
 
 Verified on localhost:3002: 103 products with images, including all 75 with saved Warehouse photos. The Next.js optimizer returned image data for all 102 distinct catalog image URLs. Chromium decoded G107169 on its directory card and detail gallery. TypeScript and 137 catalog tests passed.

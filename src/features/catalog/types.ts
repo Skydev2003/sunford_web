@@ -51,7 +51,8 @@ export type ProductCardData = Pick<
   Product,
   "id" | "slug" | "name" | "category" | "subtitle" | "image" | "capacity" | "badge"
 >;
-export type CatalogProduct = ProductCardData & Pick<Product, "description" | "featured" | "topics" | "warehouseSku">;
+export type CatalogProduct = ProductCardData &
+  Pick<Product, "description" | "featured" | "topics" | "warehouseSku">;
 export type StorefrontProduct = CatalogProduct &
   Pick<
     Product,

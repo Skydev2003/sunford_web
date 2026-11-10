@@ -6380,6 +6380,7 @@ R2: adding one exact development-origin hostname affects only access to developm
 The loopback regression failed before the fix (connected false) and all three HMR tests pass after it, including actual source update/restoration and retained builder selection. Five Warehouse integration browser tests and six carousel/gesture tests pass on localhost:3000: 14 browser tests total. Product API returns 89 SKUs and proxy image returns 200 WebP. Additional product/builder captures at 390/1440px recorded zero console/page errors; screenshots were visually inspected. A real quotation PDF was generated. TypeScript, scoped ESLint, formatting and 134 catalog tests pass. The temporary builder probe is byte-identical to its snapshot after restoration.
 
 Node 24.22.1 / Next 16.4.3 Turbopack dev remains running on localhost:3000 (listener 11892, CLI 24412 at delivery). No cache clearing, Webpack fallback, app/layout changes, Warehouse writes, environment edit or deployment was required. The prior unresolved-dev/Webpack workaround in the sitewide delivery is superseded. See `docs/warehouse/localhost-hmr-delivery.md`.
+
 ## Task: Carousel model-row overflow bug (2026-11-10)
 
 Status: "Ready to Code"

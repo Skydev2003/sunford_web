@@ -1,5 +1,8 @@
 import { isPublicWarehouseSku } from "@/features/catalog/data/warehouse-products";
-import { getOfficialProducts, savedWarehouseImage } from "@/features/services/warehouse-product.server";
+import {
+  getOfficialProducts,
+  savedWarehouseImage,
+} from "@/features/services/warehouse-product.server";
 
 const maxImageBytes = 10 * 1024 * 1024;
 
