@@ -129,8 +129,11 @@
   bottom: 16%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   padding-block: 4px;
+}
+.models::-webkit-scrollbar {
+  display: none;
 }
 .models button {
   flex: 0 0 auto;

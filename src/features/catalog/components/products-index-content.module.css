@@ -48,8 +48,11 @@
   overscroll-behavior-inline: contain;
   scroll-padding-inline: var(--overview-gutter);
   scroll-snap-type: inline mandatory;
-  scrollbar-color: #d2d2d7 transparent;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
+.index .rail::-webkit-scrollbar {
+  display: none;
 }
 
 .index .rail:focus-visible {
