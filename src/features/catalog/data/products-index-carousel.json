@@ -1,0 +1,486 @@
+{
+  "categories": [
+    {
+      "id": "scale-price",
+      "label": "เครื่องชั่งคำนวณราคาหน้าร้าน"
+    },
+    {
+      "id": "scale-industrial",
+      "label": "เครื่องชั่งอุตสาหกรรมงานผลิต"
+    },
+    {
+      "id": "scale-analytical",
+      "label": "เครื่องชั่งงานวิเคราะห์ความแม่นยำสูง"
+    },
+    {
+      "id": "scale-kitchen",
+      "label": "เครื่องชั่งงานครัวและกาแฟ"
+    },
+    {
+      "id": "scale-water-dust",
+      "label": "เครื่องชั่งกันน้ำและกันฝุ่น 100%"
+    },
+    {
+      "id": "scale-benchtop",
+      "label": "เครื่องชั่งตั้งโต๊ะ"
+    },
+    {
+      "id": "scale-floor",
+      "label": "เครื่องชั่งตั้งพื้น"
+    },
+    {
+      "id": "scale-pole",
+      "label": "เครื่องชั่งมีเสา"
+    },
+    {
+      "id": "indicators",
+      "label": "อินดิเคเตอร์แท่นชั่ง"
+    },
+    {
+      "id": "platforms",
+      "label": "โครงสร้างแท่นชั่ง"
+    },
+    {
+      "id": "pos",
+      "label": "ระบบ POS"
+    },
+    {
+      "id": "accessories",
+      "label": "อุปกรณ์เสริม"
+    }
+  ],
+  "products": [
+    {
+      "id": "acs30-jc21",
+      "model": "ACS-30-JC21",
+      "categoryId": "scale-price",
+      "categoryLabel": "เครื่องชั่งคำนวณราคาหน้าร้าน",
+      "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
+      "capacity": "30kg",
+      "readability": "5/10g",
+      "connection": "ใช้งานแบบอิสระ",
+      "image": "/images/hero/acs30-jc21-carousel-cutout.png",
+      "href": "/products/acs30-jc21"
+    },
+    {
+      "id": "sunford-10612",
+      "model": "ACS-30-FC31",
+      "categoryId": "scale-price",
+      "categoryLabel": "เครื่องชั่งคำนวณราคาหน้าร้าน",
+      "subtitle": "หน้าจอใหญ่ จานชั่งใหญ่ ชั่งไว!",
+      "capacity": "30kg",
+      "readability": "5/10g",
+      "connection": "—",
+      "image": "/images/imported/e9a5f827c7fc29c6ef6c.png",
+      "href": "/products/10612"
+    },
+    {
+      "id": "sunford-10641",
+      "model": "ACS-30-JE81",
+      "categoryId": "scale-price",
+      "categoryLabel": "เครื่องชั่งคำนวณราคาหน้าร้าน",
+      "subtitle": "กันน้ำ-กันฝุ่น ล้างทำความสะอาดได้ ชั่งไว ใช้ง่าย",
+      "capacity": "30 kg",
+      "readability": "5/10g",
+      "connection": "—",
+      "image": "/images/imported/77debcf4d49dd05dd323.png",
+      "href": "/products/10641"
+    },
+    {
+      "id": "feh5ks",
+      "model": "FEH5KS",
+      "categoryId": "scale-industrial",
+      "categoryLabel": "เครื่องชั่งอุตสาหกรรมงานผลิต",
+      "subtitle": "เบสเซลเลอร์สำหรับครัวร้านอาหารและเบเกอรี่!",
+      "capacity": "5kg",
+      "readability": "1g",
+      "connection": "RS232 / SUNFORD CONNECT",
+      "image": "/images/hero/feh5ks-carousel-cutout.png",
+      "href": "/products/feh5ks"
+    },
+    {
+      "id": "sunford-10635",
+      "model": "FEH10KS",
+      "categoryId": "scale-industrial",
+      "categoryLabel": "เครื่องชั่งอุตสาหกรรมงานผลิต",
+      "subtitle": "ไอเทมขายดีตลอดกาล ชั่งง่าย ทนทาน ทุกวงการเลือกใช้",
+      "capacity": "10kg",
+      "readability": "1g",
+      "connection": "RS232 ไปยังคอมพิวเตอร์หรืออุปกรณ์ PLC ที่ผู้ใช้งานสร้างขึ้นเอง (โปรดติดต่อฝ่ายบริการหลังการขาย)",
+      "image": "/images/imported/1718767e98ea89960d9b.png",
+      "href": "/products/10635"
+    },
+    {
+      "id": "sunford-10672",
+      "model": "KBS6000S",
+      "categoryId": "scale-industrial",
+      "categoryLabel": "เครื่องชั่งอุตสาหกรรมงานผลิต",
+      "subtitle": "เที่ยงตรงแม่นยำสำหรับส่วนผสมระดับช้อนชา!",
+      "capacity": "6kg",
+      "readability": "0.1/0.2g",
+      "connection": "—",
+      "image": "/images/imported/4429e6dd7890831f8f7b.png",
+      "href": "/products/10672"
+    },
+    {
+      "id": "sunford-10664",
+      "model": "C1",
+      "categoryId": "scale-analytical",
+      "categoryLabel": "เครื่องชั่งงานวิเคราะห์ความแม่นยำสูง",
+      "subtitle": "ความเที่ยงตรงระดับห้องปฏิบัติการ เพื่องานวิเคราะห์และควบคุมคุณภาพสูง",
+      "capacity": "1kg",
+      "readability": "0.01g",
+      "connection": "RS232 ไปยังคอมพิวเตอร์",
+      "image": "/images/imported/ac4fa82a18bc9172a2e8.png",
+      "href": "/products/10664"
+    },
+    {
+      "id": "sunford-10665",
+      "model": "C5",
+      "categoryId": "scale-analytical",
+      "categoryLabel": "เครื่องชั่งงานวิเคราะห์ความแม่นยำสูง",
+      "subtitle": "ความเที่ยงตรงระดับห้องปฏิบัติการ เพื่องานวิเคราะห์และควบคุมคุณภาพสูง",
+      "capacity": "",
+      "readability": "0.1g",
+      "connection": "RS232 ไปยังคอมพิวเตอร์",
+      "image": "/images/products-index-carousel/sunford-10665-front.png",
+      "href": "/products/10665"
+    },
+    {
+      "id": "sunford-10680",
+      "model": "R3",
+      "categoryId": "scale-analytical",
+      "categoryLabel": "เครื่องชั่งงานวิเคราะห์ความแม่นยำสูง",
+      "subtitle": "ความเที่ยงตรงระดับห้องปฏิบัติการ เพื่องานวิเคราะห์และควบคุมคุณภาพสูง",
+      "capacity": "3kg",
+      "readability": "0.01g",
+      "connection": "RS232 ไปยังคอมพิวเตอร์และเครื่องพิมพ์",
+      "image": "/images/products-index-carousel/sunford-10680-front.png",
+      "href": "/products/10680"
+    },
+    {
+      "id": "sunford-10668",
+      "model": "WPK5000",
+      "categoryId": "scale-kitchen",
+      "categoryLabel": "เครื่องชั่งงานครัวและกาแฟ",
+      "subtitle": "เปียกไม่กลัว กลัวไม่เปียก ฉีดล้างได้ ไอเท็มพื้นฐานของครัวบ้านและร้านเบเกอรี่!",
+      "capacity": "5kg",
+      "readability": "1g",
+      "connection": "—",
+      "image": "/images/imported/f8089cea6aa95a677f83.png",
+      "href": "/products/10668"
+    },
+    {
+      "id": "sunford-10625",
+      "model": "KAH5000S",
+      "categoryId": "scale-kitchen",
+      "categoryLabel": "เครื่องชั่งงานครัวและกาแฟ",
+      "subtitle": "เที่ยงตรงแม่นยำสำหรับส่วนผสมระดับช้อนชา ",
+      "capacity": "5kg",
+      "readability": "0.1g",
+      "connection": "—",
+      "image": "/images/imported/f9124a5ba519ebbe61d4.png",
+      "href": "/products/10625"
+    },
+    {
+      "id": "sunford-10617",
+      "model": "VR5000",
+      "categoryId": "scale-kitchen",
+      "categoryLabel": "เครื่องชั่งงานครัวและกาแฟ",
+      "subtitle": "คู่หูสายเบเกอรี่และครัวบ้าน อร่อยทุกจาน แม่นยำทุกสูตร!",
+      "capacity": "5kg",
+      "readability": "1g",
+      "connection": "—",
+      "image": "/images/products-index-carousel/sunford-10617-front.png",
+      "href": "/products/10617"
+    },
+    {
+      "id": "sunford-10671",
+      "model": "WPS6KS",
+      "categoryId": "scale-water-dust",
+      "categoryLabel": "เครื่องชั่งกันน้ำและกันฝุ่น 100%",
+      "subtitle": "ฉีดล้างได้ ไร้สนิม ปลอดภัยสำหรับงานอาหาร ",
+      "capacity": "6kg",
+      "readability": "0.1/0.2g",
+      "connection": "—",
+      "image": "/images/products-index-carousel/sunford-10671-front.png",
+      "href": "/products/10671"
+    },
+    {
+      "id": "wps10ks",
+      "model": "WPS10KS",
+      "categoryId": "scale-water-dust",
+      "categoryLabel": "เครื่องชั่งกันน้ำและกันฝุ่น 100%",
+      "subtitle": "จอ 2 ด้าน ฉีดล้างได้ ไร้สนิม ปลอดภัยสำหรับงานอาหาร ",
+      "capacity": "10kg",
+      "readability": "0.5/1g",
+      "connection": "ใช้งานแบบอิสระ",
+      "image": "/images/hero/wps10ks-carousel-cutout.png",
+      "href": "/products/wps10ks"
+    },
+    {
+      "id": "sunford-10670",
+      "model": "WSS30KS-LED",
+      "categoryId": "scale-water-dust",
+      "categoryLabel": "เครื่องชั่งกันน้ำและกันฝุ่น 100%",
+      "subtitle": "ตัวเครื่องสแตนเลส ปลอดสนิม ฉีดล้างได้",
+      "capacity": "30kg",
+      "readability": "1g",
+      "connection": "—",
+      "image": "/images/products-index-carousel/sunford-10670-front.png",
+      "href": "/products/10670"
+    },
+    {
+      "id": "sunford-10628",
+      "model": "VC5000",
+      "categoryId": "scale-benchtop",
+      "categoryLabel": "เครื่องชั่งตั้งโต๊ะ",
+      "subtitle": "คู่หูสายเบเกอรี่และครัวบ้าน อร่อยทุกจาน แม่นยำทุกสูตร!",
+      "capacity": "",
+      "readability": "1g",
+      "connection": "—",
+      "image": "/images/imported/18bd2f38a87edbf24614.png",
+      "href": "/products/10628"
+    },
+    {
+      "id": "sunford-10673",
+      "model": "KBS5000",
+      "categoryId": "scale-benchtop",
+      "categoryLabel": "เครื่องชั่งตั้งโต๊ะ",
+      "subtitle": "เที่ยงตรงแม่นยำสำหรับส่วนผสมระดับช้อนชา!",
+      "capacity": "5kg",
+      "readability": "1g",
+      "connection": "—",
+      "image": "/images/imported/f82bb3e9676b459bc34b.png",
+      "href": "/products/10673"
+    },
+    {
+      "id": "sunford-10614",
+      "model": "ACS-30-JC21ET",
+      "categoryId": "scale-benchtop",
+      "categoryLabel": "เครื่องชั่งตั้งโต๊ะ",
+      "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
+      "capacity": "30kg",
+      "readability": "5/10g",
+      "connection": "—",
+      "image": "/images/products-index-carousel/sunford-10614-front.png",
+      "href": "/products/10614"
+    },
+    {
+      "id": "sunford-10856",
+      "model": "TIS-150-JE62ZR",
+      "categoryId": "scale-floor",
+      "categoryLabel": "เครื่องชั่งตั้งพื้น",
+      "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
+      "capacity": "150kg",
+      "readability": "20/50g",
+      "connection": "RS232 ไปยังเครื่องพิมพ์ฉลากหรือสลิปแบบพิมพ์ด้วยความร้อน",
+      "image": "/images/imported/08ce24dcc9fe0c157114.png",
+      "href": "/products/10856"
+    },
+    {
+      "id": "sunford-10653",
+      "model": "FCS-150-SW31",
+      "categoryId": "scale-floor",
+      "categoryLabel": "เครื่องชั่งตั้งพื้น",
+      "subtitle": "คุณสมบัติของเครื่องชั่ง",
+      "capacity": "150kg",
+      "readability": "20/50g",
+      "connection": "RS232",
+      "image": "/images/products-index-carousel/sunford-10653-front.png",
+      "href": "/products/10653"
+    },
+    {
+      "id": "sunford-TSS-150-SW31S",
+      "model": "TSS-150-SW31S",
+      "categoryId": "scale-floor",
+      "categoryLabel": "เครื่องชั่งตั้งพื้น",
+      "subtitle": "เครื่องชั่งน้ำหนัก เตือนช่วงน้ำหนัก-นับจำนวนอัตโนมัติ แบบตั้งพื้น จอแยกอิสระ",
+      "capacity": "150.00 กิโลกรัม",
+      "readability": "0.02 กิโลกรัม (20 กรัม)",
+      "connection": "—",
+      "image": "/images/products-index-carousel/sunford-TSS-150-SW31S-front.png",
+      "href": "/products/TSS-150-SW31S"
+    },
+    {
+      "id": "sunford-10656",
+      "model": "TCS-60-JC62Z",
+      "categoryId": "scale-pole",
+      "categoryLabel": "เครื่องชั่งมีเสา",
+      "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
+      "capacity": "60kg",
+      "readability": "10/20g",
+      "connection": "—",
+      "image": "/images/imported/f380d755f182ebfecc4e.png",
+      "href": "/products/10656"
+    },
+    {
+      "id": "sunford-10634",
+      "model": "TCS-150-AW31",
+      "categoryId": "scale-pole",
+      "categoryLabel": "เครื่องชั่งมีเสา",
+      "subtitle": "คุณสมบัติของเครื่องชั่ง",
+      "capacity": "150kg",
+      "readability": "20/50g",
+      "connection": "RS232",
+      "image": "/images/imported/9cf1a577d7c5bc58b8d5.png",
+      "href": "/products/10634"
+    },
+    {
+      "id": "sunford-10867",
+      "model": "CCS-150-JC62Z",
+      "categoryId": "scale-pole",
+      "categoryLabel": "เครื่องชั่งมีเสา",
+      "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
+      "capacity": "150kg",
+      "readability": "20/50g",
+      "connection": "—",
+      "image": "/images/products-index-carousel/sunford-10867-front.png",
+      "href": "/products/10867"
+    },
+    {
+      "id": "sunford-10777",
+      "model": "AW31",
+      "categoryId": "indicators",
+      "categoryLabel": "อินดิเคเตอร์แท่นชั่ง",
+      "subtitle": "ชั่งไว ใช้ง่าย เตือนน้ำหนักขาด-เกิน พร้อมส่งข้อมูล",
+      "capacity": "",
+      "readability": "",
+      "connection": "RS232 ไปยังเครื่องพิมพ์ฉลากหรือสลิปแบบพิมพ์ด้วยความร้อน",
+      "image": "/images/imported/7a5eefe60abdefd4d9d1.jpeg",
+      "href": "/products/10777"
+    },
+    {
+      "id": "sunford-10778",
+      "model": "SW31",
+      "categoryId": "indicators",
+      "categoryLabel": "อินดิเคเตอร์แท่นชั่ง",
+      "subtitle": "ชั่งไว ใช้ง่าย กรอบสแตนเลสทนทานไร้สนิม",
+      "capacity": "",
+      "readability": "",
+      "connection": "RS232 ไปยังเครื่องพิมพ์ฉลากหรือสลิปแบบพิมพ์ด้วยความร้อน",
+      "image": "/images/imported/9efcbb1a286004687488.png",
+      "href": "/products/10778"
+    },
+    {
+      "id": "sunford-10779",
+      "model": "WP31C",
+      "categoryId": "indicators",
+      "categoryLabel": "อินดิเคเตอร์แท่นชั่ง",
+      "subtitle": "กันน้ำ-กันฝุ่นละออง มาตรฐานสากล IP67 ฉีดล้างได้",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/imported/4082e97b8ea7d8627ce8.png",
+      "href": "/products/10779"
+    },
+    {
+      "id": "sunford-10755",
+      "model": "TCS4050",
+      "categoryId": "platforms",
+      "categoryLabel": "โครงสร้างแท่นชั่ง",
+      "subtitle": "คุณสมบัติของ Platform TCS 4050",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/imported/73affb8e71209dc1f9bb.png",
+      "href": "/products/10755"
+    },
+    {
+      "id": "sunford-10759",
+      "model": "TSS4050",
+      "categoryId": "platforms",
+      "categoryLabel": "โครงสร้างแท่นชั่ง",
+      "subtitle": "คุณสมบัติของ Platform TSS 4050",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/imported/269ef3127cbbc0907a14.png",
+      "href": "/products/10759"
+    },
+    {
+      "id": "sunford-10751",
+      "model": "CSS3838",
+      "categoryId": "platforms",
+      "categoryLabel": "โครงสร้างแท่นชั่ง",
+      "subtitle": "คุณสมบัติของ Platform CSS 3838",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/imported/347f70775613b9706d42.png",
+      "href": "/products/10751"
+    },
+    {
+      "id": "sunford-10801",
+      "model": "P1W",
+      "categoryId": "pos",
+      "categoryLabel": "ระบบ POS",
+      "subtitle": "เครื่องบันทึกเงินสด P1W",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/products-index-carousel/sunford-10801-front.png",
+      "href": "/products/10801"
+    },
+    {
+      "id": "sunford-10802",
+      "model": "P1",
+      "categoryId": "pos",
+      "categoryLabel": "ระบบ POS",
+      "subtitle": "เครื่องบันทึกเงินสด P1",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/products-index-carousel/sunford-10802-front.png",
+      "href": "/products/10802"
+    },
+    {
+      "id": "sunford-10805",
+      "model": "P4",
+      "categoryId": "pos",
+      "categoryLabel": "ระบบ POS",
+      "subtitle": "เครื่องบันทึกเงินสด P4",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/products-index-carousel/sunford-10805-front.png",
+      "href": "/products/10805"
+    },
+    {
+      "id": "sunford-10725",
+      "model": "LED-R1",
+      "categoryId": "accessories",
+      "categoryLabel": "อุปกรณ์เสริม",
+      "subtitle": "จอแสดงผล SUNFORD LED-R1 แบบตั้งโต๊ะ",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/products-index-carousel/sunford-10725-front.png",
+      "href": "/products/10725"
+    },
+    {
+      "id": "sunford-10732",
+      "model": "LP53",
+      "categoryId": "accessories",
+      "categoryLabel": "อุปกรณ์เสริม",
+      "subtitle": "เครื่องพิมพ์ความร้อนชาร์จไฟได้ SUNFORD LP53(Rechargable)",
+      "capacity": "",
+      "readability": "203 dpi",
+      "connection": "",
+      "image": "/images/imported/fcc2261c57419939a6bc.jpeg",
+      "href": "/products/10732"
+    },
+    {
+      "id": "sunford-10741",
+      "model": "DRW-350",
+      "categoryId": "accessories",
+      "categoryLabel": "อุปกรณ์เสริม",
+      "subtitle": "ลิ้นชักไฟฟ้า DRW-350",
+      "capacity": "",
+      "readability": "",
+      "connection": "",
+      "image": "/images/imported/92b5cabed48b08e487f1.png",
+      "href": "/products/10741"
+    }
+  ]
+}

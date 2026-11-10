@@ -1,0 +1,353 @@
+.scene {
+  touch-action: pan-y pinch-zoom;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: clamp(530px, 74svh, 770px);
+  background: white;
+  color: #1d1d1f;
+}
+.touchHint {
+  display: none;
+}
+@media (pointer: coarse) {
+  .mouseHint {
+    display: none;
+  }
+  .touchHint {
+    display: inline;
+  }
+}
+.scene button,
+.scene select {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+.scene button {
+  border: 0;
+  background: transparent;
+}
+.scene :focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+.copy {
+  position: absolute;
+  z-index: 12;
+  top: 11%;
+  left: var(--overview-gutter);
+  width: min(32%, 425px);
+  pointer-events: none;
+}
+.copy select {
+  pointer-events: auto;
+  max-width: 100%;
+  border: 0;
+  background: #fff;
+  font-size: 12px;
+  color: #6e6e73;
+}
+.copy h2 {
+  font-size: clamp(28px, 3.34vw, 48px);
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+  margin: 10px 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.copy p,
+.detail article p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.copy small,
+.progress small,
+.categories small {
+  font-size: 11px;
+  color: #6e6e73;
+}
+.photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400px;
+  height: 320px;
+  padding: 0;
+  transform-origin: center;
+  will-change: transform;
+}
+.photo[hidden] {
+  display: none;
+}
+.photo img,
+.hero img,
+.thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  mix-blend-mode: multiply;
+}
+.photo img {
+  pointer-events: none;
+}
+.scene[data-interactive] .photo img:not([data-ready="true"]) {
+  opacity: 0;
+}
+@media (max-width: 759px) {
+  .scene:not([data-interactive]) .photo[aria-current="true"] {
+    left: 52%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.7) !important;
+  }
+}
+.photo::after,
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 29%;
+  right: 29%;
+  bottom: -6%;
+  height: 4%;
+  background: radial-gradient(ellipse, rgba(29, 29, 31, 0.12), transparent 72%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+.models,
+.progress,
+.skip {
+  position: absolute;
+  z-index: 12;
+}
+.models {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  left: var(--overview-gutter);
+  right: var(--overview-gutter);
+  bottom: 16%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  padding-block: 4px;
+}
+.models button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 11px;
+  padding: 8px 2px;
+  border-bottom: 1px solid transparent;
+}
+.models button:first-child {
+  margin-inline-start: auto;
+}
+.models [aria-current="true"] {
+  border-color: currentColor;
+}
+.progress {
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  width: min(310px, 70%);
+  text-align: center;
+}
+.progress > div {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.progress button {
+  min-width: 36px;
+  height: 36px;
+  font-size: 24px;
+}
+.progress small {
+  display: block;
+}
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  height: 28px;
+}
+.ticks i {
+  flex: 1;
+  max-width: 3px;
+  height: 100%;
+  background: currentColor;
+  border-radius: 2px;
+}
+.skip {
+  right: var(--overview-gutter);
+  bottom: 5%;
+  font-size: 12px;
+  text-underline-offset: 3px;
+}
+.dialog {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  border: 0;
+  padding: 0;
+  background: white;
+  color: inherit;
+  overscroll-behavior: contain;
+}
+.dialog::backdrop {
+  background: white;
+}
+.detail {
+  position: relative;
+  min-height: 100%;
+  max-width: 1536px;
+  margin: auto;
+  padding: 90px 6% 48px 12%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 336px);
+  gap: 24px 8%;
+  align-items: center;
+}
+.scene .back {
+  position: absolute;
+  top: 20px;
+  left: var(--overview-gutter, 32px);
+  padding: 12px 18px;
+  background: #1d1d1f;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.hero {
+  height: min(510px, 56svh);
+  position: relative;
+  min-width: 0;
+}
+.detail article h2 {
+  font-size: clamp(32px, 3vw, 46px);
+  overflow-wrap: anywhere;
+}
+.detail article p {
+  color: #6e6e73;
+  margin: 14px 0;
+}
+.detail dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.detail dt {
+  font-size: 12px;
+  color: #6e6e73;
+}
+.detail dd {
+  margin: 4px 0;
+}
+.detail article a {
+  font-size: 13px;
+  text-decoration: underline;
+}
+.detail article .contact {
+  display: block;
+  text-align: center;
+  border-radius: 32px;
+  background: #e5e5ea;
+  padding: 16px;
+  margin: 20px 0 12px;
+  text-decoration: none;
+}
+.thumbs,
+.categories {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.thumbs button {
+  width: clamp(60px, 7vw, 82px);
+  height: 66px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px;
+}
+.thumbs [aria-current="true"] {
+  border-color: #1d1d1f;
+}
+.categories {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+}
+.categories small {
+  grid-column: 1/-1;
+}
+.categories button {
+  font-size: 12px;
+  min-height: 44px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+}
+.zoom,
+.trail {
+  object-fit: contain;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.zoom {
+  position: fixed;
+  z-index: 5;
+  transform-origin: top left;
+}
+.trail {
+  position: absolute;
+  inset: 0;
+}
+@media (max-width: 759px) {
+  .copy {
+    top: 22px;
+    width: calc(100% - 64px);
+  }
+  .copy p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .models {
+    right: 20px;
+    left: 20px;
+    bottom: 21%;
+  }
+  .models button:last-child {
+    margin-inline-end: auto;
+  }
+  .progress {
+    bottom: 8%;
+  }
+  .skip {
+    bottom: 2%;
+  }
+  .detail {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 85px 24px 32px;
+  }
+  .hero {
+    height: clamp(210px, 35svh, 320px);
+  }
+  .thumbs {
+    justify-content: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo {
+    will-change: auto;
+  }
+}

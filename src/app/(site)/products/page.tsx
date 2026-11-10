@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductsOverview } from "@/features/catalog/components/products-overview";
+import { ProductsIndexContent } from "@/features/catalog/components/products-index-content";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { buyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/cms/server/documents";
@@ -170,6 +171,7 @@ export default async function ProductsPage() {
   ];
   return (
     <ProductsOverview
+      indexContent={<ProductsIndexContent products={clientProducts} categories={categories} />}
       products={clientProducts}
       categories={categories}
       cardNames={cardNames}

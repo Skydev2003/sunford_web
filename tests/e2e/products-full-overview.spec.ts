@@ -1,202 +1,202 @@
-import { expect, test } from "@playwright/test";
-import { writeFile } from "node:fs/promises";
+import { expect, test, type Page } from "@playwright/test";
+import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
+async function openScalesMenu(page: Page) {
+  await expect(page.locator("[data-products-header]:visible button:visible").first()).toBeEnabled();
+  const trigger = page
+    .locator("[data-products-nav]")
+    .getByRole("link", { name: "เครื่องชั่ง", exact: true });
+  await trigger.focus();
+  await trigger.press("ArrowDown");
+  await expect(trigger).toHaveAttribute("aria-expanded", "true", { timeout: 1_000 });
+  return page.locator("#products-navigation-panel");
+}
+
 for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
-  test(`complete reference sections and route-only chrome at ${width}px`, async ({ page }) => {
+  test(`carousel and five actual product categories and existing chrome remain contained at ${width}px`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 1000 });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/products");
-    await expect(page.locator("[data-products-header]")).toHaveCount(1);
-    await expect(page.locator("[data-products-footer]")).toHaveCount(1);
-    await expect(page.locator(".site-header, .site-footer")).toHaveCount(0);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์");
-    expect(
-      await page
-        .locator("[data-overview-section]")
-        .evaluateAll((sections) =>
-          sections.map((section) => section.getAttribute("data-overview-section")),
-        ),
-    ).toEqual([
-      "chapters",
-      "hero",
-      "lineup",
-      "services",
-      "features",
-      "essentials",
-      "accordion",
-      "index",
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+    const directory = page.locator("[data-products-directory]");
+    const sections = directory.locator("[data-products-category-section]");
+    await expect(sections).toHaveCount(5);
+    await expect(sections.locator("h2")).toHaveText([
+      "เครื่องชั่ง",
+      "อินดิเคเตอร์แท่นชั่ง",
+      "โครงสร้างแท่นชั่ง",
+      "ระบบ POS",
+      "อุปกรณ์เสริม",
     ]);
-    await expect(page.locator("#products-chapters li")).toHaveCount(5);
-    await expect(page.locator("#products-lineup li")).toHaveCount(6);
-    await expect(page.locator("#products-services li")).toHaveCount(6);
-    await expect(page.locator("#products-features li")).toHaveCount(6);
-    await expect(page.locator("#products-essentials li")).toHaveCount(2);
+    const response = await page.request.get("/api/products");
+    expect(response.ok()).toBe(true);
+    const { products } = await response.json();
+    for (const section of await sections.all()) {
+      const cards = section.locator("[data-warehouse-sku]");
+      expect(await cards.count()).toBeGreaterThan(0);
+      for (const card of await cards.all()) {
+        const sku = await card.getAttribute("data-warehouse-sku");
+        const product = products.find(
+          (product: { warehouseSku: string }) => product.warehouseSku === sku,
+        );
+        expect(product).toBeTruthy();
+        await expect(card.getByRole("link").first()).toHaveAttribute(
+          "href",
+          `/products/${product.slug}`,
+        );
+      }
+    }
+    await expect(directory.locator("[data-warehouse-sku]")).toHaveCount(products.length);
+    await expect(directory).not.toContainText("Mock");
+    await expect(
+      directory.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }),
+    ).toHaveCount(0);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+    await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
+    const expectedLeft = width <= 600 ? 32 : Math.max(48, (width - 1180) / 2);
+    const leftEdges = await directory.evaluate((element) => {
+      const selectors = ["[data-products-category-section] h2", "[data-warehouse-sku]"];
+      return selectors.map((selector) =>
+        Math.round(element.querySelector(selector)!.getBoundingClientRect().left),
+      );
+    });
+    expect(leftEdges).toEqual(Array.from({ length: 2 }, () => expectedLeft));
     expect(
-      await page
-        .locator("#products-features li")
+      await sections
         .first()
-        .evaluate((card) => ({
-          width: Math.round(card.getBoundingClientRect().width),
-          height: Math.round(card.getBoundingClientRect().height),
-        })),
-    ).toEqual(
-      width <= 734
-        ? { width: 260, height: 480 }
-        : width <= 1068
-          ? { width: 344, height: 628 }
-          : { width: 372, height: 680 },
-    );
-    expect(
-      await page
-        .locator("[data-products-header]")
-        .evaluate((header) => Math.round(header.getBoundingClientRect().height)),
-    ).toBe(width < 834 ? 48 : 44);
+        .locator("ul")
+        .evaluate((element) => element.scrollWidth > element.clientWidth),
+    ).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    await page.screenshot({ path: test.info().outputPath(`overview-${width}.png`) });
-    await writeFile(
-      test.info().outputPath(`overview-${width}-geometry.json`),
-      JSON.stringify(
-        await page.evaluate(() => ({
-          width: innerWidth,
-          height: innerHeight,
-          documentWidth: document.documentElement.scrollWidth,
-          sections: Array.from(
-            document.querySelectorAll<HTMLElement>("[data-overview-section]"),
-          ).map((section) => ({
-            section: section.dataset.overviewSection,
-            top: Math.round(section.getBoundingClientRect().top + scrollY),
-            height: Math.round(section.getBoundingClientRect().height),
-          })),
-        })),
-        null,
-        2,
-      ),
-    );
-    for (const section of await page.locator("[data-overview-section]").all()) {
-      await section.scrollIntoViewIfNeeded();
-      const image = section.locator("img").filter({ visible: true }).first();
-      if (await image.count())
-        await expect
-          .poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth))
-          .toBeGreaterThan(0);
-      await page.screenshot({
-        path: test
-          .info()
-          .outputPath(
-            `overview-${width}-${await section.getAttribute("data-overview-section")}.png`,
-          ),
-      });
-    }
-    await page.locator("[data-products-footer]").scrollIntoViewIfNeeded();
-    await page.screenshot({ path: test.info().outputPath(`overview-${width}-footer.png`) });
-    await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
-    const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
-    await expect(finder).toBeVisible();
-    await expect(finder.getByRole("status")).toHaveText("146 รายการ");
-    await expect(finder.locator("#catalog-showcase")).toHaveCount(0);
-    await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("WPS10KS");
-    await expect(finder.locator("#mock-product-results article h3")).toHaveText(["WPS10KS"]);
-    await page.keyboard.press("Escape");
-    await expect(finder).not.toBeVisible();
-    await expect(page.locator('[data-overview-section="lineup"] button').first()).toBeFocused();
-    await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
-    await expect(finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })).toHaveValue("WPS10KS");
-    await page.keyboard.press("Escape");
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.screenshot({ path: test.info().outputPath(`mock-sections-${width}.png`) });
     expect(errors).toEqual([]);
   });
 }
 
-test("service and feature popups use distinct reference sizes and restore focus", async ({
+test("direct all-model finder keeps search and legacy query entry", async ({ page }) => {
+  await page.goto("/products?catalog=all");
+  const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
+  await expect(finder).toBeVisible();
+  await expect(
+    finder.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }).getByRole("button"),
+  ).toHaveCount(5);
+  await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("WPS10KS");
+  await expect(finder.locator("#mock-product-results article h3")).toHaveText(["WPS10KS"]);
+  await page.keyboard.press("Escape");
+  await expect(finder).not.toBeVisible();
+  await page.goto("/products?category=scales&subcategory=scale-kitchen");
+  await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen$/);
+  await expect(page.locator('[data-scale-subcategory-page="scale-kitchen"]')).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
+test("Navbar category/industrial navigation retains one active header/footer through history", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/products");
-  for (const [id, title, minimumWidth] of [
-    ["products-services", "จัดส่งถึงคุณ.", 810],
-    ["products-features", "เลือกเครื่องชั่งให้เหมาะกับงาน", 1240],
-  ] as const) {
-    const trigger = page.locator(`#${id} li`).first().getByRole("button");
-    await trigger.click();
-    const modal = page.getByRole("dialog", { name: title, exact: true });
-    await expect(modal).toBeVisible();
-    expect(
-      await modal.locator(":scope > div").evaluate((panel) => panel.getBoundingClientRect().width),
-    ).toBeGreaterThanOrEqual(minimumWidth);
-    expect(
-      await modal.locator(":scope > div").evaluate((panel) => getComputedStyle(panel).borderRadius),
-    ).toBe("28px");
-    await page.keyboard.press("Tab");
-    expect(await modal.evaluate((dialog) => dialog.contains(document.activeElement))).toBe(true);
-    await page.screenshot({ path: test.info().outputPath(`${id}-modal.png`) });
-    await page.keyboard.press("Escape");
-    await expect(modal).not.toBeVisible();
-    await expect(trigger).toBeFocused();
+  for (const [name, href] of [
+    ["เครื่องชั่ง", "/products/category/scales"],
+    ["อุตสาหกรรมงานผลิต", "/products/category/scales/industrial"],
+  ]) {
+    const panel = await openScalesMenu(page);
+    if (name === "เครื่องชั่ง")
+      await page.locator("[data-products-nav]").getByRole("link", { name, exact: true }).click();
+    else await panel.getByRole("link", { name, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(href + "$"));
+    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
+    await expect(page.locator(":is([data-products-footer], .site-footer):visible")).toHaveCount(1);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await page.goBack();
+    await expect(page.locator("[data-products-directory]")).toBeVisible();
+    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+    await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
   }
 });
 
-for (const width of [390, 1440]) {
-  test(`gallery paddles, image accordion, menu and footer work at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 1000 });
-    await page.goto("/products");
-    for (const [id, label] of [
-      ["products-lineup", "เลื่อนผลิตภัณฑ์"],
-      ["products-services", "เลื่อนบริการ"],
-      ["products-features", "เลื่อนเรื่องราวผลิตภัณฑ์"],
-    ]) {
-      const gallery = page.locator(`#${id}`);
-      await page.getByRole("button", { name: `${label}ถัดไป`, exact: true }).click();
-      await expect.poll(() => gallery.evaluate((track) => track.scrollLeft)).toBeGreaterThan(0);
-      await page.getByRole("button", { name: `${label}ก่อนหน้า`, exact: true }).click();
-      await expect.poll(() => gallery.evaluate((track) => track.scrollLeft)).toBe(0);
-    }
-    const accordion = page.locator('[data-overview-section="accordion"]');
-    const buttons = accordion.getByRole("button");
-    for (let index = 0; index < 3; index++) {
-      await buttons.nth(index).click();
-      await expect(buttons.nth(index)).toHaveAttribute("aria-expanded", "true");
-      await expect(accordion.locator('[aria-expanded="true"]')).toHaveCount(1);
-      await expect(accordion.getByRole("region").filter({ visible: true })).toHaveCount(1);
-      const title = await buttons.nth(index).textContent();
-      await expect(
-        accordion.getByRole("img", { name: title!, exact: true }).filter({ visible: true }),
-      ).toHaveCount(1);
-    }
-    const header = page.locator("[data-products-header]");
-    if (width < 834) {
-      await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-      await header.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true }).click();
-    } else await header.getByRole("link", { name: "เครื่องชั่ง", exact: true }).hover();
-    await expect(
-      header.locator(
-        '#products-navigation-panel a[href^="/products/category/scales?subcategory="]',
-      ),
-    ).toHaveCount(8);
-    await page.screenshot({ path: test.info().outputPath(`products-menu-${width}.png`) });
-    if (width >= 834) await header.getByRole("link", { name: "เครื่องชั่ง", exact: true }).focus();
-    await page.keyboard.press("Escape");
-    await expect(header.locator("#products-navigation-panel")).toHaveCount(0);
-    if (width < 735) {
-      const footer = page.locator("[data-products-footer] details").first();
-      await footer.locator("summary").click();
-      await expect(footer).toHaveAttribute("open", "");
-      await expect(
-        footer.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }),
-      ).toBeVisible();
-    } else await expect(page.locator("[data-products-footer] h3")).toHaveCount(5);
-  });
-}
-
-test("hero pauses for reduced motion, supports keyboard tabs, play and offscreen pause", async ({
+test("actual product cards use the existing viewport entrance and reduced-motion opt-out", async ({
   page,
 }) => {
+  await recordStaggerMotion(page);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/products");
+  const firstCard = page.locator("[data-warehouse-sku]").first();
+  await firstCard.scrollIntoViewIfNeeded();
+  await expectStaggerMotion(firstCard);
+  const laterCard = page.locator("[data-products-category-section]").last().locator("li").first();
+  expect(
+    await laterCard.evaluate(
+      (element) =>
+        element.getAnimations().filter((animation) => animation.id === "sunford-stagger-bounce")
+          .length,
+    ),
+  ).toBe(0);
+  await laterCard.scrollIntoViewIfNeeded();
+  await expectStaggerMotion(laterCard);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  expect(
+    await page
+      .locator("[data-warehouse-sku]")
+      .first()
+      .evaluate(
+        (element) =>
+          element.getAnimations().filter((animation) => animation.id === "sunford-stagger-bounce")
+            .length,
+      ),
+  ).toBe(0);
+});
+
+test("mobile product rail supports native horizontal keyboard scrolling", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/products");
+  const rail = page.locator("[data-products-category-section]").first().locator("ul");
+  await rail.focus();
+  await expect(rail).toBeFocused();
+  for (let press = 0; press < 12; press++) await page.keyboard.press("ArrowRight");
+  await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
+  for (let press = 0; press < 12; press++) await page.keyboard.press("ArrowLeft");
+  await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBe(0);
+  await expect(rail).toHaveCSS("scroll-snap-type", /x mandatory|inline mandatory/);
+});
+
+test("server response contains actual category products without motion hiding", async ({
+  request,
+}) => {
+  const response = await request.get("/products");
+  expect(response.ok()).toBe(true);
+  const html = await response.text();
+  expect(html).toContain("ผลิตภัณฑ์ทั้งหมด");
+  expect(html).toContain("data-products-index-carousel");
+  for (const category of [
+    "เครื่องชั่ง",
+    "อินดิเคเตอร์แท่นชั่ง",
+    "โครงสร้างแท่นชั่ง",
+    "ระบบ POS",
+    "อุปกรณ์เสริม",
+  ])
+    expect(html).toContain(category);
+  expect(html).toContain('data-warehouse-sku="G106308"');
+  expect(html).not.toContain("รอเพิ่มเนื้อหาหลัก");
+  expect(html).toContain("data-products-category-section");
+  expect(html).toContain("data-warehouse-sku");
+  expect(html).not.toContain("data-stagger-bounce=");
+});
+
+test("shared scales hero pauses for reduced motion, supports keyboard tabs, play and offscreen pause", async ({
+  page,
+}) => {
+  await page.goto("/products/category/scales");
   const hero = page.locator('[data-overview-section="hero"]');
   const tabs = hero.getByRole("tab");
   await expect(
@@ -219,83 +219,14 @@ test("hero pauses for reduced motion, supports keyboard tabs, play and offscreen
   ).toHaveCount(1);
 });
 
-test("cached client navigation preserves one correct header/footer on products home contact guide and detail", async ({
-  page,
-}) => {
-  test.slow();
-  const errors: string[] = [];
-  page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/products");
-  const detailPath = await page
-    .locator('#products-lineup a[href^="/products/"]')
-    .first()
-    .getAttribute("href");
-  const baseline = await page.context().newPage();
-  for (const path of ["/contact-us", "/guides/scales", detailPath!, "/"]) {
-    await baseline.goto(path, { waitUntil: "domcontentloaded" });
-    await expect(baseline.locator(":is([data-products-header], .site-header):visible")).toHaveCount(
-      1,
-    );
-    await expect
-      .poll(() =>
-        baseline
-          .locator(":is([data-products-header], .site-header):visible")
-          .evaluate((header) => header.closest('[class*="surface"]')!.className),
-      )
-      .toContain("surface");
-    await expect
-      .poll(() =>
-        baseline
-          .locator(":is([data-products-header], .site-header):visible")
-          .evaluate((header) => getComputedStyle(header.closest('[class*="surface"]')!).paddingTop),
-      )
-      .not.toBe("");
-    const frameStyle = await baseline
-      .locator(":is([data-products-header], .site-header):visible")
-      .evaluate((header) => {
-        const style = getComputedStyle(header.closest('[class*="surface"]')!);
-        return { background: style.backgroundColor, padding: style.paddingTop };
-      });
-    const destination =
-      path === "/"
-        ? page.locator("[data-products-header] a[href='/']")
-        : page.locator(`[data-products-overview] a[href='${path}']`).first();
-    await destination.click();
-    await expect(page).toHaveURL(new URL(path, page.url()).href);
-    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
-    await expect(page.locator(".site-footer:visible")).toHaveCount(1);
-    await expect
-      .poll(() =>
-        page.locator(":is([data-products-header], .site-header):visible").evaluate((header) => {
-          const style = getComputedStyle(header.closest('[class*="surface"]')!);
-          return { background: style.backgroundColor, padding: style.paddingTop };
-        }),
-      )
-      .toEqual(frameStyle);
-    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
-    await page.goBack({ waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/\/products$/);
-    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
-    await expect(page.locator(".site-header:visible, .site-footer:visible")).toHaveCount(0);
-    await page.goForward({ waitUntil: "domcontentloaded" });
-    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
-    await page.goBack({ waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/\/products$/);
-    await expect(page.locator(":is([data-products-header], .site-header):visible")).toHaveCount(1);
-    await expect(page.locator(".site-header:visible, .site-footer:visible")).toHaveCount(0);
-  }
-  await baseline.close();
-  expect(errors).toEqual([]);
-});
-
-test.describe("reference gallery touch gestures", () => {
+test.describe("shared scales gallery touch gestures", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
   test("native swipe moves the hero while vertical page scrolling remains available", async ({
     page,
     context,
   }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.goto("/products");
+    await page.goto("/products/category/scales");
     const track = page.locator('[data-overview-section="hero"] ul');
     await track.scrollIntoViewIfNeeded();
     await expect(
