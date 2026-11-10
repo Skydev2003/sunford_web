@@ -1,5 +1,6 @@
 import type { NavigationItem } from "../types";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
+import { getProductSubcategoryPageByHref } from "@/features/catalog/data/product-subcategory-pages";
 
 const productRelatedHrefs: Record<string, string[]> = {
   scales: [
@@ -35,11 +36,11 @@ const productSupportHrefs = [
   "/warranty/policy",
   "/contact-us",
 ];
+const guideHref = "/guides/indicator-platform-compatibility";
 export function getPrimaryNavigationItems(navigation: NavigationItem[]): NavigationItem[] {
-  const availableLinks = navigation.flatMap((item) => [
-    ...item.links,
-    ...(item.groups ?? []).flatMap((group) => group.links),
-  ]);
+  const availableLinks = navigation
+    .filter((item) => item.href !== "/products")
+    .flatMap((item) => [...item.links, ...(item.groups ?? []).flatMap((group) => group.links)]);
   const existingLinks = (hrefs: string[]) =>
     hrefs.flatMap((href) => {
       const match = availableLinks.find(
@@ -47,12 +48,15 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       );
       return match ? [match] : [];
     });
-  const mergedMenus = navigation.filter((item) => ["/about-us", "/contact-us"].includes(item.href));
+  const sectionHrefs = ["/solutions", "/applications-and-softwares"];
+  const mergedMenus = navigation.filter((item) =>
+    [...sectionHrefs, "/about-us", "/contact-us"].includes(item.href),
+  );
   const headerNavigation = navigation
-    .filter((item) => !mergedMenus.includes(item))
+    .filter((item) => !mergedMenus.includes(item) && item.href !== guideHref)
     .flatMap((item) => {
       if (item.href !== "/products") return [item];
-      return item.links
+      const productCategories = item.links
         .filter((link) => new URLSearchParams(link.href.split("?")[1]).has("category"))
         .map((category) => {
           const categoryId = new URLSearchParams(category.href.split("?")[1]).get("category");
@@ -66,11 +70,14 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
                 .flatMap((group) => group.links)
                 .filter(
                   (link) =>
-                    new URLSearchParams(link.href.split("?")[1]).get("category") === categoryId,
+                    new URLSearchParams(link.href.split("?")[1]).get("category") === categoryId ||
+                    getProductSubcategoryPageByHref(link.href)?.categoryId === categoryId,
                 )
                 .map((link) => ({
                   ...link,
-                  href: `${categoryHref}?subcategory=${new URLSearchParams(link.href.split("?")[1]).get("subcategory")}`,
+                  href: getProductSubcategoryPageByHref(link.href)
+                    ? link.href
+                    : `${categoryHref}?subcategory=${new URLSearchParams(link.href.split("?")[1]).get("subcategory")}`,
                 })),
             ],
             groups: [
@@ -85,25 +92,77 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
             ].filter((group) => group.links.length),
           };
         });
+      return [
+        {
+          label: "ผลิตภัณฑ์ทั้งหมด",
+          submenuLabel: "สำรวจผลิตภัณฑ์",
+          href: "/products",
+          links: productCategories.map(({ label, href }) => ({ label, href })),
+          groups: [
+            {
+              label: "ลิงก์ด่วน",
+              links: [
+                { label: "ดูผลิตภัณฑ์ทั้งหมด", href: "/products" },
+                { label: "ข้อมูลทางเทคนิคและคู่มือ", href: "/technical-specification" },
+                { label: "ดาวน์โหลดซอฟต์แวร์", href: "/software/download" },
+              ],
+            },
+            {
+              label: "บริการและความช่วยเหลือ",
+              links: [
+                { label: "บริการหลังการขาย", href: "/service" },
+                { label: "ลงทะเบียนรับประกัน", href: "/warranty/register" },
+                { label: "ติดต่อเรา", href: "/contact-us" },
+              ],
+            },
+          ],
+        },
+        ...productCategories,
+      ];
     })
     .map((item) =>
       item.href === "/service"
         ? {
             ...item,
-            groups: [
-              ...(item.groups ?? []),
-              ...mergedMenus.flatMap((menu) => [
-                {
-                  label: menu.label,
-                  links: menu.links.length ? menu.links : [{ label: menu.label, href: menu.href }],
-                },
-                ...(menu.groups ?? []),
-              ]),
+            submenuLabel: "สำรวจบริการ",
+            links: [
+              ...mergedMenus
+                .filter((menu) => sectionHrefs.includes(menu.href))
+                .map(({ label, href }) => ({ label, href })),
+              {
+                label:
+                  item.links.find((link) => link.href === item.href)?.label ?? "บริการหลังการขาย",
+                href: item.href,
+              },
+              { label: "ใบเสนอราคา", href: "/service/quotation" },
             ],
+            groups: [
+              {
+                label: "ข้อมูลและความช่วยเหลือ",
+                links: existingLinks([
+                  "/software/download",
+                  "/warranty/register",
+                  "/technical-specification",
+                ]),
+              },
+              {
+                label: "บริษัท",
+                links: mergedMenus
+                  .filter((menu) => !sectionHrefs.includes(menu.href))
+                  .map(({ label, href }) => ({ label, href })),
+              },
+            ].filter((group) => group.links.length),
           }
         : item,
     );
 
+  const servicesIndex = headerNavigation.findIndex((item) => item.href === "/service");
+  headerNavigation.splice(servicesIndex < 0 ? headerNavigation.length : servicesIndex, 0, {
+    label: "จัดสเปค",
+    href: guideHref,
+    links: [],
+    groups: [],
+  });
   const normalizeLink = (link: NavigationItem["links"][number]) => ({
     ...link,
     href: resolveCategoryHref(link.href),

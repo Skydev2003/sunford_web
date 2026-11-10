@@ -1,4 +1,5 @@
 import { expect, test, type Locator } from "@playwright/test";
+import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 import { defaultNavigation } from "../../src/features/cms/data/navigation";
 async function openCategoryMenu(header: Locator, label: string, width: number) {
   if (width < 834)
@@ -63,10 +64,10 @@ for (const width of [390, 1440]) {
         "scales",
         9,
         [
-          "/products/category/scales?subcategory=scale-price",
-          "/products/category/scales?subcategory=scale-kitchen",
-          "/products/category/scales?subcategory=scale-industrial",
-          "/products/category/scales?subcategory=scale-analytical",
+          "/products/category/scales/price",
+          "/products/category/scales/kitchen",
+          "/products/category/scales/industrial",
+          "/products/category/scales/analytical",
         ],
       ],
       [
@@ -85,7 +86,7 @@ for (const width of [390, 1440]) {
         "platforms",
         5,
         [
-          "/products/category/scales?subcategory=scale-industrial",
+          "/products/category/scales/industrial",
           "/solutions/checkweighing",
           "/solutions/wet-environments",
         ],
@@ -140,9 +141,10 @@ for (const width of [390, 1440]) {
           .locator("a")
           .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
       ).toEqual([
-        ...originalChildren.map(
-          (link) =>
+        ...originalChildren.map((link) =>
+          resolveCategoryHref(
             `/products/category/${id}?subcategory=${new URL(link.href, "http://localhost").searchParams.get("subcategory")}`,
+          ),
         ),
       ]);
       expect(
@@ -153,7 +155,11 @@ for (const width of [390, 1440]) {
               links.every(
                 (link) =>
                   new URL((link as HTMLAnchorElement).href).pathname ===
-                  `/products/category/${category}`,
+                    `/products/category/${category}` ||
+                  (["scales", "indicators", "platforms", "pos", "accessories"].includes(category) &&
+                    new URL((link as HTMLAnchorElement).href).pathname.startsWith(
+                      `/products/category/${category}/`,
+                    )),
               ),
             id,
           ),
@@ -203,7 +209,7 @@ for (const width of [390, 1440]) {
     }
     await header.getByRole("button", { name: "บริการ", exact: true }).click();
     const panel = header.locator("#products-navigation-panel");
-    await expect(panel.getByRole("link", { name: "รู้จักซันฟอร์ด", exact: true })).toHaveAttribute(
+    await expect(panel.getByRole("link", { name: "เกี่ยวกับเรา", exact: true })).toHaveAttribute(
       "href",
       "/about-us",
     );
@@ -278,6 +284,29 @@ for (const width of [390, 1440]) {
       await expect(page).toHaveURL(new URL(href, page.url()).href);
       const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
       await expect(finder).not.toBeVisible();
+      if (
+        [
+          "เครื่องชั่ง",
+          "อินดิเคเตอร์แท่นชั่ง",
+          "โครงสร้างแท่นชั่ง",
+          "ระบบ POS",
+          "อุปกรณ์เสริม",
+        ].includes(label)
+      ) {
+        const childId =
+          label === "เครื่องชั่ง"
+            ? "scale-pole"
+            : label === "อินดิเคเตอร์แท่นชั่ง"
+              ? "indicator-waterproof"
+              : label === "โครงสร้างแท่นชั่ง"
+                ? "platform-abs"
+                : label === "ระบบ POS"
+                  ? "pos-windows"
+                  : "accessory-consumables";
+        await expect(page.locator(`[data-product-subcategory-page="${childId}"]`)).toBeVisible();
+        await expect(page.getByRole("dialog")).toHaveCount(0);
+        continue;
+      }
       const catalog = page
         .getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" })
         .filter({ visible: true });

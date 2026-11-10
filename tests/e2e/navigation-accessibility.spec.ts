@@ -17,14 +17,11 @@ test("desktop keyboard reaches submenu destinations and Escape returns focus", a
   await page.keyboard.press("Escape");
   await expect(products).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
-  await page
-    .locator(".desktop-nav")
-    .getByRole("link", { name: "โซลูชันตามธุรกิจ", exact: true })
-    .focus();
+  await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).focus();
   await page.keyboard.press("ArrowDown");
-  await expect(panel.getByRole("link", { name: "ร้านค้าและตลาดสด", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "โซลูชันตามธุรกิจ", exact: true })).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/product\/commercial$/);
+  await expect(page).toHaveURL(/\/solutions$/);
 });
 
 test("touch navigation expands products and follows the company coffee destination", async ({
@@ -64,27 +61,13 @@ test("software menu category links select the real filter on first entry and sam
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  for (const [label, hash] of [
-    ["ซอฟต์แวร์สำหรับค้าปลีก", "retail-software"],
-    ["ซอฟต์แวร์สำหรับอุตสาหกรรม", "industrial-software"],
-    ["ซอฟต์แวร์สำหรับครัวเรือน", "household-software"],
-  ]) {
-    if (new URL(page.url()).pathname === "/")
-      await page
-        .locator(".desktop-nav")
-        .getByRole("link", { name: "ซอฟต์แวร์", exact: true })
-        .hover();
-    else
-      await page
-        .locator("[data-products-header]:visible")
-        .getByRole("button", { name: "ซอฟต์แวร์", exact: true })
-        .click();
-    await page
-      .locator(
-        ".desktop-submenu.is-open .submenu-panel.is-active:visible, #products-navigation-panel:visible",
-      )
-      .getByRole("link", { name: label, exact: true })
-      .click();
+  await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
+  await page
+    .locator(".submenu-panel.is-active")
+    .getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true })
+    .click();
+  for (const hash of ["retail-software", "industrial-software", "household-software"]) {
+    await page.locator(`.software-filters a[href="#${hash}"]`).click();
     await expect(page).toHaveURL(new RegExp(`/software/download#${hash}$`));
     await expect(page.locator(`.software-filters a[href="#${hash}"]`)).toHaveAttribute(
       "aria-current",
@@ -93,9 +76,5 @@ test("software menu category links select the real filter on first entry and sam
     await expect(page.locator(".software-card").first()).toBeVisible();
   }
   await page.goBack();
-  await expect(page).toHaveURL(/\/software\/download#industrial-software$/);
-  await expect(page.locator('.software-filters a[href="#industrial-software"]')).toHaveAttribute(
-    "aria-current",
-    "true",
-  );
+  await expect(page).toHaveURL(/\/$/);
 });

@@ -6,22 +6,18 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 const labels = [
+  "ผลิตภัณฑ์ทั้งหมด",
   ...productCategoryDefinitions.map(({ label }) => label),
-  "โซลูชันตามธุรกิจ",
-  "ซอฟต์แวร์",
+  "จัดสเปค",
   "บริการ",
 ];
 const menus = [
+  { label: "ผลิตภัณฑ์ทั้งหมด", groups: ["ลิงก์ด่วน", "บริการและความช่วยเหลือ"] },
   ...productCategoryDefinitions.map(({ label }) => ({
     label,
     groups: ["การใช้งานและโซลูชัน", "ข้อมูลและความช่วยเหลือ"],
   })),
-  {
-    label: "โซลูชันตามธุรกิจ",
-    groups: ["ค้าปลีก อาหารและกาแฟ", "อุตสาหกรรมและการผลิต", "ห้องแล็บและข้อมูลธุรกิจ"],
-  },
-  { label: "ซอฟต์แวร์", groups: ["ค้าปลีกและระบบ POS", "งานชั่งและการผลิต", "ครัวเรือนและสุขภาพ"] },
-  { label: "บริการ", groups: ["ข้อมูลและความช่วยเหลือ", "เกี่ยวกับเรา", "ติดต่อเรา"] },
+  { label: "บริการ", groups: ["ข้อมูลและความช่วยเหลือ", "บริษัท"] },
 ];
 for (const width of [1440, 390]) {
   test(`primary product links match the catalog and select each real family at ${width}px`, async ({
@@ -139,6 +135,7 @@ test("navigation changes mode at 834px and closes menus when the layout changes"
     await expect(mobile).toHaveCount(0);
     const desktop = header.getByRole("link", { name: "เครื่องชั่ง", exact: true });
     await expect(desktop).toBeVisible();
+    await page.keyboard.press("Tab");
     await desktop.focus();
     await expect(desktop).toHaveAttribute("aria-expanded", "true");
     await page.setViewportSize({ width: breakpoint - 1, height: 900 });
@@ -147,7 +144,7 @@ test("navigation changes mode at 834px and closes menus when the layout changes"
   }
 });
 
-test("eight company menus expose real destinations without calibration or a top bar", async ({
+test("nine company menus expose real destinations without calibration or a top bar", async ({
   page,
   request,
 }) => {
@@ -211,11 +208,14 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   const toggle = page.getByRole("button", { name: "เปิดเมนู", exact: true });
   await toggle.click();
   const mobile = page.locator("#mobile-navigation");
-  await expect(mobile.locator("summary")).toHaveCount(8);
-  await expect(mobile.locator(".mobile-nav-category-link")).toHaveText(
-    productCategoryDefinitions.map(({ label }) => label),
-  );
-  const products = mobile.locator(".mobile-nav-category").nth(1).locator("details");
+  await expect(mobile.locator("summary")).toHaveCount(7);
+  await expect(mobile.locator(".mobile-nav-category-link")).toHaveText([
+    "ผลิตภัณฑ์ทั้งหมด",
+    ...productCategoryDefinitions.map(({ label }) => label),
+  ]);
+  const products = mobile
+    .locator("details")
+    .filter({ has: page.getByLabel("เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง") });
   await expect(products).not.toHaveAttribute("open");
   await products.locator("summary").focus();
   await page.keyboard.press("Enter");
@@ -229,7 +229,7 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
     .locator('#mobile-navigation summary[aria-label="เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง"]')
     .click();
   await page.locator("#mobile-navigation").getByRole("link", { name: "LCD", exact: true }).click();
-  await expect(page).toHaveURL(/\/products\/category\/indicators\?subcategory=indicator-lcd$/);
+  await expect(page).toHaveURL(/\/products\/category\/indicators\/lcd$/);
   await expect(page.locator("#mobile-navigation")).toHaveCount(0);
 });
 
@@ -242,9 +242,10 @@ test("mobile software and warranty links remain reachable in a short viewport", 
   const mobile = page.locator("#mobile-navigation");
   await mobile
     .locator("summary")
-    .filter({ hasText: /^ซอฟต์แวร์$/ })
+    .filter({ hasText: /^บริการ$/ })
     .click();
-  await mobile.getByRole("link", { name: "SUNFORD INDUS", exact: true }).click();
+  await mobile.getByRole("link", { name: "ซอฟต์แวร์", exact: true }).click();
+  await page.locator('.software-catalog a[href="/software/download/sunford-indus"]').click();
   await expect(page).toHaveURL(/\/software\/download\/sunford-indus$/);
   await expect(mobile).toHaveCount(0);
   await page.goto("/");
@@ -258,6 +259,36 @@ test("mobile software and warranty links remain reachable in a short viewport", 
   await expect(mobile).toHaveCount(0);
 });
 
+for (const route of ["/", "/contact-us"]) {
+  test(`all flyout headings and first links align with the logo on ${route}`, async ({ page }) => {
+    const home = route === "/";
+    await page.goto(route);
+    if (home)
+      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    const nav = page.locator(home ? ".desktop-nav" : "[data-products-nav]");
+    const logo = page.locator(home ? ".brand" : '[data-products-nav] a[href="/"]');
+    const panel = page.locator(home ? ".submenu-panel.is-active" : "#products-navigation-panel");
+    for (const width of [834, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const { label } of menus) {
+        const trigger = nav.getByText(label, { exact: true });
+        await trigger.press("ArrowDown");
+        await expect(trigger).toHaveAttribute("aria-expanded", "true");
+        const firstLink = panel.locator("a:visible").first();
+        await expect(firstLink).toBeFocused();
+        const logoX = (await logo.boundingBox())!.x;
+        for (const text of [panel.locator("p:visible").first(), firstLink]) {
+          expect(Math.abs((await text.boundingBox())!.x - logoX), label).toBeLessThanOrEqual(1);
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+          width,
+        );
+        await page.keyboard.press("Escape");
+      }
+    }
+  });
+}
+
 test("wide menus fit the viewport and preserve the logo-aligned origin and hover motion", async ({
   page,
 }) => {
@@ -267,8 +298,10 @@ test("wide menus fit the viewport and preserve the logo-aligned origin and hover
   await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
   for (const width of [1400, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const label of ["เครื่องชั่ง", "โครงสร้างแท่นชั่ง", "ซอฟต์แวร์", "บริการ"]) {
-      await page.locator(".desktop-nav").getByRole("link", { name: label, exact: true }).hover();
+    for (const label of ["เครื่องชั่ง", "โครงสร้างแท่นชั่ง", "บริการ"]) {
+      const trigger = page.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
+      await trigger.hover();
+      await expect(trigger).toHaveAttribute("aria-expanded", "true");
       const panel = page.locator(".desktop-submenu.is-open .submenu-panel.is-active");
       await expect(panel).toBeVisible();
       const bounds = (await panel.boundingBox())!;

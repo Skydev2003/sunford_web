@@ -4,11 +4,13 @@ import Image from "next/image";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
   type MouseEvent,
 } from "react";
+import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, GitCompareArrows, Search, Menu, X } from "lucide-react";
 import { getPrimaryNavigationItems } from "@/features/cms/data/primary-navigation";
 import type { NavigationItem, SiteSettings } from "@/features/cms/types";
@@ -35,15 +37,70 @@ export function PrimaryNavigation({
   );
   const [mobileMenu, setMobileMenu] = useState(false);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
+  const pathname = usePathname();
+  const [menuPathname, setMenuPathname] = useState(pathname);
+  if (menuPathname !== pathname) {
+    setMenuPathname(pathname);
+    setMobileMenu(false);
+    setMenuIndex(null);
+  }
   const navRef = useRef<HTMLElement>(null);
+  const linksRef = useRef<HTMLDivElement>(null);
   const menuTrigger = useRef<HTMLButtonElement>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoveredTrigger = useRef<HTMLElement | null>(null);
+  const blockedTrigger = useRef<HTMLElement | null>(null);
+  const clearHover = useCallback(() => {
+    if (hoverTimer.current !== null) clearTimeout(hoverTimer.current);
+    hoverTimer.current = null;
+  }, []);
   const setSearchOpen = useCatalogStore((s) => s.setSearchOpen);
   const startCompare = useCatalogStore((s) => s.startCompare);
   const compareIds = useCatalogStore((s) => s.compareIds);
   const closeMenu = useCallback(() => {
+    clearHover();
+    blockedTrigger.current =
+      linksRef.current?.querySelector<HTMLElement>(":scope > :hover") ?? null;
     setMobileMenu(false);
     setMenuIndex(null);
-  }, []);
+  }, [clearHover]);
+  useLayoutEffect(() => {
+    clearHover();
+    blockedTrigger.current =
+      linksRef.current?.querySelector<HTMLElement>(":scope > :hover") ?? null;
+    return clearHover;
+  }, [pathname, clearHover]);
+  const scheduleOpen = (index: number, trigger: HTMLElement) => {
+    clearHover();
+    hoveredTrigger.current = trigger;
+    if (
+      blockedTrigger.current === trigger ||
+      !matchMedia("(min-width: 834px) and (hover: hover) and (pointer: fine)").matches
+    )
+      return;
+    hoverTimer.current = setTimeout(() => {
+      hoverTimer.current = null;
+      if (
+        hoveredTrigger.current === trigger &&
+        blockedTrigger.current !== trigger &&
+        trigger.matches(":hover") &&
+        trigger.getClientRects().length > 0
+      )
+        setMenuIndex(index);
+    }, 300);
+  };
+  const leaveTrigger = (trigger: HTMLElement) => {
+    clearHover();
+    if (hoveredTrigger.current === trigger) hoveredTrigger.current = null;
+    if (blockedTrigger.current === trigger) blockedTrigger.current = null;
+  };
+  const openWithKeyboard = (index: number) => {
+    clearHover();
+    setMenuIndex(index);
+    requestAnimationFrame(() => {
+      navRef.current?.querySelector<HTMLAnchorElement>("#products-navigation-panel a")?.focus();
+    });
+  };
   useEffect(() => {
     onMenuChange?.(mobileMenu || menuIndex !== null);
   }, [mobileMenu, menuIndex, onMenuChange]);
@@ -62,7 +119,7 @@ export function PrimaryNavigation({
   useEffect(() => {
     if (!mobileMenu) return;
     const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.setProperty("overflow", "hidden");
     const header = navRef.current;
     const keydown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -89,21 +146,28 @@ export function PrimaryNavigation({
     };
     document.addEventListener("keydown", keydown);
     return () => {
-      document.body.style.overflow = previous;
+      document.body.style.setProperty("overflow", previous);
       document.removeEventListener("keydown", keydown);
     };
   }, [mobileMenu, closeMenu]);
   useEffect(() => {
     const query = window.matchMedia("(min-width: 834px)");
     const resize = () => closeMenu();
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && query.matches) closeMenu();
+    };
     query.addEventListener("change", resize);
-    return () => query.removeEventListener("change", resize);
+    window.addEventListener("keydown", escape);
+    return () => {
+      query.removeEventListener("change", resize);
+      window.removeEventListener("keydown", escape);
+    };
   }, [closeMenu]);
 
   const activateLink = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const url = new URL(href, window.location.origin);
-    if (onOpenFinder && url.pathname === "/products") {
+    if (onOpenFinder && url.pathname === "/products" && url.search) {
       event.preventDefault();
       if (url.search && url.search !== window.location.search)
         window.history.pushState(null, "", url.pathname + url.search + url.hash);
@@ -132,36 +196,41 @@ export function PrimaryNavigation({
         className={`${styles.header} ${mobileMenu || activeMenu ? styles.headerOpen : ""}`}
         data-products-header
         onMouseLeave={() => {
-          if (window.matchMedia("(min-width: 834px)").matches) setMenuIndex(null);
+          if (window.matchMedia("(min-width: 834px)").matches) closeMenu();
         }}
         onKeyDown={(event) => {
-          if (event.key === "Escape") closeMenu();
+          if (event.key === "Escape") {
+            if (!mobileMenu && menuIndex !== null)
+              (linksRef.current?.children[menuIndex] as HTMLElement | undefined)?.focus();
+            closeMenu();
+          }
         }}
       >
         <nav className={styles.nav} aria-label="เมนูหลัก SUNFORD" data-products-nav>
           <Link className={styles.logo} href="/" aria-label="SUNFORD หน้าแรก">
             <Image src={site.logo} alt={site.name} width={106} height={26} />
           </Link>
-          <div className={styles.navLinks}>
+          <div ref={linksRef} className={styles.navLinks}>
             {headerNavigation.map((item, index) =>
-              item.href.startsWith("/products/category/") ? (
+              item.href === "/products" || item.href.startsWith("/products/category/") ? (
                 <Link
                   key={item.href}
                   href={item.href}
-                  onMouseEnter={() => setMenuIndex(index)}
-                  onFocus={() => setMenuIndex(index)}
+                  onMouseEnter={(event) => scheduleOpen(index, event.currentTarget)}
+                  onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
+                  onFocus={(event) => {
+                    if (event.currentTarget.matches(":focus-visible")) {
+                      clearHover();
+                      setMenuIndex(index);
+                    }
+                  }}
                   aria-haspopup="true"
                   aria-expanded={menuIndex === index}
                   aria-controls="products-navigation-panel"
                   onKeyDown={(event) => {
                     if (event.key === "ArrowDown") {
                       event.preventDefault();
-                      setMenuIndex(index);
-                      requestAnimationFrame(() => {
-                        navRef.current
-                          ?.querySelector<HTMLAnchorElement>("#products-navigation-panel a")
-                          ?.focus();
-                      });
+                      openWithKeyboard(index);
                     }
                   }}
                   onClick={(event) => activateLink(event, item.href)}
@@ -175,13 +244,24 @@ export function PrimaryNavigation({
                   key={item.href}
                   aria-expanded={menuIndex === index}
                   aria-controls="products-navigation-panel"
-                  onMouseEnter={() => setMenuIndex(index)}
-                  onClick={() => setMenuIndex(index)}
+                  onMouseEnter={(event) => scheduleOpen(index, event.currentTarget)}
+                  onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
+                  onClick={(event) => {
+                    clearHover();
+                    blockedTrigger.current = event.currentTarget;
+                    setMenuIndex((current) => (current === index ? null : index));
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "ArrowDown") {
+                      event.preventDefault();
+                      openWithKeyboard(index);
+                    }
+                  }}
                 >
                   {item.label}
                 </button>
               ) : (
-                <Link key={item.href} href={item.href} onMouseEnter={() => setMenuIndex(null)}>
+                <Link key={item.href} href={item.href} onMouseEnter={closeMenu} onClick={closeMenu}>
                   {item.label}
                 </Link>
               ),
@@ -232,7 +312,7 @@ export function PrimaryNavigation({
             {mobileMenu && !activeMenu ? (
               <div className={styles.mobileMenuItems}>
                 {headerNavigation.map((item, index) =>
-                  item.href.startsWith("/products/category/") ? (
+                  item.href === "/products" || item.href.startsWith("/products/category/") ? (
                     <div key={item.href} className={styles.mobileCategoryRow}>
                       {link(item.href, item.label)}
                       <button
@@ -264,6 +344,7 @@ export function PrimaryNavigation({
             ) : (
               activeMenu && (
                 <div
+                  data-all-products={activeMenu.href === "/products" || undefined}
                   className={`${styles.menuContent} ${activeMenu.href.startsWith("/products/category/") ? styles.productMenuContent : ""}`}
                 >
                   {mobileMenu && (

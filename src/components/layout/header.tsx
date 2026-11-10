@@ -2,6 +2,7 @@
 import { Tooltip } from "@/components/ui/tooltip";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, Search, X } from "lucide-react";
 import {
   type CSSProperties,
@@ -61,6 +62,7 @@ export function Header({
           links: item.links.map((link) => [link.label, link.href]),
           groups,
           hasSubmenu: item.links.length > 0 || groups.length > 0,
+          isProductMenu: item.href === "/products" || item.href.startsWith("/products/category/"),
         };
       }),
     [items, extras],
@@ -71,12 +73,21 @@ export function Header({
   const [menuHeight, setMenuHeight] = useState(374);
   const [menuStart, setMenuStart] = useState(0);
   const [switchingMenu, setSwitchingMenu] = useState(false);
+  const pathname = usePathname();
+  const [menuPathname, setMenuPathname] = useState(pathname);
+  if (menuPathname !== pathname) {
+    setMenuPathname(pathname);
+    setMenuOpen(false);
+    setActiveMenu(null);
+  }
   const headerRef = useRef<HTMLElement>(null);
   useHeaderSurface(headerRef);
   const brandRef = useRef<HTMLAnchorElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoveredTrigger = useRef<HTMLElement | null>(null);
+  const blockedTrigger = useRef<HTMLElement | null>(null);
   const clearTimers = useCallback(() => {
     if (openTimer.current) clearTimeout(openTimer.current);
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -85,8 +96,16 @@ export function Header({
   }, []);
   const closeDesktopMenu = useCallback(() => {
     clearTimers();
+    blockedTrigger.current =
+      headerRef.current?.querySelector<HTMLElement>(".desktop-nav > a:hover") ?? null;
     setActiveMenu(null);
   }, [clearTimers]);
+  useLayoutEffect(() => {
+    clearTimers();
+    blockedTrigger.current =
+      headerRef.current?.querySelector<HTMLElement>(".desktop-nav > a:hover") ?? null;
+    return clearTimers;
+  }, [pathname, clearTimers]);
   const openDesktopMenu = useCallback(
     (index: number) => {
       clearTimers();
@@ -96,10 +115,31 @@ export function Header({
     },
     [activeMenu, clearTimers],
   );
-  const scheduleOpen = (index: number) => {
+  const scheduleOpen = (index: number, trigger: HTMLElement) => {
     clearTimers();
-    if (activeMenu === index) return;
-    openTimer.current = setTimeout(() => openDesktopMenu(index), 80);
+    hoveredTrigger.current = trigger;
+    if (
+      activeMenu === index ||
+      blockedTrigger.current === trigger ||
+      !matchMedia("(min-width: 834px) and (hover: hover) and (pointer: fine)").matches
+    )
+      return;
+    openTimer.current = setTimeout(() => {
+      openTimer.current = null;
+      if (
+        hoveredTrigger.current === trigger &&
+        blockedTrigger.current !== trigger &&
+        trigger.matches(":hover") &&
+        trigger.getClientRects().length > 0
+      )
+        openDesktopMenu(index);
+    }, 300);
+  };
+  const leaveTrigger = (trigger: HTMLElement) => {
+    if (openTimer.current !== null) clearTimeout(openTimer.current);
+    openTimer.current = null;
+    if (hoveredTrigger.current === trigger) hoveredTrigger.current = null;
+    if (blockedTrigger.current === trigger) blockedTrigger.current = null;
   };
   const scheduleClose = () => {
     clearTimers();
@@ -192,8 +232,16 @@ export function Header({
               <Link
                 key={`${index}:${item.href}`}
                 href={item.href}
-                onMouseEnter={() => (item.hasSubmenu ? scheduleOpen(index) : closeDesktopMenu())}
-                onFocus={() => (item.hasSubmenu ? openDesktopMenu(index) : closeDesktopMenu())}
+                onMouseEnter={(event) =>
+                  item.hasSubmenu ? scheduleOpen(index, event.currentTarget) : closeDesktopMenu()
+                }
+                onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
+                onFocus={(event) => {
+                  if (event.currentTarget.matches(":focus-visible")) {
+                    if (item.hasSubmenu) openDesktopMenu(index);
+                    else closeDesktopMenu();
+                  }
+                }}
                 onClick={closeDesktopMenu}
                 onKeyDown={(event) => {
                   if (event.key !== "ArrowDown" || !item.hasSubmenu) return;
@@ -278,12 +326,13 @@ export function Header({
                 key={`${index}:${item.href}`}
                 ref={displayMenu === index ? panelRef : undefined}
                 className={`submenu-panel ${item.href === "/solutions" ? "submenu-panel--solutions" : ""} ${item.href === "/products" || item.href.startsWith("/products/category/") || item.href === "/applications-and-softwares" ? "submenu-panel--wide" : ""} ${displayMenu === index ? "is-active" : ""}`}
+                data-all-products={item.href === "/products" || undefined}
                 aria-hidden={activeMenu === null || displayMenu !== index}
                 inert={activeMenu === null || displayMenu !== index}
               >
                 <div className="submenu-group submenu-group-primary">
                   <p className="submenu-item">
-                    {item.href.startsWith("/products/category/")
+                    {item.isProductMenu
                       ? item.submenuLabel
                       : `สำรวจ ${item.submenuLabel || item.label}`}
                   </p>
@@ -334,11 +383,9 @@ export function Header({
               item.hasSubmenu ? (
                 <div
                   key={`${index}:${item.href}`}
-                  className={
-                    item.href.startsWith("/products/category/") ? "mobile-nav-category" : undefined
-                  }
+                  className={item.isProductMenu ? "mobile-nav-category" : undefined}
                 >
-                  {item.href.startsWith("/products/category/") && (
+                  {item.isProductMenu && (
                     <Link
                       className="mobile-nav-category-link"
                       href={item.href}
@@ -349,16 +396,16 @@ export function Header({
                   )}
                   <details className="mobile-nav-group">
                     <summary
-                      aria-label={
-                        item.href.startsWith("/products/category/")
-                          ? `เปิดเมนูย่อย${item.label}`
-                          : undefined
-                      }
+                      aria-label={item.isProductMenu ? `เปิดเมนูย่อย${item.label}` : undefined}
                     >
-                      {!item.href.startsWith("/products/category/") && item.label}
+                      {!item.isProductMenu && item.label}
                       <ChevronDown size={17} aria-hidden="true" />
                     </summary>
-                    <div className="mobile-nav-panel">
+                    <div
+                      className="mobile-nav-panel"
+                      data-all-products={item.href === "/products" || undefined}
+                    >
+                      {item.href === "/products" && <p>{item.submenuLabel}</p>}
                       {item.links.map(([label, href]) => (
                         <Link
                           key={href}

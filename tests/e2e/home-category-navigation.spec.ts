@@ -3,9 +3,9 @@ import { defaultNavigation } from "../../src/features/cms/data/navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 
 const labels = [
+  "ผลิตภัณฑ์ทั้งหมด",
   ...productCategoryDefinitions.map(({ label }) => label),
-  "โซลูชันตามธุรกิจ",
-  "ซอฟต์แวร์",
+  "จัดสเปค",
   "บริการ",
 ];
 test.beforeEach(async ({ page }) => {
