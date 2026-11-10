@@ -4343,3 +4343,11 @@ Root TypeScript, scoped ESLint, 134 catalog tests, scoped Prettier and diff whit
 ## Impact / Rollback
 
 Only the existing carousel model-selector row changes. Images, source identities, timing and detail transitions remain as before. Restore just the task-owned carousel delta from its snapshot to undo it; keep unrelated dirty files and dev/Warehouse processes intact. No shared style, dependency, data, environment or deployment change.
+# Non-X Warehouse catalog
+
+Owner-approved inclusion and fee visibility. Update the common Warehouse adapter and image lookup, the product category projection and products index, and their unit/browser contracts. Compare live SKU sets in the catalog and quotation with Warehouse, check detail/image/category behavior and filtered audit output. Rollback is limited to the site projection and its consumers.
+
+Verified the public API, product index cards and quotation options each contain the same 355 distinct SKUs. The four service fee IDs are retained only in the 359-row filtered audit. The existing Excel/CSV report was refreshed in place. TypeScript, the 135 catalog tests and the production build (664 generated pages) passed.
+# Warehouse category review
+
+Updated the existing mapping for 38 of 101 reviewed SKUs. The owner chose to keep all 63 remaining rows in “รายการอื่น ๆ”. The review table is in docs/warehouse/category-review-101.md.

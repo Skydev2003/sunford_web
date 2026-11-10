@@ -9,13 +9,19 @@ export type WarehouseItem = {
   image_url: string | null;
 };
 
+const warehouseOnlyFees = new Set(["72", "CALIBRATION FEE TYPE 2", "S000005", "S000006"]);
+
+export function isPublicWarehouseSku(sku: string) {
+  return !/^x/i.test(sku) && !warehouseOnlyFees.has(sku.toUpperCase());
+}
+
 export function parseWarehouseProducts(data: unknown): {
   total_count: number;
   items: WarehouseItem[];
 } {
   if (!data || typeof data !== "object") throw new Error("Invalid Warehouse product list");
   const list = data as { total_count?: unknown; items?: unknown };
-  const skus = new Set<string>();
+  const skus = new Map<string, WarehouseItem>();
   if (!Array.isArray(list.items) || list.total_count !== list.items.length)
     throw new Error("Incomplete Warehouse product list");
   for (const item of list.items) {
@@ -25,7 +31,6 @@ export function parseWarehouseProducts(data: unknown): {
       typeof item.sku !== "string" ||
       !item.sku.trim() ||
       item.sku !== item.sku.trim() ||
-      skus.has(item.sku.toUpperCase()) ||
       typeof item.product_name !== "string" ||
       !item.product_name.trim() ||
       typeof item.unit !== "string" ||
@@ -38,9 +43,21 @@ export function parseWarehouseProducts(data: unknown): {
           !Number.isSafeInteger(Math.round(item.sale_price * 100))))
     )
       throw new Error("Invalid Warehouse product item");
-    skus.add(item.sku.toUpperCase());
+    const key = item.sku.toUpperCase();
+    const previous = skus.get(key);
+    if (
+      previous &&
+      (previous.sku !== item.sku ||
+        previous.product_name !== item.product_name ||
+        previous.unit !== item.unit ||
+        previous.sale_price !== item.sale_price ||
+        previous.image_url !== item.image_url)
+    )
+      throw new Error("Conflicting Warehouse SKU");
+    skus.set(key, item);
   }
-  return list as { total_count: number; items: WarehouseItem[] };
+  const items = [...skus.values()].filter((item) => !/^x/i.test(item.sku));
+  return { total_count: items.length, items };
 }
 
 const modelKey = (family: string | null, code: string) =>
@@ -70,16 +87,22 @@ export const approvedWarehouseMappings = candidates.filter((item) =>
   ].every((key) => occurrences.get(key) === 1),
 );
 
+const bySku = new Map(mapping.items.map((entry) => [entry.sku, entry]));
+const verifiedBySku = new Map(approvedWarehouseMappings.map((entry) => [entry.sku, entry]));
+
 export function warehouseCatalog(items: WarehouseItem[], editorial: Product[]): Product[] {
-  const live = new Map(items.map((item) => [item.sku, item]));
   const content = new Map(editorial.map((item) => [item.id, item]));
-  return approvedWarehouseMappings
-    .flatMap((entry, index): Product[] => {
-      const item = live.get(entry.sku);
-      if (!item) return [];
-      const legacyId = entry.legacyProductCandidateIds[0];
+  return items
+    .filter((item) => isPublicWarehouseSku(item.sku))
+    .flatMap((item, index): Product[] => {
+      const entry = bySku.get(item.sku);
+      const verified = verifiedBySku.get(item.sku);
+      const categoryId =
+        entry && ["mapped", "category_only"].includes(entry.status)
+          ? (entry.categoryId ?? undefined)
+          : undefined;
+      const legacyId = verified?.legacyProductCandidateIds[0];
       const existing = legacyId ? content.get(legacyId) : undefined;
-      if (legacyId && !existing) return [];
       const net = item.sale_price === null ? null : Math.round(item.sale_price * 100);
       const gross =
         net === null ? null : net + Number((BigInt(net) * BigInt(7) + BigInt(50)) / BigInt(100));
@@ -91,7 +114,7 @@ export function warehouseCatalog(items: WarehouseItem[], editorial: Product[]): 
           name: item.product_name,
           category:
             existing?.category ??
-            (entry.categoryId === "scales" ? "industrial" : entry.categoryId!),
+            (categoryId === "scales" ? "industrial" : (categoryId ?? "uncategorized")),
           subtitle: existing?.subtitle ?? "",
           description: existing?.description ?? "",
           image:
@@ -113,9 +136,9 @@ export function warehouseCatalog(items: WarehouseItem[], editorial: Product[]): 
           warehouseSku: item.sku,
           warehouseUnit: item.unit,
           warehouseNetUnitSatang: net,
-          warehouseCategoryId: entry.categoryId!,
-          warehouseSubcategoryIds: entry.subcategoryIds,
-          warehouseModelCodes: entry.modelCodes,
+          warehouseCategoryId: categoryId,
+          warehouseSubcategoryIds: entry?.status === "mapped" ? entry.subcategoryIds : [],
+          warehouseModelCodes: verified?.modelCodes ?? [],
         },
       ];
     })

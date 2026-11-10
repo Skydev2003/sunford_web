@@ -15,6 +15,7 @@ import { getPosSubcategories } from "../../src/features/catalog/data/pos-subcate
 import { getAccessorySubcategories } from "../../src/features/catalog/data/accessory-subcategories";
 
 const editorial = getSnapshotProducts();
+
 const items: WarehouseItem[] = approvedWarehouseMappings.map((entry) => ({
   sku: entry.sku,
   product_name: entry.name,
@@ -23,7 +24,7 @@ const items: WarehouseItem[] = approvedWarehouseMappings.map((entry) => ({
   image_url: null,
 }));
 
-test("only mapped G sales SKUs with unambiguous models/content are eligible", () => {
+test("only verified SKU mappings inherit legacy content and configurator codes", () => {
   assert.equal(approvedWarehouseMappings.length, 89);
   assert(
     approvedWarehouseMappings.every((item) => item.sku.startsWith("G") && item.status === "mapped"),
@@ -43,18 +44,39 @@ test("API prices/identity replace old prices without reviving deleted or missing
   assert.equal(catalog[0].warehouseNetUnitSatang, 10000);
   assert.equal(warehouseCatalog([{ ...item, sale_price: 200 }], editorial)[0].price, 214);
   assert.deepEqual(warehouseCatalog([], editorial), []);
-  assert.deepEqual(
+  assert.equal(
     warehouseCatalog(
       [item],
       editorial.filter((product) => product.id !== catalog[0].id),
-    ),
-    [],
+    )[0].id,
+    `warehouse-${item.sku}`,
   );
   assert.equal(warehouseCatalog([{ ...item, sale_price: null }], editorial)[0].price, null);
   assert.equal(warehouseCatalog([{ ...item, sale_price: 0 }], editorial)[0].price, null);
 });
 
-test("a complete response validates and partial/duplicate/invalid responses fail closed", () => {
+test("identical records appear once; X is excluded and calibration charges remain warehouse-only", () => {
+  const rows = [
+    "11",
+    "X001",
+    "x002",
+    "72",
+    "Calibration Fee Type 2",
+    "S000005",
+    "S000006",
+    "G106612",
+  ].map((sku) => ({ ...items[0], sku }));
+  const parsed = parseWarehouseProducts({
+    total_count: rows.length + 1,
+    items: [...rows, rows[0]],
+  });
+  assert.equal(parsed.total_count, 6);
+  assert.deepEqual(
+    warehouseCatalog(parsed.items, []).map((p) => p.warehouseSku),
+    ["11", "G106612"],
+  );
+});
+test("a complete response validates and partial/conflicting/invalid responses fail closed", () => {
   const item = items[0];
   assert.deepEqual(parseWarehouseProducts({ total_count: 1, items: [item] }).items, [item]);
   for (const invalid of [

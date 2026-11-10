@@ -27,25 +27,41 @@ test("Home search and comparison reuse the published Warehouse identities", asyn
   );
 });
 
-test("public catalog uses live Warehouse prices, excludes parked SKUs and serves real detail/images", async ({
+test("public catalog lists each eligible non-X SKU once with real detail/images", async ({
   page,
   request,
 }) => {
   const response = await request.get("/api/products");
   expect(response.status()).toBe(200);
   const { products } = await response.json();
-  expect(products.length).toBe(89);
   expect(new Set(products.map((p: { warehouseSku: string }) => p.warehouseSku)).size).toBe(
     products.length,
   );
-  expect(products.every((p: { warehouseSku: string }) => p.warehouseSku.startsWith("G"))).toBe(
-    true,
-  );
-  for (const sku of ["TMS60AW31", "G106094", "G-TF003", "G-SET03", "S000005"])
-    expect(products.some((p: { warehouseSku: string }) => p.warehouseSku === sku)).toBe(false);
   const official = await fetch(new URL("/api/store/products", process.env.WAREHOUSE_API_URL!), {
     signal: AbortSignal.timeout(10000),
   }).then((r) => r.json());
+  const hidden = new Set(["72", "Calibration Fee Type 2", "S000005", "S000006"]);
+  const expected = [
+    ...new Set(
+      official.items
+        .map((p: { sku: string }) => p.sku)
+        .filter((sku: string) => !/^x/i.test(sku) && !hidden.has(sku)),
+    ),
+  ].sort();
+  expect(products.map((p: { warehouseSku: string }) => p.warehouseSku).sort()).toEqual(expected);
+  await page.goto("/service/quotation");
+  const select = page.getByRole("combobox").first();
+  await expect(select).toBeVisible();
+  const options = await select
+    .locator("option")
+    .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("value")).filter(Boolean));
+  expect(options.sort()).toEqual(
+    expected.filter((sku) =>
+      official.items.some(
+        (i: { sku: string; sale_price: number }) => i.sku === sku && i.sale_price > 0,
+      ),
+    ),
+  );
   const item = products.find((p: { warehouseSku: string }) => p.warehouseSku === "G106308");
   const upstream = official.items.find((p: { sku: string }) => p.sku === item.warehouseSku);
   expect(item.warehouseNetUnitSatang).toBe(Math.round(upstream.sale_price * 100));
@@ -59,7 +75,10 @@ test("public catalog uses live Warehouse prices, excludes parked SKUs and serves
   expect(image.status()).toBe(200);
   expect(image.headers()["content-type"]).toMatch(/^image\//);
   expect((await request.get("/api/products/S000005/image")).status()).toBe(404);
-  expect((await request.get("/products/acs30-jc21")).status()).toBe(404);
+  const newlyListed = products.find((p: { warehouseSku: string }) => p.warehouseSku === "11");
+  await page.goto(`/products/${newlyListed.slug}`);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(newlyListed.name);
+  expect((await request.get("/api/products/X000000/image")).status()).toBe(404);
 });
 
 for (const width of [390, 834, 1440]) {
@@ -89,7 +108,9 @@ for (const width of [390, 834, 1440]) {
     const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
     await expect(finder).toBeVisible();
     await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("WPS10KS");
-    await expect(finder.locator("#mock-product-results article h3")).toHaveText(["WPS10KS"]);
+    await expect(
+      finder.getByRole("heading", { level: 3, name: "WPS10KS", exact: true }).first(),
+    ).toBeVisible();
     await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("G106308");
     await expect(finder.locator("#mock-product-results article h3")).toHaveText(["TMS-60-AW31"]);
     expect(errors).toEqual([]);

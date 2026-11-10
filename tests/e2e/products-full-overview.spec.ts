@@ -27,13 +27,14 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
     const directory = page.locator("[data-products-directory]");
     const sections = directory.locator("[data-products-category-section]");
-    await expect(sections).toHaveCount(5);
+    await expect(sections).toHaveCount(6);
     await expect(sections.locator("h2")).toHaveText([
       "เครื่องชั่ง",
       "อินดิเคเตอร์แท่นชั่ง",
       "โครงสร้างแท่นชั่ง",
       "ระบบ POS",
       "อุปกรณ์เสริม",
+      "รายการอื่น ๆ",
     ]);
     const response = await page.request.get("/api/products");
     expect(response.ok()).toBe(true);
@@ -92,7 +93,9 @@ test("direct all-model finder keeps search and legacy query entry", async ({ pag
     finder.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }).getByRole("button"),
   ).toHaveCount(5);
   await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("WPS10KS");
-  await expect(finder.locator("#mock-product-results article h3")).toHaveText(["WPS10KS"]);
+  await expect(
+    finder.getByRole("heading", { level: 3, name: "WPS10KS", exact: true }).first(),
+  ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(finder).not.toBeVisible();
   await page.goto("/products?category=scales&subcategory=scale-kitchen");

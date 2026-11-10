@@ -1,12 +1,11 @@
-import { approvedWarehouseMappings } from "@/features/catalog/data/warehouse-products";
+import { isPublicWarehouseSku } from "@/features/catalog/data/warehouse-products";
 import { getOfficialProducts } from "@/features/services/warehouse-product.server";
 
-const approvedSkus = new Set(approvedWarehouseMappings.map((item) => item.sku));
 const maxImageBytes = 10 * 1024 * 1024;
 
 export async function GET(_request: Request, { params }: { params: Promise<{ sku: string }> }) {
   const { sku } = await params;
-  if (!approvedSkus.has(sku)) return new Response(null, { status: 404 });
+  if (!isPublicWarehouseSku(sku)) return new Response(null, { status: 404 });
   try {
     const item = (await getOfficialProducts()).items.find((item) => item.sku === sku);
     if (!item?.image_url) return new Response(null, { status: 404 });

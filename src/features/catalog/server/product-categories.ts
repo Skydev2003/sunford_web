@@ -13,7 +13,9 @@ import { catalogCardName } from "../data/catalog-card-names";
 import { productCategoryDefinitions } from "../data/mock-categories";
 
 export const getProductCategories = cache(async () => {
-  const products = deduplicateConsumableSizes(await getProducts());
+  const catalogProducts = await getProducts();
+  const warehouse = catalogProducts.some((product) => product.warehouseSku);
+  const products = warehouse ? catalogProducts : deduplicateConsumableSizes(catalogProducts);
   const categories = await Promise.all(
     productCategoryDefinitions.map(async ({ id, label, path }) => {
       const catalog = products.some((product) => product.warehouseSku)
@@ -46,8 +48,8 @@ export const getProductCategories = cache(async () => {
     }),
   );
   const productIds = new Set(categories.flatMap((category) => category.productIds));
-  const clientProducts = (await getClientProducts()).filter((product) =>
-    productIds.has(product.id),
+  const clientProducts = (await getClientProducts()).filter(
+    (product) => warehouse || productIds.has(product.id),
   );
   const productsById = new Map(products.map((product) => [product.id, product]));
   const cardNames = Object.fromEntries(

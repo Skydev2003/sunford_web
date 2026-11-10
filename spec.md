@@ -1,5 +1,13 @@
 # Project state
 
+## Review the 101 uncategorized SKUs
+
+Completed: 23 scale, 14 POS and one accessory assignment reuse existing SKU records. The owner confirmed the remaining 63 SKUs stay in “รายการอื่น ๆ”.
+
+## Publish Warehouse products except X-prefixed SKUs
+
+Status: "Implemented". Owner requested all non-X SKUs, preserved existing data and selected Warehouse-only visibility for four calibration service charges. Exact duplicate feed rows collapse by SKU; conflicting versions of the same SKU fail validation. Verified legacy associations reuse their existing IDs and URLs. New SKUs are projected from the live response. Unclassified rows are reachable through “รายการอื่น ๆ”, search and quotations. Source data stays in Warehouse. Verified live counts: 380 raw, 359 retained, 355 public, with 355 distinct IDs and URLs.
+
 ## Warehouse SKU selection on /service/quotation
 
 Status: "Implemented and browser verified". The quotation page uses Warehouse SKU, name, unit and net THB sale price. VAT is rounded once at document level. The configurator prefills literal SKU matches for standalone models only. Unverified selections retain their pending state. Website CMS and other product pages retain their existing sources. Verified the 380-SKU selector and the printed net/VAT/gross with live prices.

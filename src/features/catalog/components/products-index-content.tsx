@@ -15,14 +15,22 @@ export function ProductsIndexContent({
   categories: ProductCategory[];
 }) {
   const photos = new Map(curatedCarousel.products.map((product) => [product.id, product.image]));
+  const otherIds = products
+    .filter((p) => p.warehouseSku && !p.warehouseCategoryId)
+    .map((p) => p.id);
+  const sections = otherIds.length
+    ? [...categories, { id: "uncategorized", label: "รายการอื่น ๆ", productIds: otherIds }]
+    : categories;
   const carousel = products
     .filter((product) => product.image)
     .map((product) => ({
       id: product.id,
       model: catalogCardName(product),
-      categoryId: product.warehouseCategoryId ?? "scales",
+      categoryId: product.warehouseCategoryId ?? "uncategorized",
       categoryLabel:
-        categories.find((category) => category.id === product.warehouseCategoryId)?.label ?? "",
+        sections.find(
+          (category) => category.id === (product.warehouseCategoryId ?? "uncategorized"),
+        )?.label ?? "",
       subtitle: product.subtitle,
       capacity: product.capacity,
       readability: product.readability,
@@ -37,11 +45,11 @@ export function ProductsIndexContent({
       </h1>
       <ProductsIndexCarousel
         products={carousel}
-        categories={categories.filter((category) =>
+        categories={sections.filter((category) =>
           carousel.some((product) => product.categoryId === category.id),
         )}
       />
-      {categories.map((category) => {
+      {sections.map((category) => {
         const members = products.filter((product) => category.productIds.includes(product.id));
         return (
           <section
@@ -53,7 +61,9 @@ export function ProductsIndexContent({
             <div className={styles.sectionHeading}>
               <h2 id={`products-category-${category.id}`}>{category.label}</h2>
               <span>{members.length} รายการ</span>
-              <Link href={`/products/category/${category.id}`}>ดูทั้งหมด</Link>
+              {category.id !== "uncategorized" && (
+                <Link href={`/products/category/${category.id}`}>ดูทั้งหมด</Link>
+              )}
             </div>
             <ul className={styles.rail} tabIndex={0} aria-label={category.label}>
               {members.map((product, index) => (
