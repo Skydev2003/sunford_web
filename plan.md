@@ -4486,6 +4486,20 @@ Final Next.js feedback review: no framework defect retained; the observed transi
 
 Warehouse commit dependencies: includes the direct PostgreSQL/storage reader, image-only cache, local site-content replacement of CMS reads and read-only product projections. Existing quotation PDF/numbering and builder sidebar changes are intentionally not staged. Hero/homepage presentation remains the approved exception. Standalone commit verification is recorded in the commit delivery task.
 
+
+## Plan: Constrain product carousel descriptions
+
+- [x] Confirm the owner's direct bug-fix authorization, inspect existing CSS/mobile clamp and record the spec.
+- [x] `src/features/catalog/components/products-index-carousel.module.css` — apply the existing line-clamp treatment to desktop/tablet at3lines; retain mobile2lines and current typography. No source-text truncation.
+- [x] Verify actual TSS-150-SW31S before/after; check all36 slide descriptions at390/834/1440/1917px, detail opening/full text, navigation and responsive screenshots.
+- [x] Update `spec.md`, `plan.md`, `MEMORY.md` with results and the source-content length lesson.
+
+Impact/Rollback: local carousel summary rendering only, reversible by removing the scoped clamp. Full descriptions, product values and homepage/Hero are unchanged.
+
+### Verification Results
+
+Verified: before the fix,TSS-150-SW31S rendered972 source characters at313.47px height with no desktop clamp. After the scoped CSS change, all36 carousel models passed height/line-clamp checks at390/834/1440/1917px, including a2251-character source summary. Mobile retains2lines; other tested widths show at most3. Capacity/readability stay below the summary; full source text remains intact and unclamped in the existing detail dialog. Previous/next navigation completed a36-model loop at each width, Escape closed details, document width stayed within viewport, and no browser console/page errors occurred. Responsive screenshots inspected. Scoped Prettier and diff checks passed. No source data, Hero/homepage or global files changed. Final Next feedback review found no framework issue; local CSS behavior only.
+
 ### Warehouse commit verification (2026-11-11)
 
 The owner authorized separating Warehouse and carousel commits and pushing safe. The Warehouse commit includes the PostgreSQL/image pipeline and local-site dependencies, with partial quotation and builder staging to leave the independent PDF/numbering/sidebar work local. Tested the actual staged tree in an isolated export:154/154 catalog tests,27/27 UAT, TypeScript and scoped formatting/lint passed. Standalone build generated793/793 pages with Node24 and Webpack. Turbopack's hermetic root rejected the external dependency junction in this temporary export; no application config change was staged. Production smoke verified484 Warehouse products, source photo/description equality, original Hero video, carousel interaction and an actual priced SKU at quantity2 with VAT7%, native print and PDF rendering. Unrelated working files and environment secrets were preserved.

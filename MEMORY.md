@@ -680,3 +680,8 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Do not restore absent Warehouse photos, specifications, descriptions or compatibility from old editorial data. Retain old route IDs only for URL identity. Confirmed component rows or verified compatibility facts are required before offering a pairing or assuming a bundled price.
 - Repeated rich-content sanitation during every page lookup made static generation unnecessarily expensive. Correct behavior: sanitize only the requested document, memoize its source-independent blank layout, and use lightweight projections for lists/indexes. Keep raw source access confined to the approved homepage exception.
 - Warehouse connections terminated intermittently during production generation despite healthy direct reads. Correct behavior: permit one bounded retry for known transient read failures; surface schema/data errors immediately and verify the retry bound with regression tests. Empty guide paragraphs require stable positional React keys, because cleared paragraph text is no longer unique.
+
+## Bound live product summaries in fixed carousel layouts (2026-11-11)
+
+- Warehouse verified highlight text can contain full long descriptions. Using this value in the existing fixed-height carousel expanded the desktop copy into neighboring product photos; only the mobile summary had a line limit.
+- Correct behavior: constrain the carousel summary with3desktop/tablet lines and2mobile lines in its local CSS. Preserve complete source text in the existing detail view. When changing product sources, verify the longest actual summary across all carousel entries and responsive widths, alongside title/spec/control geometry.
