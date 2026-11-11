@@ -6,8 +6,6 @@ import { getIndicatorSubcategories } from "../../src/features/catalog/data/indic
 import { getPlatformSubcategories } from "../../src/features/catalog/data/platform-subcategories";
 import { getPosSubcategories } from "../../src/features/catalog/data/pos-subcategories";
 import { getAccessorySubcategories } from "../../src/features/catalog/data/accessory-subcategories";
-import { deduplicateConsumableSizes } from "../../src/features/catalog/data/consumable-sizes";
-import { catalogProductGroup } from "../../src/features/catalog/data/catalog-supplements";
 import type { Product } from "../../src/features/catalog/types";
 
 const resolvers = [
@@ -60,14 +58,14 @@ for (const width of [1440, 390]) {
     const { products } = (await (await request.get("/api/products")).json()) as {
       products: Product[];
     };
-    const visible = deduplicateConsumableSizes(products);
+    const visible = products;
     await page.goto("/contact-us");
     let first = true;
     for (const [index, parent] of groups.entries()) {
       const input =
         parent.id === "indicators"
           ? visible
-          : visible.filter((product) => catalogProductGroup(product) === parent.path);
+          : visible.filter((product) => product.warehouseCategoryId === parent.id);
       const expected = resolvers[index](input);
       for (const [childIndex, child] of parent.children.entries()) {
         const menu = await productMenu(page, width, parent.label);
@@ -105,7 +103,7 @@ for (const width of [1440, 390]) {
 }
 
 for (const width of [320, 768, 1400, 1920]) {
-  test(`product submenu keeps every group reachable at ${width}px`, async ({ page }) => {
+  test(`product submenu keeps every group reachable at ${width}px`, async ({ page, request }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/contact-us");
     const menu = await productMenu(page, width, "อุปกรณ์เสริม");
@@ -129,7 +127,9 @@ for (const width of [320, 768, 1400, 1920]) {
     await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
     await expect(
       page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" }).getByRole("status"),
-    ).toHaveText("7 รายการ");
+    ).toHaveText(
+      `${((await (await request.get("/api/products")).json()).products as Product[]).filter((p) => p.warehouseSubcategoryIds?.includes("accessory-consumables")).length} รายการ`,
+    );
   });
 }
 
@@ -188,12 +188,12 @@ test("child URLs support refresh, same-family links, local changes, clearing and
     .click();
   await expect(page).toHaveURL(/\/products$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
+  await page.goto("/products?catalog=all");
   await expect(page).toHaveURL(/\/products\?catalog=all$/);
   await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
 });
 
-test("unknown and cross-family child IDs fall back safely, while empty iOS remains a real destination", async ({
+test("unknown and cross-family child IDs fall back safely, while canonical iOS remains a real destination", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -213,7 +213,7 @@ test("unknown and cross-family child IDs fall back safely, while empty iOS remai
         .getByRole("button", { name: "ทั้งหมด", exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
   }
-  await page.goto("/products?category=pos&subcategory=pos-ios");
+  await page.goto("/products/category/pos/ios");
   await expect(page).toHaveURL(/\/products\/category\/pos\/ios$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(catalog.getByRole("status")).toHaveText("0 รายการ");

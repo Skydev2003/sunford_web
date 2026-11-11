@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ScaleSubcategoryPage } from "@/features/catalog/components/scale-subcategory-page";
 import { scaleSubcategoryPages } from "@/features/catalog/data/scale-subcategory-pages";
 
@@ -18,7 +19,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ScaleGroupPage({ params }: Props) {
+export default function ScaleGroupPage({ params }: Props) {
+  return (
+    <Suspense fallback={<p role="status">กำลังโหลดหมวดสินค้า…</p>}>
+      <ScaleGroupContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ScaleGroupContent({ params }: Props) {
   const { group } = await params;
   const page = scaleSubcategoryPages.find((item) => item.slug === group);
   if (!page) notFound();

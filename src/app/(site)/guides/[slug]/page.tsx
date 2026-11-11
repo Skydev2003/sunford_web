@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import { buyingGuides } from "@/features/content/data/buying-guides";
 
@@ -18,7 +19,17 @@ export async function generateMetadata({
   return { title: guide?.title ?? "ไม่พบคู่มือ", description: guide?.introduction };
 }
 
-export default async function BuyingGuidePage({ params }: { params: Promise<{ slug: string }> }) {
+type GuidePageProps = { params: Promise<{ slug: string }> };
+
+export default function BuyingGuidePage({ params }: GuidePageProps) {
+  return (
+    <Suspense fallback={<p role="status">กำลังโหลดคู่มือ…</p>}>
+      <BuyingGuideContent params={params} />
+    </Suspense>
+  );
+}
+
+async function BuyingGuideContent({ params }: GuidePageProps) {
   const { slug } = await params;
   const guide = buyingGuides.find((item) => item.slug === slug);
   if (!guide) notFound();
