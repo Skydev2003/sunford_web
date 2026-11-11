@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Monitor, Layers, Cable, Search, Check, Plus, X } from "lucide-react";
+import { Monitor, Layers, Cable, Search, Check, Plus, ChevronRight, Trash2 } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./weighing-builder.module.css";
 import { quotationTotals } from "@/features/catalog/data/quotation";
@@ -115,45 +115,67 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
         </header>
         <div className={styles.steps}>
           {categories.map(({ kind: tab, label, icon: Icon }) => (
-            <button
-              key={tab}
-              type="button"
-              aria-pressed={tab === kind}
-              disabled={tab === "accessory" && !(head && platform)}
-              onClick={() => openStep(tab)}
-            >
-              <Icon size={18} aria-hidden="true" />
-              {label}
-            </button>
+            <section key={tab} className={styles.slot} aria-label={label}>
+              <button
+                type="button"
+                className={styles.category}
+                aria-pressed={tab === kind}
+                disabled={tab === "accessory" && !(head && platform)}
+                onClick={() => openStep(tab)}
+              >
+                <Icon size={18} aria-hidden="true" />
+                {label}
+                <ChevronRight size={16} aria-hidden="true" />
+              </button>
+              {selected
+                .filter((item) => item.kind === tab)
+                .map((item) => (
+                  <div key={item.code} className={styles.item}>
+                    <div className={styles.thumb} aria-hidden="true">
+                      {item.image || item.fallbackImage ? (
+                        <ProductImage
+                          src={item.image}
+                          fallbackSrc={item.fallbackImage}
+                          alt=""
+                          fill
+                          sizes="48px"
+                        />
+                      ) : (
+                        <Icon size={20} />
+                      )}
+                    </div>
+                    <div className={styles.itemInfo}>
+                      <strong>{item.displayName ?? item.code}</strong>
+                      <span>
+                        {item.kind === "head" && platform?.includesHead
+                          ? "รวมในราคาแท่นชั่งแล้ว"
+                          : item.price !== null && item.price > 0
+                            ? baht.format(item.price)
+                            : "สอบถามราคา"}
+                      </span>
+                      <a
+                        href={item.detailHref}
+                        target={item.detailHref.startsWith("/") ? "_blank" : undefined}
+                        rel={item.detailHref.startsWith("/") ? "noopener noreferrer" : undefined}
+                        aria-label={`ดูสเปค ${item.code}`}
+                      >
+                        ดูสเปค
+                      </a>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.remove}
+                      aria-label={`นำ ${item.code} ออกจากชุด`}
+                      onClick={() => remove(item)}
+                    >
+                      <Trash2 size={16} aria-hidden="true" />
+                    </button>
+                  </div>
+                ))}
+            </section>
           ))}
         </div>
-        <div className={styles.selection} aria-live="polite">
-          {selected.length === 0 ? (
-            <p>ยังไม่ได้เลือกรุ่น</p>
-          ) : (
-            <ul>
-              {selected.map((o) => (
-                <li key={o.code}>
-                  <span>
-                    {categories.find((item) => item.kind === o.kind)?.label} · {optionName(o)}
-                    {o.kind === "platform" && (
-                      <small className={styles.reference}>รหัสชุด {o.code}</small>
-                    )}
-                  </span>
-                  <button aria-label={`นำ ${o.code} ออกจากชุด`} onClick={() => remove(o)}>
-                    <X size={16} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          {selected.length > 0 && (
-            <p>
-              {priced
-                ? `ยอดรวม ${baht.format(totalPrice)} (รวม VAT)`
-                : "ติดต่อ SUNFORD เพื่อยืนยันราคาและชุดที่เลือก"}
-            </p>
-          )}
+        <div className={styles.selection}>
           {head && platform ? (
             <a
               className={styles.quoteLink}

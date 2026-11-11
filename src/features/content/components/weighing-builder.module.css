@@ -1,6 +1,6 @@
 .layout {
   display: grid;
-  grid-template-columns: minmax(215px, 1fr) minmax(0, 3fr);
+  grid-template-columns: clamp(248px, 25vw, 320px) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -18,19 +18,45 @@
 .sidebar {
   position: sticky;
   top: 68px;
+  padding: 18px;
+  max-height: calc(100dvh - 84px);
+  overflow-y: auto;
 }
 .layout h2 {
   font-size: 21px;
   line-height: 1.4;
 }
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+.total h2 {
+  font-size: 17px;
+}
+.total div {
+  margin-inline-start: auto;
+  text-align: right;
+}
+.total strong {
+  color: var(--red);
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.total small {
+  display: block;
+  color: var(--muted);
+}
 .steps {
   display: grid;
-  gap: 7px;
+  gap: 10px;
   margin-top: 16px;
 }
-.steps button,
+.category,
 .cards button,
-.selection button {
+.quoteLink {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -39,12 +65,25 @@
   border-radius: 10px;
   cursor: pointer;
 }
-.steps button {
-  padding: 10px 12px;
-  text-align: left;
+.slot {
+  border-radius: 12px;
   background: var(--paper);
 }
-.steps button[aria-pressed="true"],
+.category {
+  width: 100%;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: transparent;
+  font-weight: 600;
+}
+.category svg:last-child {
+  margin-inline-start: auto;
+}
+.category:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.category[aria-pressed="true"],
 .cards button[aria-pressed="true"] {
   background: #fcecef;
   color: #a60e21;
@@ -55,27 +94,63 @@
   border-top: 1px solid #e4e4e8;
   font-size: 14px;
 }
-.selection p,
 .count,
 .copy p,
 .copy small {
   color: #595960;
 }
-.selection ul {
-  list-style: none;
-  padding: 0;
+.item {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 44px;
+  align-items: start;
+  gap: 8px;
+  padding: 10px 4px 12px 10px;
+  border-top: 1px solid var(--line);
 }
-.selection li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
+.thumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: white;
+  color: var(--muted);
+}
+.thumb img {
+  object-fit: contain;
+}
+.itemInfo {
+  display: grid;
+  justify-items: start;
+  gap: 3px;
   overflow-wrap: anywhere;
 }
-.selection button {
-  min-width: 44px;
-  justify-content: center;
+.itemInfo span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.itemInfo a {
+  color: #a60e21;
+  background: #fcecef;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 13px;
+}
+.remove {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 8px;
   background: transparent;
+  color: var(--red);
+  cursor: pointer;
+}
+.remove:hover {
+  background: #fcecef;
 }
 .fields {
   display: flex;
@@ -149,7 +224,7 @@
   background: var(--ink);
   color: white;
 }
-.layout :is(button, input, select):focus-visible {
+.layout :is(button, input, select, a):focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 2px;
 }
@@ -165,13 +240,12 @@
   }
   .sidebar {
     position: static;
+    max-height: none;
+    overflow: visible;
   }
   .sidebar,
   .toolbar {
     padding: 18px;
-  }
-  .steps {
-    grid-template-columns: 1fr 1fr;
   }
   .fields {
     flex-direction: column;
@@ -186,26 +260,8 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.steps button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
 .toolbar h2 {
   scroll-margin-top: 72px;
-}
-@media (max-width: 767px) {
-  .sidebar .steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .sidebar .steps button {
-    flex-direction: column;
-    justify-content: center;
-    padding: 8px 3px;
-  }
-}
-.reference {
-  display: block;
-  color: var(--muted);
 }
 .cards article {
   position: relative;
@@ -233,7 +289,6 @@
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  margin-top: 14px;
   border-radius: 10px;
   background: var(--red);
   color: #fff;
