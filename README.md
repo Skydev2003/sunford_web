@@ -8,14 +8,14 @@
 
 ## เริ่มต้น
 
-ใช้ Node.js 20.19+ หรือ 22.12+ (พัฒนาและตรวจด้วย Node.js 24)
+ใช้ Node.js 24 และตั้งค่า Warehouse ใน .env.local ตาม .env.example ก่อนเริ่มเว็บ
 
 ```bash
 npm install
 npm run dev
 ```
 
-เปิด URL ที่ Next.js แสดงใน terminal (ปกติ http://localhost:3000) แคตตาล็อกที่นำเข้าทั้งหมดแสดงได้โดยไม่ต้องตั้งค่าฐานข้อมูล หากตั้งค่าฐานข้อมูลจะรวมสินค้าที่ดูแลเพิ่มในฐานข้อมูลเข้ากับข้อมูลต้นฉบับ โดยไม่สร้างรายการซ้ำสำหรับสินค้าแนะนำเดิม
+เปิด URL ที่ Next.js แสดงใน terminal (ปกติ http://localhost:3000) สินค้า ราคา หน่วย และรูปหลักอ่านจาก Warehouse PostgreSQL/storage โดยตรง ไม่ต้องเปิดแอป Warehouse ส่วนหน้าสินค้าและใบเสนอราคาใช้ข้อมูล Warehouse เท่านั้น ช่องที่ไม่มีข้อมูลเว้นว่าง ส่วนหน้าแรก/Hero คงภาพและเนื้อหาเดิมจากไฟล์โปรเจกต์ ไม่มีการอ่านฐาน CMS
 
 ## โครงสร้าง
 
@@ -35,14 +35,14 @@ src/
       server/                # Repository: จุดเดียวที่อ่านข้อมูลสินค้า
       types.ts               # Domain model และหมวดหมู่
     home/components/         # Hero, solutions, brand story, support
+    site/                    # Local settings, navigation and content readers
   stores/                    # Zustand: filter, search, comparison UI state
-  lib/                       # Server-only Prisma integration
+  lib/                       # Prisma และประวัติ migration เดิม
   styles/                    # Design tokens และ CSS แยกตามส่วน
   generated/prisma/          # สร้างด้วย prisma generate ไม่ commit
 prisma/
-  schema.prisma              # PostgreSQL schema + indexes
-  migrations/                # Initial migration + RLS
-  seed.ts                    # Idempotent upsert catalogue
+  schema.prisma              # ทะเบียนเลขใบเสนอราคาและ schema เดิมที่คงไว้
+  migrations/                # ประวัติ migration; ไม่ลบตาราง CMS จริง
 tests/e2e/                  # Playwright user journeys
 public/
   images/                   # รูปที่เว็บใช้งาน
@@ -50,7 +50,7 @@ public/
   videos/                   # วิดีโอ WebM ของหน้าแรก
 ```
 
-หลักการ: `app → features → repository → Prisma → Supabase PostgreSQL` โดย Client Components รับเฉพาะข้อมูลสินค้าสาธารณะ ส่วน credentials และ database client อยู่ฝั่งเซิร์ฟเวอร์ Zustand เก็บเฉพาะสถานะ UI; ข้อมูลสินค้าอยู่ใน Server Components ไม่เก็บสำเนาใน global store
+หลักการ: `app → features → repository → Warehouse PostgreSQL + local content` โดย Client Components รับเฉพาะข้อมูลสินค้าสาธารณะ ส่วน credentials และ database client อยู่ฝั่งเซิร์ฟเวอร์ Zustand เก็บเฉพาะสถานะ UI; ข้อมูลสินค้าอยู่ใน Server Components ไม่เก็บสำเนาใน global store
 
 สไลด์ ACS-30-JC21, WPS10KS และ FEH5KS ใช้โมเดล GLB จาก `public/models/` และเรนเดอร์ 3D ตามขนาดจอจริง จึงแสดงภาพใหญ่บนจอ Retina ได้โดยไม่ขยายวิดีโอ 1080p เฉพาะสไลด์ที่เลือกเท่านั้นที่มี viewer อยู่บนหน้า โมเดล ACS ใช้ฉากขนาดใหญ่พร้อมกล้องเคลื่อนช้า ๆ ส่วนข้อความอยู่นิ่ง การลากหมุนจะพักกล้องอัตโนมัติและกดเล่นต่อได้
 
@@ -58,34 +58,16 @@ public/
 
 ไฟล์ใน `output/`, `outputs/` และ `work/` เป็นงานทดลอง ภาพเรนเดอร์ และ log เฉพาะเครื่อง จึงไม่นำเข้า Git หรือใช้ในการ build เว็บไซต์
 
-## เชื่อม Supabase PostgreSQL
+## แหล่งข้อมูลหลังถอด CMS
 
-1. คัดลอกไฟล์ตัวอย่างและแก้ในเครื่องเท่านั้น:
+- `WAREHOUSE_DATABASE_URL` และ `WAREHOUSE_COMPANY_ID` ใช้อ่านสินค้า/ราคาจาก PostgreSQL แบบ read-only ส่วน `WAREHOUSE_S3_*` ใช้อ่านรูปใหม่หรือรูปที่เปลี่ยน ดู [คู่มือ Warehouse](docs/warehouse/direct-postgres.md)
+- `data/site/content.json` เก็บค่าตั้งเว็บและเมนู ตัวอ่านอยู่ใน `src/features/site/`
+- `src/features/content/data/products.json` เก็บสเปก คำอธิบาย แกลเลอรี และข้อมูลอ้างอิงสินค้าเดิม159รายการ ส่วน `pages.json` เก็บหน้าเนื้อหาเดิม401หน้า ไฟล์เหล่านี้ไม่ใช่แหล่งราคาปัจจุบัน
+- `public/images/` เก็บรูปสำรองและภาพเดิม ส่วน `data/warehouse/images.json` เก็บ metadata ของ cache รูป Warehouse
+- `DATABASE_URL` และ `DIRECT_URL` แยกจาก Warehouse และเก็บไว้สำหรับ Prisma/migration เดิม ไม่ใช้ดึงสินค้า/เนื้อหา CMS และห้ามชี้ Prisma ไป Warehouse
+- เก็บ Prisma/client/schema และประวัติ migration เดิม แต่ถอด seed/import สินค้า CMS และคำสั่ง `db:seed` แล้ว งานนี้ไม่ลบตารางหรือข้อมูลจริงในฐานเดิม
 
-   ```bash
-   cp .env.example .env
-   ```
-
-2. ใส่รหัสผ่านฐานข้อมูลที่ URL-encode แล้วแทน `YOUR-PASSWORD` และตรวจ endpoint ใน Supabase Dashboard → Connect:
-   - `DATABASE_URL`: transaction pooler พอร์ต `6543` สำหรับ runtime
-   - `DIRECT_URL`: session pooler พอร์ต `5432` สำหรับ Prisma CLI / migrations (หรือ direct endpoint ที่เข้าถึงได้)
-3. เมื่อตรวจแล้วว่าเป็นฐานข้อมูลที่ต้องการ ให้รัน:
-
-   ```bash
-   npm run db:deploy
-   npm run db:seed
-   npm run dev
-   ```
-
-Initial migration สร้างตาราง `products`, enum และ indexes เปิด RLS โดยไม่มี anonymous policies เพราะอ่านผ่าน Prisma ฝั่งเซิร์ฟเวอร์ด้วย role ที่มีสิทธิ์เหมาะสม คำสั่ง `npm run db:seed` สำรองตารางสินค้าและเพิ่มเฉพาะสินค้านำเข้าที่ยังขาดให้ครบ 150 รายการ ไม่เขียนทับข้อมูลเดิม การแก้ไข ฉบับร่าง หรือสินค้าที่ลบแล้ว
-
-เมื่อมี `DATABASE_URL` จริง repository ใช้ PostgreSQL เป็นรายการสินค้าหลัก อ่านเฉพาะ `published=true` และ `deletedAt=null` โดยคงสถานะเผยแพร่และการลบเดิมไว้ครบทั้ง 8 หมวด ข้อมูลนำเข้าใช้รักษารายละเอียด รูป และ URL เดิม ไม่เพิ่มสินค้าที่ถูกซ่อนหรือลบกลับมา หากไม่มีฐานข้อมูลยังดู snapshot ได้ หากตั้งค่าฐานข้อมูลแล้วเชื่อมต่อล้มเหลวจะแสดง error state
-
-ข้อมูลสินค้าสาธารณะถูก cache 1 ชั่วโมงด้วย Next.js Cache Components การแก้ข้อมูลทำผ่านไฟล์ต้นฉบับหรือกระบวนการฐานข้อมูลที่ทีมดูแล จากนั้นรอ cache หมดอายุหรือ deploy ใหม่ หลังเปลี่ยน environment ให้ restart dev server หรือ build/deploy ใหม่
-
-`SUPABASE_URL` เป็นตัวเลือกสำหรับแสดงรูปเดิมจาก bucket `product-images` เท่านั้น ไม่ต้องใช้ publishable key หรือ secret key ในแอป รูปใน `public/images` ยังใช้งานตามเดิม
-
-**สถานะตรวจสอบล่าสุด:** รัน migration และนำเข้าสินค้าครบ 150 รายการแล้ว ตรวจว่าข้อมูลทุกช่องและ timestamps ของ 6 รายการเดิมไม่เปลี่ยน และข้อมูลสาธารณะของทั้ง 150 รายการยังตรงกับต้นฉบับ ทดสอบ CRUD ครบ 8 หมวดใน transaction ที่ rollback ทั้งหมดแล้ว การเชื่อมต่อต้องอาศัยค่าที่ถูกต้องใน `.env` ของแต่ละเครื่องหรือ deployment
+สินค้า/ราคาและรูป Warehouse อัปเดตตามรอบ catalog เดิมโดยไม่ต้องรันคำสั่งนำเข้า รูปมีเวอร์ชันใน URL ส่วนหน้าภายในเว้นรูปว่างเมื่อ Warehouse ไม่มีรูป การแก้เนื้อหาในไฟล์โปรเจกต์ให้ตรวจและ build/deploy ตามกระบวนการเดิม
 
 ## คำสั่งพัฒนา
 
@@ -131,23 +113,23 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 
 ## เนื้อหาและภาพ
 
-แหล่งข้อมูลหลักคือเว็บไซต์ [Sunford](https://www.sunford.co) เก็บข้อมูลเต็มไว้ใน snapshot ส่วนภาพสินค้าแบบตัดพื้นหลังเดิมและภาพแบรนด์บางส่วนมาจาก [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) แสดงราคาเฉพาะรายการที่เว็บไซต์ต้นฉบับเปิดเผยราคา ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford
+แหล่งข้อมูลหลักคือเว็บไซต์ [Sunford](https://www.sunford.co) เก็บข้อมูลเต็มไว้ใน snapshot ส่วนภาพสินค้าแบบตัดพื้นหลังเดิมและภาพแบรนด์บางส่วนมาจาก [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) แสดงราคาจาก Warehouse ตามกติกาที่อนุมัติ ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford
 
 ฟอนต์ Inter และ Noto Sans Thai ถูก self-host ด้วย `next/font/local` ดูใบอนุญาตใน `src/app/fonts` การติดตั้งและ build ไม่ต้องเรียก Google Fonts
 
 ## การดูแลเนื้อหา
 
-ดูแลเนื้อหาผ่านไฟล์ใน repository และกระบวนการฐานข้อมูลของทีม ไม่มีหน้าจัดการหรือ Server Actions สำหรับเขียนข้อมูลผ่านเว็บไซต์ ตารางบัญชีแอดมินและประวัติเดิมยังเก็บใน schema/migrations เพื่อรักษาข้อมูลและประวัติ migration; การเปลี่ยนแปลงนี้ไม่ลบข้อมูลจริงใน Supabase
+ดูแลเนื้อหาเว็บผ่านไฟล์ใน repository ไม่มีระบบ CMS หรือหน้าจัดการเนื้อหา สเปก/คำอธิบาย/รูปสำรองอยู่ครบ การตั้ง DATABASE_URL เก่าจะไม่เปิดการอ่าน CMS กลับมา ประวัติ schema/migrations ยังเก็บไว้เพื่อรักษาทะเบียนเอกสารและฐานเดิม โดยไม่มีการลบข้อมูลจริง
 
 ## Deploy บน Vercel
 
-ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Supabase เดิมสำหรับฐานข้อมูลและรูป Storage เดิม ฟังก์ชันรันที่ Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1`
+ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Warehouse PostgreSQL/storage สำหรับสินค้า และฐานแยกสำหรับทะเบียนเลขใบเสนอราคา ฟังก์ชันรันที่ Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1`
 
-Production จาก branch `main` รัน migration → เติมสินค้าที่ขาด → build ส่วน Preview ของ `uat` และ branch อื่นรันเฉพาะ build ไม่ migrate หรือ seed อัตโนมัติ ตั้ง Environment Variables แยก Production/Preview และใช้ Supabase สำหรับทดสอบแยกจาก production ดูขั้นตอน import repo, ตั้งค่า และย้าย URL ใน [docs/vercel.md](docs/vercel.md)
+Production จาก branch `main` รัน migration ทะเบียนเอกสาร → build ส่วน Preview รันเฉพาะ build ไม่มี CMS seed ตั้งค่า Warehouse และทะเบียนเอกสารแยก Production/Preview ดูขั้นตอน import repo, ตั้งค่า และย้าย URL ใน [docs/vercel.md](docs/vercel.md)
 
 ปล่อย Production จาก branch `uat` ด้วย `bun run deploy`: commit งานให้ครบก่อน แล้วสคริปต์จะ fetch, sync `uat`, rebase บน `origin/main`, ตรวจ lint/format/tests/build ด้วยข้อมูลจำลอง แล้ว push revision ที่ตรวจแล้วเข้า `main` ให้ Vercel deploy อัตโนมัติ ไม่ force-push และไม่รัน migration/seed ในเครื่อง ใช้ `bun run deploy --check` เพื่อตรวจความพร้อมโดยไม่เปลี่ยน Git หรือ push
 
-ขั้นตอน migration/seed/build บน Vercel แยกอยู่ใน `bun run vercel-build` อย่าตั้ง Vercel Build Command เป็น `bun run deploy`
+ขั้นตอน migration ทะเบียนเอกสารและ build บน Vercel แยกอยู่ใน `bun run vercel-build` อย่าตั้ง Vercel Build Command เป็น `bun run deploy`
 
 ## UAT บน LAN ชั่วคราว
 

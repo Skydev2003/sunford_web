@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { SiteHeader } from "@/features/cms/components/site-header";
+import { SiteHeader } from "@/features/site/components/site-header";
 import { Footer } from "@/components/layout/footer";
 import styles from "@/components/layout/site-background.module.css";
 import { CatalogOverlays } from "@/features/catalog/components/catalog-overlays";

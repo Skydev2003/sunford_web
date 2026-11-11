@@ -13,6 +13,8 @@ function inferCategory(product: SourceProduct): Product["category"] {
   const sourceCategories = [
     ["POS เชื่อมต่อเครื่องชั่ง", "pos"],
     ["อุปกรณ์ประกอบเครื่องชั่ง", "accessories"],
+    ["สายส่งข้อมูล", "accessories"],
+    ["จานชั่งลูกกลิ้งลำเลียง", "accessories"],
     ["วัสดุสิ้นเปลือง", "accessories"],
     ["พรีเมี่ยม", "accessories"],
     ["ห้องปฏิบัติการ", "laboratory"],

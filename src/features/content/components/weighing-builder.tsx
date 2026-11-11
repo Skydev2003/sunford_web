@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { Monitor, Layers, Cable, Search, Check, Plus, X } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { headPlatformPairs } from "../data/indicator-platform-compatibility";
 import styles from "./weighing-builder.module.css";
 import { quotationTotals } from "@/features/catalog/data/quotation";
 
@@ -14,9 +13,9 @@ const categories = [
   { kind: "accessory", label: "อุปกรณ์เสริม", icon: Cable },
 ] as const;
 const baht = new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" });
-const pairedPlatforms = new Set(Object.values(headPlatformPairs).flat());
 
 function optionName(option: WeighingOption) {
+  if (option.displayName) return option.displayName;
   if (option.kind !== "platform") return option.code;
   const [series, capacity] = option.code.split("-");
   return `${series} · ${capacity} กก.`;
@@ -31,10 +30,15 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
   const head = selected.find((o) => o.kind === "head");
   const platform = selected.find((o) => o.kind === "platform");
   const first = selected[0];
+  const headPlatformPairs = Object.fromEntries(
+    options.filter((o) => o.kind === "head").map((o) => [o.code, o.compatibleCodes ?? []]),
+  );
+  const pairedPlatforms = new Set(Object.values(headPlatformPairs).flat());
   const groups = [...new Set(options.map((o) => o.group).filter(Boolean))];
   const visible = options.filter(
     (o) =>
       o.kind === kind &&
+      (kind !== "accessory" || !head || Boolean(o.compatibleCodes?.includes(head.code))) &&
       (kind === "accessory" || !group || o.group === group) &&
       (kind !== "head" ||
         first?.kind !== "platform" ||
@@ -43,13 +47,6 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
         (first?.kind === "head"
           ? headPlatformPairs[first.code]?.includes(o.code)
           : pairedPlatforms.has(o.code))) &&
-      (!o.code.startsWith("LED-R") ||
-        head?.code === "Indicator-AW31" ||
-        head?.code === "Indicator-AC31P") &&
-      (o.code !== "RS2321M2F" ||
-        ["Indicator-AW31", "Indicator-AC31P", "Indicator-SW31", "Indicator-SW31F"].includes(
-          head?.code ?? "",
-        )) &&
       [o.code, o.description, o.group].join(" ").toLowerCase().includes(query.trim().toLowerCase()),
   );
   function openStep(next: WeighingOption["kind"]) {
@@ -102,8 +99,20 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
       : (quotationTotals(sourceNet)?.gross ?? 0) / 100;
   return (
     <section className={styles.layout} aria-label="เลือกอุปกรณ์จัดชุด">
-      <aside className={styles.sidebar}>
-        <h2>ชุดที่เลือก</h2>
+      <aside className={styles.sidebar} aria-label="ชุดที่เลือก">
+        <header className={styles.total} aria-live="polite" aria-atomic="true">
+          <h2>ยอดรวมทั้งสิ้น</h2>
+          <div>
+            {priced || !selected.length ? (
+              <>
+                <strong>{baht.format(totalPrice)}</strong>
+                <small>รวม VAT</small>
+              </>
+            ) : (
+              <small>ติดต่อ SUNFORD เพื่อยืนยันราคา</small>
+            )}
+          </div>
+        </header>
         <div className={styles.steps}>
           {categories.map(({ kind: tab, label, icon: Icon }) => (
             <button
@@ -170,9 +179,9 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
         <div className={styles.toolbar}>
           <h2 ref={heading} tabIndex={-1}>
             {kind === "platform" && first?.kind === "head"
-              ? `แท่นชั่งสำหรับ ${first.code}`
+              ? `แท่นชั่งสำหรับ ${first.displayName ?? first.code}`
               : kind === "head" && first?.kind === "platform"
-                ? `หัวอ่านสำหรับ ${first.code}`
+                ? `หัวอ่านสำหรับ ${first.displayName ?? first.code}`
                 : categories.find((tab) => tab.kind === kind)?.label}
           </h2>
           <div className={styles.fields}>
@@ -214,6 +223,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                   <div className={styles.photo}>
                     <ProductImage
                       src={o.image}
+                      fallbackSrc={o.fallbackImage}
                       alt={o.kind === "platform" ? `ภาพชุดอ้างอิง ${o.code}` : o.code}
                       fill
                       sizes="(max-width:600px) 90vw, (max-width:1000px) 40vw, 240px"
@@ -244,10 +254,12 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                         rel="noopener noreferrer"
                         aria-label={`ดูรายละเอียด ${head.code}${head.detailHref.startsWith("/") ? " (เปิดแท็บใหม่)" : ""}`}
                       >
-                        ดูหัวอ่าน {head.code}
+                        ดูหัวอ่าน {head.displayName ?? head.code}
                       </a>
                     )}
-                  {o.price !== null && o.price > 0 && <span>{baht.format(o.price)}</span>}
+                  <span>
+                    {o.price !== null && o.price > 0 ? baht.format(o.price) : "สอบถามราคา"}
+                  </span>
                 </div>
                 <button
                   aria-label={pending ? `${o.code} รอยืนยันรุ่นแท่นชั่ง` : `เลือก ${o.code}`}

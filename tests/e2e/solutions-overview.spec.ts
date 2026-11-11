@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { solutions } from "../../src/features/content/data/solutions";
-import { defaultNavigation } from "../../src/features/cms/data/navigation";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 
 const groups = defaultNavigation.find(({ href }) => href === "/solutions")!.groups!;

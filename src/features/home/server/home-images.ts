@@ -1,19 +1,28 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { getPrisma } from "@/lib/prisma";
-import { hasDatabase } from "@/lib/env";
+import { getDocuments } from "@/features/site/server/documents";
 import { homeImageSlots, type HomeImages } from "../data/image-slots";
 import type { HomeLinkTargets } from "../data/link-targets";
 import { defaultHomePagePaths } from "../data/link-targets";
 import { getContentPageIndex } from "@/features/content/server/content-repository";
 import { publicPath } from "@/features/content/data/public-paths.mjs";
 
+async function localHomeImages() {
+  return (await getDocuments("homepage-image"))
+    .filter((row) => !row.deletedAt)
+    .map(({ id, data }) => ({
+      slot: String(data.slot ?? id),
+      image: typeof data.image === "string" ? data.image : "",
+      targetProductId: typeof data.targetProductId === "string" ? data.targetProductId : null,
+      targetPagePath: typeof data.targetPagePath === "string" ? data.targetPagePath : null,
+    }));
+}
+
 export async function getHomeImages(): Promise<HomeImages> {
   "use cache";
   cacheLife("hours");
   cacheTag("home-images");
-  if (!hasDatabase()) return {};
-  const images = await getPrisma().homepageImage.findMany();
+  const images = await localHomeImages();
   return Object.fromEntries(
     images
       .filter((row) => row.image && homeImageSlots.some((slot) => slot.id === row.slot))
@@ -25,9 +34,10 @@ export async function getHomeLinkTargets(): Promise<HomeLinkTargets> {
   "use cache";
   cacheLife("hours");
   cacheTag("home-images");
-  if (!hasDatabase()) return {};
+  const images = await localHomeImages();
+  if (!images.length) return {};
   const targets: HomeLinkTargets = Object.fromEntries(
-    (await getPrisma().homepageImage.findMany())
+    images
       .filter(
         (row) =>
           homeImageSlots.some((slot) => slot.id === row.slot) &&

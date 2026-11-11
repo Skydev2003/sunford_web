@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SiteHeader } from "@/features/cms/components/site-header";
+import { SiteHeader } from "@/features/site/components/site-header";
 import { Footer } from "@/components/layout/footer";
 export default function NotFound() {
   return (

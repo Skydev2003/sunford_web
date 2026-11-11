@@ -14,6 +14,7 @@ export function validateDeploymentEnvironment(env) {
   if (env.VERCEL === "1" && env.APP_ENV !== (preview ? "uat" : "production"))
     errors.push("APP_ENV must match the Vercel target: production or uat for preview.");
 
+  // These credentials belong to the quotation registry; site content is local.
   const required = ["DATABASE_URL"];
   if (!preview) required.push("DIRECT_URL");
   for (const name of required) {

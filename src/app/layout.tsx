@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { getCategories } from "@/features/cms/server/categories";
-import { CategoriesProvider } from "@/features/cms/components/categories-provider";
+import { getCategories } from "@/features/site/server/categories";
+import { CategoriesProvider } from "@/features/site/components/categories-provider";
 import { navigationStartScript } from "@/components/layout/navigation-start";
 
 const sunfordFont = localFont({

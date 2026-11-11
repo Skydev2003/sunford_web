@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 import { resolveHomeLink } from "../../src/features/home/data/link-targets";
-import { getPrimaryNavigationItems } from "../../src/features/cms/data/primary-navigation";
-import { defaultNavigation } from "../../src/features/cms/data/navigation";
+import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
 
 test("known category links retain their category and exact current subcategory", () => {

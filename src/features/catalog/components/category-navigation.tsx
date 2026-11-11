@@ -1,7 +1,7 @@
 "use client";
 import { Monitor, Plug, Scale, ScanLine } from "lucide-react";
 import { useCatalogStore } from "@/stores/catalog-store";
-import { catalogDefaults } from "@/features/cms/data/settings";
+import { catalogDefaults } from "@/features/site/data/settings";
 import Link from "next/link";
 
 export function CategoryNavigation({

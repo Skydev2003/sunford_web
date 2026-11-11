@@ -64,8 +64,8 @@ test("deployment rejects mismatched environments and missing credentials before 
   assert.throws(() => deploymentEnvironment({}, "main"), /Configure DATABASE_URL/);
 });
 
-test("deployment stops immediately after a failed migration, seed or build", () => {
-  for (let failure = 0; failure < 3; failure++) {
+test("deployment stops immediately after a failed registry migration or build", () => {
+  for (let failure = 0; failure < 2; failure++) {
     const called = [];
     assert.equal(
       runDeployment((script) => {
@@ -104,7 +104,7 @@ test("CLI check validates both Vercel branches without touching the database", (
       },
     });
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /No migrations, seed or build were run/);
+    assert.match(result.stdout, /No migrations or build were run/);
   }
 });
 
@@ -148,5 +148,5 @@ test("Vercel rejects wrong target settings before any database mutation", () => 
     called.push(script);
     return { status: 0 };
   }, deploymentEnvironment(cloud));
-  assert.deepEqual(called, ["db:deploy", "db:seed", "build"]);
+  assert.deepEqual(called, ["db:deploy", "build"]);
 });

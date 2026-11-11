@@ -4,9 +4,11 @@ import sourcePages from "../data/pages.json";
 import type { SourcePage, SourceProduct } from "../types";
 import { products as curated } from "@/features/catalog/data/products";
 import { productSources } from "@/features/catalog/data/product-sources";
-import { getDocuments } from "@/features/cms/server/documents";
+import { getDocuments } from "@/features/site/server/documents";
 import { publicPath } from "../data/public-paths.mjs";
 import { solutions, solutionsIndex } from "../data/solutions";
+import { warehouseContentPage } from "../data/warehouse-content";
+import { getProducts } from "@/features/catalog/server/product-repository";
 
 export { getSnapshotProducts } from "../data/catalog-snapshot";
 
@@ -53,8 +55,15 @@ function mergePages(documents: Awaited<ReturnType<typeof getDocuments>>): Source
     ...originals,
   ];
 }
-export async function getContentPages(): Promise<SourcePage[]> {
+export async function getHomeContentPages(): Promise<SourcePage[]> {
   return mergePages(await getDocuments("page"));
+}
+
+export async function getContentPages(): Promise<SourcePage[]> {
+  const products = await getProducts();
+  return mergePages(await getDocuments("page")).map((page) =>
+    warehouseContentPage(page, products, false),
+  );
 }
 export async function getContentPageIndex(): Promise<Record<string, SourcePage>> {
   const documents = await getDocuments("page");
@@ -88,7 +97,8 @@ export async function getContentPageIndex(): Promise<Record<string, SourcePage>>
   return index;
 }
 export async function getContentPage(path: string) {
-  return (await getContentPageIndex())[normalize(path)] as SourcePage | undefined;
+  const page = (await getContentPageIndex())[normalize(path)] as SourcePage | undefined;
+  return page ? warehouseContentPage(page, await getProducts()) : undefined;
 }
 
 export function getSourceProduct(slug: string) {

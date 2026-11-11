@@ -48,6 +48,7 @@ export function catalogProductGroup(product: Product): CatalogGroup | undefined 
       } as Record<string, CatalogGroup>
     )[product.warehouseCategoryId];
   }
+  if (product.warehouseSku) return undefined;
   const source = originalProduct(product);
   if (
     ["10732", "10733", "10838", "10839", "10840", "10841", "10842", "10843", "10844"].includes(
@@ -69,6 +70,7 @@ export function catalogProductGroup(product: Product): CatalogGroup | undefined 
 }
 
 export function catalogProductCategory(product: Product): Product["category"] {
+  if (product.warehouseSku) return product.category;
   const group = catalogProductGroup(product);
   if (group === "/product/scale-accessories") return "accessories";
   if (group === "/Product/POS") return "pos";
@@ -98,6 +100,7 @@ const accessorySectionIndex = sectionIndexes([
 
 /** Fill gaps in older subcategory indexes without changing existing memberships. */
 export function supplementalCatalogSection(product: Product): string | undefined {
+  if (product.warehouseSku) return undefined;
   const source = originalProduct(product);
   const sourceId = source?.sourceId ?? product.sourceId ?? "";
   const group = catalogProductGroup(product);

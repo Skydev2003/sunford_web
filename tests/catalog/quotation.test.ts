@@ -53,12 +53,17 @@ test("a verified complete kit includes its head exactly once in either selection
 });
 
 test("Warehouse SKU, unit and net price are preserved to the satang", () => {
-  const item = { sku: "001", product_name: "สินค้า", unit: "ชุด", sale_price: 1.07 };
+  const item = {
+    warehouseSku: "001",
+    name: "สินค้า",
+    warehouseUnit: "ชุด",
+    warehouseNetUnitSatang: 107,
+  };
   assert.deepEqual(pricedProducts([item]), [
     { id: "001", name: "สินค้า", unit: "ชุด", unitSatang: 107 },
   ]);
-  for (const sale_price of [NaN, Infinity, -1, 0, 0.001])
-    assert.throws(() => pricedProducts([{ ...item, sale_price }]));
+  for (const warehouseNetUnitSatang of [NaN, Infinity, -1, 0, 0.001, null, undefined])
+    assert.deepEqual(pricedProducts([{ ...item, warehouseNetUnitSatang }]), []);
 });
 test("VAT is added once to the document net, rounded to the nearest satang", () => {
   assert.deepEqual(quotationTotals(100000), { net: 100000, vat: 7000, gross: 107000 });

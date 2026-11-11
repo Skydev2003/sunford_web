@@ -4,7 +4,7 @@ Public content was imported and checked on 26 October 2026. The main content sou
 
 The products landing page follows the supplied [Apple Thailand Store layout reference](https://www.apple.com/th/store): a large introduction, image category rail, horizontal product and accessory shelves, assistance cards, benefits and quick links. Images and content remain Sunford's. Missing editorial photos have reserved image slots. The complete searchable catalogue is available from the category rail and “ดูทั้งหมด” control.
 
-The interactive homepage category panels follow the four-column section on [Sunford's homepage](https://www.sunford.co/), checked on 27 October 2026. Hovering or selecting a category changes the shared background and reveals its details. Titles and descriptions use the existing `showcase` CMS settings with source-backed defaults; links respect the configured homepage destinations. Backgrounds are stored locally in `public/images/home-categories/`:
+The interactive homepage category panels follow the four-column section on [Sunford's homepage](https://www.sunford.co/), checked on 27 October 2026. Hovering or selecting a category changes the shared background and reveals its details. Titles and descriptions use the local `showcase` settings in `data/site/content.json` with source-backed defaults; links respect the configured homepage destinations. Backgrounds are stored locally in `public/images/home-categories/`:
 
 | File             | Original Sunford asset                                                                                                          |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |

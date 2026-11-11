@@ -631,3 +631,52 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Observed: earlier checks used `127.0.0.1` and had HMR handshake failures, while direct `localhost` HMR and builder selection worked. The dev log explicitly recorded cross-origin rejection of the IP alias.
 - Root cause: Next implicitly permits localhost but the existing exact LAN/UAT `allowedDevOrigins` list omitted `127.0.0.1`. The previous bundler workaround did not isolate this hostname difference.
 - Correct behavior: compare the actual hostname/origin handshakes before changing bundlers or clearing caches. Keep `127.0.0.1` explicitly allowed, preserve exact LAN/UAT entries, and use the project's Node 24 runtime. After authorized restart, default Turbopack HMR passed on both names and a real source-update/restoration probe retained builder state. The earlier unresolved-dev/Webpack workaround is superseded. Verify current listener/CLI identity again after config saves because Next may restart the child with a new PID.
+
+## ตรวจแหล่งข้อมูลและเสนอวิธีที่ง่ายกว่าก่อนเพิ่ม API
+
+- เหตุการณ์ (11 พฤศจิกายน 2026) — หน้าใบเสนอราคาเคยเรียกราคาจาก Warehouse อีกครั้ง ทั้งที่โปรเจกต์มี SKU และราคาที่บันทึกไว้แล้ว ผู้ใช้ชี้ว่าการแยกโปรเจกต์ทำให้เผลอสรุปว่าต้องเรียกข้อมูลผ่านอีกแอปเสมอ
+- หลักตัดสินใจ — เริ่มจากถามว่าต้องใช้ข้อมูลสดหรือข้อมูล ณ วันที่บันทึก แล้วตรวจว่ามีตัวอ่านข้อมูลเดิมหรือไม่ ถ้าสองโปรเจกต์ใช้ฐานเดียวกันจริง และบัญชีฝั่งเซิร์ฟเวอร์ของโปรเจกต์ที่ต้องการข้อมูลมีสิทธิ์อ่านตารางหรือวิวที่เกี่ยวข้อง ให้พิจารณาใช้คำสั่งอ่านหรือฟังก์ชันเดิมโดยตรง ตรวจด้วยการอ่านตัวอย่างโดยใช้บัญชีของแอป การเชื่อมต่อฐานสำเร็จเพียงอย่างเดียวยังไม่ยืนยันสิทธิ์อ่านข้อมูลนั้น
+- เมื่อกฎสำคัญอยู่ที่บริการต้นทาง เช่น สิทธิ์เห็นสินค้า สถานะเผยแพร่ หรือการเลือกราคา ให้ใช้วิว ฟังก์ชัน หรือ API ที่บังคับกฎนั้นอยู่แล้ว เพื่อให้แต่ละโปรเจกต์ได้ผลตรงกัน
+- ข้อตกลงของ SUNFORD — หน้าสินค้าและใบเสนอราคาอ่าน SKU และราคาก่อน VAT จาก `data/warehouse/products.json` ชุดเดียวกัน โดยเรียก Warehouse ตอนนำเข้าด้วย `npm run warehouse:snapshot` ส่วน `DATABASE_URL` ของเว็บใช้กับ CMS การตัดสินใจนี้ไม่ได้ตั้งอยู่บนสมมติฐานว่าเว็บมีสิทธิ์อ่านฐาน Warehouse โดยตรง
+- ความต้องการของผู้ใช้ — เมื่อพบว่าวิธีหรือคำสั่งที่เสนอมีขั้นตอนซ้ำ ให้ทักทันทีและเสนอวิธีที่ง่ายกว่าก่อนลงมือ ระบุสั้น ๆ ว่าลดขั้นตอนไหน และเงื่อนไขใดมีผลต่อคำตอบ เช่น สิทธิ์เข้าถึง ความสดของราคา หรือกฎธุรกิจ
+
+## Separate live Warehouse PostgreSQL from CMS (2026-11-11)
+
+- Owner chose automatic direct Warehouse reads and retained only positive sale prices; the prior saved-price-only runtime is superseded. Keep CMS DATABASE_URL/DIRECT_URL untouched and configure the independent WAREHOUSE_DATABASE_URL/company ID instead of routing reads through the Warehouse web app.
+- Correct behavior: use the shared bounded read-only pg reader for live catalog, fresh quotations and optional snapshot export. Keep snapshot photos only when item/version match; image bytes live in object storage, so PostgreSQL metadata alone does not retrieve a new image. Read changed images directly from the existing storage. Never use CMS credentials or stale saved prices as a silent fallback for a failed Warehouse read.
+
+## Warehouse cache retains image metadata only (2026-11-11)
+
+- Owner requested removing unnecessary historical product/price data while retaining photos/categories after direct PostgreSQL migration. `data/warehouse/products.json` and its snapshot writer are removed; `data/warehouse/images.json` retains only SKU, master item ID, source image version and local path for75 image references.
+- Correct behavior: read all product names/units/prices from PostgreSQL, preserve the physical image files and category/CMS mappings, and refresh cached photos with `bun run warehouse:images`. Do not recreate a product/price snapshot merely to keep local image lookup working. Verify both dependency removal and physical asset hashes when deleting the old dataset.
+
+## Warehouse photos take priority with versioned cache keys (2026-11-11)
+
+- Owner selected Warehouse-first product photos with CMS/editorial fallback. Preserve CMS rich content, category mapping, curated36 membership and campaign/3D artwork; removing CMS is a separate decision. Products/prices already work without a configured CMS database using local editorial defaults.
+- Correct behavior: derive `v` from current Warehouse `updated_at` for both saved-image and proxy URLs. Reuse saved bytes only when item/version match; changed photos must read storage directly, without requiring `warehouse:images`. Forward the optional fallback through cards, detail galleries, search/comparison and builder. Keep the existing catalog revalidation timing explicit; open pages require refresh/navigation, and storage-only writes without a metadata version change cannot be detected.
+- Observed: the installed Next default rejects local image URLs with queries, and its optimizer cannot consume an internal307 redirect. Correct behavior: allow query strings only on Warehouse cached-photo/SKU-image paths and return image bytes for versioned proxy requests. Test the real optimizer with two unique versions and confirm separate production cache MISS responses. Wait for the existing carousel `data-interactive` marker before interaction tests; SSR-visible labels alone do not prove its event engine is initialized.
+
+## Public content no longer reads CMS (2026-11-11)
+
+- Owner requested removing CMS while retaining fallback photos, specs, descriptions and existing content locally. Static site helpers moved from features/cms to features/site; data/site/content.json stores the9 current settings/navigation records. Original159 product-content records,401 pages and all public assets are preserved; Warehouse remains the sole product/price/primary-photo source.
+- Correct behavior: use local site document/settings readers and existing imported product/page files for editorial content. Never let a legacy DATABASE_URL reactivate product, cmsDocument or homepageImage reads. Preserve versioned Warehouse photos and local fallbacks. Local content changes require normal build/deployment; Warehouse values retain their existing automatic revalidation.
+- A concurrent non-CMS quotation registry uses Prisma and DATABASE_URL/DIRECT_URL. Correct behavior: retain that registry/client/schema/migration history and keep it separate from read-only Warehouse. CMS removal does not authorize deleting registry code or dropping database tables. CMS seed/catalog import tools are removed; production deployment retains registry migration and build only, without CMS seeding.
+- Observed: the path audit tried reading deleted CMS files still in the Git index. Root cause: it assumed every indexed path existed. Correct behavior: include untracked replacements and filter the audit inventory to existing working-tree files before reading them; audit local site JSON links too.
+
+## Warehouse-only product cards (2026-11-11)
+
+- Owner replaced the former editorial-fallback rule for product cards. Card/search/comparison fields must use Warehouse-only photo, description and verified technical facts. Leave missing fields empty and exclude conflicting fact values.
+- Project Warehouse data through productCardData/clientProductData; keep those projections independent from rich product-detail editorial data. Never let hardcoded photos or category-derived technical labels refill empty Warehouse card values.
+
+## Warehouse-only product details (2026-11-11)
+
+- Owner extended the Warehouse-only rule to product detail pages, superseding prior editorial fallback preservation for these pages. Use warehouseDetailProduct through getProduct and short-circuit legacy productPresentation/media/source/video/3D paths for Warehouse SKUs.
+- Populate detail rows from uniquely valued verified Warehouse facts and item_description. Omit unavailable or conflicting fields, and preserve the price0 inquiry state. Related cards must retain their Warehouse-only projection.
+
+
+## Warehouse-only interior products, homepage exception (2026-11-11)
+
+- Owner extended Warehouse-only product fields to interior pages, API, carousel, configurator, quotations and product documents, then explicitly preserved the Hero/homepage presentation. Correct behavior: keep `getHomeProducts` and `getHomeContentPages` scoped to `/`; use the authoritative Warehouse projection for interior consumers. Do not propagate a sitewide product migration into homepage campaign media or copy when this exception applies.
+- Do not restore absent Warehouse photos, specifications, descriptions or compatibility from old editorial data. Retain old route IDs only for URL identity. Confirmed component rows or verified compatibility facts are required before offering a pairing or assuming a bundled price.
+- Repeated rich-content sanitation during every page lookup made static generation unnecessarily expensive. Correct behavior: sanitize only the requested document, memoize its source-independent blank layout, and use lightweight projections for lists/indexes. Keep raw source access confined to the approved homepage exception.
+- Warehouse connections terminated intermittently during production generation despite healthy direct reads. Correct behavior: permit one bounded retry for known transient read failures; surface schema/data errors immediately and verify the retry bound with regression tests. Empty guide paragraphs require stable positional React keys, because cleared paragraph text is no longer unique.

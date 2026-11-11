@@ -18,7 +18,7 @@ export function SolutionsPage({ page }: { page: SourcePage }) {
         <ChevronRight size={14} />
         <span>{page.title}</span>
       </nav>
-      {page.text.trim() ? (
+      {page.text.trim() || page.warehouseOnly ? (
         <article
           className={`container ${styles.article} solution-source--${solution?.id}${["lot-serial", "pos", "windows", "driver"].includes(solution?.id ?? "") ? " source-prose" : ""}`}
           dangerouslySetInnerHTML={{ __html: page.html }}

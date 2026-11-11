@@ -4372,3 +4372,120 @@ Use products-index-carousel.json for the carousel only, resolve confirmed detail
 Verified on localhost:3002: 103 products with images, including all 75 with saved Warehouse photos. The Next.js optimizer returned image data for all 102 distinct catalog image URLs. Chromium decoded G107169 on its directory card and detail gallery. TypeScript and 137 catalog tests passed.
 
 Pass the existing server-side saved-image resolver into the shared catalog projection. Test the resulting image URLs in the directory and detail gallery, including G107169, and check saved image coverage.
+
+## Plan: Show zero-priced Warehouse products
+
+Owner authorized displaying zero-priced products with inquiry pricing on 2026-11-11.
+
+- [x] src/features/services/warehouse-postgres.ts — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/types.ts — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/data/client-products.ts — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/catalog-product-card.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/product-card.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/catalog-overlays.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/product-storefront.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/products-index-content.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/products-overview.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/app/(site)/products/[slug]/page.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/content/components/weighing-builder.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/app/warehouse-products-test/page.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] tests/catalog/warehouse-postgres.test.ts — update eligibility, price display/projection or regression as applicable.
+- [x] Verify catalog tests, types, scoped formatting/lint and browser search/detail at mobile/desktop. Update spec.md / plan.md with results.
+
+Verification passed on 2026-11-11. Catalog unit suite 152/152, TypeScript, scoped ESLint and Prettier. Actual API returns 484 public SKUs including129 inquiry-price products. Browser checked inquiry text for all129 on the products directory. FCS-150-AW31 / G106445 detail and name/SKU search pass at1440px and390px. Paid product detail remains numeric and pricedProducts excludes the zero-price SKU while retaining G106537. No production deployment performed.
+
+## Plan: Warehouse-only product cards
+
+- [x] src/features/services/warehouse-postgres.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/server/product-repository.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/types.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/warehouse-products.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/warehouse-card-data.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/client-products.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/catalog-decision-facts.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/server/product-categories.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/components/catalog-product-card.tsx — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/components/product-storefront.tsx — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/components/product-category-mock.tsx — Warehouse card contract, projection, display or regression.
+- [x] tests/catalog/warehouse-card-data.test.ts — Warehouse card contract, projection, display or regression.
+- [x] Verify real cards at390/1440px, source field equality, missing values and existing pricing. Update results in spec/plan. Changes are reversible by restoring card projection and its Warehouse fact enrichment.
+
+- [x] tests/catalog/local-site-content.test.ts — extend isolated Warehouse stub for the new read-only card fact query.
+
+Verified:153/153 catalog tests, TypeScript, scoped ESLint/Prettier passed. Live484-product card data matches Warehouse verified facts.97 source photos,69 capacities and38 connection values. Directory/search with missing Warehouse photos and subgroup card facts passed at390px/1440px. Local source content remains available to detail/editorial callers. No deployment.
+
+## Plan: Warehouse-only product details
+- [x] src/features/services/warehouse-postgres.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/types.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/data/warehouse-card-data.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/data/warehouse-detail-data.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/server/product-repository.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/data/product-presentation.ts — authoritative detail data, rendering or regression.
+- [x] src/app/(site)/products/[slug]/page.tsx — authoritative detail data, rendering or regression.
+- [x] tests/catalog/warehouse-detail-data.test.ts — authoritative detail data, rendering or regression.
+- [x] tests/catalog/warehouse-image-priority.test.ts — authoritative detail data, rendering or regression.
+- [x] Verify real Warehouse field values/blank states, paid/inquiry prices, image sources, dialogs and metadata on mobile/desktop; catalog tests/typecheck/lint/format; record results.
+
+Verified on2026-11-11.155/155 catalog tests, TypeScript, scoped ESLint and Prettier passed. Browser checked Warehouse-only detail gallery, headings/metadata, all spec rows, dialog interaction, no fallback videos/3D and paid/inquiry prices at390px and1440px. G107572 has no Warehouse photo/description/specs and shows no legacy replacements; G106193 displays its27 verified attributes; G106445 displays17 attributes and inquiry pricing. No page errors observed.
+
+## Plan: Sitewide Warehouse-only product content
+- [x] src/features/services/warehouse-postgres.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/types.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/data/warehouse-products.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/data/warehouse-card-data.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/data/warehouse-site-data.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/server/product-repository.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/server/product-topics.ts — authoritative Warehouse data or render integration.
+- [x] src/features/home/components/product-spotlight.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/home/components/category-feature.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/home/data/hero-slides.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/products-index-content.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/products-index-carousel.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/data/weighing-options.ts — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/weighing-builder.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/indicator-platform-compatibility-page.tsx — authoritative Warehouse data or render integration.
+- [x] src/app/(site)/service/quotation/page.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/server/content-repository.ts — authoritative Warehouse data or render integration.
+- [x] src/features/content/data/buying-guides.ts — authoritative Warehouse data or render integration.
+- [x] src/features/content/data/warehouse-content.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/scales-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/indicators-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/platforms-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/pos-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/accessories-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/app/(site)/products/page.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/home/components/source-showcase.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/solutions-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/solutions-page.tsx — authoritative Warehouse data or render integration.
+- [x] src/app/(site)/[...path]/page.tsx — authoritative Warehouse data or render integration.
+- [x] tests/catalog/warehouse-site-data.test.ts — authoritative Warehouse data or render integration.
+- [x] Adapt only superseded regression expectations; verify source data, responsive routes, zero prices, selection and quotation. Record outcomes.
+
+- [x] src/features/catalog/data/catalog-supplements.ts — stop legacy family inference for unclassified Warehouse SKUs.
+
+- [x] src/features/content/types.ts — mark documents with cleared product content for layout-preserving rendering.
+- [x] tests/catalog/client-payload.test.ts — replace superseded legacy-photo/kit assumptions with current Warehouse contract.
+- [x] tests/catalog/local-site-content.test.ts — replace superseded legacy-photo/kit assumptions with current Warehouse contract.
+- [x] tests/catalog/warehouse-products.test.ts — replace superseded legacy-photo/kit assumptions with current Warehouse contract.
+- [x] src/features/catalog/data/client-products.ts — expose Warehouse grouping to interior listings.
+- [x] src/features/content/components/video-gallery.tsx — restored original implementation after the homepage exception removed the need for empty video slots; no final application change.
+
+- [x] src/features/home/server/home-products.ts and src/app/(site)/page.tsx — scoped homepage source exception to restore prior presentation.
+
+- [x] tests/catalog/warehouse-postgres.test.ts — regress one bounded retry for transient disconnection observed during production generation; data/schema failures still surface.
+
+### Homepage correction and final regression scope
+
+The owner explicitly requested preserving Hero/homepage. Restore its settings, campaign media, story copy and actual videos, with a homepage-only reader. Keep shared layout, Navbar and styles unchanged. Verify at390/1440px that the Hero video and description match the existing homepage data and that the8 distinct stories and12 distinct video links remain present. Empty interior guide paragraphs use positional keys to avoid duplicate-key warnings after legacy prose is cleared. Reversibility remains limited to the listed source projections/renderers; no Warehouse writes or data deletion.
+
+### Verification Results
+
+Verified on2026-11-11:157/157 catalog regressions, TypeScript, scoped ESLint, Prettier and diff checks passed. Final Node24 production build generated795/795 pages with2 workers. Live public API contains484 eligible Warehouse products and no legacy product photo/description/media fallback. Development browser checked homepage and11 interior route families at390/1440px, including software/solutions/guides/configurator, inquiry pricing and search. Inspected homepage screenshots confirm the original Hero video/copy,8 distinct stories and12 distinct video links. Production browser checked homepage plus all5 category overviews at both widths with no console or page errors. Actual quotation selection G106537 at quantity2 yielded net13,065.42,VAT7%914.58,total13,980.00 and an A4 PDF download. Tests mocked document-number issuance; no registry/source data writes or deployment. Confirmed Warehouse builder pairings remain empty until verified source relationships exist. Homepage is the sole approved editorial presentation exception.
+
+Final Next.js feedback review: no framework defect retained; the observed transient database reads, avoidable content processing and duplicate empty React keys were application issues resolved and verified. No feedback submission.
+
+Warehouse commit dependencies: includes the direct PostgreSQL/storage reader, image-only cache, local site-content replacement of CMS reads and read-only product projections. Existing quotation PDF/numbering and builder sidebar changes are intentionally not staged. Hero/homepage presentation remains the approved exception. Standalone commit verification is recorded in the commit delivery task.
+
+### Warehouse commit verification (2026-11-11)
+
+The owner authorized separating Warehouse and carousel commits and pushing safe. The Warehouse commit includes the PostgreSQL/image pipeline and local-site dependencies, with partial quotation and builder staging to leave the independent PDF/numbering/sidebar work local. Tested the actual staged tree in an isolated export:154/154 catalog tests,27/27 UAT, TypeScript and scoped formatting/lint passed. Standalone build generated793/793 pages with Node24 and Webpack. Turbopack's hermetic root rejected the external dependency junction in this temporary export; no application config change was staged. Production smoke verified484 Warehouse products, source photo/description equality, original Hero video, carousel interaction and an actual priced SKU at quantity2 with VAT7%, native print and PDF rendering. Unrelated working files and environment secrets were preserved.

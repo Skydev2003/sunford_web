@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
     agentFeedback: true,
   },
   images: {
+    localPatterns: [
+      { pathname: "**", search: "" },
+      { pathname: "/images/warehouse-cache/**" },
+      { pathname: "/api/products/*/image" },
+    ],
     remotePatterns: process.env.SUPABASE_URL
       ? [
           {

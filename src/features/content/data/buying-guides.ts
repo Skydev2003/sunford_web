@@ -11,7 +11,7 @@ export type BuyingGuide = {
   }[];
 };
 
-export const buyingGuides: BuyingGuide[] = [
+const guideLayouts: BuyingGuide[] = [
   {
     slug: "scales",
     title: "เลือกเครื่องชั่งให้เหมาะกับงาน",
@@ -217,3 +217,14 @@ export const buyingGuides: BuyingGuide[] = [
     ],
   },
 ];
+
+// These headings and routes define the existing page layout. Product prose is supplied by Warehouse.
+export const buyingGuides = guideLayouts.map((guide) => ({
+  ...guide,
+  introduction: "",
+  sections: guide.sections.map((section) => ({
+    ...section,
+    paragraphs: section.paragraphs.map(() => ""),
+    links: section.links,
+  })),
+}));

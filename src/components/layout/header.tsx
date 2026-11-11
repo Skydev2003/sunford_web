@@ -20,10 +20,10 @@ import {
   defaultNavigation,
   defaultNavigationExtras,
   defaultNavigationGroups,
-} from "@/features/cms/data/navigation";
-import { defaultSite } from "@/features/cms/data/settings";
-import { getPrimaryNavigationItems } from "@/features/cms/data/primary-navigation";
-import type { NavigationItem, SiteSettings } from "@/features/cms/types";
+} from "@/features/site/data/navigation";
+import { defaultSite } from "@/features/site/data/settings";
+import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
+import type { NavigationItem, SiteSettings } from "@/features/site/types";
 
 function navigateSamePageHash(event: { preventDefault: () => void }, href: string) {
   const destination = new URL(href, window.location.href);

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { load } from "cheerio";
 import ts from "typescript";
 
@@ -10,7 +10,7 @@ const files = execFileSync(
   { encoding: "utf8" },
 )
   .split("\0")
-  .filter(Boolean);
+  .filter((file) => file && existsSync(file));
 const failures = new Set();
 let paths = 0;
 function check(value, location) {
@@ -64,6 +64,7 @@ for (const file of files) {
 }
 for (const name of ["pages", "products"])
   inspect(JSON.parse(readFileSync(`src/features/content/data/${name}.json`, "utf8")), name);
+inspect(JSON.parse(readFileSync("data/site/content.json", "utf8")), "site");
 assert.equal(failures.size, 0, [...failures].join("\n"));
 console.log(
   `Checked ${files.length} filenames and ${paths} internal URL references: no Thai paths.`,

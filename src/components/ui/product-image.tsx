@@ -5,6 +5,7 @@ import { ImageIcon } from "lucide-react";
 
 export function ProductImage({
   src,
+  fallbackSrc,
   alt,
   fill,
   width,
@@ -15,6 +16,7 @@ export function ProductImage({
   className,
 }: {
   src?: string;
+  fallbackSrc?: string;
   alt: string;
   fill?: boolean;
   width?: number;
@@ -24,8 +26,14 @@ export function ProductImage({
   unoptimized?: boolean;
   className?: string;
 }) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  if (!src || failedSrc === src)
+  const [failedSources, setFailedSources] = useState<string[]>([]);
+  const displayed =
+    src && !failedSources.includes(src)
+      ? src
+      : fallbackSrc && !failedSources.includes(fallbackSrc)
+        ? fallbackSrc
+        : undefined;
+  if (!displayed)
     return (
       <div
         className={`media-placeholder ${fill ? "media-placeholder-fill" : ""} ${className ?? ""}`}
@@ -38,7 +46,7 @@ export function ProductImage({
     );
   return (
     <Image
-      src={src}
+      src={displayed}
       alt={alt}
       fill={fill}
       width={width}
@@ -47,7 +55,11 @@ export function ProductImage({
       preload={preload}
       unoptimized={unoptimized}
       className={className}
-      onError={() => setFailedSrc(src)}
+      onError={() =>
+        setFailedSources((previous) =>
+          previous.includes(displayed) ? previous : [...previous, displayed],
+        )
+      }
     />
   );
 }

@@ -6404,3 +6404,62 @@ Reference: the owner's screenshot, existing carousel CSS and `src/styles/base.cs
 ### Impact / Rollback / Missing information
 
 R2: scoped row layout and horizontal selection-follow behavior only. Changes are confined to the carousel TSX/CSS and browser tests. Preserve task-owned file snapshots for rollback. No missing input remains after the owner's direct bug-fix instruction; no redesign, product/data change or deployment is included.
+
+## Task: Show zero-priced Warehouse products
+
+Status: "Ready to Code"
+Approval: "Approved by owner request on 2026-11-11"
+
+### Goal / contract
+Include active, saleable, nondeleted Warehouse products with a zero sale price in storefront and search. Display สอบถามราคา wherever those products show a price. Keep positive prices and VAT calculation. Zero is an inquiry state represented by catalog price=null, never a free quotation line. Retain existing public SKU exclusions and unit/company validation.
+
+### Plan / acceptance
+Change the Warehouse SQL eligibility to >=0, forward price to card/search projections, render inquiry text in cards/search/details/current price surfaces and builder, update the existing SQL regression, and verify real zero-price SKU G106445 in API/search/detail on desktop/mobile. Check priced quotations still exclude unknown prices.
+UI follows existing price markup and typography. Impact includes catalog membership and image lookup, reversible by reverting this task's SQL and display changes.
+
+### Zero-price task completed and verified (2026-11-11)
+Current Warehouse contract includes standard_sale_price >=0. Catalog converts zero to price=null and preserves warehouseNetUnitSatang=0. Price is forwarded to cards/search; inquiry products display สอบถามราคา. Existing quotation eligibility remains positive-price-only. Verified484 actual public products including129 inquiry products, every inquiry directory label, mobile/desktop search and detail, paid pricing and quotation eligibility. Catalog tests152/152, TypeScript, scoped lint/format passed.
+
+## Task: Warehouse-only product cards
+Status: "Ready to Code"
+Approval: owner requested Warehouse-only cards, leaving unavailable fields empty (2026-11-11).
+Contract: product card and shared client/search/comparison projections receive Warehouse-only name/photo/description/specifications; use current item_description and uniquely valued verified AI product facts where available. Empty source fields stay empty. Price0 continues to mean inquiry. Preserve category navigation, SKU/URL identity, detail/editorial source content and curated campaign sections. Cards do not display fallback photos, old badges or inferred technical facts from local categories.
+Verification: regression with deliberately conflicting old/new data and absent fields, live comparison against Warehouse, directory/category/search on desktop/mobile, catalog tests/typecheck/scoped lint.
+
+Warehouse-only cards completed 2026-11-11. Card projections now use Warehouse photo/description/verified facts with empty missing fields. Raw SQL item_description and verified ai_product_facts are card sources. Conflicting values are omitted. Original product IDs/URLs and price0 inquiry semantics retained. Browser verified directory/search/subcategory on mobile/desktop and all484 fact projections against live Warehouse.153 catalog tests, TypeScript, scoped lint/format passed.
+
+## Task: Warehouse-only product details
+Status: "Ready to Code"
+Approval: owner requested Warehouse-only product detail pages with empty missing fields on2026-11-11.
+Contract: product detail identity/name, descriptions, price, photo and verified specifications are from Warehouse. Extend the existing Warehouse fact read to all attributes, retain zero as inquiry, omit ambiguous values and unverified facts. Empty fields receive no old gallery, text, video or 3D product data. Existing category/return/contact navigation and SKU URL identities remain functional.
+Plan: collect all verified facts, project an authoritative detail Product through getProduct, short-circuit legacy presentation and page lookups, render only nonempty Warehouse rows using existing safe text rendering, and regress missing/conflicting fields and actual browser output on390/1440px. Impact is the product detail data/presentation plus additive specification records on the internal catalog. Reversible via these task changes.
+
+Warehouse-only details completed and verified2026-11-11. getProduct now projects authoritative Warehouse-only product fields. productPresentation uses Warehouse photo and warehouseSpecifications only for Warehouse SKUs; page skips legacy source/snapshot/media/video/3D lookups. Warehouse fact query now includes all verified attributes and text/numeric/option-array values; conflicting values are omitted. Absent data stays empty. Related cards use the previous Warehouse-only projection.155/155 catalog tests, TypeScript, scoped lint/format and390px/1440px browser checks passed for sparse, rich and price0 records.
+
+## Task: Sitewide Warehouse-only product content
+Status: "Ready to Code"
+Approval: owner authorized replacing all remaining old product content with Warehouse-only values and blank absent fields, preserving layout (2026-11-11).
+Scope: full interior Product/API source, carousel, taxonomy membership and topics, builder/quotation photos and compatibility, product guides, software/solutions/technical/article product content. Homepage/Hero is an explicit presentation exception following the owner correction below. Keep existing UI section headings, route labels, structures, navigation, contact/company information and CSS. Route identity aliases may retain old identifiers solely for existing URLs.
+Use Warehouse item groups/types, current prices/images/descriptions and verified facts as data. Missing compatibility must not claim a pairing or bundled price. Legacy rich product documents retain HTML structure but clear old facts/media when Warehouse supplies none. Existing page route shells remain.
+Risk: unsupported model pairs and unpopulated document fields become empty. Scope is display/read-only data; no Warehouse writes or data deletion. Rollback restores scoped product projections/rendering.
+Verification: source audit for remaining active old product reads, regression for poisoned legacy fields, live484-SKU integrity, runtime routes and responsive screenshots, source data/price/blank and compatibility checks, scoped formatting/lint/typecheck/build as feasible.
+
+Scope correction from owner: preserve the Hero/homepage presentation. Treat the homepage as an explicit exception to Warehouse-only product prose/media, restoring its original settings/campaign images/videos/story data. Continue Warehouse-only work for interior pages/API/cards/details.
+
+### Current contract — homepage exception
+
+- Homepage/Hero reads `getHomeProducts` and `getHomeContentPages` so existing campaign photos, local editorial presentation, stories and videos remain available on `/` only. Interior card/detail/API consumers read the Warehouse-only projection. This exception supersedes the initial homepage migration scope.
+- Source names, descriptions, groups, primary photos, prices and uniquely valued verified technical facts drive interior product content. Stable legacy IDs/slugs are retained as URL identities, without contributing missing product attributes.
+- Configurator compatibility and included components require verified Warehouse evidence. Current source has no confirmed builder pairings, so unsupported partners remain unavailable rather than restoring the previous static pairing table.
+- Product document shells retain their existing structure while unsupported old prose/media is cleared. Software listings use current Warehouse software products.
+- Warehouse remains read-only. Product reads retry once only for transient connection failures. Schema/data errors still surface.
+
+### Verification and delivery
+
+Verified on2026-11-11:157/157 catalog regressions, TypeScript, scoped ESLint, Prettier and diff checks passed. Final Node24 production build generated795/795 pages with2 workers. Live public API contains484 eligible Warehouse products and no legacy product photo/description/media fallback. Development browser checked homepage and11 interior route families at390/1440px, including software/solutions/guides/configurator, inquiry pricing and search. Inspected homepage screenshots confirm the original Hero video/copy,8 distinct stories and12 distinct video links. Production browser checked homepage plus all5 category overviews at both widths with no console or page errors. Actual quotation selection G106537 at quantity2 yielded net13,065.42,VAT7%914.58,total13,980.00 and an A4 PDF download. Tests mocked document-number issuance; no registry/source data writes or deployment. Confirmed Warehouse builder pairings remain empty until verified source relationships exist. Homepage is the sole approved editorial presentation exception.
+
+Warehouse commit dependencies: includes the direct PostgreSQL/storage reader, image-only cache, local site-content replacement of CMS reads and read-only product projections. Existing quotation PDF/numbering and builder sidebar changes are intentionally not staged. Hero/homepage presentation remains the approved exception. Standalone commit verification is recorded in the commit delivery task.
+
+### Warehouse commit verification (2026-11-11)
+
+The owner authorized separating Warehouse and carousel commits and pushing safe. The Warehouse commit includes the PostgreSQL/image pipeline and local-site dependencies, with partial quotation and builder staging to leave the independent PDF/numbering/sidebar work local. Tested the actual staged tree in an isolated export:154/154 catalog tests,27/27 UAT, TypeScript and scoped formatting/lint passed. Standalone build generated793/793 pages with Node24 and Webpack. Turbopack's hermetic root rejected the external dependency junction in this temporary export; no application config change was staged. Production smoke verified484 Warehouse products, source photo/description equality, original Hero video, carousel interaction and an actual priced SKU at quantity2 with VAT7%, native print and PDF rendering. Unrelated working files and environment secrets were preserved.

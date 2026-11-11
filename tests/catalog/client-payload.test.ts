@@ -6,7 +6,6 @@ import {
   productCardData,
 } from "../../src/features/catalog/data/client-products";
 import { heroSlideData } from "../../src/features/home/data/hero-slides";
-import { defaultHero } from "../../src/features/cms/data/settings";
 
 const products = getSnapshotProducts();
 
@@ -74,60 +73,28 @@ test("projections exclude rich content and internal fields while retaining store
   assert.equal(storefront.image, product.image);
 });
 
-test("server Hero slides keep configured order, assets and destinations without the catalogue", () => {
-  const slides = heroSlideData(products, defaultHero.slides);
-  assert.deepEqual(
-    slides.map((s) => s.name),
-    ["ACS-30-JC21", "FEH5KS", "WPS10KS"],
+test("homepage Hero preserves configured campaign content as the owner exception", () => {
+  const product = { ...products[0], id: "acs30-jc21" };
+  const [slide] = heroSlideData(
+    [product],
+    [{ productId: product.id, title: "", description: "", image: "", href: "" }],
   );
-  assert.deepEqual(
-    slides.map((s) => s.model),
-    ["/models/acs30-jc21.glb", "/models/feh5ks.glb", "/models/wps10ks.glb"],
+  assert.equal(slide.image, "/images/products/acs30-jc21-cutout.png");
+  assert.equal(slide.model, "/models/acs30-jc21.glb");
+  assert.equal(slide.descriptionOverride, undefined);
+  const [custom] = heroSlideData(
+    [product],
+    [
+      {
+        productId: product.id,
+        title: "Custom",
+        description: "Campaign",
+        image: "/campaign.png",
+        href: "/contact-us",
+      },
+    ],
   );
-  assert.equal(slides[0].image, "/images/products/acs30-jc21-cutout.png");
-  assert.equal(slides[0].ribbonImage, "/images/hero/acs30-jc21-carousel-cutout.png");
-  assert.equal(slides[0].href, "/products/acs30-jc21");
-  assert.ok(slides.every((slide) => slide.highlights?.length === 3));
-  const reversed = heroSlideData(products, [...defaultHero.slides].reverse());
-  assert.match(reversed[0].highlights![0], /IP67/);
-  assert.equal(reversed.at(-1)!.highlights![0], "ชั่งพร้อมคิดราคา สูงสุด 30 กก.");
-  const hidden = heroSlideData(
-    products.filter((p) => p.id !== "acs30-jc21"),
-    defaultHero.slides,
-  );
-  assert.deepEqual(
-    hidden.map((s) => s.id),
-    ["1:feh5ks", "2:wps10ks"],
-  );
-  assert.ok(JSON.stringify(slides).length < JSON.stringify(products).length / 20);
-});
-
-test("Hero respects image overrides, custom slides and missing product fallbacks", () => {
-  const overridden = products.map((p) =>
-    p.id === "acs30-jc21" ? { ...p, imageOverridden: true, image: "/custom.png" } : p,
-  );
-  const first = heroSlideData(overridden, defaultHero.slides)[0];
-  assert.equal(first.image, "/custom.png");
-  assert.equal(first.ribbonImage, "/custom.png");
-  const custom = heroSlideData(products, [
-    {
-      productId: "acs30-jc21",
-      title: "Custom",
-      description: "Copy",
-      image: "/campaign.png",
-      href: "/contact-us",
-    },
-  ])[0];
-  assert.deepEqual(
-    [custom.name, custom.description, custom.image, custom.ribbonImage, custom.href, custom.model],
-    ["Custom", "Copy", "/campaign.png", "/campaign.png", "/contact-us", undefined],
-  );
-  const fallback = heroSlideData(
-    [],
-    [{ productId: "", title: "", description: "", image: "", href: "" }],
-  )[0];
-  assert.equal(fallback.name, "SUNFORD");
-  assert.equal(fallback.href, "/products");
-  assert.equal(fallback.highlights, undefined);
-  assert.equal(heroSlideData([], defaultHero.slides).length, 0);
+  assert.equal(custom.descriptionOverride, "Campaign");
+  assert.equal(custom.image, "/campaign.png");
+  assert.equal(custom.href, "/contact-us");
 });

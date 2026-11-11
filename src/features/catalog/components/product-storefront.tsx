@@ -1,6 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useCategories } from "@/features/cms/components/categories-provider";
+import { useCategories } from "@/features/site/components/categories-provider";
 import Link from "next/link";
 import { Check, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
@@ -58,14 +58,17 @@ function StoreProductCard({
                   currency: "THB",
                   maximumFractionDigits: 0,
                 }).format(product.price)
-              : product.capacity !== "—"
-                ? `พิกัด ${product.capacity}`
-                : "ดูรายละเอียดผลิตภัณฑ์"}
+              : product.warehouseSku && product.price === null
+                ? "สอบถามราคา"
+                : product.capacity !== "—"
+                  ? `พิกัด ${product.capacity}`
+                  : "ดูรายละเอียดผลิตภัณฑ์"}
           </p>
         </div>
         <div className="store-product-image">
           <ProductImage
             src={product.image}
+            fallbackSrc={product.fallbackImage}
             alt={`SUNFORD ${product.name}`}
             fill
             sizes={compact ? "(max-width: 720px) 75vw, 280px" : "(max-width: 720px) 85vw, 400px"}
@@ -106,7 +109,10 @@ export function ProductStorefront({
   const setQuery = useCatalogStore((state) => state.setQuery);
   const storeProducts = products.map((product) => ({
     ...product,
-    image: product.imageOverridden ? product.image : (cleanImages[product.id] ?? product.image),
+    image:
+      product.warehouseSku || product.imageOverridden
+        ? product.image
+        : (cleanImages[product.id] ?? product.image),
   }));
   const browse = showAll || category !== "all" || Boolean(query.trim());
   const featured = ["rls1100", "wps10ks", "feh5ks", "tis150", "pos1100", "acs30-jc21"].flatMap(
@@ -178,7 +184,13 @@ export function ProductStorefront({
               onClick={() => openCatalogue(item.id)}
             >
               <div className="store-category-image">
-                <ProductImage src={product?.image} alt={item.label} fill sizes="120px" />
+                <ProductImage
+                  src={product?.image}
+                  fallbackSrc={product?.fallbackImage}
+                  alt={item.label}
+                  fill
+                  sizes="120px"
+                />
               </div>
               <span>
                 {originalCategories.find((original) => original.id === item.id)?.label ===
@@ -232,6 +244,7 @@ export function ProductStorefront({
               <div className="store-editorial-image">
                 <ProductImage
                   src={accessories[0]?.image}
+                  fallbackSrc={accessories[0]?.fallbackImage}
                   alt="อุปกรณ์ประกอบเครื่องชั่ง Sunford"
                   fill
                   sizes="320px"

@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { getProducts } from "./product-repository";
+import { getStorefrontProducts } from "./product-repository";
 import { getCatalogPage } from "./catalog-page";
 import { getClientProducts } from "./client-products";
 import { getScaleSubcategories } from "../data/scale-subcategories";
@@ -13,7 +13,7 @@ import { catalogCardName } from "../data/catalog-card-names";
 import { productCategoryDefinitions } from "../data/mock-categories";
 
 export const getProductCategories = cache(async () => {
-  const catalogProducts = await getProducts();
+  const catalogProducts = await getStorefrontProducts();
   const warehouse = catalogProducts.some((product) => product.warehouseSku);
   const products = warehouse ? catalogProducts : deduplicateConsumableSizes(catalogProducts);
   const categories = await Promise.all(
@@ -51,12 +51,8 @@ export const getProductCategories = cache(async () => {
   const clientProducts = (await getClientProducts()).filter(
     (product) => warehouse || productIds.has(product.id),
   );
-  const productsById = new Map(products.map((product) => [product.id, product]));
   const cardNames = Object.fromEntries(
-    clientProducts.map((product) => [
-      product.id,
-      catalogCardName(productsById.get(product.id) ?? product),
-    ]),
+    clientProducts.map((product) => [product.id, catalogCardName(product)]),
   );
   return { products: clientProducts, categories, cardNames };
 });

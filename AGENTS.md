@@ -23,7 +23,9 @@
 
 - Next.js 16 App Router, React 19 และ TypeScript 5
 - CSS Modules และ CSS ที่มีอยู่ใน `src/styles/` โดยโหลด Global Styles ผ่าน `src/app/globals.css`
-- Prisma ORM 7 และ PostgreSQL สำหรับการเข้าถึงข้อมูลที่มีอยู่
+- อ่านสินค้า ราคา และ metadata รูปจาก Warehouse PostgreSQL ด้วย `pg` ฝั่งเซิร์ฟเวอร์ และอ่านรูปหลักจาก storage เดิม
+- เนื้อหาเว็บ สเปก คำอธิบาย รูปสำรอง และค่าตั้งเว็บอยู่ในไฟล์ของโปรเจกต์ (`data/site/content.json`, `src/features/site/`, `src/features/content/data/`) ไม่มีการอ่าน CMS
+- เก็บ Prisma ORM 7 และ PostgreSQL สำหรับทะเบียนเลขใบเสนอราคาที่แยกจาก Warehouse รวมถึงประวัติ migration เดิม ห้ามนำการถอด CMS ไปทำให้ทะเบียนเอกสารเสียหรือรัน DROP ตารางเดิม
 - Node.js 24; ใช้คำสั่งตรวจสอบและ Release ที่กำหนดไว้ใน `package.json`
 
 ไม่เพิ่ม Tailwind CSS, UI Library, Dependency หรือเปลี่ยน Stack เว้นแต่อยู่ใน Spec และ Plan ที่ผู้ใช้อนุมัติ
@@ -39,7 +41,7 @@
 
 ## Next.js Performance Strategy
 
-- ใช้ React Server Components (RSC) เป็นค่าเริ่มต้น และดึงข้อมูลผ่าน Prisma ฝั่งเซิร์ฟเวอร์
+- ใช้ React Server Components (RSC) เป็นค่าเริ่มต้น อ่านข้อมูลจาก Warehouse หรือไฟล์เนื้อหาตามขอบเขตข้างต้น
 - ใช้ Client Component (`"use client"`) เฉพาะส่วนที่มี Interactivity จริงเท่านั้น
 
 ## กระบวนการ Spec → Plan → Approval → Code

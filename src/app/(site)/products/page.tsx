@@ -1,26 +1,33 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { ProductsOverview } from "@/features/catalog/components/products-overview";
 import { ProductsIndexContent } from "@/features/catalog/components/products-index-content";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { buyingGuides } from "@/features/content/data/buying-guides";
-import { getSettings } from "@/features/cms/server/documents";
+import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
-} from "@/features/cms/data/navigation";
-import { defaultSite } from "@/features/cms/data/settings";
+} from "@/features/site/data/navigation";
+import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
-import { solutionImages } from "@/features/home/data/business-solutions";
-import { defaultSpotlightImage, defaultSpotlightProductId } from "@/features/home/data/image-slots";
 import styles from "@/features/catalog/components/products-overview.module.css";
 export const metadata: Metadata = { title: "ผลิตภัณฑ์ทั้งหมด" };
 async function getCopyrightYear() {
   "use cache";
   return new Date().getFullYear();
 }
-export default async function ProductsPage() {
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<p role="status">กำลังโหลดสินค้า…</p>}>
+      <ProductsContent />
+    </Suspense>
+  );
+}
+
+async function ProductsContent() {
   const { products: clientProducts, categories, cardNames } = await getProductCategories();
   const [navigation, site, copyrightYear] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
@@ -33,12 +40,7 @@ export default async function ProductsPage() {
         .map((id) => clientProducts.find((product) => product.id === id))
         .filter((product) => product?.image);
       const representative = members.find((product) => product?.featured) ?? members[0];
-      return [
-        category.id,
-        representative?.id === defaultSpotlightProductId
-          ? defaultSpotlightImage
-          : (representative?.image ?? solutionImages.feature),
-      ];
+      return [category.id, representative?.image ?? ""];
     }),
   );
   const guideBody = (guide: (typeof buyingGuides)[number]) => (
@@ -63,15 +65,18 @@ export default async function ProductsPage() {
       id: guide.slug,
       title: guide.title,
       introduction: guide.introduction,
-      image: photos.get(guide.slug) ?? solutionImages.feature,
+      image: photos.get(guide.slug) ?? "",
       href: `/guides/${guide.slug}`,
       content: guideBody(guide),
     })),
     {
       id: "software",
       title: "แอปพลิเคชันและซอฟต์แวร์",
-      introduction: "สำหรับงานค้าปลีก การผลิตอุตสาหกรรม และการดูแลครัวเรือนกับสุขภาพ",
-      image: solutionImages.software,
+      introduction: "",
+      image:
+        clientProducts.find(
+          (product) => product.warehouseGroup === "โปรแกรมและสิทธิ์ใช้งาน" && product.image,
+        )?.image ?? "",
       href: sunford.software,
       content: (
         <div className={styles.storyBlocks}>
@@ -82,7 +87,7 @@ export default async function ProductsPage() {
           </section>
           <section>
             <h3>เมื่อทุกอย่างเชื่อมถึงกัน ธุรกิจก็ไปได้ไกลขึ้น</h3>
-            <p>เครื่องชั่งและระบบ POS ที่ทำงานร่วมกัน เพื่อให้คุณมีเวลาโฟกัสกับสิ่งที่สำคัญกว่า</p>
+            <p></p>
             <Link href="/products/pos1100">ค้นพบ SUNFORD POS ›</Link>
           </section>
         </div>
@@ -134,13 +139,13 @@ export default async function ProductsPage() {
       title: "ดาวน์โหลดซอฟต์แวร์",
       detail: "แอปพลิเคชันและซอฟต์แวร์",
       href: sunford.downloads,
-      content: <p>สำหรับงานค้าปลีก การผลิตอุตสาหกรรม และการดูแลครัวเรือนกับสุขภาพ</p>,
+      content: <p></p>,
     },
   ];
   const accordion = [
     {
       title: "แท่นชั่ง และอินดิเคเตอร์",
-      image: photos.get("platforms") ?? solutionImages.feature,
+      image: photos.get("platforms") ?? "",
       content: (
         <>
           <p>{buyingGuides[1].sections[0].paragraphs[0]}</p>
@@ -150,7 +155,7 @@ export default async function ProductsPage() {
     },
     {
       title: "ระบบ POS และซอฟต์แวร์",
-      image: solutionImages.feature,
+      image: clientProducts.find((product) => product.image)?.image ?? "",
       content: (
         <>
           <p>{buyingGuides[3].sections[2].paragraphs[0]}</p>
@@ -160,7 +165,10 @@ export default async function ProductsPage() {
     },
     {
       title: "เครื่องชั่ง และอุปกรณ์เสริม",
-      image: solutionImages.accessories,
+      image:
+        clientProducts.find(
+          (product) => product.warehouseCategoryId === "accessories" && product.image,
+        )?.image ?? "",
       content: (
         <>
           <p>{buyingGuides[4].sections[0].paragraphs[0]}</p>

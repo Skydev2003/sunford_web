@@ -1,3 +1,5 @@
+import type { Product } from "../types";
+
 export const seller = {
   name: "บริษัท ไทยโกลบอล ธุรกิจพัฒนา จำกัด",
   address: "เลขที่ 554, 554/1 ถนนเอกชัย แขวงคลองบางพราน เขตบางบอน กรุงเทพมหานคร 10150",
@@ -8,17 +10,56 @@ export const seller = {
   bank: "ธนาคารกสิกรไทย · ออมทรัพย์ 035-8-53065-6",
 };
 
-export type QuoteProduct = { id: string; name: string; unit: string; unitSatang: number };
+export type QuoteProduct = {
+  id: string;
+  name: string;
+  documentName?: string;
+  categoryId?: string;
+  image?: string;
+  fallbackImage?: string;
+  unit: string;
+  unitSatang: number;
+};
 
 export function pricedProducts(
-  products: { sku: string; product_name: string; unit: string; sale_price: number }[],
+  products: (Pick<
+    Product,
+    "warehouseSku" | "name" | "warehouseName" | "warehouseUnit" | "warehouseNetUnitSatang"
+  > &
+    Partial<Pick<Product, "image" | "fallbackImage" | "warehouseCategoryId">>)[],
 ): QuoteProduct[] {
-  return products.map(({ sku, product_name, unit, sale_price }) => {
-    const unitSatang = Math.round(sale_price * 100);
-    if (!Number.isSafeInteger(unitSatang) || unitSatang <= 0 || unitSatang / 100 !== sale_price)
-      throw new RangeError("Invalid Warehouse unit price");
-    return { id: sku, name: product_name, unit, unitSatang };
-  });
+  return products.flatMap(
+    ({
+      warehouseSku,
+      name,
+      warehouseName,
+      warehouseCategoryId,
+      warehouseUnit,
+      warehouseNetUnitSatang,
+      image,
+      fallbackImage,
+    }) => {
+      if (
+        !warehouseSku ||
+        typeof warehouseNetUnitSatang !== "number" ||
+        !Number.isSafeInteger(warehouseNetUnitSatang) ||
+        warehouseNetUnitSatang <= 0
+      )
+        return [];
+      return [
+        {
+          id: warehouseSku,
+          name,
+          ...(warehouseName && { documentName: warehouseName }),
+          ...(warehouseCategoryId && { categoryId: warehouseCategoryId }),
+          ...(image && { image }),
+          ...(fallbackImage && { fallbackImage }),
+          unit: warehouseUnit ?? "",
+          unitSatang: warehouseNetUnitSatang,
+        },
+      ];
+    },
+  );
 }
 
 export function quotationTotals(net: number) {

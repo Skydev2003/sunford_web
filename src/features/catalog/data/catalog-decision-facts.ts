@@ -9,7 +9,10 @@ export function catalogFieldValue(value: string | undefined): string | null {
 }
 
 export function getCatalogDecisionFacts(
-  product: Pick<OverlayProduct, "id" | "subtitle" | "capacity" | "readability" | "connection">,
+  product: Pick<
+    OverlayProduct,
+    "id" | "subtitle" | "capacity" | "readability" | "connection" | "warehouseSku"
+  >,
   category?: ProductCategory,
 ): CatalogDecisionFact[] {
   const facts: CatalogDecisionFact[] = [];
@@ -17,6 +20,13 @@ export function getCatalogDecisionFacts(
     const text = catalogFieldValue(value);
     if (text) facts.push({ label, value: text });
   };
+  if (product.warehouseSku) {
+    add("พิกัดน้ำหนัก", product.capacity);
+    add("ค่าละเอียด", product.readability);
+    add("การเชื่อมต่อ", product.connection);
+    if (!facts.length) add("ข้อมูลสินค้า", product.subtitle);
+    return facts;
+  }
   if (category?.id === "indicators") {
     const display = category.subcategories.find(
       (child) =>

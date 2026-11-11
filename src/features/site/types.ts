@@ -1,5 +1,12 @@
-export type CmsValue = string | number | boolean | null | CmsValue[] | { [key: string]: CmsValue };
-export type CmsData = { [key: string]: CmsValue };
+export type ContentValue =
+  string | number | boolean | null | ContentValue[] | { [key: string]: ContentValue };
+export type ContentData = { [key: string]: ContentValue };
+export type SiteDocument = {
+  id: string;
+  kind: string;
+  data: ContentData;
+  deletedAt?: string | null;
+};
 export type Category = { id: string; label: string; english: string };
 export type ProductMedia = {
   price: number | null;
