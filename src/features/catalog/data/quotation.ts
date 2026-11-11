@@ -77,24 +77,22 @@ export type QuotePreset = {
 
 export function selectedQuoteItems(models: string[], presets: QuotePreset[]) {
   const byCode = new Map(presets.map((item) => [item.code, item]));
-  const ids: string[] = [];
+  const items: { id: string; includedIn?: string; model?: string }[] = [];
   const pending: string[] = [];
   const selected = new Set(models);
-  const included = new Set(
-    presets
-      .filter((item) => selected.has(item.code) && item.pricedId)
-      .flatMap((item) => item.includesCodes ?? []),
-  );
-  for (const code of new Set(models)) {
-    const item = byCode.get(code);
-    if (included.has(code)) continue;
-    if (!item) {
-      pending.push(code);
-      continue;
+  const kitByModel = new Map<string, string>();
+  for (const code of selected) {
+    const kit = byCode.get(code);
+    if (kit?.pricedId) {
+      for (const model of kit.includesCodes ?? []) kitByModel.set(model, kit.pricedId);
     }
-    if (item.pricedId) {
-      if (!ids.includes(item.pricedId)) ids.push(item.pricedId);
-    } else pending.push(item.label);
   }
-  return { ids, pending };
+  for (const code of selected) {
+    const item = byCode.get(code);
+    const includedIn = kitByModel.get(code);
+    if (includedIn) items.push({ id: item?.pricedId ?? code, includedIn, model: code });
+    else if (item?.pricedId) items.push({ id: item.pricedId });
+    else pending.push(item?.label ?? code);
+  }
+  return { items, pending };
 }

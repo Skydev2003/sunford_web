@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="th">
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ออกใบเสนอราคา | SUNFORD</title>
+  <style>
+    /* embedded-font */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font:
+        16px Quotation,
+        Arial,
+        sans-serif;
+      color: #171719;
+      background: #f6f6f7;
+      margin: auto;
+      padding: 24px;
+      max-width: 760px;
+    }
+    form {
+      padding: 24px;
+      background: #fff;
+      border-radius: 12px;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+    input,
+    textarea {
+      display: block;
+      font: inherit;
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
+    button {
+      font: inherit;
+      background: #cb0000;
+      color: white;
+      padding: 10px 20px;
+      border: 0;
+      border-radius: 5px;
+    }
+  </style>
+  <main>
+    <h1>ออกใบเสนอราคา</h1>
+    <p>เลือก PDF ที่ลูกค้าส่งมา แล้วกรอกข้อมูลของผู้ขายเพื่อดาวน์โหลดใบเสนอราคาฉบับสมบูรณ์</p>
+    <form>
+      <label
+        >PDF จากลูกค้า<input type="file" name="source" accept="application/pdf" required
+      /></label>
+      <label>หมายเหตุ / เงื่อนไขรับประกัน<textarea name="note" maxlength="250"></textarea></label>
+      <label
+        >รูปลายเซ็นผู้อนุมัติ<input
+          name="signature"
+          type="file"
+          accept="image/png,image/jpeg"
+          required
+      /></label>
+      <label
+        >รูป QR ของใบนี้<input name="qr" type="file" accept="image/png,image/jpeg" required
+      /></label>
+      <button>ดาวน์โหลดใบเสนอราคา PDF</button>
+      <p role="status"></p>
+    </form>
+  </main>
+  <script>
+    /* embedded-app */
+  </script>
+</html>
