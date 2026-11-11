@@ -1,5 +1,11 @@
 # Project Memory
 
+## Current policy — 2026-11-12
+
+Interior product fields, photos, prices and verified specifications use Warehouse only. Leave missing values empty and display zero prices as inquiry; automatic quotations require positive net prices and add VAT7% once. No file-based product/price fallback or legacy editorial image/spec filling. Homepage/Hero retains its explicitly approved local presentation exception. Keep the quotation-number registry separate from read-only Warehouse.
+
+Earlier notes are historical when they conflict with this policy. Retained imported product records/images are reference/homepage data. Six customer-map deletions are explicitly held outside the current safe commits. Use distinct output directories for concurrent Playwright runs to avoid deleting another run's active traces.
+
 ## Logo alignment in the Home Navbar flyout
 
 - At tablet widths the all-products links started 32px to the right of the logo. The panel used a header-relative offset inside a narrower, centered stage.
@@ -613,6 +619,8 @@
 
 ## Warehouse catalog publication and quotation source
 
+Historical policy. The current SKU publication and pricing source is recorded below in “ตรวจแหล่งข้อมูลและเสนอวิธีที่ง่ายกว่าก่อนเพิ่ม API”.
+
 - Owner decision: Public product consumers use actual Warehouse G-prefix SKUs. Keep unclear subgroup, model/content collisions, non-G alternatives and service/shipping records parked. Prisma remains the source of existing website/CMS metadata; never migrate the Warehouse schema to satisfy website queries.
 - Correct behavior: Use the shared product repository and explicit SKU/model memberships for every product consumer. Preserve verified legacy IDs/URLs, honor CMS hidden/deleted records, and do not revive snapshot products when the API removes an item or fails. Read prices net of VAT from Warehouse, derive gross public prices, and quote an exact complete kit once rather than adding the included head again.
 
@@ -631,6 +639,18 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Observed: earlier checks used `127.0.0.1` and had HMR handshake failures, while direct `localhost` HMR and builder selection worked. The dev log explicitly recorded cross-origin rejection of the IP alias.
 - Root cause: Next implicitly permits localhost but the existing exact LAN/UAT `allowedDevOrigins` list omitted `127.0.0.1`. The previous bundler workaround did not isolate this hostname difference.
 - Correct behavior: compare the actual hostname/origin handshakes before changing bundlers or clearing caches. Keep `127.0.0.1` explicitly allowed, preserve exact LAN/UAT entries, and use the project's Node 24 runtime. After authorized restart, default Turbopack HMR passed on both names and a real source-update/restoration probe retained builder state. The earlier unresolved-dev/Webpack workaround is superseded. Verify current listener/CLI identity again after config saves because Next may restart the child with a new PID.
+
+## Keep carousel model selectors bounded as data grows
+
+- Observed: a dynamic category expanded to 41 model buttons; the unbounded centered flex row started hundreds of pixels outside the viewport while its parent clipped overflow, so a document-width check alone missed inaccessible labels.
+- Root cause: the old selector assumed a small fixed group, allowed flex label compression/wrapping and had no horizontal bounds; scene wheel/touch handlers could also consume row gestures.
+- Correct behavior: bound the row to its existing gutters, keep label buttons unwrapped and non-shrinking, permit native row scrolling, and follow the active label using horizontal-only scrolling. Exclude that row from scene navigation handlers. Verify first/last labels and active bounds at mobile/desktop widths, alongside scene gestures and detail returns. Preserve the later owner-approved curated36 membership and hidden scrollbar policy when checking this layout fix.
+
+## Close opening motion after hydration but before scrolling
+
+- Observed: A one-scan entrance animated the server-rendered title, then delayed child hydration replaced that node and left the final mobile title without the approved opening motion.
+- Root cause: Treating the first layout scan as the end of page opening did not account for delayed client chunks and hydration replacements.
+- Correct behavior: Keep opening eligibility through document load and hydration mutations, settle it after two stable animation frames, and close it immediately on the first scroll. New offscreen or post-opening content must remain static. Verify cold delayed hydration, client navigation, reload and scrolling separately without writing motion state into child React attributes.
 
 ## ตรวจแหล่งข้อมูลและเสนอวิธีที่ง่ายกว่าก่อนเพิ่ม API
 
@@ -662,6 +682,7 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Correct behavior: use local site document/settings readers and existing imported product/page files for editorial content. Never let a legacy DATABASE_URL reactivate product, cmsDocument or homepageImage reads. Preserve versioned Warehouse photos and local fallbacks. Local content changes require normal build/deployment; Warehouse values retain their existing automatic revalidation.
 - A concurrent non-CMS quotation registry uses Prisma and DATABASE_URL/DIRECT_URL. Correct behavior: retain that registry/client/schema/migration history and keep it separate from read-only Warehouse. CMS removal does not authorize deleting registry code or dropping database tables. CMS seed/catalog import tools are removed; production deployment retains registry migration and build only, without CMS seeding.
 - Observed: the path audit tried reading deleted CMS files still in the Git index. Root cause: it assumed every indexed path existed. Correct behavior: include untracked replacements and filter the audit inventory to existing working-tree files before reading them; audit local site JSON links too.
+  Product subgroup navigation: awaiting params in a default page before rendering its Suspense boundary caused the Next.js instant-navigation insight across multiple group families. Keep the page wrapper synchronous, pass the params promise to a child inside the route-local boundary, and verify both direct entry and navigation from the product menu.
 
 ## Warehouse-only product cards (2026-11-11)
 
@@ -672,7 +693,6 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 
 - Owner extended the Warehouse-only rule to product detail pages, superseding prior editorial fallback preservation for these pages. Use warehouseDetailProduct through getProduct and short-circuit legacy productPresentation/media/source/video/3D paths for Warehouse SKUs.
 - Populate detail rows from uniquely valued verified Warehouse facts and item_description. Omit unavailable or conflicting fields, and preserve the price0 inquiry state. Related cards must retain their Warehouse-only projection.
-
 
 ## Warehouse-only interior products, homepage exception (2026-11-11)
 
@@ -685,3 +705,9 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 
 - Warehouse verified highlight text can contain full long descriptions. Using this value in the existing fixed-height carousel expanded the desktop copy into neighboring product photos; only the mobile summary had a line limit.
 - Correct behavior: constrain the carousel summary with3desktop/tablet lines and2mobile lines in its local CSS. Preserve complete source text in the existing detail view. When changing product sources, verify the longest actual summary across all carousel entries and responsive widths, alongside title/spec/control geometry.
+
+## Current product policy and grouped safe delivery (2026-11-12)
+
+- Warehouse-only interior fields supersede earlier snapshot/editorial fallback notes. Preserve only the explicitly approved homepage/Hero presentation exception. Keep reference imports without using them to fill missing interior product data.
+- Owner authorized committing all remaining work by group while holding6 customer-map deletions. Validate the committed candidate with those map files retained from Git; do not restore,stage or delete them as part of the delivery. Correct browser expectations that still assume old static pairs or editorial photos without changing product behavior.
+- Keep current documentation distinguishable from historical verification. Do not present old SKU counts, positive-only eligibility, fallback-photo rules or file-based prices as active instructions.
