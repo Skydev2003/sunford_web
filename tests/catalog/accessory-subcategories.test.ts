@@ -34,7 +34,7 @@ test("first four owner lists preserve exact document identifiers and order; cons
     children.map((child) => child.entries!.filter((entry) => !entry.productId).length),
     [1, 3, 2, 1, 0],
   );
-  assert.equal(parent.length, 39);
+  assert.equal(parent.length, 46);
   assert.equal(
     new Set(
       children

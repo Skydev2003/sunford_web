@@ -15,8 +15,8 @@ const legacyPages = pages.filter((page) =>
   /[\u0e00-\u0e7f]/.test(decodeURIComponent(new URL(page.sourceUrl).pathname)),
 );
 
-test("all 111 legacy paths map to distinct English pages without new case collisions", () => {
-  assert.equal(legacyPages.length, 111);
+test("all 112 legacy paths map to distinct English pages without new case collisions", () => {
+  assert.equal(legacyPages.length, 112);
   const paths = new Set();
   for (const page of legacyPages) {
     const original = new URL(page.sourceUrl).pathname;

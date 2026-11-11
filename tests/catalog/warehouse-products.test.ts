@@ -244,6 +244,34 @@ test("all five category projections contain only actual mapped products", () => 
   }
 });
 
+test("official accessories keep their SKU routes, live prices and photo priority", () => {
+  for (const [sku, id, group] of [
+    ["G107121", "10712", "accessory-cables"],
+    ["G107145", "10714", "accessory-cables"],
+    ["G108456", "10845", "accessory-mechanical"],
+    ["G108463", "10846", "accessory-mechanical"],
+    ["G108470", "10847", "accessory-mechanical"],
+    ["G108494", "10849", "accessory-mechanical"],
+    ["G108500", "10850", "accessory-mechanical"],
+  ]) {
+    const item = items.find((row) => row.sku === sku)!;
+    const local = warehouseCatalog([item], editorial)[0];
+    assert.equal(local.sourceId, id);
+    assert.equal(local.id, `warehouse-${sku}`);
+    assert.equal(local.slug, local.id);
+    assert.equal(local.category, "accessories");
+    assert.deepEqual(local.warehouseSubcategoryIds, [group]);
+    assert.match(local.image, /^\/images\/imported\//);
+    const updated = warehouseCatalog(
+      [{ ...item, sale_price: 12, image_url: "/image?v=2" }],
+      editorial,
+    )[0];
+    assert.equal(updated.image, `/api/products/${sku}/image?v=2`);
+    assert.equal(updated.fallbackImage, local.image);
+    assert.equal(updated.warehouseNetUnitSatang, 1200);
+  }
+});
+
 test("configurator uses Warehouse SKU identity and requires source evidence for bundled heads", () => {
   const options = getWeighingOptions(warehouseSiteProducts(warehouseCatalog(items, editorial)));
   assert(options.every((option) => option.sku?.startsWith("G") && option.productId));

@@ -1112,7 +1112,10 @@
     "html": "<div><div><div><div><div><div><h2>อุปกรณ์ส่งข้อมูล</h2></div><div><div><div><div><div><div></div></div><div><div></div><div><h3>ขออภัย ไม่มีสินค้าในคอลเลกชันนี้</h3></div></div></div></div></div></div></div></div></div></div><div><div>\n\n\n</div></div><div><div>\n\n\n</div></div></div>",
     "text": "อุปกรณ์ส่งข้อมูล\nขออภัย ไม่มีสินค้าในคอลเลกชันนี้",
     "images": [],
-    "productHandles": [],
+    "productHandles": [
+      "10712",
+      "10714"
+    ],
     "collectionIds": [],
     "videos": [],
     "kind": "page"
@@ -3755,7 +3758,10 @@
     "html": "<div><div><div><div><div><h1>สายส่งข้อมูล</h1></div></div></div></div><div><div><div><div><div></div></div><div><div></div><div><h3>ขออภัย ไม่มีสินค้าในคอลเลกชันนี้</h3></div></div></div></div></div><div><div></div></div><div><div>\n\n\n</div></div></div>",
     "text": "สายส่งข้อมูล\nขออภัย ไม่มีสินค้าในคอลเลกชันนี้",
     "images": [],
-    "productHandles": [],
+    "productHandles": [
+      "10712",
+      "10714"
+    ],
     "collectionIds": [],
     "videos": [],
     "kind": "collection"
@@ -6674,6 +6680,122 @@
     "images": [],
     "productHandles": [
       "10844"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "product"
+  },
+  {
+    "path": "/collections/content-a852d878c5035aa4",
+    "title": "จานชั่งลูกกลิ้งลำเลียง",
+    "sourceUrl": "https://www.sunford.co/collections/%E0%B8%88%E0%B8%B2%E0%B8%99%E0%B8%8A%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%A5%E0%B8%B9%E0%B8%81%E0%B8%81%E0%B8%A5%E0%B8%B4%E0%B9%89%E0%B8%87%E0%B8%A5%E0%B8%B3%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%87",
+    "html": "<div><div><div><div><div><h1>จานชั่งลูกกลิ้งลำเลียง</h1></div></div></div></div><div><div><div><div><div><div><div><span>สินค้าต่อหน้า</span><span></span></div></div><div><div>เรียงตามตัวอักษร A-Z</div></div></div></div><div><div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div><div><div><div></div></div><div><div></div><div><div></div><div></div><div></div></div><div></div><div></div></div></div></div><div><div><div></div><p>หน้าที่ 1 จาก 1</p><div></div></div></div></div></div></div></div><div><div></div></div><div><div>\n\n\n</div></div></div>",
+    "text": "จานชั่งลูกกลิ้งลำเลียง\nสินค้าต่อหน้าเรียงตามตัวอักษร A-Zหน้าที่ 1 จาก 1",
+    "images": [],
+    "productHandles": [
+      "10845",
+      "10849",
+      "10846",
+      "10850",
+      "10847"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "collection"
+  },
+  {
+    "path": "/products/10712",
+    "title": "RS232-USB",
+    "sourceUrl": "https://www.sunford.co/products/10712",
+    "html": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "text": "พื้นที่สำหรับรูปภาพ",
+    "images": [],
+    "productHandles": [
+      "10712"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "product"
+  },
+  {
+    "path": "/products/10714",
+    "title": "RS232 1M2F",
+    "sourceUrl": "https://www.sunford.co/products/10714",
+    "html": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "text": "พื้นที่สำหรับรูปภาพ",
+    "images": [],
+    "productHandles": [
+      "10714"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "product"
+  },
+  {
+    "path": "/products/10845",
+    "title": "จานชั่งลูกกลิ้งลำเลียง 40x50 (เข้าด้าน50)",
+    "sourceUrl": "https://www.sunford.co/products/10845",
+    "html": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "text": "พื้นที่สำหรับรูปภาพ",
+    "images": [],
+    "productHandles": [
+      "10845"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "product"
+  },
+  {
+    "path": "/products/10846",
+    "title": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 60)",
+    "sourceUrl": "https://www.sunford.co/products/10846",
+    "html": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "text": "พื้นที่สำหรับรูปภาพ",
+    "images": [],
+    "productHandles": [
+      "10846"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "product"
+  },
+  {
+    "path": "/products/10847",
+    "title": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 80)",
+    "sourceUrl": "https://www.sunford.co/products/10847",
+    "html": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "text": "พื้นที่สำหรับรูปภาพ",
+    "images": [],
+    "productHandles": [
+      "10847"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "product"
+  },
+  {
+    "path": "/products/10849",
+    "title": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 45)",
+    "sourceUrl": "https://www.sunford.co/products/10849",
+    "html": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "text": "พื้นที่สำหรับรูปภาพ",
+    "images": [],
+    "productHandles": [
+      "10849"
+    ],
+    "collectionIds": [],
+    "videos": [],
+    "kind": "product"
+  },
+  {
+    "path": "/products/10850",
+    "title": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 60)",
+    "sourceUrl": "https://www.sunford.co/products/10850",
+    "html": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "text": "พื้นที่สำหรับรูปภาพ",
+    "images": [],
+    "productHandles": [
+      "10850"
     ],
     "collectionIds": [],
     "videos": [],
