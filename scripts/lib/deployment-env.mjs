@@ -15,30 +15,21 @@ export function validateDeploymentEnvironment(env) {
     errors.push("APP_ENV must match the Vercel target: production or uat for preview.");
 
   // These credentials belong to the quotation registry; site content is local.
-  const required = ["DATABASE_URL"];
-  if (!preview) required.push("DIRECT_URL");
+  const required = ["QUOTATION_DATABASE_URL"];
   for (const name of required) {
     if (!env[name]?.trim() || env[name].includes("YOUR-PASSWORD"))
       errors.push(`Configure ${name} in the deployment environment variables.`);
   }
-  for (const name of ["DATABASE_URL", "DIRECT_URL"]) {
+  for (const name of required) {
     if (!env[name]) continue;
     try {
       const url = new URL(env[name]);
       if (!["postgres:", "postgresql:"].includes(url.protocol) || !url.username || !url.password)
         throw new Error();
-      if (name === "DIRECT_URL" && url.port === "6543")
-        errors.push("DIRECT_URL must use the session pooler (5432) or a direct connection.");
+      if (url.port === "6543")
+        errors.push("QUOTATION_DATABASE_URL must use a session pooler or direct connection.");
     } catch {
       errors.push(`${name} must be a PostgreSQL connection URL with credentials.`);
-    }
-  }
-  if (env.SUPABASE_URL) {
-    try {
-      const url = new URL(env.SUPABASE_URL);
-      if (url.protocol !== "https:" || url.username || url.password) throw new Error();
-    } catch {
-      errors.push("SUPABASE_URL must be an HTTPS project URL.");
     }
   }
   return errors;

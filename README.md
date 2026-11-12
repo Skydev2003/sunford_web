@@ -64,8 +64,8 @@ public/
 - `data/site/content.json` เก็บค่าตั้งเว็บและเมนู ตัวอ่านอยู่ใน `src/features/site/`
 - `src/features/content/data/products.json` เก็บสเปก คำอธิบาย แกลเลอรี และข้อมูลอ้างอิงสินค้าเดิม166รายการ ส่วน `pages.json` เก็บหน้าเนื้อหาเดิม409หน้า ไฟล์เหล่านี้เก็บเป็นข้อมูลอ้างอิงและใช้ในข้อยกเว้นหน้าแรก/Hero หน้าภายในไม่ใช้เติมชื่อ รูป สเปก หรือคำอธิบายที่ Warehouse ไม่มี
 - `public/images/` เก็บรูปอ้างอิง ภาพแคมเปญ และ cache รูป Warehouse ส่วน `data/warehouse/images.json` เก็บ metadata ของ cache รูป Warehouse
-- `DATABASE_URL` และ `DIRECT_URL` ใช้กับทะเบียนเลขใบเสนอราคาที่แยกจาก Warehouse และประวัติ migration เดิม ไม่มีการอ่านสินค้า/เนื้อหา CMS เครื่องพัฒนาใช้ SQLite ใน `.local/quotation-issues.sqlite` เมื่อไม่มีฐานทะเบียน ส่วน production ต้องตั้งฐานทะเบียนแยก ห้ามชี้ Prisma ไป Warehouse
-- เก็บ Prisma/client/schema และประวัติ migration เดิม แต่ถอด seed/import สินค้า CMS และคำสั่ง `db:seed` แล้ว งานนี้ไม่ลบตารางหรือข้อมูลจริงในฐานเดิม
+- `QUOTATION_DATABASE_URL` ใช้ Prisma กับทะเบียนของเว็บใน `warehouse_db.ecommerce.quotation_issues` แยกจาก counter เอกสารของ Warehouse และ pool อ่านสินค้า Production ต้องตั้งค่าการเชื่อมต่อนี้ เครื่องพัฒนาใช้ SQLite ใน `.local/quotation-issues.sqlite` เฉพาะเมื่อไม่ได้ตั้งค่าทะเบียน
+- เก็บ Prisma/client/schema และประวัติ migration เดิมเป็นอ้างอิง `db:deploy` ใช้ `scripts/migrate-quotation-registry.mjs` เพื่อตั้งค่า/ตรวจเฉพาะตารางทะเบียน ไม่รัน migration ของ CMS/auth เข้า Warehouse ไม่ใช้ `DATABASE_URL`, `DIRECT_URL` หรือ Supabase สำหรับเนื้อหา/ทะเบียนที่ runtime แล้ว
 
 สินค้า/ราคาและรูป Warehouse อัปเดตตามรอบ catalog เดิมโดยไม่ต้องรันคำสั่งนำเข้า รูปมีเวอร์ชันใน URL ส่วนหน้าภายในเว้นรูปว่างเมื่อ Warehouse ไม่มีรูป การแก้เนื้อหาในไฟล์โปรเจกต์ให้ตรวจและ build/deploy ตามกระบวนการเดิม
 
@@ -91,7 +91,7 @@ npm run start
 npm run db:validate
 ```
 
-สร้าง migration ใหม่ระหว่างพัฒนา: `npm run db:migrate -- --name descriptive_name` โดยต้องตั้งค่า `DIRECT_URL` และ shadow database ให้เหมาะกับสภาพแวดล้อมก่อน ไม่ควรใช้ `migrate dev` กับฐานข้อมูล production
+ตั้งค่า/ตรวจทะเบียนเลขเว็บด้วย `npm run db:deploy` หลังตั้ง `QUOTATION_DATABASE_URL` คำสั่งรันซ้ำได้และไม่รีเซ็ตเลข หาก schema ไม่ตรงจะหยุดแทนการเขียนทับ เก็บคำสั่ง/ประวัติ Prisma migration เดิมสำหรับอ้างอิงเท่านั้น ห้ามใช้ `db:migrate` หรือ migration เดิมกับ Warehouse
 
 ## ตรวจการใช้งานด้วยเบราว์เซอร์
 
@@ -119,11 +119,11 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 
 ## การดูแลเนื้อหา
 
-ดูแลเนื้อหาเว็บผ่านไฟล์ใน repository ไม่มีระบบ CMS หรือหน้าจัดการเนื้อหา สเปก/คำอธิบาย/รูปสำรองอยู่ครบ การตั้ง DATABASE_URL เก่าจะไม่เปิดการอ่าน CMS กลับมา ประวัติ schema/migrations ยังเก็บไว้เพื่อรักษาทะเบียนเอกสารและฐานเดิม โดยไม่มีการลบข้อมูลจริง
+ดูแลเนื้อหาเว็บผ่านไฟล์ใน repository ไม่มีระบบ CMS หรือหน้าจัดการเนื้อหา ข้อมูลสินค้าเดิมเก็บเป็นอ้างอิง/ข้อยกเว้นหน้าแรกเท่านั้น การตั้ง DATABASE_URL เก่าจะไม่เปิดการอ่าน CMS กลับมา ประวัติ schema/migrations ยังเก็บไว้เป็นอ้างอิง การลบ Supabase project เดิมเป็นขั้นตอนแยกหลังตรวจ production cutover ไม่ใช่งานของ build หรือ migration
 
 ## Deploy บน Vercel
 
-ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Warehouse PostgreSQL/storage สำหรับสินค้า และฐานแยกสำหรับทะเบียนเลขใบเสนอราคา ฟังก์ชันรันที่ Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1`
+ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Warehouse PostgreSQL/storage สำหรับสินค้า และตารางทะเบียนเลขของเว็บแยกใน schema ecommerce ฟังก์ชันยังรันที่ Mumbai (`bom1`) ตาม config เดิม จึงต้องตรวจการเชื่อมถึง Warehouse จาก region นี้
 
 Production จาก branch `main` รัน migration ทะเบียนเอกสาร → build ส่วน Preview รันเฉพาะ build ไม่มี CMS seed ตั้งค่า Warehouse และทะเบียนเอกสารแยก Production/Preview ดูขั้นตอน import repo, ตั้งค่า และย้าย URL ใน [docs/vercel.md](docs/vercel.md)
 

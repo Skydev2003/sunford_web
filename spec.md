@@ -121,12 +121,12 @@ Create a Warehouse database function returning the product, price, primary-image
 - Final validation: catalogue 161/161, UAT 27/27, TypeScript, scoped ESLint/Prettier and diff checks passed. Final bun run build succeeded and generated 795/795 pages after the last application change.
 - Seven existing browser regressions passed with PLAYWRIGHT_CHANNEL=chrome: source photos, all five categories/search/details at390/834/1440px, SKU/price/VAT handoff and PDF issue/retry. Quote issuance was mocked, not written to the real registry. Mobile/desktop screenshots were inspected.
 - Initial TypeScript failure came from missing installed pdf-lib packages already declared in the lockfile. Restored those exact versions with lockfile integrity verification, without package/lockfile edits. Initial browser attempts could not launch the absent Playwright binary; reran successfully using installed Chrome through the existing configuration. These environment issues are resolved and are not Next.js feedback candidates. Final reporting pass retained no framework issue.
-- Changes are local/uncommitted; no production deployment or old Supabase-project deletion occurred. Evidence is in ignored output/warehouse-product-rpc-20261112/.
+- RPC work was committed by the owner as6d4620d and subsequently released with the registry migration in production revisiond0a812eba3af. The old Supabase project remains untouched under the latest owner direction. RPC evidence is in ignored output/warehouse-product-rpc-20261112/.
 
 ## Task: Move the website quotation registry into Warehouse (2026-11-12)
 
 Status: "Ready to Code"
-Approval: "Direction approved; concrete application Spec/Plan pending review"
+Approval: "Approved — owner explicitly approved the registry Spec/Plan, deployment and old Supabase-project deletion"
 
 ### Goal
 
@@ -139,7 +139,7 @@ Remove the website's runtime/build dependency on the old Supabase database by ke
 - Retain Prisma 7, pg and all historical Prisma migrations. Configure the runtime PrismaPg adapter for the ecommerce schema through a dedicated server-side QUOTATION_DATABASE_URL, independently from the read-only product pool.
 - Replace automatic deployment of the historical CMS migration chain with a narrow, idempotent registry-only SQL setup. This may create/validate ecommerce.quotation_issues and its own constraints/privacy settings; it must not change other Warehouse objects.
 - Configure local and deployment environments for the new registry. Remove old Supabase connection/storage/auth settings only after source/deployment verification.
-- Validate local and production quotation behaviour before retiring the old project. Current implementation branch is sky; production publication must use clean committed uat and bun run deploy.
+- Validate local and production quotation behaviour before retiring the old project. Current implementation branch is codex/warehouse-quotation-registry; production publication must use clean committed uat and bun run deploy.
 
 ### Scope Out
 
@@ -162,28 +162,34 @@ Remove the website's runtime/build dependency on the old Supabase database by ke
 
 ### Acceptance Criteria
 
-- [ ] Registry setup touches only ecommerce.quotation_issues; a second run is safe and incompatible existing schemas are rejected.
-- [ ] Old registry history is rechecked/exported and all rows are preserved before cutover; current zero-row observation is not treated as a permanent guarantee.
-- [ ] Retrying the same UUID returns the same number/date; distinct UUIDs allocate distinct increasing numbers; failed/rolled-back operations do not leave verification records.
-- [ ] Product reads remain read-only and the exact current SKU/price/image behaviour is preserved.
-- [ ] No runtime or production build dependency remains on the old project; historical migrations are retained without executing their CMS/auth SQL on Warehouse.
-- [ ] Scoped type/lint/format, UAT/catalogue regressions, build and quotation/PDF browser verification pass. Production deployment/health and quotation access are verified before project deletion.
+- [x] Registry setup touches only ecommerce.quotation_issues; a second run is safe and incompatible existing schemas are rejected.
+- [x] Old registry exported0rows before the latest no-Supabase instruction. The verified live production revision c132b8e8db08 has no quotation-issuance route, so no old production allocator can issue numbers during cutover. No further Supabase access.
+- [x] Retrying the same UUID returns the same number/date; distinct UUIDs allocate distinct increasing numbers; failed/rolled-back operations do not leave verification records.
+- [x] Product reads remain read-only and the exact current SKU/price/image behaviour is preserved.
+- [x] No runtime or production build dependency remains on the old project; historical migrations are retained without executing their CMS/auth SQL on Warehouse.
+- [x] Scoped type/lint/format, UAT/catalogue regressions, build and quotation/PDF browser verification pass. Production deployment/health and quotation access are verified; the latest owner direction excludes project deletion.
 
 ### Missing Information
 
-- None for the local data contract. Supabase/Vercel account access is required for the external cutover/deletion task below and is not yet connected.
-- A concrete Spec/Plan review is still required before application edits under AGENTS.md; the owner's target/direction approvals are recorded below and will not be requested again.
+- None. Vercel official CLI authentication and project identity are verified. Latest owner steering stops Supabase management/deletion; continue the approved registry migration and deployment.
 
 ### Approval Record
 
 - Owner explicitly requested deletion of the old database and said quotations will use Warehouse.
 - Owner clarified deletion means the entire old Supabase project including Auth and Storage, and chose ย้ายทะเบียนเลขของเว็บไป warehouse_db after the proposal to preserve the website's numbering/idempotency separately from Warehouse document numbering.
-- This explicitly supersedes the previous separate-database rule for the quotation registry only. Warehouse products/stock remain read-only. The concrete file plan is now in plan.md and has not yet been approved.
+- This explicitly supersedes the previous separate-database rule for the quotation registry only. Warehouse products/stock remain read-only.
+- Owner explicitly said อนุมัติ Spec/Plan ย้ายทะเบียนเลขใบเสนอราคาไป Warehouse แล้ว deploy และลบ Supabase project เดิมให้เรียบร้อยเลย. This approves the concrete listed file plan, narrow registry installation, deployment through the mandated clean-uat release flow and whole old-project deletion after cutover. Do not ask for these approvals again.
+
+### Verification / Current State
+
+- Isolated registry installed/validated twice. Guard rejection, allocation sequencing and UUID/date idempotency checked in rollback-only transactions;0 verification rows persisted. Catalogue162/162, UAT28/28, TypeScript, local build795/795 and3 Warehouse/quotation/PDF browser checks passed. Independent read-only review found no concrete findings. Released through clean-uat bun run deploy asd0a812eba3af. Vercel reportsREADY and the public health endpoint confirms that exact revision. Production checks passed for484 unique products,97/97 primary photos, homepage video/poster and3 existing browser/PDF cases (issuance mocked; no real verification numbers).
+
+- All5 old DATABASE_URL/DIRECT_URL/SUPABASE connection settings were removed from Vercel after successful cutover. Warehouse settings and UAT_DEV_HOSTS remain. The old Supabase project was neither connected to again nor deleted. No framework feedback candidate arose during the final review.
 
 ## Task: Retire the old Supabase project after quotation cutover (2026-11-12)
 
-Status: "Need Information"
-Approval: "Deletion authorised — whole old Supabase project, including Auth and Storage"
+Status: "Stopped by owner — outside current scope"
+Approval: "Earlier deletion authorisation retained as history; latest owner instruction stops Supabase connection/management"
 
 ### Goal
 
@@ -220,17 +226,19 @@ Delete the exact old sunford_web Supabase project after the website no longer de
 
 ### Missing Information
 
-- Supabase and Vercel integrations were discovered but are not installed/connected. Suggestions were provided for both; account access is not yet confirmed.
-- Browser runtime could not start because of the host's symlinked writable-root configuration. No dashboard was accessed and no account/project/environment mutation occurred. Do not replace account-management authorization with database credentials.
+- Owner subsequently instructed ไม่ต้องเชื่อม Supabase อะไรเลย and clarified that the website displays product data owned by Project Warehouse, providing /Volumes/ssd/Developer/Verified/Documents/projects/sunford_warehouse as the source. Stop Supabase login/management/deletion work under this latest direction; continue the already-approved Warehouse registry/deployment work without Supabase runtime dependencies. No deletion is performed or claimed.
+- Vercel CLI OAuth login succeeded with the owner's confirmation. Browser automation remains unavailable because of host writable-root setup, so Vercel management uses its authenticated official CLI. The Warehouse source project was inspected read-only and remains unchanged.
 
 ### Approval Record
 
 - Owner answered ทั้งโปรเจกต์ รวม Auth และ Storage ด้วย. This is the actual deletion authorisation and must be preserved through later turns; do not ask for it again merely because cutover work takes time.
+- Latest steering stops Supabase connection/management. It supersedes the external deletion execution step for the current work; do not use the earlier permission to bypass that restriction.
 
 ### Verification / Current State
 
 - Old registry inspection used an explicit BEGIN READ ONLY transaction and returned zero records. Supabase pooler did not preserve the requested startup default_transaction_read_only, so explicit transaction mode was verified instead; every preflight statement was a read.
 - No database/schema/data/role or deployment changes have been performed for these tasks. Browser failed before initialization, and Supabase/Vercel account integrations remain unconnected. No framework issue was retained in the Next.js feedback pass.
+- The earlier preflight above is historical. Current work created only the isolated Warehouse registry and validated allocator/setup through rollback-only checks. No Supabase management session was established or project deleted. Old local DATABASE_URL/DIRECT_URL/SUPABASE_* keys were removed after the Warehouse replacement passed, and the website product source remains Warehouse RPC/Spaces.
 
 ## Task: Configure and verify the supplied Warehouse connection (2026-11-12)
 

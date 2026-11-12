@@ -5209,13 +5209,13 @@ Implementation groups:7da5530quotation/PDF; a6d3fd9sidebar;62755f8opening motion
 - Node 24.22.1: warehouse-postgres, warehouse-products, warehouse-image-priority and warehouse-site-data regression files passed 24/24 tests using node --import tsx --test. The tsx CLI's sandbox IPC restriction was avoided without modifying code or dependencies.
 - git check-ignore confirms .env.local is ignored. Final diff/whitespace inspection covers spec.md and plan.md only; the configuration file remains local. No production release, application build, responsive screenshot claim or source data mutation. Final Next.js feedback review found no framework issue.
 
-## Plan: Move the website quotation registry into Warehouse and retire Supabase
+## Plan: Move the website quotation registry into Warehouse and remove the old connection
 
-**Goal:** Keep the website's independent quotation numbering in warehouse_db, remove its old Supabase dependency and delete the exact old project last.
+**Goal:** Keep the website's independent quotation numbering in warehouse_db and remove its old Supabase dependency. Latest owner steering stops all Supabase account/deletion work; the old project is retained.
 
 **Architecture:** Retain Prisma 7 and the current allocator contract. Bind the registry adapter and explicitly qualified allocation SQL to ecommerce.quotation_issues through QUOTATION_DATABASE_URL; keep the product pool read-only. A narrow registry setup replaces production execution of the historical CMS migration chain, which remains archived unchanged.
 
-**Spec:** The two 2026-11-12 registry/cutover tasks at the beginning of spec.md. Execute inline in this chat after the concrete Spec/Plan is approved; account deletion itself is already authorised.
+**Spec:** The two 2026-11-12 registry/cutover tasks at the beginning of spec.md. Execute inline in this chat after the concrete Spec/Plan is approved; the earlier deletion step is superseded by the latest no-Supabase direction.
 
 ### Files
 
@@ -5255,17 +5255,17 @@ No shared UI/layout/CSS or historical Prisma migration file is changed. If addit
 - [x] Confirm the owner's whole-project deletion authorisation and isolated website-registry choice.
 - [x] Inspect source/deployment dependencies, old/new database identity and existing numbering history with read-only queries.
 - [x] Discover account-management options and record the currently unavailable browser/account access.
-- [ ] Obtain approval of this concrete application/file plan under AGENTS.md before editing application files.
-- [ ] Write focused failing regressions for the new registry environment/pool reuse contract and run them to establish the failure.
-- [ ] Implement the dedicated registry adapter/qualified allocator and narrow SQL setup in the listed files; keep the historical migrations intact.
-- [ ] Configure local QUOTATION_DATABASE_URL, export/recheck old history, create/validate only ecommerce.quotation_issues and reconcile any newly issued rows without silently overwriting conflicts.
-- [ ] Verify allocation/retry/date behaviour in a rollback-only live transaction, leaving no test allocations. Run affected UAT/catalogue tests, typecheck, lint, format and build; run existing quotation/PDF browser checks at mobile/desktop sizes where browser access is available.
-- [ ] Update documentation/policy and remove confirmed-unused local Supabase settings after the replacement works.
-- [ ] Authenticate Supabase/Vercel management access, match the exact project/site identities and prepare the new production environment. No raw management tokens/passwords in chat.
-- [ ] Commit approved changes on clean uat and run bun run deploy; do not push production directly or use Vercel CLI deployment. Coordinate old-registry locking/issuance pause and final history migration during cutover.
-- [ ] Verify the deployed revision/health, Warehouse products/images/homepage and quotation registry before releasing the old-registry lock and retiring its connection.
-- [ ] Delete only the confirmed old Supabase project, including Auth/Storage, using the existing user authorisation. Verify service-reported deletion and post-deletion site operation.
-- [ ] Record actual outcomes and any unresolved blocker; never report deletion before it happens.
+- [x] Obtain approval of this concrete application/file plan: owner explicitly approved the registry Spec/Plan, deployment and deletion.
+- [x] Write focused failing regressions for the new registry environment/pool reuse contract and run them to establish the failure.
+- [x] Implement the dedicated registry adapter/qualified allocator and narrow SQL setup in the listed files; keep the historical migrations intact.
+- [x] Configure local QUOTATION_DATABASE_URL, export/recheck old history, create/validate only ecommerce.quotation_issues and reconcile any newly issued rows without silently overwriting conflicts.
+- [x] Verify allocation/retry/date behaviour in a rollback-only live transaction, leaving no test allocations. Run affected UAT/catalogue tests, typecheck, lint, format and build; run existing quotation/PDF browser checks at mobile/desktop sizes where browser access is available.
+- [x] Update documentation/policy and remove confirmed-unused local Supabase settings after the replacement works.
+- [x] Prepare the verified Vercel production environment through its authenticated official CLI. Do not connect to Supabase. No raw management tokens/passwords in chat.
+- [x] Commit approved changes on clean uat and run bun run deploy; do not push production directly or use Vercel CLI deployment. Coordinate old-registry locking/issuance pause and final history migration during cutover.
+- [x] Verify the deployed revision/health, Warehouse products/images/homepage and quotation registry, then remove the unused old connection settings. No old production allocator existed to lock.
+- [x] Stop Supabase login/deletion per the latest owner direction. The old project remains untouched; no deletion claim.
+- [x] Record actual outcomes. No Supabase deletion was performed under the latest direction.
 
 ### Impact / Rollback
 
@@ -5278,6 +5278,18 @@ No shared UI/layout/CSS or historical Prisma migration file is changed. If addit
 - Preflight only: old Supabase database postgres/PostgreSQL 17.11; quotation_issues exists with 0 records. New warehouse_db/PostgreSQL 16.13 has ecommerce and its own internal numbering tables, so website numbering must remain separate.
 - PrismaPg's installed adapter supports an explicit schema setting. Current runtime reads DATABASE_URL and raw public-registry SQL; current production validation/migration still depends on the old connection. Those are the concrete changes planned above.
 - Browser startup failed on the host's symlinked writable-root configuration before any dashboard interaction. Supabase and Vercel integrations were found and suggested but are not yet connected. No application implementation, Warehouse write, deployment or project deletion has occurred.
+- Execution started on codex/warehouse-quotation-registry from the owner's clean committed RPC revision6d4620d. The existing local checkout is retained for the running preview; no main/uat edit or unrelated worktree/ignore change. Baseline deployment/config/cache regressions passed12/12.
+- Account preflight still reports Supabase/Vercel uninstalled/unconnected, and browser startup still fails before navigation. Requested account connection while independent implementation continues. The owner asked to open them; dashboard-open requests were queued and integration connection actions offered. No account operation is claimed.
+- Latest owner steering: no Supabase connection/management; inspect Project Warehouse as the authoritative product source. Stop the login/deletion path and continue registry/deployment without Supabase dependencies. Read the source project's AGENTS.md and public-store/PostgREST services without modifying it.
+- Vercel CLI OAuth login and project identity verification succeeded: sunford-web is linked to Skydev2003/sunford_web, production branch main. The ready production health reports revisionc132b8e8db08; that Git revision has no /api/quotations/issue route, so there is no old production allocator to lock during this rollout. Old registry export captured0rows before the no-Supabase direction; the old project is retained rather than queried/deleted again.
+- Registry installed/validated twice using only the narrow SQL. Actual Prisma allocator produced sequential eight-digit numbers, reused number/date on retry, and rolled back all test records. Setup rejected wrong identity/default/RLS in savepoints, all rolled back; persistent row count remains0. Catalogue162/162, UAT28/28 and TypeScript/scoped lint passed.
+- Corrected an inaccurate existing release log/comment: release validation disables registry writer configuration but product build reads still use the read-only Warehouse pool. No new fixture system or extra source change was introduced.
+
+- Production verification: /api/health confirmsd0a812eba3af/production/ok; API has484 unique Warehouse products and WPS10KS net3542.06; all97 photos return nonempty image responses; homepage video/poster return200. All3 existing production browser/PDF cases passed17.5s; issue requests were mocked, and an invalid real request returned400 without allocation.
+- Removed all5 legacy database/Supabase environment entries from Vercel after the replacement passed. Re-listed settings to verify only Warehouse registry/product/storage and UAT_DEV_HOSTS remain. No Supabase account operation or project deletion. Artifacts are ignored under output/warehouse-retirement-20261112/. Final Next.js feedback review found no framework issue candidate.
+- Clean-uat release completed all7 gates (lint, repository formatting, Prisma validation,28 UAT,162 catalogue,795-page build, TypeScript) and pushed d0a812eba3af to main through bun run deploy. Vercel Git deployment dpl_Hct7H1r5CxrdcKSBqNqFnKf1WA3u reachedREADY with the exact revision; its narrow registry setup already validated existing numbers.
+- Vercel production now has all8 Warehouse/registry settings; credentials are sensitive and no values are stored in tracked files. Local lint and repository-wide formatting passed;20 changed/new files were checked against local secret values with0 leaks.
+- Local production build completed795/795 pages, all3 existing Warehouse/quotation/PDF browser cases passed using installed Chrome, and an independent read-only review found no concrete correctness/security/regression findings. All verification allocations were rolled back.
 
 ## Plan: Read the complete Warehouse product contract through RPC
 
@@ -5343,7 +5355,7 @@ No environment, package/dependency, quotation registry, Prisma, shared UI/layout
 - Existing browser tests passed7/7 on installed Chrome using the project's supported channel setting, covering photos, five categories/search/details at390/834/1440px, VAT handoff and quotation/PDF retry. Issuance endpoints were mocked. Inspected mobile and desktop screenshots. The initial7 browser attempts failed solely because Playwright's default binary was absent; Chrome rerun resolved this.
 - Restored5 missing installed PDF dependency packages from the exact existing lockfile versions, verified their integrity and changed no dependency manifest/lockfile. This resolved the initial TypeScript errors. No unrelated application fix was made.
 - Final review performed inline as specified by the approved no-subagent plan: checked schema/ACL/tenant scope, collection fanout, parameter binding/price precision, safe failure/retry, source/API/image parity and approved file scope. No unresolved implementation finding. Final Next.js feedback pass found no framework issue; browser/dependency setup issues were environmental.
-- Runtime/SQL/doc/test changes remain uncommitted in sky. No production release, quotation-registry migration or Supabase project deletion. All evidence remains in ignored output/warehouse-product-rpc-20261112/.
+- RPC runtime/SQL/doc/test work was committed by the owner as6d4620d, then released with the separately approved registry task in production revisiond0a812eba3af. No Supabase project deletion. RPC evidence remains in ignored output/warehouse-product-rpc-20261112/.
 
 ## Plan: Inspect all master_data.ai_articles data
 

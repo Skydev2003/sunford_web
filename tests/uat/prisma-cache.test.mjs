@@ -23,7 +23,7 @@ test("Prisma cache replaces an old client after generation and reuses unchanged 
               path === "server-only"
                 ? "export {};"
                 : path === "@prisma/adapter-pg"
-                  ? "export class PrismaPg {}"
+                  ? "export class PrismaPg { constructor(config, options={}) { this.connectionString=config.connectionString; this.schema=options.schema; } }"
                   : "export const PrismaClient = globalThis.currentClientConstructor;",
             loader: "js",
           }));
@@ -40,8 +40,9 @@ test("Prisma cache replaces an old client after generation and reuses unchanged 
     },
   };
   class CurrentClient {
-    constructor() {
+    constructor(options) {
       created++;
+      this.adapter = options.adapter;
     }
     cmsDocument = { findMany: async () => [{ id: "hero" }] };
     async $disconnect() {
@@ -51,7 +52,12 @@ test("Prisma cache replaces an old client after generation and reuses unchanged 
   const context = createContext({
     prisma: legacy,
     currentClientConstructor: CurrentClient,
-    process: { env: { DATABASE_URL: "postgresql://local.invalid/test" } },
+    process: {
+      env: {
+        DATABASE_URL: "postgresql://old:unused@old.invalid/postgres",
+        QUOTATION_DATABASE_URL: "postgresql://writer:secret@warehouse.invalid/warehouse_db",
+      },
+    },
     console,
   });
   const loadModule = () =>
@@ -72,6 +78,11 @@ test("Prisma cache replaces an old client after generation and reuses unchanged 
   assert.equal(firstModule.getPrisma(), current);
   assert.equal(loadModule().getPrisma(), current, "unrelated module reloads must keep the pool");
   assert.equal(created, 1);
+  assert.equal(
+    current.adapter.connectionString,
+    "postgresql://writer:secret@warehouse.invalid/warehouse_db",
+  );
+  assert.equal(current.adapter.schema, "ecommerce");
 
   context.currentClientConstructor = class RegeneratedClient extends CurrentClient {};
   const nextModule = loadModule();
@@ -81,4 +92,34 @@ test("Prisma cache replaces an old client after generation and reuses unchanged 
   assert.equal(created, 2);
   assert.equal(nextModule.getPrisma(), regenerated);
   assert.deepEqual(await regenerated.cmsDocument.findMany(), [{ id: "hero" }]);
+  context.process.env.QUOTATION_DATABASE_URL =
+    "postgresql://writer:secret@replacement.invalid/warehouse_db";
+  const replacement = nextModule.getPrisma();
+  assert.notEqual(replacement, regenerated, "a connection change must discard the old pool");
+  assert.equal(replacement.adapter.connectionString, context.process.env.QUOTATION_DATABASE_URL);
+  assert.equal(created, 3);
+  assert.equal(disconnects, 2);
+  delete context.process.env.QUOTATION_DATABASE_URL;
+  assert.throws(() => nextModule.getPrisma(), /QUOTATION_DATABASE_URL/);
+});
+
+test("legacy CMS credentials alone never enable the quotation registry", async () => {
+  const result = await build({
+    entryPoints: ["src/lib/env.ts"],
+    bundle: true,
+    write: false,
+    platform: "node",
+    format: "cjs",
+  });
+  const context = createContext({
+    module: { exports: {} },
+    process: { env: { DATABASE_URL: "postgresql://old:unused@old.invalid/postgres" } },
+  });
+  runInContext(result.outputFiles[0].text, context);
+  assert.equal(context.module.exports.hasDatabase(), false);
+  context.process.env.QUOTATION_DATABASE_URL =
+    "postgresql://writer:secret@warehouse.invalid/warehouse_db";
+  assert.equal(context.module.exports.hasDatabase(), true);
+  context.process.env.QUOTATION_DATABASE_URL = " ";
+  assert.equal(context.module.exports.hasDatabase(), false);
 });

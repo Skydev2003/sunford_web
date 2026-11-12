@@ -6,17 +6,19 @@
 
 ## แยกการเชื่อมต่อ
 
-| ตัวแปร                                                                | ใช้สำหรับ                                               |
-| --------------------------------------------------------------------- | ------------------------------------------------------- |
-| `WAREHOUSE_DATABASE_URL`                                              | PostgreSQL Warehouse ใช้บัญชีอ่านข้อมูล                 |
-| `WAREHOUSE_COMPANY_ID`                                                | บริษัทที่ต้องการอ่าน                                    |
-| `WAREHOUSE_S3_ENDPOINT`, `WAREHOUSE_S3_BUCKET`, `WAREHOUSE_S3_REGION` | Storage รูปสินค้าของ Warehouse                          |
-| `WAREHOUSE_S3_KEY`, `WAREHOUSE_S3_SECRET`                             | สิทธิ์อ่าน Storage ฝั่งเซิร์ฟเวอร์                      |
-| `DATABASE_URL`, `DIRECT_URL`                                          | ทะเบียนเลขใบเสนอราคาและ migration เดิม แยกจาก Warehouse |
+| ตัวแปร                                                                | ใช้สำหรับ                                                                 |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `WAREHOUSE_DATABASE_URL`                                              | PostgreSQL Warehouse ใช้บัญชีอ่านข้อมูล                                   |
+| `WAREHOUSE_COMPANY_ID`                                                | บริษัทที่ต้องการอ่าน                                                      |
+| `WAREHOUSE_S3_ENDPOINT`, `WAREHOUSE_S3_BUCKET`, `WAREHOUSE_S3_REGION` | Storage รูปสินค้าของ Warehouse                                            |
+| `WAREHOUSE_S3_KEY`, `WAREHOUSE_S3_SECRET`                             | สิทธิ์อ่าน Storage ฝั่งเซิร์ฟเวอร์                                        |
+| `QUOTATION_DATABASE_URL`                                              | การเชื่อมต่อเขียนเฉพาะทะเบียนเว็บ ecommerce.quotation_issues ใน Warehouse |
 
-ตั้งค่าใน `.env.local` หรือ environment ของ deployment โดยใช้ `.env.example` เป็นแบบ ห้ามเติม `NEXT_PUBLIC_` หรือส่ง credentials ไปใน browser/log และห้ามชี้ Prisma migration ไป Warehouse
+ตั้งค่าใน `.env.local` หรือ environment ของ deployment โดยใช้ `.env.example` เป็นแบบ ห้ามเติม `NEXT_PUBLIC_` หรือส่ง credentials ไปใน browser/log และห้ามรัน Prisma migration ของ CMS เดิมเข้า Warehouse
 
-Production ต้องมีฐานทะเบียนเลขใบเสนอราคาแยก เครื่องพัฒนาที่ไม่มีฐานทะเบียนใช้ SQLite ใน `.local/quotation-issues.sqlite` ซึ่งถูก ignore ส่วนข้อมูลสินค้าและราคายังอ่าน Warehouse เหมือนเดิม
+Production ต้องตั้ง `QUOTATION_DATABASE_URL` เป็น direct/session connection ของ Warehouse สำหรับตาราง `ecommerce.quotation_issues` เท่านั้น ใช้ `npm run db:deploy` เพื่อ setup/ตรวจตารางแบบ idempotent โดยไม่ล้างเลขและไม่รัน migration ของ CMS/auth เดิม PrismaPg กำหนด schema ecommerce และตัว allocator ระบุชื่อตารางพร้อม schema ทุกคำสั่ง แยกจาก pool สินค้าที่บังคับ read-only และจาก counter ของเอกสาร Warehouse
+
+เครื่องพัฒนาที่ไม่ได้ตั้งทะเบียนใช้ SQLite ใน `.local/quotation-issues.sqlite` ซึ่งถูก ignore ส่วน production ไม่ fallback ไป SQLite หรือฐาน Supabase เดิม การย้าย/ลบ project เก่าต้องตรวจประวัติเลขและ deployment ก่อนตาม Spec/Plan
 
 ## เส้นทางข้อมูล
 
