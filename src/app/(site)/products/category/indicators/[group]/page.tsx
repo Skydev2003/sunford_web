@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ProductSubcategoryPage } from "@/features/catalog/components/product-subcategory-page";
 import { indicatorSubcategoryPages } from "@/features/catalog/data/product-subcategory-pages";
 
@@ -16,7 +17,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function IndicatorGroupPage({ params }: Props) {
+export default function IndicatorGroupPage({ params }: Props) {
+  return (
+    <Suspense fallback={<p role="status">กำลังโหลดหมวดสินค้า…</p>}>
+      <IndicatorGroupContent params={params} />
+    </Suspense>
+  );
+}
+
+async function IndicatorGroupContent({ params }: Props) {
   const { group } = await params;
   const page = indicatorSubcategoryPages.find((item) => item.slug === group);
   if (!page) notFound();

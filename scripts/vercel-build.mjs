@@ -27,7 +27,7 @@ try {
 
 console.log(`Deployment: ${env.DEPLOY_BRANCH} → ${env.APP_ENV}`);
 if (args.includes("--check")) {
-  console.log("Configuration passed. No migrations, seed or build were run.");
+  console.log("Configuration passed. No migrations or build were run.");
   process.exit(0);
 }
 

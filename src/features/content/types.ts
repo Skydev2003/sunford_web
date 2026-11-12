@@ -17,6 +17,7 @@ export type SourceProduct = {
 };
 
 export type SourcePage = {
+  warehouseOnly?: boolean;
   softwareCatalog?: {
     categories: { id: string; label: string }[];
     items: {

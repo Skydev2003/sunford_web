@@ -1,6 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useCategories } from "@/features/cms/components/categories-provider";
+import { useCategories } from "@/features/site/components/categories-provider";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { Check, Plus } from "lucide-react";
@@ -45,6 +45,7 @@ export function ProductCard({
       <Link href={`/products/${product.slug}`} className="product-card-image">
         <ProductImage
           src={product.image}
+          fallbackSrc={product.fallbackImage}
           alt={`SUNFORD ${product.name}`}
           fill
           sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 30vw"
@@ -57,7 +58,7 @@ export function ProductCard({
         <Link href={`/products/${product.slug}`}>
           <h3>{product.name}</h3>
         </Link>
-        <p>{product.subtitle}</p>
+        {product.warehouseSku && product.price === null && <p>สอบถามราคา</p>}
         <div className="product-card-bottom">
           <span>{product.capacity}</span>
           <Link href={`/products/${product.slug}`}>ดูรายละเอียด</Link>

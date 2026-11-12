@@ -132,6 +132,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                       >
                         <ProductImage
                           src={entry.image}
+                          fallbackSrc={entry.fallbackImage}
                           alt=""
                           width={70}
                           height={70}

@@ -1,5 +1,379 @@
 # Project state
 
+## Current product publication contract (2026-11-12)
+
+- Publish the full public result of `ecommerce.get_website_products`, retaining `is_active=true AND is_saleable=true` and existing company/deletion/unit/nonnegative-price guards. Continue hiding X-prefixed and calibration SKUs.
+- Excel five-NAV-sheet metadata overrides existing short display names and primary categories only; it no longer limits product visibility. Other live records use their actual Warehouse names and source-evidence taxonomy. The inactive-inclusive SQL proposal was reviewed but never approved or installed.
+- Verified current public catalogue:486SKUs, including375unchanged existing records and111additional real-source records. Preserve homepage/Hero presentation and layout, quotation/source prices/VAT and all Warehouse-only missing-field rules. Counts are observations, not hardcoded constraints.
+
+## Task: Shorten Excel item_name to concise product/model names (2026-11-12)
+
+Status: "Complete"
+Approval: "Owner explicitly requested item_name shortened, with MK845534 SUNFORD เครื่องชั่ง-นับจำนวน KAH5000S 5กก./1ก. becoming KAH5000S, and clarified ทุกกลุ่มเลยนะครับ"
+
+Edit only item_name cells in the current Desktop workbook's ข้อมูลจัดกลุ่ม,21management groups and7NAV tabs (29working tabs). Preserve full original names in master_item and leave export guide unchanged. Keep every other value, source ID/SKU/barcode/price/group, native table/filter, sheet name/order and compact row/view styling intact. Derive short names from actual current cell text and own verified model facts only when the model is visibly present in that name. Remove retailer/barcode/brand/generic prefixes and trailing capacity prose for clear models; retain explicitly named bundle components and distinguishing colours/voltage/options. Do not substitute a stock SKU for an unknown model or truncate to an accessory named after พร้อม/with. Keep unclear names unchanged rather than inventing a model. No new columns, rows, sheets, Warehouse connection or application changes.
+
+Use temporary backup/extractor/proposal/builder/candidate/verifier/previews under TEMP/sunford-master-item-shortnames-20261112. Review representative proposed changes and explicitly test the supplied KAH5000S example, source-name/fact conflicts, bundle and colour variants before authoring. Verify all changed cells match approved deterministic source-name extraction, every non-target value/style/native feature is unchanged and raw original names remain intact. Render before/after and preserve original view metadata through narrow native packaging restoration if needed. Recheck saved-file hash before replacing the same Desktop workbook; retain temporary original for rollback. Only spec.md/plan.md notes change in repository. No missing information; ambiguous names stay unchanged.
+
+Verified completion: reviewed all731items across all29working/group/NAV tabs.377distinct item names shortened in1452cells;354names already concise or requiring their descriptive meaning remain. The actual G-MK013 and G-TF010 examples now read KAH5000S in every applicable working copy. Preserve full bundle labels (TCS-150-AW31 + LP50, +233B variants), black/white DRW-350,RYG-POLE voltage/sound, software Basic/Pro/licence periods, cable SERIAL/HID and part/consumable identity. Kept vague spare-part names rather than replacing a part with its compatible machine model. During proposal review, retailer TF codes, broad Fitdays facts, Indicator generic labels and numeric-start printer models were corrected before writing.
+
+Independent saved-XLSX audit verified all1452intended name edits,168612non-target cells unchanged,170064effective cell styles and every original table/filter/group/row-height/view/name/order setting preserved. Raw master_item original full names and export guide are unchanged.13specific name regression examples passed; before/after plus all5NAVfamily previews inspected; artifact recalculation/error scan and ZIP integrity passed. Source file hash was unchanged before atomic same-file replacement; actual Desktop file matches candidate SHA256bb04a40e4300d0a39a00ad23a37fb65b531b92282542af5204f51ea8be781d4f. No Warehouse/app/price/SKU/group changes; no Next.js feedback candidate or Microsoft Excel interactive testing claimed. Temporary backup retained.
+
+## Task: Add navbar product-family worksheets to the same Excel (2026-11-12)
+
+Status: "Complete — evidence-based groups delivered;55item-role questions remain explicitly pending for owner review"
+Approval: "Owner explicitly requested new group worksheets matching the supplied Navbar reference in the same file"
+
+Reference: supplied image labels ผลิตภัณฑ์ทั้งหมด,เครื่องชั่ง,อินดิเคเตอร์แท่นชั่ง,โครงสร้างแท่นชั่ง,ระบบ POS,อุปกรณ์เสริม. Preserve the24existing worksheets and any saved user edits. Add6Navbar worksheets (all-products union plus5families) and one review/outside worksheet so all731source rows remain accounted for. Use current workbook's48Warehouse-derived fields as data evidence: primary name/description, actual group/type, verified facts and explicit part roles. No Warehouse connection, new external data or application change. Existing project taxonomy notes inform definitions only; do not blindly copy a weak/old SKU assignment or infer specifications from model codes.
+
+Prioritize the item being sold before accessories bundled with it: standalone Indicator/head readers go to indicators; explicit standalone Platform/structural assemblies go to platforms; a complete เครื่องชั่ง POS1100 remains scales; POS computer/software sets go to POS; scanners/printers/cables/parts go to accessories. Do not force fees,shipping,discounts,vouchers,raw materials,gloves,Xcodes,test records into the five families. Ambiguous แท่นชั่ง or opaque bundle descriptions go to review with a concrete question. Keep retired/inactive status separate from physical family, not silently publishable. Preserve original source values/prices/IDs and append only family/status/evidence/review/provenance columns in new tabs. New all-products sheet is exactly the union of the five families; review/outside rows remain separate and original all731rows remain in existing sheets.
+
+Plan: snapshot current saved XLSX under TEMP/sunford-master-item-navbar-20261112, classify and inspect difficult cases before authoring, add compact numbered NAV tabs with row5headers/99point frozen area/24–36point body rows, filters and correct first-item views. Verify every original cell/style/native feature, exact five-family partition plus review accounting, unchanged source fields/IDs/prices, key ambiguity cases, all new previews and safe source-hash-guarded replacement. Only spec.md/plan.md notes change in repo; temporary scripts/reports/previews and backup outside source; same Desktop .xlsx is the deliverable. Unknown item roles are explicitly pending rather than fabricated. No missing information blocks the verified/pending split, but unresolved item questions remain for owner review.
+
+Verified delivery: appended7NAV sheets,31worksheets total. NAV ผลิตภัณฑ์ทั้งหมด is the exact547SKU union of เครื่องชั่ง250,อินดิเคเตอร์แท่นชั่ง22,โครงสร้างแท่นชั่ง34,ระบบ POS40,อุปกรณ์เสริม201. NAV รอยืนยัน-นอกหมวด contains55ambiguous roles (including Platform Terminal, opaque bundles and oldแท่นชั่ง labels) plus129known internal/outside records.547+55+129=731unique original IDs; none removed or merged. Family sheets include clearly identified historical/inactive products with a separate source-status column, not automatic website publication approval. Original48fields retained plus6classification/evidence/status/provenance fields; no original product attributes or prices rewritten.
+
+Independent saved-XLSX validation preserved all24original sheets,99162existing cell values/effective styles, native tables/filters, original row heights and view state (except switching selected tab). Compared69390newcells including headers and every source field, proved the5family sheets partition the all-products sheet and review rows are disjoint, and passed17source-grounded classification regression cases. All7newpreviews rendered/inspected, compact99point frozen region and100%zoom/C6opening views verified. Artifact recalculation/error scan and ZIP integrity passed. Same Desktop workbook atomically replaced only after unchanged source hash check; final candidate/file SHA2565bb391e8a27647fe9210cd653fc1d6b1f054aabeb700fb759ed08e8388f99de0. No Warehouse connection/write, application change or Next.js feedback candidate; no Microsoft Excel interactive test claimed. Remaining55questions are visible per item for the owner rather than forced into a category.
+
+## Task: Compact grouped Excel layout and reset opening view (2026-11-12)
+
+Status: "Complete"
+Approval: "Owner requested fixing the layout shown in the supplied Excel screenshot"
+
+Confirmed source group sheet freezes rows1..5 and columnsA..B; the frozen rows total196points (27+27+27+45+70), with data rows45..135points. This explains excessive frozen whitespace and few visible products; source worksheet itself starts its data pane atC6 rather than row172 shown after scrolling. Fix only layout/view of ข้อมูลจัดกลุ่ม and21group sheets: compact title/context/spacer/header heights, compact product-list rows, preserve existing data/table row positions/48columns/filters/grouping, and initialize scroll/selection at the first item with100%zoom. Keep the raw master_item and export-guide sheets unchanged. Full long text remains in original cells and can be expanded; no content rewrite, column removal, reclassification or Warehouse connection.
+
+Use temporary backup/builder/candidate/verification/previews under TEMP/sunford-master-item-layout-20261112. Bundled artifact-tool controls row sizing; one targeted public-API help lookup exposed no view/selection setter, so a narrow native XLSX view-metadata patch may set opening pane/selection/workbook active-tab state after artifact export. Preserve all values/effective cell styles/native tables and all unrelated sheet metadata. Render before/after and verify reduced frozen-height budget, compact row heights, exact source cells/styles/IDs/prices, table ranges, opening views and original2sheets. Recheck saved source hash before atomic same-file replacement; if locked, finish verified candidate and ask owner to close it. Only spec.md/plan.md task notes change in repository. No missing information or application changes.
+
+Verified completion:22clean/group sheets now use99points total frozen height (21+16+16+4+42), down from196, and24/36point list rows. The24worksheet names/order/data, all native table ranges/filters,99,162cell values/effective cell styles and raw/guide row/view metadata are unchanged. All22target panes/first-item selections reset toC6 at100%zoom; workbook opens01เครื่องชั่ง. Full long text remains in cells, with expansion needed for long notes/specifications in compact list view. Before/after/notes previews inspected; artifact recalculation/error scan and independent ZIP/XML audit passed. Original saved hash matched before atomic replacement; actual Desktop file matches candidate SHA2563863ecc22af10dae5fcd9c440cce685ec583880ffa044ffdb5de9bc61a6e1876. No file lock on final install. No Microsoft Excel interactive verification or Next.js issue claimed. MEMORY.md additionally records the observed frozen-viewport sizing lesson; no application/Warehouse changes.
+
+## Task: Split Excel management groups into individual worksheets (2026-11-12)
+
+Status: "Complete"
+Approval: "Owner explicitly requested separate worksheets per group in the same workbook"
+
+Append one sheet per existing management group from ข้อมูลจัดกลุ่ม in C:/Users/cityc/Desktop/SUNFORD_master_item_company1_2026-11-12.xlsx. Retain all three existing sheets, their values/styles/native features, all48columns, exact731item identities and original source-row references. Preserve existing21group assignments rather than reclassifying or removing rows. New sheet names meet Excel's31character/prohibited-character restrictions, using deterministic numbered names. Match table styling, native filters and frozen header/identity columns. No Warehouse connection or application changes. Temporary backup/builder/candidate/verifier/previews live under TEMP/sunford-master-item-split-20261112; only spec.md/plan.md notes change in repo. Verify every group cell/type/ID,731rows with each ID exactly once, old sheet effective styles/features, new table/pane ranges and previews; recheck saved-file hash before safe same-file replacement. If locked, verify candidate before requesting closure. No missing information. Group tabs are static editable copies, not synchronized views.
+
+Verified completion: appended21numbered group sheets, leaving the original3sheets in place (24total). Each group keeps all48columns, source row references, native filter and frozen5headerrows/2identitycolumns. Independent saved-XLSX inspection reconciled59034existing cells/effective styles and original native features plus36096newgroup cells including headers. Group membership partitions all731unique IDs exactly once; no source value, price, SKU or classification changed. Rendered all21group views and inspected their three contact sheets. Artifact inspection/recalculation/error scan passed. The saved source hash was unchanged before atomic replacement; actual Desktop file reopened as24valid sheets and matches candidate SHA25625610391db098835d90dd3d1d5f861892f67d6c49ae2a2fe2e4bcaf77eaf9a25. No file lock remained, no Warehouse connection/write, and no Next.js feedback candidate. Temporary original backup retained; no Microsoft Excel interactive test claimed.
+
+## Task: Read the complete Warehouse product contract through RPC (2026-11-12)
+
+Status: "Complete"
+Approval: "Approved — owner explicitly replied อนุมัติ Spec/Plan งาน RPC นี้"
+
+### Goal
+
+Create a Warehouse database function returning the product, price, primary-image metadata and verified technical facts required by the website, then replace direct application-level product-table SQL with calls to that function.
+
+### Scope In
+
+- Create only ecommerce.get_website_products(p_master_company_id bigint, p_item_codes text[] DEFAULT NULL) in warehouse_db. NULL reads the full eligible company catalogue without a LIMIT; an explicit array filters exact SKUs and an empty array returns no products.
+- Return one row per item, deterministically ordered by item_code/master_item_id. Include master_item_id as text, sku, product_name, description, base-unit display name, group_name, usage_family, raw net sale_price as text, image_object_key/image_mime_type/image_size_bytes, updated_at, read_at, specifications JSONB and components JSONB.
+- specifications contains all currently verified active product/attribute facts with title, value_text, value_number as text, value_options and unit. Preserve raw verified values so the existing projection continues omitting conflicting attribute values. Empty collections are [], never NULL.
+- components contains the existing component SKU/quantity information for that root item, with numeric quantities represented as text. This preserves configurator/quotation consumers when the repository loads the full catalogue in one call.
+- Move the existing source-table joins and item/company filters into the function. Preserve active/saleable/not-deleted items, non-deleted base units and nonnegative prices, including zero-price inquiries. Existing X-prefix/four fee exclusions remain in the application projection. No stock-availability filter.
+- Use a read-only SQL STABLE SECURITY INVOKER function with fully qualified relations and a fixed safe search_path. Revoke PUBLIC execution; the configured owner role can execute. Do not grant anonymous/PostgREST roles or invent a new HTTP endpoint.
+- Existing server-side pg transport calls SELECT * FROM ecommerce.get_website_products($1::bigint, $2::text[]). Preserve product-reader/image-reader contracts and bounded read-only sessions/retry behaviour. Existing fact/component helper exports, if retained for callers, must also use RPC rather than direct joins.
+- The repository obtains products/facts/components from the same RPC result for a normal catalogue read. Image metadata lookup uses an exact one-SKU RPC call. Storage signing/image-cache logic remains unchanged.
+
+### Scope Out
+
+- No UI/layout/CSS/global component change, no additional gallery/media source and no invented product facts.
+- No PostgREST/HTTP transport, authentication/role redesign, new dependency, Prisma migration, product/table/data mutation or production release in this RPC implementation scope.
+- The separate quotation-registry migration and whole Supabase-project deletion requests remain pending under their own Spec/Plan; this task does not approve or execute those application changes.
+
+### UI/UX Brand Alignment
+
+- Reference: existing product/detail/catalogue/quotation pages and the owner's WPS10KS screenshot.
+- Design: identical visible fields and source values, existing VAT/zero-price behaviour, routes and versioned images. Preserve the original homepage/Hero presentation exception.
+- Responsive: no markup/style change; run existing Warehouse catalogue/detail/image and quotation browser regressions at their configured mobile/desktop sizes. Record a host/browser limitation honestly if those checks cannot run.
+
+### Input / Output
+
+- Input: verified warehouse_db/PostgreSQL 16.13, company 1, existing WAREHOUSE_DATABASE_URL and WAREHOUSE_S3_* settings. The current database role is postgres and ecommerce exists. Read-only preflight found no get_website_products overload or proposed-signature collision.
+- Verified source relations: master_data.master_item/master_unit/master_item_group/master_item_type, ai_products/ai_product_facts/ai_attributes and master_item_component_line. Current initial item eligibility yields 514 rows and 97 primary-image references; final public catalogue previously verified at 484 SKUs. Counts are verification observations, not hardcoded application requirements.
+- Output: stored read RPC plus unchanged website Product/API values. Image bytes continue to come from the existing Spaces/cache path; SQL returns metadata, not credentials, image binary or a fabricated public Storage URL.
+
+### Acceptance Criteria
+
+- [x] Function exists with the agreed signature, STABLE/SECURITY INVOKER properties and no PUBLIC execute privilege; repeated installation does not overwrite an unrelated object.
+- [x] Full-catalogue and selected-SKU RPC values match the previous reads for identity, prices, units, groups, image versions, verified facts and components in the same verification snapshot. One item is not multiplied by its facts/components.
+- [x] Empty/unknown SKU, empty array, invalid/absent company and missing optional content return the agreed empty result/collection semantics without cross-company data or legacy filling.
+- [x] Catalogue loading uses one RPC request for product/fact/component content; image lookups also call RPC. Application product readers contain no direct master_data table joins or fallback to old direct SQL when the function is unavailable.
+- [x] Missing/malformed RPC collections, price errors and RPC failures fail safely; transient disconnections retain only the existing single retry.
+- [x] Live API SKU/value parity, WPS10KS price/specifications, zero-price and sparse products, current 97 primary-image routes and homepage exception are verified. Scoped tests/type/lint/format/build and relevant browser checks are recorded.
+- [x] No credentials enter the client response, tracked files or function definition. Only the new function/its own ACL/comment are changed in Warehouse; no source table/data or quotation-registry/project-deletion operation occurs.
+
+### Missing Information
+
+- None for implementing the proposed database-function transport and current display contract. This is pg calling a stored SQL function; an HTTP/PostgREST API is outside this proposal.
+- None for this RPC task. Existing automated browser checks passed using the project's supported Chrome channel. The separate Supabase/Vercel account-management blocker belongs to the pending retirement task, not these local website checks.
+
+### Approval Record
+
+- Owner requested งั้นสร้าง RPC สำหรับดึงสินค้า ราคา รูป และสเปกจาก Warehouse ให้ครบ แล้วเปลี่ยนเว็บมาเรียก RPC แทน SQL ตรงให้หน่อย. This authorises the intended RPC migration; concrete function signature, transport and file plan are now presented for review under AGENTS.md.
+- Owner explicitly answered อนุมัติ Spec/Plan งาน RPC นี้ to the presented function signature, pg transport and concrete file plan. This approves the listed source/SQL changes and installation of this read function only. The separate registry/project-deletion tasks remain outside this implementation.
+
+### Verification / Current State
+
+- Read-only schema/name preflight passed with transaction_read_only=on. Existing source files, direct-query consumers, test fixtures and installed Next.js server-component guide were reviewed. package.json/package-lock.json retain Next.js 16.4.3, React 19.3.0, pg and Node 24.
+- Installed ecommerce.get_website_products(bigint,text[]) persistently after two transaction-scoped installations, source comparisons and verified rollback. Source parity in one REPEATABLE READ snapshot: 514 eligible item rows, 1366 verified facts, 4 component rows, 97 image references. Null/zero company, empty/unknown/injection-shaped SKU and repeated-SKU inputs passed; persisted STABLE/SECURITY INVOKER/private execution properties were rechecked.
+- The RPC reader returns 488 parsed items and all retained facts/components. Local /api/products returns the exact same 484 Product objects as the saved pre-change response, including prices/specifications/category/route/image fields. WPS10KS remains 3790 THB gross with 19 source specifications. Normal, zero-price and no-photo detail routes return 200; homepage video remains present.
+- All 97 existing primary-image routes passed. API/diff/SQL audits found no configured credentials and no direct master_data references in the application product readers. Source data, quotation registry, historical migrations and project accounts were not changed.
+- Final validation: catalogue 161/161, UAT 27/27, TypeScript, scoped ESLint/Prettier and diff checks passed. Final bun run build succeeded and generated 795/795 pages after the last application change.
+- Seven existing browser regressions passed with PLAYWRIGHT_CHANNEL=chrome: source photos, all five categories/search/details at390/834/1440px, SKU/price/VAT handoff and PDF issue/retry. Quote issuance was mocked, not written to the real registry. Mobile/desktop screenshots were inspected.
+- Initial TypeScript failure came from missing installed pdf-lib packages already declared in the lockfile. Restored those exact versions with lockfile integrity verification, without package/lockfile edits. Initial browser attempts could not launch the absent Playwright binary; reran successfully using installed Chrome through the existing configuration. These environment issues are resolved and are not Next.js feedback candidates. Final reporting pass retained no framework issue.
+- Changes are local/uncommitted; no production deployment or old Supabase-project deletion occurred. Evidence is in ignored output/warehouse-product-rpc-20261112/.
+
+## Task: Move the website quotation registry into Warehouse (2026-11-12)
+
+Status: "Ready to Code"
+Approval: "Direction approved; concrete application Spec/Plan pending review"
+
+### Goal
+
+Remove the website's runtime/build dependency on the old Supabase database by keeping its independent quotation-number registry in warehouse_db. Preserve current quotation behaviour and Warehouse-only product data.
+
+### Scope In
+
+- Use a dedicated ecommerce.quotation_issues table for website numbering inside the existing warehouse_db database. Do not share counters with Warehouse business documents.
+- Preserve the existing integer range 1..99999999, eight-digit displayed numbers, unique request UUID, created_at timestamp and retry idempotency. Keep the existing PostgreSQL allocation transaction/locking behaviour.
+- Retain Prisma 7, pg and all historical Prisma migrations. Configure the runtime PrismaPg adapter for the ecommerce schema through a dedicated server-side QUOTATION_DATABASE_URL, independently from the read-only product pool.
+- Replace automatic deployment of the historical CMS migration chain with a narrow, idempotent registry-only SQL setup. This may create/validate ecommerce.quotation_issues and its own constraints/privacy settings; it must not change other Warehouse objects.
+- Configure local and deployment environments for the new registry. Remove old Supabase connection/storage/auth settings only after source/deployment verification.
+- Validate local and production quotation behaviour before retiring the old project. Current implementation branch is sky; production publication must use clean committed uat and bun run deploy.
+
+### Scope Out
+
+- No shared UI, layout, typography, price/VAT, quotation PDF layout or product-source changes.
+- No writing to Warehouse product/stock/accounting/document counters, no new dependency and no wholesale Prisma migration into Warehouse.
+- No restoration of legacy CMS, galleries or unsupported product attributes.
+
+### UI/UX Brand Alignment
+
+- Reference: existing quotation page/PDF and the current Warehouse product pages.
+- Design: preserve all visible behaviour, including numbering format, issue date, 14-day validity and retry behaviour.
+- Responsive: run the existing quotation issuance/PDF browser regression at mobile and desktop sizes; no visual redesign.
+
+### Input / Output
+
+- Input: confirmed owner choice to keep the website registry separately in warehouse_db, existing quotation_issues schema/allocator and verified connection settings already stored locally.
+- Verified old target is the Supabase PostgreSQL 17.11 database named postgres. sunford_web is the connection/project label, not a database name discovered through pg_database. public.quotation_issues exists and had zero records at inspection. No local SQLite registry exists.
+- Verified new target is PostgreSQL 16.13 warehouse_db. ecommerce exists and the quotation-table inventory contains no existing quotation registry. Keep the source/current table identities explicitly qualified.
+- Output: unchanged quotation API {number, createdAt}, backed by the isolated Warehouse registry; application/build no longer uses the old Supabase connection.
+
+### Acceptance Criteria
+
+- [ ] Registry setup touches only ecommerce.quotation_issues; a second run is safe and incompatible existing schemas are rejected.
+- [ ] Old registry history is rechecked/exported and all rows are preserved before cutover; current zero-row observation is not treated as a permanent guarantee.
+- [ ] Retrying the same UUID returns the same number/date; distinct UUIDs allocate distinct increasing numbers; failed/rolled-back operations do not leave verification records.
+- [ ] Product reads remain read-only and the exact current SKU/price/image behaviour is preserved.
+- [ ] No runtime or production build dependency remains on the old project; historical migrations are retained without executing their CMS/auth SQL on Warehouse.
+- [ ] Scoped type/lint/format, UAT/catalogue regressions, build and quotation/PDF browser verification pass. Production deployment/health and quotation access are verified before project deletion.
+
+### Missing Information
+
+- None for the local data contract. Supabase/Vercel account access is required for the external cutover/deletion task below and is not yet connected.
+- A concrete Spec/Plan review is still required before application edits under AGENTS.md; the owner's target/direction approvals are recorded below and will not be requested again.
+
+### Approval Record
+
+- Owner explicitly requested deletion of the old database and said quotations will use Warehouse.
+- Owner clarified deletion means the entire old Supabase project including Auth and Storage, and chose ย้ายทะเบียนเลขของเว็บไป warehouse_db after the proposal to preserve the website's numbering/idempotency separately from Warehouse document numbering.
+- This explicitly supersedes the previous separate-database rule for the quotation registry only. Warehouse products/stock remain read-only. The concrete file plan is now in plan.md and has not yet been approved.
+
+## Task: Retire the old Supabase project after quotation cutover (2026-11-12)
+
+Status: "Need Information"
+Approval: "Deletion authorised — whole old Supabase project, including Auth and Storage"
+
+### Goal
+
+Delete the exact old sunford_web Supabase project after the website no longer depends on it.
+
+### Scope In
+
+- Match the authenticated project ID to the old local database/storage project before deletion. Do not use the connection label as an SQL DROP DATABASE target.
+- Inspect deployed environment/revision and switch the website to the verified Warehouse registry before deletion. Coordinate cutover so the old and new registries cannot allocate overlapping numbers; pause/lock old issuance during the final migration/cutover as needed.
+- Export the old registry to an ignored local verification artifact, recheck source/target history and confirm deployed product, homepage/media and quotation behaviour.
+- Delete only the confirmed old project, including its Auth/Storage, as explicitly authorised. Verify project removal and continued website operation.
+
+### Scope Out
+
+- No deletion of warehouse_db, other projects, local catalogue/reference media or historical repository migrations.
+- No blanket DROP DATABASE postgres, DROP SCHEMA public CASCADE or mutation of Supabase-managed auth/storage schemas as a substitute for deleting the project.
+
+### UI/UX Brand Alignment
+
+- Reference: existing site/homepage and quotation workflow. Preserve their current presentation and working media.
+- Responsive: covered by the cutover task's existing mobile/desktop checks.
+
+### Input / Output
+
+- Input: authenticated Supabase project-management access and Vercel project/environment access, matched to the current site's old/new connections.
+- Output: old project removed only after successful cutover; verified Warehouse-backed site remains usable.
+
+### Acceptance Criteria
+
+- [ ] Exact project identity and account capability are verified before destructive action.
+- [ ] The preceding registry/source/deployment cutover passes before deletion.
+- [ ] Auth and Storage deletion stays limited to the owner-confirmed old project.
+- [ ] Actual deletion status and post-deletion website checks are recorded; no claim of deletion without service confirmation.
+
+### Missing Information
+
+- Supabase and Vercel integrations were discovered but are not installed/connected. Suggestions were provided for both; account access is not yet confirmed.
+- Browser runtime could not start because of the host's symlinked writable-root configuration. No dashboard was accessed and no account/project/environment mutation occurred. Do not replace account-management authorization with database credentials.
+
+### Approval Record
+
+- Owner answered ทั้งโปรเจกต์ รวม Auth และ Storage ด้วย. This is the actual deletion authorisation and must be preserved through later turns; do not ask for it again merely because cutover work takes time.
+
+### Verification / Current State
+
+- Old registry inspection used an explicit BEGIN READ ONLY transaction and returned zero records. Supabase pooler did not preserve the requested startup default_transaction_read_only, so explicit transaction mode was verified instead; every preflight statement was a read.
+- No database/schema/data/role or deployment changes have been performed for these tasks. Browser failed before initialization, and Supabase/Vercel account integrations remain unconnected. No framework issue was retained in the Next.js feedback pass.
+
+## Task: Configure and verify the supplied Warehouse connection (2026-11-12)
+
+Status: "Complete"
+Approval: "Approved for local Warehouse configuration and read-only inspection — owner requested ทำให้หน่อย and supplied connection settings after the reviewed connection recommendation"
+
+### Goal
+
+Connect the existing server-side Warehouse reader to the supplied warehouse_db database and verify which catalogue, specification, component and image sources are actually available.
+
+### Scope In
+
+- Create ignored .env.local with WAREHOUSE_DATABASE_URL mapped from the supplied Warehouse URL and WAREHOUSE_S3_ENDPOINT/BUCKET/REGION from the supplied storage settings. Keep credentials out of tracked files and output.
+- Read company IDs and catalogue/function metadata using read-only sessions and bounded timeouts. Set WAREHOUSE_COMPANY_ID only from verified company evidence; ask if the source is ambiguous.
+- Exercise the existing product/fact/component readers against the confirmed company and verify eligible SKU counts and available content. Check storage access without inventing credentials or data.
+- Preserve the separate quotation registry configuration in .env. Do not copy the supplied Warehouse URL to Prisma DATABASE_URL.
+
+### Scope Out
+
+- No application source, shared UI, styling, dependency, database function/role/grant/schema/data mutation or production deployment.
+- No use or storage of the supplied OpenAI key, PostgREST settings or empty APP_SESSION_SECRET; they are not required by the existing pg reader.
+- No legacy content fallback, new product facts, stock filter or snapshot-price fallback.
+
+### UI/UX Brand Alignment
+
+- Reference: existing Warehouse-only catalogue/detail design and the owner's screenshots.
+- Design: preserve existing presentation and blank missing data behaviour.
+- Responsive: this scope changes local connection settings only. Verify data integration through the existing reader/API as available; no UI redesign is authorised.
+
+### Input / Output
+
+- Input: owner-provided PostgreSQL URL and storage endpoint/bucket/region. Storage access key and secret were provided empty; actual source metadata/company and storage accessibility require inspection.
+- Output: ignored local Warehouse configuration and a verified account of readable products/functions/content, with any remaining blockers stated explicitly.
+
+### Acceptance Criteria
+
+- [x] Warehouse connection is stored only in ignored .env.local and the separate registry values remain unchanged.
+- [x] Warehouse sessions enforce read-only operations and bounded timeouts; verify server/database and company evidence without disclosing credentials.
+- [x] Inspect actual catalogue dependencies and available RPCs; run current readers where the schema supports them.
+- [x] Verify image accessibility or identify the exact missing storage access.
+- [x] Report actual verification and remaining limitations; no claim of production deployment or database installation.
+
+### Missing Information
+
+- None for this local connection scope. Source data identifies one active/non-deleted company with items, ID 1. The owner subsequently configured the missing S3 credentials locally and signed reads passed.
+- No schema incompatibility requiring application edits was found. Deployment configuration, new RPC installation and additional gallery data remain outside this task.
+
+### Approval Record
+
+- Owner said ทำให้หน่อย and supplied the connection after the recommendation to configure the separate Warehouse URL, identify company and inspect the actual schema. This authorises these local settings and read-only checks. No Warehouse mutation, new API, production release or unrelated AI integration is authorised.
+- Owner replied ใส่แล้ว after being asked to configure the missing S3 credentials locally. Existing keys were consumed from the local environment without printing or copying their values into tracked files.
+
+### Verification / Current State
+
+- Connected to warehouse_db on PostgreSQL 16.13 using read-only sessions. Exactly one company has item records and it is active/non-deleted; configured WAREHOUSE_COMPANY_ID=1 from that evidence. master_item has 730 rows, of which 514 pass the initial company/item eligibility conditions before unit/SKU/public exclusions.
+- The existing reader returned 488 parsed non-X items; current public exclusions yield 484 unique public SKUs: 355 with positive net prices and 129 inquiry-price items. Public items include 97 primary-image references and 182 nonempty descriptions. Source fact/component readers returned 1366 verified-fact rows across 87 SKUs and 4 component rows.
+- master_data unit/group/type, verified-fact and component dependencies are present. Both supplied functions exist and executed for WPS10KS: zero component lines and two purchase-unit rows. search_master_item also exists, but its return contract omits the price/image/description fields needed to replace the catalogue reader. Existing pg queries work; no new RPC was needed or installed.
+- Local /api/products returned HTTP 200 and 484 unique SKUs matching the source reader exactly; /api/health returned HTTP 200/status ok. The local WPS10KS detail page returned HTTP 200, with its current gross price 3790 THB and 19 specification rows from source. Its primary image returned HTTP 200/image/webp.
+- Initial unsigned storage access returned 403. After the owner configured S3 credentials, a signed storage read succeeded and all 22 image routes requiring storage returned nonempty image responses. All 75 version-matched cached image routes passed HEAD checks. This covers all 97 current primary images; products without source image metadata retain the existing empty-image state. No multi-image gallery was added.
+- Node 24.22.1 ran the four scoped Warehouse regression files: 24/24 tests passed. API output contains none of the configured database/storage secrets. .env.local is Git-ignored and mode 600; .env registry content remained unchanged during verification. No application source or production settings changed.
+- Initial sandbox network/tsx-CLI IPC restrictions were resolved through approved network access and Node's tsx import loader, respectively. These are environment restrictions, not Next.js issues. Final Next.js feedback review retained no framework candidate.
+
+## Task: Review new Warehouse database product RPCs (2026-11-12)
+
+Status: "Complete"
+Approval: "Review requested; database installation and application changes pending"
+
+### Goal
+
+Check whether the supplied master_item DDL and two SQL functions can replace the product source used by the pictured catalogue/detail pages, and recommend how the website should connect to the new database.
+
+### Scope In
+
+- Review the supplied SQL against the current server-side Warehouse reader and product projections.
+- Record missing product fields, function dependencies and connection information before planning implementation.
+- The additional database-browser screenshot identifies PostgreSQL 16.13, database warehouse_db, and schemas including master_data and ecommerce. It does not provide a network address, credentials, company ID, table contents or API contract.
+
+### Scope Out
+
+- No application, shared UI, styling, environment, database object, privilege, migration or deployment changes.
+- No restoration of legacy product descriptions, specifications or gallery images. Keep the current homepage/Hero exception and separate quotation-number registry.
+
+### UI/UX Brand Alignment
+
+- Reference: the owner's catalogue/detail screenshots and the existing site. Screenshots identify the displayed fields; they do not establish that the new database contains those values.
+- Design: no visual change in this review.
+- Responsive: not applicable to this documentation-only review; any future integration must verify the existing mobile/tablet/desktop behaviour under its approved plan.
+
+### Input / Output
+
+- Input: supplied master_item DDL, get_master_item_component_tree and get_master_item_purchase_units definitions; current warehouse-postgres.ts, product-repository.ts and Warehouse-only projections.
+- Output: reviewed capability mapping and a connection recommendation, not an installed RPC or implemented source switch.
+- Current code reads master_item/base units/groups/types directly through pg, verified specifications separately from ai_products/ai_product_facts/ai_attributes, and component rows separately. This is source-code evidence, not a fresh live database verification.
+- get_master_item_component_tree requires one root item ID and returns component lines, not the root product or a catalogue. An item without component lines returns no rows. It does not return sale prices, descriptions, image metadata or technical specifications. Component activity is returned rather than filtered; that can be appropriate for an internal component tree but does not define storefront eligibility.
+- get_master_item_purchase_units requires one item ID and returns purchase-unit conversions. It does not provide a product catalogue, sale price, images or specifications. Its deletion/activity behaviour depends on the unavailable v_master_item_purchase_unit_detail definition; the supplied function itself only filters company/item.
+- master_item provides identity/name/description, base-unit/group/type references, standard_sale_price and one primary image's metadata. Image bytes still require storage. The supplied schema does not establish a multi-image gallery or structured capacity/readability facts.
+- The table creation statement is unqualified while its indexes target master_data.master_item; any future reviewed DDL must explicitly establish the intended schema rather than rely on search_path.
+
+### Recommendation / Proposed Future Direction
+
+- Use the existing server-side pg connection mechanism for warehouse_db, with WAREHOUSE_DATABASE_URL and WAREHOUSE_COMPANY_ID separate from the quotation registry's DATABASE_URL. A separate database alone does not require HTTP/PostgREST or a new function.
+- If the owner wants the read contract managed as an RPC, prepare a dedicated storefront-list function after confirming the real schema and execution role. Keep the two supplied specialised functions for their existing purposes. A pg caller can invoke a SQL function directly; no HTTP endpoint is assumed or invented.
+- The list contract must preserve identity, names, description, base unit, group/type, net price, primary-image metadata/version and current public eligibility rules. Preserve verified facts separately or include an explicitly agreed representation. Define deterministic complete-list/pagination behaviour and avoid per-item calls for catalogue loading.
+- No stock-availability requirement, product/price snapshot, legacy fallback or new gallery source is introduced by this proposal.
+
+### Acceptance Criteria
+
+- [x] Explain why the two supplied functions cannot replace the catalogue reader.
+- [x] Identify fields available from master_item versus fields requiring units, groups/types, verified facts or storage.
+- [x] Distinguish the new Warehouse database connection from the quotation registry and from an HTTP RPC API.
+- [x] Verify the actual new database schema, role access, product counts, storage and any existing catalogue RPC before implementation; see the approved connection follow-up above.
+- [x] Agree the source approach: the owner authorised the existing pg connection setup. No application/SQL implementation was required; any future new RPC needs its own approved scope.
+
+### Missing Information
+
+- None for the review. The subsequent approved connection task above verified company ID, schema, existing read functions, current product/fact/component readers and storage. A dedicated catalogue function is unnecessary for the working direct-pg approach.
+
+### Approval Record
+
+- Owner requested checking the supplied functions and asked what to do because the data is in a new database, then supplied its database-browser screenshot. This authorises analysis and recommendations; it does not approve database installation or an application implementation plan.
+
+### Verification / Current State
+
+- Reviewed current source and current architecture/memory rules. package.json/package-lock.json identify Next.js 16.4.3, React 19.3.0 and the existing pg dependency; Node.js 24 remains the project requirement.
+- Initial review found no WAREHOUSE_DATABASE_URL and did not connect. The later owner-authorised local configuration and live verification supersede that initial limitation; see the connection task above.
+- No application/UI changes; therefore no production build or responsive visual execution is claimed. Next.js feedback review found no framework issue in this SQL/source audit.
+
+## Current architecture — 2026-11-12
+
+This section supersedes historical product-source and fallback policies below.
+
+- Interior catalog, cards, details, search, comparison, carousel and quotation product fields use live Warehouse PostgreSQL data and uniquely valued verified facts through ecommerce.get_website_products(bigint,text[]) via the server pg pool. Source-table joins are in the stored function; catalogue facts/components share its result and image metadata uses exact-SKU RPC reads. Missing images/specifications/descriptions stay empty; no legacy editorial fallback or fallback to direct table SQL.
+- Products satisfy the current company,active,saleable,not-deleted,valid-unit and nonnegative-price filters. Exclude X-prefix placeholders and the4 hidden calibration-fee SKUs. A zero price displays inquiry; automatic quotations require a positive net price and add VAT7% once.
+- Warehouse PostgreSQL and storage are read-only. Product/price snapshots are retired. `data/warehouse/images.json` and `public/images/warehouse-cache/` cache only version-matched images. `bun run warehouse:images` refreshes images, not products/prices.
+- Homepage/Hero is the explicit presentation exception: preserve its original local campaign media/copy/story/video sources. Local site settings/navigation and general company/service content remain available; legacy product imports are reference/homepage data only.
+- Quotation numbering uses a separate Prisma/PostgreSQL registry. Local development without that database uses ignored SQLite; production requires the separate registry. Retain migration history and never migrate Warehouse. Tests mock document issuance or use temporary test registries.
+- Configurator pairings/bundles require verified Warehouse facts or component rows. Do not infer old static pairs from model names.
+- Grouped safe pushes are authorized; production releases still require the existing uat deployment flow. The6 customer-map deletions are expressly held outside this task.
+
+## Historical decisions and task records
+
+The following records describe earlier stages. Their counts,source fallbacks and snapshot procedures are historical unless reaffirmed by Current architecture above.
+
 ## Display saved Warehouse product photos
 
 Use the saved static image path when the Warehouse image version matches the snapshot and the product uses Warehouse imagery. Retain existing editorial images, live image proxying for newer images and the existing empty-image state. Owner requested the correction across products after the G107169 gallery failure.
@@ -6383,7 +6757,7 @@ Node 24.22.1 / Next 16.4.3 Turbopack dev remains running on localhost:3000 (list
 
 ## Task: Carousel model-row overflow bug (2026-11-10)
 
-Status: "Ready to Code"
+Status: "Complete"
 Approval: "Approved — owner supplied the screenshot and explicitly instructed แก้บั๊ค"
 
 ### Goal / Scope
@@ -6396,11 +6770,973 @@ Reference: the owner's screenshot, existing carousel CSS and `src/styles/base.cs
 
 ### Contract / Acceptance
 
-- [ ] Model row stays inside the scene at 320/390/834/1440/1887px, with unwrapped readable labels.
-- [ ] First/last labels are reachable, clickable and select the same real model; the active label stays visible after carousel navigation and category changes without moving the page vertically.
-- [ ] Touch/wheel within the model row scrolls the row without switching carousel models accidentally; existing scene wheel/photo/background gestures and detail return continue working.
-- [ ] TypeScript, scoped ESLint, meaningful new browser regressions and existing carousel tests pass. Inspect mobile/desktop screenshots and preserve unrelated work.
+- [x] Model row stays inside the scene at 320/390/834/1440/1887px, with unwrapped readable labels.
+- [x] First/last labels are reachable, clickable and select the same real model; the active label stays visible after carousel navigation and category changes without moving the page vertically.
+- [x] Touch/wheel within the model row scrolls the row without switching carousel models accidentally; existing scene wheel/photo/background gestures and detail return continue working.
+- [x] TypeScript, scoped ESLint, meaningful new browser regressions and existing carousel tests pass. Inspect mobile/desktop screenshots and preserve unrelated work.
 
 ### Impact / Rollback / Missing information
 
 R2: scoped row layout and horizontal selection-follow behavior only. Changes are confined to the carousel TSX/CSS and browser tests. Preserve task-owned file snapshots for rollback. No missing input remains after the owner's direct bug-fix instruction; no redesign, product/data change or deployment is included.
+
+### Verification / Current state (2026-11-11)
+
+Before the fix, the browser regression reproduced x=-682px on a 1440px viewport. Six new row/gesture regressions passed against the original 41-label data after bounding the row, preventing label wrapping, following the active item horizontally and separating row gestures from scene navigation. An initial combined run was interrupted after nine passing cases and was not claimed as a completed suite.
+
+Later owner-approved work restored the curated 36-model carousel (12 groups of three) and hid horizontal scrollbars. Those newer decisions and their source were preserved. Fresh verification of the current source on localhost:3000 passes all 12 carousel browser tests, root TypeScript, scoped ESLint and all 137 catalog tests. Dedicated 390/1887px captures have zero console/page errors and were visually inspected. Row bounds are 20–370px on mobile and 353.5–1533.5px at 1887px. Node24 / Turbopack dev is running on port3000; no new application change or deployment occurred in this final verification pass. Report: `docs/warehouse/carousel-model-row-delivery.md`.
+
+## Task: Use the saved Warehouse catalog as the sole runtime Warehouse source
+
+Status: "Ready to Code"
+Approval: "Approved for shared saved product data and removal of obsolete quotation data code and SQL draft"
+
+### Goal and scope
+
+Read Warehouse SKU, unit, price and image data for the catalog and quotations from the committed snapshot. Apply the existing publication rules. The explicit snapshot refresh command is the import boundary. The owner asked to clear the duplicate data flow. This task concerns reads and carries no database or product deletions.
+
+### UI/UX and data contract
+
+Keep the existing quotation form, print layout, capture date and catalog presentation at all viewport sizes. Input is `data/warehouse/products.json` plus saved image assets. Output is one public record per eligible SKU and quotations calculated from saved pre-tax unit prices. Editorial descriptions, categories, URLs and curated imagery remain website metadata.
+
+### Acceptance criteria
+
+- [x] Listing, image resolution and quotation work with zero requests to Warehouse even when its URL is configured.
+- [x] All eligible saved SKUs appear once in the directory. Print a quotation from the saved net price with quantity and 7% VAT.
+- [x] Retain all snapshot records, existing image assets and the manual refresh path.
+
+### Missing information and approval record
+
+The owner selected the shared-file plan for product pages and quotations, with pre-tax prices, 7% VAT and the capture date. The owner explicitly confirmed “ลบแบบร่าง SQL ด้วย”. Delete the repository draft only. Use the catalog's saved net price in satang for the quotation and preserve seller details, form, configurator handoff and printing.
+
+### Verified state
+
+Product pages and quotations share the published catalog derived from the saved snapshot. The SQL draft and live product and image fetches were removed. The quotation retains the capture date on screen and in print, and computes VAT from the saved pre-tax price. Confirmed 355 eligible SKUs, 137 passing catalog tests and three passing browser checks.
+
+## Task: Calm stagger entrance once at page opening (2026-11-11)
+
+Status: "Ready to Code"
+Approval: "Approved — มันเด้งจนน่ารำคาญ อนุมัติ"
+Progress: "Done"
+
+### Goal
+
+ลด stagger bounce ที่เด้งแรงและเกิดตลอดการเลื่อนหน้า ให้เหลือ entrance สั้นครั้งเดียวตอนเปิดหน้า แล้วทุกองค์ประกอบอยู่ในสถานะนิ่งถาวรตลอด page visit นั้น
+
+### Scope In
+
+- ปรับ shared hook `src/components/ui/use-stagger-bounce.ts` เฉพาะ activation และ motion profile หลังผู้ใช้ยืนยันความหมายของ “ตอนเปิด”
+- เล่นเฉพาะ target ที่อยู่ใน initial viewport เมื่อเปิด route; target ที่อยู่นอกจอในตอนเปิดและ target ที่เพิ่มภายหลังต้องแสดงนิ่งโดยไม่เริ่ม animation เมื่อเลื่อนถึง
+- ใช้ one-way rise profile ที่เบากว่า reference ปัจจุบัน: opacity `0.65 → 1`, translateY `16px → 0`, ไม่มี scale, duration `650ms`, easing `ease-out`, delay `80ms × index` capped ที่ `320ms`
+- คง whole-homepage exclusion, Navbar exclusion, final index/Footer exclusions, hydration-safe JavaScript bookkeeping, keyboard focus, reduced motion, unsupported API/no-JavaScript fallback และ cleanup เดิม
+- ปรับ browser regression ให้พิสูจน์ initial entrance, no scroll-trigger replay, settled styles และ responsive behavior
+
+### Scope Out
+
+- ไม่เปลี่ยน layout, spacing, typography, colors, content, images, product data, routes, Header/Navbar, Footer markup, dependencies, database หรือ deployment
+- ไม่เพิ่ม replay control, persistent state หรือ child DOM bookkeeping attributes
+- ไม่แก้ motion อื่นของหน้าแรกหรือ component เฉพาะทางที่ไม่ได้ใช้ shared stagger hook
+
+### UI/UX Brand Alignment
+
+- Reference: คำสั่งผู้ใช้ “แก้เอฟเฟก stagger bounce มันเด้งมากเกินไปอยากให้มันเด้งขึ้นมาแค่ตอนเปิดแล้วนิ่ง” และ shared hook ปัจจุบัน
+- Design: รักษาหน้าตาเดิมทั้งหมด; ลดเฉพาะความถี่/overshoot ของ entrance ตามค่าที่ผู้ใช้ยืนยัน
+- Responsive: ตรวจ 390px, 834px และ 1440px พร้อม first viewport, scroll ลงส่วนถัดไป, scroll กลับ, client navigation และ reload
+
+### Input / Output
+
+- Input: current profile `opacity 0→1`, `translateY 40→0px`, `scale 0.8→1`, `800ms`, `100+150ms` stagger และ overshooting cubic-bezier; current activation เป็น first viewport entry ของแต่ละ target
+- Output: route opening มี one-way entrance ตาม approved profile หนึ่งครั้ง; หลังจากนั้นเนื้อหาทั้งหน้าคง opacity/position/scale ปกติและไม่มี animation ใหม่จากการเลื่อน
+
+### Acceptance Criteria
+
+- [x] Initial visible targets เล่น entrance ตาม profile ที่ผู้ใช้ยืนยันเพียงหนึ่งครั้งต่อ page visit และ settle ที่ opacity 1, translate none, scale none
+- [x] การเลื่อนลง/กลับขึ้นไม่สร้าง stagger animation ใหม่ให้ target เดิมหรือ target ที่อยู่นอก initial viewport
+- [x] Dynamic content หลัง initial scan แสดงนิ่งและไม่ถูกซ่อน/เลื่อน/ย่อ
+- [x] Home, Navbar, final index/Footer exclusions, reduced motion, keyboard/pointer, no-JavaScript/API fallback และ hydration behavior คงเดิม
+- [x] Browser checks ที่ 390/834/1440px ไม่มี horizontal overflow, console error, page error หรือ content geometry regression; มี screenshot ก่อน/หลัง settle
+- [x] TypeScript, scoped ESLint, Prettier และ focused Playwright suites ผ่านด้วยจำนวนเคสที่รายงานจริง
+
+### Missing Information
+
+- ไม่มี: ผู้ใช้อนุมัติ interpretation ที่เสนอว่าเล่นเฉพาะ initial viewport และตัด scale/overshoot ออก
+
+### Approval Record
+
+- 2026-11-11: หลังได้รับ Spec/Plan และคำถามยืนยัน initial-viewport-only/no-scale/no-overshoot ผู้ใช้ตอบ “มันเด้งจนน่ารำคาญ อนุมัติ” ขอบเขตนี้อนุญาตให้แก้ shared hook และ focused motion regressions ตามรายการไฟล์ใน Plan; ไม่ครอบคลุม layout/content/dependency/deploy
+
+### Impact / Rollback / Current State
+
+R1 เพราะ `src/components/ui/use-stagger-bounce.ts` เป็น shared UI hook ของ non-home public routes; หาก activation ผิด อาจทำให้หลายหน้าดูนิ่งเกินไปหรือ content เริ่มในตำแหน่งผิด แม้การเปลี่ยนจะย้อนกลับได้ด้วยการคืนเฉพาะ hook/test delta. Implementation ปัจจุบันเล่น one-way rise เฉพาะ target ที่อยู่ใน opening viewport ด้วย `opacity 0.65→1`, `translateY 16→0px`, ไม่มี scale, `650ms ease-out` และ stagger `80ms` capped ที่ `320ms`; first scroll ปิด opening window และ target นอกจอ/เพิ่มภายหลังแสดงนิ่ง. Opening window รอ hydration mutation ที่เกี่ยวข้องแล้วปิดหลัง stable animation frames เพื่อไม่ทำ SSR content เด้งซ้ำหรือทำ hydrated replacement พลาด entrance
+
+Verification วันที่ 2026-11-11: focused Chromium motion suites ผ่าน `41/41` แบบ sequential และ hydration regression ผ่าน `5/5`; browser inspection ที่ 390/834/1440px ยืนยันว่า opening content settle เป็น opacity 1/translate none/scale none, lower content ไม่ animate เมื่อ scroll, ไม่มี horizontal overflow, console error หรือ page error. TypeScript, scoped ESLint, Prettier ของ task-owned source/tests/MEMORY และ scoped whitespace check ผ่าน; task sections ใน `spec.md`/`plan.md` ตรงกับ Prettier โดยไม่ reformat unrelated historical content. ไม่พบ Next.js framework feedback candidate ที่เข้าเกณฑ์ในงานนี้
+
+## Task: Instant navigation for product category routes
+
+Status: "Ready to Code"
+Approval: User approved the previously proposed Suspense wrapper and child parameter read with “จัดการ”.
+
+Show an accessible loading state while resolving the category URL. Preserve the existing five overview routes, metadata, static parameters and unknown-category handling. Verify direct visits, client navigation, mobile and desktop rendering and the absence of the reported instant-navigation diagnostic.
+
+Category navigation verification (2026-11-11): the Suspense boundary now precedes the page parameter read. Mobile and desktop category transitions, direct titles and not-found UI passed in Chromium.
+
+## Task: Show photographed SKUs in public product listings
+
+Status: "Ready to Code"
+Approval: Owner approved showing the 103 photographed SKUs on the storefront, retaining hidden records and all 355 quotation choices.
+
+The owner requested temporarily hiding products that await photos and retaining their records. Count either an existing website product photo or a locally saved Warehouse photo when selecting public listing items. Use the existing catalog and snapshot as the single data source. Derive visibility when the catalog is read so adding a photo makes the SKU eligible without a second list.
+
+Proposed scope: product cards, category and subcategory lists, public product search, comparison selection and related-product suggestions. Preserve curated carousel membership, quotation and configurator eligibility, existing detail URLs and the full saved catalog. No product, photo or CMS record is deleted. Preserve existing card styles and responsive behavior.
+
+Acceptance: lists contain only photographed products; a saved SKU without a photo still exists for quotations and remains reachable by its existing detail URL. On the local site 103 of 355 eligible SKUs have photos and 252 are awaiting photos. All 102 distinct listed photo files exist under public. Verify actual UI on mobile and desktop.
+
+Verified locally: 103 photographed storefront SKUs and 355 quotation choices. All five categories passed at 390, 834 and 1440px. Six related-product links resolved to photographed products. SKU 11 remains reachable and selectable for quotation. Adding a photo to a test fixture restored storefront eligibility without editing the saved inventory. TypeScript, scoped ESLint, 137 catalog tests and eight Chromium tests passed.
+
+## Task: Direct Warehouse PostgreSQL reads (2026-11-11)
+
+Status: "Complete"
+Approval: "Approved — owner requested direct PostgreSQL with separate CMS connection, selected automatic live reads and explicitly retained only positive sale prices"
+
+### Goal / Contract
+
+Read product identity, name, unit and net sale price automatically from Warehouse PostgreSQL without running its web/API app. Preserve CMS `DATABASE_URL` and Prisma unchanged. Use the existing pg dependency through a separate `WAREHOUSE_DATABASE_URL` and explicit positive `WAREHOUSE_COMPANY_ID`; do not fall back to the CMS connection. The owner selected live runtime reads over manual snapshot-only updates. This supersedes the previous saved-price-only decision for this scope.
+
+Verified source: company1 master_data.master_item joined to master_data.master_unit; item active/saleable/not deleted, unit not deleted, standard_sale_price >0. These records yield exactly the same359 non-X SKUs/names/units/prices as the saved snapshot. Existing four fee exclusions leave355 public/quotable SKUs; retain existing photographed-only storefront visibility and curated36 carousel. The owner explicitly excluded130 additional zero-price records. No stock constraint or schema migration. Parameterize company/SKU values and force a read-only database session with bounded connections/timeouts.
+
+Catalog retains its existing60-second revalidation policy. Quotations perform a fresh direct read and show its actual read timestamp; no saved-price fallback if PostgreSQL is unavailable. Existing integer-satang/VAT/kit rules remain unchanged. Saved data/photos remain a backup/image cache and optional manual export, not the runtime price source. Snapshot export must also read PostgreSQL instead of calling Warehouse API.
+
+Image bytes are in the existing S3-compatible object storage, not PostgreSQL. Read metadata from Warehouse, preserve unchanged saved photos by matching item/version, and fetch changed/new photos directly from storage using separate server-only Warehouse storage settings and bounded GET-only requests. No Warehouse web/API dependency or new library. No writes to Warehouse or storage.
+
+### Acceptance
+
+- [x] Automatic catalog/quotation reads match the verified positive-price source and preserve eligibility, taxonomy, units/VAT, mapped URLs and CMS filters.
+- [x] No Warehouse API process/request is needed; the separate PostgreSQL connection is read-only and never reuses CMS DATABASE_URL.
+- [x] A changed source fixture is visible on the next direct read; catalog cache is explicit and quotation uses current prices/read time.
+- [x] Existing photos work; changed versions do not silently reuse old photos; direct storage GET works without the Warehouse app.
+- [x] Database failure produces generic API503 and a safe quotation error with no print form; missing configuration does not fall back to saved prices or CMS.
+- [x] Typecheck, scoped lint, catalog tests, production build and relevant product/quotation/image browser tests pass.
+
+### Impact / Rollback
+
+R1: all catalog consumers use live Warehouse values, and deployment needs network access to PostgreSQL/storage. Only source readers, quotation freshness, image forwarding, exporter, config/docs/tests change; preserve current unrelated dirty work. Roll back this task's owned delta to the saved-data reader if needed. Credentials go only in ignored local env; copy the verified Warehouse connection/storage settings locally without exposing values. No CMS env change, database writes/migrations, dependency change, commit/push/deploy or shared layout/style change. No missing input remains after the owner's two answers and verified local connection.
+
+### Verification / Current State
+
+Live positive-price source matches all359 saved SKU/name/unit/price records; existing eligibility yields355 public/quotable items and photographed storefront filtering remains unchanged. PostgreSQL reports transaction_read_only=on. CMS DATABASE_URL/DIRECT_URL compare equal before/after configuring only independent Warehouse variables. The75 unchanged photos retain saved files; a direct storage GET returned WebP20038bytes. Snapshot CLI completed in an isolated output directory with359SKUs/75photos and identical prices/image hashes; source snapshot/photos were not changed.
+
+Passed142 catalog tests, TypeScript and scoped ESLint. Node24/Next16.4.3 production build generated664/664pages. Development browser15/15 and focused production3/3 pass for catalog/source parity, images/details, all five categories at390/834/1440px, search/comparison, builder, current quotation time, units/VAT and PDF. Failure QA with an unreachable independent Warehouse connection returned generic API503 and a quotation error with no print form. No Warehouse API listener on3048 was running, and active source readers/exporter contain no Warehouse API fetch. Actual source-price mutation was tested using query fixtures, without writing Warehouse data. Setup/delivery contract is in `docs/warehouse/direct-postgres.md`.
+
+## Task: Image-only Warehouse cache (2026-11-11)
+
+Status: "Complete"
+Approval: "Approved — user explicitly requested separating used image data, deleting unnecessary old product/price data, retaining photos/categories and verifying complete PostgreSQL reads"
+
+### Goal / Scope
+
+Remove the historical Warehouse product/price snapshot from the project after extracting only the metadata required for its saved photos. Runtime product/name/unit/price reads remain direct PostgreSQL. Preserve every physical photo, category/model mapping, curated carousel and CMS/editorial content. This supersedes retaining a full product/price backup in `data/warehouse/products.json`.
+
+### Contract
+
+Replace the359-row product snapshot with an image-only manifest containing the75 locally saved image entries: SKU, master item ID, source updated timestamp and local image path. No product names, unit, sale price or stored product list. Match current PostgreSQL image metadata against this manifest before reusing a local photo. Keep the current live-price cache/fresh quotation/error contracts unchanged. Replace the old product snapshot export command with an image-cache refresh command so deleted product/price data is not recreated.
+
+### Acceptance
+
+- [x] Old `data/warehouse/products.json` and its writer are removed; no runtime/test/CLI import requires the old file and the new manifest contains image metadata only.
+- [x] All75 image references and74 physical image files remain intact; full image-directory/category/model/curated/CMS hashes are unchanged.
+- [x] PostgreSQL still supplies the complete355 public/quotable SKUs with matching names/units/net prices; storefront photo eligibility and category memberships remain the same.
+- [x] Image-only refresh writes no product/price snapshot; image version matching, new-photo storage reads and failure safeguards still work.
+- [x] Unit/type/lint/build and catalog/image/category/builder/quotation/PDF browser checks pass, including photo decode and current SQL parity.
+
+### Impact / Rollback
+
+R2 with task-owned private backups and Git history for recovery. Deleting only the old snapshot is authorized; no physical image or category/CMS data deletion. Source database, env, shared UI, stock policy and deployment remain out of scope. Update runtime/tests/exporter before removing the referenced file; preserve all unrelated dirty work.
+
+### Verification / Current State
+
+The359-row product/price snapshot and old writer are removed. Runtime imports only `data/warehouse/images.json` with75 image records containing exactly sku/master_item_id/updated_at/local_image. The new `warehouse:images` command completed in isolated output with75references, unchanged paths/hashes and no product/price file. All74 physical image files and category mapping, curated manifest and CMS reader hashes match the pre-task baseline.
+
+Live SQL returns359positive-price records and the public API355; full API identity/name/unit/net/gross/image/category fields match the baseline, and photographed storefront membership stays103. Passed143catalog tests, TypeScript/scoped ESLint/Prettier/diff checks, Node24 build664/664, development browser15/15 and production3/3 including current SQL parity, photo decode, categories at390/834/1440px, builder, quotation VAT/date/units and PDF. No database/env/shared UI/dependency changes or deployment. Current guide: `docs/warehouse/direct-postgres.md`. Dev remains available on3000; temporary production QA is stopped after verification.
+
+## Task: ใบเสนอราคา PDF ตามต้นฉบับ QO-072208
+
+Status: "Ready to Code"
+Approval: "มีแค่ PDF นี้ ใช้เป็นแม่แบบได้เลย อนุมัติให้ทำ เลขเอกสาร วันหมดอายุ ลายเซ็นกับ QR ให้ฝั่งผู้ขายใส่เอง ส่วนลูกค้ากรอกข้อมูลตัวเอง"
+
+### Goal / Scope
+
+PDF จากหน้า /service/quotation ต้องยึดพิกัด A4 ต้นฉบับทุกส่วน ทั้งผู้ขาย ลูกค้า ข้อมูลเอกสาร ตารางสินค้า VAT ยอดเป็นตัวอักษร การชำระเงิน หมายเหตุ และส่วนรับรอง ลูกค้ากรอกข้อมูลของตนและเลือกสินค้าได้ ข้อมูลการอนุมัติต้องมาจากผู้ขาย ใช้ราคาขายจริงและยอดสตางค์ของเอกสารใหม่
+
+### Reference / Input / Output
+
+ต้นฉบับ QO-072208.pdf (25072026).pdf มีหนึ่งหน้า 595.28 × 841.89 pt และวาด JPEG 2382 × 3483 px เต็มหน้า ไม่มีช่อง PDF form แบบแก้ได้ พิกัดจากขอบบนที่กึ่งกลางแถบคำอธิบายคือ 91.07–101.30 มม. ที่ x = 157.5 มม. กรอบเอกสารเริ่ม y = 30.19 มม. และกรอบยอดเงินเริ่ม y = 181.80 มม. ใช้ภาพหน้าจอประกอบการอ่านเท่านั้น
+
+### Acceptance Criteria
+
+- [x] เมื่อป้อนข้อมูลตัวอย่างในชุดทดสอบ PDF มี A4 หนึ่งหน้าและยอด 8,953.28 + 626.73 = 9,580.01 บาท
+- [x] เรนเดอร์ PDF สองฉบับที่ 840 × 1188 px เทียบจุดจัดวาง 33 จุดและส่วนต่างภาพทั้งหน้า ดูผลจริงใน output/quotation/comparison.json และ difference.png
+- [x] ตรวจข้อมูลผู้ซื้อใหม่ ชื่อ/ที่อยู่ยาว รายการเกินหน้า และหน้ากรอกบนมือถือ แท็บเล็ต เดสก์ท็อป
+
+ผลเทียบตัวอย่าง: จุดจัดวางที่วัดต่างสูงสุด 1 พิกเซล (0.25 มม.) มีความต่างของรูปร่างตัวอักษรรวมอยู่ในภาพส่วนต่าง 29,750 จาก 997,920 พิกเซลที่ต่างเกิน 20 ระดับสีต่อช่อง จึงยังไม่ยืนยันว่าเหมือนทุกพิกเซล ฟอนต์สำหรับข้อความใหม่ใช้ Noto Thai ของเว็บไซต์ เครื่องมือออกเอกสารของผู้ขายสร้างด้วย node tools/quotation-seller/build.mjs
+
+### Missing Information / Approval Record
+
+ใช้ภาพจาก PDF เป็นแม่แบบหลังลบข้อมูลเฉพาะใบออกจากพิกเซล ฝั่งลูกค้าสร้าง PDF จากข้อมูลลูกค้าและสินค้าที่เลือก ผู้ขายเปิดไฟล์ดังกล่าวด้วยเครื่องมือภายใน ใส่ข้อมูลรับรองและภาพ QR กับลายเซ็นของใบใหม่ตามตำแหน่งที่วัดได้
+
+## Task: Warehouse-first versioned product photos (2026-11-11)
+
+Status: "Complete"
+Approval: "Approved — owner requested Warehouse photos first, CMS fallback, versioned image URLs, automatic updates without a refresh command and verification"
+
+### Goal / Contract
+
+Product photos resolve from current Warehouse metadata first. Reuse a saved Warehouse photo only when item/version match, otherwise use the direct storage image route. Put the source version in both local-cache and proxy URLs so a changed Warehouse photo gets a distinct Next/browser cache key after the existing catalog revalidation. No image export/deploy command is needed for runtime updates; an already-open page updates on refresh/navigation, not push.
+
+Use existing CMS/editorial images when Warehouse has no image, and retain a client-side fallback when its primary image fails. Propagate the optional fallback through product cards, search/comparison, detail/gallery and builder. Gallery must not let the CMS media branch override the chosen primary photo. Product-photo cutouts must not override a Warehouse photo. Keep curated carousel membership36, but prefer the corresponding live product photo for linked members and retain the curated image as the final photo fallback. Preserve campaign artwork/3D behavior, specs, layout/styles and all physical photo/category/CMS data.
+
+Only change image priority/version/cache behavior. Product eligibility, PostgreSQL prices, VAT, CMS connection, catalog cache and photographed-storefront rules remain unchanged. CMS removal is not authorized: the owner asked about its impact. Existing no-CMS database behavior uses static/default editorial content; Warehouse supplies no replacement for all descriptions/specifications/pages/settings.
+
+### Acceptance
+
+- [x] Warehouse overrides an existing CMS photo; absent Warehouse image keeps CMS, and a failed primary renders the fallback without a retry loop.
+- [x] Source version changes produce new primary/optimizer URLs without running warehouse:images; valid versioned proxy requests return image bytes, not redirects that Next optimization rejects.
+- [x] Cards, detail/media gallery, search/comparison, builder and linked curated-carousel photos use the chosen source; group counts/IDs/routes/specs/physical assets remain unchanged.
+- [x] Unit source-version fixtures and browser/cache/fallback checks cover changes without writing Warehouse records. Live catalog remains355 and storefront membership103; CMS database is not required for product/price reads.
+- [x] Type/lint/catalog/build and relevant mobile/desktop product/carousel/quotation tests pass. Explain update timing and CMS limits truthfully.
+
+### Impact / Rollback
+
+R1: shared ProductImage receives an optional fallback prop; all unchanged callers retain their behavior. No shared style/layout change. Snapshot task-owned dirty files before edits; roll back just image-source/fallback changes if needed. No CMS removal, source DB/storage writes, environment/dependency change or deployment. No missing input.
+
+### Verification / Current State
+
+Warehouse photos now take priority with source updated_at in local/proxy URLs;41 products retain a CMS/editorial fallback. Warehouse absence uses CMS, and primary image failure renders the fallback on actual cards/details/builder at390/1440px. The installed Next default rejected local query URLs during the first browser run; the scoped image allowlist now permits queries only on Warehouse cache and SKU image paths. Versioned proxy calls return200 image bytes and two unique versions each produced a real production optimizer MISS. Source-version changes are simulated in pure fixtures and URL requests, without changing actual Warehouse photos or database records.
+
+Passed147 catalog tests, TypeScript, scoped ESLint/Prettier/diff checks and Node24 production build664/664. Final dev photo/carousel suite17/17 and catalog/quotation suite15/15 pass across320/390/834/1440/1887px where applicable; production photo suite5/5 plus8/8 selected carousel/catalog/builder/quotation checks pass. A first cold carousel selector test clicked before its existing interaction engine initialized; the test now waits for data-interactive and passed the full rerun. Curated36 membership, image manifest, category mapping and local environment are preserved. No configured CMS DATABASE_URL was needed for the live355-SKU API.
+
+Guide and CMS limits are documented in docs/warehouse/direct-postgres.md; evidence is in output/warehouse-primary-images-20261111. The image export command remains optional. Catalog retains30/60/300-second cache settings and needs refresh/navigation to observe revalidation; storage-only writes without a Warehouse metadata version update cannot be detected.
+
+## Task: เลขใบเสนอราคาและวันที่อัตโนมัติ
+
+Status: "Ready to Code"
+Approval: ผู้ใช้กำหนดเลขเริ่ม 00000001 วันที่สร้าง อายุ 14 วัน และชื่อเจ้าหน้าที่ กำไลพลอย ศรีพุ่มไข่ ให้แสดงบนใบที่ลูกค้าสร้าง
+
+ออกเลข 8 หลักเรียงต่อเนื่องข้ามวันและเครื่อง คำนวณวันที่ประเทศไทยจากเวลาที่เซิร์ฟเวอร์ออกเลข วันหมดอายุเท่ากับวันที่ออกบวก 14 วัน เครื่องมือผู้ขายใช้ข้อมูลบนใบและเติมเฉพาะการรับรอง ตรวจคำขอพร้อมกัน การลองใหม่ และช่วงสิ้นเดือน/ปี
+
+ตรวจแล้วใน PDF ฝั่งลูกค้าและหลังลงนาม ตัวอย่าง 00000001 วันที่ 11/11/2026 ใช้ได้ถึง 25/11/2026 ผู้ติดต่อ กำไลพลอย ศรีพุ่มไข่ ภาพหัวเอกสารก่อนและหลังลงนามตรงกันทุกพิกเซลในภาพตรวจ PostgreSQL 17 ฐานแยกออกเลขต่อเนื่อง 8 ใบจากคำขอพร้อมกัน 10 ครั้ง (ซ้ำ 2 ครั้ง) ทดสอบเวลาไทยข้ามปีและวันอธิกสุรทินผ่าน ฐานใช้งานจริงต้องได้รับ migration ก่อนเปิดใช้
+
+## Task: Remove CMS reads and retain local editorial content (2026-11-11)
+
+Status: "Complete"
+Approval: "Approved — user explicitly requested removing CMS, preserving fallback images/specs/descriptions/existing content in the project, and keeping live Warehouse products/prices/primary images with tests"
+
+### Goal / Scope / Contract
+
+Replace all public-site CMS product/document/homepage database reads with local project content. Preserve current rendered content, imported159 product records and401 page records, local images, rich HTML/specifications/videos, local site/navigation settings, category mappings and curated36 carousel. Move preserved static CMS helper modules to features/site; the name no longer denotes an external editor/database. Product identity/units/net prices and versioned primary photos remain from Warehouse; local editorial images remain fallback. Keep existing catalog cache, VAT, routes and design.
+
+Current local DATABASE_URL is absent: current public content is local defaults/imports. No claim is made that unconnected remote CMS edits are exported. The user requested preserving current project content, which is available and will be hashed/compared. New local content.json stores actual current settings/navigation; original product/page files are not rewritten.
+
+Concurrent work added a non-CMS quotation issue registry using Prisma/DATABASE_URL plus a local development fallback. Preserve that code, Prisma client/schema/migration history, registry env contract and database data. This task removes CMS reads/seed, not the separate quotation registry or historical database tables. No database migrations, seed, DROP, or external storage mutation will run. Old CMS-specific import/seed tools can be removed with private task-owned backups; no new dependency is needed.
+
+### UI / Acceptance
+
+Reference: current header/footer/layout/product/gallery/builder and existing local brand assets. Preserve all styling/interaction/props and responsive behavior; shared-file changes are source-import updates only. Verify390/834/1440px navigation/content/products and maintain curated36.
+
+- [x] No public runtime queries CMS products, cmsDocument or homepageImage tables; product data still comes solely from Warehouse.
+- [x] Current full public catalog/identity/prices/category/image/fallback metadata and original content/assets match the protected baseline.
+- [x] Site/navigation/settings/specs/descriptions/gallery/pages resolve from local files; missing main photos still use preserved local fallbacks.
+- [x] CMS seed/import code is retired and deployment does not seed CMS; separate quotation registry and historical migrations remain intact.
+- [x] Unit/UAT/type/lint/build and product/photo/content/navigation/builder browser checks pass without a configured CMS; health checks Warehouse, with generic503 on failure.
+
+### Approval / Risk / Rollback
+
+The user's current instruction explicitly authorizes the CMS removal and preservation boundary. The prior image-only restriction is superseded for CMS removal. Highest risk is shared content/navigation dependency changes; capture hashes and task-owned files before edits and compare complete API/content after. Roll back only the owned delta, retaining concurrent quotation work. No required input is missing for the current visible local-content baseline. Deployment and migration execution are outside this task.
+
+### Verification / Current State
+
+Ten preserved site modules now live in features/site;44 consumer/test imports use that path. Local content.json contains9 actual current settings/navigation records. There are no active product/cmsDocument/homepageImage queries in src/scripts. CMS seed and catalog import helpers are removed; production deployment retains registry migration then build, with no CMS seed. Prisma, its historical schema/migrations, quotation API and registry code remain. Health now reads the active Warehouse pool and retains its generic503 response contract.
+
+Full public API355 records compare equal to the protected baseline, including identity/name/unit/net/gross prices/category/image/fallback fields. Storefront photo membership103 and local fallback count41 are unchanged. All159 product-content and401 page records, Warehouse reader/storage/mapping/image metadata, ignored environment and1414 original public assets have matching hashes.
+
+Passed149 catalog tests (including configured-legacy-CMS URL traps),27 UAT tests, TypeScript, scoped ESLint/Prettier and diff checks. Node24 build665/665 completed with DATABASE_URL deliberately pointing to an unreachable test address. Dev local-content/photo9/9 and navigation/catalog/builder/quotation27/27 passed; production content/health/category/photo/builder13/13 passed without a CMS connection. Dev PDF tests use the existing local quotation registry; no live registry/Warehouse/storage writes or migrations/seed were performed. Runtime production registry issuance is outside these CMS checks and retains its separate configuration requirement.
+
+Evidence is in output/cms-removal-20261111, including verification.json, build/UAT/catalog logs, PDFs and390/834/1440 screenshots. Existing task-owned backup preserves the pre-edit dirty files. README and docs/warehouse/direct-postgres.md describe local editing and the remaining quotation-registry exception. Final Next feedback review found no new qualifying framework issue; the corrected Git path audit was application tooling.
+
+## Task: Selection sidebar for the weighing builder
+
+Status: "Ready to Code"
+Approval: "วางแผนเสร็จแล้วเริ่มทำเลยอนุมัติ"
+
+Use the supplied sidebar reference on the existing guide. Show the total at the top and selectable head, platform and accessory slots with the actual selected model, thumbnail, detail link, price status and removal inside each slot. Keep the compatible selection rules, kit pricing and quotation handoff. Keep the rail at the left on desktop and in normal flow above the catalog on phones. Reference styling uses existing SUNFORD colors and product images. Acceptance covers empty and populated slots, bundled heads, removal, quotation and responsive layout. No missing inputs.
+
+### Weighing builder sidebar verification
+
+The guide now shows the summary above the category slots and the kit price includes its bundled head exactly once. Verified in Chrome on 390, 834 and 1440px viewports with a selected head, platform and accessory. Removing an accessory restored the kit total. Both selection orders opened the quotation with the selected models. Six targeted browser tests passed, as did typecheck and scoped lint.
+
+## Task: Show each configurator selection on its own quotation line
+
+Status: "Ready to Code"
+Approval: "ในหน้านี้หากรายการไหนที่ส่งมาจากจัดสเปคให้ขึ้นรายการที่จัดมาเป็นคนละรายการไปเลย"
+
+The screenshot specifies separate rows for Indicator-AW31 and TCS-150-AW31. Preserve incoming model order and distinct accessory rows in the editor and buyer PDF. Show a bundled head as included in the matched kit price, using the kit quantity and zero additional charge. Keep normal standalone product prices, pending-model protection and document VAT. Brand reference is the existing quotation form and PDF. Verify both selection orders, edits and PDF output.
+
+Verified the example handoff in Chrome, both selection orders, accessory rows, synchronized quantities, removing either row, price restoration for a standalone head and buyer PDF generation. The rendered PDF lists the indicator and kit separately. Four unit checks, five browser checks, scoped ESLint and typecheck passed.
+
+## Task: Model-only product titles across the website
+
+Status: "Ready to Code" for models recorded in the catalog. Owner requested model-only names including currently hidden products. Apply the display rule at catalog assembly before photo filtering. Keep raw Warehouse wording for document printing and search, and keep product identity, visibility and pricing. Verify named models, variants, entries without photos, website selectors and detail headings. Source is the live catalog and its existing model mappings. Fallback preference for entries without an identifiable model was requested.
+
+### Model-only title contract and results
+
+Owner selected “แสดงรหัสสินค้า (SKU)” for products without an identifiable model. Product.name is the public label; warehouseName retains source wording for search, topic classification and ordinary quotation PDF lines. The model-title projection runs before photo eligibility. At verification the catalog held 355 records, of which 103 were visible in the directory and 252 were photo-hidden. Browser checks confirmed TCS-150-AW31 and AW31 in the quotation, ACS-30-FC31 on a hidden detail page, and G107435 as the fallback for thermal paper. The catalog tests passed 150/150 and the targeted Chrome suite passed 11/11, including 390/834/1440 px layouts.
+
+## Task: Quotation item details popup
+
+Status: "Ready to Code"
+Approval: “ทำเป็นปุ่มกด popup ไว้ด้านขวา แทนการไว้ด้านล่างรายการ”
+
+Replace each quotation row's inline notes textarea with a right-aligned details button. Open the existing site dialog for the selected row, save its note to the existing row/PDF field, and allow closing without saving draft changes. Preserve the 1500-character limit and usable layout on phones, tablets and desktop. The supplied image identifies the field to replace.
+
+Chrome passed at 320, 768 and 1440px. Verified draft discard, focus return, saved note isolation and the rendered PDF showing the saved Thai note under the second item. TypeScript and scoped lint passed.
+
+## Task: Remove customer website and reference inputs
+
+Status: "Ready to Code". The owner requested removal of the two fields shown in the quotation form screenshot. Leave their empty-value placeholders in the approved PDF layout.
+
+## Task: Searchable quotation product picker
+
+Status: "Ready to Code". The owner requested a compact product picker with space above it, search and a thumbnail before every model name. Use the official product image and its existing fallback, with a neutral icon for products without a photo. Search by model or SKU and apply the selection to the active quotation line. Preserve availability of every priced item and required product selection before export.
+
+Verified the 380px maximum dialog width, screen margins, thumbnail decoding and keyboard search at 390, 834 and 1440px in Chrome. Confirmed all priced products remain selectable, including items without photos, and that the quotation still exports to PDF.
+
+## Task: Prevent duplicate models in quotations
+
+Status: "Ready to Code". Owner requested “รุ่นที่เลือกไปแล้วห้ามแสดงซ้ำ”. Hide a selected model and its other SKUs from picker results, including during search and replacement. Re-enable the model when its line is changed or removed. Additional units use the quantity on that line.
+
+Verified with the live catalog in Chrome, including both SKUs for TMS-60-AW31, bundled AW31, removing a kit, replacing a WPS10KS line, and downloading a multi-page PDF.
+
+## Task: Flow long quotations across A4 pages
+
+Status: "Ready to Code". Approval record: owner's authorized template work and current direction “รายการจะเรียงลงมาจนสุดแล้วค่อยต่อด้วยส่วนสุดท้ายส่วนหัวไม่ต้องเปิดในหน้าถัดไปซ้ำ”.
+Use the supplied PDF as the reference for a short quotation. For overflow, print the document and table headers once; continue products and their details to the printable bottom, in order. Place totals, payment and certification together once after all items, starting a new page if necessary. Keep numbering, dates, amounts and offline seller completion functional. No form, registry or shared UI changes.
+
+Verified: the original short layout remains in place. A moved final section uses buyer v3 with its top position in the PDF catalog; the offline seller tool accepts v2 and v3, placing the QR, signature, note and date at the final section. The 15-item visual comparison and 35-model end-to-end export passed.
+
+## Task: Simplify quotation item rows
+
+Status: "Ready to Code". The owner requested “รายละเอียดเอาออกและ จำนวนชิ้น(เครื่อง) อยู่บรรทัดเดียวกัน”. Remove the per-item details editor. Keep quantity and its catalog unit on one line for each row, including bundled products. Reference: the supplied quotation form screenshot. Verify both unit labels and the removal action on phone, tablet and desktop.
+Verified both units at 320, 768 and 1440 px in Chrome and downloaded the quotation PDF from the simplified form.
+
+## Task: Enable model selection on the bundled quotation row
+
+Status: "Ready to Code". Owner reported “ทำไมรายการแรกถึงเลือกไม่ได้” for the AW31 row. Allow the same searchable model picker on a bundled component. Preserve kit pricing for included components and use the replacement price and current displayed quantity for an independent replacement. Verify replacing and restoring the model without duplicating charges.
+Verified AW31 can be changed to WPS10KS and restored within the first row. The replacement acquired the displayed quantity and its Warehouse price; restoring the included head returned the subtotal to the kit price.
+
+## Task: Import the missing official SUNFORD product content (2026-11-11)
+
+Status: "Ready to Code" for the seven verified accessory SKU matches. Approval: "Approved — นำเข้า 7 รายการและทดสอบ".
+
+The official sitemap and product grids identify 168 readable products. Compare them with local editorial content and the current Warehouse catalog. Import missing editorial fields and backup photos for verified SKU matches. Use the existing accessory-cables and accessory-mechanical groups. Preserve the current commercial identifiers, canonical SKU URLs, quotation prices, Warehouse primary images and existing categories. Record all source models, source collection memberships and unresolved matches in the audit. Hold 10731 (LP42 heading, LP53 description) and 10871 (FEH30KS, no current matching sale SKU). The FCS URL returned 404. Use model dimensions and feed side to distinguish roller trays.
+
+Acceptance: the seven SKUs appear once in their correct categories, original SKU links and quotes work, Warehouse prices and primary-photo versions compare equal before and after, and source galleries resolve locally. No changes to Warehouse, global components or styles. Source design and layouts remain the existing product and accessory views. Check mobile, tablet, desktop, catalog tests and content validation. Audit and staged local content are authorized under the current request; production-data merge is the new scope for review.
+Approval record — owner selected “อนุมัติ นำเข้า 7 รายการและทดสอบ”.
+
+## Task: Category filter in the quotation model picker
+
+Status: "Ready to Code". The owner requested a filter button in the supplied model-picker screenshot using the six entries shown in the product menu. Start with all priced products, filter by the existing Warehouse category and combine it with model/SKU search and exclusion of selected models. Keep the compact popup usable on phone, tablet and desktop.
+
+Verified that the picker uses the shared category order, resets to all on opening a row, and combines the selected Warehouse category with text search and model exclusion.
+
+## Task: Fix overlapping quantity and price in quotation rows
+
+Status: "Ready to Code". Owner requested the screenshot bug fix and explicitly requested removal of “(ไม่ระบุหน่วย (PEAK))”. Display only จำนวน when the Warehouse unit is this placeholder. Keep named units on one line. Constrain the quantity input and caption to their column at each breakpoint. Verify TIS300 at 7,500.00 before VAT and a quantity edit, alongside ชิ้น and เครื่อง.
+Verified the TIS300 placeholder and quantity/price geometry in Chrome at 320, 768 and 1440 px, with named units on one line and desktop PDF download.
+
+### Delivery — official product content review
+
+Seven existing Warehouse SKUs now receive local descriptions and fallback photos. All 168 readable source products are inventoried, 166 have local editorial records, and two remain parked. Storefront photo coverage is 110 of 355 SKU records. Prices, primary Warehouse photo precedence and canonical product/quotation IDs are preserved. Verified catalog 151/151, Chrome 11/11, TypeScript, lint, content validation and all 14 detail routes. See output/official-product-audit-20261111/report.md and verification.json.
+
+## Task: Hide the unspecified PEAK unit across the website
+
+Status: "Ready to Code". Owner requested removal on every page. Treat the Warehouse placeholder as an absent unit when projecting the public catalog. Display known units normally and keep all priced products eligible for quotations.
+Verified the public catalog omits the unit on all 190 affected products. The Warehouse listing omits the field for those products, real units remain visible, and TIS300 remains quotable.
+
+## Task: Fix URL data outside Suspense on POS subgroup navigation
+
+Status: "Ready to Code". Owner requested correction of the Next.js insight on PosGroupPage. Place the POS subgroup parameter lookup inside the page's Suspense boundary so its fallback can render independently. Keep subgroup titles, static parameters and missing-group handling. Use the existing category page's loading status.
+Verified the three POS group pages stream the fallback, then render the requested subgroup. Chrome navigation and reload checks at 390 and 1440 pixels passed.
+
+## Task: Fix URL data outside Suspense on remaining product subgroups
+
+Status: "Ready to Code". The owner requested all other product subgroup routes be checked and fixed for the same insight as POS. Four dynamic page families await the group before providing a boundary: scales, indicators, platforms and accessories. Apply the existing POS streaming pattern; verify titles, listings, links and not-found handling. The dedicated static industrial route has no URL-param read.
+Verified all 23 subgroup destinations on direct access and through 46 mobile/desktop menu navigations. All 22 dynamic pages render the expected loading fallback; the dedicated industrial page uses static routing.
+
+## Task: Audit storefront product reads for instant-navigation insights
+
+Status: "Ready to Code". Owner asked to check all callers of getStorefrontProducts and fix affected pages while retaining Warehouse. DevTools reproduced a catalog wait outside Suspense on the homepage, product directory and dedicated industrial scales page. The shared overlays and category/group readers already render inside boundaries. Inspect the detail and catch-all route families separately because they resolve missing URLs and redirects before streaming. Verify actual development Insights, navigation and Warehouse-backed content.
+
+## Task: Show Warehouse listings awaiting a product photo
+
+Status: "Ready to Code". Approval record: owner explicitly directed “เปิดข้อมูลสินค้าที่ซ่อนไว้ครับให้แสดงในเว็บได้เลยตัวไหนไม่มีรูปก็เป็น mock เหมือนเดิม”, lifting the temporary storefront photo restriction. Return every already eligible catalog SKU to the directory, category/search and comparison consumers. Use the existing ProductImage placeholder when primary and fallback images are absent. A product with a placeholder has its real name, SKU, price and detail link. Verify each eligible SKU appears once, placeholder rendering on card/detail, search and category access and current quotation choices. Baseline on localhost: 355 eligible SKU records, 110 with images. No missing input.
+Verified 41 distinct routes in development Chrome after adding boundaries at home, the directory, the industrial subgroup and the buying-guide template. Categories and subgroups were checked exhaustively, other dynamic templates by representative URLs. The product repository and Warehouse cache configuration remain unchanged.
+
+Verified on localhost: 355 distinct directory SKUs match the Warehouse catalog, including 245 actual cards using the existing photo placeholder. Five targeted Chrome cases passed, including 390px and 1440px category/detail navigation, search, comparison and quotation choices. Catalog tests passed 151/151, TypeScript and scoped ESLint passed. Evidence in output/storefront-photo-placeholder/verified.log.
+
+## Task: Audit all 355 Warehouse SKU categories
+
+Status: "Ready to Code". Approval record: owner explicitly instructed “ตัวไหนจับคู่ได้ชัดเจนให้จัดเข้าหมวดเดิมเลย ส่วนตัวที่ยังไม่ชัดลิสต์ไว้ให้ผมตรวจ”. Audit the currently visible 355 SKUs against company-scoped Warehouse master records, available verified technical facts and the existing five families and 23 subgroups. Record the 245 without photos separately in the results. Apply only supported category decisions. For conflicting or missing evidence, record the specific question per SKU, retaining any independently established category. No new taxonomy, visibility changes, commercial data changes, source DB writes, or assumptions about grades, OS or complete-kit protection. Acceptance: one audit row per SKU, the review file is the exact open subset, actual public category and subgroup membership matches the resulting inventory and SKU/price/photo/model identities remain intact.
+
+Completed and verified on localhost. Exactly 65 category records changed, including 57 from the 245 awaiting photos. The audit contains all 355 products, with 215 confirmed and 140 open questions (125 without photos). Eight partial corrections still need an answer. Verified the full catalog against the actual rendered directory, all 23 subgroup pages including pagination and empty groups, and every SKU/ID/URL, model, unit, price and photo against the before snapshot. All 152 catalog tests, TypeScript, scoped ESLint and CSV consistency checks passed. The results and open questions are in docs/warehouse/category-audit-355.csv and docs/warehouse/category-review-queue.csv.
+
+## Task: Show zero-priced Warehouse products
+
+Status: "Ready to Code"
+Approval: "Approved by owner request on 2026-11-11"
+
+### Goal / contract
+
+Include active, saleable, nondeleted Warehouse products with a zero sale price in storefront and search. Display สอบถามราคา wherever those products show a price. Keep positive prices and VAT calculation. Zero is an inquiry state represented by catalog price=null, never a free quotation line. Retain existing public SKU exclusions and unit/company validation.
+
+### Plan / acceptance
+
+Change the Warehouse SQL eligibility to >=0, forward price to card/search projections, render inquiry text in cards/search/details/current price surfaces and builder, update the existing SQL regression, and verify real zero-price SKU G106445 in API/search/detail on desktop/mobile. Check priced quotations still exclude unknown prices.
+UI follows existing price markup and typography. Impact includes catalog membership and image lookup, reversible by reverting this task's SQL and display changes.
+
+### Zero-price task completed and verified (2026-11-11)
+
+Current Warehouse contract includes standard_sale_price >=0. Catalog converts zero to price=null and preserves warehouseNetUnitSatang=0. Price is forwarded to cards/search; inquiry products display สอบถามราคา. Existing quotation eligibility remains positive-price-only. Verified484 actual public products including129 inquiry products, every inquiry directory label, mobile/desktop search and detail, paid pricing and quotation eligibility. Catalog tests152/152, TypeScript, scoped lint/format passed.
+
+## Task: Warehouse-only product cards
+
+Status: "Ready to Code"
+Approval: owner requested Warehouse-only cards, leaving unavailable fields empty (2026-11-11).
+Contract: product card and shared client/search/comparison projections receive Warehouse-only name/photo/description/specifications; use current item_description and uniquely valued verified AI product facts where available. Empty source fields stay empty. Price0 continues to mean inquiry. Preserve category navigation, SKU/URL identity, detail/editorial source content and curated campaign sections. Cards do not display fallback photos, old badges or inferred technical facts from local categories.
+Verification: regression with deliberately conflicting old/new data and absent fields, live comparison against Warehouse, directory/category/search on desktop/mobile, catalog tests/typecheck/scoped lint.
+
+Warehouse-only cards completed 2026-11-11. Card projections now use Warehouse photo/description/verified facts with empty missing fields. Raw SQL item_description and verified ai_product_facts are card sources. Conflicting values are omitted. Original product IDs/URLs and price0 inquiry semantics retained. Browser verified directory/search/subcategory on mobile/desktop and all484 fact projections against live Warehouse.153 catalog tests, TypeScript, scoped lint/format passed.
+
+## Task: Warehouse-only product details
+
+Status: "Ready to Code"
+Approval: owner requested Warehouse-only product detail pages with empty missing fields on2026-11-11.
+Contract: product detail identity/name, descriptions, price, photo and verified specifications are from Warehouse. Extend the existing Warehouse fact read to all attributes, retain zero as inquiry, omit ambiguous values and unverified facts. Empty fields receive no old gallery, text, video or 3D product data. Existing category/return/contact navigation and SKU URL identities remain functional.
+Plan: collect all verified facts, project an authoritative detail Product through getProduct, short-circuit legacy presentation and page lookups, render only nonempty Warehouse rows using existing safe text rendering, and regress missing/conflicting fields and actual browser output on390/1440px. Impact is the product detail data/presentation plus additive specification records on the internal catalog. Reversible via these task changes.
+
+Warehouse-only details completed and verified2026-11-11. getProduct now projects authoritative Warehouse-only product fields. productPresentation uses Warehouse photo and warehouseSpecifications only for Warehouse SKUs; page skips legacy source/snapshot/media/video/3D lookups. Warehouse fact query now includes all verified attributes and text/numeric/option-array values; conflicting values are omitted. Absent data stays empty. Related cards use the previous Warehouse-only projection.155/155 catalog tests, TypeScript, scoped lint/format and390px/1440px browser checks passed for sparse, rich and price0 records.
+
+## Task: Sitewide Warehouse-only product content
+
+Status: "Ready to Code"
+Approval: owner authorized replacing all remaining old product content with Warehouse-only values and blank absent fields, preserving layout (2026-11-11).
+Scope: full interior Product/API source, carousel, taxonomy membership and topics, builder/quotation photos and compatibility, product guides, software/solutions/technical/article product content. Homepage/Hero is an explicit presentation exception following the owner correction below. Keep existing UI section headings, route labels, structures, navigation, contact/company information and CSS. Route identity aliases may retain old identifiers solely for existing URLs.
+Use Warehouse item groups/types, current prices/images/descriptions and verified facts as data. Missing compatibility must not claim a pairing or bundled price. Legacy rich product documents retain HTML structure but clear old facts/media when Warehouse supplies none. Existing page route shells remain.
+Risk: unsupported model pairs and unpopulated document fields become empty. Scope is display/read-only data; no Warehouse writes or data deletion. Rollback restores scoped product projections/rendering.
+Verification: source audit for remaining active old product reads, regression for poisoned legacy fields, live484-SKU integrity, runtime routes and responsive screenshots, source data/price/blank and compatibility checks, scoped formatting/lint/typecheck/build as feasible.
+
+Scope correction from owner: preserve the Hero/homepage presentation. Treat the homepage as an explicit exception to Warehouse-only product prose/media, restoring its original settings/campaign images/videos/story data. Continue Warehouse-only work for interior pages/API/cards/details.
+
+### Current contract — homepage exception
+
+- Homepage/Hero reads `getHomeProducts` and `getHomeContentPages` so existing campaign photos, local editorial presentation, stories and videos remain available on `/` only. Interior card/detail/API consumers read the Warehouse-only projection. This exception supersedes the initial homepage migration scope.
+- Source names, descriptions, groups, primary photos, prices and uniquely valued verified technical facts drive interior product content. Stable legacy IDs/slugs are retained as URL identities, without contributing missing product attributes.
+- Configurator compatibility and included components require verified Warehouse evidence. Current source has no confirmed builder pairings, so unsupported partners remain unavailable rather than restoring the previous static pairing table.
+- Product document shells retain their existing structure while unsupported old prose/media is cleared. Software listings use current Warehouse software products.
+- Warehouse remains read-only. Product reads retry once only for transient connection failures. Schema/data errors still surface.
+
+### Verification and delivery
+
+Verified on2026-11-11:157/157 catalog regressions, TypeScript, scoped ESLint, Prettier and diff checks passed. Final Node24 production build generated795/795 pages with2 workers. Live public API contains484 eligible Warehouse products and no legacy product photo/description/media fallback. Development browser checked homepage and11 interior route families at390/1440px, including software/solutions/guides/configurator, inquiry pricing and search. Inspected homepage screenshots confirm the original Hero video/copy,8 distinct stories and12 distinct video links. Production browser checked homepage plus all5 category overviews at both widths with no console or page errors. Actual quotation selection G106537 at quantity2 yielded net13,065.42,VAT7%914.58,total13,980.00 and an A4 PDF download. Tests mocked document-number issuance; no registry/source data writes or deployment. Confirmed Warehouse builder pairings remain empty until verified source relationships exist. Homepage is the sole approved editorial presentation exception.
+
+## Task: Constrain product carousel descriptions
+
+Status: "Ready to Code"
+Approval: owner requested “แก้งานนี้” with the screenshot of TSS-150-SW31S text overflowing the existing carousel (2026-11-11).
+Goal: keep Warehouse descriptions within the existing carousel copy area. Desktop/tablet summary at most3 lines, mobile at most2. Full detail text remains available through existing product detail interaction. Preserve source values, product ordering, images, controls, typography, Navbar and the homepage/Hero exception.
+Reference: supplied screenshot and existing products-index-carousel CSS; mobile already uses a2-line clamp. Scope: carousel-local CSS plus spec/plan/memory. No shared/global styles, data edits or homepage changes.
+Acceptance: reproduce the long-description geometry before editing; verify all36 carousel models at390/834/1440/1917px have bounded summary height, visible specification text/controls and no page overflow; open the affected model's details to verify full text; use screenshots, scoped formatting and existing interaction smoke. Rollback: remove this task's local summary clamp only. No missing information.
+
+### Verification — carousel summary
+
+Verified: before the fix,TSS-150-SW31S rendered972 source characters at313.47px height with no desktop clamp. After the scoped CSS change, all36 carousel models passed height/line-clamp checks at390/834/1440/1917px, including a2251-character source summary. Mobile retains2lines; other tested widths show at most3. Capacity/readability stay below the summary; full source text remains intact and unclamped in the existing detail dialog. Previous/next navigation completed a36-model loop at each width, Escape closed details, document width stayed within viewport, and no browser console/page errors occurred. Responsive screenshots inspected. Scoped Prettier and diff checks passed. No source data, Hero/homepage or global files changed. Final Next feedback review found no framework issue; local CSS behavior only.
+
+### Warehouse commit verification (2026-11-11)
+
+The owner authorized separating Warehouse and carousel commits and pushing safe. The Warehouse commit includes the PostgreSQL/image pipeline and local-site dependencies, with partial quotation and builder staging to leave the independent PDF/numbering/sidebar work local. Tested the actual staged tree in an isolated export:154/154 catalog tests,27/27 UAT, TypeScript and scoped formatting/lint passed. Standalone build generated793/793 pages with Node24 and Webpack. Turbopack's hermetic root rejected the external dependency junction in this temporary export; no application config change was staged. Production smoke verified484 Warehouse products, source photo/description equality, original Hero video, carousel interaction and an actual priced SKU at quantity2 with VAT7%, native print and PDF rendering. Unrelated working files and environment secrets were preserved.
+
+Commit/push delivery:2540abf (Warehouse) and80ea89a (Carousel summary) are on origin/safe; remote/local tip equality verified. Partial staging preserved unrelated quotation PDF/numbering/sidebar, opening motion, editorial imports and other working files. No production release.
+
+## Task: Commit remaining work with Warehouse-only documentation
+
+Status: "Ready to Code"
+Approval: owner instructed “แยก commit งานที่เหลือแล้ว push ขึ้น safe ให้ด้วยครับ ปรับเอกสารให้ตรงกับ Warehouse-only ส่วนไฟล์แผนที่ลูกค้าที่ถูกลบให้พักไว้ก่อนครับ” (2026-11-12).
+Goal: publish the remaining authorized work as coherent commits on safe. Include quotation PDF/registry/tooling, selected-set sidebar, opening motion, Suspense routes, retained reference content/images, associated browser tests and documentation. The6 deleted customer-map files remain unstaged and absent locally, while their existing Git versions remain on safe.
+Contract: public interior product attributes/images come only from current Warehouse records/verified facts. No editorial photo/spec/text fallback. Source zero price means inquiry; automatic quotation selection requires a positive net price and adds VAT7% once. Quotation numbering uses a separate registry. Homepage/Hero retains the approved presentation exception. Legacy imported content remains local reference/homepage data only. No new product claims, design, database writes/migrations or production release.
+Plan: classify remaining paths, update current documentation and stale browser expectations for this contract, validate a complete candidate tree with the6 map files retained from Git, commit each group and push without force. Existing shared motion change is part of the owner's remaining-work authorization; no other shared behavior is added. Rollback is by reverting the relevant group commit. Missing information:none.
+Acceptance: all requested non-map changes committed; direct source policy is consistent in current docs/tests; catalog/UAT/type/format checks and representative responsive/PDF/navigation verification pass; complete candidate build passes; remote safe equals local tip; only6 held map deletions remain in Changes.
+
+### Remaining-work verification — 2026-11-12
+
+- Catalog regression157/157 passed under Node24. UAT coverage27unique tests passed after updating the retained archive's legacy-path inventory to112; the4 path checks were rerun successfully. Prisma schema validation, TypeScript, scoped ESLint/Prettier/diff checks and seller-tool build passed.
+- Responsive browser verification covered quotation picker/filter/deduplication/quantity/long PDFs, document-issue retry idempotency, source-driven sidebar/gating,23canonical submenu destinations at both widths, all five product families, current missing-photo states and mobile/desktop history. The focused motion/source integration run passed23/23, including opening-only behavior across5widths, static footer/index regions, reduced motion, original homepage exclusion, complete carousel source matching and direct-PG quotation/PDF.
+- Standalone complete-candidate build with the six map files retained generated795/795 pages under Node24/Webpack with1worker. The first2-worker attempt hit a transient Warehouse connection timeout after compilation/typecheck. No data fallback or application-config workaround was added; the isolated dependency junction requires Webpack because it is outside Turbopack's hermetic root.
+- Production smoke passed for original Hero video,484 Warehouse-only public Product records, exact source photo/description fields, mobile SKU selection,quantity2,VAT7% and numbered A4 PDF. Document issuance was mocked; no production registry migration or Warehouse write was performed.
+- The6 held customer-map deletions were not restored or staged. Their Git object IDs are unchanged in every implementation commit and match the candidate's retained files. Candidate runtime files match the committed runtime files. Final Next feedback review retained no framework defect; external database interruption and test-output directory collision were identified separately.
+
+Implementation groups:7da5530quotation/PDF; a6d3fd9sidebar;62755f8opening motion;010bf61Suspense;5d5b3dereference records;0c035a0browser contracts. The final documentation group records current Warehouse-only rules and the homepage exception. Final safe push and remote-tip equality are recorded in the canonical commit-remaining-safe work state after this documentation commit; no production release is part of this task.
+
+## Task: Inspect all master_data.ai_articles data (2026-11-12)
+
+Status: "Ready to Code"
+Approval: owner requested all data from the highlighted ai_articles table. Read-only inspection and a standalone local report are within this request.
+Goal: read every row and column of master_data.ai_articles and deliver the full table plus a concise description. Preliminary read-only inspection found93rows and16columns with primary key id. The screenshot's85count is not used as the source count.
+Scope: SELECT-only Warehouse transaction; standalone HTML/JSON reports outside application source. Preserve timestamps and JSON text, distinguish NULL from empty text, escape article content and render it as data. No filters on company/status and no row limit. No data mutation,RPC installation,application changes,commits or deployment.
+Plan: query a consistent read-only snapshot, reconcile row/column/ID counts, write escaped searchable HTML with complete long fields and lossless data exports, validate exported inventory and browser rendering, record results. Existing local report styling is sufficient; no product or brand UI change. Missing information:none. Rollback: remove only task report artifacts if requested; database remains unchanged.
+
+### ai_articles inspection completed — 2026-11-12
+
+Read warehouse_db.master_data.ai_articles in a REPEATABLE READ READ ONLY transaction (transaction_read_only=on). Exported all93rows/16columns ordered by id with no company/status filters or row limit. All records are company1,after-sales,customer and active; review_status draft85/ready8. Body text is present in17rows and empty in76. HTML/JSON preserve all columns, NULL/empty distinctions, raw timestamp precision and raw JSONB text. Source-to-JSON roundtrip and browser comparison of all1488cells passed; direct file opening/search/reset/long-field expansion and390px layout passed with zero console/page errors. Only report artifacts and spec/plan task notes changed; no application or database writes. No Next framework feedback candidate in this standalone read-only report task.
+
+Report: C:/Users/cityc/Documents/SUNFORD-reports/ai-articles-2026-11-12.html
+Raw export: C:/Users/cityc/Documents/SUNFORD-reports/ai-articles-2026-11-12.json
+
+## Task: Inspect Warehouse product detail sources (2026-11-12)
+
+Status: "Complete"
+Approval: "Directly requested read-only inspection and report; no application changes"
+
+### Goal / Scope
+
+Show current descriptions, verified technical facts and component sets with exact SKU/name relationships. Read the configured company's eligible catalogue through ecommerce.get_website_products in a REPEATABLE READ READ ONLY snapshot, reconcile the three collections against their source tables in that snapshot, and export searchable standalone HTML plus JSON outside application source. Keep NULL/empty values and numeric precision. The RPC scope includes its eligible raw items before the website's additional X-prefix/fee exclusions; disclose this in the report. No source-data, environment, RPC, application, design or runtime-contract changes.
+
+### Input / Output / Acceptance
+
+- Input: existing Warehouse connection/company configuration and installed RPC/source schema; user explicitly requested the three listed detail sources.
+- Output: C:/Users/cityc/Documents/SUNFORD-reports/warehouse-product-details-2026-11-12.html and matching .json (use a unique suffix if files already exist).
+- Verify read-only state, exact source/RPC counts and values, exported JSON roundtrip and every rendered table cell. Verify direct-file browser opening, SKU search/reset, long text and responsive document overflow. No truncation of source values.
+- Missing information: none. This read-only report does not approve publication of new content or any application edits.
+
+### Plan / Impact
+
+Temporary generator and verification scripts live outside application source under the system temporary directory. Only spec.md and plan.md task notes are changed in the repository. Reports are local snapshots with no credentials, network connection or auto-refresh; rollback only removes the new report files.
+
+### Verified Results
+
+- Snapshot: warehouse_db, company1,2026-11-12 04:18:01.95898+00 (11:18:01 Bangkok), transaction_read_only=on; rolled back and closed after reads.
+- All514 eligible RPC items reconciled exactly against item_description and the verified active-fact/component source joins in the same snapshot.201 nonempty descriptions,313 empty strings,0NULL.1366 verified fact rows across87 items.4 component rows across3 roots: SKU11 ACS-30-FC31 has G107015 x1; G106155 TGS1000M has G107015 x1 and G107022 x1; G106193 ACS-30-JC91 has G107015 x1.
+- HTML/JSON exports preserve source numeric/JSON text, NULL/empty values and exact item identities. The counts describe raw eligible RPC results before website-specific exclusions, not the final public catalogue size.
+- JSON roundtrip and all15406 rendered cells passed exact-value comparison. Chrome direct-file opening, SKU/nonexistent-query/reset, empty-description toggle, long-field expansion and390/834/1440px document-overflow checks passed; screenshots inspected and0browser errors. Initial verification incorrectly assumed a long description field; switched the expansion check to an actual long specification field without changing source/report values.
+- Source quality finding: some descriptions are only short codes; the verified WPS10KS point-of-sale prose includes the name WPS6KS. Exported verbatim for owner review; no content correction or publication was performed.
+- No application, database, configuration, dependency or runtime-contract changes. Only report artifacts and task notes changed. Final Next.js feedback review retained no framework candidate for this standalone report.
+
+## Task: Export all company-1 master_item rows to Desktop Excel (2026-11-12)
+
+Status: "Complete"
+Approval: "User directly requested count verification and complete Excel export to Desktop for manual cleaning/grouping"
+
+Scope: run SELECT * FROM master_data.master_item WHERE master_company_id=1 ORDER BY master_item_id in a REPEATABLE READ READ ONLY snapshot. Verify the user's observed731count against that snapshot rather than assume it. Include every source column and matching row, including X codes, inactive/non-saleable/deleted/zero-price records; no website/RPC eligibility filter. Preserve identifiers, source date precision, numbers, NULL and empty-string distinctions. Create one .xlsx on the resolved Windows Desktop, with a filterable full source table/frozen header and a compact export/schema guide. No automated cleaning, classification, source mutation, application changes, commit or deployment.
+
+Plan: use a temporary read-only pg extractor and bundled artifact-tool workbook builder outside application source; verify row/column/key counts, saved XLSX cell/type/precision parity, filters/panes, and preview. Desktop destination resolves to C:/Users/cityc/Desktop; use a unique SUNFORD_master_item_company1_2026-11-12 filename if it already exists. Only spec.md/plan.md notes change inside the repository. No missing information; output is a snapshot and does not write edits back to Warehouse. Rollback removes only the new workbook.
+
+Verified: warehouse_db read-only snapshot at2026-11-12 04:42:33.152459+00 (11:42:33 Bangkok) contains exactly731company1rows and32columns;731unique IDs. Source max cell length1927, no truncation. Included26X-codes,4deleted,213inactive and97non-saleable records (these statuses may overlap). The complete query applies no additional filter or deduplication. Rolled back and closed the read transaction.
+
+Delivered C:/Users/cityc/Desktop/SUNFORD_master_item_company1_2026-11-12.xlsx with master_item (full original column order, native filtered table A1:AF732, frozen header/first ID column) and ข้อมูลการส่งออก (source/query/snapshot, NULL/type guidance and schema completeness counts). IDs/SKU/barcodes and exact timestamp text are preserved; numeric/Boolean values use native Excel types. [NULL] distinguishes database NULL from empty text. Workbook artifact inspection/recalculation and error scan passed; both worksheet previews inspected. Independent saved-XLSX verification compared all23392source cells and32headers, exact numeric precision/text/Boolean/NULL values, filter/table range and both freeze axes; zero formulas and valid ZIP. No claim of Microsoft Excel interactive testing. Only the requested .xlsx remains on Desktop; temporary tooling/previews stay outside application source. No application/database/configuration change or deployment; no Next.js feedback candidate.
+
+## Task: Use get_website_products for products (2026-11-12)
+
+Status: "Ready to Code"
+Approval: owner requested “ใช้ฟังก์ชันนี้ get_website_products นำข้อมูลมาทำส่วนของ products”.
+
+Verify the current ecommerce.get_website_products(company, optional SKU list) reader supplies the products API, directory, category and detail projections with live names, units, net prices, versioned image metadata, descriptions, verified specifications and components. Warehouse-only interior policy applies, with empty absent fields and existing photo placeholder. Inspect the existing integration before changing it, preserve the established homepage exception, and apply an application fix only if a concrete gap is found. No missing information for verifying the installed reader. Acceptance is current RPC/API SKU and field parity plus browser use of /products and representative rich/sparse details.
+Verified existing wiring, with no application edits required. ecommerce.get_website_products is called by readWarehouseRpc and readWarehouseProducts, which feeds getCurrentProducts and the interior product API/directory/category/detail views. At verification the reader returned 489 non-X rows and the public API exposed 485 records after the established four fee exclusions. All public SKU sets, source names, trimmed descriptions, group names, prices, distinct-value verified specifications, components and photo versions matched the RPC reader. Current public coverage: 183 descriptions, 87 products with specifications, 97 source photos, 129 inquiry-price records and 3 component roots. Database session read_only=on. Passed15 existing RPC/field-projection tests and 8 browser view checks across390/1440px with exact directory counts, photo/placeholder rendering and screenshots. App source is already integrated as requested. Initial verification assumptions about display-name equality, whitespace and co-occurring description/photo richness were corrected to the established presentation contract. Browser selectors were scoped to the product-detail main while Next preserves previous route DOM. No new framework feedback candidate.
+
+## Task: Review Desktop master_item Excel before cleaning (2026-11-12)
+
+Status: "Ready to Code"
+Approval: "Owner explicitly requested read-only workbook audit and tables before edits"
+
+Read C:/Users/cityc/Desktop/SUNFORD_master_item_company1_2026-11-12.xlsx as the sole product-data source. Check duplicate IDs/SKUs/nonempty barcodes/exact normalized names and clearly label inferred model-name matches as candidates rather than proven duplicates. Distinguish basic identity/type/unit gaps from optional description/photo/group/price fields and from intentionally nullable operational fields. Summarize status/service/placeholder/grouping suggestions with counts, examples and exact Excel row references. Do not mutate/export the source workbook, clean/group data automatically, connect to Warehouse, change application files or commit. Hash original workbook before/after; reconcile counts and independently check source data. Temporary read-only analysis scripts/results live outside application source. Only spec.md/plan.md notes change; no extra reader-facing workbook requested. Missing information: semantic group/type names are not in this workbook, so do not invent labels from foreign-key IDs.
+
+Audit verified731rows/32columns/23392cells with unchanged source hash. No duplicate ID/SKU; one duplicate-barcode pair, five same-name pairs (one confirmed black/white variant pair),31conservative model-name groups with64rows. Missing descriptions526,image keys593,barcodes252. Existing user follow-up now explicitly authorizes a new cleaned/grouped worksheet with the scoped Warehouse enrichment below; audit findings feed that task rather than a separate unrequested workbook.
+
+## Task: Clean and group data in a new worksheet of the existing workbook (2026-11-12)
+
+Status: "Complete"
+Approval: "Owner explicitly requested clean/group and new worksheet(s) in the same Excel, permitting extra reads only from the supplied source-table reference"
+
+Scope: preserve the two original worksheets and their values/styles/native features. Add a new working sheet with all source master_item columns, actual unit/group/type names, usage family, verified facts, component SKU/name/quantity, image-key metadata, management category and review flags. Read company1 only from master_data.master_item/master_unit/master_item_group/master_item_type/ai_products/ai_product_facts/ai_attributes/master_item_component_line in one READ ONLY snapshot. No AI articles, stock/accounting/CMS tables or unrelated sources; image files need not be downloaded because this task cleans data, not imagery.
+
+Clean working text whitespace only; preserve exact IDs/SKUs/barcodes, source price/VAT meaning, empty values and all original rows. Do not merge name-only duplicate candidates or delete inactive/X/service rows; separate them into explicit management categories and review flags. Distinguish confirmed colour variants, before/after-tax price hypotheses, service flags contradicting physical-product names and genuinely missing identity fields. Actual Warehouse categories and recommended management categories are separate columns. Source values remain traceable by master_item_id and original Excel row. Verify current source coverage before deciding whether any newly read item is additional, and label live/source differences without silently overwriting user edits.
+
+Implementation: bounded temporary extractor/builder/verification files outside application source, one added worksheet in C:/Users/cityc/Desktop/SUNFORD_master_item_company1_2026-11-12.xlsx, and spec.md/plan.md notes only inside repo. Keep a temporary original-file backup, render existing views before editing, build/verify a candidate first, then replace the same workbook only if the saved source has not changed. If Excel locks final replacement, finish the candidate and ask the owner to close that file with the concrete lock reason. No Warehouse or application mutation, commit, deployment, price conversion, inferred specification or automatic duplicate deletion. Verify company/source scope, all original sheet values/formats/features, added-row/ID coverage, enrichment/flags, filters/panes and new preview.
+
+### Candidate verification
+
+Company1 READ ONLY snapshot at2026-11-12 04:57:06.260861+00 (11:57:06 Bangkok) contains731items,13units,21groups,14types,138AI products,1582facts,155attributes and26component lines. Reads used only the eight allowed business tables plus their schema metadata; transaction rolled back and connection closed. New sheet includes1366verified active product/attribute facts and4non-deleted component lines; deleted lines are not presented as current parts. No image download or extra table was used.
+
+Candidate adds only ข้อมูลจัดกลุ่ม!A5:AV736:731rows/48columns, including all32master_item fields plus actual lookup names, usage family, facts/components, review/alias/provenance fields.21exclusive management groups sum to731. Includes all26Xcodes,4test/reference records,226closed/deleted/name-discontinued records,5internal calibration-fee rows and normal product/service/material groups. Source IDs/SKUs/barcodes/prices are unchanged; descriptive whitespace trimmed in3item_description values. All ambiguous duplicate candidates and confirmed black/white variants remain separate. Group columns preserve the actual Warehouse group separately from Excel's management categorization.
+
+Independent saved-XLSX verification passed:23706existing-cell values/effective styles, both original sheets' column/pane/merge/native table features and relationships preserved;35088newcell values match the scoped source/manifest; all731IDs and original-row references reconcile. Native table filter, frozen5headerrows/2identitycolumns, exact price/quantity precision, source scope/company, source NULL/empty distinctions and ZIP integrity pass. Artifact inspection/recalculation/error scan and before/new view renders passed; final previews inspected. Relationship IDs were regenerated during packaging, so verification resolves their unchanged table targets rather than requiring identical arbitrary rId strings. No Microsoft Excel interactive test and no Next.js feedback candidate.
+
+Initial installation returned EPERM because the Desktop workbook was open in another process; its original SHA256 remained unchanged. Owner then explicitly replied ปิดไฟล์แล้ว. The installer rechecked the unchanged original hash, atomically replaced the same Desktop file and verified exact candidate/final SHA256 equality (d73177b545a0be071cf68f8b2c9e901b02a1c8023b584bf2c6eb8675a119f170). Reopened the installed ZIP/XML to confirm the original two sheets plus ข้อมูลจัดกลุ่ม,731cleaned rows and valid archive integrity. The requested Desktop workbook is now updated. The temporary original.xlsx backup and verified candidate remain under TEMP/sunford-master-item-clean-20261112. No Warehouse or application change was performed by this spreadsheet task.
+
+## Task: Audit 485 RPC product categories (2026-11-12)
+
+Status: "Ready to Code".
+Approval record: owner explicitly requested “ตัวไหนข้อมูลชัดเจนให้จัดเข้าหมวดเดิมเลย ส่วนตัวที่ไม่ชัดลิสต์ไว้ให้ผมตรวจ”.
+
+Audit the 485 current public SKUs from get_website_products against its name, description, group and verified specifications only. Classify into the existing five families and their actual23subgroup IDs. Correct substring collisions (wireless devices versus cables, cameras versus wheels), use explicit verified functions, and require structure-grade/OS evidence for material and POS children. Keep source-field conflicts and unsupported types in a per-SKU review report. Product identity, prices, photo metadata, blank-content policy and homepage exception remain independent. No Warehouse mutations or use of old editorial specs as evidence.
+
+Acceptance: each current public SKU has one audit row and a specific question if unresolved; actual category/subgroup membership equals the report, every emitted ID belongs to its family, and non-category commercial data equals the protected baseline. Verify all subgroup pages and representative narrow/desktop details.
+Verified completion — 485 current public RPC SKU records, 144 changed category assignments (70 parent and 80 child changes, overlapping), 149 with confirmed parent/child placement, and 336 requiring owner review. Of the review set, 226 retain an established parent and 110 remain under other items. All485non-category product fields match the baseline, including IDs/URLs/model codes/units/prices/images/specifications/components. The rendered directory and every one of23subgroup pages matched the audit, including pagination and empty groups. Four390px/1440px scanner/checkweigher detail views passed; inspected the mobile screenshot. Full catalog tests163/163 passed, with four targeted classification tests passing again after the final weights-parent correction; TypeScript, scoped ESLint, formatting and diff checks passed. Memory notes record the repeatable substring failure and source-model verification rule. No source-data write or deployment occurred. Next.js feedback review found no framework candidate.
+
+## Task: Editable Excel for 336 pending category reviews (2026-11-12)
+
+Status: "Ready to Code". Approval: user directly requested an Excel file to fill correct categories/subcategories and return for website updates.
+
+Use exactly the336items with questions in docs/warehouse/category-audit-485.json. Deliver one workbook with an editable review table and a reference sheet of existing five categories/23subgroups plus the existing other-items choice. Keep original SKU/name/current category/current subgroups/questions intact; initially blank yellow input cells capture confirmed category, one or multiple subgroups, and notes. Preserve SKU as text. Main-category dropdown, native filter and frozen header/SKU-name columns support review. Multiple subgroup labels or IDs use a semicolon delimiter. Blank category means defer; selected category with blank subgroup means parent-only; other-items means no dedicated product category. The owner can return the edited workbook, then changes are matched by SKU and validated against the selected parent. Notes are review answers, not new product prose. No application/source DB edits in this task.
+
+Acceptance: exact336unique source records, all source text intact, input cells blank/editable, taxonomy complete, dropdown/filter/frozen panes present in saved file, workbook opens as valid XLSX and both sheets render legibly. No formulas or macros are needed.
+Verified completion — delivered C:/Users/cityc/Documents/Project/sunford_web/outputs/category-review-336-20261112/SUNFORD_category_review_336.xlsx with336unique text SKUs, blank C8:E343 inputs (1008cells), exact original names/current classifications/questions, five existing families/23children and the other-items choice. Saved XLSX ZIP/XML verification reconciled every source/header/reference cell, category dropdown choices, native filtered tables A7:H343 and A5:D29, frozen C8 pane (2columns/7rows), and zero formulas/macros. Both sheets and long-question context rendered legibly and were visually inspected. The original audit JSON hash is unchanged. Native Microsoft Excel interaction was not exercised. Source/application/database edits were outside this workbook task. The return convention is explicit in the workbook instructions, including semicolon-separated child IDs/labels and blank/deferred versus parent-only selections. Temporary builders/previews remain outside the source tree; only the requested .xlsx is in its output folder. No Next.js feedback candidate.
+
+## Task: Remove legacy-database-derived frontend data except Hero (2026-11-12)
+
+Status: "Deferred"
+Approval: "Not approved — owner said ยังไม่ทำครับ; no implementation or deletion"
+
+### Goal
+
+Remove data copied or derived from the former website/CMS database from every public frontend surface except the approved Hero section. Product identity, name, description, verified facts, price, unit, component relationship and primary-image metadata outside Hero must come from `ecommerce.get_website_products`; image bytes continue to come from Warehouse storage or the version-matched Warehouse image cache.
+
+### Scope In
+
+- Remove non-Hero runtime dependencies on the legacy product snapshot (`166` records), page snapshot (`409` records), local settings copy (`9` records) and legacy product matching/mapping data where the owner confirms that old URL identity must also be removed.
+- Isolate the minimum current Hero copy/media/product references required to preserve the Hero exactly; do not retain the full old datasets merely for Hero.
+- Make homepage sections outside Hero use Warehouse data or source-independent project defaults. Remove an outside-Hero section if its only content source is the old database and no approved local replacement exists.
+- Remove dead loaders, import/update scripts, old source tests, rewrites and orphaned legacy assets only after their complete dependency graph and rollback inventory are verified.
+- Keep current Warehouse RPC/storage reads, category classification from Warehouse evidence, quotation-number registry and current visual design outside data-dependent empty/removed sections.
+
+### Scope Out
+
+- No Warehouse database/storage mutation, new CMS, new content, invented copy/specifications/images, production deployment or quotation-registry deletion/migration.
+- No redesign or unrelated refactor. No removal of current Warehouse image cache or verified Warehouse classification work.
+- Do not delete shared assets or routes whose provenance/use has not been verified.
+
+### UI/UX Brand Alignment
+
+- Reference: current Hero must remain visually and behaviorally identical; all other layouts retain existing brand tokens and responsive behavior where their content source remains valid.
+- Design: missing Warehouse fields stay empty. Do not replace removed legacy content with invented placeholders.
+- Responsive: after approval, verify Hero parity plus homepage, product directory/detail/category/search/quotation and every retained explicit company/service route at mobile and desktop widths.
+
+### Input / Output
+
+- Verified current legacy copies: `src/features/content/data/products.json` has `166` product records; `src/features/content/data/pages.json` has `409` page records; `data/site/content.json` has `9` settings records; `src/features/catalog/data/warehouse-product-mapping.json` has `380` mapping records.
+- Current application product SQL already uses only `ecommerce.get_website_products`. Remaining old-data coupling is local: product/editorial merge and aliases, legacy route IDs, content catch-all/static rewrites, stories/software/collection pages, settings overrides and source-oriented tests/scripts.
+- Output after approval: only Hero retains explicitly isolated old presentation data; all retained non-Hero product data is Warehouse-derived and no deleted legacy dataset is imported by application, build, test or config code.
+
+### Acceptance Criteria
+
+- [ ] Hero screenshot/DOM/media behavior matches the pre-change baseline at `390px` and `1440px`.
+- [ ] A repository-wide import/reference audit finds no non-Hero runtime/build dependency on the removed legacy product/page/settings datasets.
+- [ ] Public product/API SKU set and every Warehouse commercial/source field match `get_website_products`; no legacy product photo/specification/description/price fills a missing value.
+- [ ] Every retained route, navbar/footer link and rewrite resolves intentionally; removed legacy URLs return the owner-approved result rather than an accidental build failure.
+- [ ] Quotation registry, Warehouse reads/storage images and current uncommitted category-classification work remain unchanged outside necessary integration adjustments.
+- [ ] TypeScript, scoped lint/format, catalogue/UAT tests, production build and responsive browser checks pass with exact deletion and orphan-asset evidence.
+
+### Missing Information
+
+- Confirm whether “Hero” means only the top Hero section (recommended interpretation) or the whole homepage. The current exception also covers homepage spotlight/category/story/video content.
+- Confirm whether legacy URL identity must be deleted too. Removing the `380`-row mapping means mapped product URLs/IDs change to Warehouse-SKU routes and old bookmarks/SEO links stop resolving; retaining redirects preserves old-derived mapping data.
+- Confirm whether the `409` imported content pages and their referenced physical assets should be deleted, even though this removes news, articles, software/download, warranty/policy and many collection URLs. Locally authored About/Contact/After-sales components can remain behind a new explicit route registry because their visible content does not require the old snapshot.
+
+### Approval Record
+
+- Owner said: “ทุกส่วนที่เป็นข้อมูลจากฐานข้อมูลเดิมลบให้หมด ยกเว้นหน้า hero”. This authorises the audit and draft scope. Because the operation deletes large tracked datasets/assets and changes hundreds of public routes, implementation approval is pending answers to the three scope points above and approval of the resulting exact file plan.
+- Owner subsequently said “งั้นยังไม่ทำครับ”. The task is deferred. No application, data, asset, route or configuration change is authorised.
+
+## Task: Restore JC21 homepage spotlight video (2026-11-12)
+
+Status: "Complete"
+Approval: "Approved by owner on 2026-11-12: restore the existing JC21 homepage Spotlight video using the documented exact-SKU fallback plan"
+
+### Goal
+
+Restore the missing JC21 product Spotlight section on the homepage using the existing `public/videos/jc21-panel-aligned-1080p.mp4`, without changing the Hero, Showroom Tour video, product source, product identity, navigation or surrounding homepage design.
+
+### Scope In
+
+- Resolve the current official JC21 product by exact Warehouse SKU `G106094`, while retaining the legacy `acs30-jc21` ID fallback for the approved homepage presentation.
+- Use the existing 10-second H.264 1920×1080 MP4 and existing poster; do not replace or regenerate media.
+- Restore the product-detail link using the current product slug returned by Warehouse projection.
+- Update focused unit/browser regressions for current Warehouse identity, autoplay visibility, reduced-motion pause and poster fallback.
+
+### Scope Out
+
+- No change to Hero video, `SectionTwoVideo`, category section, Warehouse data/function/storage, product mapping, prices, routes, global/shared UI, CSS, dependencies or production deployment.
+- No invented product content or reassignment of the ambiguous legacy product identity.
+
+### UI/UX Brand Alignment
+
+- Reference: the previously implemented JC21 Spotlight component and supplied screenshot showing the missing black area before “เลือกหมวดหมู่สินค้า”.
+- Design: reuse existing `ProductSpotlight`, `SpotlightProductVideo`, poster, layout and motion behavior unchanged.
+- Responsive: verify the restored video at 390px and 1440px, including visibility, no overflow and correct link target.
+
+### Input / Output
+
+- Input: `public/videos/jc21-panel-aligned-1080p.mp4` exists, is H.264/yuv420p, 1920×1080, 30fps, 10 seconds, 3,126,585 bytes. Existing source already points to this path.
+- Verified root cause: `ProductSpotlight` searches only for ID `acs30-jc21`; the current public product is ID/slug `warehouse-G106094`, Warehouse SKU `G106094`, so no product is found and line 32 returns `null` before rendering the video.
+- Output: the JC21 Spotlight section renders again between Showroom Tour and category selection, with the existing MP4 and current product link.
+
+### Acceptance Criteria
+
+- [x] Homepage renders `.product-spotlight` and `.spotlight-product-video` with source `/videos/jc21-panel-aligned-1080p.mp4`.
+- [x] Spotlight resolves exact Warehouse SKU `G106094` and links to the current `/products/warehouse-G106094` route; legacy fixture behavior remains supported.
+- [x] Visible video plays when in view and motion is allowed, pauses when hidden/reduced-motion, and keeps the existing poster if playback or media loading fails.
+- [x] Hero and Showroom Tour video behavior and surrounding section order remain unchanged.
+- [x] Focused catalogue tests, TypeScript, scoped lint/format and browser checks at 390px/1440px pass with no relevant console/page errors.
+
+### Missing Information
+
+- None. The requested file and intended existing Spotlight location are verified.
+
+### Approval Record
+
+- Owner said “วิดิโอหน้า แรกหายใส่ใหม่ครับ” and supplied `public/videos/jc21-panel-aligned-1080p.mp4`. This establishes intent and the media asset. Per project process, implementation starts after the owner approves this concrete Spec/Plan.
+- Owner replied “อนุมัติ” after reviewing the concrete Spec/Plan. Approval covers only the three source files, two focused tests and documentation listed in `plan.md`; no Hero, CSS, Warehouse, shared UI or media-asset changes.
+
+### Verification Result
+
+- Complete: the existing JC21 Spotlight renders between Showroom Tour and category selection, uses the supplied MP4/poster and links to `/products/warehouse-G106094`. Exact Warehouse SKU `G106094` and the retained legacy ID use one shared identity helper.
+- Browser checks passed at 390×844 and 1440×900 with no horizontal overflow or browser warnings/errors. Autoplay/visibility/reduced-motion and failed-media poster fallback passed 3/3 focused Playwright cases; catalogue regression passed 18/18. TypeScript, scoped ESLint, Prettier and diff checks passed.
+- The existing no-JavaScript test was also attempted against `next dev`, but that environment keeps the streamed Suspense subtree at zero size until client scripts run, before the Spotlight-specific assertion. A production build was not run because the active development server owns the shared `.next` output; no no-JavaScript production claim is made.
+
+## Task: Publish the five saved Excel NAV groups using live Warehouse products (2026-11-12)
+
+Status: "Complete"
+Approval: "Approved by owner: five saved NAV sheets, exact Excel short names, live Warehouse facts; preserve Hero and layout"
+
+### Goal
+
+Use only the five saved NAV worksheets to decide storefront product inclusion, primary family and the exact shortened display name. Read commercial facts exclusively from `ecommerce.get_website_products`; excluded or RPC-ineligible records must not reappear in storefront product searches or detail routes.
+
+### Scope In
+
+- Read `C:/Users/cityc/Desktop/SUNFORD_master_item_company1_2026-11-12.xlsx`, only `NAV เครื่องชั่ง`, `NAV อินดิเคเตอร์แท่นชั่ง`, `NAV โครงสร้างแท่นชั่ง`, `NAV ระบบ POS`, and `NAV อุปกรณ์เสริม`.
+- Commit-ready project metadata will contain only workbook provenance/company, SKU/source identity, exact display name and primary category. The application will not read a Desktop workbook at runtime or store Excel commercial facts as a fallback.
+- Intersect that selection with the live public Warehouse feed. Respect current RPC eligibility, X/calibration exclusions and zero-price inquiry behavior. Match the source IDs/SKUs during import; validate uniqueness and the selected company.
+- Apply the selection to `getProducts` / `getStorefrontProducts`, category pages, their cards, product detail/metadata, public product JSON and shared product search/compare consumers. Keep the full Warehouse name as a search alias and provenance value.
+- Excel primary categories override automatic parent classification. Retain evidence-supported child categories only when they belong to the approved parent; do not invent missing specification/material/OS evidence.
+- Preserve existing product IDs/URLs for retained items and the current product presentation, spacing and animation.
+
+### Scope Out
+
+- No Warehouse data/function/schema, storage object, workbook, dependency, global component, stylesheet or layout edits.
+- Homepage/Hero product presentation remains on its existing separate reader. The shared navbar product search follows the approved storefront selection on all pages.
+- The quotation reader, its eligibility/price/VAT calculation and registry remain unchanged. This request concerns the five storefront families, not a new quotation inventory policy.
+- No deletion of historical project datasets/assets, unrelated taxonomy work, commit, push or deployment. The earlier legacy-data deletion task remains deferred.
+
+### UI/UX Brand Alignment
+
+- Reference: the owner's five NAV tab screenshot, latest saved short `item_name` values, existing category/detail/search components and `src/styles/base.css`.
+- Design: data substitution only; keep current typography, colors, layout, placeholders, motions and routes. Empty Warehouse fields remain empty; no legacy content fills them.
+- Responsive: verify category cards, product detail and navbar search at 390px and 1440px, including long accessory names and products awaiting photos.
+
+### Input / Output
+
+- Current saved workbook SHA256: `7c1d46a284566fc03f6b614a002c1b45005972b37beac46025aa2ab9dcdf28da`. It differs from the previous delivered workbook and contains 547 unique selected SKU/IDs with no missing names or duplicate identities. No SKU rows have been removed from these five sheets; other sheets are excluded entirely.
+- Verified read-only RPC snapshot at `2026-11-12 07:13:19+00`: 515 raw rows; 375 exactly match the selected SKU/source IDs without conflicts. Breakdown (Excel / live): scales 250/192, indicators 22/13, platforms 34/34, POS 40/40, accessories 201/96.
+- The other 172 selected rows are absent from the RPC: 170 inactive and two remaining rows not saleable. Do not reactivate them or substitute saved Excel facts. Counts can change with subsequent live eligibility.
+- Of the current 375 matched records, 97 have primary-image metadata and 89 have a zero net price. Keep inquiry behavior and existing empty-image presentation; do not invent photos or prices.
+- Output: eligible selected products appear in the approved family under the exact saved Excel short name and can be found by that name, SKU or original Warehouse name.
+
+### Acceptance Criteria
+
+- [x] The storefront SKU set equals the live public RPC set intersected with the five-sheet selection; no other sheet supplies records and no excluded record survives the detail lookup or product search.
+- [x] Every selected display name and parent category matches the saved workbook exactly; card/client/detail projection does not replace the curated name with the old model-name heuristic.
+- [x] Retained item prices, units, images, descriptions, verified specifications and component quantities match the live source. Missing fields remain empty and zero-price items show the existing inquiry text.
+- [x] Search finds representative items from all five families by short name, SKU and original Warehouse name; removed/unselected SKUs produce no product result. Products without images remain searchable under the current policy.
+- [x] Primary category overrides cannot retain child categories from a different family; retained product routes remain stable, and excluded direct detail routes render the existing not-found page with `noindex` and no product details. The current parent Suspense can stream HTTP 200 before `notFound`; changing global routing/streaming is outside this task.
+- [x] Homepage/Hero presentation and quotation reader/output remain unchanged, except shared navbar search intentionally uses the selected storefront set.
+- [x] Focused regression tests, catalog tests, TypeScript, scoped lint/format and responsive browser checks pass; record any unavailable checks explicitly.
+
+### Missing Information
+
+- None for the proposed scope. Re-read the workbook hash immediately before creating the project selection; if the owner saves further edits, regenerate and reconcile from that version before applying it.
+
+### Approval Record
+
+- Owner requested the five NAV groups on the real website, exact shortened Excel names, actual searchable Warehouse data, and exclusion of the removed material.
+- Owner clarified: “ผมพึ่งบันทึกตรวจสอบใหม่ครับและใช้แค่5ชีตตามnav ที่ส่งไป”. Re-read that newly saved file and reconciled it read-only as documented above.
+- Owner approved the concrete plan: “อนุมัติครับ เริ่มตามแผนได้เลย ใช้เฉพาะ 5 ชีต NAV ชื่อสั้นตาม Excel และข้อมูลจริงจาก Warehouse โดยคง Hero และเลย์เอาต์เดิมครับ”. Implementation is authorised within the listed files and scope.
+
+### Current State / Data Contract / Verification
+
+- `warehouse-storefront-selection.json` contains547unique source identities and exact short names from only the five saved NAV sheets, company1 and source hash. The Desktop workbook hash remained unchanged at final shared-read verification; no workbook write occurred.
+- `getProducts` / `getStorefrontProducts` apply `warehouseStorefrontProducts` after the existing live projection. Company mismatch or invalid/ambiguous selection fails closed. Only selected products already returned by the source can appear. The optional `Product.storefrontName` preserves the approved name through card/client/repeated detail projection; `warehouseName` remains the unmodified searchable source name.
+- Current `/api/products` and the rendered directory contain375unique SKUs:192scales,13indicators,34platforms,40POS,96accessories. All375names/parents match Excel and all retained non-presentation fields, including ID/URL, net/gross price, images, descriptions, specifications and components, exactly match the pre-change live baseline. Zero-price/missing-image behavior is retained.
+- Homepage main text, all265image references and video references match the pre-change baseline exactly. Homepage/Hero source files, global components/styles/layouts and the quotation current-product reader were not changed. The existing quotation browser regression confirms its full eligible positive-price SKU list and original Warehouse-derived labels still match live Warehouse independently of storefront selection; no number issuance was triggered.
+- Catalog tests170/170passed (seven new selection regressions). New browser/API suite3/3passed: exact live intersection/commercial values and excluded not-found/noindex routes; all five category cards/details and short-name/SKU/full-name search at390px/1440px; inquiry pricing and homepage search exclusions, without browser page errors. The maintained existing catalog/quotation parity browser case also passed1/1.
+- Screenshots for five categories at both widths, long mobile accessory name, empty-photo platform and homepage were inspected. Temporary baseline/source/browser/preservation evidence is under `%TEMP%/sunford-excel-storefront-20261112`; generated test output is not added to Git.
+- TypeScript, scoped ESLint, scoped Prettier and diff checks passed. A production build and the entire unrelated browser suite were not run; this delivery verifies the running development site and specified regressions. No Warehouse/storage/registry write, source-data fallback, deployment, commit or push occurred. Final Next.js feedback review found no qualifying framework issue; the pre-existing streamed not-found status is documented behavior.
+
+## Task: Reconcile all saleable Warehouse records with RPC and storefront (2026-11-12)
+
+Status: "Complete"
+Approval: "Approved final policy: retain active AND saleable RPC guards; publish the full current public RPC set with existing Excel short names and X/calibration exclusions"
+
+### Goal / Scope
+
+Owner requested checking whether all `is_saleable=true` records are fetched through `get_website_products` and including missing records. Audit the database, installed function, raw RPC, existing X/calibration exclusions and the previously approved five-sheet storefront selection. Preserve real source facts, existing short names for Excel-selected items, Hero and layout. No Warehouse write or application filter change before resolving the conflicting eligibility/publishing interpretations below.
+
+### Verified Input / Output
+
+- Read-only repeatable-read company1 snapshot at `2026-11-12 07:51:47+00`:732master items;635with `is_saleable=true`;516raw RPC rows, all saleable. After current X/calibration exclusions486public RPC records remain. The actual `/api/products` returns375, exactly the eligible selected records;111public RPC records are outside the five-sheet selection. No selected eligible record is missing from the website, and no website record is absent from RPC.
+- The installed function still requires company match, `is_active`, `is_saleable`, `NOT is_deleted`, nonnegative standard sale price and an existing non-deleted base unit; optional SKU-array filtering is unchanged. The website already calls the function for the complete list with a null SKU filter.
+- Of119saleable rows absent from RPC,115are inactive, three are inactive/deleted with missing/deleted units, and one is the active `K-LINE-SHOPPING` discount with standard price-50.00. Thus `is_saleable=true` alone does not mean every row is an active publishable product.
+  -111public RPC items omitted from storefront include customized fees, gloves, unreviewed/other product families and newly added Warehouse records; this is the explicit five-worksheet inclusion rule from the completed task, not missing SQL fetching. Counts are observations, not hardcoded requirements.
+
+### Eligibility Decision / Approval Record
+
+- Owner's latest request: “เช็กอีกรอบจากฟังก์ชัน get_website_products ว่าสถานะ true ของช่อง is_saleable ดึงมาหมดหรือยังถ้ายังดึงสถานะ true มาให้หมดครับ”. This authorizes the audit and inclusion work once its intended eligibility boundary is clear; it does not silently authorize publishing deleted rows or changing a shared database function.
+- Asked whether to publish all486currently public RPC items while keeping eligibility guards/X/calibration exclusions, or change RPC eligibility to include saleable but inactive records after reviewing deletion/negative-price exceptions. The first option explicitly includes111rows outside Excel; existing selected names remain from Excel, new names come directly from Warehouse.
+- Owner chose: “ใช้ is_saleable=true เป็นหลัก รวมรายการปิดใช้งานด้วย — ตรวจข้อยกเว้นก่อนแก้ RPC”. Include inactive saleable records, but first present actual exceptions and a concrete reversible function/site plan. No change to the live function is made by this choice alone before the requested exception review.
+- Proposed exceptions retain existing deleted-item/deleted-unit/nonnegative-price guards and existing X/calibration storefront exclusions. The new source predicate removes only `AND item.is_active`; active/verified AI-fact filters, tenant scoping, SKU parameters, return signature, source permissions and all other guards stay intact.
+- No missing source information remains for this proposed policy. Approval of the concrete exception/function plan is pending. Do not publish deleted test records or the discount entry, fabricate prices, or merge different source SKUs merely because their shortened names coincide.
+
+### UI / Acceptance Criteria
+
+- Reference: existing approved storefront cards/search/detail and unchanged homepage/Hero; no style/layout/global component changes.
+- [x] Reconcile same-company source flags, installed SQL, full RPC and actual website; identify both function eligibility and storefront exclusions separately.
+- [x] Record the owner's selected publication policy and update the implementation scope before app or function changes.
+- [x] After authorization, verify the exact intended SKU set, preserved names/prices/images/specifications, all five parent groups plus any permitted other items, search/detail behavior, current X/calibration exclusions and homepage/Hero/quotation isolation at390px/1440px.
+- [x] Run focused tests/type/lint/format/diff and document actual results. No commit/push/deploy or unrelated source-data edits.
+
+### Read-only Inactive-Inclusion Preflight (Superseded; Never Installed)
+
+- Executed only a SELECT equivalent to the installed function body with the single item-active predicate removed, using bound company/SKU parameters and the original output column names in a read-only transaction. No CREATE/ALTER/REPLACE/ACL/source-data write occurred.
+- Source635saleable records minus three deleted records with invalid/deleted base units and one negative-price discount produce631candidate RPC rows. The three excluded SKUs are `CXPFCXP028809`, `CXPMCXP028809`, `UI7I154726`; the negative-price SKU is `K-LINE-SHOPPING` at-50.00. These four remain excluded under the proposed policy.
+- Keep26X-prefixed rows and four calibration SKUs (`72`, `Calibration Fee Type 2`, `S000005`, `S000006`) outside storefront/quotation under the existing owner policy. Proposed public catalogue:601SKUs, versus375currently displayed. Source counts can change before installation; re-run the audit in the installation transaction.
+  -631candidate source rows include115newly eligible inactive items. Of those,114have price0 (inquiry only) and one is positive-price RLS1100, adding one quotation choice under the unchanged positive-price policy. The original516RPC rows are identical in every field except statement read time; source IDs/prices/images/specifications/components are not rewritten.
+  -451of the601public records have names/categories in the approved five-sheet metadata;150use their actual Warehouse name and evidence-based category, retaining the existing other-items group when the source does not confirm a parent. Metadata must become a display override, rather than an inclusion allowlist, to satisfy the chosen saleable-first publication policy. Missing fields stay empty.
+- No newly eligible item has a mapped homepage family in the existing legacy-identity mapping. Capture fresh homepage/Hero DOM/media and quotation option baselines before installation, verify them after cache refresh and roll back the exact function definition if the preserved presentation or contract regresses. Global styles/layout/Hero code remain out of scope.
+
+### Final Approved Policy — Supersedes Inactive-Inclusion Proposal
+
+- Owner explicitly approved: “งั้นคง is_active=true และ is_saleable=true ไว้ครับ ให้เว็บแสดงครบจาก RPC ไม่จำกัดเฉพาะ 5 ชีต Excel โดยคงชื่อสั้นเดิม และซ่อน X กับค่าสอบเทียบเหมือนเดิมครับ อนุมัติให้ปรับได้เลย”. This is the authoritative implementation scope; no further approval is needed for the active-only full-RPC plan already listed.
+- Keep the installed function and checked-in SQL unchanged, including company/active/saleable/deletion/unit/price predicates, parameters, return types, comment and ACL. The unapproved631/601inactive-inclusive candidate remains read-only analysis and will not be installed.
+- Publish every live public RPC product after existing X/calibration exclusions. Excel metadata supplies short names and primary category overrides only; it no longer limits which live SKU is visible. For records absent from Excel, use their actual Warehouse name and current evidence-based taxonomy/other-items membership, with blank missing fields. No legacy content fills absent source data.
+- Current expected public set is486instead of375, adding111previously omitted active/saleable records. Recheck actual counts rather than hardcoding them. Keep homepage/Hero presentation, quotation eligibility/source names/VAT, all existing source facts/IDs/URLs and UI layout unchanged.
+- Acceptance now requires full public RPC/API/directory parity, exact retained short names, real source names for the added records, hidden X/calibration routes/search, unchanged function fingerprint and Hero/media baselines, plus390px/1440px search/detail checks.
+
+### Final Implementation / Verification
+
+- `warehouseStorefrontProducts` now retains every live public Warehouse product independently of Excel membership. It still rejects X/calibration and legacy-only records, validates metadata/company, applies exact curated names/categories to matches and protects those names through repeated card/detail serialization. Other records retain their original source name and source-evidence category. No absent RPC product is synthesized.
+- Actual `/api/products` and the full rendered directory contain486unique SKUs, exactly the current public RPC set. All375existing product objects, including names/IDs/URLs/prices/images/descriptions/specifications/components, are byte-for-value identical to their parsed pre-change baseline; all111added display names match `warehouseName` exactly. Source prices/fields remain live, missing values stay blank and inquiry pricing is unchanged.
+- The installed function definition, owner, ACL and comment are identical before/after, and all516raw RPC result rows are unchanged except statement read time. Checked-in SQL, selection JSON, repository/cache code, card/type files, homepage readers/page, base styles and site layout file hashes are unchanged. No database, storage or workbook write occurred.
+- Catalog tests171/171pass, including eight selection/presentation regressions. Four browser/API tests pass: independent active/saleable/valid-unit/nonnegative-price source membership vs RPC, complete public API/directory and quotation eligibility, hidden X/calibration/inactive direct routes and search, and all five category plus newly published full-source product detail/search cases at390px/1440px. No browser page errors or horizontal overflow; real photos decode and missing photos retain the existing placeholder.
+- Homepage main text,265image references and video references match the pre-change baseline exactly at both390px/1440px; inspected mobile/desktop added-product and homepage screenshots. Quotation eligible options, original Warehouse-derived labels and live net/gross pricing remain correct. No real document number was issued.
+- TypeScript, scoped ESLint/Prettier and diff checks pass. Temporary baselines/read-only audit/browser/screenshots and `verification.json` reside under TEMP/sunford-rpc-full-catalog-20261112. Production build and the entire unrelated browser suite were not run. Final Next.js feedback review found no qualifying candidate. No commit, push or deployment is part of this delivery.
+
+## Task: Audit completeness of public Warehouse primary images (2026-11-12)
+
+Status: "Complete"
+Approval: "Owner requested read-only verification: ตรวจสอบว่ารูปดึงมาครบไหม"
+
+- Goal: compare all current public RPC primary-image metadata with storefront data, actual directory image elements, existing saved-cache files, direct image delivery and browser decoding through the actual Next.js image URLs. Distinguish missing source photos from missing/broken website images.
+- Scope: read-only company-scoped RPC/API, existing cache manifest/files and HTTP/browser checks; temporary audit scripts/JSON/report/screenshots outside the source tree. No image import/cache refresh, application/style/Hero change, source-data/function/storage write or deployment.
+- Plan files: `spec.md`, `plan.md` task notes and TEMP/sunford-warehouse-image-audit-20261112/audit.cjs plus generated report/evidence. All existing application/source/cache files remain unchanged.
+- [x] Verify complete public SKU/image-reference parity and current local-cache presence/version.
+- [x] Fetch expected image bytes from the source route and actual storefront URL, and decode every actual directory image URL in the browser; record per-SKU failures and counts.
+- [x] Deliver concise counts for source photos, working images and genuinely missing source images; document any failed check honestly and preserve application/data state.
+
+Verified:486current public products,97source primary-image references and97matching website images;389products genuinely have no primary-image metadata. All97source routes and97current asset URLs return successful nonempty image responses. All97actual directory image URLs decode successfully through the browser/Next.js optimizer, with zero metadata/directory mismatches or failed images.75images use existing local files and22use direct Warehouse delivery; all75cache-manifest files exist, and the manifest is unchanged. No image import/cache refresh or application/database/storage write occurred. Temporary per-SKU audit, Markdown report and directory screenshot reside under TEMP/sunford-warehouse-image-audit-20261112. This checks primary images only, matching the current RPC contract; it does not assert additional gallery images exist. Final framework-feedback review found no qualifying candidate.
+
+Additional integrity check: all97delivered asset SHA256 values match their current source-image bytes. All75used local cache records match the current source ID/version, and their physical file hashes remain unchanged.
+
+## Task: Remove long product preview text (2026-11-12)
+
+Status: "Ready to Code". Approval record: owner requested “เอาข้อความยาวๆออกครับที่หลายๆส่วนมี” and supplied product lineup, hero and search-preview screenshots.
+
+Remove displayed product subtitles from product overview hero/lineup, category showcase, both current product card renderers and the shared product-search result preview. Keep full product data available for detail reading and search matching. Reference is the supplied screenshots and existing component layouts. Scope is the preview paragraph/span only, with current names, prices, images, factual labels and actions retained. No design or source-data input is missing. Acceptance: those previews render no long subtitle, detail prose remains available, responsive preview geometry and search/detail navigation work.
+Completed: removed six subtitle JSX nodes across the five planned feature components. Actual FEH5KS source subtitle remains536characters in the API and in the detail DOM, while hero/lineup/card/search previews omit it at390/834/1440px. All three responsive browser workflows passed, including search-to-detail navigation, exact model heading and retained details, with no page errors or horizontal overflow. Inspected mobile and desktop screenshots. TypeScript, scoped ESLint, Prettier and diff checks passed. QA selectors were corrected to preserve price paragraphs, use the homepage search control and read collapsed detail content. No application style/data changes were required, and no framework feedback candidate was retained. Evidence: output/product-preview-copy-removal/verification.json and responsive screenshots.
+
+## Task: Fix black product background after client navigation (2026-11-12)
+
+Status: "Ready to Code". Approval: owner reported that opening a product requires reloading and explicitly requested fixing it, with a WPS10KS screenshot.
+
+Reproduced home search to /products/wps10ks. The shared route surface and footer are black after soft navigation, white/light after a direct reload. Next Activity retains the hidden home main (display:none!important), so homepage :has and sibling CSS still matches. Gate homepage ancestor/footer styling on the current pathname through a data attribute on the existing CatalogRouteFrame. Keep the home main/hero styles intact. The cross-route impact is limited to where the homepage black surface/footer theme applies; rollback removes the marker and its CSS selector guards.
+
+Acceptance: homepage dark theme and product light theme are identical after direct load, client-link navigation, back and forward at390/834/1440px; background no longer requires reload, actual product image/content stays available, and navigation uses the same document. No missing input.
+Verified completion: the original home-to-product reproduction showed a black shared surface/footer, while reload showed white/light colors. CatalogRouteFrame now emits data-home-route only for pathname /, and home-page.module.css gates its ancestor/footer selectors on that marker. A retained hidden home main remains present during navigation, but product colors now equal direct-load colors. Three Chrome regressions passed at390/834/1440px, covering home search to WPS10KS, real image decode, back to dark home, forward to light product, and directory-card navigation to the product, with a same-document marker proving no reload. Inspected the fixed desktop screenshot. TypeScript, scoped ESLint/Prettier and diff checks passed. Evidence in output/product-navigation-background; MEMORY records the repeatable selector failure. This is an application CSS interaction with documented Activity behavior; no Next.js framework feedback candidate.
+
+## Task: Audit client navigation surfaces across route families (2026-11-12)
+
+Status: "Ready to Code". Approval record: owner requested checking other pages for retained background/layout bugs and fixing any found without reload.
+
+Read-only audit found the shared surface :has([data-page-surface=paper]) selector matches a retained hidden /service main and leaks paper color into other routes. Reproduced service-to-WPS10KS colors against a direct load. Scope includes the shared wrapper surface rule and the existing CatalogRouteFrame pathname marker, plus route-family regression tests. Verify normal existing links and history in one document for representative catalogue, all primary category families, subgroup, product, builder, quotation, service, company/contact, software, policy and discovery pages. Check body scroll, inert state, active main count and current header/footer/main styling against direct visits. Preserve current route designs, content and interactions.
+
+The shared CSS change affects each site's wrapper surface. Assumption: the source inventory currently emits the paper surface for the /service root and local overview sections; the latter own their own background. Give the active wrapper an explicit route-owned surface marker. Rollback is the surface selector and marker change. No missing requirements for the reproduced fix.
+
+## Task: Reconcile 138 database photos with 97 storefront photos (2026-11-12)
+
+Status: "Complete"
+Approval: owner requested explanation and current RPC filters; read-only inspection only.
+
+Verified in a read-only company1 snapshot at2026-11-12 08:34:49+00:138master_item rows have nonempty image_object_key. Exactly41are excluded from RPC solely because is_active=false; all41remain is_saleable=true, not deleted, nonnegative-price and valid-unit records. RPC returns97image references and the public website contains exactly those97; no image-bearing X/calibration rows or source-photo changes since the previous audit were found. Thus no image is missing from the eligible storefront set; the earlier97count was scoped to published eligible products, not all source-table photos.
+
+Installed RPC filters company, active AND saleable, not deleted, price>=0, valid same-company non-deleted base unit and optional exact SKU array. It does not require a photo; X/calibration visibility is enforced separately in website code. No application/function/source/cache/image changes occurred. Evidence: TEMP/sunford-warehouse-image-audit-20261112/count-reconciliation.json. Memory now requires explicit source/eligible/public/loaded populations in image-completeness answers. Final framework-feedback review has no candidate.
+
+Audit extension: rapid builder-to-service-to-back reproduces a shared footer left with inline display:none before its hydration completes (5/5 immediate probes; delayed probes3/3 pass). Browser instrumentation confirms React hideOrUnhideDehydratedBoundary writes that style. Scope stays in the already planned CatalogRouteFrame: key only the footer Fragment by pathname to recreate its DOM on route changes. This restores the footer without resetting the page or adding a DOM wrapper; footer-local transient UI resets on navigation. Rollback removes the Fragment key. Owner's current request explicitly covers other stuck-layout fixes. An isolated Suspense boundary did not fix the reproduction and was removed; the keyed footer passes5/5 rapid probes.
+
+## Task: Reconcile RPC eligibility against website publication
+
+Status: "Ready to Code". Approval: owner requested detailed read-only verification of the 516 RPC results, website counts and SQL correctness. Compare all RPC SKU rows against the reader, public API, directory and quotation choices. Inspect the installed function definition, document each exclusion and deliver a reproducible SQL check and per-SKU report. Application and Warehouse data changes are outside this audit.
+
+Verified completion:36/36Chrome browser tests passed on localhost:3000. Coverage is20desktop target routes,6mobile and6tablet target routes through real service links/history, mobile menu/search cleanup, and3previous homepage/product regressions. Surface/main/header/footer colors, typography and top padding equal direct visits; a same-document marker proves no reload. Body overflow/inert/dialog state restores correctly, with one visible main, no page errors or horizontal overflow in the route matrix.5/5immediate builder-history probes also keep the footer visible after the fix (baseline5/5hidden). Inspected mobile builder and desktop product screenshots. TypeScript, scoped ESLint, Prettier and git diff --check passed. Evidence:output/site-navigation-audit/verified and diagnostic scripts under output/site-navigation-audit. This is representative route-family coverage, not an exhaustive test of every generated content/product URL. No production build/deployment or Warehouse mutation was performed. The footer workaround recreates only footer-local UI per pathname; page/builder state remains outside its key. A sanitized Next.js feedback draft is prepared for the reproduced early-hydration case only; ordinary hidden-DOM CSS matching is an application issue.
+Completed RPC reconciliation: company 1 snapshot 2026-11-12 08:46:05 UTC confirms 516 unique RPC SKUs. Website excludes 26 X-prefixed and four fee records, publishes 486 cards/API rows, and has 357 quotation choices after excluding 129 zero-price rows. Category sections contain 380 items plus 106 uncategorized. Both SQL invocation forms return identical SKU sets; no missing SKUs or price mismatches beyond these rules. Evidence: output/rpc-storefront-reconciliation/.
+
+## Task: Remove prices from product directory cards (2026-11-12)
+
+Status: "Ready to Code"
+Approval: "Pending revised scope — browser evidence corrected the owning component after the first approved plan"
+
+### Goal
+
+Remove the pictured price presentation from product-category cards on `/products` while preserving product identities, Warehouse prices and every pricing-dependent business workflow.
+
+### Scope In
+
+- Remove both positive-price text such as `3,790.00 บาท (รวม VAT)` and the zero-price label `สอบถามราคา` from cards rendered by `ProductsIndexContent` under `[data-products-directory]`.
+- Apply the deletion to every category rail on `/products`, including the existing uncategorized rail; keep card image, model name and detail link unchanged.
+- Add a browser regression proving the price paragraphs are absent at 390px and 1440px while `/api/products` still contains price values.
+
+### Scope Out
+
+- Do not remove or change `price`, Warehouse/RPC/API data, the separate ProductsOverview lineup on category roots, product-detail pricing, finder/search cards, builder pricing, quotation unit prices/totals/VAT/PDF or database records.
+- No CSS, layout, shared global component, dependency, route, media, Hero or deployment change.
+- Preserve all concurrent uncommitted catalogue and navigation work.
+
+### UI/UX Brand Alignment
+
+- Reference: the owner's supplied crop. Browser evidence matches its sequence (`3,790`, `1,590`, `5,990`, `16,900`) to the `/products` category-card rails owned by `ProductsIndexContent`.
+- Design: deletion-only; no spacing, typography or card redesign.
+- Responsive: verify `/products` at 390×844 and 1440×900 with intact category/card counts, links, native horizontal rails and no page overflow.
+
+### Input / Output
+
+- Input: the conditional price JSX in `src/features/catalog/components/products-index-content.tsx` lines 83–93, currently rendering a VAT-inclusive price or `สอบถามราคา`.
+- Output: no price/inquiry paragraph on `/products` directory cards; pricing data and other website surfaces remain available and unchanged.
+
+### Acceptance Criteria
+
+- [ ] No `[data-products-directory] [data-warehouse-sku]` card renders a price or `สอบถามราคา` paragraph.
+- [ ] All six category sections and every product card/link remain present; 390px/1440px layouts have no page overflow.
+- [ ] `/api/products` still returns price values and product-detail/quotation price code remains unchanged; no Warehouse/API/data mutation occurs.
+- [ ] TypeScript, scoped ESLint/Prettier/diff checks and focused browser regression pass with no relevant page errors.
+
+### Missing Information
+
+- None. The exact pictured sequence and live DOM now identify `/products` directory cards unambiguously. Removing prices from other website surfaces would be a separate scope.
+
+### Approval Record
+
+- Owner said “เอาส่วนแสดงราคาออกครับ” and supplied the price crop.
+- Owner approved the first concrete plan, but browser verification proved that plan named the wrong owning surface. The attempted ProductsOverview source/test edits were fully restored before delivery. Per project process, the corrected source path and `/products`-only blast radius require a fresh approval.

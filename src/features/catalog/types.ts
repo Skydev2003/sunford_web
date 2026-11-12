@@ -27,6 +27,7 @@ export type Product = {
   subtitle: string;
   description: string;
   image: string;
+  fallbackImage?: string;
   capacity: string;
   readability: string;
   connection: string;
@@ -38,24 +39,46 @@ export type Product = {
   sourceUrl?: string;
   price?: number | null;
   warehouseSku?: string;
+  warehouseName?: string;
+  storefrontName?: string;
+  warehouseGroup?: string;
+  warehouseUsageFamily?: string;
+  warehouseCompatibleSkus?: string[];
+  warehouseComponents?: { sku: string; quantity: number }[];
+  warehouseSpecifications?: { label: string; value: string }[];
+  warehouseCard?: Pick<
+    Product,
+    "image" | "subtitle" | "description" | "capacity" | "readability" | "connection"
+  >;
   warehouseUnit?: string;
   warehouseNetUnitSatang?: number | null;
   warehouseCategoryId?: string;
   warehouseSubcategoryIds?: string[];
   warehouseModelCodes?: string[];
   imageOverridden?: boolean;
-  media?: import("@/features/cms/types").ProductMedia;
+  media?: import("@/features/site/types").ProductMedia;
 };
 
 export type ProductCardData = Pick<
   Product,
-  "id" | "slug" | "name" | "category" | "subtitle" | "image" | "capacity" | "badge"
+  | "price"
+  | "id"
+  | "slug"
+  | "name"
+  | "category"
+  | "subtitle"
+  | "image"
+  | "fallbackImage"
+  | "warehouseSku"
+  | "capacity"
+  | "badge"
 >;
 export type CatalogProduct = ProductCardData &
-  Pick<Product, "description" | "featured" | "topics" | "warehouseSku">;
+  Pick<Product, "description" | "featured" | "topics" | "warehouseSku" | "warehouseName">;
 export type StorefrontProduct = CatalogProduct &
   Pick<
     Product,
+    | "warehouseGroup"
     | "price"
     | "imageOverridden"
     | "warehouseSku"
@@ -65,6 +88,7 @@ export type StorefrontProduct = CatalogProduct &
   >;
 export type OverlayProduct = Pick<
   Product,
+  | "price"
   | "id"
   | "slug"
   | "name"
@@ -72,9 +96,11 @@ export type OverlayProduct = Pick<
   | "subtitle"
   | "description"
   | "image"
+  | "fallbackImage"
   | "capacity"
   | "readability"
   | "connection"
   | "warehouseSku"
+  | "warehouseName"
 >;
 export type ClientProduct = StorefrontProduct & OverlayProduct;

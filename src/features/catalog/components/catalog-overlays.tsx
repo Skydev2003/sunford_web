@@ -1,6 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useCategories } from "@/features/cms/components/categories-provider";
+import { useCategories } from "@/features/site/components/categories-provider";
 import { useEffect, useRef, useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
@@ -43,7 +43,7 @@ export function CatalogOverlays({
     }
   }, [compareOpen]);
   const found = products.filter((p) =>
-    `${p.warehouseSku ?? ""} ${p.name} ${p.subtitle} ${p.description} ${categories.find((c) => c.id === p.category)?.label}`
+    `${p.warehouseSku ?? ""} ${p.name} ${p.warehouseName ?? ""} ${p.subtitle} ${p.description} ${categories.find((c) => c.id === p.category)?.label}`
       .toLowerCase()
       .includes(search.trim().toLowerCase()),
   );
@@ -90,10 +90,16 @@ export function CatalogOverlays({
         <div className="search-results">
           {found.slice(0, 40).map((p) => (
             <Link key={p.id} href={`/products/${p.slug}`} onClick={() => setSearchOpen(false)}>
-              <ProductImage src={p.image} alt={p.name} width={65} height={65} />
+              <ProductImage
+                src={p.image}
+                fallbackSrc={p.fallbackImage}
+                alt={p.name}
+                width={65}
+                height={65}
+              />
               <div>
                 <strong>{p.name}</strong>
-                <span>{p.subtitle}</span>
+                {p.warehouseSku && p.price === null && <span>สอบถามราคา</span>}
               </div>
               <ArrowRight size={18} />
             </Link>
@@ -174,7 +180,13 @@ export function CatalogOverlays({
                             <X size={15} />
                           </button>
                         </Tooltip>
-                        <ProductImage src={p.image} alt={p.name} width={145} height={130} />
+                        <ProductImage
+                          src={p.image}
+                          fallbackSrc={p.fallbackImage}
+                          alt={p.name}
+                          width={145}
+                          height={130}
+                        />
                         <Link href={`/products/${p.slug}`} onClick={() => setCompareOpen(false)}>
                           {p.name} <ArrowRight size={13} />
                         </Link>

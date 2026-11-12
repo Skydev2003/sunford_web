@@ -1,5 +1,5 @@
 import type { Product } from "@/features/catalog/types";
-import type { HeroSettings } from "@/features/cms/types";
+import type { HeroSettings } from "@/features/site/types";
 
 export type HeroSlide = {
   id: string;
@@ -31,7 +31,6 @@ const heroHighlights: Partial<Record<string, readonly [string, string, string]>>
     "ต่อเครื่องพิมพ์ RS232 และ SUNFORD CONNECT ผ่านอุปกรณ์ที่รองรับ",
   ],
 };
-
 const heroImages: Record<string, string> = {
   "acs30-jc21": "/images/products/acs30-jc21-cutout.png",
   wps10ks: "/images/products/wps10ks.png",
@@ -51,7 +50,7 @@ const heroModels: Record<string, string> = {
 
 export function heroSlideData(products: Product[], slides: HeroSettings["slides"]): HeroSlide[] {
   return slides.flatMap((slide, index) => {
-    const product = products.find((product) => product.id === slide.productId);
+    const product = products.find((p) => p.id === slide.productId);
     if (slide.productId && !product) return [];
     return [
       {

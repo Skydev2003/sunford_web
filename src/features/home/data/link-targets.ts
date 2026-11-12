@@ -1,6 +1,6 @@
 import type { Product } from "@/features/catalog/types";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
-import { defaultSpotlightProductId, type HomeImageSlot } from "./image-slots";
+import { isDefaultSpotlightProduct, type HomeImageSlot } from "./image-slots";
 
 export type HomeLinkTarget = {
   productId?: string | null;
@@ -35,7 +35,7 @@ export function resolveHomeLink(
       ? resolveCategoryHref(target.pagePath)
       : undefined;
   if (slot === "spotlight") {
-    const product = products.find((item) => item.id === defaultSpotlightProductId);
+    const product = products.find(isDefaultSpotlightProduct);
     return product ? `/products/${product.slug}` : undefined;
   }
   return resolveCategoryHref(defaultHomePagePaths[slot]);

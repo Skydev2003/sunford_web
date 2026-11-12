@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { defaultNavigation } from "../../src/features/cms/data/navigation";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 
 const children = defaultNavigation[0].groups!.flatMap((group) => group.links);

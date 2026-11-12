@@ -1,16 +1,17 @@
 import Image from "next/image";
+import { catalogModelLabel } from "@/features/catalog/data/catalog-card-names";
+import { getSettings } from "@/features/site/server/documents";
+import { spotlightDefaults } from "@/features/site/data/settings";
+import {
+  defaultSpotlightImage,
+  defaultSpotlightVideo,
+  defaultSpotlightPoster,
+  isDefaultSpotlightProduct,
+} from "../data/image-slots";
+import { SpotlightProductVideo } from "./spotlight-product-video";
 import Link from "next/link";
 import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTarget } from "../data/link-targets";
-import { getSettings } from "@/features/cms/server/documents";
-import { spotlightDefaults } from "@/features/cms/data/settings";
-import {
-  defaultSpotlightImage,
-  defaultSpotlightProductId,
-  defaultSpotlightVideo,
-  defaultSpotlightPoster,
-} from "../data/image-slots";
-import { SpotlightProductVideo } from "./spotlight-product-video";
 
 export async function ProductSpotlight({
   products,
@@ -24,14 +25,14 @@ export async function ProductSpotlight({
   leading?: boolean;
 }) {
   const copy = await getSettings("spotlight", spotlightDefaults);
-  const defaultProduct = products.find((item) => item.id === defaultSpotlightProductId);
+  const defaultProduct = products.find(isDefaultSpotlightProduct);
   const product = target?.productId
     ? products.find((item) => item.id === target.productId)
     : defaultProduct;
   if (!product && !target?.pagePath) return null;
   const href = resolveHomeLink("spotlight", target, products);
   const showVideo =
-    product?.id === defaultSpotlightProductId && (!image || image === defaultSpotlightImage);
+    product && isDefaultSpotlightProduct(product) && (!image || image === defaultSpotlightImage);
   const visual = (
     <Image
       src={image ?? defaultSpotlightImage}
@@ -48,15 +49,17 @@ export async function ProductSpotlight({
       <div className="container spotlight-inner">
         <div className="spotlight-copy">
           <h2 id="spotlight-title">
-            {copy.title.split(/(\bJC21\b)/).map((part, index) =>
-              part === "JC21" ? (
-                <span key={index} className="spotlight-model">
-                  {part}
-                </span>
-              ) : (
-                part
-              ),
-            )}
+            {catalogModelLabel(copy.title)
+              .split(/(\bJC21\b)/)
+              .map((part, index) =>
+                part === "JC21" ? (
+                  <span key={index} className="spotlight-model">
+                    {part}
+                  </span>
+                ) : (
+                  part
+                ),
+              )}
           </h2>
           <p className="spotlight-tagline">{copy.accent}</p>
           {copy.description && (

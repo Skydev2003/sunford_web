@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ChevronRight, MessageCircleMore, Phone, ShoppingBag, Star, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
-import type { SiteSettings } from "@/features/cms/types";
+import type { SiteSettings } from "@/features/site/types";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useMascotMotion } from "./use-mascot-motion";
 import styles from "./sunford-mascot.module.css";

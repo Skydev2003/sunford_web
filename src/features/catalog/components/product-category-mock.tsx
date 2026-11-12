@@ -147,7 +147,7 @@ export function ProductCategoryMock({
     .filter(
       ({ model, product }) =>
         (!featured || product?.featured) &&
-        `${model} ${product?.warehouseSku ?? ""} ${product?.name ?? ""} ${product?.subtitle ?? ""} ${product?.description ?? ""}`
+        `${model} ${product?.warehouseSku ?? ""} ${product?.name ?? ""} ${product?.warehouseName ?? ""} ${product?.subtitle ?? ""} ${product?.description ?? ""}`
           .toLowerCase()
           .includes(normalizedQuery),
     )
@@ -312,7 +312,13 @@ export function ProductCategoryMock({
                 >
                   <span className={styles.categoryArt}>
                     {photo ? (
-                      <ProductImage src={catalogProductPhoto(photo)} alt="" fill sizes="160px" />
+                      <ProductImage
+                        src={catalogProductPhoto(photo)}
+                        fallbackSrc={photo.fallbackImage}
+                        alt=""
+                        fill
+                        sizes="160px"
+                      />
                     ) : (
                       (categoryIcons[item.id] ?? (
                         <Package size={32} strokeWidth={1.4} aria-hidden="true" />
@@ -357,12 +363,12 @@ export function ProductCategoryMock({
                 >
                   <div className={styles.showcaseCopy}>
                     <p className={styles.showcaseName}>{cardNames[product.id] ?? product.name}</p>
-                    <p className={styles.showcaseSubtitle}>{product.subtitle}</p>
                     <span className={styles.showcaseCta}>ดูรายละเอียด</span>
                   </div>
                   <div className={styles.showcaseArt}>
                     <ProductImage
                       src={catalogProductPhoto(product)}
+                      fallbackSrc={product.fallbackImage}
                       alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                       fill
                       preload={index === 0}
@@ -534,7 +540,7 @@ export function ProductCategoryMock({
                 }
                 key={`${product.id}:${model}`}
                 modelOnly
-                product={{ ...product, name: model }}
+                product={{ ...product, name: product.warehouseSku ? product.name : model }}
                 decisionFacts={getCatalogDecisionFacts(
                   product,
                   activeCategory ?? categories.find((item) => item.productIds.includes(product.id)),

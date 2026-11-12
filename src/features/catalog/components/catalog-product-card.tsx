@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Check, Plus } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { useCategories } from "@/features/cms/components/categories-provider";
+import { useCategories } from "@/features/site/components/categories-provider";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { ProductCardData } from "../types";
 import type { CatalogDecisionFact } from "../data/catalog-decision-facts";
@@ -15,8 +15,9 @@ const productPhotos: Record<string, string> = {
   feh5ks: "/images/products/feh5ks.png",
 };
 
-export const catalogProductPhoto = (product: Pick<ProductCardData, "id" | "image">) =>
-  productPhotos[product.id] ?? product.image;
+export const catalogProductPhoto = (
+  product: Pick<ProductCardData, "id" | "image" | "warehouseSku">,
+) => (product.warehouseSku ? product.image : productPhotos[product.id] || product.image);
 
 export function CatalogProductCard({
   product,
@@ -49,6 +50,7 @@ export function CatalogProductCard({
       <Link href={href} className={styles.image}>
         <ProductImage
           src={catalogProductPhoto(product)}
+          fallbackSrc={product.fallbackImage}
           alt={`SUNFORD ${product.name}`}
           fill
           sizes="(max-width: 600px) 45vw, (max-width: 1100px) 30vw, 22vw"
@@ -70,6 +72,7 @@ export function CatalogProductCard({
         <Link href={href}>
           <Heading>{product.name}</Heading>
         </Link>
+        {product.warehouseSku && product.price === null && <p>สอบถามราคา</p>}
         {decisionFacts && decisionFacts.length > 0 && (
           <dl
             className={styles.decisionFacts}
@@ -86,7 +89,6 @@ export function CatalogProductCard({
         )}
         {!modelOnly && (
           <>
-            <p>{product.subtitle}</p>
             <div className={styles.tags}>
               {product.badge && <span>{product.badge}</span>}
               {product.capacity && product.capacity !== "—" && <span>{product.capacity}</span>}

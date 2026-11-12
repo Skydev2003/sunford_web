@@ -14,8 +14,11 @@ export function warehouseSubcategories(
       ...group,
       productIds: members.map((product) => product.id),
       entries: members.map((product) => {
-        const model = product.warehouseModelCodes?.[0] ?? product.name;
-        return { model, documentModel: model, productId: product.id };
+        return {
+          model: product.name,
+          documentModel: product.warehouseModelCodes?.[0] ?? product.name,
+          productId: product.id,
+        };
       }),
     };
   });

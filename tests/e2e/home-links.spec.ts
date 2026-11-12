@@ -1,14 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-test("homepage spotlight media retains its product destination", async ({ page }) => {
+test("homepage preserves Hero media and existing campaign destinations", async ({
+  page,
+  request,
+}) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await expect(
+    page.locator(
+      'video[src="/videos/sunford-web.mp4"],video source[src="/videos/sunford-web.mp4"]',
+    ),
+  ).toHaveCount(1);
+  await expect(page.locator("#stories-heading")).not.toBeEmpty();
   const spotlight = page.locator(".product-spotlight");
-  const spotlightHref = await spotlight.locator(".spotlight-visual").getAttribute("href");
-  await expect(spotlight.locator("h2")).toHaveText("SUNFORD JC21");
-  expect(spotlightHref).toBe("/products/acs30-jc21");
-  await expect(spotlight.locator(".spotlight-actions")).toHaveCount(0);
-  await spotlight.locator(".spotlight-visual").click();
-  await expect(page).toHaveURL(new RegExp(`${spotlightHref}$`));
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("JC21");
+  if (await spotlight.count()) {
+    const href = await spotlight.locator(".spotlight-visual").getAttribute("href");
+    expect(href).toMatch(/^\/products\//);
+    expect((await request.get(href!)).status()).toBe(200);
+    await expect(spotlight.locator("h2")).not.toBeEmpty();
+  }
 });

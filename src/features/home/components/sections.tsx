@@ -1,5 +1,5 @@
-import { getSettings } from "@/features/cms/server/documents";
-import { patchSection } from "@/features/cms/server/section-tree";
+import { getSettings } from "@/features/site/server/documents";
+import { patchSection } from "@/features/site/server/section-tree";
 import Image from "next/image";
 import { ShieldCheck, UsersRound, Settings2 } from "lucide-react";
 import { sunford } from "@/features/home/data/brand";

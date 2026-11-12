@@ -1,81 +1,76 @@
 import type { Product } from "@/features/catalog/types";
-import { getAccessorySubcategories } from "@/features/catalog/data/accessory-subcategories";
-import { findScaleModel } from "@/features/catalog/data/scale-subcategories";
-import { weighingAccessories, weighingGroups } from "./indicator-platform-compatibility";
+import { warehouseFact } from "@/features/catalog/data/warehouse-site-data";
 
 export type WeighingOption = {
   code: string;
+  displayName?: string;
   description: string;
   group: string;
   kind: "head" | "platform" | "accessory";
   image: string;
+  fallbackImage?: string;
   productId?: string;
   price: number | null;
   detailHref: string;
   sku?: string;
   includesHead?: boolean;
   netUnitSatang?: number | null;
+  compatibleCodes?: string[];
 };
 export function getWeighingOptions(products: Product[]): WeighingOption[] {
-  const warehouse = products.some((product) => product.warehouseSku);
-  const normalize = (code: string) => code.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  const productByCode = new Map(products.map((p) => [p.name.trim().toUpperCase(), p]));
-  const byId = new Map(products.map((product) => [product.id, product]));
-  const accessories = new Map(
-    getAccessorySubcategories(products).flatMap((group) =>
-      (group.entries ?? []).flatMap((entry) =>
-        entry.productId ? [[entry.model, byId.get(entry.productId)] as const] : [],
-      ),
-    ),
+  const heads = products.filter((p) => p.warehouseCategoryId === "indicators");
+  const platforms = products.filter(
+    (p) =>
+      p.warehouseCategoryId === "platforms" ||
+      (p.warehouseCategoryId === "scales" &&
+        /\b(?:TCS|FCS|TIS|TSS|TMS|CSS|VCS|DCS|BCS|BSS|FSS)[-\d]/i.test(p.warehouseName ?? "")),
   );
-  const option = (
-    code: string,
-    description: string,
-    group: string,
-    kind: WeighingOption["kind"],
-  ): WeighingOption => {
-    const mapped = products.filter((product) =>
-      product.warehouseModelCodes?.some((model) => normalize(model) === normalize(code)),
-    );
-    const product = warehouse
-      ? mapped.length === 1
-        ? mapped[0]
-        : undefined
-      : kind === "platform"
-        ? findScaleModel(products, code)
-        : kind === "accessory"
-          ? (accessories.get(code) ?? findScaleModel(products, code))
-          : (productByCode.get(code.toUpperCase()) ??
-            productByCode.get(code.replace(/^Indicator-/, "Indicator ").toUpperCase()));
+  const accessories = products.filter((p) => p.warehouseCategoryId === "accessories");
+  const knownPairs = new Map<string, Set<string>>();
+  for (const platform of platforms) {
+    const headFact = warehouseFact(platform, "รุ่นหัวอ่านที่รองรับ");
+    for (const head of heads) {
+      const platformFact = warehouseFact(head, "รุ่นแท่นชั่งที่รองรับ");
+      const tokens = (value: string) => value.split(/[,;\n/]+/).map((x) => x.trim().toUpperCase());
+      const matches = (value: string, p: Product) =>
+        tokens(value).some(
+          (x) => x === p.warehouseSku?.toUpperCase() || x === p.name.toUpperCase(),
+        );
+      if (
+        matches(headFact, head) ||
+        matches(platformFact, platform) ||
+        platform.warehouseComponents?.some((c) => c.sku === head.warehouseSku)
+      ) {
+        const set = knownPairs.get(head.warehouseSku!) ?? new Set<string>();
+        set.add(platform.warehouseSku!);
+        knownPairs.set(head.warehouseSku!, set);
+      }
+    }
+  }
+  return [...heads, ...platforms, ...accessories].map((p) => {
+    const kind = heads.includes(p) ? "head" : platforms.includes(p) ? "platform" : "accessory";
+    const compatibleCodes =
+      kind === "head"
+        ? [...(knownPairs.get(p.warehouseSku!) ?? [])]
+        : kind === "platform"
+          ? [...knownPairs].filter(([, v]) => v.has(p.warehouseSku!)).map(([sku]) => sku)
+          : [];
     return {
-      code,
-      description,
-      group,
+      code: p.warehouseSku!,
+      displayName: p.name,
+      description: p.subtitle || p.description,
+      group: p.warehouseGroup ?? "",
       kind,
-      productId: product?.id,
-      detailHref: product ? `/products/${product.slug}` : `#${kind}-card-${code}`,
-      image: product?.image ?? "",
-      price: !warehouse && kind === "platform" ? null : (product?.price ?? null),
-      sku: product?.warehouseSku,
-      netUnitSatang: product?.warehouseNetUnitSatang,
-      includesHead: warehouse && kind === "platform" && Boolean(product),
+      image: p.image,
+      productId: p.id,
+      price: p.price ?? null,
+      detailHref: `/products/${p.slug}`,
+      sku: p.warehouseSku,
+      includesHead:
+        kind === "platform" &&
+        Boolean(p.warehouseComponents?.some((c) => heads.some((h) => h.warehouseSku === c.sku))),
+      netUnitSatang: p.warehouseNetUnitSatang,
+      compatibleCodes,
     };
-  };
-  return [
-    ...weighingGroups.flatMap((group) =>
-      group.heads.split(" / ").map((code) => option(code, group.purpose, group.title, "head")),
-    ),
-    ...weighingGroups.flatMap((group) =>
-      group.platforms.flatMap(([description, codes]) =>
-        codes
-          .split(", ")
-          .map((code) => option(code, description.split(" · ")[0], group.title, "platform")),
-      ),
-    ),
-    ...weighingAccessories.flatMap(([codes, description]) =>
-      codes.split(" / ").map((code) => option(code, description, "", "accessory")),
-    ),
-  ]
-    .filter((option) => !warehouse || Boolean(option.productId))
-    .sort((a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)));
+  });
 }

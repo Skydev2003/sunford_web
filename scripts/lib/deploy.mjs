@@ -26,12 +26,10 @@ export function deploymentEnvironment(env, localBranch) {
 }
 
 export function runDeployment(runScript, env) {
-  // Prerendering reads the database, so apply migrations before seeding/building.
-  // Preview builds never migrate or seed a database on branch/PR pushes.
+  // Keep the quotation registry migration flow; local site content is never seeded.
+  // Preview builds never migrate a database on branch/PR pushes.
   const scripts =
-    env?.VERCEL === "1" && env.VERCEL_ENV === "preview"
-      ? ["build"]
-      : ["db:deploy", "db:seed", "build"];
+    env?.VERCEL === "1" && env.VERCEL_ENV === "preview" ? ["build"] : ["db:deploy", "build"];
   for (const script of scripts) {
     const result = runScript(script);
     if (result.error || result.status !== 0) return result.status || 1;

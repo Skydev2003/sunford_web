@@ -1,10 +1,10 @@
 .page,
-.page ~ :global(.site-footer) {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) {
   color: #f5f5f7;
   background: #000;
 }
 
-:global(div):has(> .page) {
+:global(div[data-home-route="true"]):has(> .page) {
   background: #000;
 }
 
@@ -25,55 +25,76 @@
   color: #f5f5f7;
 }
 
-.page ~ :global(.site-footer) :global(.contact-banner),
-.page ~ :global(.site-footer) :global(.footer-surface),
-.page ~ :global(.site-footer) :global(.footer-bottom-bar) {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.contact-banner),
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-surface),
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-bottom-bar) {
   background: #000;
 }
 
-.page ~ :global(.site-footer) :global(.contact-banner),
-.page ~ :global(.site-footer) :global(.footer-bottom-bar) {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.contact-banner),
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-bottom-bar) {
   border-top: 1px solid #2a2a2a;
 }
 
-.page ~ :global(.site-footer) :global(.footer-scene) {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-scene) {
   display: none;
 }
 
-.page ~ :global(.site-footer) :global(.footer-contact-row),
-.page ~ :global(.site-footer) :global(.footer-address) strong {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-contact-row),
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-address) strong {
   color: #f5f5f7;
 }
 
-.page ~ :global(.site-footer) :global(.footer-tagline) > span,
-.page ~ :global(.site-footer) :global(.footer-links) > a,
-.page ~ :global(.site-footer) :global(.footer-links) > a > svg,
-.page ~ :global(.site-footer) :global(.footer-address) > span > span,
-.page ~ :global(.site-footer) :global(.footer-coverage) p {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-tagline) > span,
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-links) > a,
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-links) > a > svg,
+:global([data-home-route="true"])
+  > .page
+  ~ :global(.site-footer)
+  :global(.footer-address)
+  > span
+  > span,
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-coverage) p {
   color: #a1a1a6;
 }
 
-.page ~ :global(.site-footer) :global(.footer-contact-icon),
-.page ~ :global(.site-footer) :global(.footer-socials) a {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-contact-icon),
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-socials) a {
   background: #1c1c1e;
 }
 
-.page ~ :global(.site-footer) :global(.footer-socials) a {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-socials) a {
   color: #f5f5f7;
 }
 
-.page ~ :global(.site-footer) :global(.footer-links),
-.page ~ :global(.site-footer) :global(.footer-coverage) {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-links),
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-coverage) {
   border-color: #2a2a2a;
 }
 
-.page ~ :global(.site-footer) :global(.footer-contact-row):is(:hover, :focus-visible),
-.page ~ :global(.site-footer) :global(.footer-links) > a:is(:hover, :focus-visible),
-.page ~ :global(.site-footer) :global(.footer-links) > a:is(:hover, :focus-visible) > svg {
+:global([data-home-route="true"])
+  > .page
+  ~ :global(.site-footer)
+  :global(.footer-contact-row):is(:hover, :focus-visible),
+:global([data-home-route="true"])
+  > .page
+  ~ :global(.site-footer)
+  :global(.footer-links)
+  > a:is(:hover, :focus-visible),
+:global([data-home-route="true"])
+  > .page
+  ~ :global(.site-footer)
+  :global(.footer-links)
+  > a:is(:hover, :focus-visible)
+  > svg {
   color: #ff4c60;
 }
 
-.page ~ :global(.site-footer) :global(.footer-socials) a:is(:hover, :focus-visible, :active) {
+:global([data-home-route="true"])
+  > .page
+  ~ :global(.site-footer)
+  :global(.footer-socials)
+  a:is(:hover, :focus-visible, :active) {
   background: var(--social-background);
   color: var(--social-color);
 }

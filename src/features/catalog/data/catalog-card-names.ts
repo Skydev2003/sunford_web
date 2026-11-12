@@ -63,17 +63,55 @@ const sourceCardNames: Record<string, string> = {
 };
 
 export function catalogModelLabel(name: string) {
+  if (name === "SUNFORD DRW-350 (DRW350-B / DRW350-W)") return "DRW-350";
   if (name === "VB3000S HiCoFE") return "VB3000S";
   if (name === "Fitdays Smart Scale - FD1000") return "FD1000";
   return name
-    .replace(/^(?:SUNFORD|Indicator|Platform|RAMP)\s+/i, "")
+    .replace(/^(?:SUNFORD|Indicator|Platform|RAMP)[\s-]+/i, "")
     .replace(/^(PCS-60-FC11)\s+\(SUS304 PAN\)$/i, "$1")
     .trim();
 }
 
+export function warehouseModelName(sku: string, name: string, mappedModel?: string): string {
+  if (mappedModel === "SUNFORD DRW-350 (DRW350-B / DRW350-W)") {
+    const variant = /DRW350-[BW]$/i.exec(sku);
+    return variant?.[0] ?? "DRW-350";
+  }
+  if (mappedModel) return catalogModelLabel(mappedModel);
+  // Remove supplier references before looking for a model in the item description.
+  const title = name
+    .trim()
+    .replace(/^(?:\d{12,14}|(?:TF|MK)\d{5,})\s+/i, "")
+    .replace(/^SUNFORD(?=[A-Z]+\d)/, "");
+  if (/^SKU-/i.test(title)) return sku;
+  const explicit = /(?:รุ่น|\bmodel)\s*[:：]?\s*([A-Z0-9][A-Z0-9._/-]*)/i.exec(title);
+  if (explicit) return catalogModelLabel(explicit[1]);
+  const platform = /\bPlatform\s+([A-Z]+\s+\d{4})\b/i.exec(title);
+  if (platform) return platform[1];
+  const software = /\b(Connect Driver|Connect POS\s*-\s*(?:Basic|Smart Retail))\b/i.exec(title);
+  if (software) return software[1];
+  const glove = /^TG\s+([A-Z]+KNIT)\b/.exec(title);
+  if (glove) return glove[1];
+  const tokens =
+    title.replace(/\([^)]*\)/g, "").match(/[A-Za-z0-9]+(?:[-_/.][A-Za-z0-9]+)*/g) ?? [];
+  const models = tokens.filter(
+    (token) =>
+      (/^[A-Z][A-Z0-9./_-]*\d[A-Z0-9./_-]*$/.test(token) ||
+        /^\d+[A-Z]{1,3}$/.test(token) ||
+        /^[A-Z]{2,}-[A-Z]+$/.test(token)) &&
+      !/^\d+(?:D|V|G|KG|MM|CM|M)$/.test(token) &&
+      !/^\d{8,}/.test(token),
+  );
+  if (models.length)
+    return title.startsWith("จัดชุด") ? models.join(" + ") : catalogModelLabel(models[0]);
+  return sku;
+}
+
 export function catalogCardName(
-  product: Pick<Product, "name" | "sourceId"> & Partial<Pick<Product, "warehouseModelCodes">>,
+  product: Pick<Product, "name" | "sourceId"> &
+    Partial<Pick<Product, "warehouseModelCodes" | "warehouseSku">>,
 ) {
+  if (product.warehouseSku) return product.name;
   if (product.warehouseModelCodes?.[0])
     return catalogModelLabel(product.warehouseModelCodes[0].replace(/^Indicator-/, "Indicator "));
   return sourceCardNames[product.sourceId ?? ""] ?? catalogModelLabel(product.name);

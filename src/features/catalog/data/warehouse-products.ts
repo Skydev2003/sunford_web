@@ -1,4 +1,5 @@
 import mapping from "./warehouse-product-mapping.json";
+import { warehouseModelName } from "./catalog-card-names";
 import type { Product } from "../types";
 
 export type WarehouseItem = {
@@ -7,6 +8,9 @@ export type WarehouseItem = {
   unit: string;
   sale_price: number | null;
   image_url: string | null;
+  description?: string | null;
+  group_name?: string | null;
+  usage_family?: string | null;
 };
 
 const warehouseOnlyFees = new Set(["72", "CALIBRATION FEE TYPE 2", "S000005", "S000006"]);
@@ -64,6 +68,7 @@ const modelKey = (family: string | null, code: string) =>
   `${family}:${code.toUpperCase().replace(/[^A-Z0-9]/g, "")}`;
 const candidates = mapping.items.filter(
   (item) =>
+    item.useForIdentity !== false &&
     item.skuPreference === "primary_group" &&
     item.sku.startsWith("G") &&
     item.status === "mapped" &&
@@ -90,6 +95,18 @@ export const approvedWarehouseMappings = candidates.filter((item) =>
 const bySku = new Map(mapping.items.map((entry) => [entry.sku, entry]));
 const verifiedBySku = new Map(approvedWarehouseMappings.map((entry) => [entry.sku, entry]));
 
+export function warehousePhotoUrl(
+  item: Pick<WarehouseItem, "sku" | "image_url">,
+  saved?: string | null,
+) {
+  if (!item.image_url) return "";
+  const version = new URL(item.image_url, "https://warehouse.invalid").searchParams.get("v");
+  const source = saved || `/api/products/${encodeURIComponent(item.sku)}/image`;
+  return version
+    ? `${source}${source.includes("?") ? "&" : "?"}v=${encodeURIComponent(version)}`
+    : source;
+}
+
 export function warehouseCatalog(
   items: WarehouseItem[],
   editorial: Product[],
@@ -107,30 +124,46 @@ export function warehouseCatalog(
           : undefined;
       const legacyId = verified?.legacyProductCandidateIds[0];
       const existing = legacyId ? content.get(legacyId) : undefined;
+      const routeOwner = verified?.preserveWarehouseIdentity ? undefined : existing;
+      const cmsImage = existing?.image || existing?.media?.gallery[0]?.image || "";
+      const warehouseImage = warehousePhotoUrl(item, savedImage?.(item));
       const net = item.sale_price === null ? null : Math.round(item.sale_price * 100);
       const gross =
         net === null ? null : net + Number((BigInt(net) * BigInt(7) + BigInt(50)) / BigInt(100));
       if (gross !== null && !Number.isSafeInteger(gross)) return [];
       return [
         {
-          id: existing?.id ?? `warehouse-${item.sku}`,
-          slug: existing?.slug ?? `warehouse-${encodeURIComponent(item.sku)}`,
-          name: item.product_name,
+          id: routeOwner?.id ?? `warehouse-${item.sku}`,
+          slug: routeOwner?.slug ?? `warehouse-${encodeURIComponent(item.sku)}`,
+          name: warehouseModelName(
+            item.sku,
+            item.product_name,
+            entry?.name === item.product_name ? entry.modelCodes[0] : undefined,
+          ),
+          warehouseName: item.product_name,
+          warehouseGroup: item.group_name ?? "",
+          warehouseUsageFamily: item.usage_family ?? "",
+          warehouseCard: {
+            image: warehouseImage,
+            description: item.description?.trim() ?? "",
+            subtitle: "",
+            capacity: "",
+            readability: "",
+            connection: "",
+          },
           category:
             existing?.category ??
             (categoryId === "scales" ? "industrial" : (categoryId ?? "uncategorized")),
           subtitle: existing?.subtitle ?? "",
           description: existing?.description ?? "",
-          image:
-            existing?.image ||
-            savedImage?.(item) ||
-            (item.image_url ? `/api/products/${encodeURIComponent(item.sku)}/image` : ""),
+          image: warehouseImage || cmsImage,
+          fallbackImage: warehouseImage && cmsImage ? cmsImage : undefined,
           capacity: existing?.capacity ?? "—",
           readability: existing?.readability ?? "—",
           connection: existing?.connection ?? "—",
           badge: existing?.badge ?? null,
           featured: existing?.featured ?? false,
-          sortOrder: existing?.sortOrder ?? 1000 + index,
+          sortOrder: routeOwner?.sortOrder ?? 1000 + index,
           sourceId: existing?.sourceId,
           sourceUrl: existing?.sourceUrl,
           media: existing?.media
@@ -139,7 +172,7 @@ export function warehouseCatalog(
           price: gross === null || net === 0 ? null : gross / 100,
           imageOverridden: existing?.imageOverridden,
           warehouseSku: item.sku,
-          warehouseUnit: item.unit,
+          warehouseUnit: item.unit.trim() === "ไม่ระบุหน่วย (PEAK)" ? undefined : item.unit.trim(),
           warehouseNetUnitSatang: net,
           warehouseCategoryId: categoryId,
           warehouseSubcategoryIds: entry?.status === "mapped" ? entry.subcategoryIds : [],

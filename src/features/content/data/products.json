@@ -9192,5 +9192,201 @@
     "specifications": [],
     "price": null,
     "collections": []
+  },
+  {
+    "sourceId": "10712",
+    "name": "RS232-USB",
+    "sourceUrl": "https://www.sunford.co/products/10712",
+    "path": "/products/10712",
+    "descriptionHtml": "<p>สายนำสัญญาณ RS232-USB</p>\n\n<p>สำหรับใช้งานร่วมกับเครื่องชั่ง</p>\n<p>เพื่อเชื่อมต่อสัญญาณกับคอมพิวเตอร์</p>",
+    "detailsHtml": "",
+    "description": "สายนำสัญญาณ RS232-USB\n\nสำหรับใช้งานร่วมกับเครื่องชั่ง\n\nเพื่อเชื่อมต่อสัญญาณกับคอมพิวเตอร์",
+    "details": "",
+    "images": [
+      "/images/imported/b157754b9e414aedf41d.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6ac5e613873e59a85af51f67"
+    ],
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specifications": [],
+    "price": null,
+    "collections": [
+      {
+        "path": "/collections/data-cables",
+        "title": "สายส่งข้อมูล"
+      }
+    ]
+  },
+  {
+    "sourceId": "10714",
+    "name": "RS232 1M2F",
+    "sourceUrl": "https://www.sunford.co/products/10714",
+    "path": "/products/10714",
+    "descriptionHtml": "<p>สาย Y สำหรับขยายช่องสัญญาณ RS232</p>\n<p>สำหรับหัวอ่าน SUNFORD ที่มีพอร์ต RS232 ทุกรุ่น</p>",
+    "detailsHtml": "",
+    "description": "สาย Y สำหรับขยายช่องสัญญาณ RS232\n\nสำหรับหัวอ่าน SUNFORD ที่มีพอร์ต RS232 ทุกรุ่น",
+    "details": "",
+    "images": [
+      "/images/imported/5f9fb0ba57870f1027e0.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6ac5e613873e59a85af51f67"
+    ],
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specifications": [],
+    "price": null,
+    "collections": [
+      {
+        "path": "/collections/data-cables",
+        "title": "สายส่งข้อมูล"
+      }
+    ]
+  },
+  {
+    "sourceId": "10845",
+    "name": "จานชั่งลูกกลิ้งลำเลียง 40x50 (เข้าด้าน50)",
+    "sourceUrl": "https://www.sunford.co/products/10845",
+    "path": "/products/10845",
+    "descriptionHtml": "<p>จานชั่งลูกกลิ้งลำเลียง 40x50 (เข้าด้าน50)</p>\n<p>จานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS</p>",
+    "detailsHtml": "",
+    "description": "จานชั่งลูกกลิ้งลำเลียง 40x50 (เข้าด้าน50)\n\nจานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS",
+    "details": "",
+    "images": [
+      "/images/imported/46ef37674777c4f3dee8.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6af135d4dfdbb1035b9dc210"
+    ],
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specifications": [],
+    "price": null,
+    "collections": [
+      {
+        "path": "/collections/content-a852d878c5035aa4",
+        "title": "จานชั่งลูกกลิ้งลำเลียง"
+      }
+    ]
+  },
+  {
+    "sourceId": "10846",
+    "name": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 60)",
+    "sourceUrl": "https://www.sunford.co/products/10846",
+    "path": "/products/10846",
+    "descriptionHtml": "<p>จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 60)</p>\n<p>จานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS</p>",
+    "detailsHtml": "",
+    "description": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 60)\n\nจานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS",
+    "details": "",
+    "images": [
+      "/images/imported/219fb78c6fb389f80c0f.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6af135d4dfdbb1035b9dc210"
+    ],
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specifications": [],
+    "price": null,
+    "collections": [
+      {
+        "path": "/collections/content-a852d878c5035aa4",
+        "title": "จานชั่งลูกกลิ้งลำเลียง"
+      }
+    ]
+  },
+  {
+    "sourceId": "10847",
+    "name": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 80)",
+    "sourceUrl": "https://www.sunford.co/products/10847",
+    "path": "/products/10847",
+    "descriptionHtml": "<p>จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 80)</p>\n<p>จานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS</p>",
+    "detailsHtml": "",
+    "description": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 80)\n\nจานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS",
+    "details": "",
+    "images": [
+      "/images/imported/8a5f813db042679a548b.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6af135d4dfdbb1035b9dc210"
+    ],
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specifications": [],
+    "price": null,
+    "collections": [
+      {
+        "path": "/collections/content-a852d878c5035aa4",
+        "title": "จานชั่งลูกกลิ้งลำเลียง"
+      }
+    ]
+  },
+  {
+    "sourceId": "10849",
+    "name": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 45)",
+    "sourceUrl": "https://www.sunford.co/products/10849",
+    "path": "/products/10849",
+    "descriptionHtml": "<p>จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 45)</p>\n<p>จานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS</p>",
+    "detailsHtml": "",
+    "description": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 45)\n\nจานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS",
+    "details": "",
+    "images": [
+      "/images/imported/53b33ca95ca919c7c771.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6af135d4dfdbb1035b9dc210"
+    ],
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specifications": [],
+    "price": null,
+    "collections": [
+      {
+        "path": "/collections/content-a852d878c5035aa4",
+        "title": "จานชั่งลูกกลิ้งลำเลียง"
+      }
+    ]
+  },
+  {
+    "sourceId": "10850",
+    "name": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 60)",
+    "sourceUrl": "https://www.sunford.co/products/10850",
+    "path": "/products/10850",
+    "descriptionHtml": "<p>จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 60)</p>\n<p>จานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS</p>",
+    "detailsHtml": "",
+    "description": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 60)\n\nจานชั่งลูกกลิ้งสำหรับแท่นชั่ง TCS, FCS และ TSS",
+    "details": "",
+    "images": [
+      "/images/imported/38303ec55ea3bb7ffe78.png"
+    ],
+    "imageAlt": [
+      ""
+    ],
+    "collectionIds": [
+      "6af135d4dfdbb1035b9dc210"
+    ],
+    "specificationHtml": "<div><div><div><div><div><div><div><div><div><div><div><div class=\"media-placeholder\" role=\"img\" aria-label=\"พื้นที่สำหรับรูปภาพ\"><span>พื้นที่สำหรับรูปภาพ</span></div></div></div><div></div></div></div></div></div><div></div></div></div></div></div></div><div><div>\n\n\n</div></div>",
+    "specifications": [],
+    "price": null,
+    "collections": [
+      {
+        "path": "/collections/content-a852d878c5035aa4",
+        "title": "จานชั่งลูกกลิ้งลำเลียง"
+      }
+    ]
   }
 ]

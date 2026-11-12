@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { defaultNavigation } from "../../src/features/cms/data/navigation";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 
 const labels = [

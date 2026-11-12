@@ -1,6 +1,6 @@
 # Deploy บน Vercel
 
-ใช้ Vercel สำหรับ Next.js และใช้ Supabase เดิมสำหรับ PostgreSQL และรูป Storage เดิม ไม่ต้องย้ายข้อมูลหรือรูปสินค้า ไฟล์ `vercel.json` กำหนด npm, build pipeline และ Function Region เป็น Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1` หากเปลี่ยน region ของ Supabase ให้ปรับ region นี้ตาม
+ใช้ Vercel สำหรับ Next.js อ่านสินค้า/ราคาจาก Warehouse PostgreSQL และรูปหลักจาก storage ของ Warehouse หน้าภายในไม่ใช้รูปหรือข้อมูลสินค้าเดิมเติมช่องว่าง ส่วนค่าตั้งเว็บ เนื้อหาทั่วไป และข้อยกเว้นหน้าแรก/Hero อยู่ในโปรเจกต์ ไม่มีการอ่าน CMS ไฟล์ `vercel.json` กำหนด npm, build pipeline และ Function Region เป็น Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1` หากเปลี่ยน region ของ Supabase ให้ปรับ region นี้ตาม
 
 ## ตั้งค่าครั้งแรก
 
@@ -15,13 +15,13 @@
 
 ## Environment Variables
 
-| Variable                  | Production                                                           | Preview                              |
-| ------------------------- | -------------------------------------------------------------------- | ------------------------------------ |
-| `DATABASE_URL`            | Supabase ปัจจุบัน: transaction pooler พอร์ต 6543                     | transaction pooler ของ project ทดสอบ |
-| `DIRECT_URL`              | session pooler พอร์ต 5432 หรือ direct endpoint สำหรับ migration/seed | ไม่จำเป็นสำหรับ build                |
-| `SUPABASE_URL`            | ตัวเลือกสำหรับรูปเดิมจาก Storage                                     | ตัวเลือกสำหรับรูปจาก Storage ทดสอบ   |
-| `APP_ENV`                 | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `production`                             | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `uat`    |
-| `NEXT_TELEMETRY_DISABLED` | `1` (เลือกตั้งได้)                                                   | `1` (เลือกตั้งได้)                   |
+| Variable                  | Production                                                      | Preview                                    |
+| ------------------------- | --------------------------------------------------------------- | ------------------------------------------ |
+| `DATABASE_URL`            | ฐานทะเบียนเลขใบเสนอราคา แยกจาก Warehouse                        | transaction pooler ของ project ทดสอบ       |
+| `DIRECT_URL`              | session pooler/direct endpoint ของทะเบียนเอกสารสำหรับ migration | ไม่จำเป็นสำหรับ build                      |
+| `SUPABASE_URL`            | ตัวเลือกสำหรับรูปอ้างอิงหน้าแรกจาก Storage                      | ตัวเลือกสำหรับรูปอ้างอิงหน้าแรกในระบบทดสอบ |
+| `APP_ENV`                 | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `production`                        | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `uat`          |
+| `NEXT_TELEMETRY_DISABLED` | `1` (เลือกตั้งได้)                                              | `1` (เลือกตั้งได้)                         |
 
 คัดลอกเฉพาะ value จาก `.env` ไม่ใส่ชื่อ key ซ้ำหรือเครื่องหมายคำพูดครอบ แอปไม่ใช้ Supabase Auth หรือคีย์สำหรับอัปโหลดแล้ว หากมีรูปเดิมใน Storage ให้ตั้ง `SUPABASE_URL` ให้ตรงกับ project ของรูป การเปลี่ยน environment ต้อง redeploy เพราะ config รูปอ่าน URL ตอน build ด้วย
 
@@ -29,16 +29,16 @@
 
 ## Production และ Preview
 
-| Target     | Branch                       | ขั้นตอน build                                   |
-| ---------- | ---------------------------- | ----------------------------------------------- |
-| Production | `main`                       | ตรวจ config → `db:deploy` → `db:seed` → `build` |
-| Preview    | `uat`, feature branch และ PR | ตรวจ config → `build`                           |
+| Target     | Branch                       | ขั้นตอน build                       |
+| ---------- | ---------------------------- | ----------------------------------- |
+| Production | `main`                       | ตรวจ config → `db:deploy` → `build` |
+| Preview    | `uat`, feature branch และ PR | ตรวจ config → `build`               |
 
-Production ปฏิเสธ branch อื่นและ Environment ที่ไม่ตรงกันก่อนแตะฐานข้อมูล Seed เพิ่มเฉพาะสินค้านำเข้าที่ยังขาด ไม่เขียนทับข้อมูลเดิม สำรอง JSON ชั่วคราวไว้ใน build directory ใต้ `/tmp` บน Vercel ไฟล์นี้หายได้หลัง build; ใช้ backup ของ Supabase สำหรับการกู้คืนถาวร การ rollback deployment ไม่ rollback migration ที่รันสำเร็จแล้ว
+Production ปฏิเสธ branch/environment ที่ไม่ตรงก่อนแตะฐานข้อมูล ขั้น `db:deploy` คงไว้สำหรับทะเบียนเลขใบเสนอราคาและประวัติ migration เดิม ไม่มี CMS seed การ rollback deployment ไม่ rollback migration ที่สำเร็จแล้ว
 
-Preview ไม่รัน migration หรือ seed อัตโนมัติ ก่อนใช้ project ทดสอบครั้งแรก ต้องเตรียม schema และ catalogue ให้ครบ โดยชี้ `.env` ในเครื่องไป project ทดสอบ แล้วรัน `npm run db:deploy` และ `npm run db:seed` การเพิ่ม migration ใหม่ต้อง apply ที่ project ทดสอบก่อน build Preview เช่นกัน
+Preview ไม่รัน migration อัตโนมัติ เตรียมทะเบียนเอกสารในฐานทดสอบก่อนใช้งานออกเลข ห้ามใช้ Warehouse เป็นฐานเขียนเลขเอกสาร งานถอด CMS นี้ไม่รัน migration หรือ DROP ตารางจริง
 
-เก็บ project ทดสอบแยกจาก Production สำหรับการเตรียม schema และข้อมูล ไม่มีการแก้ข้อมูลผ่านหน้าแอดมินบนเว็บไซต์แล้ว
+ทุก target ต้องตั้ง `WAREHOUSE_DATABASE_URL`, `WAREHOUSE_COMPANY_ID`, `WAREHOUSE_S3_ENDPOINT`, `WAREHOUSE_S3_BUCKET`, `WAREHOUSE_S3_REGION`, `WAREHOUSE_S3_KEY` และ `WAREHOUSE_S3_SECRET` ฝั่งเซิร์ฟเวอร์ ดู [คู่มือ Warehouse](warehouse/direct-postgres.md) เนื้อหา local มากับ build ไม่ต้องตั้งฐาน CMS
 
 Vercel Git integration สร้าง deployment เมื่อ push ตามการตั้งค่า project โดย CI เดิมยังทำงานอยู่ แต่ไม่ได้รอ GitHub Actions ผ่านเหมือน Render โดยอัตโนมัติ หากต้องการ gate ก่อน promote ให้ตั้ง [Deployment Checks](https://vercel.com/docs/deployment-checks) ที่บัญชีรองรับ และคง branch protection ให้ PR ผ่าน CI ก่อน merge เข้า `main`
 
@@ -69,7 +69,7 @@ bun run deploy --check
 
 ผลลัพธ์ push สำเร็จแปลว่าส่ง commit เข้า GitHub แล้ว ต้องรอ Vercel build สำเร็จและตรวจ `/api/health` ว่า revision ตรงกันก่อนถือว่าเว็บ live
 
-Build Command บน Vercel ยังคงเป็น `npm run vercel-build` ตาม `vercel.json` ซึ่งเรียก `scripts/vercel-build.mjs` เพื่อ validate environment, migrate/seed เฉพาะ Production และ build อย่าเปลี่ยนเป็น `bun run deploy` เพราะคำสั่งนั้นใช้จัดการ Git ในเครื่อง
+Build Command บน Vercel ยังคงเป็น `npm run vercel-build` ตาม `vercel.json` ซึ่งเรียก `scripts/vercel-build.mjs` เพื่อ validate environment, migrate ทะเบียนเอกสารเฉพาะ Production และ build อย่าเปลี่ยนเป็น `bun run deploy` เพราะคำสั่งนั้นใช้จัดการ Git ในเครื่อง
 
 ## URL ภาษาอังกฤษและขนาดชื่อไฟล์
 
@@ -90,8 +90,8 @@ URL ภายในใช้ path ภาษาอังกฤษ ลิงก์
 
 - รูปเดิมใน `public/images` และ Supabase Storage ยังเปิดได้ ไม่มีหน้าหรือคำสั่งอัปโหลดรูปจากเว็บไซต์แล้ว
 - Migration ต่อไม่ได้: ตรวจ `DIRECT_URL` เป็น session pooler พอร์ต 5432 หรือ direct endpoint ไม่ใช้ transaction pooler 6543 และตรวจว่า Supabase ไม่พักอยู่
-- Build Preview แจ้งตาราง/คอลัมน์ไม่มี: apply migration ของ branch นี้ที่ฐานข้อมูล Preview ก่อน redeploy
+- ออกเลขเอกสารไม่ได้: ตรวจ DATABASE_URL ของทะเบียนเอกสารและ migration quotation_issues ในฐานที่ถูกต้อง ไม่มีการนำ CMS กลับมาใช้
 - Build แจ้ง branch/config: ตรวจ Production Branch, scope ของ `APP_ENV` และ System Environment Variables อย่าใส่ `APP_ENV=production` ครอบทุก target
-- `/api/health` ได้ 503: ตรวจ runtime `DATABASE_URL` และการเชื่อมต่อ Supabase; ไม่เผย credentials ใน log
+- `/api/health` ได้ 503: ตรวจ runtime `WAREHOUSE_DATABASE_URL` และการเชื่อมต่อ Warehouse; ไม่เผย credentials ใน log
 
 อ้างอิง: [Vercel configuration](https://vercel.com/docs/project-configuration/vercel-json), [System environment variables](https://vercel.com/docs/environment-variables/system-environment-variables), [Node.js versions](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions), [Function limits](https://vercel.com/docs/functions/limitations)

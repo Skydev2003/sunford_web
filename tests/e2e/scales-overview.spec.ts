@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-subcategory-pages";
-import { defaultNavigation } from "../../src/features/cms/data/navigation";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
 import { scaleSubcategoryDefinitions } from "../../src/features/catalog/data/scale-subcategories";
 

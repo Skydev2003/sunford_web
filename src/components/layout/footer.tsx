@@ -1,8 +1,8 @@
-import { defaultSite } from "@/features/cms/data/settings";
-import type { SiteSettings } from "@/features/cms/types";
+import { defaultSite } from "@/features/site/data/settings";
+import type { SiteSettings } from "@/features/site/types";
 import { cacheLife, cacheTag } from "next/cache";
-import { getSettings } from "@/features/cms/server/documents";
-import { patchSection } from "@/features/cms/server/section-tree";
+import { getSettings } from "@/features/site/server/documents";
+import { patchSection } from "@/features/site/server/section-tree";
 import { ContactBannerVisibility } from "@/components/contact/contact-banner-visibility";
 import { CustomerCoverage } from "@/features/customer-map/components/customer-coverage";
 import Image from "next/image";

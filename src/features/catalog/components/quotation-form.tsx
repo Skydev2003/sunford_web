@@ -1,10 +1,14 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import type { PdfBuyer } from "../data/quotation-pdf";
+import type { QuotationIssue } from "../data/quotation-issue";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Printer, Plus, X } from "lucide-react";
+import { ChevronDown, ImageIcon, Printer, Plus, Search, SlidersHorizontal, X } from "lucide-react";
+import { productCategoryDefinitions } from "../data/mock-categories";
+import { ProductImage } from "@/components/ui/product-image";
+import { Modal } from "@/components/ui/modal";
 import {
   quotationTotals,
   seller,
@@ -19,17 +23,31 @@ const money = new Intl.NumberFormat("th-TH", {
   maximumFractionDigits: 2,
 });
 const amount = (satang: number) => money.format(satang / 100);
-type Selection = { key: number; id: string; quantity: string };
-type Buyer = {
-  name: string;
-  address: string;
-  tax: string;
-  branch: string;
-  contact: string;
-  phone: string;
-  email: string;
-  date: string;
+const pickerCategories = [{ id: "all", label: "ผลิตภัณฑ์ทั้งหมด" }, ...productCategoryDefinitions];
+type Selection = {
+  key: number;
+  id: string;
+  quantity: string;
+  bundle?: { kitKey: number; model: string };
 };
+
+function ModelThumbnail({ product }: { product?: QuoteProduct }) {
+  return (
+    <span className={styles.thumbnail} aria-hidden="true">
+      {product?.image || product?.fallbackImage ? (
+        <ProductImage
+          src={product.image}
+          fallbackSrc={product.fallbackImage}
+          alt=""
+          fill
+          sizes="36px"
+        />
+      ) : (
+        <ImageIcon size={18} />
+      )}
+    </span>
+  );
+}
 
 function SellerDetails() {
   return (
@@ -69,11 +87,9 @@ function Totals({ total }: { total: NonNullable<ReturnType<typeof quotationTotal
 export function QuotationFromSelection({
   products,
   presets,
-  priceNote,
 }: {
   products: QuoteProduct[];
   presets: QuotePreset[];
-  priceNote?: string;
 }) {
   const models = useSearchParams().getAll("model");
   const initial = selectedQuoteItems(models, presets);
@@ -82,72 +98,218 @@ export function QuotationFromSelection({
       key={JSON.stringify(initial)}
       products={products}
       initial={initial}
-      priceNote={priceNote}
+      presets={presets}
     />
   );
 }
 
 export function QuotationForm({
   products,
-  initial = { ids: [], pending: [] },
-  priceNote,
+  initial = { items: [], pending: [] },
+  presets = [],
 }: {
   products: QuoteProduct[];
   initial?: ReturnType<typeof selectedQuoteItems>;
-  priceNote?: string;
+  presets?: QuotePreset[];
 }) {
-  const [rows, setRows] = useState<Selection[]>(() =>
-    (initial.ids.length ? initial.ids : [""]).map((id, key) => ({ key, id, quantity: "1" })),
-  );
-  const [pending, setPending] = useState(initial.pending);
-  const nextKey = useRef(rows.length);
-  const [buyer, setBuyer] = useState<Buyer | null>(null);
   const byId = new Map(products.map((product) => [product.id, product]));
+  function modelKey(id: string) {
+    return (byId.get(id)?.name ?? id).trim().toLowerCase();
+  }
+  const [rows, setRows] = useState<Selection[]>(() => {
+    if (!initial.items.length) return [{ key: 0, id: "", quantity: "1" }];
+    const seen = new Set<string>();
+    const items = initial.items.filter((item) => {
+      const model = modelKey(item.id);
+      if (seen.has(model)) return false;
+      seen.add(model);
+      return true;
+    });
+    return items.map((item, key) => ({
+      key,
+      id: item.id,
+      quantity: "1",
+      bundle:
+        item.includedIn && item.model
+          ? {
+              kitKey: items.findIndex((kit) => !kit.includedIn && kit.id === item.includedIn),
+              model: item.model,
+            }
+          : undefined,
+    }));
+  });
+  const [pending, setPending] = useState(initial.pending);
+  const [pickerKey, setPickerKey] = useState<number | null>(null);
+  const [modelQuery, setModelQuery] = useState("");
+  const [category, setCategory] = useState(pickerCategories[0]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const firstResult = useRef<HTMLButtonElement>(null);
+  const modelSearch = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (pickerKey !== null) modelSearch.current?.focus();
+  }, [pickerKey]);
+  const picking = rows.find((row) => row.key === pickerKey);
+  const selectedModels = new Set(rows.filter((row) => row.id).map((row) => modelKey(row.id)));
+  const searchTerm = modelQuery.trim().toLowerCase();
+  const matches = picking
+    ? products.filter(
+        (product) =>
+          !selectedModels.has(modelKey(product.id)) &&
+          (category.id === "all" || product.categoryId === category.id) &&
+          (product.name.toLowerCase().includes(searchTerm) ||
+            product.id.toLowerCase().includes(searchTerm)),
+      )
+    : [];
+  function openPicker(key: number) {
+    setCategory(pickerCategories[0]);
+    setFiltersOpen(false);
+    setModelQuery("");
+    setPickerKey(key);
+  }
+  const nextKey = useRef(rows.length);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const pendingIssue = useRef<{ draft: string | File; key: string } | null>(null);
+  const working = useRef(false);
   const lines = rows.map((row) => {
-    const product = byId.get(row.id);
-    const qty = Number(row.quantity);
+    const catalogProduct = byId.get(row.id);
+    const product: QuoteProduct | undefined = row.bundle
+      ? { id: row.id, name: row.bundle.model, unit: catalogProduct?.unit ?? "", unitSatang: 0 }
+      : catalogProduct;
+    const kit = row.bundle && rows.find((other) => other.key === row.bundle?.kitKey);
+    const quantity = kit?.quantity ?? row.quantity;
+    const qty = Number(quantity);
+    const unit = product?.unit.trim();
     return {
       product,
+      quantity,
+      quantityLabel: unit ? `จำนวน (${unit})` : "จำนวน",
       qty,
       subtotal: product && Number.isSafeInteger(qty) && qty > 0 ? product.unitSatang * qty : 0,
     };
   });
   const total = quotationTotals(lines.reduce((sum, line) => sum + line.subtotal, 0));
-  function change(key: number, value: Partial<Pick<Selection, "id" | "quantity">>) {
-    setRows((current) => current.map((row) => (row.key === key ? { ...row, ...value } : row)));
+  function changeQuantity(key: number, quantity: string) {
+    setRows((current) => current.map((row) => (row.key === key ? { ...row, quantity } : row)));
   }
-  function print(event: FormEvent<HTMLFormElement>) {
+  function editProduct(edited: Selection, replacement?: string) {
+    if (replacement && selectedModels.has(modelKey(replacement))) return;
+    const nextKit = replacement && presets.find((preset) => preset.pricedId === replacement);
+    const includedCode =
+      replacement &&
+      presets.find(
+        (preset) => preset.pricedId && modelKey(preset.pricedId) === modelKey(replacement),
+      )?.code;
+    const includingKit =
+      includedCode &&
+      rows.find(
+        (row) =>
+          row.key !== edited.key &&
+          !row.bundle &&
+          presets.some(
+            (preset) => preset.pricedId === row.id && preset.includesCodes?.includes(includedCode),
+          ),
+      );
+    const previousKit = edited.bundle && rows.find((row) => row.key === edited.bundle?.kitKey);
+    const nextRows: Selection[] = [];
+    const unpriced: string[] = [];
+    for (const row of rows) {
+      if (row.key === edited.key) {
+        if (replacement !== undefined)
+          nextRows.push({
+            key: row.key,
+            id: replacement,
+            quantity: previousKit?.quantity ?? row.quantity,
+            bundle:
+              includingKit && includedCode
+                ? { kitKey: includingKit.key, model: includedCode }
+                : undefined,
+          });
+      } else if (
+        row.bundle?.kitKey === edited.key &&
+        !(nextKit && nextKit.includesCodes?.includes(row.bundle.model))
+      ) {
+        if (byId.has(row.id))
+          nextRows.push({ ...row, bundle: undefined, quantity: edited.quantity });
+        else unpriced.push(row.bundle.model);
+      } else nextRows.push(row);
+    }
+    if (unpriced.length) setPending((current) => [...new Set([...current, ...unpriced])]);
+    setRows(nextRows.length ? nextRows : [{ key: nextKey.current++, id: "", quantity: "1" }]);
+  }
+  async function allocate(draft: string | File): Promise<QuotationIssue> {
+    if (pendingIssue.current?.draft !== draft) {
+      const key = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+        b.toString(16).padStart(2, "0"),
+      ).join("");
+      pendingIssue.current = { draft, key };
+    }
+    const response = await fetch("/api/quotations/issue", {
+      method: "POST",
+      headers: { "Idempotency-Key": pendingIssue.current.key },
+    });
+    if (!response.ok) throw new Error("ออกเลขเอกสารไม่ได้ในขณะนี้ กรุณาลองอีกครั้ง");
+    return response.json();
+  }
+  async function print(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending.length || !products.length || !total?.net) return;
+    if (working.current || pending.length) return;
+    const missing = rows.find((row) => !row.id);
+    if (missing) {
+      openPicker(missing.key);
+      return;
+    }
+    if (!total?.net) return;
     const form = new FormData(event.currentTarget);
     const field = (name: string) => String(form.get(name) ?? "").trim();
-    flushSync(() =>
-      setBuyer({
-        name: field("name"),
-        address: field("address"),
-        tax: field("tax"),
-        branch: field("branch"),
-        contact: field("contact"),
-        phone: field("phone"),
-        email: field("email"),
-        date: new Intl.DateTimeFormat("th-TH-u-ca-gregory", {
-          dateStyle: "long",
-          timeZone: "Asia/Bangkok",
-        }).format(new Date()),
-      }),
-    );
-    window.print();
+    const buyer: PdfBuyer = {
+      name: field("name"),
+      address: field("address"),
+      tax: field("tax"),
+      branch: field("branch"),
+      contact: field("contact"),
+      phone: field("phone"),
+      email: field("email"),
+      website: "",
+      reference: "",
+    };
+    setError("");
+    working.current = true;
+    setBusy(true);
+    try {
+      const { createBuyerPdf, downloadPdf } = await import("../data/quotation-pdf");
+      const family = getComputedStyle(event.target as HTMLFormElement).fontFamily;
+      await Promise.all([
+        document.fonts.load("400 12px " + family, "สวัสดี"),
+        document.fonts.load("600 12px " + family, "สวัสดี"),
+      ]);
+      const items = lines.map(({ product, qty }, index) => ({
+        id: product!.id,
+        name: product!.documentName ?? product!.name,
+        quantity: qty,
+        unitSatang: product!.unitSatang,
+        details: rows[index].bundle ? "รวมในราคาชุด" : "",
+      }));
+      const pdf = await createBuyerPdf(buyer, items, family, () =>
+        allocate(JSON.stringify([buyer, items])),
+      );
+      downloadPdf(pdf.bytes);
+      pendingIssue.current = null;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "สร้าง PDF ไม่สำเร็จ กรุณาลองใหม่");
+    } finally {
+      working.current = false;
+      setBusy(false);
+    }
   }
   return (
     <main id="main-content" className={styles.page}>
       <div className={styles.editor}>
         <div className={styles.heading}>
           <h1>ใบเสนอราคา</h1>
-          {priceNote && <p role="status">{priceNote}</p>}
-          <p>กรอกข้อมูลผู้ซื้อและเลือกสินค้า เพื่อพิมพ์ใบเสนอราคาหรือบันทึกเป็น PDF</p>
         </div>
         <SellerDetails />
-        <form onSubmit={print} onChange={() => setBuyer(null)}>
+        <form onSubmit={print}>
           <fieldset>
             <legend>ข้อมูลลูกค้า</legend>
             <div className={styles.fields}>
@@ -216,7 +378,6 @@ export function QuotationForm({
                         type="button"
                         aria-label={`นำ ${label} ออก`}
                         onClick={() => {
-                          setBuyer(null);
                           setPending((current) => current.filter((item) => item !== label));
                         }}
                       >
@@ -237,34 +398,43 @@ export function QuotationForm({
                 <div key={row.key} className={styles.line}>
                   <label>
                     สินค้า
-                    <select
+                    <button
+                      type="button"
+                      className={styles.modelTrigger}
+                      aria-haspopup="dialog"
+                      aria-label={`เลือกรุ่นสินค้ารายการที่ ${index + 1}${row.id ? ` · ${byId.get(row.id)?.name ?? row.bundle?.model ?? row.id}` : ""}`}
                       value={row.id}
-                      required
-                      onChange={(e) => change(row.key, { id: e.target.value })}
+                      onClick={() => openPicker(row.key)}
                     >
-                      <option value="">เลือกรุ่นสินค้า</option>
-                      {products.map((product) => (
-                        <option key={product.id} value={product.id}>
-                          {product.id} · {product.name}
-                        </option>
-                      ))}
-                    </select>
+                      {row.id && <ModelThumbnail product={byId.get(row.id)} />}
+                      <span>
+                        {byId.get(row.id)?.name ?? row.bundle?.model ?? "เลือกรุ่นสินค้า"}
+                      </span>
+                      <ChevronDown size={16} aria-hidden="true" />
+                    </button>
                   </label>
-                  <label>
-                    จำนวน{lines[index].product && ` (${lines[index].product.unit})`}
+                  <label className={styles.quantityField}>
+                    <span className={styles.quantityLabel} title={lines[index].quantityLabel}>
+                      {lines[index].quantityLabel}
+                    </span>
                     <input
                       type="number"
                       min="1"
                       max="999999"
                       step="1"
                       required
-                      value={row.quantity}
-                      onChange={(e) => change(row.key, { quantity: e.target.value })}
+                      readOnly={Boolean(row.bundle)}
+                      value={lines[index].quantity}
+                      onChange={(e) => changeQuantity(row.key, e.target.value)}
                     />
                   </label>
                   <div>
                     <small>ราคา/หน่วย (ก่อน VAT)</small>
-                    {lines[index].product ? amount(lines[index].product.unitSatang) : "—"}
+                    {row.bundle
+                      ? "รวมในราคาชุด"
+                      : lines[index].product
+                        ? amount(lines[index].product.unitSatang)
+                        : "—"}
                   </div>
                   <div>
                     <small>รวมก่อน VAT (บาท)</small>
@@ -275,10 +445,7 @@ export function QuotationForm({
                     type="button"
                     aria-label={`ลบรายการที่ ${index + 1}`}
                     disabled={rows.length === 1}
-                    onClick={() => {
-                      setBuyer(null);
-                      setRows(rows.filter((item) => item.key !== row.key));
-                    }}
+                    onClick={() => editProduct(row)}
                   >
                     <X size={18} />
                   </button>
@@ -289,7 +456,6 @@ export function QuotationForm({
               className={styles.add}
               disabled={!products.length}
               onClick={() => {
-                setBuyer(null);
                 setRows([...rows, { key: nextKey.current++, id: "", quantity: "1" }]);
               }}
             >
@@ -304,76 +470,139 @@ export function QuotationForm({
           ) : (
             <p role="alert">ยอดรวมสูงเกินช่วงที่รองรับ กรุณาตรวจสอบจำนวนสินค้า</p>
           )}
+          {error && <p role="alert">{error}</p>}
           <div className={styles.actions}>
             <button
               className={styles.printButton}
-              disabled={pending.length > 0 || !products.length || !total}
+              disabled={busy || pending.length > 0 || !products.length || !total}
             >
               <Printer size={18} />
               พิมพ์ / บันทึก PDF
             </button>
           </div>
         </form>
+        <div className={styles.picker}>
+          <Modal open={Boolean(picking)} onClose={() => setPickerKey(null)} title="เลือกรุ่นสินค้า">
+            {picking && (
+              <>
+                <div className={styles.pickerTools}>
+                  <div className={styles.modelSearch}>
+                    <Search size={16} aria-hidden="true" />
+                    <input
+                      type="search"
+                      ref={modelSearch}
+                      aria-label="ค้นหาชื่อรุ่นหรือ SKU"
+                      placeholder="ค้นหาชื่อรุ่นหรือ SKU"
+                      value={modelQuery}
+                      onChange={(event) => setModelQuery(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "ArrowDown") {
+                          event.preventDefault();
+                          firstResult.current?.focus();
+                        } else if (
+                          event.key === "Enter" &&
+                          matches.length === 1 &&
+                          !event.nativeEvent.isComposing
+                        ) {
+                          event.preventDefault();
+                          firstResult.current?.click();
+                        }
+                      }}
+                    />
+                  </div>
+                  <button
+                    className={styles.filterButton}
+                    type="button"
+                    aria-expanded={filtersOpen}
+                    aria-controls="quotation-category-options"
+                    onClick={() => setFiltersOpen(!filtersOpen)}
+                  >
+                    <SlidersHorizontal size={16} aria-hidden="true" />
+                    ฟิลเตอร์
+                  </button>
+                </div>
+                <div
+                  id="quotation-category-options"
+                  role="group"
+                  aria-label="หมวดสินค้า"
+                  className={styles.categoryOptions}
+                  hidden={!filtersOpen}
+                >
+                  {pickerCategories.map((option) => (
+                    <button
+                      type="button"
+                      key={option.id}
+                      aria-pressed={option.id === category.id}
+                      onClick={() => setCategory(option)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                {!filtersOpen && category.id !== "all" && <small>{category.label}</small>}
+                <ul className={styles.modelList} aria-label="รุ่นสินค้า">
+                  {matches.map((product, index) => (
+                    <li key={product.id}>
+                      <button
+                        type="button"
+                        ref={index === 0 ? firstResult : undefined}
+                        value={product.id}
+                        title={product.id}
+                        aria-label={product.name}
+                        onClick={() => {
+                          editProduct(picking, product.id);
+                          setPickerKey(null);
+                        }}
+                      >
+                        <ModelThumbnail product={product} />
+                        <span>{product.name}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                {!matches.length && <p role="status">ไม่พบรุ่นสินค้า</p>}
+              </>
+            )}
+          </Modal>
+        </div>
+        <details>
+          <summary>ออกเลขให้ PDF รุ่นเดิมที่ยังไม่มีเลขเอกสาร</summary>
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              if (working.current) return;
+              const form = event.currentTarget;
+              const file = (form.elements.namedItem("legacy") as HTMLInputElement).files?.[0];
+              if (!file) return;
+              working.current = true;
+              setBusy(true);
+              setError("");
+              try {
+                const { numberLegacyPdf, downloadPdf } = await import("../data/quotation-pdf");
+                const family = getComputedStyle(form).fontFamily;
+                await document.fonts.load("400 12px " + family, "กำไลพลอย");
+                const pdf = await numberLegacyPdf(await file.arrayBuffer(), family, () =>
+                  allocate(file),
+                );
+                downloadPdf(pdf.bytes);
+                pendingIssue.current = null;
+                form.reset();
+              } catch (e) {
+                setError(e instanceof Error ? e.message : "ออกเลขเอกสารไม่สำเร็จ");
+              } finally {
+                working.current = false;
+                setBusy(false);
+              }
+            }}
+          >
+            <label>
+              ไฟล์ใบเสนอราคาเดิม
+              <input required type="file" name="legacy" accept="application/pdf" />
+            </label>
+            <button disabled={busy}>ออกเลขและดาวน์โหลด</button>
+          </form>
+        </details>
       </div>
-      <article className={styles.sheet} aria-label="ใบเสนอราคาสำหรับพิมพ์">
-        {buyer && total ? (
-          <>
-            <div className={styles.printTitle}>
-              <h1>ใบเสนอราคา</h1>
-              {priceNote && <p>{priceNote}</p>}
-              <p>วันที่ออก {buyer.date}</p>
-            </div>
-            <SellerDetails />
-            <div className={styles.customer}>
-              <h2>ลูกค้า</h2>
-              <strong>{buyer.name}</strong>
-              <p>{buyer.address}</p>
-              {(buyer.tax || buyer.branch) && (
-                <p>
-                  {buyer.tax && `เลขประจำตัวผู้เสียภาษี ${buyer.tax}`} {buyer.branch}
-                </p>
-              )}
-              {buyer.contact && <p>ผู้ติดต่อ {buyer.contact}</p>}
-              {(buyer.phone || buyer.email) && (
-                <p>{[buyer.phone, buyer.email].filter(Boolean).join(" · ")}</p>
-              )}
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>รายการสินค้า</th>
-                  <th>จำนวน</th>
-                  <th>ราคา/หน่วย¹</th>
-                  <th>รวม (บาท)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lines.map(({ product, qty, subtotal }, index) => (
-                  <tr key={rows[index].key}>
-                    <td>
-                      {product?.id} · {product?.name}
-                    </td>
-                    <td>
-                      {qty} {product?.unit}
-                    </td>
-                    <td>{product && amount(product.unitSatang)}</td>
-                    <td>{amount(subtotal)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p>¹ ราคาต่อหน่วยและยอดรายการเป็นราคาก่อน VAT 7%</p>
-            <Totals total={total} />
-            <div className={styles.payment}>
-              <h2>ข้อมูลการชำระเงิน</h2>
-              <p>{seller.bank}</p>
-              <p>ชื่อบัญชี {seller.name}</p>
-            </div>
-          </>
-        ) : (
-          <p>กรอกข้อมูลและกด “พิมพ์ / บันทึก PDF” บนหน้าใบเสนอราคา</p>
-        )}
-      </article>
     </main>
   );
 }

@@ -12,8 +12,8 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, GitCompareArrows, Search, Menu, X } from "lucide-react";
-import { getPrimaryNavigationItems } from "@/features/cms/data/primary-navigation";
-import type { NavigationItem, SiteSettings } from "@/features/cms/types";
+import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
+import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import styles from "@/features/catalog/components/products-overview.module.css";
 const subscribe = () => () => {};

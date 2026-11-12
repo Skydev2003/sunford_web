@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock3, Mail, Phone, Printer } from "lucide-react";
-import { defaultSite } from "@/features/cms/data/settings";
-import { getSettings } from "@/features/cms/server/documents";
+import { defaultSite } from "@/features/site/data/settings";
+import { getSettings } from "@/features/site/server/documents";
 import { sunford } from "@/features/home/data/brand";
 import { defaultContactLocationImages } from "../data/contact-locations";
 import { ContactLocations } from "./contact-locations";

@@ -18,11 +18,11 @@ test("handoff fills confirmed product IDs and retains pending models exactly onc
       presets,
     ),
     {
-      ids: ["head-id"],
+      items: [{ id: "head-id" }],
       pending: ["แท่นชั่ง (รหัสชุด TMS-60-AW31)", "LoadcellCable", "invalid"],
     },
   );
-  assert.deepEqual(selectedQuoteItems([], presets), { ids: [], pending: [] });
+  assert.deepEqual(selectedQuoteItems([], presets), { items: [], pending: [] });
 });
 
 test("a verified complete kit includes its head exactly once in either selection order", () => {
@@ -41,24 +41,36 @@ test("a verified complete kit includes its head exactly once in either selection
     ["TMS-60-AW31", "Indicator-AW31"],
   ]) {
     assert.deepEqual(selectedQuoteItems([...selection, "LoadcellCable"], presets), {
-      ids: ["G106308", "G107060"],
+      items: [
+        ...selection.map((model) =>
+          model === "Indicator-AW31"
+            ? { id: "G107770", includedIn: "G106308", model }
+            : { id: "G106308" },
+        ),
+        { id: "G107060" },
+      ],
       pending: [],
     });
   }
   assert.deepEqual(selectedQuoteItems(["Indicator-AW31"], presets), {
-    ids: ["G107770"],
+    items: [{ id: "G107770" }],
     pending: [],
   });
   assert.deepEqual(quotationTotals(10000 * 2), { net: 20000, vat: 1400, gross: 21400 });
 });
 
 test("Warehouse SKU, unit and net price are preserved to the satang", () => {
-  const item = { sku: "001", product_name: "สินค้า", unit: "ชุด", sale_price: 1.07 };
+  const item = {
+    warehouseSku: "001",
+    name: "สินค้า",
+    warehouseUnit: "ชุด",
+    warehouseNetUnitSatang: 107,
+  };
   assert.deepEqual(pricedProducts([item]), [
     { id: "001", name: "สินค้า", unit: "ชุด", unitSatang: 107 },
   ]);
-  for (const sale_price of [NaN, Infinity, -1, 0, 0.001])
-    assert.throws(() => pricedProducts([{ ...item, sale_price }]));
+  for (const warehouseNetUnitSatang of [NaN, Infinity, -1, 0, 0.001, null, undefined])
+    assert.deepEqual(pricedProducts([{ ...item, warehouseNetUnitSatang }]), []);
 });
 test("VAT is added once to the document net, rounded to the nearest satang", () => {
   assert.deepEqual(quotationTotals(100000), { net: 100000, vat: 7000, gross: 107000 });

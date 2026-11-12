@@ -7,6 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
+model QuotationIssue {
+  number     Int      @id
+  requestKey String   @unique @map("request_key") @db.Uuid
+  createdAt  DateTime @default(dbgenerated("clock_timestamp()")) @map("created_at") @db.Timestamptz(3)
+
+  @@map("quotation_issues")
+}
+
 enum ProductCategory {
   commercial
   industrial

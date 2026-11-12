@@ -9,7 +9,7 @@
   padding-top: var(--site-header-height);
 }
 
-.surface:has([data-page-surface="paper"]) {
+.surface[data-page-surface="paper"] {
   background: #f6f8fb;
 }
 

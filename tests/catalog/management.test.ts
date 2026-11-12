@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { getSnapshotProducts } from "../../src/features/content/data/catalog-snapshot";
-import { resolveManagedProduct } from "../../src/features/catalog/data/managed-products";
 import {
   productOverview,
   productPresentation,
@@ -16,7 +15,12 @@ import {
   productContentRows,
 } from "../../src/features/catalog/data/product-content";
 import { load } from "cheerio";
-import { defaultHomeImages, homeImageSlots } from "../../src/features/home/data/image-slots";
+import {
+  defaultHomeImages,
+  defaultSpotlightProductId,
+  defaultSpotlightWarehouseSku,
+  homeImageSlots,
+} from "../../src/features/home/data/image-slots";
 import { resolveHomeLink } from "../../src/features/home/data/link-targets";
 import {
   contentRoutePath,
@@ -263,6 +267,19 @@ test("product content separates line breaks, headings and lists while retaining 
 test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {
   const products = getSnapshotProducts();
   assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/acs30-jc21");
+  const legacySpotlight = products.find((product) => product.id === defaultSpotlightProductId)!;
+  const warehouseProducts = products
+    .filter((product) => product.id !== defaultSpotlightProductId)
+    .concat({
+      ...legacySpotlight,
+      id: "warehouse-G106094",
+      slug: "warehouse-G106094",
+      warehouseSku: defaultSpotlightWarehouseSku,
+    });
+  assert.equal(
+    resolveHomeLink("spotlight", undefined, warehouseProducts),
+    "/products/warehouse-G106094",
+  );
   assert.equal(resolveHomeLink("digital", undefined, products), "/products/category/scales");
   const target = { productId: "wps10ks" };
   assert.equal(resolveHomeLink("digital", target, products), "/products/wps10ks");
@@ -305,43 +322,15 @@ test("homepage image defaults preserve the current artwork in five independent p
   assert.equal(defaults.software, "/images/pd/app.png");
 });
 
-test("all 159 imported products retain unique slugs and supported categories", () => {
+test("all imported products retain unique slugs and supported categories", () => {
   const snapshot = getSnapshotProducts();
-  assert.equal(snapshot.length, 159);
+  assert.equal(snapshot.length, 166);
   assert.equal(new Set(snapshot.map((product) => product.slug)).size, snapshot.length);
   for (const product of snapshot)
     assert.ok(
       categories.some((category) => category.id === product.category),
       product.id,
     );
-});
-
-test("legacy display is preserved until saved; explicit edits win while original metadata survives", () => {
-  const snapshot = getSnapshotProducts()[0];
-  const legacy = {
-    ...snapshot,
-    name: "Old database seed",
-    image: "/images/products/old.png",
-    catalogManaged: false,
-    published: false,
-  };
-  const original = structuredClone(legacy);
-  const before = resolveManagedProduct(legacy);
-  assert.equal(before.name, snapshot.name);
-  assert.equal(before.image, snapshot.image);
-  assert.equal(before.published, false);
-  const edited = resolveManagedProduct({
-    ...legacy,
-    name: "Admin edit",
-    image: "/images/products/new.png",
-    catalogManaged: true,
-  });
-  assert.equal(edited.name, "Admin edit");
-  assert.equal(edited.imageOverridden, true);
-  assert.equal(edited.sourceId, snapshot.sourceId);
-  assert.equal(edited.sourceUrl, snapshot.sourceUrl);
-  assert.equal(edited.price, snapshot.price);
-  assert.deepEqual(legacy, original);
 });
 
 test("source collections classify POS terminals and accessories before description keywords", () => {
@@ -355,26 +344,6 @@ test("source collections classify POS terminals and accessories before descripti
       "accessories",
       sourceId,
     );
-});
-
-test("category corrections apply only to untouched imports and preserve administrator overrides", () => {
-  const snapshot = getSnapshotProducts().find((product) => product.sourceId === "10801")!;
-  const seeded = {
-    ...snapshot,
-    category: "industrial",
-    catalogManaged: true,
-    createdAt: new Date("2026-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-01-01T00:00:00Z"),
-  };
-  assert.equal(resolveManagedProduct(seeded).category, "pos");
-  assert.equal(
-    resolveManagedProduct({ ...seeded, updatedAt: new Date("2026-01-02T00:00:00Z") }).category,
-    "industrial",
-  );
-  assert.equal(
-    resolveManagedProduct({ ...seeded, categoryId: "custom-category" }).category,
-    "custom-category",
-  );
 });
 
 test("case-distinct original URLs stay separate and hidden records never fall back to a different product", () => {

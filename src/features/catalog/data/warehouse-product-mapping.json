@@ -281,15 +281,17 @@
       "skuPreference": "review_alternative",
       "name": "BSS150150",
       "warehouseGroup": "OTHER",
-      "categoryId": null,
+      "categoryId": "platforms",
       "subcategoryIds": [],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "needs_review",
+      "status": "category_only",
       "evidence": [
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบาย Warehouse ระบุแท่นพร้อมโหลดเซลล์และวัสดุพื้นฐาน ไม่มีหลักฐานยืนยันเกรดโครงสำหรับหมวดย่อย"
       ],
-      "notes": ["Primary website category is not established"],
+      "notes": [
+        "ขอวัสดุของโครงแท่นรุ่นนี้ (เกรด SUS304/SUS201 เหล็กคาร์บอนเคลือบ หรือ ABS) แยกจากวัสดุจาน/เสา"
+      ],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -359,16 +361,17 @@
       "skuPreference": "review_alternative",
       "name": "CSS-150",
       "warehouseGroup": "SCALE",
-      "categoryId": "scales",
+      "categoryId": "platforms",
       "subcategoryIds": [],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
       "status": "category_only",
       "evidence": [
-        "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบาย Warehouse ระบุแท่นพร้อมโหลดเซลล์และวัสดุพื้นฐาน ไม่มีหลักฐานยืนยันเกรดโครงสำหรับหมวดย่อย"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [
+        "ขอวัสดุของโครงแท่นรุ่นนี้ (เกรด SUS304/SUS201 เหล็กคาร์บอนเคลือบ หรือ ABS) แยกจากวัสดุจาน/เสา"
+      ],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -433,15 +436,15 @@
       "name": "FCS60AW31PL",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก FCS-60-AW31 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -452,15 +455,15 @@
       "name": "FEH5KSLP51",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-benchtop"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก FEH5KS ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -655,13 +658,14 @@
       "name": "8858847106162 SUNFORD เครื่องชั่ง TCS-150-JC62Z",
       "warehouseGroup": null,
       "categoryId": "scales",
-      "subcategoryIds": ["scale-pole"],
+      "subcategoryIds": ["scale-price", "scale-pole"],
       "modelCodes": ["TCS-150-JC62Z"],
       "legacyProductCandidateIds": ["sunford-10616"],
       "status": "mapped",
       "evidence": [
         "API name explicitly identifies a scale/checkweigher",
-        "Exact standalone model code in API name and existing website taxonomy"
+        "Exact standalone model code in API name and existing website taxonomy",
+        "รุ่น TCS-150-JC62Z ตรง /products/10616 และ verified fact คำนวณราคาสินค้า ของ G106162; อยู่ในทะเบียนรุ่นมีเสา"
       ],
       "notes": [
         "Model occurs under multiple Warehouse SKUs; canonical website item/variant is unresolved"
@@ -1072,13 +1076,14 @@
       "name": "8858847106407 SUNFORD เครื่องชั่ง TCS-150-JE62ZR",
       "warehouseGroup": null,
       "categoryId": "scales",
-      "subcategoryIds": ["scale-floor", "scale-pole"],
+      "subcategoryIds": ["scale-price", "scale-floor", "scale-pole"],
       "modelCodes": ["TCS-150-JE62ZR"],
       "legacyProductCandidateIds": ["sunford-10640"],
       "status": "mapped",
       "evidence": [
         "API name explicitly identifies a scale/checkweigher",
-        "Exact standalone model code in API name and existing website taxonomy"
+        "Exact standalone model code in API name and existing website taxonomy",
+        "Warehouse verified fact คำนวณราคาสินค้า และหน้ารุ่น TCS-150-JE62ZR /products/10640; ตารางรุ่นตั้งพื้นและมีเสา"
       ],
       "notes": [],
       "unit": "เครื่อง"
@@ -1677,13 +1682,17 @@
       "name": "8858847106391 SUNFORD เครื่องชั่ง RLS1800",
       "warehouseGroup": null,
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
-      "evidence": ["API name explicitly identifies a scale/checkweigher"],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "status": "mapped",
+      "evidence": [
+        "API name explicitly identifies a scale/checkweigher",
+        "คู่มือ /support/Technical-assistance/commercial ระบุชื่อ RLS1800 สำหรับพิมพ์ฉลากพร้อมราคาสินค้า"
+      ],
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -1846,16 +1855,16 @@
       "name": "8858847107039 SUNFORD ชิ้นส่วน - Cable connector (1 คู่)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-cables"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Warehouse ระบุ Cable connector (1 คู่); เอกสารหมวดสายสัญญาณระบุ CableConnector"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "เส้น"
+      "notes": [],
+      "unit": "เส้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -1865,16 +1874,16 @@
       "name": "8858847107046 SUNFORD ชิ้นส่วน - Floor pole",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/คำอธิบาย SKU ระบุชิ้นส่วนกลของแท่นชั่งโดยตรง (เสาตั้งพื้น จานชั่ง ทางลาด หรือล้อโต๊ะชั่ง)"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -1923,16 +1932,18 @@
       "name": "8858847107121 SUNFORD ชิ้นส่วน - Data cable RS232-USB SERIAL",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
-      "modelCodes": [],
-      "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "subcategoryIds": ["accessory-cables"],
+      "modelCodes": ["RS232-USB"],
+      "legacyProductCandidateIds": ["sunford-10712"],
+      "status": "mapped",
       "evidence": [
         "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence",
+        "Reviewed official product https://www.sunford.co/products/10712 against Warehouse item name and cable type"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "preserveWarehouseIdentity": true
     },
     {
       "companyId": null,
@@ -1944,15 +1955,17 @@
       "categoryId": "accessories",
       "subcategoryIds": ["accessory-cables"],
       "modelCodes": ["RS2321M2F"],
-      "legacyProductCandidateIds": [],
+      "legacyProductCandidateIds": ["sunford-10714"],
       "status": "mapped",
       "evidence": [
         "Warehouse group: COMPONENT (subgroup requires model evidence)",
         "Exact model association in existing website subcategory definitions",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence",
+        "Reviewed official product https://www.sunford.co/products/10714 against Warehouse item name and cable type"
       ],
       "notes": [],
-      "unit": "ชิ้น"
+      "unit": "ชิ้น",
+      "preserveWarehouseIdentity": true
     },
     {
       "companyId": null,
@@ -1962,13 +1975,17 @@
       "name": "8858847107152 SUNFORD ไฟเตือน RYG-POLE ไม่มีเสียง 5V",
       "warehouseGroup": null,
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-displays"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
-      "evidence": ["API name explicitly identifies an accessory"],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "status": "mapped",
+      "evidence": [
+        "API name explicitly identifies an accessory",
+        "ชื่อหรือคำอธิบาย Warehouse ระบุเสาไฟแสดงสัญญาณ; เว็บทางการจัดไฟสัญญาณเตือนในอุปกรณ์ต่อพ่วง (/products/10715 และ /products/10716)"
+      ],
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -1978,13 +1995,19 @@
       "name": "8858847107169 SUNFORD ไฟเตือน RYG-POLE มีเสียง 12V",
       "warehouseGroup": null,
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-displays"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
-      "evidence": ["API name explicitly identifies an accessory"],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "status": "mapped",
+      "evidence": [
+        "API name explicitly identifies an accessory",
+        "ชื่อหรือคำอธิบาย Warehouse ระบุเสาไฟแสดงสัญญาณ; เว็บทางการจัดไฟสัญญาณเตือนในอุปกรณ์ต่อพ่วง (/products/10715 และ /products/10716)"
+      ],
+      "notes": [
+        "ยืนยันหมวดไฟต่อพ่วงแล้ว แต่มีทั้ง R-POLE และ RYG-POLE ในข้อมูล SKU กรุณายืนยันรุ่นที่ส่งมอบ"
+      ],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -1994,16 +2017,16 @@
       "name": "8858847107183 SUNFORD ชิ้นส่วน - จานชั่ง",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/คำอธิบาย SKU ระบุชิ้นส่วนกลของแท่นชั่งโดยตรง (เสาตั้งพื้น จานชั่ง ทางลาด หรือล้อโต๊ะชั่ง)"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2013,13 +2036,17 @@
       "name": "8858847107213 SUNFORD จอแสดงผล C1/C5",
       "warehouseGroup": null,
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-displays"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
-      "evidence": ["API name explicitly identifies an accessory"],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "status": "mapped",
+      "evidence": [
+        "API name explicitly identifies an accessory",
+        "ชื่อ Warehouse ระบุจอแสดงผล C1/C5 ตรงรุ่น LCDC1C5 ในทะเบียนจอเสริม"
+      ],
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2067,16 +2094,17 @@
       "name": "8858847107275 SUNFORD เครื่องพิมพ์ TRP-233B",
       "warehouseGroup": "PRINTER",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-pos"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse product name identifies an accessory",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/กลุ่ม PRINTER ระบุเครื่องพิมพ์สลิปหรือฉลาก; นิยามอุปกรณ์ระบบหน้าร้านรวม printer ตระกูล LP และ TRP"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "notes": [],
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2086,13 +2114,17 @@
       "name": "8858847107282 SUNFORD เครื่องพิมพ์ LP50",
       "warehouseGroup": null,
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-pos"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
-      "evidence": ["API name explicitly identifies an accessory"],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "เครื่อง"
+      "status": "mapped",
+      "evidence": [
+        "API name explicitly identifies an accessory",
+        "ชื่อ/กลุ่ม PRINTER ระบุเครื่องพิมพ์สลิปหรือฉลาก; นิยามอุปกรณ์ระบบหน้าร้านรวม printer ตระกูล LP และ TRP"
+      ],
+      "notes": [],
+      "unit": "เครื่อง",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2102,16 +2134,17 @@
       "name": "8858847107299 SUNFORD เครื่องพิมพ์ 58IIN",
       "warehouseGroup": "PRINTER",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-pos"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse product name identifies an accessory",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/กลุ่ม PRINTER ระบุเครื่องพิมพ์สลิปหรือฉลาก; นิยามอุปกรณ์ระบบหน้าร้านรวม printer ตระกูล LP และ TRP"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "notes": [],
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2121,13 +2154,17 @@
       "name": "8858847107305 SUNFORD เครื่องพิมพ์ LP51",
       "warehouseGroup": null,
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-pos"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
-      "evidence": ["API name explicitly identifies an accessory"],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "เครื่อง"
+      "status": "mapped",
+      "evidence": [
+        "API name explicitly identifies an accessory",
+        "ชื่อ/กลุ่ม PRINTER ระบุเครื่องพิมพ์สลิปหรือฉลาก; นิยามอุปกรณ์ระบบหน้าร้านรวม printer ตระกูล LP และ TRP"
+      ],
+      "notes": [],
+      "unit": "เครื่อง",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2175,16 +2212,17 @@
       "name": "8858847107374 SUNFORD สแกนเนอร์ ยิงบาร์โค้ด 1D ไร้สาย",
       "warehouseGroup": "PERIPHERAL",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-pos"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse product name identifies an accessory",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Warehouse ระบุสแกนเนอร์บาร์โค้ดในกลุ่มอุปกรณ์ต่อพ่วง หรือระบุ Accessory for POS โดยตรง"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "เครื่อง"
+      "notes": [],
+      "unit": "เครื่อง",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2194,16 +2232,17 @@
       "name": "8858847107381 SUNFORD สแกนเนอร์ ยิงบาร์โค้ด 1D มีสาย",
       "warehouseGroup": "PERIPHERAL",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-pos"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse product name identifies an accessory",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Warehouse ระบุสแกนเนอร์บาร์โค้ดในกลุ่มอุปกรณ์ต่อพ่วง หรือระบุ Accessory for POS โดยตรง"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "เครื่อง"
+      "notes": [],
+      "unit": "เครื่อง",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2733,16 +2772,16 @@
       "name": "8858847107688 SUNFORD ชิ้นส่วน - RAMP FCR100100",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/คำอธิบาย SKU ระบุชิ้นส่วนกลของแท่นชั่งโดยตรง (เสาตั้งพื้น จานชั่ง ทางลาด หรือล้อโต๊ะชั่ง)"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2752,16 +2791,16 @@
       "name": "8858847107695 SUNFORD ชิ้นส่วน - RAMP FCR120120",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/คำอธิบาย SKU ระบุชิ้นส่วนกลของแท่นชั่งโดยตรง (เสาตั้งพื้น จานชั่ง ทางลาด หรือล้อโต๊ะชั่ง)"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -2891,16 +2930,17 @@
       "name": "8858847107763 SUNFORD ชิ้นส่วน - Indicator AC31S",
       "warehouseGroup": "COMPONENT",
       "categoryId": "indicators",
-      "subcategoryIds": [],
+      "subcategoryIds": ["indicator-lcd"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse name explicitly identifies Indicator",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "หน้าสินค้า Indicator AC31S /products/10776 ระบุจอแสดงผล LCD ตรงรุ่น"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -3276,16 +3316,16 @@
       "name": "8858847108388 SUNFORD ชิ้นส่วน - ล้อ PU30M16 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/คำอธิบาย SKU ระบุชิ้นส่วนกลของแท่นชั่งโดยตรง (เสาตั้งพื้น จานชั่ง ทางลาด หรือล้อโต๊ะชั่ง)"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "notes": [],
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -3295,16 +3335,16 @@
       "name": "8858847108395 SUNFORD ชิ้นส่วน - ล้อ PU30M16 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อ/คำอธิบาย SKU ระบุชิ้นส่วนกลของแท่นชั่งโดยตรง (เสาตั้งพื้น จานชั่ง ทางลาด หรือล้อโต๊ะชั่ง)"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "notes": ["ยืนยันหมวดล้อแล้ว แต่ชื่อระบุ PU30M16 และคำอธิบายระบุ M10 กรุณายืนยันรุ่นล้อ"],
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -3314,16 +3354,18 @@
       "name": "8858847108456 SUNFORD ชิ้นส่วน - จานชั่งลูกกลิ้งลำเลียง 40x50 (เข้าด้าน50)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
-      "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "legacyProductCandidateIds": ["sunford-10845"],
+      "status": "mapped",
       "evidence": [
         "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence",
+        "Reviewed official product https://www.sunford.co/products/10845 against Warehouse item name and tray size and feed side"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "preserveWarehouseIdentity": true
     },
     {
       "companyId": null,
@@ -3333,16 +3375,18 @@
       "name": "8858847108463 SUNFORD ชิ้นส่วน - จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 60)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
-      "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "legacyProductCandidateIds": ["sunford-10846"],
+      "status": "mapped",
       "evidence": [
         "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence",
+        "Reviewed official product https://www.sunford.co/products/10846 against Warehouse item name and tray size and feed side"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "preserveWarehouseIdentity": true
     },
     {
       "companyId": null,
@@ -3352,16 +3396,18 @@
       "name": "8858847108470 SUNFORD ชิ้นส่วน - จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 80)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
-      "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "legacyProductCandidateIds": ["sunford-10847"],
+      "status": "mapped",
       "evidence": [
         "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence",
+        "Reviewed official product https://www.sunford.co/products/10847 against Warehouse item name and tray size and feed side"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "preserveWarehouseIdentity": true
     },
     {
       "companyId": null,
@@ -3371,16 +3417,18 @@
       "name": "8858847108494 SUNFORD ชิ้นส่วน - จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 45)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
-      "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "legacyProductCandidateIds": ["sunford-10849"],
+      "status": "mapped",
       "evidence": [
         "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence",
+        "Reviewed official product https://www.sunford.co/products/10849 against Warehouse item name and tray size and feed side"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "preserveWarehouseIdentity": true
     },
     {
       "companyId": null,
@@ -3390,16 +3438,18 @@
       "name": "8858847108500 SUNFORD ชิ้นส่วน - จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 60)",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-mechanical"],
       "modelCodes": [],
-      "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "legacyProductCandidateIds": ["sunford-10850"],
+      "status": "mapped",
       "evidence": [
         "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence",
+        "Reviewed official product https://www.sunford.co/products/10850 against Warehouse item name and tray size and feed side"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "ชิ้น"
+      "notes": [],
+      "unit": "ชิ้น",
+      "preserveWarehouseIdentity": true
     },
     {
       "companyId": null,
@@ -4206,16 +4256,17 @@
       "name": "MK215825 SUNFORD เครื่องชั่งคำนวณราคา ACS-JC21 30กก./10ก.",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse name explicitly identifies a scale/checkweigher",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อการขาย Warehouse ระบุเครื่องชั่งคำนวณราคาโดยตรง"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "เครื่อง"
+      "notes": [],
+      "unit": "เครื่อง",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4225,16 +4276,17 @@
       "name": "MK853896 SUNFORD เครื่องชั่งคำนวณราคา ACS-JC81 30กก./10ก.",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse name explicitly identifies a scale/checkweigher",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อการขาย Warehouse ระบุเครื่องชั่งคำนวณราคาโดยตรง"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
-      "unit": "เครื่อง"
+      "notes": [],
+      "unit": "เครื่อง",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4266,16 +4318,17 @@
       "name": "จัดชุด - SUNFORD ACS-30-JC91",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price", "scale-benchtop"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก ACS-30-JC91 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4285,16 +4338,17 @@
       "name": "จัดชุด - SUNFORD ACS-30-JC91 พร้อมเครื่องพิมพ์ TRP58B",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price", "scale-benchtop"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก ACS-30-JC91 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4304,16 +4358,17 @@
       "name": "จัดชุด - SUNFORD TCS-150-AW31 พร้อมเครื่องพิมพ์ LP50",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-150-AW31 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4323,16 +4378,17 @@
       "name": "จัดชุด - SUNFORD TCS-150-AW31 พร้อมจอเสริม LED-R5",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-150-AW31 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4342,16 +4398,17 @@
       "name": "จัดชุด - SUNFORD TCS-150-JE62ZR พร้อมเครื่องพิมพ์ 233B",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-floor", "scale-pole", "scale-price"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-150-JE62ZR ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้ และฟังก์ชันคำนวณราคาในสเปกทางการของเครื่องหลัก"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4437,16 +4494,17 @@
       "name": "จัดชุด - SUNFORD TCS-300-AW31 พร้อมเครื่องพิมพ์ LP50",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-300-AW31 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4456,16 +4514,17 @@
       "name": "จัดชุด - SUNFORD TCS-300-AW31 พร้อมจอเสริม LED-R5",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-300-AW31 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4513,16 +4572,17 @@
       "name": "จัดชุด - SUNFORD TCS-500-AW31 พร้อมเครื่องพิมพ์ LP50",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-500-AW31 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4532,16 +4592,17 @@
       "name": "จัดชุด - SUNFORD TCS-500-AW31 พร้อมจอเสริม LED-R5",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-500-AW31 ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4551,16 +4612,17 @@
       "name": "จัดชุด - SUNFORD เครื่องชั่ง FCS-300-SW31 พร้อม Floor pole",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อระบุเครื่องหลัก FCS ตามทะเบียนเครื่องอุตสาหกรรม/ตั้งพื้น และระบุ Floor pole ที่รวมในชุด"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4608,16 +4670,17 @@
       "name": "จัดชุด - SUNFORD TCS-60-JE62ZR พร้อมเครื่องพิมพ์ 233B",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price", "scale-benchtop"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-60-JE62ZR ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4665,16 +4728,17 @@
       "name": "จัดชุด - SUNFORD เครื่องชั่ง FCS-150-SW31 พร้อม Floor pole",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-industrial", "scale-floor", "scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อระบุเครื่องหลัก FCS ตามทะเบียนเครื่องอุตสาหกรรม/ตั้งพื้น และระบุ Floor pole ที่รวมในชุด"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -4838,14 +4902,14 @@
       "name": "TF335438 SUNFORD เครื่องชั่งดิจิตอล TCS-150-JC62Z 150กก./50ก.",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": ["scale-pole"],
+      "subcategoryIds": ["scale-price", "scale-pole"],
       "modelCodes": ["TCS-150-JC62Z"],
       "legacyProductCandidateIds": ["sunford-10616"],
       "status": "mapped",
       "evidence": [
         "Warehouse name explicitly identifies a scale/checkweigher",
         "Exact model association in existing website subcategory definitions",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "รุ่น TCS-150-JC62Z ตรง /products/10616 และ verified fact คำนวณราคาสินค้า ของ G106162; อยู่ในทะเบียนรุ่นมีเสา"
       ],
       "notes": [
         "Model occurs under multiple Warehouse SKUs; canonical website item/variant is unresolved"
@@ -5023,19 +5087,19 @@
       "skuPreference": "primary_group",
       "name": "GWT5YW58K9",
       "warehouseGroup": "PACKAGED_PRODUCT",
-      "categoryId": null,
-      "subcategoryIds": [],
+      "categoryId": "scales",
+      "subcategoryIds": ["scale-industrial", "scale-benchtop"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "needs_review",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก FEH5KS ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
       "notes": [
         "Complete package/bundle: primary product and variant require explicit review; do not bind the price to a bare component"
       ],
-      "unit": "ไม่ระบุหน่วย (PEAK)"
+      "unit": "ไม่ระบุหน่วย (PEAK)",
+      "useForIdentity": false
     },
     {
       "companyId": null,
@@ -5820,15 +5884,15 @@
       "name": "Accessory for POS - Basic",
       "warehouseGroup": "PERIPHERAL",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-pos"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PERIPHERAL",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Warehouse ระบุสแกนเนอร์บาร์โค้ดในกลุ่มอุปกรณ์ต่อพ่วง หรือระบุ Accessory for POS โดยตรง"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -5839,13 +5903,13 @@
       "name": "POSP1SETPCS60FC11Drawer",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5858,13 +5922,13 @@
       "name": "POSP1SETPOS1100ADrawer",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5877,13 +5941,13 @@
       "name": "POSP1SETPOS1100BDrawer",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5896,13 +5960,13 @@
       "name": "POSP1SETPOS1100Drawer",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5915,13 +5979,13 @@
       "name": "POSP1SETRLS1100",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5934,13 +5998,13 @@
       "name": "POSP1SETRLS1100Drawer",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5953,13 +6017,13 @@
       "name": "POSP1SET-WPS10KS_BT",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5972,13 +6036,13 @@
       "name": "POSP1SETWPS10KS_BTDrawer",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -5991,13 +6055,13 @@
       "name": "POSP1WSET",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-windows"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบาย Warehouse ระบุ Set SUNFORD POS P1W (Windows) และ /products/10801 ตรงรุ่น"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -6026,15 +6090,14 @@
       "name": "RPole_Buzzer",
       "warehouseGroup": "COMPONENT",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-displays"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อหรือคำอธิบาย Warehouse ระบุเสาไฟแสดงสัญญาณ; เว็บทางการจัดไฟสัญญาณเตือนในอุปกรณ์ต่อพ่วง (/products/10715 และ /products/10716)"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6045,14 +6108,17 @@
       "name": "RYGPole_Buzzer",
       "warehouseGroup": "OTHER",
       "categoryId": "accessories",
-      "subcategoryIds": [],
+      "subcategoryIds": ["accessory-displays"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "ชื่อหรือคำอธิบาย Warehouse ระบุเสาไฟแสดงสัญญาณ; เว็บทางการจัดไฟสัญญาณเตือนในอุปกรณ์ต่อพ่วง (/products/10715 และ /products/10716)"
       ],
-      "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
+      "notes": [
+        "Reviewed primary category; see docs/warehouse/category-review-101.md",
+        "ยืนยันหมวดไฟต่อพ่วงแล้ว แต่มีทั้ง R-POLE และ RYG-POLE ในข้อมูล SKU กรุณายืนยันรุ่นที่ส่งมอบ"
+      ],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6203,13 +6269,13 @@
       "name": "SETPOS1100AP1",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -6222,13 +6288,13 @@
       "name": "SETPOS1100BP1",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -6241,13 +6307,13 @@
       "name": "SETPOSP1",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายชุดระบุเครื่อง POS P1; สเปก P1 /products/10802 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -6279,13 +6345,13 @@
       "name": "SETPOSP4",
       "warehouseGroup": "PACKAGED_PRODUCT",
       "categoryId": "pos",
-      "subcategoryIds": [],
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: PACKAGED_PRODUCT",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "Warehouse ระบุ Set SUNFORD POS P4; สเปก P4 /products/10805 ระบุ Android"
       ],
       "notes": ["Reviewed primary category; see docs/warehouse/category-review-101.md"],
       "unit": "ไม่ระบุหน่วย (PEAK)"
@@ -6297,13 +6363,13 @@
       "skuPreference": "review_alternative",
       "name": "SFCLPOS4m",
       "warehouseGroup": null,
-      "categoryId": null,
-      "subcategoryIds": [],
+      "categoryId": "pos",
+      "subcategoryIds": ["pos-android"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "needs_review",
-      "evidence": [],
-      "notes": ["Primary website category is not established"],
+      "status": "mapped",
+      "evidence": ["คำอธิบาย Warehouse ระบุ SUNFORD Cloud POS - Android version"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6495,15 +6561,15 @@
       "name": "TCS150JE62ZRLP51",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-floor", "scale-pole", "scale-price"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-150-JE62ZR ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้ และฟังก์ชันคำนวณราคาในสเปกทางการของเครื่องหลัก"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6514,15 +6580,15 @@
       "name": "TCS1KAW31",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-pole"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบาย SKU ใน Warehouse ระบุ มีเสา | SUNFORD TCS-1K-AW31"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6551,16 +6617,15 @@
       "skuPreference": "review_alternative",
       "name": "TCS600",
       "warehouseGroup": "SCALE",
-      "categoryId": "scales",
-      "subcategoryIds": [],
+      "categoryId": "platforms",
+      "subcategoryIds": ["platform-carbon-steel"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
-        "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบายระบุแท่นเหล็ก เสาเหล็ก 6080 พร้อมโหลดเซลล์; รุ่นโครง TCS 6080 ตรงทะเบียนวัสดุ platform-subcategories.ts และ /products/10762"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6571,15 +6636,15 @@
       "name": "TCS60JE62ZRLP50",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price", "scale-benchtop"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-60-JE62ZR ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6590,15 +6655,15 @@
       "name": "TCS60JE62ZRLP51",
       "warehouseGroup": "SCALE",
       "categoryId": "scales",
-      "subcategoryIds": [],
+      "subcategoryIds": ["scale-price", "scale-benchtop"],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
-      "status": "category_only",
+      "status": "mapped",
       "evidence": [
         "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "เครื่องหลัก TCS-60-JE62ZR ตรงทะเบียนรุ่น docs/sunford-scale-categories.md; เทียบชื่อและคำอธิบาย Warehouse ของ SKU นี้"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6608,16 +6673,17 @@
       "skuPreference": "review_alternative",
       "name": "TCS60-LC",
       "warehouseGroup": "COMPONENT",
-      "categoryId": "accessories",
+      "categoryId": "platforms",
       "subcategoryIds": [],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
       "status": "category_only",
       "evidence": [
-        "Warehouse group: COMPONENT (subgroup requires model evidence)",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบาย Warehouse ระบุแท่นพร้อมโหลดเซลล์และวัสดุพื้นฐาน ไม่มีหลักฐานยืนยันเกรดโครงสำหรับหมวดย่อย"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [
+        "ขอวัสดุของโครงแท่นรุ่นนี้ (เกรด SUS304/SUS201 เหล็กคาร์บอนเคลือบ หรือ ABS) แยกจากวัสดุจาน/เสา"
+      ],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6854,16 +6920,17 @@
       "skuPreference": "review_alternative",
       "name": "TIS300",
       "warehouseGroup": "SCALE",
-      "categoryId": "scales",
+      "categoryId": "platforms",
       "subcategoryIds": [],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
       "status": "category_only",
       "evidence": [
-        "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบาย Warehouse ระบุแท่นพร้อมโหลดเซลล์และวัสดุพื้นฐาน ไม่มีหลักฐานยืนยันเกรดโครงสำหรับหมวดย่อย"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [
+        "ขอวัสดุของโครงแท่นรุ่นนี้ (เกรด SUS304/SUS201 เหล็กคาร์บอนเคลือบ หรือ ABS) แยกจากวัสดุจาน/เสา"
+      ],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {
@@ -6933,16 +7000,17 @@
       "skuPreference": "review_alternative",
       "name": "TMS60",
       "warehouseGroup": "SCALE",
-      "categoryId": "scales",
+      "categoryId": "platforms",
       "subcategoryIds": [],
       "modelCodes": [],
       "legacyProductCandidateIds": [],
       "status": "category_only",
       "evidence": [
-        "Warehouse group: SCALE",
-        "Same SKU and exact name in the earlier read-only master-item query; group used only as classification evidence"
+        "คำอธิบาย Warehouse ระบุแท่นพร้อมโหลดเซลล์และวัสดุพื้นฐาน ไม่มีหลักฐานยืนยันเกรดโครงสำหรับหมวดย่อย"
       ],
-      "notes": ["Primary category only; no proven existing website subgroup"],
+      "notes": [
+        "ขอวัสดุของโครงแท่นรุ่นนี้ (เกรด SUS304/SUS201 เหล็กคาร์บอนเคลือบ หรือ ABS) แยกจากวัสดุจาน/เสา"
+      ],
       "unit": "ไม่ระบุหน่วย (PEAK)"
     },
     {

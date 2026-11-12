@@ -38,7 +38,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import type { NavigationItem, SiteSettings } from "@/features/cms/types";
+import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import type { ClientProduct } from "../types";
 import type { ProductCategory } from "../data/mock-categories";
 import { sunford } from "@/features/home/data/brand";
@@ -535,6 +535,7 @@ export function ProductsOverview({
                           {categoryPhotos[index] && (
                             <ProductImage
                               src={catalogProductPhoto(categoryPhotos[index])}
+                              fallbackSrc={categoryPhotos[index].fallbackImage}
                               alt=""
                               fill
                               sizes="96px"
@@ -623,7 +624,6 @@ export function ProductsOverview({
                       <div className={styles.heroCopy}>
                         <div>
                           <h2>{cardNames[product.id] ?? product.name}</h2>
-                          <p>{product.subtitle}</p>
                         </div>
                         <div className={styles.heroActions}>
                           <Link className={styles.primaryButton} href={`/products/${product.slug}`}>
@@ -652,6 +652,7 @@ export function ProductsOverview({
                         ) : (
                           <ProductImage
                             src={catalogProductPhoto(product)}
+                            fallbackSrc={product.fallbackImage}
                             alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                             fill
                             preload={index === 0}
@@ -750,6 +751,7 @@ export function ProductsOverview({
                     <Link href={`/products/${product.slug}`} className={styles.lineupArt}>
                       <ProductImage
                         src={catalogProductPhoto(product)}
+                        fallbackSrc={product.fallbackImage}
                         alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                         fill
                         sizes="(max-width: 734px) 260px, 372px"
@@ -758,10 +760,11 @@ export function ProductsOverview({
                     <div className={styles.lineupCopy}>
                       {product.badge && <p className={styles.productBadge}>{product.badge}</p>}
                       <h3>{cardNames[product.id] ?? product.name}</h3>
-                      <p>{product.subtitle}</p>
-                      {typeof product.price === "number" && product.price > 0 && (
+                      {typeof product.price === "number" && product.price > 0 ? (
                         <p className={styles.price}>{product.price.toLocaleString("th-TH")} บาท</p>
-                      )}
+                      ) : product.warehouseSku ? (
+                        <p className={styles.price}>สอบถามราคา</p>
+                      ) : null}
                       <div className={styles.tileActions}>
                         <Link href={`/products/${product.slug}`} className={styles.primaryButton}>
                           ดูรายละเอียดรุ่น

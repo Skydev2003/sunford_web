@@ -1,12 +1,18 @@
 # ตั้งค่า Warehouse API และฐานเว็บไซต์ใน .env.local
 
+> อัปเดต 11 พฤศจิกายน 2026: ระบบเปลี่ยนเป็นอ่าน PostgreSQL ของ Warehouse โดยตรงอัตโนมัติแล้ว ใช้ `WAREHOUSE_DATABASE_URL` แยกจาก CMS `DATABASE_URL` และไม่ต้องรันแอป/API Warehouse ให้ใช้ [คู่มือตั้งค่าและผลตรวจ PostgreSQL โดยตรง](./direct-postgres.md) เป็นข้อมูลปัจจุบัน ส่วนเนื้อหาด้านล่างเก็บประวัติการเชื่อม API/การนำเข้าชุดข้อมูลก่อนเปลี่ยนระบบ
+
+## ประวัติการตั้งค่าก่อนเปลี่ยนเป็น PostgreSQL โดยตรง
+
 คู่มือนี้อิงโค้ดของโปรเจกต์ ณ วันที่ 10 พฤศจิกายน 2026 ใช้ Node.js 24 และ PowerShell ค่าตัวอย่างที่มีคำว่า `example`, `YOUR-PASSWORD` หรืออักษรตัวพิมพ์ใหญ่เป็นจุดให้แทนด้วยค่าจริง ไม่ใช่บริการที่ยืนยันว่ามีอยู่
 
 ## แยกสองการเชื่อมต่อ
 
+หน้าสินค้าและใบเสนอราคาอ่าน SKU หน่วย และราคาก่อน VAT จาก `data/warehouse/products.json` และใช้รูป Warehouse ที่บันทึกใน `public/images/warehouse-cache/` เมื่อจะนำเข้าราคาใหม่ ให้เปิด Warehouse แล้วรัน `npm run warehouse:snapshot` จากนั้น deploy ไฟล์ที่อัปเดต วันที่ราคาบนใบเสนอราคามาจาก `capturedAt` ของชุดข้อมูลนี้
+
 | ตัวแปร              | ต้องชี้ไปที่                                            | ใช้ทำอะไร                                               |
 | ------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
-| `WAREHOUSE_API_URL` | URL หลักของบริการ Warehouse ที่มี `/api/store/products` | อ่านสินค้า ชื่อ หน่วย ราคาขายก่อน VAT และรูป            |
+| `WAREHOUSE_API_URL` | URL หลักของบริการ Warehouse ที่มี `/api/store/products` | ใช้เฉพาะตอนนำเข้าสินค้า ราคา และรูปด้วยคำสั่ง snapshot  |
 | `DATABASE_URL`      | PostgreSQL ของ **เว็บไซต์ SUNFORD/CMS เดิม**            | อ่านข้อมูล CMS การตั้งค่าและข้อมูลเว็บไซต์ที่ใช้ Prisma |
 | `DIRECT_URL`        | การเชื่อมต่อฐานเว็บไซต์สำหรับ Prisma CLI                | ใช้เมื่อทำงานฐานข้อมูลภายหลัง ไม่ต้องมีเพื่อทดสอบ API   |
 | `SUPABASE_URL`      | URL โปรเจกต์ Supabase เดิม ถ้ามีรูปจาก Storage          | คงไว้ตามการใช้งานเดิม                                   |
@@ -48,7 +54,7 @@ GET https://sunford.co/api/store/products → redirect ไป www แล้ว 4
 WAREHOUSE_API_URL="https://warehouse-api.example"
 ```
 
-ผลลัพธ์ที่ต้องได้เมื่อเรียก `/api/store/products` คือ HTTP 200 และ JSON ที่มี `total_count`, `items` โดยแต่ละรายการมี `sku`, `product_name`, `unit`, `sale_price`, `image_url` คำว่า `POSTGREST_URL` ไม่ใช่ตัวแทนของตัวแปรนี้โดยอัตโนมัติ เพราะ helper ปัจจุบันเรียก product API ข้างต้น ไม่ได้เรียก RPC โดยตรง
+สคริปต์นำเข้าเรียก `/api/store/products` และอ่าน JSON ที่มี `total_count`, `items` โดยแต่ละรายการมี `sku`, `product_name`, `unit`, `sale_price`, `image_url`
 
 ## 3. นำ DATABASE_URL ของเว็บไซต์เดิมกลับมา
 

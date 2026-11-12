@@ -1,180 +1,76 @@
 import { test, expect } from "@playwright/test";
+import { getWeighingOptions } from "../../src/features/content/data/weighing-options";
 
 const path = "/guides/indicator-platform-compatibility";
 test.use({ reducedMotion: "reduce" });
-for (const width of [390, 1440]) {
-  test(`platform-first matching and accessory gating at ${width}px`, async ({ page }) => {
+
+for (const width of [390, 834, 1440]) {
+  test(`Warehouse sidebar and confirmed pair gating at ${width}px`, async ({ page, request }) => {
+    const { products } = await (await request.get("/api/products")).json();
+    const options = getWeighingOptions(products);
+    const heads = options.filter((o) => o.kind === "head");
     await page.setViewportSize({ width, height: 900 });
     await page.goto(path);
-    const summary = page.locator("main aside");
-    const tab = (name: string) => summary.getByRole("button", { name, exact: true });
-    const select = (code: string) =>
-      page.getByRole("button", { name: `เลือก ${code}`, exact: true });
-    await tab("แท่นชั่ง").click();
-    await expect(page.locator("main article")).toHaveCount(26);
-    await expect(tab("อุปกรณ์เสริม")).toBeDisabled();
-    await page.getByRole("combobox").selectOption("พื้นที่เปียกชื้น");
-    await select("TSS-60-WP31E").click();
-    await expect(page.locator("main article h3")).toHaveText(["Indicator-WP31E"]);
-    await expect(tab("อุปกรณ์เสริม")).toBeDisabled();
-    await select("Indicator-WP31E").click();
-    await select("LoadcellCable").click();
-    await expect(summary).toContainText("LoadcellCable");
-    await tab("แท่นชั่ง").click();
-    await select("TMS-60-AW31").click();
-    await expect(page.locator("main article h3")).toHaveText(["Indicator-AW31"]);
-    await expect(summary).not.toContainText("WP31E");
-    await expect(summary).not.toContainText("LoadcellCable");
-    await expect(tab("อุปกรณ์เสริม")).toBeDisabled();
-    await select("Indicator-AW31").click();
-    await select("LED-R1").click();
-    await summary.getByRole("button", { name: "นำ TMS-60-AW31 ออกจากชุด" }).click();
-    await expect(summary).toContainText("Indicator-AW31");
-    await expect(summary).not.toContainText("LED-R1");
-    await expect(page.locator("main article")).toHaveCount(7);
-    await expect(tab("อุปกรณ์เสริม")).toBeDisabled();
-  });
-}
-for (const width of [390, 1440]) {
-  test(`open platform and accessory photos and names without changing the set at ${width}px`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto(path);
-    const select = (code: string) =>
-      page.getByRole("button", { name: `เลือก ${code}`, exact: true });
-    await select("Indicator-AW31").click();
-    for (const [code, expected] of [
-      ["TMS-60-AW31", "TMS-60-AW31"],
-      ["NY30M12", "ล้อ NY30M12"],
-    ]) {
-      const card = page.locator("main article").filter({ has: select(code) });
-      const link = card.getByRole("link", {
-        name: `ดูรายละเอียด ${code} (เปิดแท็บใหม่)`,
-        exact: true,
-      });
-      for (const surface of ["img", "h3"]) {
-        const target = card.locator(surface);
-        await target.scrollIntoViewIfNeeded();
-        const box = (await target.boundingBox())!;
-        const popup = page.waitForEvent("popup");
-        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-        const product = await popup;
-        await expect(product.getByRole("heading", { level: 1 })).toHaveText(expected);
-        expect(new URL(product.url()).pathname).toBe(await link.getAttribute("href"));
-        await product.close();
-      }
-      await expect(page.locator("main aside")).not.toContainText(code);
-      const missing = code === "TMS-60-AW31" ? "TIS-150-AW31" : "LoadcellCable";
-      const fallback = page
-        .locator("main article")
-        .filter({ has: select(missing) })
-        .getByRole("link", { name: `ดูรายละเอียด ${missing}`, exact: true });
-      await fallback.click();
-      await expect(page.locator(":target")).toHaveText(missing);
-      await expect(page.locator(":target")).toBeInViewport();
-      await select(code).click();
-      await expect(page.locator("main aside")).toContainText(code);
-    }
-  });
-}
-test("each head opens its own published product or its exact model card", async ({ page }) => {
-  for (const code of [
-    "Indicator-AW31",
-    "Indicator-SW31",
-    "Indicator-SW31F",
-    "Indicator-WP31E",
-    "Indicator-AC31P",
-    "Indicator-WP31C",
-    "Indicator-WP31EUSB",
-    "JC62Z",
-    "JE62ZR",
-  ]) {
-    await page.goto(path);
-    const card = page
-      .locator("main article")
-      .filter({ has: page.locator("h3").getByText(code, { exact: true }) });
-    const link = card.getByRole("link");
-    if (["Indicator-WP31EUSB", "JC62Z", "JE62ZR"].includes(code)) {
-      await link.click();
-      await expect(page.locator(":target")).toBeInViewport();
-      await expect(page.locator(":target h3")).toHaveText(code);
-    } else {
-      const popup = page.waitForEvent("popup");
-      await link.click();
-      const product = await popup;
-      await expect(product.getByRole("heading", { level: 1 })).toHaveText(
-        code.replace("Indicator-", "Indicator "),
-      );
-      await product.close();
-    }
-  }
-});
-test("a platform opens the selected head product", async ({ page }) => {
-  await page.goto(path);
-  await page.getByRole("combobox", { name: "ลักษณะงาน" }).selectOption("พื้นที่เปียกชื้น");
-  await page.getByRole("button", { name: "เลือก Indicator-WP31E", exact: true }).click();
-  const popup = page.waitForEvent("popup");
-  await page
-    .getByRole("link", { name: "ดูรายละเอียด Indicator-WP31E (เปิดแท็บใหม่)", exact: true })
-    .first()
-    .click();
-  const product = await popup;
-  await expect(product.getByRole("heading", { level: 1 })).toHaveText("Indicator WP31E");
-  await product.close();
-  await expect(page.locator("main aside")).toContainText("Indicator-WP31E");
-});
-for (const width of [390, 1440])
-  test(`select head, compatible platform, accessories and revise the set at ${width}px`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto(path);
-    const summary = page.locator("main aside");
-    const steps = summary.getByRole("button");
-    await expect(page.locator("main article")).toHaveCount(9);
-    await expect(page.getByText("ดูรายละเอียดรุ่น", { exact: false })).toHaveCount(0);
-    await expect(page.locator("main article button:enabled")).toHaveCount(6);
-    for (const code of ["AC31P", "WP31C", "WP31EUSB"]) {
+    const sidebar = page.getByRole("complementary", { name: "ชุดที่เลือก" });
+    await expect(sidebar.locator("header")).toContainText("฿0.00");
+    for (const label of ["หัวอ่าน", "แท่นชั่ง", "อุปกรณ์เสริม"])
+      await expect(sidebar.getByRole("region", { name: label, exact: true })).toBeVisible();
+    await expect(page.locator("main article h3")).toHaveText(heads.map((o) => o.displayName!));
+    for (const head of heads) {
+      const pending = !head.compatibleCodes?.length;
       const button = page.getByRole("button", {
-        name: `Indicator-${code} รอยืนยันรุ่นแท่นชั่ง`,
+        name: pending ? `${head.code} รอยืนยันรุ่นแท่นชั่ง` : `เลือก ${head.code}`,
         exact: true,
       });
-      await expect(button).toBeVisible();
-      await expect(button).toBeDisabled();
+      if (pending) await expect(button).toBeDisabled();
+      else await expect(button).toBeEnabled();
     }
-    await expect(steps.nth(1)).toBeEnabled();
-    await expect(steps.nth(2)).toBeDisabled();
-    await page.getByRole("combobox", { name: "ลักษณะงาน" }).selectOption("พื้นที่เปียกชื้น");
-    await page.getByRole("button", { name: "เลือก Indicator-WP31E", exact: true }).click();
-    await expect(page.locator("main article")).toHaveCount(4);
-    await page.screenshot({ path: test.info().outputPath(`compatible-platforms-${width}.png`) });
-    await expect(steps.nth(2)).toBeDisabled();
-    await page.getByRole("searchbox").fill("TSS-60");
-    await page.getByRole("button", { name: "เลือก TSS-60-WP31E", exact: true }).click();
-    await page.getByRole("button", { name: "เลือก LoadcellCable", exact: true }).click();
-    await steps.nth(1).click();
-    await page.getByRole("searchbox").fill("TSS-150");
-    await page.getByRole("button", { name: "เลือก TSS-150-WP31E", exact: true }).click();
-    await expect(summary).not.toContainText("LoadcellCable");
-    await expect(summary).not.toContainText("TSS-60-WP31E");
-    await expect(summary).toContainText("TSS-150-WP31E");
-    await page.getByRole("button", { name: "เลือก LoadcellCable", exact: true }).click();
-    await summary.getByRole("button", { name: "นำ LoadcellCable ออกจากชุด" }).click();
-    await expect(summary).not.toContainText("LoadcellCable");
-    await expect(summary).toContainText("TSS-150-WP31E");
-    await steps.nth(0).click();
-    await page.getByRole("searchbox").fill("WP31EUSB");
-    await expect(page.locator("main article")).toHaveCount(1);
-    await expect(page.locator("main article button")).toBeDisabled();
-    await expect(summary).toContainText("TSS-150-WP31E");
-    await page.getByRole("searchbox").fill("");
-    await page.getByRole("combobox", { name: "ลักษณะงาน" }).selectOption("");
-    await page.getByRole("button", { name: "เลือก Indicator-AW31", exact: true }).click();
-    await expect(summary).not.toContainText("TSS-150-WP31E");
-    await expect(page.locator("main article")).toHaveCount(7);
-    await expect(steps.nth(2)).toBeDisabled();
+    await expect(sidebar.getByRole("button", { name: "อุปกรณ์เสริม", exact: true })).toBeDisabled();
+    const confirmed = heads.find((o) => o.compatibleCodes?.length);
+    if (confirmed) {
+      await page.getByRole("button", { name: `เลือก ${confirmed.code}`, exact: true }).click();
+      const selected = sidebar.getByRole("region", { name: "หัวอ่าน", exact: true });
+      await expect(selected.getByRole("link")).toHaveText(confirmed.displayName!);
+      const platform = options.find((o) => confirmed.compatibleCodes!.includes(o.code))!;
+      await page.getByRole("button", { name: `เลือก ${platform.code}`, exact: true }).click();
+      await expect(
+        sidebar.getByRole("region", { name: "แท่นชั่ง", exact: true }).getByRole("link"),
+      ).toHaveText(platform.displayName!);
+      const quote = sidebar.getByRole("link", { name: /ทำใบเสนอราคา/ });
+      expect(
+        new URL((await quote.getAttribute("href"))!, "http://local").searchParams.getAll("model"),
+      ).toEqual([confirmed.code, platform.code]);
+      await sidebar
+        .getByRole("button", { name: `นำ ${confirmed.code} ออกจากชุด`, exact: true })
+        .click();
+      await expect(quote).toHaveCount(0);
+    } else {
+      await expect(
+        sidebar.getByRole("button", { name: "ทำใบเสนอราคา", exact: true }),
+      ).toBeDisabled();
+      await sidebar.getByRole("button", { name: "แท่นชั่ง", exact: true }).click();
+      await expect(page.locator("main article")).toHaveCount(0);
+      await expect(sidebar.getByRole("link", { name: /ทำใบเสนอราคา/ })).toHaveCount(0);
+      await sidebar.getByRole("button", { name: "หัวอ่าน", exact: true }).click();
+    }
+    const rail = (await sidebar.boundingBox())!;
+    const search = (await page.getByRole("searchbox").boundingBox())!;
+    if (width < 768) expect(rail.y + rail.height).toBeLessThanOrEqual(search.y);
+    else expect(rail.x + rail.width).toBeLessThan(search.x);
+    await page.getByRole("searchbox").fill(heads[0].code);
+    await expect(page.locator("main article h3")).toHaveText([heads[0].displayName!]);
+    const popup = page.waitForEvent("popup");
+    await page.locator("main article h3 a").click();
+    const detail = await popup;
+    await expect(detail.locator("#product-overview h1")).toHaveText(heads[0].displayName!);
+    await detail.close();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await sidebar.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: test.info().outputPath(`warehouse-sidebar-${width}.png`) });
   });
+}
 for (const [width, entry] of [
   [390, "/"],
   [1440, "/contact-us"],
@@ -224,8 +120,11 @@ for (const width of [320, 390, 600, 768, 834, 1024, 1440, 1920]) {
       await summary.press("Enter");
     }
     await expect(main.locator("details[open]")).toHaveCount(5);
-    await expect(main.locator("details").getByText(/TIS-150-AW31/)).toBeVisible();
-    await expect(main.getByText("LoadcellCable")).toBeVisible();
+    const { products } = await (await page.request.get("/api/products")).json();
+    const options = getWeighingOptions(products);
+    await expect(
+      main.locator("details a").filter({ hasText: options[0].displayName }).first(),
+    ).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
