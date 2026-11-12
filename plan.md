@@ -5103,3 +5103,199 @@ Additional verification path: `tests/uat/public-paths.test.mjs` — retained ref
 - The6 held customer-map deletions were not restored or staged. Their Git object IDs are unchanged in every implementation commit and match the candidate's retained files. Candidate runtime files match the committed runtime files. Final Next feedback review retained no framework defect; external database interruption and test-output directory collision were identified separately.
 
 Implementation groups:7da5530quotation/PDF; a6d3fd9sidebar;62755f8opening motion;010bf61Suspense;5d5b3dereference records;0c035a0browser contracts. The final documentation group records current Warehouse-only rules and the homepage exception. Final safe push and remote-tip equality are recorded in the canonical commit-remaining-safe work state after this documentation commit; no production release is part of this task.
+
+## Plan: Review new Warehouse database product RPCs (2026-11-12)
+
+### Files
+
+- `spec.md` — add the review findings, source contract gaps, connection recommendation and pending implementation status; preserve existing architecture/history.
+- `plan.md` — record the documentation-only audit steps and verification limits.
+- No application or SQL installation file is in this review's edit scope. Define any future implementation file list after inspecting the new database and agreeing its contract.
+
+### Steps
+
+- [x] Read current spec/memory, supplied DDL/functions/screenshots and actual product-source code.
+- [x] Compare catalogue/detail requirements with component-tree and purchase-unit return fields.
+- [x] Check whether the local read-only Warehouse connection is available for metadata inspection.
+- [x] Explain the direct-pg option and the conditional need for a dedicated catalogue RPC, keeping quotation numbering separate.
+- [x] Record findings and missing information in spec.md/plan.md; inspect the documentation diff and whitespace.
+- [x] Verify the new database connection, company, schema, existing catalogue functions, facts and storage in the subsequent authorised connection task.
+- [x] Confirm the owner-authorised existing pg configuration requires no application/database-object change; retain approval requirements for any future new RPC.
+
+### Impact / Rollback
+
+- Documentation only. Remove this task section from each file to roll back the review record. Runtime, shared components, styles, database objects, source data and deployment are unaffected.
+
+### Verification Results
+
+- The current reader uses parameterised server-side pg queries; the two provided functions have no catalogue-list contract or complete catalogue/detail field set.
+- Initial local environment lookup reported WAREHOUSE_DATABASE_URL unconfigured. The subsequent authorised configuration task below verified the actual database/readers/storage and resolves that initial limitation.
+- Documentation diff/whitespace checked. No implementation tests, build or browser checks were required or run for this review. No Next.js feedback candidate was retained.
+
+## Plan: Configure and verify the supplied Warehouse connection (2026-11-12)
+
+### Files
+
+- `.env.local` — create ignored local Warehouse connection/storage settings, restricted to the existing WAREHOUSE_* contract; derive company from verified data.
+- `spec.md` — record owner authorisation, source findings, acceptance criteria and remaining blockers without credentials.
+- `plan.md` — record configuration steps and actual verification results.
+- No application or SQL installation file is in scope. Existing registry configuration in .env is retained unchanged.
+
+### Steps
+
+- [x] Read current rules/state, inspect environment key presence and confirm real credentials are ignored by Git.
+- [x] Record the owner's authorisation for local settings and read-only inspection; separate unresolved company/storage requirements from permitted connection work.
+- [x] Create .env.local with owner-supplied Warehouse/storage settings; keep secrets out of tracked files/logs.
+- [x] Inspect database/company/schema/functions in read-only sessions and select company 1 from the single active/non-deleted source company with items.
+- [x] Run current product/fact/component readers and inspect representative pictured-model coverage and image metadata/access.
+- [x] Verify ignored-file status, unchanged registry, data results and documentation diff; update the spec/plan with final results.
+
+### Impact / Rollback
+
+- Local connection changes affect the existing Warehouse reader after the local server loads .env.local. Remove only the new WAREHOUSE_* settings to restore the prior environment. Preserve .env and all registry values. Database/storage access remains read-only; no production settings or deployment are changed.
+
+### Verification Results
+
+- Created ignored mode-600 .env.local with only WAREHOUSE_* configuration; preserved .env and the separate registry. The owner subsequently added S3 credentials locally. Secrets were not added to tracked files or API output.
+- Connected read-only to PostgreSQL 16.13/warehouse_db. Company 1 is the sole active/non-deleted company with item records. All existing catalogue/fact/component query dependencies exist; supplied component-tree/purchase-unit functions execute, and no new RPC/application code was needed.
+- Direct reader: 488 retained items, 484 unique public SKUs, 355 positive-price and 129 inquiry-price products, 97 primary-image references, 182 descriptions, 1366 verified-fact rows across 87 SKUs, 4 component rows.
+- Local /api/products HTTP 200 contains the exact 484-SKU source set. /api/health HTTP 200/status ok. WPS10KS detail HTTP 200, gross price 3790 THB, 19 source specification rows; its primary image HTTP 200/image/webp.
+- Initial unsigned storage probe returned 403. After the owner's local key update, signed storage access and all 22 storage-dependent image routes passed. All 75 version-matched cache routes passed HEAD checks: 97/97 existing primary images accessible. Products with no source image remain empty.
+- Node 24.22.1: warehouse-postgres, warehouse-products, warehouse-image-priority and warehouse-site-data regression files passed 24/24 tests using node --import tsx --test. The tsx CLI's sandbox IPC restriction was avoided without modifying code or dependencies.
+- git check-ignore confirms .env.local is ignored. Final diff/whitespace inspection covers spec.md and plan.md only; the configuration file remains local. No production release, application build, responsive screenshot claim or source data mutation. Final Next.js feedback review found no framework issue.
+
+## Plan: Move the website quotation registry into Warehouse and retire Supabase
+
+**Goal:** Keep the website's independent quotation numbering in warehouse_db, remove its old Supabase dependency and delete the exact old project last.
+
+**Architecture:** Retain Prisma 7 and the current allocator contract. Bind the registry adapter and explicitly qualified allocation SQL to ecommerce.quotation_issues through QUOTATION_DATABASE_URL; keep the product pool read-only. A narrow registry setup replaces production execution of the historical CMS migration chain, which remains archived unchanged.
+
+**Spec:** The two 2026-11-12 registry/cutover tasks at the beginning of spec.md. Execute inline in this chat after the concrete Spec/Plan is approved; account deletion itself is already authorised.
+
+### Files
+
+- `spec.md`, `plan.md` — requirements, authorisation and real verification/cutover records.
+- `.env.local` — add the Warehouse-backed QUOTATION_DATABASE_URL; keep product credentials separate by purpose.
+- `.env` — remove old Supabase connection/auth/storage keys only after the replacement works; preserve unrelated local values.
+- `.env.example` — document the new registry variable without credentials.
+- `src/lib/env.ts` — detect the dedicated registry configuration rather than the old CMS DATABASE_URL.
+- `src/lib/prisma.ts` — use QUOTATION_DATABASE_URL and the ecommerce schema; invalidate cached clients when the connection changes as well as when the generated constructor changes.
+- `src/features/catalog/server/quotation-issues.ts` — qualify the website registry table while retaining its allocation/idempotency contract.
+- `prisma/warehouse/quotation-issues.sql` — create the reviewed, idempotent registry-only table setup; no legacy CMS/auth migrations.
+- `scripts/migrate-quotation-registry.mjs` — execute only that setup against the dedicated registry connection, validate the existing table contract and redact errors.
+- `package.json` — route db:deploy to the narrow registry setup; retain Prisma generation/schema validation and archived migration files.
+- `scripts/lib/deployment-env.mjs` — validate the dedicated registry configuration instead of requiring old Supabase DATABASE_URL/DIRECT_URL.
+- `scripts/lib/release.mjs` — clear the new registry setting during isolated release verification, preserving the clean-uat release flow.
+- `tests/uat/deployment-env.test.mjs`, `tests/uat/deploy.test.mjs` — verify the new environment contract, invalid-config rejection and migration/build ordering.
+- `tests/uat/prisma-cache.test.mjs` — verify registry connection switching and client regeneration do not retain an old Supabase pool.
+- `tests/catalog/quotation-issuance.test.ts` — retain existing dates/retry behaviour and add only needed regressions for the registry contract.
+- `README.md`, `docs/vercel.md`, `docs/warehouse/direct-postgres.md` — document the dedicated writable registry table and the product-read-only boundary.
+- `AGENTS.md`, `MEMORY.md` — record the owner's explicit isolated-registry exception to the prior separate-database rule after implementation.
+- `output/warehouse-retirement-20261112/` — ignored local registry export and verification artifacts only; never tracked credentials.
+
+No shared UI/layout/CSS or historical Prisma migration file is changed. If additional files are required, update and approve that scope before editing them.
+
+### Global Constraints / Review Focus
+
+- Preserve Node 24, Next.js 16.4.3, React 19.3.0, Prisma 7 and existing dependencies.
+- Do not run the old Prisma CMS/auth migration chain against Warehouse or mutate its product/stock/internal document-numbering data.
+- Wrong/missing registry configuration must fail safely without falling back to the old Supabase URL.
+- Existing cached Prisma instances must not continue using a previous connection after a local environment reload.
+- Migration retries and concurrent quotation requests must preserve constraints, uniqueness and retry idempotency; never reset an existing counter.
+- Old issuance must be stopped/locked during cutover so both registries cannot allocate overlapping numbers.
+- Account/project identity and production verification precede project deletion; deletion has no automatic rollback.
+
+### Steps
+
+- [x] Confirm the owner's whole-project deletion authorisation and isolated website-registry choice.
+- [x] Inspect source/deployment dependencies, old/new database identity and existing numbering history with read-only queries.
+- [x] Discover account-management options and record the currently unavailable browser/account access.
+- [ ] Obtain approval of this concrete application/file plan under AGENTS.md before editing application files.
+- [ ] Write focused failing regressions for the new registry environment/pool reuse contract and run them to establish the failure.
+- [ ] Implement the dedicated registry adapter/qualified allocator and narrow SQL setup in the listed files; keep the historical migrations intact.
+- [ ] Configure local QUOTATION_DATABASE_URL, export/recheck old history, create/validate only ecommerce.quotation_issues and reconcile any newly issued rows without silently overwriting conflicts.
+- [ ] Verify allocation/retry/date behaviour in a rollback-only live transaction, leaving no test allocations. Run affected UAT/catalogue tests, typecheck, lint, format and build; run existing quotation/PDF browser checks at mobile/desktop sizes where browser access is available.
+- [ ] Update documentation/policy and remove confirmed-unused local Supabase settings after the replacement works.
+- [ ] Authenticate Supabase/Vercel management access, match the exact project/site identities and prepare the new production environment. No raw management tokens/passwords in chat.
+- [ ] Commit approved changes on clean uat and run bun run deploy; do not push production directly or use Vercel CLI deployment. Coordinate old-registry locking/issuance pause and final history migration during cutover.
+- [ ] Verify the deployed revision/health, Warehouse products/images/homepage and quotation registry before releasing the old-registry lock and retiring its connection.
+- [ ] Delete only the confirmed old Supabase project, including Auth/Storage, using the existing user authorisation. Verify service-reported deletion and post-deletion site operation.
+- [ ] Record actual outcomes and any unresolved blocker; never report deletion before it happens.
+
+### Impact / Rollback
+
+- Runtime changes are limited to document numbering/configuration and deployment setup. Warehouse writes are limited to the isolated website registry and its setup; product access remains read-only.
+- Before project deletion, rollback can restore the old application/environment after reconciling newly issued numbers. Never resume two independent allocators against diverging histories.
+- Registry setup is additive. Do not drop the new table as a rollback after live documents have been issued. Entire-project deletion is irreversible; perform it only after verification and preserve the registry export.
+
+### Verification Results
+
+- Preflight only: old Supabase database postgres/PostgreSQL 17.11; quotation_issues exists with 0 records. New warehouse_db/PostgreSQL 16.13 has ecommerce and its own internal numbering tables, so website numbering must remain separate.
+- PrismaPg's installed adapter supports an explicit schema setting. Current runtime reads DATABASE_URL and raw public-registry SQL; current production validation/migration still depends on the old connection. Those are the concrete changes planned above.
+- Browser startup failed on the host's symlinked writable-root configuration before any dashboard interaction. Supabase and Vercel integrations were found and suggested but are not yet connected. No application implementation, Warehouse write, deployment or project deletion has occurred.
+
+## Plan: Read the complete Warehouse product contract through RPC
+
+**Goal:** Replace direct application product-table queries with one stored Warehouse read RPC while preserving the website's current product data and behaviour.
+
+**Architecture:** ecommerce.get_website_products(bigint,text[] DEFAULT NULL) returns item rows with verified specifications/components arrays and primary-image metadata. The server keeps its existing pg pool but invokes the function instead of joining tables. Normal catalogue loading projects products/facts/components from one result; exact-SKU image metadata reads use the same function. Spaces/cache/VAT/UI remain unchanged.
+
+**Spec:** The complete-product-RPC task at the beginning of spec.md. Execute inline after the concrete plan is approved; no sub-agent or production deployment is part of this scope.
+
+### Files
+
+- `docs/warehouse/get-website-products.sql` — create the stored function, its comment/private execution ACL and documented installation/read/rollback examples. All source joins live here; no source-data or table DDL.
+- `src/features/services/warehouse-postgres.ts` — add typed RPC rows/collection mapping, replace catalogue/fact/component/image joins with parameterised function calls and preserve existing public helper contracts, validation, retry, image versioning and pool settings.
+- `src/features/catalog/server/product-repository.ts` — project facts/components from the catalogue RPC result without the two additional source reads; preserve all existing Product/cache/route contracts.
+- `tests/catalog/warehouse-postgres.test.ts` — exercise RPC call parameters, full/selected/empty results, nested fact/component mapping, current prices, empty fields, malformed collections and failure/retry behaviour.
+- `tests/catalog/local-site-content.test.ts` — align the mocked official-reader result with embedded facts/components and retain the regression that any legacy CMS access throws.
+- `docs/warehouse/direct-postgres.md` — document the actual stored-function path, metadata/storage split, safe installation and failure/rollback handling.
+- `spec.md`, `plan.md`, `MEMORY.md` — record the approved contract, actual results and current RPC-only product-read policy after implementation.
+- `output/warehouse-product-rpc-20261112/` — ignored before/after/source-parity and browser-verification artifacts, with no credentials.
+
+No environment, package/dependency, quotation registry, Prisma, shared UI/layout/style, image-cache manifest or other source file is changed. Any required additional path must be added to the approved scope first.
+
+### Review Focus
+
+- Facts/components must not multiply item rows or silently disappear in the new mapping. Preserve ambiguous-value omission in the existing renderer.
+- NULL SKU array means all eligible products; [] means none. Treat SKUs as bound exact values rather than interpolating SQL.
+- Preserve net-price precision, bigint image identity/version strings, zero-price inquiry and company isolation.
+- SQL returns existing primary-image metadata only. Preserve private signed Storage access and version-matched local images without legacy/gallery fallback.
+- Function absence/permission/schema failures must surface through existing safe error handling, never resume direct table reads.
+
+### Steps
+
+- [x] Read current spec/memory, source/test consumers, package versions and relevant installed Next.js guidance.
+- [x] Verify schema/columns, company settings and absence of a function-name/signature collision with a read-only database connection.
+- [x] Obtain concrete RPC Spec/Plan approval before creating application/SQL files or installing the function: owner replied อนุมัติ Spec/Plan งาน RPC นี้.
+- [x] Verify the existing non-main sky checkout and preserve the existing uncommitted task documentation; record actual approval in spec.md.
+- [x] Capture current direct-reader/API values in ignored artifacts for parity comparisons. Write focused failing RPC-contract/repository fixture regressions and run them before implementation.
+- [x] Write the new SQL function using the verified joins/filters, ordered JSONB collections, STABLE/SECURITY INVOKER/fixed search_path and owner-only execution. Include no credentials or HTTP endpoint.
+- [x] Validate creation and full/filtered/empty/company/ACL/parity cases transactionally, then roll back the validation install. Persistent installation is limited to the approved new function after verification, rejecting unrelated name collisions.
+- [x] Replace all four product-content read paths with bound RPC calls; return embedded facts/components from readWarehouseProducts and consume them once in the repository. Preserve external helper/API behaviour and image-key checks.
+- [x] Run scoped tests, full catalogue regressions, TypeScript, scoped lint/format and the project build as appropriate. Confirm no application master_data joins remain for product content and failure does not fall back to direct SQL.
+- [x] Install the verified SQL function persistently in the configured Warehouse database and verify signature/volatility/security/ACL plus live source parity again. Do not run Prisma migrations or mutate source data.
+- [x] Verify API catalogue values/SKU set, full WPS10KS fields, sparse/zero-price records, homepage exception and cached/private primary images. Run existing Warehouse/quotation browser regressions at configured widths and record host limitations rather than claiming unchecked results.
+- [x] Update documentation/current memory and actual results; inspect the final diff and secret exposure. Leave the separate registry/Supabase-retirement tasks unchanged.
+
+### Impact / Rollback
+
+- One database read function and the server product-reader/repository change affect catalogue consumers sitewide; URLs, props, projections and visual behaviour must remain stable. The read pool remains read-only and the function cannot write source data.
+- Revert only these scoped application changes to restore the prior reader before dropping the exact new function. Never drop the function while a deployed caller still requires it. The SQL file documents the exact signature for eventual rollback, without executing a DROP during installation.
+- Existing quotation-registry migration, Supabase-project deletion and production-release permissions remain separate; no such operation is performed in this RPC task.
+
+### Verification Results
+
+- Preflight: warehouse_db/PostgreSQL 16.13, company configured, ecommerce present, proposed function name/signature absent, transaction_read_only=on. Existing eligibility query yields 514 item rows and 97 image references.
+- Ruling: implement in the existing non-main sky checkout because the approved local preview uses this checkout and the only pre-existing edits are this chat's spec/plan records. No additional worktree/branch/global ignore changes are needed for the bounded approved file scope.
+- Baseline: the two affected catalogue test files passed 8/8 before edits. Live direct-reader/API baseline saved to ignored before.json: 488 parsed items, 484 public products, 1366 verified facts and 4 component rows.
+- Owner approved the concrete RPC plan. Test-first implementation is starting; persistent installation has not occurred. Next.js feedback audit retained no framework issue.
+- Ruling: persist the RPC after transactional source-parity/ACL/repeated-install validation and green scoped tests, before the full build, because that build reads the live product source. This reorders verification/install only; all planned checks still run and no additional database object is changed.
+- RED observed: 5 scoped failures for direct SQL, missing embedded collections, separate repository reads and exact-SKU parameter shape. GREEN: 11/11 affected tests pass. A VM-fixture cross-realm prototype assertion was corrected to compare the actual nested field values; application values were already correct.
+- SQL validation passed inside REPEATABLE READ and was rolled back: 514 eligible products, 1366 facts, 4 components and 97 image references match legacy SQL in the same snapshot. Full/selected/duplicate/empty/unknown/company-empty inputs pass. Signature is STABLE/SECURITY INVOKER, fixed pg_catalog search path, owner executable, no PUBLIC execution. Validated creation twice and rollback, then installed only the approved function persistently.
+- Final catalogue suite passed161/161 after a second RED/GREEN check for missing option values and null/blank prices; zero remains an actual source price rather than the coercion of absent data. UAT passed27/27. TypeScript, scoped ESLint/Prettier and diff checks passed. Final bun run build compiled the final source and generated795/795 pages successfully.
+- Local API Product objects are exactly equal before/after for all484 public SKUs. WPS10KS remains3790THB with19 verified specification rows. All97 primary images passed; normal/inquiry/no-photo details and homepage video passed. No credentials found in API output/diff/SQL, and application product readers have no master_data table references.
+- Existing browser tests passed7/7 on installed Chrome using the project's supported channel setting, covering photos, five categories/search/details at390/834/1440px, VAT handoff and quotation/PDF retry. Issuance endpoints were mocked. Inspected mobile and desktop screenshots. The initial7 browser attempts failed solely because Playwright's default binary was absent; Chrome rerun resolved this.
+- Restored5 missing installed PDF dependency packages from the exact existing lockfile versions, verified their integrity and changed no dependency manifest/lockfile. This resolved the initial TypeScript errors. No unrelated application fix was made.
+- Final review performed inline as specified by the approved no-subagent plan: checked schema/ACL/tenant scope, collection fanout, parameter binding/price precision, safe failure/retry, source/API/image parity and approved file scope. No unresolved implementation finding. Final Next.js feedback pass found no framework issue; browser/dependency setup issues were environmental.
+- Runtime/SQL/doc/test changes remain uncommitted in sky. No production release, quotation-registry migration or Supabase project deletion. All evidence remains in ignored output/warehouse-product-rpc-20261112/.

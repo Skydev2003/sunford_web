@@ -4,6 +4,10 @@
 
 Interior product fields, photos, prices and verified specifications use Warehouse only. Leave missing values empty and display zero prices as inquiry; automatic quotations require positive net prices and add VAT7% once. No file-based product/price fallback or legacy editorial image/spec filling. Homepage/Hero retains its explicitly approved local presentation exception. Keep the quotation-number registry separate from read-only Warehouse.
 
+Owner approved the complete product RPC Spec/Plan on 2026-11-12. Product-content reads now call ecommerce.get_website_products(bigint,text[]) through the existing server-side pg pool; table joins belong in docs/warehouse/get-website-products.sql. The catalogue result includes verified facts/components in one call, and image metadata uses the same exact-SKU RPC. Keep product/VAT/cache/image/empty-field projections unchanged; do not fall back to direct table SQL if the RPC fails. The separate quotation-registry migration and old Supabase project deletion plans remain pending and were not executed by the RPC task.
+
+RPC delivery verified: exact API parity for484 public SKUs,97 primary images,161 catalogue/27 UAT/7 browser checks, TypeScript/lint/format and795-page build. Function is STABLE/SECURITY INVOKER with PUBLIC execution revoked; runtime product reads remain read-only. No production deployment. Existing Playwright binary was missing, so tests used the configured installed Chrome channel; missing PDF packages were restored from the existing lockfile with integrity verification, without changing dependencies.
+
 Earlier notes are historical when they conflict with this policy. Retained imported product records/images are reference/homepage data. Six customer-map deletions are explicitly held outside the current safe commits. Use distinct output directories for concurrent Playwright runs to avoid deleting another run's active traces.
 
 ## Logo alignment in the Home Navbar flyout

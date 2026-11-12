@@ -1,10 +1,314 @@
 # Project state
 
+## Task: Read the complete Warehouse product contract through RPC (2026-11-12)
+
+Status: "Complete"
+Approval: "Approved — owner explicitly replied อนุมัติ Spec/Plan งาน RPC นี้"
+
+### Goal
+
+Create a Warehouse database function returning the product, price, primary-image metadata and verified technical facts required by the website, then replace direct application-level product-table SQL with calls to that function.
+
+### Scope In
+
+- Create only ecommerce.get_website_products(p_master_company_id bigint, p_item_codes text[] DEFAULT NULL) in warehouse_db. NULL reads the full eligible company catalogue without a LIMIT; an explicit array filters exact SKUs and an empty array returns no products.
+- Return one row per item, deterministically ordered by item_code/master_item_id. Include master_item_id as text, sku, product_name, description, base-unit display name, group_name, usage_family, raw net sale_price as text, image_object_key/image_mime_type/image_size_bytes, updated_at, read_at, specifications JSONB and components JSONB.
+- specifications contains all currently verified active product/attribute facts with title, value_text, value_number as text, value_options and unit. Preserve raw verified values so the existing projection continues omitting conflicting attribute values. Empty collections are [], never NULL.
+- components contains the existing component SKU/quantity information for that root item, with numeric quantities represented as text. This preserves configurator/quotation consumers when the repository loads the full catalogue in one call.
+- Move the existing source-table joins and item/company filters into the function. Preserve active/saleable/not-deleted items, non-deleted base units and nonnegative prices, including zero-price inquiries. Existing X-prefix/four fee exclusions remain in the application projection. No stock-availability filter.
+- Use a read-only SQL STABLE SECURITY INVOKER function with fully qualified relations and a fixed safe search_path. Revoke PUBLIC execution; the configured owner role can execute. Do not grant anonymous/PostgREST roles or invent a new HTTP endpoint.
+- Existing server-side pg transport calls SELECT * FROM ecommerce.get_website_products($1::bigint, $2::text[]). Preserve product-reader/image-reader contracts and bounded read-only sessions/retry behaviour. Existing fact/component helper exports, if retained for callers, must also use RPC rather than direct joins.
+- The repository obtains products/facts/components from the same RPC result for a normal catalogue read. Image metadata lookup uses an exact one-SKU RPC call. Storage signing/image-cache logic remains unchanged.
+
+### Scope Out
+
+- No UI/layout/CSS/global component change, no additional gallery/media source and no invented product facts.
+- No PostgREST/HTTP transport, authentication/role redesign, new dependency, Prisma migration, product/table/data mutation or production release in this RPC implementation scope.
+- The separate quotation-registry migration and whole Supabase-project deletion requests remain pending under their own Spec/Plan; this task does not approve or execute those application changes.
+
+### UI/UX Brand Alignment
+
+- Reference: existing product/detail/catalogue/quotation pages and the owner's WPS10KS screenshot.
+- Design: identical visible fields and source values, existing VAT/zero-price behaviour, routes and versioned images. Preserve the original homepage/Hero presentation exception.
+- Responsive: no markup/style change; run existing Warehouse catalogue/detail/image and quotation browser regressions at their configured mobile/desktop sizes. Record a host/browser limitation honestly if those checks cannot run.
+
+### Input / Output
+
+- Input: verified warehouse_db/PostgreSQL 16.13, company 1, existing WAREHOUSE_DATABASE_URL and WAREHOUSE_S3_* settings. The current database role is postgres and ecommerce exists. Read-only preflight found no get_website_products overload or proposed-signature collision.
+- Verified source relations: master_data.master_item/master_unit/master_item_group/master_item_type, ai_products/ai_product_facts/ai_attributes and master_item_component_line. Current initial item eligibility yields 514 rows and 97 primary-image references; final public catalogue previously verified at 484 SKUs. Counts are verification observations, not hardcoded application requirements.
+- Output: stored read RPC plus unchanged website Product/API values. Image bytes continue to come from the existing Spaces/cache path; SQL returns metadata, not credentials, image binary or a fabricated public Storage URL.
+
+### Acceptance Criteria
+
+- [x] Function exists with the agreed signature, STABLE/SECURITY INVOKER properties and no PUBLIC execute privilege; repeated installation does not overwrite an unrelated object.
+- [x] Full-catalogue and selected-SKU RPC values match the previous reads for identity, prices, units, groups, image versions, verified facts and components in the same verification snapshot. One item is not multiplied by its facts/components.
+- [x] Empty/unknown SKU, empty array, invalid/absent company and missing optional content return the agreed empty result/collection semantics without cross-company data or legacy filling.
+- [x] Catalogue loading uses one RPC request for product/fact/component content; image lookups also call RPC. Application product readers contain no direct master_data table joins or fallback to old direct SQL when the function is unavailable.
+- [x] Missing/malformed RPC collections, price errors and RPC failures fail safely; transient disconnections retain only the existing single retry.
+- [x] Live API SKU/value parity, WPS10KS price/specifications, zero-price and sparse products, current 97 primary-image routes and homepage exception are verified. Scoped tests/type/lint/format/build and relevant browser checks are recorded.
+- [x] No credentials enter the client response, tracked files or function definition. Only the new function/its own ACL/comment are changed in Warehouse; no source table/data or quotation-registry/project-deletion operation occurs.
+
+### Missing Information
+
+- None for implementing the proposed database-function transport and current display contract. This is pg calling a stored SQL function; an HTTP/PostgREST API is outside this proposal.
+- None for this RPC task. Existing automated browser checks passed using the project's supported Chrome channel. The separate Supabase/Vercel account-management blocker belongs to the pending retirement task, not these local website checks.
+
+### Approval Record
+
+- Owner requested งั้นสร้าง RPC สำหรับดึงสินค้า ราคา รูป และสเปกจาก Warehouse ให้ครบ แล้วเปลี่ยนเว็บมาเรียก RPC แทน SQL ตรงให้หน่อย. This authorises the intended RPC migration; concrete function signature, transport and file plan are now presented for review under AGENTS.md.
+- Owner explicitly answered อนุมัติ Spec/Plan งาน RPC นี้ to the presented function signature, pg transport and concrete file plan. This approves the listed source/SQL changes and installation of this read function only. The separate registry/project-deletion tasks remain outside this implementation.
+
+### Verification / Current State
+
+- Read-only schema/name preflight passed with transaction_read_only=on. Existing source files, direct-query consumers, test fixtures and installed Next.js server-component guide were reviewed. package.json/package-lock.json retain Next.js 16.4.3, React 19.3.0, pg and Node 24.
+- Installed ecommerce.get_website_products(bigint,text[]) persistently after two transaction-scoped installations, source comparisons and verified rollback. Source parity in one REPEATABLE READ snapshot: 514 eligible item rows, 1366 verified facts, 4 component rows, 97 image references. Null/zero company, empty/unknown/injection-shaped SKU and repeated-SKU inputs passed; persisted STABLE/SECURITY INVOKER/private execution properties were rechecked.
+- The RPC reader returns 488 parsed items and all retained facts/components. Local /api/products returns the exact same 484 Product objects as the saved pre-change response, including prices/specifications/category/route/image fields. WPS10KS remains 3790 THB gross with 19 source specifications. Normal, zero-price and no-photo detail routes return 200; homepage video remains present.
+- All 97 existing primary-image routes passed. API/diff/SQL audits found no configured credentials and no direct master_data references in the application product readers. Source data, quotation registry, historical migrations and project accounts were not changed.
+- Final validation: catalogue 161/161, UAT 27/27, TypeScript, scoped ESLint/Prettier and diff checks passed. Final bun run build succeeded and generated 795/795 pages after the last application change.
+- Seven existing browser regressions passed with PLAYWRIGHT_CHANNEL=chrome: source photos, all five categories/search/details at390/834/1440px, SKU/price/VAT handoff and PDF issue/retry. Quote issuance was mocked, not written to the real registry. Mobile/desktop screenshots were inspected.
+- Initial TypeScript failure came from missing installed pdf-lib packages already declared in the lockfile. Restored those exact versions with lockfile integrity verification, without package/lockfile edits. Initial browser attempts could not launch the absent Playwright binary; reran successfully using installed Chrome through the existing configuration. These environment issues are resolved and are not Next.js feedback candidates. Final reporting pass retained no framework issue.
+- Changes are local/uncommitted; no production deployment or old Supabase-project deletion occurred. Evidence is in ignored output/warehouse-product-rpc-20261112/.
+
+## Task: Move the website quotation registry into Warehouse (2026-11-12)
+
+Status: "Ready to Code"
+Approval: "Direction approved; concrete application Spec/Plan pending review"
+
+### Goal
+
+Remove the website's runtime/build dependency on the old Supabase database by keeping its independent quotation-number registry in warehouse_db. Preserve current quotation behaviour and Warehouse-only product data.
+
+### Scope In
+
+- Use a dedicated ecommerce.quotation_issues table for website numbering inside the existing warehouse_db database. Do not share counters with Warehouse business documents.
+- Preserve the existing integer range 1..99999999, eight-digit displayed numbers, unique request UUID, created_at timestamp and retry idempotency. Keep the existing PostgreSQL allocation transaction/locking behaviour.
+- Retain Prisma 7, pg and all historical Prisma migrations. Configure the runtime PrismaPg adapter for the ecommerce schema through a dedicated server-side QUOTATION_DATABASE_URL, independently from the read-only product pool.
+- Replace automatic deployment of the historical CMS migration chain with a narrow, idempotent registry-only SQL setup. This may create/validate ecommerce.quotation_issues and its own constraints/privacy settings; it must not change other Warehouse objects.
+- Configure local and deployment environments for the new registry. Remove old Supabase connection/storage/auth settings only after source/deployment verification.
+- Validate local and production quotation behaviour before retiring the old project. Current implementation branch is sky; production publication must use clean committed uat and bun run deploy.
+
+### Scope Out
+
+- No shared UI, layout, typography, price/VAT, quotation PDF layout or product-source changes.
+- No writing to Warehouse product/stock/accounting/document counters, no new dependency and no wholesale Prisma migration into Warehouse.
+- No restoration of legacy CMS, galleries or unsupported product attributes.
+
+### UI/UX Brand Alignment
+
+- Reference: existing quotation page/PDF and the current Warehouse product pages.
+- Design: preserve all visible behaviour, including numbering format, issue date, 14-day validity and retry behaviour.
+- Responsive: run the existing quotation issuance/PDF browser regression at mobile and desktop sizes; no visual redesign.
+
+### Input / Output
+
+- Input: confirmed owner choice to keep the website registry separately in warehouse_db, existing quotation_issues schema/allocator and verified connection settings already stored locally.
+- Verified old target is the Supabase PostgreSQL 17.11 database named postgres. sunford_web is the connection/project label, not a database name discovered through pg_database. public.quotation_issues exists and had zero records at inspection. No local SQLite registry exists.
+- Verified new target is PostgreSQL 16.13 warehouse_db. ecommerce exists and the quotation-table inventory contains no existing quotation registry. Keep the source/current table identities explicitly qualified.
+- Output: unchanged quotation API {number, createdAt}, backed by the isolated Warehouse registry; application/build no longer uses the old Supabase connection.
+
+### Acceptance Criteria
+
+- [ ] Registry setup touches only ecommerce.quotation_issues; a second run is safe and incompatible existing schemas are rejected.
+- [ ] Old registry history is rechecked/exported and all rows are preserved before cutover; current zero-row observation is not treated as a permanent guarantee.
+- [ ] Retrying the same UUID returns the same number/date; distinct UUIDs allocate distinct increasing numbers; failed/rolled-back operations do not leave verification records.
+- [ ] Product reads remain read-only and the exact current SKU/price/image behaviour is preserved.
+- [ ] No runtime or production build dependency remains on the old project; historical migrations are retained without executing their CMS/auth SQL on Warehouse.
+- [ ] Scoped type/lint/format, UAT/catalogue regressions, build and quotation/PDF browser verification pass. Production deployment/health and quotation access are verified before project deletion.
+
+### Missing Information
+
+- None for the local data contract. Supabase/Vercel account access is required for the external cutover/deletion task below and is not yet connected.
+- A concrete Spec/Plan review is still required before application edits under AGENTS.md; the owner's target/direction approvals are recorded below and will not be requested again.
+
+### Approval Record
+
+- Owner explicitly requested deletion of the old database and said quotations will use Warehouse.
+- Owner clarified deletion means the entire old Supabase project including Auth and Storage, and chose ย้ายทะเบียนเลขของเว็บไป warehouse_db after the proposal to preserve the website's numbering/idempotency separately from Warehouse document numbering.
+- This explicitly supersedes the previous separate-database rule for the quotation registry only. Warehouse products/stock remain read-only. The concrete file plan is now in plan.md and has not yet been approved.
+
+## Task: Retire the old Supabase project after quotation cutover (2026-11-12)
+
+Status: "Need Information"
+Approval: "Deletion authorised — whole old Supabase project, including Auth and Storage"
+
+### Goal
+
+Delete the exact old sunford_web Supabase project after the website no longer depends on it.
+
+### Scope In
+
+- Match the authenticated project ID to the old local database/storage project before deletion. Do not use the connection label as an SQL DROP DATABASE target.
+- Inspect deployed environment/revision and switch the website to the verified Warehouse registry before deletion. Coordinate cutover so the old and new registries cannot allocate overlapping numbers; pause/lock old issuance during the final migration/cutover as needed.
+- Export the old registry to an ignored local verification artifact, recheck source/target history and confirm deployed product, homepage/media and quotation behaviour.
+- Delete only the confirmed old project, including its Auth/Storage, as explicitly authorised. Verify project removal and continued website operation.
+
+### Scope Out
+
+- No deletion of warehouse_db, other projects, local catalogue/reference media or historical repository migrations.
+- No blanket DROP DATABASE postgres, DROP SCHEMA public CASCADE or mutation of Supabase-managed auth/storage schemas as a substitute for deleting the project.
+
+### UI/UX Brand Alignment
+
+- Reference: existing site/homepage and quotation workflow. Preserve their current presentation and working media.
+- Responsive: covered by the cutover task's existing mobile/desktop checks.
+
+### Input / Output
+
+- Input: authenticated Supabase project-management access and Vercel project/environment access, matched to the current site's old/new connections.
+- Output: old project removed only after successful cutover; verified Warehouse-backed site remains usable.
+
+### Acceptance Criteria
+
+- [ ] Exact project identity and account capability are verified before destructive action.
+- [ ] The preceding registry/source/deployment cutover passes before deletion.
+- [ ] Auth and Storage deletion stays limited to the owner-confirmed old project.
+- [ ] Actual deletion status and post-deletion website checks are recorded; no claim of deletion without service confirmation.
+
+### Missing Information
+
+- Supabase and Vercel integrations were discovered but are not installed/connected. Suggestions were provided for both; account access is not yet confirmed.
+- Browser runtime could not start because of the host's symlinked writable-root configuration. No dashboard was accessed and no account/project/environment mutation occurred. Do not replace account-management authorization with database credentials.
+
+### Approval Record
+
+- Owner answered ทั้งโปรเจกต์ รวม Auth และ Storage ด้วย. This is the actual deletion authorisation and must be preserved through later turns; do not ask for it again merely because cutover work takes time.
+
+### Verification / Current State
+
+- Old registry inspection used an explicit BEGIN READ ONLY transaction and returned zero records. Supabase pooler did not preserve the requested startup default_transaction_read_only, so explicit transaction mode was verified instead; every preflight statement was a read.
+- No database/schema/data/role or deployment changes have been performed for these tasks. Browser failed before initialization, and Supabase/Vercel account integrations remain unconnected. No framework issue was retained in the Next.js feedback pass.
+
+## Task: Configure and verify the supplied Warehouse connection (2026-11-12)
+
+Status: "Complete"
+Approval: "Approved for local Warehouse configuration and read-only inspection — owner requested ทำให้หน่อย and supplied connection settings after the reviewed connection recommendation"
+
+### Goal
+
+Connect the existing server-side Warehouse reader to the supplied warehouse_db database and verify which catalogue, specification, component and image sources are actually available.
+
+### Scope In
+
+- Create ignored .env.local with WAREHOUSE_DATABASE_URL mapped from the supplied Warehouse URL and WAREHOUSE_S3_ENDPOINT/BUCKET/REGION from the supplied storage settings. Keep credentials out of tracked files and output.
+- Read company IDs and catalogue/function metadata using read-only sessions and bounded timeouts. Set WAREHOUSE_COMPANY_ID only from verified company evidence; ask if the source is ambiguous.
+- Exercise the existing product/fact/component readers against the confirmed company and verify eligible SKU counts and available content. Check storage access without inventing credentials or data.
+- Preserve the separate quotation registry configuration in .env. Do not copy the supplied Warehouse URL to Prisma DATABASE_URL.
+
+### Scope Out
+
+- No application source, shared UI, styling, dependency, database function/role/grant/schema/data mutation or production deployment.
+- No use or storage of the supplied OpenAI key, PostgREST settings or empty APP_SESSION_SECRET; they are not required by the existing pg reader.
+- No legacy content fallback, new product facts, stock filter or snapshot-price fallback.
+
+### UI/UX Brand Alignment
+
+- Reference: existing Warehouse-only catalogue/detail design and the owner's screenshots.
+- Design: preserve existing presentation and blank missing data behaviour.
+- Responsive: this scope changes local connection settings only. Verify data integration through the existing reader/API as available; no UI redesign is authorised.
+
+### Input / Output
+
+- Input: owner-provided PostgreSQL URL and storage endpoint/bucket/region. Storage access key and secret were provided empty; actual source metadata/company and storage accessibility require inspection.
+- Output: ignored local Warehouse configuration and a verified account of readable products/functions/content, with any remaining blockers stated explicitly.
+
+### Acceptance Criteria
+
+- [x] Warehouse connection is stored only in ignored .env.local and the separate registry values remain unchanged.
+- [x] Warehouse sessions enforce read-only operations and bounded timeouts; verify server/database and company evidence without disclosing credentials.
+- [x] Inspect actual catalogue dependencies and available RPCs; run current readers where the schema supports them.
+- [x] Verify image accessibility or identify the exact missing storage access.
+- [x] Report actual verification and remaining limitations; no claim of production deployment or database installation.
+
+### Missing Information
+
+- None for this local connection scope. Source data identifies one active/non-deleted company with items, ID 1. The owner subsequently configured the missing S3 credentials locally and signed reads passed.
+- No schema incompatibility requiring application edits was found. Deployment configuration, new RPC installation and additional gallery data remain outside this task.
+
+### Approval Record
+
+- Owner said ทำให้หน่อย and supplied the connection after the recommendation to configure the separate Warehouse URL, identify company and inspect the actual schema. This authorises these local settings and read-only checks. No Warehouse mutation, new API, production release or unrelated AI integration is authorised.
+- Owner replied ใส่แล้ว after being asked to configure the missing S3 credentials locally. Existing keys were consumed from the local environment without printing or copying their values into tracked files.
+
+### Verification / Current State
+
+- Connected to warehouse_db on PostgreSQL 16.13 using read-only sessions. Exactly one company has item records and it is active/non-deleted; configured WAREHOUSE_COMPANY_ID=1 from that evidence. master_item has 730 rows, of which 514 pass the initial company/item eligibility conditions before unit/SKU/public exclusions.
+- The existing reader returned 488 parsed non-X items; current public exclusions yield 484 unique public SKUs: 355 with positive net prices and 129 inquiry-price items. Public items include 97 primary-image references and 182 nonempty descriptions. Source fact/component readers returned 1366 verified-fact rows across 87 SKUs and 4 component rows.
+- master_data unit/group/type, verified-fact and component dependencies are present. Both supplied functions exist and executed for WPS10KS: zero component lines and two purchase-unit rows. search_master_item also exists, but its return contract omits the price/image/description fields needed to replace the catalogue reader. Existing pg queries work; no new RPC was needed or installed.
+- Local /api/products returned HTTP 200 and 484 unique SKUs matching the source reader exactly; /api/health returned HTTP 200/status ok. The local WPS10KS detail page returned HTTP 200, with its current gross price 3790 THB and 19 specification rows from source. Its primary image returned HTTP 200/image/webp.
+- Initial unsigned storage access returned 403. After the owner configured S3 credentials, a signed storage read succeeded and all 22 image routes requiring storage returned nonempty image responses. All 75 version-matched cached image routes passed HEAD checks. This covers all 97 current primary images; products without source image metadata retain the existing empty-image state. No multi-image gallery was added.
+- Node 24.22.1 ran the four scoped Warehouse regression files: 24/24 tests passed. API output contains none of the configured database/storage secrets. .env.local is Git-ignored and mode 600; .env registry content remained unchanged during verification. No application source or production settings changed.
+- Initial sandbox network/tsx-CLI IPC restrictions were resolved through approved network access and Node's tsx import loader, respectively. These are environment restrictions, not Next.js issues. Final Next.js feedback review retained no framework candidate.
+
+## Task: Review new Warehouse database product RPCs (2026-11-12)
+
+Status: "Complete"
+Approval: "Review requested; database installation and application changes pending"
+
+### Goal
+
+Check whether the supplied master_item DDL and two SQL functions can replace the product source used by the pictured catalogue/detail pages, and recommend how the website should connect to the new database.
+
+### Scope In
+
+- Review the supplied SQL against the current server-side Warehouse reader and product projections.
+- Record missing product fields, function dependencies and connection information before planning implementation.
+- The additional database-browser screenshot identifies PostgreSQL 16.13, database warehouse_db, and schemas including master_data and ecommerce. It does not provide a network address, credentials, company ID, table contents or API contract.
+
+### Scope Out
+
+- No application, shared UI, styling, environment, database object, privilege, migration or deployment changes.
+- No restoration of legacy product descriptions, specifications or gallery images. Keep the current homepage/Hero exception and separate quotation-number registry.
+
+### UI/UX Brand Alignment
+
+- Reference: the owner's catalogue/detail screenshots and the existing site. Screenshots identify the displayed fields; they do not establish that the new database contains those values.
+- Design: no visual change in this review.
+- Responsive: not applicable to this documentation-only review; any future integration must verify the existing mobile/tablet/desktop behaviour under its approved plan.
+
+### Input / Output
+
+- Input: supplied master_item DDL, get_master_item_component_tree and get_master_item_purchase_units definitions; current warehouse-postgres.ts, product-repository.ts and Warehouse-only projections.
+- Output: reviewed capability mapping and a connection recommendation, not an installed RPC or implemented source switch.
+- Current code reads master_item/base units/groups/types directly through pg, verified specifications separately from ai_products/ai_product_facts/ai_attributes, and component rows separately. This is source-code evidence, not a fresh live database verification.
+- get_master_item_component_tree requires one root item ID and returns component lines, not the root product or a catalogue. An item without component lines returns no rows. It does not return sale prices, descriptions, image metadata or technical specifications. Component activity is returned rather than filtered; that can be appropriate for an internal component tree but does not define storefront eligibility.
+- get_master_item_purchase_units requires one item ID and returns purchase-unit conversions. It does not provide a product catalogue, sale price, images or specifications. Its deletion/activity behaviour depends on the unavailable v_master_item_purchase_unit_detail definition; the supplied function itself only filters company/item.
+- master_item provides identity/name/description, base-unit/group/type references, standard_sale_price and one primary image's metadata. Image bytes still require storage. The supplied schema does not establish a multi-image gallery or structured capacity/readability facts.
+- The table creation statement is unqualified while its indexes target master_data.master_item; any future reviewed DDL must explicitly establish the intended schema rather than rely on search_path.
+
+### Recommendation / Proposed Future Direction
+
+- Use the existing server-side pg connection mechanism for warehouse_db, with WAREHOUSE_DATABASE_URL and WAREHOUSE_COMPANY_ID separate from the quotation registry's DATABASE_URL. A separate database alone does not require HTTP/PostgREST or a new function.
+- If the owner wants the read contract managed as an RPC, prepare a dedicated storefront-list function after confirming the real schema and execution role. Keep the two supplied specialised functions for their existing purposes. A pg caller can invoke a SQL function directly; no HTTP endpoint is assumed or invented.
+- The list contract must preserve identity, names, description, base unit, group/type, net price, primary-image metadata/version and current public eligibility rules. Preserve verified facts separately or include an explicitly agreed representation. Define deterministic complete-list/pagination behaviour and avoid per-item calls for catalogue loading.
+- No stock-availability requirement, product/price snapshot, legacy fallback or new gallery source is introduced by this proposal.
+
+### Acceptance Criteria
+
+- [x] Explain why the two supplied functions cannot replace the catalogue reader.
+- [x] Identify fields available from master_item versus fields requiring units, groups/types, verified facts or storage.
+- [x] Distinguish the new Warehouse database connection from the quotation registry and from an HTTP RPC API.
+- [x] Verify the actual new database schema, role access, product counts, storage and any existing catalogue RPC before implementation; see the approved connection follow-up above.
+- [x] Agree the source approach: the owner authorised the existing pg connection setup. No application/SQL implementation was required; any future new RPC needs its own approved scope.
+
+### Missing Information
+
+- None for the review. The subsequent approved connection task above verified company ID, schema, existing read functions, current product/fact/component readers and storage. A dedicated catalogue function is unnecessary for the working direct-pg approach.
+
+### Approval Record
+
+- Owner requested checking the supplied functions and asked what to do because the data is in a new database, then supplied its database-browser screenshot. This authorises analysis and recommendations; it does not approve database installation or an application implementation plan.
+
+### Verification / Current State
+
+- Reviewed current source and current architecture/memory rules. package.json/package-lock.json identify Next.js 16.4.3, React 19.3.0 and the existing pg dependency; Node.js 24 remains the project requirement.
+- Initial review found no WAREHOUSE_DATABASE_URL and did not connect. The later owner-authorised local configuration and live verification supersede that initial limitation; see the connection task above.
+- No application/UI changes; therefore no production build or responsive visual execution is claimed. Next.js feedback review found no framework issue in this SQL/source audit.
+
 ## Current architecture — 2026-11-12
 
 This section supersedes historical product-source and fallback policies below.
 
-- Interior catalog, cards, details, search, comparison, carousel and quotation product fields use live Warehouse PostgreSQL data and uniquely valued verified facts. Missing images/specifications/descriptions stay empty; no legacy editorial fallback.
+- Interior catalog, cards, details, search, comparison, carousel and quotation product fields use live Warehouse PostgreSQL data and uniquely valued verified facts through ecommerce.get_website_products(bigint,text[]) via the server pg pool. Source-table joins are in the stored function; catalogue facts/components share its result and image metadata uses exact-SKU RPC reads. Missing images/specifications/descriptions stay empty; no legacy editorial fallback or fallback to direct table SQL.
 - Products satisfy the current company,active,saleable,not-deleted,valid-unit and nonnegative-price filters. Exclude X-prefix placeholders and the4 hidden calibration-fee SKUs. A zero price displays inquiry; automatic quotations require a positive net price and add VAT7% once.
 - Warehouse PostgreSQL and storage are read-only. Product/price snapshots are retired. `data/warehouse/images.json` and `public/images/warehouse-cache/` cache only version-matched images. `bun run warehouse:images` refreshes images, not products/prices.
 - Homepage/Hero is the explicit presentation exception: preserve its original local campaign media/copy/story/video sources. Local site settings/navigation and general company/service content remain available; legacy product imports are reference/homepage data only.

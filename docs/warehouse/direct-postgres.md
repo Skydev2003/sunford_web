@@ -1,4 +1,4 @@
-# อ่านข้อมูล Warehouse โดยตรง
+# อ่านข้อมูล Warehouse ผ่าน PostgreSQL RPC
 
 กติกาปัจจุบัน: 12 พฤศจิกายน 2026
 
@@ -20,12 +20,37 @@ Production ต้องมีฐานทะเบียนเลขใบเส
 
 ## เส้นทางข้อมูล
 
-1. `src/features/services/warehouse-postgres.ts` สร้าง connection pool และใช้ SQL แบบ parameterized อ่านสินค้า หน่วย กลุ่มสินค้า verified facts และ component rows
-2. `src/features/catalog/server/product-repository.ts` รวมข้อมูลเป็น Product และใช้ `warehouseSiteProducts` ตัดข้อมูลสินค้าเดิมออกจากผลลัพธ์หน้าภายใน
+1. `src/features/services/warehouse-postgres.ts` สร้าง connection pool และเรียก `ecommerce.get_website_products($1::bigint, $2::text[])` ด้วย parameters ที่ bind ไว้ การ join ตารางสินค้า หน่วย กลุ่ม verified facts และ component rows อยู่ในฟังก์ชันฐานข้อมูล
+2. `src/features/catalog/server/product-repository.ts` รวมสินค้า facts และ components จาก RPC ครั้งเดียวเป็น Product และใช้ `warehouseSiteProducts` ตัดข้อมูลสินค้าเดิมออกจากผลลัพธ์หน้าภายใน
 3. Card/detail/search/comparison/Carousel ใช้ Warehouse projection เดียวกัน หน้าใบเสนอราคาเรียก `getCurrentProducts` เพื่ออ่านราคาปัจจุบันก่อนให้เลือกสินค้า
 4. `src/app/api/products/[sku]/image/route.ts` อ่านรูปจาก Storage เมื่อ cache รูปเดิมใช้ไม่ได้
 
 `master_data.master_item` และ `master_data.master_unit` เป็นแหล่งสินค้า/หน่วย สเปกใช้เฉพาะค่าที่ verified และไม่ขัดแย้งกัน การจับคู่หัวอ่าน/แท่นต้องมีหลักฐานใน verified facts หรือ `master_data.master_item_component_line` ชื่อรุ่นเพียงอย่างเดียวไม่ยืนยันว่าจับคู่กันได้
+
+## สัญญา RPC และการติดตั้ง
+
+นิยามที่ตรวจแล้วอยู่ใน `docs/warehouse/get-website-products.sql` ใช้กับ `warehouse_db` เท่านั้น เปิดไฟล์นี้ใน SQL client ของฐาน Warehouse แล้ว execute ภายใน transaction ด้วย role เจ้าของฟังก์ชัน หลังตรวจว่าชื่อฟังก์ชันยังไม่ชนกับของระบบอื่น การติดตั้งแก้เฉพาะฟังก์ชัน comment และ execution ACL ของฟังก์ชันนี้ ไม่รัน Prisma migration หรือแก้ตาราง/ข้อมูลสินค้า
+
+```sql
+-- อ่านครบทั้งบริษัท ไม่มี LIMIT แฝง
+SELECT * FROM ecommerce.get_website_products(1);
+
+-- กรอง SKU แบบ exact; ส่งผ่าน bound parameter ในโค้ดเว็บ
+SELECT * FROM ecommerce.get_website_products(1, ARRAY['G106698']);
+
+-- อาร์เรย์ว่างหมายถึงไม่เลือกรายการใด ต่างจาก NULL ที่อ่านครบ
+SELECT * FROM ecommerce.get_website_products(1, ARRAY[]::text[]);
+```
+
+เลขบริษัทในตัวอย่างคือบริษัทที่ตรวจพบปัจจุบัน ตัวฟังก์ชันรับ `p_master_company_id` จริงจาก environment ไม่ได้กำหนดบริษัทไว้ตายตัว
+
+หนึ่งแถวต่อสินค้าคืนชื่อ/คำอธิบาย หน่วย กลุ่ม usage family ราคาก่อน VAT เป็น text, `master_item_id` เป็น text, metadata รูป/version, `read_at` และอาร์เรย์ JSONB สองชุด: `specifications` มี verified attributes พร้อม text/numeric/options/unit; `components` มี SKU/quantity ของส่วนประกอบ อาร์เรย์ไม่มีข้อมูลคืน `[]` เว็บยังใช้กติกาเดิมในการละค่าของสเปกที่ขัดแย้งกัน
+
+RPC คืน metadata ของรูปหลักเท่านั้น ไฟล์รูปจริงยังอ่านจาก Spaces/cache เดิม ไม่คืน S3 credentials หรือ URL ที่สมมติขึ้น การค้น metadata ของรูปก็ใช้ RPC โดยส่งอาร์เรย์ SKU เดียว
+
+ฟังก์ชันเป็น SQL `STABLE`, `SECURITY INVOKER` และกำหนด `search_path=pg_catalog` โดยระบุตารางพร้อม schema ครบ Role เจ้าของที่ตั้งค่าไว้เรียกได้ ส่วน `PUBLIC` ไม่มี EXECUTE หากเปลี่ยนไปใช้ role อ่านข้อมูลเฉพาะ ต้องให้ USAGE/SELECT/EXECUTE ตาม scope จริงแยกต่างหาก ไม่มีการ grant ให้ anonymous/API role และยังไม่ได้เปิดเส้น HTTP/PostgREST
+
+ถ้า RPC ไม่มี สิทธิ์ไม่พอ หรือผลลัพธ์ผิดสัญญา เว็บจะแสดงข้อผิดพลาดตามกติกาเดิม ไม่ย้อนกลับไป query ตารางตรง คำสั่ง rollback ฟังก์ชันอยู่ท้ายไฟล์ SQL เป็น comment ให้คืนโค้ด caller เดิมก่อน แล้วจึงลบเฉพาะ signature นี้เมื่อไม่มีผู้ใช้งานเหลือ
 
 ## กติกาการแสดงสินค้าและราคา
 

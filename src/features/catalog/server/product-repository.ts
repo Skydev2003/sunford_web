@@ -13,10 +13,6 @@ import { warehouseCatalog } from "../data/warehouse-products";
 import { attachWarehouseCardFacts } from "../data/warehouse-card-data";
 import { warehouseDetailProduct } from "../data/warehouse-detail-data";
 import { warehouseSiteProducts } from "../data/warehouse-site-data";
-import {
-  readWarehouseCardFacts,
-  readWarehouseComponents,
-} from "@/features/services/warehouse-postgres";
 
 export async function getProducts(): Promise<Product[]> {
   "use cache";
@@ -27,19 +23,14 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getCurrentProducts(): Promise<{ products: Product[]; readAt: string }> {
   const [official, editorial] = await Promise.all([getOfficialProducts(), getEditorialProducts()]);
-  const skus = official.items.map((item) => item.sku);
-  const [facts, components] = await Promise.all([
-    readWarehouseCardFacts(skus),
-    readWarehouseComponents(skus),
-  ]);
   return {
     products: attachProductTopics(
       warehouseSiteProducts(
         attachWarehouseCardFacts(
           warehouseCatalog(official.items, editorial, savedWarehouseImage),
-          facts,
+          official.facts,
         ),
-        components,
+        official.components,
       ),
     ),
     readAt: official.readAt,

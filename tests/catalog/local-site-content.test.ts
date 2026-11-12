@@ -32,7 +32,7 @@ async function localModule(entry: string) {
                     ? "export const hasDatabase=()=>true;"
                     : path === "@/lib/prisma"
                       ? "export const getPrisma=()=>{throw Error('Legacy CMS database accessed')};"
-                      : "export const getOfficialProducts=async()=>({items:[{sku:'G106308',product_name:'Warehouse source',unit:'เครื่อง',sale_price:100,image_url:'/image?v=current'}],readAt:'2026-11-11T00:00:00Z'}); export const savedWarehouseImage=()=>null; export const readWarehouseCardFacts=async()=>[]; export const readWarehouseComponents=async()=>[];",
+                      : "export const getOfficialProducts=async()=>({items:[{sku:'G106308',product_name:'Warehouse source',unit:'เครื่อง',sale_price:100,image_url:'/image?v=current'}],facts:[{sku:'G106308',title:'พิกัดชั่งสูงสุด',value_text:null,value_number:'100',unit:'kg'}],components:[{root_sku:'G106308',sku:'PART',quantity:'2'}],readAt:'2026-11-11T00:00:00Z'}); export const savedWarehouseImage=()=>null; export const readWarehouseCardFacts=async()=>{throw Error('Unexpected separate fact read')}; export const readWarehouseComponents=async()=>{throw Error('Unexpected separate component read')};",
           }));
         },
       },
@@ -56,6 +56,8 @@ async function localModule(entry: string) {
         price: number;
         image: string;
         fallbackImage?: string;
+        warehouseSpecifications?: { label: string; value: string }[];
+        warehouseComponents?: { sku: string; quantity: number }[];
       }[];
     }>;
   };
@@ -83,4 +85,10 @@ test("the product repository uses Warehouse prices and local content without any
   assert.equal(products[0].price, 107);
   assert.match(products[0].image, /^\/api\/products\/G106308\/image\?v=current$/);
   assert.equal(products[0].fallbackImage, undefined);
+  assert.equal(products[0].warehouseSpecifications?.length, 1);
+  assert.equal(products[0].warehouseSpecifications?.[0].label, "พิกัดชั่งสูงสุด");
+  assert.equal(products[0].warehouseSpecifications?.[0].value, "100 kg");
+  assert.equal(products[0].warehouseComponents?.length, 1);
+  assert.equal(products[0].warehouseComponents?.[0].sku, "PART");
+  assert.equal(products[0].warehouseComponents?.[0].quantity, 2);
 });

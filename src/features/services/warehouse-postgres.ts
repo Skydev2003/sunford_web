@@ -56,17 +56,6 @@ async function queryWarehouse<Row extends QueryResultRow>(sql: string, values: u
   }
 }
 
-const fromItems = `
-  from master_data.master_item item
-  join master_data.master_unit unit
-    on unit.master_unit_id = item.base_master_unit_id
-   and unit.is_deleted = false
-  where item.master_company_id = $1
-    and item.is_deleted = false
-    and item.is_active = true
-    and item.is_saleable = true
-    and item.standard_sale_price >= 0`;
-
 type ItemRow = {
   description?: string | null;
   group_name?: string | null;
@@ -81,6 +70,74 @@ type ItemRow = {
   updated_at: string;
   read_at: Date;
 };
+
+type RpcRow = ItemRow & {
+  image_size_bytes?: number | null;
+  specifications: Omit<WarehouseCardFact, "sku">[];
+  components: { sku: string; quantity: string }[];
+};
+
+async function readWarehouseRpc(skus: string[] | null = null) {
+  const result = await queryWarehouse<RpcRow>(
+    "select * from ecommerce.get_website_products($1::bigint, $2::text[])",
+    [Number(process.env.WAREHOUSE_COMPANY_ID), skus],
+  );
+  for (const row of result.rows) {
+    if (typeof row.sale_price !== "string" || !row.sale_price.trim())
+      throw new Error("Invalid Warehouse RPC price");
+    if (!Array.isArray(row.specifications) || !Array.isArray(row.components))
+      throw new Error("Invalid Warehouse RPC collections");
+    for (const fact of row.specifications) {
+      if (
+        !fact ||
+        !Object.hasOwn(fact, "value_options") ||
+        typeof fact.title !== "string" ||
+        (fact.value_text !== null && typeof fact.value_text !== "string") ||
+        (fact.value_number !== null &&
+          (typeof fact.value_number !== "string" ||
+            !fact.value_number.trim() ||
+            !Number.isFinite(Number(fact.value_number)))) ||
+        (fact.unit !== null && typeof fact.unit !== "string")
+      )
+        throw new Error("Invalid Warehouse RPC specification");
+    }
+    for (const component of row.components) {
+      if (
+        !component ||
+        typeof component.sku !== "string" ||
+        !component.sku.trim() ||
+        typeof component.quantity !== "string" ||
+        !component.quantity.trim() ||
+        !Number.isFinite(Number(component.quantity))
+      )
+        throw new Error("Invalid Warehouse RPC component");
+    }
+  }
+  return result.rows;
+}
+
+function rpcFacts(rows: RpcRow[]): WarehouseCardFact[] {
+  return rows.flatMap((row) =>
+    row.specifications.map((fact) => ({
+      sku: row.sku,
+      title: fact.title,
+      value_text: fact.value_text,
+      value_number: fact.value_number,
+      value_options: fact.value_options,
+      unit: fact.unit,
+    })),
+  );
+}
+
+function rpcComponents(rows: RpcRow[]) {
+  return rows.flatMap((row) =>
+    row.components.map((component) => ({
+      root_sku: row.sku,
+      sku: component.sku,
+      quantity: component.quantity,
+    })),
+  );
+}
 
 export function warehouseRows(rows: ItemRow[]) {
   return parseWarehouseProducts({
@@ -108,69 +165,32 @@ export function warehouseImageUrl(
 }
 
 export async function readWarehouseProducts() {
-  const result = await queryWarehouse<ItemRow>(
-    `select item.item_code as sku, item.item_name as product_name, item.item_description as description, unit.unit_name as unit,
-      (select g.item_group_name from master_data.master_item_group g where g.master_company_id=item.master_company_id and g.master_item_group_id=item.master_item_group_id and not g.is_deleted) as group_name,
-      (select t.item_usage_family from master_data.master_item_type t where t.master_company_id=item.master_company_id and t.master_item_type_id=item.master_item_type_id and not t.is_deleted) as usage_family,
-      item.standard_sale_price::text as sale_price, item.master_item_id::text,
-      item.image_object_key, item.image_mime_type, item.updated_at::text,
-      statement_timestamp() as read_at ${fromItems}
-      order by item.item_code, item.master_item_id`,
-    [Number(process.env.WAREHOUSE_COMPANY_ID)],
-  );
+  const rows = await readWarehouseRpc();
+  const feed = warehouseRows(rows);
+  const skus = new Set(feed.items.map((item) => item.sku));
+  const retained = rows.filter((row) => skus.has(row.sku));
   return {
-    ...warehouseRows(result.rows),
-    readAt: (result.rows[0]?.read_at ?? new Date()).toISOString(),
+    ...feed,
+    facts: rpcFacts(retained),
+    components: rpcComponents(retained),
+    readAt: (rows[0]?.read_at ?? new Date()).toISOString(),
   };
 }
 
 export async function readWarehouseCardFacts(skus: string[]): Promise<WarehouseCardFact[]> {
   if (!skus.length) return [];
-  const result = await queryWarehouse<WarehouseCardFact>(
-    `select item.item_code as sku, attribute.title, fact.value_text,
-      fact.value_number::text, fact.value_options, attribute.unit
-     from master_data.ai_products product
-     join master_data.master_item item on item.master_item_id = product.master_item_id
-       and item.master_company_id = product.master_company_id
-     join master_data.ai_product_facts fact on fact.product_id = product.id
-       and fact.master_company_id = product.master_company_id
-     join master_data.ai_attributes attribute on attribute.id = fact.attribute_id
-       and attribute.master_company_id = product.master_company_id
-     where product.master_company_id = $1 and product.is_active = true
-       and attribute.is_active = true and fact.verification = 'verified'
-       and item.is_deleted = false and item.item_code = any($2::text[])
-     order by item.item_code, attribute.title, attribute.id`,
-    [Number(process.env.WAREHOUSE_COMPANY_ID), skus],
-  );
-  return result.rows;
+  return rpcFacts(await readWarehouseRpc(skus));
 }
 
 export async function readWarehouseComponents(skus: string[]) {
   if (!skus.length) return [];
-  const result = await queryWarehouse<{
-    root_sku: string;
-    sku: string;
-    quantity: string;
-  }>(
-    `select root.item_code as root_sku, component.item_code as sku, line.quantity::text
- from master_data.master_item_component_line line
- join master_data.master_item root on root.master_item_id=line.root_master_item_id and root.master_company_id=line.master_company_id
- join master_data.master_item component on component.master_item_id=line.component_master_item_id and component.master_company_id=line.master_company_id
- where line.master_company_id=$1 and not line.is_deleted and not root.is_deleted
- and not component.is_deleted and root.item_code=any($2::text[])`,
-    [Number(process.env.WAREHOUSE_COMPANY_ID), skus],
-  );
-  return result.rows;
+  return rpcComponents(await readWarehouseRpc(skus));
 }
 
 export async function readWarehouseImage(sku: string) {
-  const result = await queryWarehouse<ItemRow>(
-    `select item.item_code as sku, item.master_item_id::text, item.image_object_key,
-      item.image_mime_type, item.updated_at::text ${fromItems} and item.item_code = $2 limit 2`,
-    [Number(process.env.WAREHOUSE_COMPANY_ID), sku],
-  );
-  if (result.rows.length > 1) throw new Error("Conflicting Warehouse SKU");
-  const row = result.rows[0];
+  const rows = await readWarehouseRpc([sku]);
+  if (rows.length > 1) throw new Error("Conflicting Warehouse SKU");
+  const row = rows[0];
   if (!row?.image_object_key) return null;
   if (
     !row.image_object_key.startsWith(

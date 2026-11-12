@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import { Pool } from "pg";
 import {
   closeWarehousePool,
+  readWarehouseCardFacts,
+  readWarehouseComponents,
+  readWarehouseImage,
   readWarehouseProducts,
   sameWarehouseImage,
   warehouseConnectionOptions,
@@ -51,6 +54,8 @@ const row = {
   read_at: new Date("2026-11-11T01:00:00Z"),
 };
 
+const rpcRow = { ...row, specifications: [], components: [] };
+
 test("source rows preserve exact names/units/net price and reject conflicting or invalid source values", () => {
   const data = warehouseRows([row]);
   assert.equal(data.items[0].sale_price, 100.25);
@@ -64,13 +69,13 @@ test("source rows preserve exact names/units/net price and reject conflicting or
   assert.equal(warehouseRows([{ ...row, image_object_key: null }]).items[0].image_url, null);
 });
 
-test("each direct read sees updated prices and includes zero-priced inquiry products", async () => {
+test("each RPC read sees updated prices and includes zero-priced inquiry products", async () => {
   const original = { ...process.env };
   process.env.WAREHOUSE_DATABASE_URL = "postgresql://warehouse-test/db";
   process.env.WAREHOUSE_COMPANY_ID = "1";
   let price = "100.25";
   const query = mock.method(Pool.prototype, "query", (async () => ({
-    rows: [{ ...row, sale_price: price }],
+    rows: [{ ...rpcRow, sale_price: price }],
   })) as unknown as typeof Pool.prototype.query);
   try {
     assert.equal((await readWarehouseProducts()).items[0].sale_price, 100.25);
@@ -80,8 +85,127 @@ test("each direct read sees updated prices and includes zero-priced inquiry prod
     assert.equal((await readWarehouseProducts()).items[0].sale_price, 0);
     assert.equal(query.mock.callCount(), 3);
     const args = query.mock.calls[0].arguments;
-    assert.match(String(args[0]), /standard_sale_price >= 0/);
-    assert.deepEqual(args[1], [1]);
+    assert.match(String(args[0]), /ecommerce\.get_website_products\(/);
+    assert.deepEqual(args[1], [1, null]);
+  } finally {
+    query.mock.restore();
+    await closeWarehousePool();
+    process.env = original;
+  }
+});
+
+test("one RPC result preserves nested specifications and components without multiplying products", async () => {
+  const original = { ...process.env };
+  process.env.WAREHOUSE_DATABASE_URL = "postgresql://warehouse-test/db";
+  process.env.WAREHOUSE_COMPANY_ID = "1";
+  const specification = {
+    title: "พิกัดชั่งสูงสุด",
+    value_text: null,
+    value_number: "10000",
+    value_options: null,
+    unit: "g",
+  };
+  const query = mock.method(Pool.prototype, "query", (async () => ({
+    rows: [
+      {
+        ...rpcRow,
+        specifications: [specification],
+        components: [{ sku: "PART", quantity: "2.5" }],
+      },
+    ],
+  })) as unknown as typeof Pool.prototype.query);
+  try {
+    const feed = await readWarehouseProducts();
+    assert.equal(feed.items.length, 1);
+    assert.deepEqual(feed.facts, [{ sku: "G123", ...specification }]);
+    assert.deepEqual(feed.components, [{ root_sku: "G123", sku: "PART", quantity: "2.5" }]);
+    assert.equal(query.mock.callCount(), 1);
+    assert.deepEqual(await readWarehouseCardFacts(["G123"]), feed.facts);
+    assert.deepEqual(await readWarehouseComponents(["G123"]), feed.components);
+    assert.deepEqual(query.mock.calls[1].arguments[1], [1, ["G123"]]);
+    assert.deepEqual(query.mock.calls[2].arguments[1], [1, ["G123"]]);
+    for (const call of query.mock.calls)
+      assert.doesNotMatch(String(call.arguments[0]), /master_data\./);
+  } finally {
+    query.mock.restore();
+    await closeWarehousePool();
+    process.env = original;
+  }
+});
+
+test("malformed RPC collections are rejected instead of silently losing specifications", async () => {
+  const original = { ...process.env };
+  process.env.WAREHOUSE_DATABASE_URL = "postgresql://warehouse-test/db";
+  process.env.WAREHOUSE_COMPANY_ID = "1";
+  let result: Record<string, unknown> = { ...rpcRow, specifications: null };
+  const query = mock.method(Pool.prototype, "query", (async () => ({
+    rows: [result],
+  })) as unknown as typeof Pool.prototype.query);
+  try {
+    for (const malformed of [
+      { ...rpcRow, specifications: null },
+      { ...rpcRow, components: {} },
+      { ...rpcRow, specifications: [{ title: "bad", value_number: 100 }] },
+      {
+        ...rpcRow,
+        specifications: [{ title: "options", value_text: null, value_number: null, unit: "" }],
+      },
+      { ...rpcRow, components: [{ sku: "PART", quantity: "NaN" }] },
+    ]) {
+      result = malformed;
+      await assert.rejects(() => readWarehouseProducts(), /Invalid Warehouse RPC/);
+    }
+    result = rpcRow;
+    assert.deepEqual((await readWarehouseProducts()).facts, []);
+  } finally {
+    query.mock.restore();
+    await closeWarehousePool();
+    process.env = original;
+  }
+});
+
+test("RPC refuses null or blank prices instead of converting them to inquiry prices", async () => {
+  const original = { ...process.env };
+  process.env.WAREHOUSE_DATABASE_URL = "postgresql://warehouse-test/db";
+  process.env.WAREHOUSE_COMPANY_ID = "1";
+  let price: unknown = null;
+  const query = mock.method(Pool.prototype, "query", (async () => ({
+    rows: [{ ...rpcRow, sale_price: price }],
+  })) as unknown as typeof Pool.prototype.query);
+  try {
+    for (const missing of [null, "", " "]) {
+      price = missing;
+      await assert.rejects(() => readWarehouseProducts(), /Invalid Warehouse RPC/);
+    }
+  } finally {
+    query.mock.restore();
+    await closeWarehousePool();
+    process.env = original;
+  }
+});
+
+test("empty and exact-SKU RPC lookups preserve empty results and keep SKU values bound", async () => {
+  const original = { ...process.env };
+  process.env.WAREHOUSE_DATABASE_URL = "postgresql://warehouse-test/db";
+  process.env.WAREHOUSE_COMPANY_ID = "1";
+  let rows = [rpcRow];
+  const query = mock.method(Pool.prototype, "query", (async () => ({
+    rows,
+  })) as unknown as typeof Pool.prototype.query);
+  try {
+    assert.deepEqual(await readWarehouseCardFacts([]), []);
+    assert.deepEqual(await readWarehouseComponents([]), []);
+    assert.equal(query.mock.callCount(), 0);
+    const sku = "G123'); select 1; --";
+    assert.equal((await readWarehouseImage(sku))?.master_item_id, "84");
+    assert.deepEqual(query.mock.calls[0].arguments[1], [1, [sku]]);
+    assert.doesNotMatch(String(query.mock.calls[0].arguments[0]), /select 1; --/);
+    rows = [];
+    const empty = await readWarehouseProducts();
+    assert.deepEqual(empty.items, []);
+    assert.deepEqual(empty.facts, []);
+    assert.deepEqual(empty.components, []);
+    assert.equal(await readWarehouseImage("UNKNOWN"), null);
   } finally {
     query.mock.restore();
     await closeWarehousePool();
@@ -151,7 +275,7 @@ test("Warehouse retries a disconnected read once and surfaces persistent failure
     attempts++;
     if (attempts === 1)
       throw Object.assign(new Error("Connection terminated unexpectedly"), { code: "ECONNRESET" });
-    return { rows: [row] };
+    return { rows: [rpcRow] };
   }) as unknown as typeof Pool.prototype.query);
   try {
     assert.equal((await readWarehouseProducts()).items[0].sku, row.sku);
