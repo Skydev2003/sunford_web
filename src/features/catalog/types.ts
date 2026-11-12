@@ -40,6 +40,7 @@ export type Product = {
   price?: number | null;
   warehouseSku?: string;
   warehouseName?: string;
+  storefrontName?: string;
   warehouseGroup?: string;
   warehouseUsageFamily?: string;
   warehouseCompatibleSkus?: string[];

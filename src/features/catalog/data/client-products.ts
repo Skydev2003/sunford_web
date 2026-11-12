@@ -6,7 +6,9 @@ export function productCardData(product: Product): ProductCardData {
     return {
       id: product.id,
       slug: product.slug,
-      name: warehouseModelName(product.warehouseSku, product.warehouseName ?? product.warehouseSku),
+      name:
+        product.storefrontName ??
+        warehouseModelName(product.warehouseSku, product.warehouseName ?? product.warehouseSku),
       category: product.category,
       warehouseSku: product.warehouseSku,
       price: product.price,

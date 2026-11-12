@@ -99,7 +99,6 @@ export function CatalogOverlays({
               />
               <div>
                 <strong>{p.name}</strong>
-                <span>{p.subtitle}</span>
                 {p.warehouseSku && p.price === null && <span>สอบถามราคา</span>}
               </div>
               <ArrowRight size={18} />

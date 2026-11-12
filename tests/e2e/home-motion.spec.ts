@@ -138,6 +138,31 @@ test("spotlight loops without playback controls and respects visibility and moti
   await expect(video).toHaveJSProperty("paused", false);
 });
 
+test("spotlight resolves the current Warehouse product without responsive overflow", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1440, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    const spotlight = page.locator(".product-spotlight");
+    const video = spotlight.locator(".spotlight-product-video");
+    await spotlight.scrollIntoViewIfNeeded();
+    await expect(spotlight).toBeVisible();
+    await expect(video).toHaveAttribute("src", "/videos/jc21-panel-aligned-1080p.mp4");
+    await expect(video).toHaveAttribute("poster", /jc21-panel-aligned-poster\.png$/);
+    await expect(spotlight.locator(".spotlight-visual")).toHaveAttribute(
+      "href",
+      "/products/warehouse-G106094",
+    );
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      viewport.width,
+    );
+  }
+});
+
 test("explicit Hero pause survives product selection and dragging until play", async ({ page }) => {
   await page.goto("/");
   const stage = page.locator(".hero-model-stage");
@@ -187,7 +212,7 @@ test("failed video keeps its poster and product link", async ({ page }) => {
   await expect(spotlight.locator(".spotlight-visual img")).toBeVisible();
   await expect(spotlight.locator(".spotlight-visual")).toHaveAttribute(
     "href",
-    "/products/acs30-jc21",
+    "/products/warehouse-G106094",
   );
   await expect(spotlight.getByRole("button")).toHaveCount(0);
 });

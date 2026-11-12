@@ -363,7 +363,6 @@ export function ProductCategoryMock({
                 >
                   <div className={styles.showcaseCopy}>
                     <p className={styles.showcaseName}>{cardNames[product.id] ?? product.name}</p>
-                    <p className={styles.showcaseSubtitle}>{product.subtitle}</p>
                     <span className={styles.showcaseCta}>ดูรายละเอียด</span>
                   </div>
                   <div className={styles.showcaseArt}>

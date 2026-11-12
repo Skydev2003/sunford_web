@@ -58,7 +58,6 @@ export function ProductCard({
         <Link href={`/products/${product.slug}`}>
           <h3>{product.name}</h3>
         </Link>
-        <p>{product.subtitle}</p>
         {product.warehouseSku && product.price === null && <p>สอบถามราคา</p>}
         <div className="product-card-bottom">
           <span>{product.capacity}</span>

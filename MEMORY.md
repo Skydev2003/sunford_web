@@ -1,5 +1,11 @@
 # Project Memory
 
+## Budget the visible height of frozen spreadsheet rows
+
+- Observed: exported group worksheets froze5rows totaling196points, including a45point empty spacer and70point header. Tall body rows left only a few products visible in Excel; the user reported the layout as a bug.
+- Root cause: checking data parity and a range preview without budgeting the actual frozen viewport did not expose the excessive fixed-height area at the user's zoom/scroll position.
+- Correct behavior: for product-list workbooks, keep the frozen title/context/header area around100points or less, make spacer rows minimal, and use compact24–36point list rows with full long text retained for expansion. Verify pane/selection/zoom/active-tab metadata and a viewport-sized before/after preview; initialize the data pane and active cell at the first item. Preserve every value, identifier, table/filter and unrelated worksheet while fixing layout.
+
 ## Current policy — 2026-11-12
 
 Interior product fields, photos, prices and verified specifications use Warehouse only. Leave missing values empty and display zero prices as inquiry; automatic quotations require positive net prices and add VAT7% once. No file-based product/price fallback or legacy editorial image/spec filling. Homepage/Hero retains its explicitly approved local presentation exception. Keep the quotation-number registry separate from read-only Warehouse.
@@ -9,6 +15,12 @@ Owner approved the complete product RPC Spec/Plan on 2026-11-12. Product-content
 RPC delivery verified: exact API parity for484 public SKUs,97 primary images,161 catalogue/27 UAT/7 browser checks, TypeScript/lint/format and795-page build. Function is STABLE/SECURITY INVOKER with PUBLIC execution revoked; runtime product reads remain read-only. No production deployment. Existing Playwright binary was missing, so tests used the configured installed Chrome channel; missing PDF packages were restored from the existing lockfile with integrity verification, without changing dependencies.
 
 Earlier notes are historical when they conflict with this policy. Retained imported product records/images are reference/homepage data. Six customer-map deletions are explicitly held outside the current safe commits. Use distinct output directories for concurrent Playwright runs to avoid deleting another run's active traces.
+
+## Keep homepage Spotlight identity aligned with Warehouse SKU
+
+- Observed: the JC21 homepage Spotlight disappeared even though its MP4 remained valid, because rendering and link resolution required the legacy ID `acs30-jc21` while the current official product is `warehouse-G106094` with Warehouse SKU `G106094`.
+- Correct behavior: resolve the approved JC21 homepage exception through one shared exact identity rule that supports Warehouse SKU `G106094` and retains the legacy ID fallback. Reuse that rule for both rendering/video selection and link resolution; do not force an ambiguous legacy-product mapping or change Warehouse data.
+- Verified: the existing video/poster render and link to `/products/warehouse-G106094`; playback, visibility, reduced-motion, failure fallback and 390px/1440px layout regressions pass without changing Hero, CSS or media assets.
 
 ## Logo alignment in the Home Navbar flyout
 
@@ -715,3 +727,24 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Warehouse-only interior fields supersede earlier snapshot/editorial fallback notes. Preserve only the explicitly approved homepage/Hero presentation exception. Keep reference imports without using them to fill missing interior product data.
 - Owner authorized committing all remaining work by group while holding6 customer-map deletions. Validate the committed candidate with those map files retained from Git; do not restore,stage or delete them as part of the delivery. Correct browser expectations that still assume old static pairs or editorial photos without changing product behavior.
 - Keep current documentation distinguishable from historical verification. Do not present old SKU counts, positive-only eligibility, fallback-photo rules or file-based prices as active instructions.
+
+## Warehouse category matching (2026-11-12)
+
+- Plain substring checks matched ไร้สาย/มีสาย on complete devices as cables, and กล้องถ่ายภาพ as ล้อ. Identify the complete device type before matching component terms, and use word context for cable and wheel rules.
+- Use the RPC group/name/description and distinct verified facts in warehouse-classification.ts. Validate every emitted subgroup against its parent. For packaged products, match the exact main-model text to a verified model on a current Warehouse scale before assigning its parent; do not copy the reference product's technical subgroups.
+- Source highlights can refer to another model even with verified status. Compare explicitly named subjects with the sold model before using highlight text as category evidence. Record conflicts and keep missing frame grades and OS values in the review queue.
+
+## Active route CSS with preserved pages (2026-11-12)
+
+- A hidden retained homepage still matched ancestor :has(>.page) and .page~footer selectors after client navigation, leaking its black surface/footer theme into product details until reload.
+- Scope cross-route homepage ancestor/footer rules to the active pathname marker on CatalogRouteFrame. Hidden DOM presence alone must not select the current page theme. Verify home-to-product links and back/forward in the same document against direct-load colors.
+
+## Image-count scope reconciliation (2026-11-12)
+
+- A97-image storefront audit was compared with138company-wide master_item image rows. The41difference was entirely inactive products: is_saleable=true but is_active=false. The general non-null-image SQL intentionally did not apply the RPC eligibility filters.
+- Correct behavior: whenever reporting image completeness, label the population explicitly and report company-wide image rows, eligible RPC/public image rows, website images and exclusion reasons separately. Do not call the eligible97images all images in Warehouse. Distinguish missing source photos, filtered products and failed downloads before suggesting an import or source-filter change.
+
+## Shared surfaces and early footer hydration (2026-11-12)
+
+- Hidden retained service markup matched the shared descendant paper selector and left other routes pale gray. Select wrapper themes from active pathname attributes; do not infer the active route from retained descendants. Compare direct visits with actual link/back/forward navigation at390/834/1440px.
+- Immediate builder-to-service-to-back navigation left the shared footer with inline display:none in5/5probes; waiting for hydration avoided it in3/3controls. Browser instrumentation identified React hideOrUnhideDehydratedBoundary as the writer. A footer-only Fragment keyed by pathname restores visible footer DOM in5/5rapid probes; an added Suspense boundary alone did not help. Keep the key confined to the footer to preserve page/builder state, and verify immediate navigation as well as settled pages when changing this workaround.

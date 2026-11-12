@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, useState, type ReactNode } from "react";
+import { createContext, Fragment, useContext, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useStaggerBounce } from "@/components/ui/use-stagger-bounce";
@@ -35,13 +35,18 @@ export function CatalogRouteFrame({
   const [overlayHost, setOverlayHost] = useState<HTMLDivElement | null>(null);
   return (
     <OverlayHostContext.Provider value={setOverlayHost}>
-      <div ref={root} className={productsPage ? styles.routeSurface : className}>
+      <div
+        ref={root}
+        className={productsPage ? styles.routeSurface : className}
+        data-home-route={pathname === "/" || undefined}
+        data-page-surface={pathname === "/service" ? "paper" : undefined}
+      >
         <a href="#main-content" className="skip-link">
           ข้ามไปยังเนื้อหา
         </a>
         {!productsPage && header}
         {children}
-        {!productsPage && footer}
+        {!productsPage && <Fragment key={pathname}>{footer}</Fragment>}
         {productsPage && overlayHost ? createPortal(overlays, overlayHost) : overlays}
       </div>
     </OverlayHostContext.Provider>

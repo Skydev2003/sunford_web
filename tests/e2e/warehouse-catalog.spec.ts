@@ -1,6 +1,7 @@
 import { downloadQuotation } from "./quotation-download";
 import { expect, test } from "@playwright/test";
 import { loadEnvConfig } from "@next/env";
+import { warehouseModelName } from "../../src/features/catalog/data/catalog-card-names";
 import {
   readWarehouseProducts,
   closeWarehousePool,
@@ -111,7 +112,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-test("public catalog lists each eligible non-X SKU once with real detail/images", async ({
+test("public catalog lists every eligible RPC SKU once while quotation retains positive-price eligibility", async ({
   page,
   request,
 }) => {
@@ -123,13 +124,14 @@ test("public catalog lists each eligible non-X SKU once with real detail/images"
     products.length,
   );
   const hidden = new Set(["72", "Calibration Fee Type 2", "S000005", "S000006"]);
-  const expected = [
+  const publicSkus = [
     ...new Set(
       official.items
         .map((p: { sku: string }) => p.sku)
         .filter((sku: string) => !/^x/i.test(sku) && !hidden.has(sku)),
     ),
   ].sort();
+  const expected = publicSkus;
   expect(products.map((p: { warehouseSku: string }) => p.warehouseSku).sort()).toEqual(expected);
   await page.goto("/products");
   const cards = page.locator("[data-products-directory] [data-warehouse-sku]");
@@ -161,17 +163,17 @@ test("public catalog lists each eligible non-X SKU once with real detail/images"
         nodes.map((option) => [option.getAttribute("value"), option.getAttribute("aria-label")]),
       ),
     );
-  for (const product of products.filter(
-    (p: { warehouseNetUnitSatang: number }) => p.warehouseNetUnitSatang > 0,
+  for (const product of official.items.filter(
+    (item) => publicSkus.includes(item.sku) && item.sale_price !== null && item.sale_price > 0,
   ))
-    expect(labels[product.warehouseSku]).toBe(product.name);
+    expect(labels[product.sku]).toBe(warehouseModelName(product.sku, product.product_name));
   expect(labels.G106308).toBe("TMS-60-AW31");
   expect(labels.G107435).toBe("G107435");
   const options = await select
     .getByRole("button")
     .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("value")).filter(Boolean));
   expect(options.sort()).toEqual(
-    expected.filter((sku) =>
+    publicSkus.filter((sku) =>
       official.items.some((i) => i.sku === sku && i.sale_price !== null && i.sale_price > 0),
     ),
   );

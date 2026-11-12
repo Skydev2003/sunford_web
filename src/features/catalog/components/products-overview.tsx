@@ -624,7 +624,6 @@ export function ProductsOverview({
                       <div className={styles.heroCopy}>
                         <div>
                           <h2>{cardNames[product.id] ?? product.name}</h2>
-                          <p>{product.subtitle}</p>
                         </div>
                         <div className={styles.heroActions}>
                           <Link className={styles.primaryButton} href={`/products/${product.slug}`}>
@@ -761,7 +760,6 @@ export function ProductsOverview({
                     <div className={styles.lineupCopy}>
                       {product.badge && <p className={styles.productBadge}>{product.badge}</p>}
                       <h3>{cardNames[product.id] ?? product.name}</h3>
-                      <p>{product.subtitle}</p>
                       {typeof product.price === "number" && product.price > 0 ? (
                         <p className={styles.price}>{product.price.toLocaleString("th-TH")} บาท</p>
                       ) : product.warehouseSku ? (

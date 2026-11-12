@@ -6,12 +6,12 @@ import {
   defaultSpotlightImage,
   defaultSpotlightVideo,
   defaultSpotlightPoster,
+  isDefaultSpotlightProduct,
 } from "../data/image-slots";
 import { SpotlightProductVideo } from "./spotlight-product-video";
 import Link from "next/link";
 import type { Product } from "@/features/catalog/types";
 import { resolveHomeLink, type HomeLinkTarget } from "../data/link-targets";
-import { defaultSpotlightProductId } from "../data/image-slots";
 
 export async function ProductSpotlight({
   products,
@@ -25,14 +25,14 @@ export async function ProductSpotlight({
   leading?: boolean;
 }) {
   const copy = await getSettings("spotlight", spotlightDefaults);
-  const defaultProduct = products.find((item) => item.id === defaultSpotlightProductId);
+  const defaultProduct = products.find(isDefaultSpotlightProduct);
   const product = target?.productId
     ? products.find((item) => item.id === target.productId)
     : defaultProduct;
   if (!product && !target?.pagePath) return null;
   const href = resolveHomeLink("spotlight", target, products);
   const showVideo =
-    product?.id === defaultSpotlightProductId && (!image || image === defaultSpotlightImage);
+    product && isDefaultSpotlightProduct(product) && (!image || image === defaultSpotlightImage);
   const visual = (
     <Image
       src={image ?? defaultSpotlightImage}

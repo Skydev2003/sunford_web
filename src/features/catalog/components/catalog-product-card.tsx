@@ -89,7 +89,6 @@ export function CatalogProductCard({
         )}
         {!modelOnly && (
           <>
-            <p>{product.subtitle}</p>
             <div className={styles.tags}>
               {product.badge && <span>{product.badge}</span>}
               {product.capacity && product.capacity !== "—" && <span>{product.capacity}</span>}

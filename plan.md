@@ -1,3 +1,48 @@
+## Plan: Shorten Excel item_name to concise product/model names (2026-11-12)
+
+- [x] Record exact requested example and item_name-only scope; preserve saved Desktop workbook in temporary backup.
+- [x] Inspect current names and propose source-grounded shortening; test KAH5000S, conflicting facts, complete sets and colour/options preservation, retaining unclear names.
+- [x] Edit only item_name cells in29working tabs with existing layout and raw original-name sheet intact; render representative before/after.
+- [x] Verify all intended name changes and unchanged non-target cells/styles/tables/views, safely replace same file after hash guard, and record/attach final result.
+
+Files: spec.md/plan.md task notes in repo; temporary proposal/extractor/builder/backup/verifier/previews outside source; existing Desktop workbook only. No extra columns/sheets, SKU/price/group edits, Warehouse connection, dependency or application changes. Rollback uses temporary original only if no later user changes exist.
+
+Results: all731items reviewed across29working tabs;377distinct names shortened in1452cells,354names unchanged where already concise/unclear. Actual KAH5000S example shortened in all applicable copies; preserve bundle components, colour/voltage/software options and descriptive spare/consumable identity. Independent audit compares1452intended changes/168612unchanged cells/170064effective styles, all native tables/filters/groups/row heights/views and original raw/guide sheets.13regression examples, before/after and5family previews, error scan and ZIP integrity passed. Source-hash guard and final same-file replacement passed; exact final/candidate hashbb04a40e4300d0a39a00ad23a37fb65b531b92282542af5204f51ea8be781d4f. No Warehouse/app edit or Next.js candidate. User clarified every group; scope covers every management/NAV tab.
+
+## Plan: Add navbar product-family worksheets to the same Excel (2026-11-12)
+
+- [x] Record screenshot labels, authorization and unchanged24sheet backup; inspect source workbook and current taxonomy definitions without application changes.
+- [x] Classify all731source rows with primary-role/Warehouse evidence and explicit review questions; inspect indicator/platform/whole-scale/POS/scanner/bundle cases and excluded internal rows.
+- [x] Add all-products+5family+review NAV sheets with all48source fields plus evidence/status/provenance columns and compact preserved layout.
+- [x] Verify original values/styles/native features, family/review partitions, source/price/ID integrity, category regression cases and new sheet previews/views.
+- [x] Recheck original hash, replace same Desktop file when unlocked, verify/attach final workbook and record actual counts/remaining review cases.
+
+Files: spec.md/plan.md task notes in repo; temporary snapshot/classifier/builder/backup/verifier/previews under TEMP/sunford-master-item-navbar-20261112; same Desktop workbook. No Warehouse connection, source-data edits, dependency or application change. Preserve original backup and reject concurrent saved-file changes.
+
+Results:7newNAV sheets/31total;547product IDs partition into250scales/22indicators/34platforms/40POS/201accessories.55unconfirmed roles and129internal/outside records are separately retained in review sheet; all731source IDs accounted for.48original fields plus6evidence/status/provenance fields, no price/SKU edits or merging.24original sheets/99162cells/effective styles/native features preserved;69390newcells compared, source-field/partition checks and17critical role regressions passed.7previews inspected; filters/panes/99point frozen region/100%first-item views verified. Original saved-file hash matched before atomic replacement; final file hash5bb391e8a27647fe9210cd653fc1d6b1f054aabeb700fb759ed08e8388f99de0matches candidate. No Warehouse/app action or Next feedback candidate. The55role questions remain explicitly for owner review; category tabs are static working copies.
+
+## Plan: Compact grouped Excel layout and reset opening view (2026-11-12)
+
+- [x] Inspect screenshot, source row heights/panes/views and workbook identity; create a temporary unchanged original backup.
+- [x] Compact frozen title/context/spacer/header region and product-list rows on22clean/group sheets using existing row positions, formats and tables; reset opening views without changing data.
+- [x] Render before/after, verify all original values/effective cell styles/native features, row-height budgets/panes/selections and original raw/guide sheets.
+- [x] Recheck source hash, safely replace same Desktop workbook when unlocked, verify final file and record actual results.
+
+Files: spec.md/plan.md task notes and MEMORY.md operational lesson in source; temporary scoped builder/view metadata patch/backup/candidate/verifier/previews outside source; existing Desktop workbook. No content/group/price/SKU edit, Warehouse connection, dependency or application change. Restore only the task backup for rollback if no subsequent user edits exist.
+
+Results:99points frozen height versus196before; body24/36points on22clean/group sheets. Independent audit preserves all99162cell values/effective styles,24sheet names/order, native tables/filters and original2raw/guide views/heights. All22opening selections/scrolls/zoom and active group01verified. Before/after/notes previews inspected; final same-file atomic replacement passed original-hash guard and exact candidate/final hash3863ecc22af10dae5fcd9c440cce685ec583880ffa044ffdb5de9bc61a6e1876. Long fields remain complete and expandable. No Warehouse/application changes or Next.js candidate; no Microsoft Excel interactive test claimed.
+
+## Plan: Split Excel management groups into individual worksheets (2026-11-12)
+
+- [x] Record explicit worksheet-split authorization and scope; copy the current workbook to a temporary original backup without changing it.
+- [x] Inspect existing clean-sheet values/styles; append one numbered worksheet per existing group, with all columns, filters/frozen headers and source row references.
+- [x] Reconcile all group memberships/cells and731unique IDs, preserve all existing worksheet values/styles/native features and inspect new sheet previews.
+- [x] Recheck original file hash, replace same Desktop workbook when unlocked, verify final file and record/attach the result.
+
+Files: spec.md/plan.md notes in repo; temporary builder/backup/candidate/verification/previews outside source; existing Desktop workbook. No Warehouse connection, reclassification, price/SKU edit, dependency or application change. Preserve a temporary original for rollback; reject concurrent user edits.
+
+Results:21newgroup sheets/24total;731unique IDs occur exactly once across groups with48columns unchanged.59034originalcell values/styles and all original native features preserved;36096newcells including headers match source. Every group table/filter/freeze setting verified, all21previews rendered/inspected. Existing source hash matched; same Desktop file atomically replaced and reopened successfully, exact candidate/final SHA25625610391db098835d90dd3d1d5f861892f67d6c49ae2a2fe2e4bcaf77eaf9a25. No Warehouse access or application change; no framework feedback candidate. Group sheets explicitly labeled as independent editable copies.
+
 # Plan: ใบเสนอราคาที่ลูกค้าจัดทำและพิมพ์เอง
 
 - [x] ตรวจใบตัวอย่าง ยืนยันขั้นตอนของลูกค้า และตรวจแหล่งราคาสินค้าเดิม
@@ -5299,3 +5344,353 @@ No environment, package/dependency, quotation registry, Prisma, shared UI/layout
 - Restored5 missing installed PDF dependency packages from the exact existing lockfile versions, verified their integrity and changed no dependency manifest/lockfile. This resolved the initial TypeScript errors. No unrelated application fix was made.
 - Final review performed inline as specified by the approved no-subagent plan: checked schema/ACL/tenant scope, collection fanout, parameter binding/price precision, safe failure/retry, source/API/image parity and approved file scope. No unresolved implementation finding. Final Next.js feedback pass found no framework issue; browser/dependency setup issues were environmental.
 - Runtime/SQL/doc/test changes remain uncommitted in sky. No production release, quotation-registry migration or Supabase project deletion. All evidence remains in ignored output/warehouse-product-rpc-20261112/.
+
+## Plan: Inspect all master_data.ai_articles data
+
+- [x] Confirm highlighted table from the screenshot; inspect columns, primary key and live row count with an explicit READ ONLY transaction.
+- [x] Export all rows/columns in one consistent snapshot to standalone HTML/JSON under C:/Users/cityc/Documents/SUNFORD-reports/ using a temporary generator outside application source.
+- [x] Verify exact row/column/ID parity, complete long fields, safe rendering and browser table/search behavior.
+- [x] Update spec.md/plan.md and canonical work state with actual results and file links.
+
+No application, environment or database writes. Report files are local snapshots and do not auto-refresh.
+
+### ai_articles inspection completed — 2026-11-12
+
+Read warehouse_db.master_data.ai_articles in a REPEATABLE READ READ ONLY transaction (transaction_read_only=on). Exported all93rows/16columns ordered by id with no company/status filters or row limit. All records are company1,after-sales,customer and active; review_status draft85/ready8. Body text is present in17rows and empty in76. HTML/JSON preserve all columns, NULL/empty distinctions, raw timestamp precision and raw JSONB text. Source-to-JSON roundtrip and browser comparison of all1488cells passed; direct file opening/search/reset/long-field expansion and390px layout passed with zero console/page errors. Only report artifacts and spec/plan task notes changed; no application or database writes. No Next framework feedback candidate in this standalone read-only report task.
+
+Report: C:/Users/cityc/Documents/SUNFORD-reports/ai-articles-2026-11-12.html
+Raw export: C:/Users/cityc/Documents/SUNFORD-reports/ai-articles-2026-11-12.json
+
+## Plan: Inspect Warehouse product detail sources (2026-11-12)
+
+- [x] Read existing policy, current RPC/source joins, package configuration and prior report conventions; record the direct read-only request and bounded report scope.
+- [x] Query eligible descriptions, verified specifications and component sets in one READ ONLY snapshot; reconcile exact source values/counts with RPC.
+- [x] Create standalone searchable HTML and complete JSON under C:/Users/cityc/Documents/SUNFORD-reports/warehouse-product-details-2026-11-12.* using temporary scripts outside application source; preserve NULL, empty values and numeric text.
+- [x] Verify source/export parity, all rendered cells, direct-file browsing, search/reset/long fields and mobile/desktop overflow; inspect the report.
+- [x] Record actual results and attach both report files to canonical work state; leave application, database and existing unrelated changes untouched.
+
+Files: spec.md and plan.md task notes only inside the repository; temporary generator/verifier and two report artifacts outside application source. No shared UI, runtime contract, dependency or deployment changes. No Next.js implementation is involved.
+
+Verification: snapshot read_only=on;514 eligible item descriptions reconcile with RPC,201 populated/313empty;1366 verified facts across87items;4components across3roots. Full JSON roundtrip and15406browser cells match source values. Direct-file Chrome opening, search/reset/no-match, empty-description filter, real long-specification expansion,390/834/1440px overflow and inspected screenshots passed;0browser errors. The first verifier targeted a nonexistent long-description element; the corrected check uses the report's actual long-specification details and passes. Source prose/code quality issues are documented without editing source values. No Next framework feedback candidate.
+
+Report: C:/Users/cityc/Documents/SUNFORD-reports/warehouse-product-details-2026-11-12.html
+Raw export: C:/Users/cityc/Documents/SUNFORD-reports/warehouse-product-details-2026-11-12.json
+
+## Plan: Export all company-1 master_item rows to Desktop Excel (2026-11-12)
+
+- [x] Record direct export authorization, exact company-only query, resolved Desktop destination and bounded file scope; read spreadsheet authoring guidance.
+- [x] Read all rows/columns and schema in one read-only snapshot, reconcile count/unique IDs and inspect Excel cell/precision limits without filtering or cleaning.
+- [x] Build one Desktop .xlsx with the complete source table, filters/frozen headers and compact provenance/schema notes using bundled artifact-tool and temporary scripts outside source.
+- [x] Reconcile saved workbook data/types against source, verify native filters/panes and inspect previews; attach final workbook and record verified results.
+
+Files: spec.md and plan.md notes in repository; temporary extractor/builder/snapshot/verification/previews outside application source; one workbook under C:/Users/cityc/Desktop. No application/global/shared UI, database, environment or dependency modifications. No production action.
+
+Verification:731rows/32columns/731unique IDs in one company-only READ ONLY snapshot; no source value exceeds Excel cell length. Complete source matrix preserved in master_item!A1:AF732 with native filter and frozen first row/column. Artifact-tool inspection/recalculation/error scan and both rendered previews passed. Independent ZIP/XML audit reconciled all23392values and32headers, native numeric precision, text identifiers/timestamps,Boolean and NULL/empty distinctions, table/filter extent and pane settings. The first XML verifier lacked the valid t=str cell representation; adding that case produced exact parity without any workbook/data edit. No Microsoft Excel interactive check was performed. Deleted only the newly generated inspect sidecar from Desktop; delivered one workbook. Scoped diff check passed; no Next framework feedback candidate.
+
+Workbook: C:/Users/cityc/Desktop/SUNFORD_master_item_company1_2026-11-12.xlsx
+
+## Plan: Use get_website_products for products (2026-11-12)
+
+- [x] Record the owner request, inspect the installed RPC contract and existing server reader/projections and current policies.
+- [x] Verify company-scoped RPC data and the products API field by field. Check directory, categories, actual product details and missing fields in a browser.
+- [x] Run the existing reader/projection tests. Fix a demonstrated missing connection only within this product scope if found, then record exact files before editing.
+- [x] Record results in spec.md and plan.md. Evidence scripts and logs are task-owned under output/products-rpc-20261112. Existing application wiring is reused when it satisfies the request.
+      Verified existing wiring, with no application edits required. ecommerce.get_website_products is called by readWarehouseRpc and readWarehouseProducts, which feeds getCurrentProducts and the interior product API/directory/category/detail views. At verification the reader returned 489 non-X rows and the public API exposed 485 records after the established four fee exclusions. All public SKU sets, source names, trimmed descriptions, group names, prices, distinct-value verified specifications, components and photo versions matched the RPC reader. Current public coverage: 183 descriptions, 87 products with specifications, 97 source photos, 129 inquiry-price records and 3 component roots. Database session read_only=on. Passed15 existing RPC/field-projection tests and 8 browser view checks across390/1440px with exact directory counts, photo/placeholder rendering and screenshots. App source is already integrated as requested. Initial verification assumptions about display-name equality, whitespace and co-occurring description/photo richness were corrected to the established presentation contract. Browser selectors were scoped to the product-detail main while Next preserves previous route DOM. No new framework feedback candidate.
+
+## Plan: Review Desktop master_item Excel before cleaning (2026-11-12)
+
+- [x] Record the read-only workbook-audit scope and current file identity; read applicable spreadsheet follow-up guidance and preserve other task notes.
+- [ ] Import current XLSX and inspect source values without writes; audit duplicate keys/names/model candidates, missing fields and separable status/service/placeholder groups with row evidence.
+- [ ] Independently reconcile full worksheet data and reported counts; verify unchanged workbook hash and document limitations of name-based inference and absent lookup tables.
+- [ ] Present concise tables with actionable examples and source citations; record results in spec/plan and canonical work state.
+
+Files: spec.md/plan.md notes only inside repository. Temporary analysis/import/verification files outside application source. No Excel source edits, database connection, application/configuration change, new reader-facing deliverable, commit or deployment.
+
+Audit completed and independently reconciled all23392source cells with unchanged hash. Subsequent explicit user authorization expands scope to the new worksheet/enrichment task below; no Warehouse write is authorized.
+
+## Plan: Clean and group data in a new worksheet of the existing workbook (2026-11-12)
+
+- [x] Record explicit authorization and screenshot table allowlist; preserve existing workbook bytes in a temporary backup and inspect existing worksheet previews/styles. The Desktop workbook is open in another process, so shared-read backup succeeded; final write availability will be checked after candidate verification.
+- [x] Inspect only allowed table schema and read scoped company1 source data/lookup names/verified facts/components in one READ ONLY snapshot; reconcile original IDs and mark any source changes/additions explicitly.
+- [x] Import existing workbook and append one cleaned/grouped working worksheet with all original source fields and provenance/enrichment/review columns. Retain ambiguous duplicates, colour variants, X/inactive/service rows and exact prices/identifiers; normalize descriptive whitespace only.
+- [x] Verify candidate against allowed source values and original workbook sheets/styles/tables/panes; inspect new worksheet preview and source traceability, rows, issues and grouping counts.
+- [x] Check the original saved-file hash, replace the same workbook when unlocked (request closure only for an actual unresolved file lock), verify final file, attach it and record actual outcomes.
+
+Files: spec.md/plan.md task notes in source; temporary scoped reader/builder/snapshot/backup/candidate/verifier/previews under TEMP; one new worksheet in the existing Desktop workbook. No application/global/shared files, database objects/data, dependencies or settings are changed. Rollback restores the temporary original only if doing so does not overwrite subsequent user edits.
+
+Candidate verification passed:731rows/48columns/21managementgroups,1366verified facts/4current component lines, all32source columns retained,3description whitespace trims,no new/deleted/merged IDs. Both original worksheets preserve23706cell values/styles and native features;35088new cells/source identities/prices/provenance reconcile; filters/panes and previews pass. Initial relationship-ID string comparison was corrected to compare actual unchanged relationship targets, since XLSX packaging randomizes IDs. No application/database writes or framework feedback candidate.
+
+Final replacement complete after owner replied ปิดไฟล์แล้ว. install.mjs confirmed the source hash still matched the preserved original, atomically replaced the same Desktop workbook and verified candidate/final SHA256 equality. Reopening the actual Desktop XLSX confirmed exactly the original2sheets plus ข้อมูลจัดกลุ่ม,731cleaned rows and valid ZIP integrity. Original and new values/styles/features were already independently verified against this exact final hash. Candidate/backup/scripts remain under TEMP/sunford-master-item-clean-20261112. No Warehouse or application change is part of this task.
+
+## Plan: Audit 485 RPC product categories (2026-11-12)
+
+- [x] Inspect current RPC source and public485SKU baseline, current rules, existing taxonomy and Warehouse-only policy. Record direct owner authorization.
+- [x] Extract Warehouse-only classification into src/features/catalog/data/warehouse-classification.ts, and use it from src/features/catalog/data/warehouse-site-data.ts. Include classification evidence/review reasons for the report generator without changing source values.
+- [x] Cover identified false positives and verified-function/material/OS/bundle cases in tests/catalog/warehouse-site-data.test.ts.
+- [x] Deliver docs/warehouse/category-audit-485.md and docs/warehouse/category-review-485.md plus the complete machine-readable audit docs/warehouse/category-audit-485.json. Update the active policy/counts in docs/warehouse/direct-postgres.md.
+- [x] Run current tests/type/lint; compare all485SKU source and non-category fields and validate membership in all23subgroup pages with pagination, plus390px/1440px examples. Evidence under output/category-rpc-485. Update notes with actual counts and limitations. Rollback is the classification module/caller and matching tests/docs, with no source-data change.
+      Verified completion — 485 current public RPC SKU records, 144 changed category assignments (70 parent and 80 child changes, overlapping), 149 with confirmed parent/child placement, and 336 requiring owner review. Of the review set, 226 retain an established parent and 110 remain under other items. All485non-category product fields match the baseline, including IDs/URLs/model codes/units/prices/images/specifications/components. The rendered directory and every one of23subgroup pages matched the audit, including pagination and empty groups. Four390px/1440px scanner/checkweigher detail views passed; inspected the mobile screenshot. Full catalog tests163/163 passed, with four targeted classification tests passing again after the final weights-parent correction; TypeScript, scoped ESLint, formatting and diff checks passed. Memory notes record the repeatable substring failure and source-model verification rule. No source-data write or deployment occurred. Next.js feedback review found no framework candidate.
+
+## Plan: Editable Excel for 336 pending category reviews (2026-11-12)
+
+- [x] Read the current review snapshot and spreadsheet skill; record direct creation authorization and workbook return semantics.
+- [x] Use task-local temporary scripts and bundled artifact-tool to produce one outputs/category-review-336-20261112/SUNFORD_category_review_336.xlsx with a main review table and taxonomy reference.
+- [x] Preserve source data exactly, leave yellow confirmation inputs blank, add main-category dropdown and native filters/frozen panes. Fit Thai text, and render both sheets for visual verification.
+- [x] Independently validate saved XLSX source/input matrices, SKU text types, dropdown/filter/panes and category completeness. Update spec.md and plan.md and deliver the workbook only.
+      Verified completion — delivered C:/Users/cityc/Documents/Project/sunford_web/outputs/category-review-336-20261112/SUNFORD_category_review_336.xlsx with336unique text SKUs, blank C8:E343 inputs (1008cells), exact original names/current classifications/questions, five existing families/23children and the other-items choice. Saved XLSX ZIP/XML verification reconciled every source/header/reference cell, category dropdown choices, native filtered tables A7:H343 and A5:D29, frozen C8 pane (2columns/7rows), and zero formulas/macros. Both sheets and long-question context rendered legibly and were visually inspected. The original audit JSON hash is unchanged. Native Microsoft Excel interaction was not exercised. Source/application/database edits were outside this workbook task. The return convention is explicit in the workbook instructions, including semicolon-separated child IDs/labels and blank/deferred versus parent-only selections. Temporary builders/previews remain outside the source tree; only the requested .xlsx is in its output folder. No Next.js feedback candidate.
+
+## Plan: Remove legacy-database-derived frontend data except Hero (2026-11-12)
+
+Status: deferred by owner; no application or data file has been edited or deleted.
+
+### Candidate Files (final exact list depends on owner answers)
+
+- `spec.md`, `plan.md`, `MEMORY.md` — record the superseding data-source policy, approval and verified result.
+- `data/site/content.json` — delete the former nine-record settings copy after isolating the approved Hero values and switching non-Hero callers to source-controlled defaults.
+- `src/features/content/data/products.json`, `src/features/content/data/pages.json` — delete the former `166` product and `409` page snapshots after extracting only approved Hero data.
+- `src/features/content/data/catalog-snapshot.ts`, `src/features/content/server/content-repository.ts`, `src/features/content/data/static-content-params.ts` — remove or replace legacy dataset loaders, catch-all indexes and static rewrites with explicit source-independent routes.
+- `src/features/catalog/server/product-repository.ts`, `src/features/catalog/data/warehouse-products.ts`, `src/features/catalog/data/product-lookup.ts` — remove non-Hero editorial merging and legacy lookup; project interior identity/data from Warehouse only.
+- `src/features/home/server/home-products.ts`, `src/features/home/data/hero-slides.ts`, `src/app/(site)/page.tsx` and one dedicated Hero data file if required — isolate Hero-only legacy presentation and make all non-Hero homepage consumers independent of legacy snapshots.
+- `src/app/(site)/products/[slug]/page.tsx`, `src/app/(site)/[...path]/page.tsx`, `src/app/(site)/explore/page.tsx`, `src/features/home/components/source-showcase.tsx`, `src/features/home/server/home-images.ts` — remove unreachable legacy branches/sections/routes or rewire retained explicit local content after owner confirms route scope.
+- `src/features/catalog/data/warehouse-product-mapping.json`, `src/features/catalog/data/products.ts`, `src/features/catalog/data/product-sources.ts`, `src/features/catalog/data/catalog-supplements.ts`, `src/features/content/data/product-sections.ts`, `next.config.ts` — delete or reduce old-derived identity/category/rewrite data according to the URL decision; preserve Warehouse-evidence classification.
+- `scripts/import-sunford.mjs`, `scripts/import-solutions.mjs`, `scripts/audit-source-catalog.mjs`, `scripts/validate-import.mjs`, affected package scripts and source-oriented tests under `tests/catalog`, `tests/e2e` and `tests/uat` — remove obsolete import contracts and replace them with Warehouse/Hero/retained-route regressions.
+- Referenced files under `public/images`, `public/videos` and `public/models` — delete only assets proven reachable solely from removed legacy records; preserve every Hero, Warehouse-cache and independently used brand asset.
+- `README.md`, `docs/content-sources.md`, `docs/vercel.md`, `docs/uat.md`, `docs/warehouse/direct-postgres.md` — document the new source boundary and removed routes/assets without rewriting historical task evidence.
+
+### Steps
+
+- [ ] Receive clarification for Hero boundary, legacy URL behavior and deletion of imported content pages/assets; set Spec to `Ready to Code` and record exact approval.
+- [ ] Freeze a manifest of all legacy records, route/asset references and current Hero output; record hashes and rollback path before deletion.
+- [ ] Read the applicable Next.js 16 local guides for routes, rewrites, cache and image configuration before editing.
+- [ ] Isolate the minimum Hero data, switch every non-Hero product consumer to pure Warehouse projection, and replace/remove non-product old-data consumers within the approved route scope.
+- [ ] Delete confirmed legacy datasets, loaders/scripts/tests/rewrites and only proven orphaned assets; preserve unrelated dirty work and current Warehouse classification changes.
+- [ ] Verify reference closure, retained/removed route contract, RPC/API parity, Hero visual parity, quotation/registry isolation, responsive browser behavior, tests/type/lint/format and production build.
+- [ ] Update exact file checklist, verification results and current architecture in `spec.md`, `plan.md` and `MEMORY.md`; run the required final Next.js feedback review.
+
+### Impact / Rollback
+
+- Blast radius: up to `409` content URLs, `166` old product records, `380` legacy product mappings, navigation links, search index/static params and many copied assets. Old product URLs can also change if mappings are deleted.
+- Rollback: one task-scoped Git revert restores deleted files/routes. Before changes, record file hashes, route manifest, asset dependency graph and Hero screenshots. No database or storage write is part of this task.
+
+### Verification Results
+
+- Read-only audit only. Current app no longer connects to the old CMS database; the remaining coupling is in tracked local copies and derived mappings. No application/data/asset deletion has occurred. Final verification is pending clarification and approval.
+
+## Plan: Restore JC21 homepage spotlight video (2026-11-12)
+
+### Files
+
+- `src/features/home/data/image-slots.ts` — add the exact default Spotlight Warehouse SKU alongside the retained legacy ID.
+- `src/features/home/components/product-spotlight.tsx` — resolve/show the existing Spotlight for either the legacy ID or exact Warehouse SKU; keep current media/layout behavior.
+- `src/features/home/data/link-targets.ts` — resolve the default Spotlight link through the same identity rule so it uses the current Warehouse slug.
+- `tests/catalog/management.test.ts` — cover current Warehouse SKU/slug resolution while preserving the legacy-ID fixture.
+- `tests/e2e/home-motion.spec.ts` — update the Spotlight expectation to the current Warehouse route and verify video/poster behavior.
+- `spec.md`, `plan.md`, `MEMORY.md` — record approval, current identity rule and verified result.
+
+No application page, CSS, video/poster asset, Warehouse mapping, shared UI or global style file is in scope.
+
+### Steps
+
+- [x] Confirm Spec is `Ready to Code` and record owner approval of this exact file plan.
+- [x] Read the applicable installed Next.js 16 guide before editing.
+- [x] Add one exact Warehouse-SKU fallback for the default Spotlight and reuse it consistently for rendering and link resolution.
+- [x] Update focused tests without changing unrelated stale legacy-route expectations.
+- [x] Run focused catalogue test, TypeScript, scoped ESLint/Prettier and responsive browser verification at 390px/1440px, including autoplay, reduced motion and failed-video poster fallback.
+- [x] Confirm Hero/Showroom Tour/category sections and current product API fields are unchanged; update actual results in Spec/Plan/Memory and run the final Next.js feedback review.
+
+### Impact / Rollback
+
+- R2, narrow and reversible. Expected visible impact is only restoration of the existing JC21 Spotlight section and its current product link.
+- Rollback reverts the three source files and matching tests/docs. The supplied MP4 is pre-existing and is not modified.
+
+### Verification Results
+
+- Complete. Rendering and link resolution now share the exact identity rule: legacy ID `acs30-jc21` or Warehouse SKU `G106094`. No page, CSS, Hero, SectionTwoVideo, Warehouse, mapping, media or shared/global file changed.
+- Automated verification: `tests/catalog/management.test.ts` 18/18; focused `home-motion.spec.ts` 3/3 for playback/visibility/reduced motion, current Warehouse link/responsive overflow and failed-media poster fallback; TypeScript, scoped ESLint, scoped Prettier and diff checks pass.
+- Live Chrome verification: the restored section is between Showroom Tour and category selection, the source/poster/current detail link are correct, mobile and desktop have no horizontal overflow, and browser warning/error logs are empty. Evidence: `C:/Users/cityc/AppData/Local/Temp/sunford-jc21-home-restored.png`.
+- Verification limit: the existing no-JavaScript case was attempted against `next dev`; its streamed Suspense subtree remains zero-sized until client scripts execute, so that environment cannot prove no-JavaScript rendering. No production build or deployment was run.
+- Next.js feedback reporting identified that development-only Suspense behavior as one qualifying draft. Opening the review form was attempted once and blocked by host policy; nothing was submitted, and the review URL is returned to the owner in the delivery response.
+
+## Plan: Publish the five saved Excel NAV groups using live Warehouse products (2026-11-12)
+
+### Files
+
+- `spec.md`, `plan.md` — append this task's approved scope and actual verification, preserving other active/deferred tasks.
+- `src/features/catalog/data/warehouse-storefront-selection.json` — create the five-sheet metadata selection with source company/hash and exact SKU/ID/name/category values; exclude all Excel prices/images/specifications and other worksheets.
+- `src/features/catalog/data/warehouse-storefront-selection.ts` — create a small pure selection/presentation helper; validate unique selection records, use live products only, retain full source names and restrict child groups to the selected parent.
+- `src/features/catalog/types.ts` — add an optional curated storefront display-name property so repeated card/detail projection preserves the approved name without changing homepage products.
+- `src/features/catalog/data/client-products.ts` — use the curated name when present; retain existing behavior for products without this explicit property.
+- `src/features/catalog/server/product-repository.ts` — apply the metadata selection to the cached storefront `getProducts` result, checking source-company consistency; preserve the existing unfiltered current-product reader used by quotations and the separate homepage reader.
+- `tests/catalog/warehouse-storefront-selection.test.ts` — create meaningful tests for selection exclusions, duplicate validation, exact names, live-facts preservation, parent/child consistency and repeated card/detail projection without affecting uncurated products.
+- `tests/e2e/warehouse-storefront-selection.spec.ts` — create browser/API contract checks for five category samples, short-name/SKU/full-name search, excluded direct URLs, retained images/inquiry behavior and 390px/1440px rendering.
+- `tests/e2e/warehouse-catalog.spec.ts` — maintain the existing API/quotation parity regression for the approved selection contract: the storefront is selected-only while quotation eligibility and original Warehouse-derived names stay unchanged. This is necessary test maintenance for the same approved behavior, not an additional application change.
+- `docs/warehouse/direct-postgres.md` — append the Excel-selection/live-facts boundary and reimport procedure without replacing concurrent taxonomy documentation.
+
+### Steps
+
+- [x] Read applicable instructions, current state, source workbook, RPC contract, repository/client/detail/search/category consumers and local Next.js cache guide. Preserve existing dirty classification/docs/tests work.
+- [x] Re-read the newly saved workbook after owner clarification; validate five-sheet identities/names and reconcile all selected records in a read-only RPC snapshot. Counts and eligibility reasons are recorded in Spec.
+- [x] Obtain approval of this concrete application plan and record the actual approval text in Spec.
+- [x] Recheck the saved workbook hash and source identity match, then produce only the metadata manifest from these five sheets using the existing temporary bundled spreadsheet reader. No new project spreadsheet dependency or runtime Desktop access.
+- [x] Implement the pure storefront selection and explicit curated-name projection in the listed files; maintain live-source fields, parent-child consistency, stable URLs and separate homepage/quotation behavior.
+- [x] Test the exact selection against the latest RPC, identity/name/category parity, excluded detail/search behavior, repeated serialization and uncurated homepage products. Run catalog tests, typecheck, scoped lint/format and browser checks at 390px/1440px. Capture task-local browser evidence without adding generated output to Git.
+- [x] Review the final diff against pre-existing work, update actual results in Spec/Plan and task state, and perform the required final framework-feedback review. No release/commit/push is part of this request.
+
+### Impact / Rollback
+
+- Intended impact: all consumers of the cached storefront repository see only selected eligible SKUs. The current intersection is 375 records; the live RPC contains 140 other records outside the selection. Detail URLs for excluded products become unavailable and shared navbar product searches/comparison pickers omit those records.
+- The raw current-product/quotation reader, homepage/Hero reader, database/storage and UI components/styles remain unchanged. SKU selection is an explicit presentation policy; it does not delete or deactivate Warehouse records.
+- Preserve concurrent uncommitted classifier/site-data/test/doc changes. Rollback removes only this task's metadata/helper and targeted name/repository integration hunks; restore from the captured pre-edit versions without reverting other work.
+
+### Verification Results
+
+- Preflight passed: 547 selected unique identities, five exact sheet names, no missing names; 375 live SKU/ID matches, zero conflicts; 172 excluded by current RPC eligibility (170 inactive, two otherwise not saleable). Read-only transaction verified `on` and rolled back.
+- Complete:547metadata-only records imported from the final saved hash,375live selected products rendered with exact Excel names/parents and all retained source facts/IDs/URLs unchanged. The full375-item directory matches API/source selection. Other sheets and ineligible records supply no storefront product.
+- Tests: catalog170/170; new browser/API suite3/3; maintained existing catalog/quotation parity case1/1. Five category/card/detail/search samples tested at390px/1440px, including full source names/SKUs, actual image decoding, no-image placeholders, inquiry pricing, exclusions and no page errors. Inspected corresponding screenshots plus long mobile accessory label and homepage.
+- Baseline comparison: all375retained non-presentation objects equal; homepage text/265image references/video references equal; quotation reader code equal and its full eligible positive-price options/labels verified against live source. Desktop workbook final shared-read hash remains7c1d46a284566fc03f6b614a002c1b45005972b37beac46025aa2ab9dcdf28da.
+- Typecheck, scoped ESLint/Prettier and diff checks pass. Evidence/backup resides under TEMP/sunford-excel-storefront-20261112. Production build and whole unrelated browser suite were not run. Preserved all pre-existing classification/source-data/docs work; no global UI/style/database/storage/registry edits or release actions. Framework-feedback reporting pass: no qualifying candidate; existing parent-Suspense HTTP200/not-found/noindex semantics documented rather than expanding into global routing changes.
+
+## Plan: Reconcile all saleable Warehouse records with RPC and storefront (2026-11-12)
+
+### Files / Proposed Scope
+
+- `spec.md`, `plan.md` — record source/RPC/storefront reconciliation, owner policy decision and actual verification.
+- Temporary read-only audit script/report under TEMP/sunford-excel-storefront-20261112; no source records or secrets copied into application assets.
+- If the owner chooses the full current public RPC set: `src/features/catalog/data/warehouse-storefront-selection.ts` will stop excluding live products absent from the five-sheet metadata. It will continue applying exact Excel names/primary categories to selected items and use the actual Warehouse name and evidence-based current category for other live records. The metadata becomes a naming/category override rather than a SKU publication allowlist; no absent RPC row is synthesized. No SQL/function or global/layout change is necessary.
+- For that same option, update `tests/catalog/warehouse-storefront-selection.test.ts`, `tests/e2e/warehouse-storefront-selection.spec.ts` and `tests/e2e/warehouse-catalog.spec.ts` to assert complete public RPC coverage, retained curated names, real fallback names, existing protected exclusions, stable details/search and unchanged quotation eligibility.
+- `docs/warehouse/direct-postgres.md` — update the approved source/display contract if it changes. Preserve all completed task history and concurrent work.
+- If owner instead chooses inactive saleable records: inspect `docs/warehouse/get-website-products.sql` and prepare a separate exact function-contract plan after explicit decisions for inactive/deleted rows, invalid units, negative prices and existing X/calibration exclusions. Do not alter the installed function under the current unresolved scope.
+
+### Steps
+
+- [x] Re-read the current reader/selection contract and audit company1 in one read-only snapshot, including the installed function definition and actual API result.
+- [x] Establish635saleable records,516raw RPC rows,486current public RPC rows and375storefront records; identify119function exclusions and111five-sheet omissions without source/application writes.
+- [x] Receive the owner's policy clarification; mark Spec ready and record authorization for that concrete branch of this plan.
+- [x] Apply only the corresponding approved publication changes, preserving existing presentation and source facts; do not weaken SQL guards by inference.
+- [x] Run meaningful set/name/price/exclusion regressions, type/lint/format and responsive browser checks; update exact outcomes and current contract.
+
+### Impact / Rollback / Current Result
+
+The recommended existing-RPC option adds111currently eligible public records, including non-device/fee records, to storefront/search/detail. It intentionally supersedes the five-sheet-only publication restriction while retaining Excel display overrides and existing Warehouse eligibility. Rollback restores this task's selection/test/doc hunks only. No DB change is required for that option. A literal saleable-only database policy has a larger blast radius and remains unspecified. The audit is complete; application/SQL behavior is unchanged while clarification is pending. No Next.js feedback candidate was found in this read-only pass.
+
+### Owner Selected Inactive Inclusion — Concrete Revised Plan
+
+The owner selected saleable-first including inactive records, explicitly requesting exception review before changing RPC. This supersedes the earlier recommended active-only option. Keep the four identified deleted/negative-price exceptions and current X/calibration visibility exclusions. Read-only candidate evaluation passes:631RPC/601public,115inactive additions, existing516source rows unchanged. Exception review and final implementation approval are pending; no application or live-function change has been applied.
+
+Exact implementation files after approval:
+
+- `docs/warehouse/get-website-products.sql` — remove only `AND item.is_active` from the item eligibility filter. Document inactive-saleable inclusion and rollback by restoring the prior definition, rather than dropping a function with active callers. Preserve signature, company scoping, AI active/verified rules, source-table guards, ownership and execution privileges.
+- `src/features/catalog/data/warehouse-storefront-selection.ts` — retain every live public Warehouse product. Keep the Excel name/parent overrides for matched SKUs; for others keep the actual Warehouse name and existing evidence-based taxonomy. Preserve blank source fields and do not synthesize metadata-only products. No repository/global UI/layout change is needed.
+- `tests/catalog/warehouse-storefront-selection.test.ts` — update the allowlist contract to metadata-only overrides while retaining uniqueness/company, missing-source, source-fact, repeated projection and parent/child regressions.
+- `tests/e2e/warehouse-storefront-selection.spec.ts` — compare the full expected source set (saleable, not deleted, valid unit, nonnegative price) against RPC and public API; verify inactive inclusion, existing X/calibration exclusions, curated versus real Warehouse names, five-category/search/detail/inquiry behavior at390px/1440px.
+- `tests/e2e/warehouse-catalog.spec.ts` — keep the existing directory/quotation parity regression aligned with full current public RPC eligibility. Quotation stays positive-price-only and source-named; newly eligible price0rows remain inquiry-only.
+- `docs/warehouse/direct-postgres.md`, `spec.md`, `plan.md` — record the approved inactive-inclusive eligibility, metadata-only display overrides, counts, exact verification and rollback evidence. Existing selection JSON is unchanged.
+- Temporary installer/backup/candidate/audit/browser evidence under TEMP/sunford-excel-storefront-20261112; no credentials or copied product-price snapshot becomes an application fallback.
+
+Execution and verification:
+
+- [x] Capture installed function definition/owner/ACL/comment privately and simulate the proposed SELECT read-only. Confirm exactly one item-active predicate is removed and all existing source-row fields remain unchanged.
+- [ ] Obtain approval of the presented exceptions and this precise live-function/site plan; record the actual owner reply before code/DDL.
+- [ ] Capture current application file baselines, exact homepage/Hero text/image/video references and quotation choices. Recheck function fingerprint and live counts before installing.
+- [ ] Prepare the checked-in SQL/helper/test/doc changes and run focused tests/type/lint/format. Within one transaction, replace only the intended function, verify return signature/owner/ACL/security/search_path/company/SKU/full-set contracts and unchanged old source rows; roll back on any mismatch.
+- [ ] After commit, verify actual refreshed storefront/API631raw/601public expectation, all five categories/search/details/inquiry, the added positive-price quote choice and retained prices/VAT, plus original homepage/Hero presentation at390px/1440px. Do not issue real quote numbers or write product data.
+- [ ] Complete docs/state with observed counts/checks and final framework-feedback review. No branch/commit/push/deployment is authorized by this data-read task.
+
+Blast radius: replacing this shared read function immediately changes its result for current callers, including cached homepage/product/quotation/image readers. Source data, prices, tables and storage remain untouched; cache revalidation can temporarily show an older set. Preserve old-row identities/facts and Hero media. Rollback restores the privately captured previous CREATE OR REPLACE definition/comment/ACL and this task's application hunks only; do not drop the function or revert unrelated working-tree changes. If live preconditions or preserved Hero output differ, stop and report before expanding into unrelated code.
+
+### Final Approved Execution — Full Existing Active/Saleable RPC
+
+The owner explicitly retained `is_active=true AND is_saleable=true`, revoked the five-sheet publication restriction and approved implementation. The preceding inactive-inclusive proposal is superseded and was never executed. Do not edit `docs/warehouse/get-website-products.sql` or any live database object. Use the earlier active-only full-RPC branch with these exact files:
+
+- `src/features/catalog/data/warehouse-storefront-selection.ts` — retain every public live source product; apply Excel short-name/category metadata when present, otherwise preserve the real Warehouse name and existing source-evidence taxonomy. Keep X/calibration exclusions and do not synthesize absent RPC records.
+- `tests/catalog/warehouse-storefront-selection.test.ts` — assert full live-product retention independent of Excel membership, exact curated and real source naming across card/detail projection, protected exclusions, unchanged source facts, company validation and no source resurrection.
+- `tests/e2e/warehouse-storefront-selection.spec.ts` — assert full public RPC/API parity, hidden X/calibration routes/search, both naming paths, five existing category/search/detail samples and added real-source products at390px/1440px.
+- `tests/e2e/warehouse-catalog.spec.ts` — keep full public directory/API and unchanged positive-price quotation parity expectations aligned with the approved contract.
+- `docs/warehouse/direct-postgres.md`, `spec.md`, `plan.md` — record the superseding display-only Excel policy and actual checks; preserve historical task evidence. Existing selection JSON, repository/caching, Hero/global styles/layout and SQL files remain unchanged.
+- Temporary audit/baseline/browser evidence under TEMP/sunford-rpc-full-catalog-20261112; no generated price snapshot or browser artifact is added to application files.
+
+- [x] Record final explicit approval and abandon the unapproved inactive-inclusive function change.
+- [x] Capture fresh source/function, application-file and homepage/Hero baselines, preserving all unrelated uncommitted work.
+- [x] Implement and test the metadata-only display override, retaining all current public RPC records and real Warehouse facts.
+- [x] Verify full source/API/directory SKU equality, naming/category/source-field parity, excluded routes/search and quotation isolation; check five categories plus an added product at390px/1440px.
+- [x] Verify unchanged RPC definition/owner/ACL/comment and unchanged homepage/Hero media/text, run catalog/type/lint/format/diff checks and finish current-state notes.
+
+Impact: currently111additional active/saleable records become visible/searchable, including existing other-item/fee/glove records disclosed in the audit. No SQL/warehouse/registry/storage write occurs. Rollback restores only this task's helper/test/doc hunks to the captured baseline, preserving other work. No commit/push/deployment requested.
+
+Final result:486public SKUs equal the complete active/saleable RPC set after26X/four-calibration exclusions.375existing product objects are identical;111additional records use real Warehouse names.171/171catalog tests and4/4browser/API/catalog/quotation regressions pass, along with typecheck/scoped lint/format/diff checks.390px/1440px category/detail/search/added full-name views pass without page errors/overflow. Homepage text/265image/video references and protected file hashes match at both widths; installed RPC definition/owner/ACL/comment and516raw source rows are unchanged except read time. Inspected screenshots. Evidence/backup is under TEMP/sunford-rpc-full-catalog-20261112. No production build or entire unrelated browser suite was run, and no source-data/function write or release action occurred. Framework feedback review has no qualifying candidate. The old inactive-inclusive proposal remains deliberately unexecuted and is not outstanding work under the final approved policy.
+
+## Plan: Audit completeness of public Warehouse primary images (2026-11-12)
+
+- [x] Record the owner's read-only verification request; inspect RPC/image/cache/optimizer paths and preserve current publication/Hero rules.
+- [x] In one read-only source snapshot, compare public RPC SKU/image metadata with `/api/products`, existing saved-cache metadata/version and physical files. Record existing source/cache hashes without writing images.
+- [x] GET every expected primary photo through its current source route and storefront asset URL with bounded concurrency; check HTTP/mime/nonempty bytes. Verify every actual directory image via native browser decode of its real optimized URL, recording SKU-specific failures.
+- [x] Review counts and failure evidence; write a temporary Markdown audit report and update Spec/Plan with actual results. No application/code/cache-manifest/image/database/storage changes or import scripts are part of this verification.
+
+Files: `spec.md`, `plan.md` only in source; audit script, structured evidence and report under TEMP/sunford-warehouse-image-audit-20261112. Native browser/network caches may warm during reads. No product/photo fallback or new asset is added; rollback is unnecessary for read-only verification. Final response distinguishes an absent source photo from a failed website download.
+
+Result:486public products reconcile exactly;97have source images and all97are present in the directory/API.97/97source responses,97/97asset responses and97/97native browser decodes pass, with0metadata/directory mismatches or failed SKUs.75locally cached image references/files exist;22images load directly from Warehouse.389products have no source primary-image metadata and correctly keep placeholders. Cache manifest unchanged; no source/application/image changes. Audit JSON/report/screenshot are retained under TEMP/sunford-warehouse-image-audit-20261112. No framework-feedback candidate. No application tests/build were needed for this read-only audit; the complete image-delivery path was exercised directly.
+
+## Plan: Remove long product preview text (2026-11-12)
+
+- [x] Locate displayed subtitles for all three supplied examples and the active card variants.
+- [x] Remove only subtitle JSX from src/features/catalog/components/products-overview.tsx, product-category-mock.tsx, catalog-product-card.tsx, product-card.tsx and catalog-overlays.tsx. Shared search preview is explicitly in the user's third screenshot. The existing typography/layout CSS needs no initial change.
+- [x] Verify overview hero/lineup, category showcase, finder/cards and search previews at390/834/1440px; confirm the full source subtitle remains in data and detail/search navigation works. Run TypeScript and scoped ESLint. Evidence under output/product-preview-copy-removal.
+- [x] Update task outcome in spec.md and plan.md. Rollback is the removed JSX nodes in these five feature files.
+      Completed: removed six subtitle JSX nodes across the five planned feature components. Actual FEH5KS source subtitle remains536characters in the API and in the detail DOM, while hero/lineup/card/search previews omit it at390/834/1440px. All three responsive browser workflows passed, including search-to-detail navigation, exact model heading and retained details, with no page errors or horizontal overflow. Inspected mobile and desktop screenshots. TypeScript, scoped ESLint, Prettier and diff checks passed. QA selectors were corrected to preserve price paragraphs, use the homepage search control and read collapsed detail content. No application style/data changes were required, and no framework feedback candidate was retained. Evidence: output/product-preview-copy-removal/verification.json and responsive screenshots.
+
+## Plan: Fix black product background after client navigation (2026-11-12)
+
+- [x] Reproduce client navigation and compare computed ancestor/footer colors before and after reload; read installed Next Activity documentation.
+- [x] Add an active-home marker in src/features/catalog/components/catalog-route-frame.tsx using its existing pathname, and scope homepage ancestor/footer rules in src/features/home/components/home-page.module.css to that marker. These feature files own the reproduced cross-route theme interaction.
+- [x] Add tests/e2e/product-navigation-surface.spec.ts with direct versus client-link/back/forward color parity and same-document assertions at390/834/1440px. Verify source images and screenshots.
+- [x] Run TypeScript, scoped lint/format and browser regression, update MEMORY.md with the retained-DOM CSS failure pattern and record results here and in spec.md. Evidence under output/product-navigation-background.
+Verified completion: the original home-to-product reproduction showed a black shared surface/footer, while reload showed white/light colors. CatalogRouteFrame now emits data-home-route only for pathname /, and home-page.module.css gates its ancestor/footer selectors on that marker. A retained hidden home main remains present during navigation, but product colors now equal direct-load colors. Three Chrome regressions passed at390/834/1440px, covering home search to WPS10KS, real image decode, back to dark home, forward to light product, and directory-card navigation to the product, with a same-document marker proving no reload. Inspected the fixed desktop screenshot. TypeScript, scoped ESLint/Prettier and diff checks passed. Evidence in output/product-navigation-background; MEMORY records the repeatable selector failure. This is an application CSS interaction with documented Activity behavior; no Next.js framework feedback candidate.
+
+## Plan: Audit client navigation surfaces across route families (2026-11-12)
+
+- [x] Inventory ancestor/global CSS and body/inert/effect cleanup, inspect installed Activity docs, and reproduce paper-surface leakage from /service to product.
+- [x] Update src/features/catalog/components/catalog-route-frame.tsx to identify the active /service paper surface and src/components/layout/site-background.module.css to style that marker. The user authorized sitewide navigation fixes; the shared-surface blast radius and rollback are documented.
+- [x] Add tests/e2e/site-navigation-surfaces.spec.ts comparing direct visits with service-link/history transitions across route families, and mobile menu/search cleanup checks. Keep same-document assertions and responsive coverage.
+- [x] Run TypeScript, scoped lint/format, route-family browser checks and the previous home/product regression; inspect screenshots and record exact coverage/limits. Append the confirmed paper-selector pattern to MEMORY.md and update spec.md/plan.md.
+
+## Plan / Result: Reconcile database and storefront image counts (2026-11-12)
+
+Completed read-only inspection of installed RPC, all company1 image rows, current public API and prior audit.138company rows=97eligible image rows+41inactive image rows; all41have is_saleable=true but is_active=false. Current source and website image sets match, with no newly added photos since the prior audit. No app/SQL/image write. Source changes limited to spec/plan audit notes and the concrete Memory instruction to distinguish total source, eligible source and loaded image populations. Evidence: TEMP/sunford-warehouse-image-audit-20261112/count-reconciliation.json. No framework-feedback candidate.
+
+Additional reproduced case within planned CatalogRouteFrame: key the existing footer slot by pathname using Fragment, without a DOM wrapper. This resets footer-local transient UI on navigation while preserving page/builder state. Validate rapid builder/service history transitions before hydration settles. No additional application file scope. A trial Suspense boundary failed to fix the reproduction and was removed; keyed footer passes5/5 immediate browser probes.
+
+## Plan: Reconcile RPC eligibility against website publication
+
+- [x] Write read-only audit/proof files under output/rpc-storefront-reconciliation; snapshot the current installed RPC and reconcile each SKU with localhost API, directory and quotation picker.
+- [x] Record exact counts, missing/unexpected SKUs, source/filter/cache distinctions, and SQL verification in a report. Update this section and spec.md after verification.
+
+Verification Results:36/36browser checks passed with PLAYWRIGHT_BASE_URL=http://localhost:3000 and Chrome, in2.3minutes.20desktop route targets plus6mobile/6tablet targets cover real link navigation, repeated history and same-document comparisons; mobile menu/search cleanup and3home/product regressions also pass.5/5rapid footer probes pass after keying the footer;5/5failed before. Corrected two QA assumptions: product-overview links reach service via contact, and the completed homepage opening is hidden by design. TypeScript, scoped ESLint/Prettier and diff checks pass. Screenshots inspected at390and1440px. Evidence:output/site-navigation-audit/verified/.last-run.json and per-case screenshots. No exhaustive generated-URL audit or production release is claimed.
+
+Verified in a read-only Warehouse snapshot: RPC516, reader490, public API/directory486, quotation357. All SKU sets and retained prices match. Both delivered SQL queries ran successfully against the installed function and match browser counts. No application or source-data mutation.
+
+## Plan: Remove prices from product directory cards (2026-11-12)
+
+### Files
+
+- `src/features/catalog/components/products-index-content.tsx` — remove only the conditional VAT-inclusive price/`สอบถามราคา` JSX from `/products` directory cards; retain all card media, names, links and category rails.
+- `tests/e2e/products-full-overview.spec.ts` — extend the existing `/products` responsive directory test to assert zero card price paragraphs while API price values, card counts, links, rails and overflow behavior remain intact.
+- `spec.md`, `plan.md` — record corrected approval and actual verification. `MEMORY.md` changes only if a repeatable failure pattern is discovered.
+
+No CSS, ProductsOverview category-root lineup, Warehouse/RPC/API, product type, detail page, finder/search card, builder, quotation, PDF, route, global/shared layout or media file is in scope.
+
+### Steps
+
+- [ ] Obtain fresh approval of this corrected `/products`-only file plan; the earlier approval covered the wrong component and cannot authorize this path.
+- [x] Read the applicable installed Next.js 16 guide, reproduce the actual DOM and capture current diffs; restore the incorrect ProductsOverview/test attempt completely.
+- [ ] Delete only the ProductsIndexContent price conditional; do not change source price values or other presentation surfaces.
+- [ ] Extend/run the focused `/products` regression at 390px and 1440px, plus TypeScript, scoped ESLint/Prettier and diff checks.
+- [ ] Confirm product-detail and quotation price files remain unchanged; inspect representative responsive screenshots and update Spec/Plan with exact results.
+
+### Impact / Rollback
+
+- R2 and reversible. Visual blast radius is every product card rail on `/products` only; actual price data and commercial calculations are untouched.
+- Rollback restores only the deleted JSX and matching regression/docs hunk, preserving all unrelated dirty-worktree changes.
+
+### Verification Results
+
+- Pending corrected approval and implementation. Browser evidence matched the supplied sequence to `ProductsIndexContent` cards. The incorrect ProductsOverview JSX/test attempt was fully restored; no application change from this request remains.

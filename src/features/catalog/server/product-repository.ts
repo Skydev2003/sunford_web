@@ -13,12 +13,16 @@ import { warehouseCatalog } from "../data/warehouse-products";
 import { attachWarehouseCardFacts } from "../data/warehouse-card-data";
 import { warehouseDetailProduct } from "../data/warehouse-detail-data";
 import { warehouseSiteProducts } from "../data/warehouse-site-data";
+import { warehouseStorefrontProducts } from "../data/warehouse-storefront-selection";
 
 export async function getProducts(): Promise<Product[]> {
   "use cache";
   cacheLife({ stale: 30, revalidate: 60, expire: 300 });
   cacheTag("products");
-  return (await getCurrentProducts()).products;
+  return warehouseStorefrontProducts(
+    (await getCurrentProducts()).products,
+    process.env.WAREHOUSE_COMPANY_ID ?? "",
+  );
 }
 
 export async function getCurrentProducts(): Promise<{ products: Product[]; readAt: string }> {

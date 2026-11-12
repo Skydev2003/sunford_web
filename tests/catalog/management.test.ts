@@ -15,7 +15,12 @@ import {
   productContentRows,
 } from "../../src/features/catalog/data/product-content";
 import { load } from "cheerio";
-import { defaultHomeImages, homeImageSlots } from "../../src/features/home/data/image-slots";
+import {
+  defaultHomeImages,
+  defaultSpotlightProductId,
+  defaultSpotlightWarehouseSku,
+  homeImageSlots,
+} from "../../src/features/home/data/image-slots";
 import { resolveHomeLink } from "../../src/features/home/data/link-targets";
 import {
   contentRoutePath,
@@ -262,6 +267,19 @@ test("product content separates line breaks, headings and lists while retaining 
 test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {
   const products = getSnapshotProducts();
   assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/acs30-jc21");
+  const legacySpotlight = products.find((product) => product.id === defaultSpotlightProductId)!;
+  const warehouseProducts = products
+    .filter((product) => product.id !== defaultSpotlightProductId)
+    .concat({
+      ...legacySpotlight,
+      id: "warehouse-G106094",
+      slug: "warehouse-G106094",
+      warehouseSku: defaultSpotlightWarehouseSku,
+    });
+  assert.equal(
+    resolveHomeLink("spotlight", undefined, warehouseProducts),
+    "/products/warehouse-G106094",
+  );
   assert.equal(resolveHomeLink("digital", undefined, products), "/products/category/scales");
   const target = { productId: "wps10ks" };
   assert.equal(resolveHomeLink("digital", target, products), "/products/wps10ks");

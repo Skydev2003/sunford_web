@@ -1,0 +1,3299 @@
+{
+  "version": 1,
+  "companyId": "1",
+  "source": {
+    "file": "SUNFORD_master_item_company1_2026-11-12.xlsx",
+    "sha256": "7c1d46a284566fc03f6b614a002c1b45005972b37beac46025aa2ab9dcdf28da",
+    "sheets": [
+      "NAV เครื่องชั่ง",
+      "NAV อินดิเคเตอร์แท่นชั่ง",
+      "NAV โครงสร้างแท่นชั่ง",
+      "NAV ระบบ POS",
+      "NAV อุปกรณ์เสริม"
+    ]
+  },
+  "items": [
+    {
+      "masterItemId": "796",
+      "sku": "11",
+      "name": "ACS-30-FC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "801",
+      "sku": "75",
+      "name": "C5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "799",
+      "sku": "C1-Certified",
+      "name": "C1",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "807",
+      "sku": "CSS-150",
+      "name": "CSS-150",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "804",
+      "sku": "FCS60AW31PL",
+      "name": "FCS60AW31PL",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "809",
+      "sku": "FEH5KSLP51",
+      "name": "FEH5KSLP51",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "855",
+      "sku": "G-MK010",
+      "name": "VR5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "856",
+      "sku": "G-MK011",
+      "name": "VC5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "857",
+      "sku": "G-MK012",
+      "name": "FEH5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "479",
+      "sku": "G-MK013",
+      "name": "KAH5000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "858",
+      "sku": "G-MK014",
+      "name": "ACS-JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "859",
+      "sku": "G-MK015",
+      "name": "ACS-JC81",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "875",
+      "sku": "G-MK016",
+      "name": "KBS6000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "909",
+      "sku": "G-TF001",
+      "name": "ACS-30-JE11",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "910",
+      "sku": "G-TF002",
+      "name": "ACS-30-JE21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "911",
+      "sku": "G-TF003",
+      "name": "ACS-30-JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "912",
+      "sku": "G-TF004",
+      "name": "ACS-30-JC81",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "913",
+      "sku": "G-TF005",
+      "name": "ACS-30-JC91",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "914",
+      "sku": "G-TF006",
+      "name": "ACS-30-FE31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "915",
+      "sku": "G-TF007",
+      "name": "ACS-30-FC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "916",
+      "sku": "G-TF008",
+      "name": "TCS-150-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "917",
+      "sku": "G-TF009",
+      "name": "FEH5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "918",
+      "sku": "G-TF010",
+      "name": "KAH5000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "919",
+      "sku": "G-TF011",
+      "name": "VR5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "920",
+      "sku": "G-TF012",
+      "name": "VC5000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "921",
+      "sku": "G-TF013",
+      "name": "VL1500S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "922",
+      "sku": "G-TF014",
+      "name": "AVS-25-K1",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "923",
+      "sku": "G-TF015",
+      "name": "TGS-1000M",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "924",
+      "sku": "G-TF016",
+      "name": "BYK03",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "814",
+      "sku": "G106005",
+      "name": "PCS-60-FC11 (3 buttons)",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "84",
+      "sku": "G106070",
+      "name": "FEH5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "85",
+      "sku": "G106094",
+      "name": "ACS-30-JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "86",
+      "sku": "G106124",
+      "name": "ACS-30-FC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "87",
+      "sku": "G106131",
+      "name": "AVS-25-K1",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "88",
+      "sku": "G106148",
+      "name": "ACS-30-JC21ET",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "89",
+      "sku": "G106155",
+      "name": "TGS1000M",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "90",
+      "sku": "G106162",
+      "name": "TCS-150-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "91",
+      "sku": "G106179",
+      "name": "VR5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "92",
+      "sku": "G106186",
+      "name": "ACS-30-JC81",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "93",
+      "sku": "G106193",
+      "name": "ACS-30-JC91",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "94",
+      "sku": "G106209",
+      "name": "TCS-60-JE62ZR",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "95",
+      "sku": "G106216",
+      "name": "ACS-30-JE11",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "815",
+      "sku": "G106223",
+      "name": "ACS-30-JC91S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "96",
+      "sku": "G106247",
+      "name": "FD1000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "97",
+      "sku": "G106254",
+      "name": "KAH5000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "98",
+      "sku": "G106285",
+      "name": "VC5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "99",
+      "sku": "G106292",
+      "name": "VL15000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "100",
+      "sku": "G106308",
+      "name": "TMS-60-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "101",
+      "sku": "G106315",
+      "name": "ACS-30-JE21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "102",
+      "sku": "G106322",
+      "name": "ACS-30-FE31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "103",
+      "sku": "G106339",
+      "name": "TCS-300-AC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "104",
+      "sku": "G106346",
+      "name": "TCS-150-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "105",
+      "sku": "G106353",
+      "name": "FEH10KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "106",
+      "sku": "G106360",
+      "name": "TCS-300-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "107",
+      "sku": "G106377",
+      "name": "FEH5KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "108",
+      "sku": "G106384",
+      "name": "TCS-500-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "790",
+      "sku": "G106391",
+      "name": "RLS1100",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "110",
+      "sku": "G106407",
+      "name": "TCS-150-JE62ZR",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "111",
+      "sku": "G106414",
+      "name": "ACS-30-JE81",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "112",
+      "sku": "G106421",
+      "name": "TMS-30-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "113",
+      "sku": "G106438",
+      "name": "ACS-30-JC21EL",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "816",
+      "sku": "G106445",
+      "name": "FCS-150-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1105",
+      "sku": "G106452",
+      "name": "FEH5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "114",
+      "sku": "G106469",
+      "name": "VB3000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "115",
+      "sku": "G106476",
+      "name": "TSS-60-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "116",
+      "sku": "G106483",
+      "name": "TSS-150-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "117",
+      "sku": "G106490",
+      "name": "TSS-300-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "118",
+      "sku": "G106513",
+      "name": "TMS-30-AC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "119",
+      "sku": "G106537",
+      "name": "FCS-150-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "120",
+      "sku": "G106544",
+      "name": "FCS-300-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "121",
+      "sku": "G106551",
+      "name": "FCS-60-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "122",
+      "sku": "G106568",
+      "name": "TCS-60-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "125",
+      "sku": "G106612",
+      "name": "S1",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "126",
+      "sku": "G106629",
+      "name": "S2",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "127",
+      "sku": "G106636",
+      "name": "E3",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "128",
+      "sku": "G106643",
+      "name": "C1",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "129",
+      "sku": "G106650",
+      "name": "C5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "130",
+      "sku": "G106667",
+      "name": "S3",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "131",
+      "sku": "G106674",
+      "name": "TGS600S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "132",
+      "sku": "G106681",
+      "name": "WPK5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "133",
+      "sku": "G106698",
+      "name": "WPS10KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "134",
+      "sku": "G106704",
+      "name": "WSS30KS-LED",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "135",
+      "sku": "G106711",
+      "name": "WPS6KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "136",
+      "sku": "G106728",
+      "name": "KBS6000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "137",
+      "sku": "G106735",
+      "name": "KBS5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "138",
+      "sku": "G106742",
+      "name": "PCS-60-FC11 (6 buttons)",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1058",
+      "sku": "G106759",
+      "name": "WSS3KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "139",
+      "sku": "G106803",
+      "name": "R3",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "140",
+      "sku": "G106810",
+      "name": "R6",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "141",
+      "sku": "G106827",
+      "name": "RLS1800",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "142",
+      "sku": "G106834",
+      "name": "PCS-60-FC11 (SUS304 PAN)",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "143",
+      "sku": "G106841",
+      "name": "VCS-150-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "144",
+      "sku": "G106858",
+      "name": "VCS-300-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "145",
+      "sku": "G106865",
+      "name": "TSS-60-WP31C",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "146",
+      "sku": "G106872",
+      "name": "TSS-150-WP31C",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "147",
+      "sku": "G106889",
+      "name": "TSS-300-WP31C",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "148",
+      "sku": "G106902",
+      "name": "TSS-60-WP31E",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "149",
+      "sku": "G106919",
+      "name": "TSS-150-WP31E",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "150",
+      "sku": "G106926",
+      "name": "TSS-300-WP31E",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "151",
+      "sku": "G106933",
+      "name": "TSS-30-WP31E",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "152",
+      "sku": "G106940",
+      "name": "TSS-60-AC31P",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "811",
+      "sku": "G106957",
+      "name": "TCS-600-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "812",
+      "sku": "G106964",
+      "name": "FCS-600-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "813",
+      "sku": "G106971",
+      "name": "FCS-600-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "876",
+      "sku": "G108517",
+      "name": "ACS-30-FC31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "877",
+      "sku": "G108524",
+      "name": "ACS-30-FE31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "235",
+      "sku": "G108531",
+      "name": "TIS-300-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "236",
+      "sku": "G108548",
+      "name": "TIS-300-JE62ZR",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "237",
+      "sku": "G108555",
+      "name": "TIS-150-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "238",
+      "sku": "G108562",
+      "name": "TIS-150-JE62ZR",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "239",
+      "sku": "G108572",
+      "name": "TIS-150-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "240",
+      "sku": "G108586",
+      "name": "TIS-150-SW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "241",
+      "sku": "G108593",
+      "name": "TIS-150-WP31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "242",
+      "sku": "G108609",
+      "name": "TIS-150-WP31C",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "243",
+      "sku": "G108616",
+      "name": "FLS60KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "244",
+      "sku": "G108623",
+      "name": "FLS150KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "246",
+      "sku": "G108647",
+      "name": "TIS150SW31F",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "247",
+      "sku": "G108654",
+      "name": "TCS-150-SW31F",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "248",
+      "sku": "G108661",
+      "name": "TIS300SW31F",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "249",
+      "sku": "G108678",
+      "name": "CCS-150-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "250",
+      "sku": "G108685",
+      "name": "CSS-150-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "251",
+      "sku": "G108692",
+      "name": "DCS-150-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "252",
+      "sku": "G108708",
+      "name": "DSS-150-JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "883",
+      "sku": "G108715",
+      "name": "FEH30KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "253",
+      "sku": "G108739",
+      "name": "TCS-300-SW31F",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "254",
+      "sku": "G108746",
+      "name": "ACS-3-AC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "255",
+      "sku": "G108753",
+      "name": "ACS-30-AC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "983",
+      "sku": "KBS5000",
+      "name": "KBS5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "950",
+      "sku": "KBS6000S",
+      "name": "KBS6000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "952",
+      "sku": "P00249",
+      "name": "KAH5000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "953",
+      "sku": "P00251",
+      "name": "ACS-30-JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "954",
+      "sku": "P00252",
+      "name": "ACS-30-JE81",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "956",
+      "sku": "P00261",
+      "name": "FEH5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "957",
+      "sku": "P00265",
+      "name": "ACS30JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "958",
+      "sku": "P00266",
+      "name": "KAH5000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "959",
+      "sku": "P00267",
+      "name": "FEH5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "960",
+      "sku": "P00268",
+      "name": "TCS60JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "961",
+      "sku": "P00269",
+      "name": "ACS30JC81",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "962",
+      "sku": "P00270",
+      "name": "ACS30FC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "963",
+      "sku": "P00271",
+      "name": "ACS30JE11",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "964",
+      "sku": "P00272",
+      "name": "ACS30JC21ET",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "967",
+      "sku": "P00277",
+      "name": "ACS30JE21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "968",
+      "sku": "P00283",
+      "name": "WPS6KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "969",
+      "sku": "P00284",
+      "name": "ACS30JE81",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "970",
+      "sku": "P00285",
+      "name": "KAH5000S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "971",
+      "sku": "P00287",
+      "name": "AVS25K1",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1054",
+      "sku": "SUNFORDR6",
+      "name": "SUNFORDR6",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1040",
+      "sku": "TCS1KAW31",
+      "name": "TCS1KAW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1038",
+      "sku": "TCS1KAW31-Poleless",
+      "name": "TCS1KAW31-Poleless",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1053",
+      "sku": "TCS60JE62ZRLP50",
+      "name": "TCS60JE62ZRLP50",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1050",
+      "sku": "TCS60JE62ZRLP51",
+      "name": "TCS60JE62ZRLP51",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1055",
+      "sku": "TCS150JE62ZRLP51",
+      "name": "TCS150JE62ZRLP51",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1042",
+      "sku": "TCS600",
+      "name": "TCS600",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1056",
+      "sku": "TIS150JC62Z",
+      "name": "TIS150JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1057",
+      "sku": "TIS150JE62ZR",
+      "name": "TIS150JE62ZR",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1061",
+      "sku": "TIS300",
+      "name": "TIS300",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1067",
+      "sku": "TIS300JC62Z",
+      "name": "TIS300JC62Z",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1062",
+      "sku": "TIS300JE62ZR",
+      "name": "TIS300JE62ZR",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1064",
+      "sku": "TIS300SW31F",
+      "name": "TIS300SW31F",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1037",
+      "sku": "TMS60",
+      "name": "TMS60",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1036",
+      "sku": "TMS60AW31",
+      "name": "TMS60AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1047",
+      "sku": "TMS60AW31LEDR5",
+      "name": "TMS60AW31LEDR5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1039",
+      "sku": "TMS60AW31LP50",
+      "name": "TMS60AW31LP50",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1041",
+      "sku": "TSS60AC31P",
+      "name": "TSS60AC31P",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1070",
+      "sku": "TSS60SW31S",
+      "name": "TSS60SW31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1071",
+      "sku": "TSS150SW31S",
+      "name": "TSS150SW31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1069",
+      "sku": "TSS300SW31S",
+      "name": "TSS300SW31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1043",
+      "sku": "VCS300SW31PL",
+      "name": "VCS300SW31PL",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1115",
+      "sku": "WSS3KS",
+      "name": "WSS3KS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "123",
+      "sku": "G106582",
+      "name": "POS1100-A",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "124",
+      "sku": "G106599",
+      "name": "POS1100-B",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "245",
+      "sku": "G108630",
+      "name": "เครื่องชั่ง WSS30KS (จอ LCD)",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1113",
+      "sku": "G108722",
+      "name": "เครื่องชั่ง WSS3KS (จอ LCD)",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "845",
+      "sku": "G-SET01",
+      "name": "ACS-30-JC91",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "874",
+      "sku": "G-SET02",
+      "name": "ACS-30-JC91 + TRP58B",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "847",
+      "sku": "G-SET03",
+      "name": "TCS-150-AW31 + LP50",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "846",
+      "sku": "G-SET04",
+      "name": "TCS-150-AW31 + LED-R5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "848",
+      "sku": "G-SET05",
+      "name": "TCS-150-JE62ZR + 233B",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "902",
+      "sku": "G-SET08",
+      "name": "TCS-300-AC31 + LP50",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "903",
+      "sku": "G-SET09",
+      "name": "TCS-300-AC31 + LED-R5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "901",
+      "sku": "G-SET10",
+      "name": "TCS-300-AW31 + LP50",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "900",
+      "sku": "G-SET11",
+      "name": "TCS-300-AW31 + LED-R5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "926",
+      "sku": "G-SET14",
+      "name": "TCS-500-AW31 + LP50",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "906",
+      "sku": "G-SET15",
+      "name": "TCS-500-AW31 + LED-R5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "930",
+      "sku": "G-SET16",
+      "name": "FCS-300-SW31 + Floor pole",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "908",
+      "sku": "G-SET19",
+      "name": "TCS-60-JE62ZR + 233B",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "931",
+      "sku": "G-SET22",
+      "name": "FCS-150-SW31 + Floor pole",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "990",
+      "sku": "GWT5YW58K9",
+      "name": "GWT5YW58K9",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1116",
+      "sku": "G110268",
+      "name": "CW-T2-SP31-B3040",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1117",
+      "sku": "G110275",
+      "name": "CW-T2-SP31-B4050",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1119",
+      "sku": "G110282",
+      "name": "CW-T2-CB11-R6080",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "1118",
+      "sku": "G110299",
+      "name": "CWH-T2-CB11-B6080",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "109",
+      "sku": "8858847106391",
+      "name": "RLS1100",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "27",
+      "sku": "ADAPTER-12V",
+      "name": "อะแดปเตอร์ 12V",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "291",
+      "sku": "IMP-00289",
+      "name": "ACS 030 FC31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "292",
+      "sku": "IMP-00290",
+      "name": "ACS 030 JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "293",
+      "sku": "IMP-00291",
+      "name": "ACS 030 JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "294",
+      "sku": "IMP-00292",
+      "name": "ACS 030 JC21",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "295",
+      "sku": "IMP-00293",
+      "name": "ZC41",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "296",
+      "sku": "IMP-00294",
+      "name": "ACS-3-AC31P",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "297",
+      "sku": "IMP-00295",
+      "name": "ACS-3-AC31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "298",
+      "sku": "IMP-00296",
+      "name": "ACS-30-AC31P",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "299",
+      "sku": "IMP-00297",
+      "name": "ACS-30-AC31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "305",
+      "sku": "IMP-00303",
+      "name": "BYK03",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "306",
+      "sku": "IMP-00304",
+      "name": "BYK10",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "307",
+      "sku": "IMP-00305",
+      "name": "CSS-150-WP31E",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "308",
+      "sku": "IMP-00312",
+      "name": "EK15",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "312",
+      "sku": "IMP-00316",
+      "name": "FCS-150-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "313",
+      "sku": "IMP-00317",
+      "name": "FCS-300-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "314",
+      "sku": "IMP-00318",
+      "name": "FCS-60-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "315",
+      "sku": "IMP-00319",
+      "name": "FCS-600-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "329",
+      "sku": "IMP-00333",
+      "name": "KPS5000",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "330",
+      "sku": "IMP-00335",
+      "name": "OMS-E",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "331",
+      "sku": "IMP-00336",
+      "name": "OTouch 10",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "337",
+      "sku": "IMP-00345",
+      "name": "TCS-1000-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "338",
+      "sku": "IMP-00346",
+      "name": "TCS-150-SW31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "339",
+      "sku": "IMP-00347",
+      "name": "TCS-2000-AW31",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "340",
+      "sku": "IMP-00348",
+      "name": "TCS-300-SW31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "341",
+      "sku": "IMP-00349",
+      "name": "TCS-60-SW31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "342",
+      "sku": "IMP-00350",
+      "name": "TMS-60-AC31P",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "343",
+      "sku": "IMP-00351",
+      "name": "TMS-60-AC31S",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "363",
+      "sku": "IMP-00371",
+      "name": "R1",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "364",
+      "sku": "IMP-00372",
+      "name": "R3",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "365",
+      "sku": "IMP-00373",
+      "name": "R5",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "375",
+      "sku": "IMP-00451",
+      "name": "พื้นลาด 100 เซน",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "376",
+      "sku": "IMP-00452",
+      "name": "พื้นลาด 120 เซน",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "377",
+      "sku": "IMP-00453",
+      "name": "พื้นลาดแสตนเลส 100 เซน",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "378",
+      "sku": "IMP-00454",
+      "name": "พื้นลาดแสตนเลส 120 เซน",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "391",
+      "sku": "IMP-00468",
+      "name": "M10",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "392",
+      "sku": "IMP-00469",
+      "name": "M10",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "393",
+      "sku": "IMP-00470",
+      "name": "M12",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "394",
+      "sku": "IMP-00471",
+      "name": "M12",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "395",
+      "sku": "IMP-00472",
+      "name": "M8",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "396",
+      "sku": "IMP-00473",
+      "name": "M8",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "397",
+      "sku": "IMP-00474",
+      "name": "M12",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "415",
+      "sku": "IMP-00492",
+      "name": "เสา TSS - 150/300 ตรง",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "416",
+      "sku": "IMP-00493",
+      "name": "เสา TSS - 150300",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "417",
+      "sku": "IMP-00494",
+      "name": "เสา TSS - 30/60 ตรง",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "418",
+      "sku": "IMP-00495",
+      "name": "เสา TSS - 30/60 เอียง",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "419",
+      "sku": "IMP-00496",
+      "name": "เสาสัญญาณไฟ 1 สี",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "420",
+      "sku": "IMP-00497",
+      "name": "เสาสัญญาณไฟ 3 สี",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "421",
+      "sku": "IMP-00498",
+      "name": "เสาเหลี่ยม 30ซม",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "422",
+      "sku": "IMP-00499",
+      "name": "เสาเหลี่ยม 45ซม",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "423",
+      "sku": "IMP-00500",
+      "name": "เสาเหลี่ยม 60ซม",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "424",
+      "sku": "IMP-00501",
+      "name": "เสาเหลี่ยม FCS 45ซม",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "425",
+      "sku": "IMP-00502",
+      "name": "เสาแสตนเลส BCS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "426",
+      "sku": "IMP-00503",
+      "name": "เสาแสตนเลส BSS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "427",
+      "sku": "IMP-00504",
+      "name": "เสาแสตนเลส FCS",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "22",
+      "sku": "SCALE-30KG",
+      "name": "เครื่องชั่ง 30 กก.",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "23",
+      "sku": "SCALE-60KG",
+      "name": "เครื่องชั่ง 60 กก.",
+      "categoryId": "scales"
+    },
+    {
+      "masterItemId": "207",
+      "sku": "G107763",
+      "name": "AC31S",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "208",
+      "sku": "G107770",
+      "name": "AW31",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "209",
+      "sku": "G107787",
+      "name": "SW31",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "210",
+      "sku": "G107794",
+      "name": "WP31C",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "211",
+      "sku": "G107800",
+      "name": "WP31E",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "212",
+      "sku": "G107817",
+      "name": "AC31P",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "213",
+      "sku": "G107824",
+      "name": "JC62Z",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "214",
+      "sku": "G107831",
+      "name": "JE62ZR",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "215",
+      "sku": "G107848",
+      "name": "SW31F",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "216",
+      "sku": "G107855",
+      "name": "WP31EUSB",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "256",
+      "sku": "G108760",
+      "name": "WETOUCH10",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "955",
+      "sku": "Indicator-AC31S",
+      "name": "Indicator-AC31S",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "987",
+      "sku": "Indicator-WP31EUSB",
+      "name": "Indicator-WP31EUSB",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "405",
+      "sku": "IMP-00482",
+      "name": "AC31P",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "406",
+      "sku": "IMP-00483",
+      "name": "AC31S",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "407",
+      "sku": "IMP-00484",
+      "name": "AW31",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "408",
+      "sku": "IMP-00485",
+      "name": "JC62Z",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "409",
+      "sku": "IMP-00486",
+      "name": "SW31",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "410",
+      "sku": "IMP-00487",
+      "name": "SW31F",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "411",
+      "sku": "IMP-00488",
+      "name": "WP31C",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "412",
+      "sku": "IMP-00489",
+      "name": "WP31E",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "413",
+      "sku": "IMP-00490",
+      "name": "WP31E",
+      "categoryId": "indicators"
+    },
+    {
+      "masterItemId": "182",
+      "sku": "G107510",
+      "name": "CSS 3838",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "183",
+      "sku": "G107527",
+      "name": "FCS 3040",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "184",
+      "sku": "G107534",
+      "name": "FCS 4050",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "185",
+      "sku": "G107541",
+      "name": "FCS 4560",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "186",
+      "sku": "G107558",
+      "name": "TCS 4050",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "187",
+      "sku": "G107565",
+      "name": "TCS 4560",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "188",
+      "sku": "G107572",
+      "name": "TMS 3040",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "189",
+      "sku": "G107589",
+      "name": "TSS 3040",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "190",
+      "sku": "G107596",
+      "name": "TSS 4050",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "191",
+      "sku": "G107602",
+      "name": "TSS 5060",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "192",
+      "sku": "G107619",
+      "name": "TCS 5060",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "193",
+      "sku": "G107626",
+      "name": "TCS 6080",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "194",
+      "sku": "G107633",
+      "name": "TIS 3949",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "195",
+      "sku": "G107640",
+      "name": "FCS60100",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "196",
+      "sku": "G107657",
+      "name": "VCS60100",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "197",
+      "sku": "G107664",
+      "name": "FSS100100",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "198",
+      "sku": "G107671",
+      "name": "FSS120120",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "201",
+      "sku": "G107701",
+      "name": "BCS100100",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "202",
+      "sku": "G107718",
+      "name": "BCS120120",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "203",
+      "sku": "G107725",
+      "name": "BSS100100",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "204",
+      "sku": "G107732",
+      "name": "BSS120120",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "205",
+      "sku": "G107749",
+      "name": "FCS100100",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "206",
+      "sku": "G107756",
+      "name": "FCS120120",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "261",
+      "sku": "G109019",
+      "name": "CCS 3540",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "262",
+      "sku": "G109026",
+      "name": "CSS 3540",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "263",
+      "sku": "G109071",
+      "name": "DCS 3540",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "264",
+      "sku": "G109088",
+      "name": "DSS 3540",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "265",
+      "sku": "G109095",
+      "name": "DCS 4560",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "266",
+      "sku": "G109101",
+      "name": "DSS 4560",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "267",
+      "sku": "G109118",
+      "name": "DCS 6080",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "268",
+      "sku": "G109125",
+      "name": "DSS 6080",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "898",
+      "sku": "G109187",
+      "name": "BCS150150",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "899",
+      "sku": "G109194",
+      "name": "BSS150150",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "269",
+      "sku": "G109255",
+      "name": "TIS 4560",
+      "categoryId": "platforms"
+    },
+    {
+      "masterItemId": "966",
+      "sku": "P00276",
+      "name": "SFCONRLS1100",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "217",
+      "sku": "G108012",
+      "name": "P1W",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "218",
+      "sku": "G108029",
+      "name": "P1",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "219",
+      "sku": "G108036",
+      "name": "P2",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "220",
+      "sku": "G108043",
+      "name": "P3",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "221",
+      "sku": "G108050",
+      "name": "P4",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "831",
+      "sku": "G108067",
+      "name": "P5",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "891",
+      "sku": "G110015",
+      "name": "WW2-WT10-WSA",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "892",
+      "sku": "G110022",
+      "name": "WW2-WT10-WSB",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1075",
+      "sku": "WSA",
+      "name": "WSA",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1074",
+      "sku": "WSALP53",
+      "name": "WSALP53",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1068",
+      "sku": "WSALP531Y",
+      "name": "WSALP531Y",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1073",
+      "sku": "WSALP533Y",
+      "name": "WSALP533Y",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1072",
+      "sku": "WSB",
+      "name": "WSB",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1066",
+      "sku": "WSBLP53",
+      "name": "WSBLP53",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1101",
+      "sku": "POSP1SET-WPS10KS_BT",
+      "name": "POSP1SET-WPS10KS_BT",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "995",
+      "sku": "POSP1SETPCS60FC11Drawer",
+      "name": "POSP1SETPCS60FC11Drawer",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "996",
+      "sku": "POSP1SETPOS1100ADrawer",
+      "name": "POSP1SETPOS1100ADrawer",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "997",
+      "sku": "POSP1SETPOS1100BDrawer",
+      "name": "POSP1SETPOS1100BDrawer",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "992",
+      "sku": "POSP1SETPOS1100Drawer",
+      "name": "POSP1SETPOS1100Drawer",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "993",
+      "sku": "POSP1SETRLS1100",
+      "name": "POSP1SETRLS1100",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "991",
+      "sku": "POSP1SETRLS1100Drawer",
+      "name": "POSP1SETRLS1100Drawer",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1102",
+      "sku": "POSP1SETWPS10KS_BTDrawer",
+      "name": "POSP1SETWPS10KS_BTDrawer",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "984",
+      "sku": "POSP1WSET",
+      "name": "POSP1WSET",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "999",
+      "sku": "SETPOS1100AP1",
+      "name": "SETPOS1100AP1",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1063",
+      "sku": "SETPOS1100BP1",
+      "name": "SETPOS1100BP1",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1044",
+      "sku": "SETPOSP1",
+      "name": "SETPOSP1",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1048",
+      "sku": "SETPOSP2",
+      "name": "SETPOSP2",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1046",
+      "sku": "SETPOSP4",
+      "name": "SETPOSP4",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1059",
+      "sku": "SFCONFEH10KS",
+      "name": "SFCONFEH10KS",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "794",
+      "sku": "G106988",
+      "name": "Connect Driver",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "792",
+      "sku": "G106995",
+      "name": "Connect POS - Basic",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "795",
+      "sku": "G107008",
+      "name": "Connect POS - Pro",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "879",
+      "sku": "G109767",
+      "name": "ค่าบริการ Subscription WEWEIGHT 2 PRO รายเดือน",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "880",
+      "sku": "G109774",
+      "name": "ค่าบริการ Subscription WEWEIGHT 2 PRO รายปี",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "881",
+      "sku": "G109781",
+      "name": "ค่าบริการ Subscription WEWEIGHT 2 FULL รายเดือน",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "882",
+      "sku": "G109798",
+      "name": "ค่าบริการ Subscription WEWEIGHT 2 FULL รายปี",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1049",
+      "sku": "SFCLPOS4m",
+      "name": "SFCLPOS4m",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1045",
+      "sku": "SFCLPOS12m",
+      "name": "SFCLPOS12m",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "1030",
+      "sku": "SmartRetail",
+      "name": "Connect POS - Smart Retail",
+      "categoryId": "pos"
+    },
+    {
+      "masterItemId": "167",
+      "sku": "G107152",
+      "name": "RYG-POLE 5V (ไม่มีเสียง)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "168",
+      "sku": "G107169",
+      "name": "RYG-POLE 12V (มีเสียง)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "171",
+      "sku": "G107213",
+      "name": "C1/C5",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "173",
+      "sku": "G107237",
+      "name": "LED-R3",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "174",
+      "sku": "G107244",
+      "name": "LED-R5",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "175",
+      "sku": "G107251",
+      "name": "LED-R1",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "829",
+      "sku": "G107367",
+      "name": "คีย์บอร์ดและเม้าส์ ไร้สาย",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "828",
+      "sku": "G107374",
+      "name": "สแกนเนอร์ ยิงบาร์โค้ด 1D ไร้สาย",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "825",
+      "sku": "G107381",
+      "name": "สแกนเนอร์ ยิงบาร์โค้ด 1D มีสาย",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "826",
+      "sku": "G107398",
+      "name": "CAM1100",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "181",
+      "sku": "G107411",
+      "name": "DRW-350",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "949",
+      "sku": "POSBasicAccessory",
+      "name": "Accessory for POS - Basic",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1029",
+      "sku": "SUNFORDDRW350-B",
+      "name": "DRW-350 (ดำ)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1033",
+      "sku": "SUNFORDDRW350-W",
+      "name": "DRW-350 (ขาว)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1065",
+      "sku": "SUNFORDWT10",
+      "name": "SUNFORDWT10",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "176",
+      "sku": "G107268",
+      "name": "TRP-58B",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "820",
+      "sku": "G107275",
+      "name": "TRP-233B",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "177",
+      "sku": "G107282",
+      "name": "LP50",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "819",
+      "sku": "G107299",
+      "name": "58IIN",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "178",
+      "sku": "G107305",
+      "name": "LP51",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "179",
+      "sku": "G107312",
+      "name": "LP42",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "842",
+      "sku": "G107329",
+      "name": "LP53",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "844",
+      "sku": "G107336",
+      "name": "LP54",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "843",
+      "sku": "G107343",
+      "name": "LP44",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "153",
+      "sku": "G107015",
+      "name": "Adapter",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "154",
+      "sku": "G107022",
+      "name": "Battery",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "155",
+      "sku": "G107039",
+      "name": "Cable connector (1 คู่)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "156",
+      "sku": "G107046",
+      "name": "Floor pole",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "157",
+      "sku": "G107053",
+      "name": "Load cell",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "158",
+      "sku": "G107060",
+      "name": "Loadcell Cable",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "159",
+      "sku": "G107077",
+      "name": "PCB",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "160",
+      "sku": "G107084",
+      "name": "หน้าปัดและแผงปุ่มกด",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "161",
+      "sku": "G107091",
+      "name": "ชุดสายไฟ",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "162",
+      "sku": "G107107",
+      "name": "จอแสดงผล",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "163",
+      "sku": "G107114",
+      "name": "ขาเกลียวปรับระดับ",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "164",
+      "sku": "G107121",
+      "name": "Data cable RS232-USB SERIAL",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "165",
+      "sku": "G107138",
+      "name": "Data Cable RS232-USB HID",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "166",
+      "sku": "G107145",
+      "name": "สายนำสัญญาณ RS232 1M2F",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "169",
+      "sku": "G107183",
+      "name": "จานชั่ง",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "170",
+      "sku": "G107190",
+      "name": "แผ่นครอบใส",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "172",
+      "sku": "G107220",
+      "name": "อะไหล่เบ็ดเตล็ด",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "180",
+      "sku": "G107350",
+      "name": "ขาตั้งเครื่องพิมพ์",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "199",
+      "sku": "G107688",
+      "name": "RAMP FCR100100",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "200",
+      "sku": "G107695",
+      "name": "RAMP FCR120120",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "222",
+      "sku": "G108319",
+      "name": "ส่วนขยายวงจร บลูทูธ BTA",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "223",
+      "sku": "G108326",
+      "name": "ส่วนขยายวงจร บลูทูธ BTB",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "224",
+      "sku": "G108333",
+      "name": "อุปกรณ์ส่งสัญญาณ บลูทูธ 1,000ม BTL",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1109",
+      "sku": "G108388",
+      "name": "ล้อ PU30M16 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "810",
+      "sku": "G108395",
+      "name": "ล้อ PU30M16 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "225",
+      "sku": "G108401",
+      "name": "ล้อ NY30M12 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "226",
+      "sku": "G108418",
+      "name": "ล้อ PU20M08 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "227",
+      "sku": "G108425",
+      "name": "ล้อ PU20M10 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "228",
+      "sku": "G108432",
+      "name": "ล้อ NY20M12 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "229",
+      "sku": "G108449",
+      "name": "ล้อ NY25M12 ชุดละ 4 ล้อ (ล็อค 2, อิสระ 2)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "230",
+      "sku": "G108456",
+      "name": "จานชั่งลูกกลิ้งลำเลียง 40x50 (เข้าด้าน50)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "231",
+      "sku": "G108463",
+      "name": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 60)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "232",
+      "sku": "G108470",
+      "name": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 80)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "233",
+      "sku": "G108494",
+      "name": "จานชั่งลูกกลิ้งลำเลียง 45x60 (เข้าด้าน 45)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "234",
+      "sku": "G108500",
+      "name": "จานชั่งลูกกลิ้งลำเลียง 60x80 (เข้าด้าน 60)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "257",
+      "sku": "G108814",
+      "name": "วงจรแท่นชั่งเทอร์มินอล ABT",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "896",
+      "sku": "G109736",
+      "name": "ชิ้นส่วนและอะไหล่เพื่องานซ่อม",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "884",
+      "sku": "G110510",
+      "name": "คอเสากลมสแตนเลส ปรับองศา VESA NSAV",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "885",
+      "sku": "G110527",
+      "name": "คอเสากลมสแตนเลส ปรับองศา NSAV",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "886",
+      "sku": "G110534",
+      "name": "คอเสากลมสแตนเลส ไม่ปรับองศา NS",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "887",
+      "sku": "G110541",
+      "name": "คอเสากลมพลาสติก NP",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "888",
+      "sku": "G110657",
+      "name": "หน้าโต๊ะสแตนเลส TP4142P60",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "889",
+      "sku": "G110749",
+      "name": "ขาตั้งโต๊ะสแตนเลสเสากลม (ไม่รวมคอเสา) NBR",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "890",
+      "sku": "G110756",
+      "name": "ขาตั้งโต๊ะสแตนเลสเสาเหลี่ยม NBS",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1112",
+      "sku": "IMP-00999",
+      "name": "Stainless steel holder",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "994",
+      "sku": "LCDC1C5",
+      "name": "LCDC1C5",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "985",
+      "sku": "PCS60FC11STL",
+      "name": "PCS60FC11STL",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1120",
+      "sku": "PUC20M10",
+      "name": "PUC20M10",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "986",
+      "sku": "RPole_Buzzer",
+      "name": "RPole_Buzzer",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1031",
+      "sku": "SKU-264syl2y71264syl2y71",
+      "name": "เสาแสตนเลส",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1060",
+      "sku": "TCS60-LC",
+      "name": "TCS60-LC",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1108",
+      "sku": "EA-000001",
+      "name": "Name Plate",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "835",
+      "sku": "G107404",
+      "name": "สติ๊กเกอร์เลเบล (กันน้ำ) 20*60 มม 2000 ดวง (แพ็ค 1 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "834",
+      "sku": "G107428",
+      "name": "สติ๊กเกอร์เลเบล (กันน้ำ) 40*60 มม 700 ดวง (แพ็ค 2 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "833",
+      "sku": "G107435",
+      "name": "กระดาษความร้อน 57x50 บรรจุ 10 ม้วน",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "832",
+      "sku": "G107442",
+      "name": "กระดาษความร้อน 80x80 บรรจุ 10 ม้วน",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "830",
+      "sku": "G107459",
+      "name": "กระดาษความร้อน 80x80 บรรจุ 20 ม้วน",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "818",
+      "sku": "G107466",
+      "name": "กระดาษความร้อน 57x50 บรรจุ 20 ม้วน",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "824",
+      "sku": "G107473",
+      "name": "สติ๊กเกอร์เลเบล (กันน้ำ) 40*60 มม 700 ดวง (แพ็ค 5 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "817",
+      "sku": "G107480",
+      "name": "สติ๊กเกอร์เลเบล 20*60 มม 1000 ดวง (แพ็ค 5 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "823",
+      "sku": "G107497",
+      "name": "สติ๊กเกอร์เลเบล 30*60 มม 700 ดวง (แพ็ค 5 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "478",
+      "sku": "G107503",
+      "name": "สติ๊กเกอร์เลเบล 40*60 มม 700 ดวง (แพ็ค 5 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "841",
+      "sku": "G108098",
+      "name": "สติ๊กเกอร์เลเบล 30*60 มม 700 ดวง (แพ็ค 50 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "840",
+      "sku": "G108104",
+      "name": "สติ๊กเกอร์เลเบล 20*60 มม 1000 ดวง (แพ็ค 50 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "838",
+      "sku": "G108111",
+      "name": "สติ๊กเกอร์เลเบล 40*60 มม 700 ดวง (แพ็ค 50 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "837",
+      "sku": "G108128",
+      "name": "สติ๊กเกอร์เลเบล (กันน้ำ) 40*60 มม 700 ดวง (แพ็ค 50 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "839",
+      "sku": "G108241",
+      "name": "กระดาษความร้อน 80x80 (แพ็ค 50 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "836",
+      "sku": "G108258",
+      "name": "กระดาษความร้อน 80x80 บรรจุ 1 ม้วน",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "989",
+      "sku": "Label20x60-1000-50u",
+      "name": "Label20x60-1000-50u",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "951",
+      "sku": "Label30x60-700_265u5owwyp",
+      "name": "สติ๊กเกอร์เลเบล 30*60 มม 700 ดวง (แพ็ค 5 ม้วน)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "988",
+      "sku": "Label40x60WP-2u",
+      "name": "Label40x60WP-2u",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1051",
+      "sku": "Thermalpaper20",
+      "name": "Thermalpaper20",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "1052",
+      "sku": "Thermalpaper8020",
+      "name": "Thermalpaper8020",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "878",
+      "sku": "G109514",
+      "name": "ลูกตุ้มน้ำหนัก",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "366",
+      "sku": "IMP-00374",
+      "name": "จานชั่งลูกกลิ้ง 40*50 - แคบ",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "367",
+      "sku": "IMP-00375",
+      "name": "จานชั่งลูกกลิ้ง 45*60 - กว้าง",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "368",
+      "sku": "IMP-00376",
+      "name": "จานชั่งลูกกลิ้ง 45*60 - แคบ",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "369",
+      "sku": "IMP-00377",
+      "name": "จานชั่งลูกกลิ้ง 60*80 - กว้าง",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "370",
+      "sku": "IMP-00378",
+      "name": "จานชั่งลูกกลิ้ง 60*80 - แคบ",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "414",
+      "sku": "IMP-00491",
+      "name": "233B",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "24",
+      "sku": "LOADCELL-30KG",
+      "name": "โหลดเซลล์ 30 กก.",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "25",
+      "sku": "LOADCELL-60KG",
+      "name": "โหลดเซลล์ 60 กก.",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "26",
+      "sku": "PCB-CTRL-STD",
+      "name": "แผงวงจรควบคุมมาตรฐาน",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "270",
+      "sku": "IMP-00223",
+      "name": "1000Kg(Standard)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "271",
+      "sku": "IMP-00246",
+      "name": "10Kg(ACS 6Kg)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "272",
+      "sku": "IMP-00269",
+      "name": "150Kg(62Z)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "273",
+      "sku": "IMP-00270",
+      "name": "150Kg(Standard)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "274",
+      "sku": "IMP-00271",
+      "name": "300Kg(Standard)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "275",
+      "sku": "IMP-00272",
+      "name": "30Kg(30Kg/1g)*TMS",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "276",
+      "sku": "IMP-00273",
+      "name": "30Kg(ACS/RLS)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "277",
+      "sku": "IMP-00274",
+      "name": "30Kg(AVS)*ตัวเก่า",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "278",
+      "sku": "IMP-00275",
+      "name": "30Kg(Ex.JC21)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "279",
+      "sku": "IMP-00276",
+      "name": "30Kg(Standard)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "280",
+      "sku": "IMP-00277",
+      "name": "30Kg(TSS)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "281",
+      "sku": "IMP-00278",
+      "name": "30Kg(WSS)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "282",
+      "sku": "IMP-00279",
+      "name": "5Kg(ACS 3Kg)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "283",
+      "sku": "IMP-00280",
+      "name": "5Kg(KAH/FEH)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "284",
+      "sku": "IMP-00281",
+      "name": "5Kg(KBS) *[ตัวใหม่]*",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "285",
+      "sku": "IMP-00282",
+      "name": "600Kg(Standard)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "286",
+      "sku": "IMP-00283",
+      "name": "60Kg(62Z)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "287",
+      "sku": "IMP-00284",
+      "name": "60Kg(FC11)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "288",
+      "sku": "IMP-00285",
+      "name": "60Kg(Standard)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "289",
+      "sku": "IMP-00287",
+      "name": "AC31P/ACS-AC31P",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "290",
+      "sku": "IMP-00288",
+      "name": "AC31S/ACS-AC31S",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "300",
+      "sku": "IMP-00298",
+      "name": "ACS-AC31P",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "301",
+      "sku": "IMP-00299",
+      "name": "ACS-AC31S",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "302",
+      "sku": "IMP-00300",
+      "name": "AW/AC",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "303",
+      "sku": "IMP-00301",
+      "name": "AW31",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "304",
+      "sku": "IMP-00302",
+      "name": "AW31/(เวอร์ชั่นใหม่)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "309",
+      "sku": "IMP-00313",
+      "name": "FC/FE31",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "310",
+      "sku": "IMP-00314",
+      "name": "FC11",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "311",
+      "sku": "IMP-00315",
+      "name": "FC31",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "316",
+      "sku": "IMP-00320",
+      "name": "FE31",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "317",
+      "sku": "IMP-00321",
+      "name": "JC/JE21",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "318",
+      "sku": "IMP-00322",
+      "name": "JC/JE62Z",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "319",
+      "sku": "IMP-00323",
+      "name": "JC/JE81",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "320",
+      "sku": "IMP-00324",
+      "name": "JC21",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "321",
+      "sku": "IMP-00325",
+      "name": "JC21/91",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "322",
+      "sku": "IMP-00326",
+      "name": "JC62Z(ปุ่มพิมพ์)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "323",
+      "sku": "IMP-00327",
+      "name": "JC81",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "324",
+      "sku": "IMP-00328",
+      "name": "JC91",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "325",
+      "sku": "IMP-00329",
+      "name": "JC91/11",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "326",
+      "sku": "IMP-00330",
+      "name": "JE11",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "327",
+      "sku": "IMP-00331",
+      "name": "JE21",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "328",
+      "sku": "IMP-00332",
+      "name": "JE81",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "332",
+      "sku": "IMP-00340",
+      "name": "RS232 ตัวผู้",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "333",
+      "sku": "IMP-00341",
+      "name": "RS232 ตัวเมีย",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "334",
+      "sku": "IMP-00342",
+      "name": "SW31",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "335",
+      "sku": "IMP-00343",
+      "name": "SW31(TCS-SW)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "336",
+      "sku": "IMP-00344",
+      "name": "Swtich",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "344",
+      "sku": "IMP-00352",
+      "name": "WSS 0.1",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "345",
+      "sku": "IMP-00353",
+      "name": "WSS LCD",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "346",
+      "sku": "IMP-00354",
+      "name": "WSS LCD (กลาง)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "347",
+      "sku": "IMP-00355",
+      "name": "WSS LCD *ชุด",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "348",
+      "sku": "IMP-00356",
+      "name": "WSS LCD *หน้าเดี่ยว",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "349",
+      "sku": "IMP-00357",
+      "name": "WSS LED",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "350",
+      "sku": "IMP-00358",
+      "name": "WSS LED (กลาง)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "351",
+      "sku": "IMP-00359",
+      "name": "WSS LED *ชุด",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "352",
+      "sku": "IMP-00360",
+      "name": "WSS LED *หน้าเดี่ยว",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "353",
+      "sku": "IMP-00361",
+      "name": "กรอบจอหน้า62Z",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "354",
+      "sku": "IMP-00362",
+      "name": "กรอบจอหลัง62Z",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "355",
+      "sku": "IMP-00363",
+      "name": "กรอบปุ่มกด62Z",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "356",
+      "sku": "IMP-00364",
+      "name": "กรอบใสจอหลัง 62Z",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "357",
+      "sku": "IMP-00365",
+      "name": "ขั้วAC(AW/AC)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "358",
+      "sku": "IMP-00366",
+      "name": "ขั้วAC(SW31)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "359",
+      "sku": "IMP-00367",
+      "name": "ขั้วAC(WP31)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "360",
+      "sku": "IMP-00368",
+      "name": "ขั้วDC(KAH/FEH)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "361",
+      "sku": "IMP-00369",
+      "name": "ขั้วDCแกนเล็ก",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "362",
+      "sku": "IMP-00370",
+      "name": "ขั้วDCแกนใหญ่",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "371",
+      "sku": "IMP-00379",
+      "name": "ชุดจอJE11",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "372",
+      "sku": "IMP-00380",
+      "name": "ซิลิโคน",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "373",
+      "sku": "IMP-00389",
+      "name": "ตัวยึดจอหน้า 62Z",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "374",
+      "sku": "IMP-00390",
+      "name": "ตัวยึดปุ่มกด 62Z",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "379",
+      "sku": "IMP-00455",
+      "name": "ยาง Swtich",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "380",
+      "sku": "IMP-00456",
+      "name": "ยางปิดขั้วDC (Ex.JC21)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "381",
+      "sku": "IMP-00457",
+      "name": "ยางปิดขั้วDC (Ex.JC81)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "382",
+      "sku": "IMP-00458",
+      "name": "ยางปิดขั้วDC(Ex.WPS)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "383",
+      "sku": "IMP-00459",
+      "name": "รางถ่านFEH",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "384",
+      "sku": "IMP-00460",
+      "name": "รางถ่านKAH",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "385",
+      "sku": "IMP-00462",
+      "name": "ลูกน้ำสีขาว(Ex.JC21)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "386",
+      "sku": "IMP-00463",
+      "name": "ลูกน้ำสีเขียว(Ex.KAH)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "387",
+      "sku": "IMP-00464",
+      "name": "ลูกน้ำสีเขียว(Ex.WPS)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "388",
+      "sku": "IMP-00465",
+      "name": "ลูกยางWSSใหม่",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "389",
+      "sku": "IMP-00466",
+      "name": "ลูกยางกลมWSS",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "390",
+      "sku": "IMP-00467",
+      "name": "ลููกยางสี่มุมWSS",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "398",
+      "sku": "IMP-00475",
+      "name": "สกรูโหลดเซลล์ WSS",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "399",
+      "sku": "IMP-00476",
+      "name": "สาย RS232 C1/C5",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "400",
+      "sku": "IMP-00477",
+      "name": "สายจอ JE11",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "401",
+      "sku": "IMP-00478",
+      "name": "สายยาง",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "402",
+      "sku": "IMP-00479",
+      "name": "สายโหลดเซลล์",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "403",
+      "sku": "IMP-00480",
+      "name": "สายโหลดเซลล์(แบบถัก)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "404",
+      "sku": "IMP-00481",
+      "name": "หม้อแปลงAC",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "428",
+      "sku": "IMP-00505",
+      "name": "แกนท์",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "468",
+      "sku": "IMP-00545",
+      "name": "แผงTRG",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "469",
+      "sku": "IMP-00546",
+      "name": "แม่เหล็กกันสัญญาณ(กลม)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "470",
+      "sku": "IMP-00547",
+      "name": "แม่เหล็กกันสัญญาณ(หนีบ)",
+      "categoryId": "accessories"
+    },
+    {
+      "masterItemId": "471",
+      "sku": "IMP-00548",
+      "name": "โดรนตัวใหม่ WSS",
+      "categoryId": "accessories"
+    }
+  ]
+}
