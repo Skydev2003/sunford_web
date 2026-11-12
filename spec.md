@@ -67,7 +67,7 @@ Create a Warehouse database function returning the product, price, primary-image
 - Final validation: catalogue 161/161, UAT 27/27, TypeScript, scoped ESLint/Prettier and diff checks passed. Final bun run build succeeded and generated 795/795 pages after the last application change.
 - Seven existing browser regressions passed with PLAYWRIGHT_CHANNEL=chrome: source photos, all five categories/search/details at390/834/1440px, SKU/price/VAT handoff and PDF issue/retry. Quote issuance was mocked, not written to the real registry. Mobile/desktop screenshots were inspected.
 - Initial TypeScript failure came from missing installed pdf-lib packages already declared in the lockfile. Restored those exact versions with lockfile integrity verification, without package/lockfile edits. Initial browser attempts could not launch the absent Playwright binary; reran successfully using installed Chrome through the existing configuration. These environment issues are resolved and are not Next.js feedback candidates. Final reporting pass retained no framework issue.
-- Changes are local/uncommitted; no production deployment or old Supabase-project deletion occurred. Evidence is in ignored output/warehouse-product-rpc-20261112/.
+- RPC work was committed by the owner as6d4620d and subsequently released with the registry migration in production revisiond0a812eba3af. The old Supabase project remains untouched under the latest owner direction. RPC evidence is in ignored output/warehouse-product-rpc-20261112/.
 
 ## Task: Move the website quotation registry into Warehouse (2026-11-12)
 
@@ -112,8 +112,8 @@ Remove the website's runtime/build dependency on the old Supabase database by ke
 - [x] Old registry exported0rows before the latest no-Supabase instruction. The verified live production revision c132b8e8db08 has no quotation-issuance route, so no old production allocator can issue numbers during cutover. No further Supabase access.
 - [x] Retrying the same UUID returns the same number/date; distinct UUIDs allocate distinct increasing numbers; failed/rolled-back operations do not leave verification records.
 - [x] Product reads remain read-only and the exact current SKU/price/image behaviour is preserved.
-- [ ] No runtime or production build dependency remains on the old project; historical migrations are retained without executing their CMS/auth SQL on Warehouse.
-- [ ] Scoped type/lint/format, UAT/catalogue regressions, build and quotation/PDF browser verification pass. Production deployment/health and quotation access are verified before project deletion.
+- [x] No runtime or production build dependency remains on the old project; historical migrations are retained without executing their CMS/auth SQL on Warehouse.
+- [x] Scoped type/lint/format, UAT/catalogue regressions, build and quotation/PDF browser verification pass. Production deployment/health and quotation access are verified; the latest owner direction excludes project deletion.
 
 ### Missing Information
 
@@ -128,7 +128,9 @@ Remove the website's runtime/build dependency on the old Supabase database by ke
 
 ### Verification / Current State
 
-- Isolated registry installed/validated twice. Guard rejection, allocation sequencing and UUID/date idempotency checked in rollback-only transactions;0 verification rows persisted. Catalogue162/162, UAT28/28, TypeScript, local build795/795 and3 Warehouse/quotation/PDF browser checks passed. Independent read-only review found no concrete findings. Production release remains pending.
+- Isolated registry installed/validated twice. Guard rejection, allocation sequencing and UUID/date idempotency checked in rollback-only transactions;0 verification rows persisted. Catalogue162/162, UAT28/28, TypeScript, local build795/795 and3 Warehouse/quotation/PDF browser checks passed. Independent read-only review found no concrete findings. Released through clean-uat bun run deploy asd0a812eba3af. Vercel reportsREADY and the public health endpoint confirms that exact revision. Production checks passed for484 unique products,97/97 primary photos, homepage video/poster and3 existing browser/PDF cases (issuance mocked; no real verification numbers).
+
+- All5 old DATABASE_URL/DIRECT_URL/SUPABASE connection settings were removed from Vercel after successful cutover. Warehouse settings and UAT_DEV_HOSTS remain. The old Supabase project was neither connected to again nor deleted. No framework feedback candidate arose during the final review.
 
 ## Task: Retire the old Supabase project after quotation cutover (2026-11-12)
 
