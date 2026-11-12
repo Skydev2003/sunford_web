@@ -6,6 +6,7 @@ export type CategoryFeatureEntry = {
   id: string;
   title: string;
   image: string;
+  fallbackImage?: string;
   href: string;
 };
 
@@ -16,6 +17,7 @@ export function productFeatureEntries(products: Product[]): CategoryFeatureEntry
       id: product.id,
       title: product.name,
       image: product.image,
+      fallbackImage: product.fallbackImage,
       href: `/products/${product.slug}`,
     }));
 }

@@ -54,7 +54,7 @@ for (const [id, count, label] of [
   ["accessories", 5, "อุปกรณ์เสริม"],
 ] as const) {
   for (const width of [390, 1440]) {
-    test(`${id} entrance uses shared finite bounce and preserves ribbon at ${width}px`, async ({
+    test(`${id} opening uses the light shared rise and preserves ribbon at ${width}px`, async ({
       page,
     }) => {
       await page.setViewportSize({ width, height: 1000 });
@@ -68,8 +68,8 @@ for (const [id, count, label] of [
       await expect(chapters).toHaveCount(count);
       await expectStaggerMotion(title);
       await expectStaggerMotion(chapters.first());
-      await expect(title).toHaveCSS("opacity", "0");
-      await expect(title).toHaveCSS("scale", "0.8");
+      await expect(title).toHaveCSS("opacity", "0.65");
+      await expect(title).toHaveCSS("scale", "none");
       await expect(ribbon).toHaveCSS("animation-duration", "3s");
       const delays = await chapters.evaluateAll((items) =>
         items.flatMap((item) =>
@@ -80,7 +80,7 @@ for (const [id, count, label] of [
         ),
       );
       expect(delays.length).toBeGreaterThan(0);
-      expect(delays).toEqual(delays.map((_, i) => 100 + i * 150));
+      expect(delays).toEqual(delays.map((_, i) => Math.min(i * 80, 320)));
       const properties = await title.evaluate((element) =>
         element
           .getAnimations()
@@ -92,10 +92,10 @@ for (const [id, count, label] of [
           })),
       );
       expect(properties).toHaveLength(1);
-      expect(properties[0].duration).toBe(800);
+      expect(properties[0].duration).toBe(650);
       expect(properties[0].iterations).toBe(1);
-      expect(properties[0].frames.map((frame) => frame.translate)).toEqual(["0px 40px", "0px"]);
-      expect(properties[0].frames.map((frame) => frame.scale)).toEqual(["0.8", "1"]);
+      expect(properties[0].frames.map((frame) => frame.translate)).toEqual(["0px 16px", "0px"]);
+      expect(properties[0].frames.map((frame) => frame.scale ?? null)).toEqual([null, null]);
       await expect(chapters.first().getByRole("button")).toBeEnabled();
       await chapters.first().getByRole("button").focus();
       await expect(chapters.first()).toHaveCSS("opacity", "1");
@@ -127,9 +127,10 @@ for (const [id, count, label] of [
             ).length,
         ),
       ).toBe(before);
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
       await page.reload();
-      await expectStaggerMotion(title);
-      await expect(title).toHaveCSS("opacity", "0");
+      await expect(title).toBeVisible();
+      await expect(title).toHaveCSS("scale", "none");
       await expect(finder).not.toBeVisible();
     });
   }
@@ -209,7 +210,8 @@ test("normal-motion client entry and cached history keep controls usable", async
       .click();
     await page.mouse.move(1400, 800);
     const overview = page.locator(`[data-overview-category="${id}"]:visible`);
-    await expectStaggerMotion(overview.locator("#products-title"));
+    await expect(overview.locator("#products-title")).toBeVisible();
+    await expect(overview.locator("#products-title")).toHaveCSS("scale", "none");
     await overview
       .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
       .first()

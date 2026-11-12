@@ -1,10 +1,11 @@
-import { getSettings } from "@/features/cms/server/documents";
-import { showcaseDefaults } from "@/features/cms/data/settings";
+import { getSettings } from "@/features/site/server/documents";
+import { showcaseDefaults } from "@/features/site/data/settings";
+import { defaultHomeImages } from "../data/image-slots";
 import type { Product } from "@/features/catalog/types";
 import { CategoryFeaturePanels } from "./category-feature-panels";
 import { getCatalogPage } from "@/features/catalog/server/catalog-page";
 import { productFeatureEntries } from "../data/category-feature-items";
-import { defaultHomeImages, type HomeImages } from "../data/image-slots";
+import { type HomeImages } from "../data/image-slots";
 
 export async function CategoryFeature({
   products,
@@ -58,9 +59,10 @@ export async function CategoryFeature({
       return {
         ...card,
         image: card.image ?? entries[0]?.image ?? "",
-        entries,
+        description: card.description,
         companionImage:
           card.id === "accessories" && !images.accessories ? "/images/pd/RYG-POLE.png" : undefined,
+        entries,
       };
     }),
   );

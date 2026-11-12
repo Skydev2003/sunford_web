@@ -1,0 +1,568 @@
+[
+  {
+    "id": "hero",
+    "kind": "settings",
+    "data": {
+      "announcement": "เทคโนโลยีการชั่งและระบบจัดการข้อมูล เพื่อธุรกิจของคุณ",
+      "announcementLabel": "ให้เราช่วยเลือก",
+      "announcementHref": "/service",
+      "tagline": "ความแม่นยำ ที่เรียบง่ายกว่า.",
+      "primaryLabel": "ดูเพิ่มเติม",
+      "secondaryLabel": "ค้นพบผลิตภัณฑ์",
+      "secondaryHref": "#products",
+      "slides": [
+        {
+          "productId": "acs30-jc21",
+          "title": "",
+          "description": "",
+          "image": "",
+          "href": ""
+        },
+        {
+          "productId": "feh5ks",
+          "title": "",
+          "description": "",
+          "image": "",
+          "href": ""
+        },
+        {
+          "productId": "wps10ks",
+          "title": "",
+          "description": "",
+          "image": "",
+          "href": ""
+        }
+      ]
+    }
+  },
+  {
+    "id": "site",
+    "kind": "settings",
+    "data": {
+      "logo": "/images/sunford-logo.png",
+      "name": "SUNFORD",
+      "phone": "03-427-6999",
+      "phoneHref": "tel:034276999",
+      "email": "info@sunford.co.th",
+      "line": "https://line.me/R/ti/p/@sunford",
+      "messenger": "https://m.me/sunfordthai"
+    }
+  },
+  {
+    "id": "catalog",
+    "kind": "settings",
+    "data": {
+      "eyebrow": "THE SUNFORD COLLECTION",
+      "title": "เลือกความแม่นยำ",
+      "accent": "ในแบบของคุณ.",
+      "linkLabel": "สำรวจผลิตภัณฑ์ทั้งหมด",
+      "href": "/products",
+      "note": "เลือกสิ่งที่ใช่ได้ง่ายขึ้น",
+      "noteDetail": "กด + บนสินค้าเพื่อเปรียบเทียบได้สูงสุด 3 รุ่น",
+      "navEyebrow": "OUR PRODUCTS",
+      "navTitle": "ครบทุกงานชั่ง",
+      "navDigital": "เครื่องชั่งดิจิทัล",
+      "navDigitalEnglish": "Digital scale",
+      "navSmart": "เครื่องชั่งอัจฉริยะ",
+      "navSmartEnglish": "Smart scale",
+      "navAccessories": "อุปกรณ์เสริม",
+      "navAccessoriesEnglish": "Accessories",
+      "navSoftware": "แอปพลิเคชันและซอฟต์แวร์",
+      "navSoftwareEnglish": "Applications & software",
+      "accessoriesHref": "/product/scale-accessories",
+      "softwareHref": "/applications-and-softwares"
+    }
+  },
+  {
+    "id": "spotlight",
+    "kind": "settings",
+    "data": {
+      "title": "SUNFORD JC21",
+      "accent": "ชั่งน้ำหนัก คำนวณราคา อ่านชัดทั้งสองด้าน",
+      "description": "",
+      "primaryLabel": "ดูเพิ่มเติม",
+      "secondaryLabel": "ปรึกษาผู้เชี่ยวชาญ",
+      "secondaryHref": "#contact"
+    }
+  },
+  {
+    "id": "showcase",
+    "kind": "settings",
+    "data": {
+      "digitalName": "เครื่องชั่งดิจิทัล",
+      "digitalEnglish": "DIGITAL SCALE",
+      "digitalDescription": "ความแม่นยำที่พร้อมสำหรับทุกงาน ตั้งแต่บ้าน ร้านค้า ไปจนถึงโรงงาน",
+      "smartName": "เครื่องชั่งอัจฉริยะ",
+      "smartEnglish": "SMART SCALE",
+      "smartDescription": "เชื่อมต่อข้อมูลและอุปกรณ์ ให้การทำงานในยุคดิจิทัลคล่องตัวยิ่งขึ้น",
+      "accessoriesName": "อุปกรณ์เสริม",
+      "accessoriesEnglish": "ACCESSORIES",
+      "accessoriesDescription": "เครื่องพิมพ์ จอแสดงผล และระบบ POS ที่เติมเต็มงานชั่งของคุณ",
+      "softwareName": "แอปพลิเคชันและซอฟต์แวร์",
+      "softwareEnglish": "APPLICATIONS & SOFTWARE",
+      "softwareDescription": "ติดตาม วิเคราะห์ และจัดการข้อมูล เพื่อการตัดสินใจที่แม่นยำ",
+      "linkLabel": "ดูเพิ่มเติม"
+    }
+  },
+  {
+    "id": "stories",
+    "kind": "settings",
+    "data": {
+      "eyebrow": "SUNFORD STORIES",
+      "title": "เรื่องราวของคนทำธุรกิจ.",
+      "description": "แรงบันดาลใจ ความรู้ และเทคนิคดี ๆ เพื่อให้ธุรกิจของคุณเติบโตไปด้วยกัน",
+      "linkLabel": "ดูเรื่องราวทั้งหมด",
+      "href": "/news-and-activities",
+      "cardLabel": "SUNFORD BIZ TALK",
+      "readLabel": "อ่านเพิ่มเติม",
+      "videoTitle": "วิดีโอจาก Sunford"
+    }
+  },
+  {
+    "id": "navigation",
+    "kind": "settings",
+    "data": {
+      "items": [
+        {
+          "label": "สินค้า",
+          "submenuLabel": "ผลิตภัณฑ์ทั้งหมด",
+          "href": "/products",
+          "links": [
+            {
+              "label": "ผลิตภัณฑ์ทั้งหมด",
+              "href": "/products"
+            },
+            {
+              "label": "เครื่องชั่ง",
+              "href": "/products?category=scales"
+            },
+            {
+              "label": "อินดิเคเตอร์แท่นชั่ง",
+              "href": "/products?category=indicators"
+            },
+            {
+              "label": "โครงสร้างแท่นชั่ง",
+              "href": "/products?category=platforms"
+            },
+            {
+              "label": "ระบบ POS",
+              "href": "/products?category=pos"
+            },
+            {
+              "label": "อุปกรณ์เสริม",
+              "href": "/products?category=accessories"
+            }
+          ],
+          "groups": [
+            {
+              "label": "เครื่องชั่ง",
+              "links": [
+                {
+                  "label": "คำนวณราคาหน้าร้าน",
+                  "href": "/products?category=scales&subcategory=scale-price"
+                },
+                {
+                  "label": "อุตสาหกรรมงานผลิต",
+                  "href": "/products?category=scales&subcategory=scale-industrial"
+                },
+                {
+                  "label": "งานวิเคราะห์ความแม่นยำสูง",
+                  "href": "/products?category=scales&subcategory=scale-analytical"
+                },
+                {
+                  "label": "งานครัวและกาแฟ",
+                  "href": "/products?category=scales&subcategory=scale-kitchen"
+                },
+                {
+                  "label": "กันน้ำและกันฝุ่น 100%",
+                  "href": "/products?category=scales&subcategory=scale-water-dust"
+                },
+                {
+                  "label": "ตั้งโต๊ะ",
+                  "href": "/products?category=scales&subcategory=scale-benchtop"
+                },
+                {
+                  "label": "ตั้งพื้น",
+                  "href": "/products?category=scales&subcategory=scale-floor"
+                },
+                {
+                  "label": "มีเสา",
+                  "href": "/products?category=scales&subcategory=scale-pole"
+                }
+              ]
+            },
+            {
+              "label": "อินดิเคเตอร์และโครงสร้างแท่นชั่ง",
+              "links": [
+                {
+                  "label": "LCD",
+                  "href": "/products?category=indicators&subcategory=indicator-lcd"
+                },
+                {
+                  "label": "LED",
+                  "href": "/products?category=indicators&subcategory=indicator-led"
+                },
+                {
+                  "label": "กันน้ำ",
+                  "href": "/products?category=indicators&subcategory=indicator-waterproof"
+                },
+                {
+                  "label": "เหล็กคาร์บอนพ่นอบสีกันสนิม",
+                  "href": "/products?category=platforms&subcategory=platform-carbon-steel"
+                },
+                {
+                  "label": "สแตนเลส SUS304",
+                  "href": "/products?category=platforms&subcategory=platform-sus304"
+                },
+                {
+                  "label": "สแตนเลส SUS201",
+                  "href": "/products?category=platforms&subcategory=platform-sus201"
+                },
+                {
+                  "label": "พลาสติก ABS เหนียวพิเศษ",
+                  "href": "/products?category=platforms&subcategory=platform-abs"
+                }
+              ]
+            },
+            {
+              "label": "ระบบ POS และอุปกรณ์เสริม",
+              "links": [
+                {
+                  "label": "iOS",
+                  "href": "/products?category=pos&subcategory=pos-ios"
+                },
+                {
+                  "label": "Android",
+                  "href": "/products?category=pos&subcategory=pos-android"
+                },
+                {
+                  "label": "Windows",
+                  "href": "/products?category=pos&subcategory=pos-windows"
+                },
+                {
+                  "label": "จอแสดงผลเสริมและระบบต่อพ่วง",
+                  "href": "/products?category=accessories&subcategory=accessory-displays"
+                },
+                {
+                  "label": "สายสัญญาณและหัวต่อ",
+                  "href": "/products?category=accessories&subcategory=accessory-cables"
+                },
+                {
+                  "label": "อุปกรณ์เคลื่อนย้ายและชิ้นส่วนแท่นชั่ง",
+                  "href": "/products?category=accessories&subcategory=accessory-mechanical"
+                },
+                {
+                  "label": "อุปกรณ์ระบบหน้าร้านและต่อพ่วง POS",
+                  "href": "/products?category=accessories&subcategory=accessory-pos"
+                },
+                {
+                  "label": "วัสดุสิ้นเปลือง",
+                  "href": "/products?category=accessories&subcategory=accessory-consumables"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "โซลูชันตามธุรกิจ",
+          "submenuLabel": "โซลูชันสำหรับธุรกิจ",
+          "href": "/solutions",
+          "links": [
+            {
+              "label": "โซลูชันทั้งหมด",
+              "href": "/solutions"
+            }
+          ],
+          "groups": [
+            {
+              "label": "ค้าปลีก อาหารและกาแฟ",
+              "links": [
+                {
+                  "label": "ร้านค้าและตลาดสด",
+                  "href": "/product/commercial"
+                },
+                {
+                  "label": "ร้านกาแฟ",
+                  "href": "/collections/coffee-scales"
+                },
+                {
+                  "label": "เชื่อมเครื่องชั่งกับระบบ POS",
+                  "href": "/solutions/pos"
+                },
+                {
+                  "label": "พิมพ์ฉลากและบาร์โค้ด",
+                  "href": "/solutions/label-printing"
+                },
+                {
+                  "label": "พิมพ์ฉลากจากระบบ POS",
+                  "href": "/solutions/pos-label-printing"
+                }
+              ]
+            },
+            {
+              "label": "อุตสาหกรรมและการผลิต",
+              "links": [
+                {
+                  "label": "เครื่องชั่งสำหรับโรงงาน",
+                  "href": "/product/industrial"
+                },
+                {
+                  "label": "ระบบ MES สำหรับการผลิต",
+                  "href": "/solution/mes"
+                },
+                {
+                  "label": "ตรวจน้ำหนักขาด–เกิน",
+                  "href": "/solutions/checkweighing"
+                },
+                {
+                  "label": "สร้าง Lot No. และ Serial No.",
+                  "href": "/solutions/lot-serial"
+                },
+                {
+                  "label": "เชื่อมต่ออุปกรณ์ PLC",
+                  "href": "/solutions/plc"
+                },
+                {
+                  "label": "งานชั่งในสภาพเปียกชื้น",
+                  "href": "/solutions/wet-environments"
+                }
+              ]
+            },
+            {
+              "label": "ห้องแล็บและข้อมูลธุรกิจ",
+              "links": [
+                {
+                  "label": "เครื่องชั่งสำหรับห้องแล็บ",
+                  "href": "/product/laboratory"
+                },
+                {
+                  "label": "ระบบ ERP เชื่อมต่อข้อมูล",
+                  "href": "/solution/erp"
+                },
+                {
+                  "label": "ส่งข้อมูลผ่านสาย RS232",
+                  "href": "/solutions/rs232"
+                },
+                {
+                  "label": "ส่งข้อมูลแบบไร้สาย",
+                  "href": "/solutions/wireless"
+                },
+                {
+                  "label": "บันทึกน้ำหนักลง USB Drive",
+                  "href": "/solutions/usb-drive"
+                },
+                {
+                  "label": "บันทึกข้อมูลบน Android",
+                  "href": "/solutions/android"
+                },
+                {
+                  "label": "เชื่อมต่อจอแสดงผลภายนอก",
+                  "href": "/solutions/external-display"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "ซอฟต์แวร์",
+          "href": "/applications-and-softwares",
+          "links": [
+            {
+              "label": "แอปพลิเคชันและซอฟต์แวร์",
+              "href": "/applications-and-softwares"
+            },
+            {
+              "label": "ดาวน์โหลดซอฟต์แวร์",
+              "href": "/software/download"
+            }
+          ],
+          "groups": [
+            {
+              "label": "ค้าปลีกและระบบ POS",
+              "links": [
+                {
+                  "label": "ซอฟต์แวร์สำหรับค้าปลีก",
+                  "href": "/software/download#retail-software"
+                },
+                {
+                  "label": "SUNFORD POS Android",
+                  "href": "/software/download/sunford-pos-android"
+                },
+                {
+                  "label": "SUNFORD SmartRetail POS",
+                  "href": "/software/download/sunford-pos-smart-retail"
+                },
+                {
+                  "label": "SUNFORD POS Basic",
+                  "href": "/software/download/sunford-pos-basic"
+                },
+                {
+                  "label": "SUNFORD RLS1100",
+                  "href": "/software/download/sunford-rls1100"
+                },
+                {
+                  "label": "SUNFORD RLS1800",
+                  "href": "/software/download/sunford-rls1800"
+                }
+              ]
+            },
+            {
+              "label": "งานชั่งและการผลิต",
+              "links": [
+                {
+                  "label": "ซอฟต์แวร์สำหรับอุตสาหกรรม",
+                  "href": "/software/download#industrial-software"
+                },
+                {
+                  "label": "SUNFORD WeWeigh",
+                  "href": "/software/download/sunford-we-weight"
+                },
+                {
+                  "label": "SUNFORD INDUS",
+                  "href": "/software/download/sunford-indus"
+                },
+                {
+                  "label": "SUNFORD DRV",
+                  "href": "/software/download/sunford-drv"
+                },
+                {
+                  "label": "SUNFORD LP50 Label Printer",
+                  "href": "/software/download/sunford-lp50-label-printer"
+                }
+              ]
+            },
+            {
+              "label": "ครัวเรือนและสุขภาพ",
+              "links": [
+                {
+                  "label": "ซอฟต์แวร์สำหรับครัวเรือน",
+                  "href": "/software/download#household-software"
+                },
+                {
+                  "label": "SUNFORD FITDAYS",
+                  "href": "/software/download/fitdays"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "บริการ",
+          "submenuLabel": "บริการและการรับประกัน",
+          "href": "/service",
+          "links": [
+            {
+              "label": "บริการหลังการขาย",
+              "href": "/service"
+            },
+            {
+              "label": "ลงทะเบียนรับประกัน",
+              "href": "/warranty/register"
+            },
+            {
+              "label": "นโยบายการรับประกัน",
+              "href": "/warranty/policy"
+            },
+            {
+              "label": "การยกเลิกและคืนสินค้า",
+              "href": "/cancel-and-return/policy"
+            }
+          ],
+          "groups": [
+            {
+              "label": "ข้อมูลและความช่วยเหลือ",
+              "links": [
+                {
+                  "label": "ข้อมูลทางเทคนิคและคู่มือ",
+                  "href": "/technical-specification"
+                },
+                {
+                  "label": "สั่งซื้ออะไหล่",
+                  "href": "/support/accessory"
+                },
+                {
+                  "label": "ติดต่อฝ่ายบริการ",
+                  "href": "/contact-us"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "เกี่ยวกับเรา",
+          "href": "/about-us",
+          "links": [
+            {
+              "label": "รู้จักซันฟอร์ด",
+              "href": "/about-us"
+            },
+            {
+              "label": "ข่าวสารและกิจกรรม",
+              "href": "/news-and-activities"
+            },
+            {
+              "label": "บทความ",
+              "href": "/business/blogs/editorial"
+            },
+            {
+              "label": "สำรวจข้อมูลทั้งหมด",
+              "href": "/explore"
+            }
+          ]
+        },
+        {
+          "label": "ติดต่อเรา",
+          "href": "/contact-us",
+          "links": []
+        }
+      ],
+      "exploreLabel": "สำรวจเพิ่มเติม",
+      "exploreLinks": [
+        {
+          "label": "ทุกเรื่องของ Sunford",
+          "href": "/explore"
+        },
+        {
+          "label": "รู้จักซันฟอร์ด",
+          "href": "/about-us"
+        },
+        {
+          "label": "ข่าวสารและกิจกรรม",
+          "href": "/news-and-activities"
+        }
+      ],
+      "helpLabel": "ให้เราช่วยคุณ",
+      "helpLinks": [
+        {
+          "label": "ติดต่อเรา",
+          "href": "/contact-us"
+        },
+        {
+          "label": "ลงทะเบียนรับประกัน",
+          "href": "/warranty/register"
+        },
+        {
+          "label": "ข้อมูลทางเทคนิค",
+          "href": "/technical-specification"
+        }
+      ],
+      "mobileLinks": []
+    }
+  },
+  {
+    "id": "contact-locations",
+    "kind": "settings",
+    "data": {
+      "serviceImage": "",
+      "officeImage": "",
+      "warehouseImage": ""
+    }
+  },
+  {
+    "id": "section:footer",
+    "kind": "settings",
+    "data": {
+      "customerMapEnabled": true
+    }
+  }
+]

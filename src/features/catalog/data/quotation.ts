@@ -1,3 +1,5 @@
+import type { Product } from "../types";
+
 export const seller = {
   name: "บริษัท ไทยโกลบอล ธุรกิจพัฒนา จำกัด",
   address: "เลขที่ 554, 554/1 ถนนเอกชัย แขวงคลองบางพราน เขตบางบอน กรุงเทพมหานคร 10150",
@@ -8,17 +10,56 @@ export const seller = {
   bank: "ธนาคารกสิกรไทย · ออมทรัพย์ 035-8-53065-6",
 };
 
-export type QuoteProduct = { id: string; name: string; unit: string; unitSatang: number };
+export type QuoteProduct = {
+  id: string;
+  name: string;
+  documentName?: string;
+  categoryId?: string;
+  image?: string;
+  fallbackImage?: string;
+  unit: string;
+  unitSatang: number;
+};
 
 export function pricedProducts(
-  products: { sku: string; product_name: string; unit: string; sale_price: number }[],
+  products: (Pick<
+    Product,
+    "warehouseSku" | "name" | "warehouseName" | "warehouseUnit" | "warehouseNetUnitSatang"
+  > &
+    Partial<Pick<Product, "image" | "fallbackImage" | "warehouseCategoryId">>)[],
 ): QuoteProduct[] {
-  return products.map(({ sku, product_name, unit, sale_price }) => {
-    const unitSatang = Math.round(sale_price * 100);
-    if (!Number.isSafeInteger(unitSatang) || unitSatang <= 0 || unitSatang / 100 !== sale_price)
-      throw new RangeError("Invalid Warehouse unit price");
-    return { id: sku, name: product_name, unit, unitSatang };
-  });
+  return products.flatMap(
+    ({
+      warehouseSku,
+      name,
+      warehouseName,
+      warehouseCategoryId,
+      warehouseUnit,
+      warehouseNetUnitSatang,
+      image,
+      fallbackImage,
+    }) => {
+      if (
+        !warehouseSku ||
+        typeof warehouseNetUnitSatang !== "number" ||
+        !Number.isSafeInteger(warehouseNetUnitSatang) ||
+        warehouseNetUnitSatang <= 0
+      )
+        return [];
+      return [
+        {
+          id: warehouseSku,
+          name,
+          ...(warehouseName && { documentName: warehouseName }),
+          ...(warehouseCategoryId && { categoryId: warehouseCategoryId }),
+          ...(image && { image }),
+          ...(fallbackImage && { fallbackImage }),
+          unit: warehouseUnit ?? "",
+          unitSatang: warehouseNetUnitSatang,
+        },
+      ];
+    },
+  );
 }
 
 export function quotationTotals(net: number) {
@@ -36,24 +77,22 @@ export type QuotePreset = {
 
 export function selectedQuoteItems(models: string[], presets: QuotePreset[]) {
   const byCode = new Map(presets.map((item) => [item.code, item]));
-  const ids: string[] = [];
+  const items: { id: string; includedIn?: string; model?: string }[] = [];
   const pending: string[] = [];
   const selected = new Set(models);
-  const included = new Set(
-    presets
-      .filter((item) => selected.has(item.code) && item.pricedId)
-      .flatMap((item) => item.includesCodes ?? []),
-  );
-  for (const code of new Set(models)) {
-    const item = byCode.get(code);
-    if (included.has(code)) continue;
-    if (!item) {
-      pending.push(code);
-      continue;
+  const kitByModel = new Map<string, string>();
+  for (const code of selected) {
+    const kit = byCode.get(code);
+    if (kit?.pricedId) {
+      for (const model of kit.includesCodes ?? []) kitByModel.set(model, kit.pricedId);
     }
-    if (item.pricedId) {
-      if (!ids.includes(item.pricedId)) ids.push(item.pricedId);
-    } else pending.push(item.label);
   }
-  return { ids, pending };
+  for (const code of selected) {
+    const item = byCode.get(code);
+    const includedIn = kitByModel.get(code);
+    if (includedIn) items.push({ id: item?.pricedId ?? code, includedIn, model: code });
+    else if (item?.pricedId) items.push({ id: item.pricedId });
+    else pending.push(item?.label ?? code);
+  }
+  return { items, pending };
 }

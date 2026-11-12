@@ -1,6 +1,6 @@
 # UAT บนคลาวด์และ LAN
 
-สำหรับ UAT ที่ไม่ต้องเปิดเครื่องตัวเอง ใช้ [Vercel ตามคู่มือนี้](vercel.md) โดย Production deploy จาก branch `main` และ Preview รองรับ `uat` กับ branch อื่น ใช้ Supabase แยกสำหรับ Preview เพื่อแยกข้อมูลทดสอบจาก production ส่วนวิธี LAN ด้านล่างยังใช้ทดสอบชั่วคราวได้ ต้อง import repository และตั้ง Environment Variables บน Vercel ครั้งแรกก่อน
+สำหรับ UAT ที่ไม่ต้องเปิดเครื่องตัวเอง ใช้ [Vercel ตามคู่มือนี้](vercel.md) โดย Production deploy จาก branch `main` และ Preview รองรับ `uat` กับ branch อื่น ใช้การเชื่อมต่อ Warehouse สำหรับอ่านสินค้า และฐานทะเบียนเอกสารแยกสำหรับ Preview; เนื้อหาเว็บใช้ไฟล์ local ไม่มี CMS ส่วนวิธี LAN ด้านล่างยังใช้ทดสอบชั่วคราวได้ ต้อง import repository และตั้ง Environment Variables บน Vercel ครั้งแรกก่อน
 
 `nip.io` เป็น DNS ที่อ่าน IP จากชื่อโดเมน ไม่ได้ให้พื้นที่รัน Next.js ตัวอย่าง `64.176.22.9.nip.io` บนเว็บไซต์ nip.io เป็นเว็บของผู้ให้บริการเอง จึงใช้เป็นเซิร์ฟเวอร์ Sunford ไม่ได้
 

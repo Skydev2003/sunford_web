@@ -13,10 +13,10 @@ export default async function ProductsPage() {
             <ProductImage src={product.image} alt={product.name} width={300} height={300} />
             <h2>{product.name}</h2>
             <p>รหัสสินค้า: {product.warehouseSku}</p>
-            <p>หน่วย: {product.warehouseUnit}</p>
+            {product.warehouseUnit && <p>หน่วย: {product.warehouseUnit}</p>}
             <p>
               {product.price == null
-                ? "รอยืนยันราคา"
+                ? "สอบถามราคา"
                 : `ราคา ${product.price.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท (รวม VAT)`}
             </p>
           </article>

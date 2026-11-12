@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react";
-import type { HeroSettings, SiteSettings } from "@/features/cms/types";
+import type { HeroSettings, SiteSettings } from "@/features/site/types";
 import { BrandOpening } from "./brand-opening";
 import { HeroScene } from "./hero-scene";
 

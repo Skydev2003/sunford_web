@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Hero } from "@/features/home/components/hero";
 import { SectionTwoVideo } from "@/features/home/components/section-two-video";
 import { HomeMotion } from "@/features/home/components/home-motion";
@@ -6,10 +7,10 @@ import { SunfordStories, SunfordVideos } from "@/features/home/components/source
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { CategoryFeature } from "@/features/home/components/category-feature";
 import { BrandStory } from "@/features/home/components/sections";
-import { getProducts } from "@/features/catalog/server/product-repository";
+import { getHomeProducts } from "@/features/home/server/home-products";
 import { getHomeImages, getHomeLinkTargets } from "@/features/home/server/home-images";
-import { getSettings } from "@/features/cms/server/documents";
-import { defaultHero, catalogDefaults, defaultSite } from "@/features/cms/data/settings";
+import { getSettings } from "@/features/site/server/documents";
+import { defaultHero, catalogDefaults, defaultSite } from "@/features/site/data/settings";
 import { heroSlideData } from "@/features/home/data/hero-slides";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import styles from "@/features/home/components/home-page.module.css";
@@ -17,9 +18,17 @@ import styles from "@/features/home/components/home-page.module.css";
 // Temporarily hide the homepage catalogue while keeping /products available.
 const showHomepageCatalog = false;
 
-export default async function Home() {
+export default function Home() {
+  return (
+    <Suspense fallback={<p role="status">กำลังโหลดหน้าแรก…</p>}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+async function HomeContent() {
   const [products, images, targets, hero, catalog, site] = await Promise.all([
-    getProducts(),
+    getHomeProducts(),
     getHomeImages(),
     getHomeLinkTargets(),
     getSettings("hero", defaultHero),

@@ -8,12 +8,14 @@ export function ProductGallery({
   images,
   name,
   primaryImage,
+  fallbackImage,
   preferFirst = false,
   model,
 }: {
   images: string[];
   name: string;
   primaryImage?: string;
+  fallbackImage?: string;
   preferFirst?: boolean;
   model?: { src: string; poster: string };
 }) {
@@ -30,6 +32,7 @@ export function ProductGallery({
         ) : (
           <ProductImage
             src={images[active] || images[0]}
+            fallbackSrc={(images[active] || images[0]) === primaryImage ? fallbackImage : undefined}
             alt={name}
             fill
             sizes="(max-width: 900px) 90vw, 50vw"
@@ -62,7 +65,13 @@ export function ProductGallery({
               aria-label={`ดูรูป ${name} มุมที่ ${index + 1}`}
               aria-pressed={!showModel && index === active}
             >
-              <ProductImage src={src} alt={`${name} มุมที่ ${index + 1}`} width={76} height={76} />
+              <ProductImage
+                src={src}
+                fallbackSrc={src === primaryImage ? fallbackImage : undefined}
+                alt={`${name} มุมที่ ${index + 1}`}
+                width={76}
+                height={76}
+              />
             </button>
           ))}
         </div>

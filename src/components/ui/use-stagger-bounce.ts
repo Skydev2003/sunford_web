@@ -20,71 +20,73 @@ export function useStaggerBounce(root: RefObject<HTMLDivElement | null>, pathnam
     const seen = new WeakSet<HTMLElement>();
     const animations = new Map<HTMLElement, Animation>();
     let frame = 0;
+    let closeFrame = 0;
     let disposed = false;
+    let openingScanComplete = false;
 
     const visible = (element: HTMLElement) =>
       !element.closest(excluded) &&
       element.getClientRects().length > 0 &&
       getComputedStyle(element).visibility === "visible";
 
+    const inInitialViewport = (element: HTMLElement) => {
+      const bounds = element.getBoundingClientRect();
+      return (
+        bounds.bottom > 0 &&
+        bounds.right > 0 &&
+        bounds.top < window.innerHeight &&
+        bounds.left < window.innerWidth
+      );
+    };
+
     const complete = (element: HTMLElement) => {
       seen.add(element);
-      observer.unobserve(element);
       animations.get(element)?.cancel();
       animations.delete(element);
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (disposed) return;
-        const order = new Map<Element, number>();
-        const entering = entries
-          .filter((entry) => entry.isIntersecting)
-          .map((entry) => entry.target as HTMLElement)
-          .sort((a, b) =>
-            a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
-          );
-        for (const element of entering) {
-          if (!managed.has(element) || seen.has(element) || !visible(element)) continue;
-          if (preference.matches || element.contains(document.activeElement)) {
-            complete(element);
-            continue;
-          }
-          const parent = element.parentElement?.closest(group) ?? host;
-          const index = order.get(parent) ?? 0;
-          order.set(parent, index + 1);
-          seen.add(element);
-          observer.unobserve(element);
-          const animation = element.animate(
-            [
-              { opacity: 0, translate: "0 40px", scale: 0.8 },
-              { opacity: 1, translate: "0 0px", scale: 1 },
-            ],
-            {
-              id: animationId,
-              duration: 800,
-              delay: 100 + index * 150,
-              easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-              fill: "backwards",
-            },
-          );
-          animations.set(element, animation);
-          void animation.finished.then(
-            () => {
-              if (!disposed && animations.get(element) === animation) complete(element);
-            },
-            () => {},
-          );
-        }
-      },
-      { threshold: 0 },
-    );
+    const closeOpening = () => {
+      closeFrame = 0;
+      openingScanComplete = true;
+    };
+
+    const scheduleClose = () => {
+      cancelAnimationFrame(closeFrame);
+      closeFrame = requestAnimationFrame(() => {
+        closeFrame = requestAnimationFrame(closeOpening);
+      });
+    };
+
+    const start = (element: HTMLElement, index: number) => {
+      seen.add(element);
+      const animation = element.animate(
+        [
+          { opacity: 0.65, translate: "0 16px" },
+          { opacity: 1, translate: "0 0px" },
+        ],
+        {
+          id: animationId,
+          duration: 650,
+          delay: Math.min(index * 80, 320),
+          easing: "ease-out",
+          fill: "backwards",
+        },
+      );
+      animations.set(element, animation);
+      void animation.finished.then(
+        () => {
+          if (!disposed && animations.get(element) === animation) complete(element);
+        },
+        () => {},
+      );
+    };
 
     const scan = () => {
       frame = 0;
       if (disposed) return;
       host.setAttribute("data-stagger-bounce-root", preference.matches ? "reduced" : "enabled");
       const selected = new Set<HTMLElement>();
+      const order = new Map<Element, number>();
       for (const scope of host.querySelectorAll<HTMLElement>("main, footer")) {
         if (!visible(scope)) continue;
         for (const element of scope.querySelectorAll<HTMLElement>(targets)) {
@@ -104,26 +106,38 @@ export function useStaggerBounce(root: RefObject<HTMLDivElement | null>, pathnam
           if (ancestor && selected.has(ancestor)) continue;
           selected.add(element);
           if (managed.has(element)) {
-            if (!seen.has(element)) {
-              observer.unobserve(element);
-              observer.observe(element);
-            }
+            if (!seen.has(element) && openingScanComplete) complete(element);
             continue;
           }
           managed.add(element);
-          if (preference.matches || seen.has(element)) complete(element);
-          else observer.observe(element);
+          if (
+            preference.matches ||
+            openingScanComplete ||
+            !inInitialViewport(element) ||
+            element.contains(document.activeElement)
+          ) {
+            complete(element);
+            continue;
+          }
+          const parent = element.parentElement?.closest(group) ?? host;
+          const index = order.get(parent) ?? 0;
+          order.set(parent, index + 1);
+          start(element, index);
         }
       }
       for (const element of managed) {
         if (selected.has(element)) continue;
-        observer.unobserve(element);
         animations.get(element)?.cancel();
         animations.delete(element);
         managed.delete(element);
       }
+      if (document.readyState === "complete") scheduleClose();
     };
     const requestScan = () => {
+      if (!openingScanComplete) {
+        cancelAnimationFrame(closeFrame);
+        closeFrame = 0;
+      }
       if (!frame) frame = requestAnimationFrame(scan);
     };
     const mutations = new MutationObserver(requestScan);
@@ -145,17 +159,23 @@ export function useStaggerBounce(root: RefObject<HTMLDivElement | null>, pathnam
     };
     host.addEventListener("focusin", focus);
     preference.addEventListener("change", sync);
-    scan();
+    window.addEventListener("load", scheduleClose, { once: true });
+    window.addEventListener("scroll", closeOpening, { once: true, passive: true });
+    frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(scan);
+    });
     return () => {
       disposed = true;
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(closeFrame);
       mutations.disconnect();
-      observer.disconnect();
       animations.forEach((animation) => animation.cancel());
       animations.clear();
       host.removeAttribute("data-stagger-bounce-root");
       host.removeEventListener("focusin", focus);
       preference.removeEventListener("change", sync);
+      window.removeEventListener("load", scheduleClose);
+      window.removeEventListener("scroll", closeOpening);
     };
   }, [root, pathname]);
 }

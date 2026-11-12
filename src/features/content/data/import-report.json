@@ -1,9 +1,9 @@
 {
   "checkedAt": "2026-10-26T03:58:29.206Z",
   "source": "https://www.sunford.co",
-  "pages": 401,
-  "products": 159,
-  "collections": 112,
+  "pages": 409,
+  "products": 166,
+  "collections": 113,
   "assets": 909,
   "failedPages": [
     {
@@ -253,5 +253,26 @@
     ],
     "covers": 27,
     "categoriesPreserved": true
+  },
+  "officialProductReview": {
+    "date": "2026-11-11",
+    "source": "https://www.sunford.co/sitemap.xml",
+    "readableProducts": 168,
+    "linked": {
+      "10712": "G107121",
+      "10714": "G107145",
+      "10845": "G108456",
+      "10846": "G108463",
+      "10847": "G108470",
+      "10849": "G108494",
+      "10850": "G108500"
+    },
+    "parked": {
+      "10731": "ชื่อหน้า LP42 แต่คำอธิบายระบุ LP53",
+      "10871": "ไม่พบ SKU ขายตรงรุ่น FEH30KS ในแค็ตตาล็อก Warehouse ที่เว็บอ่าน"
+    },
+    "unavailable": [
+      "/products/FCS"
+    ]
   }
 }

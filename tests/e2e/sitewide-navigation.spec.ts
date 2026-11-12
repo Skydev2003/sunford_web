@@ -1,6 +1,6 @@
 import { expect, test, type Locator } from "@playwright/test";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
-import { defaultNavigation } from "../../src/features/cms/data/navigation";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
 async function openCategoryMenu(header: Locator, label: string, width: number) {
   if (width < 834)
     await header.getByRole("button", { name: `เปิดเมนูย่อย${label}`, exact: true }).click();

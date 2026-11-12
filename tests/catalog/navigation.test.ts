@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { defaultNavigation, resolveNavigationItems } from "../../src/features/cms/data/navigation";
+import { defaultNavigation, resolveNavigationItems } from "../../src/features/site/data/navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { getScaleSubcategories } from "../../src/features/catalog/data/scale-subcategories";
 import { getIndicatorSubcategories } from "../../src/features/catalog/data/indicator-subcategories";

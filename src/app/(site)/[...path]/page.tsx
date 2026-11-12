@@ -6,7 +6,7 @@ import {
   getContentPages,
   importedPages,
 } from "@/features/content/server/content-repository";
-import { getProducts, getProduct } from "@/features/catalog/server/product-repository";
+import { getStorefrontProducts, getProduct } from "@/features/catalog/server/product-repository";
 import { ProductCatalog } from "@/features/catalog/components/product-catalog";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import { ContentDirectory } from "@/features/content/components/content-directory";
@@ -83,7 +83,7 @@ export default async function SourceContentPage({
   const productHandles = section?.collectionPaths.length
     ? [...new Set(collections.flatMap((collection) => collection?.productHandles ?? []))]
     : page.productHandles;
-  const allProducts = await getProducts();
+  const allProducts = await getStorefrontProducts();
   const productIds = new Set(
     allProducts
       .filter((product) =>
@@ -137,7 +137,8 @@ export default async function SourceContentPage({
   );
   const formPage = /warranty\/register|service\//.test(pathname);
   const hasContent =
-    (page.text.trim().length > 40 || (softwareDetail && Boolean(page.html.trim()))) &&
+    (page.text.trim().length > 40 ||
+      ((page.warehouseOnly || softwareDetail) && Boolean(page.html.trim()))) &&
     !page.hasSourcePlaceholder;
   const proseHtml = softwareDetail ? page.html.replace(/<(\/?)h1(?=[\s>])/g, "<$1h2") : page.html;
   const introduction = section

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 
 for (const width of [390, 1440]) {
-  test(`solutions use shared finite bounce and retain ribbon at ${width}px`, async ({ page }) => {
+  test(`solutions use the light shared rise and retain ribbon at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await recordStaggerMotion(page);
@@ -22,8 +22,8 @@ for (const width of [390, 1440]) {
     const chapters = page.locator('nav[aria-label="สำรวจกลุ่มธุรกิจ"] li');
     await expect(chapters).toHaveCount(3);
     await expectStaggerMotion(title);
-    await expect(title).toHaveCSS("opacity", "0");
-    await expect(title).toHaveCSS("scale", "0.8");
+    await expect(title).toHaveCSS("opacity", "0.65");
+    await expect(title).toHaveCSS("scale", "none");
     await expectStaggerMotion(chapters.first());
     const timings = await chapters.evaluateAll((items) =>
       items.flatMap((item) =>
@@ -39,7 +39,7 @@ for (const width of [390, 1440]) {
     );
     expect(timings.length).toBeGreaterThan(0);
     expect(timings).toEqual(
-      timings.map((_, i) => ({ duration: 800, delay: 100 + i * 150, iterations: 1 })),
+      timings.map((_, i) => ({ duration: 650, delay: Math.min(i * 80, 320), iterations: 1 })),
     );
     await page.evaluate(() => {
       for (const animation of document.getAnimations()) animation.currentTime = 3500;

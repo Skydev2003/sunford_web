@@ -1,14 +1,14 @@
-import Image from "next/image";
+import { ProductImage } from "@/components/ui/product-image";
+import { getProducts } from "@/features/catalog/server/product-repository";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, Factory, FlaskConical, Store } from "lucide-react";
-import { getSettings } from "@/features/cms/server/documents";
+import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
-} from "@/features/cms/data/navigation";
-import { solutionImages } from "@/features/home/data/business-solutions";
+} from "@/features/site/data/navigation";
 import { sunford } from "@/features/home/data/brand";
 import { solutions } from "../data/solutions";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
@@ -19,6 +19,7 @@ import styles from "./solutions-overview.module.css";
 const businessIcons = [Store, Factory, FlaskConical];
 
 export async function SolutionsOverview({ page }: { page: SourcePage }) {
+  const products = await getProducts();
   const settings = await getSettings("navigation", {
     items: defaultNavigation,
     ...defaultNavigationExtras,
@@ -79,14 +80,14 @@ export async function SolutionsOverview({ page }: { page: SourcePage }) {
           <h2 id="solutions-hero-title">
             เมื่อทุกอย่างเชื่อมถึงกัน<span>ธุรกิจก็ไปได้ไกลขึ้น</span>
           </h2>
-          <p>เชื่อมต่อเครื่องชั่ง ข้อมูล และการทำงาน ให้ทุกขั้นตอนของธุรกิจเป็นเรื่องง่าย</p>
+          <p></p>
           <a className={overview.primaryButton} href="#solutions-all">
             โซลูชันทั้งหมด <ArrowRight size={16} aria-hidden="true" />
           </a>
         </div>
         <div className={styles.heroArt}>
-          <Image
-            src={solutionImages.feature}
+          <ProductImage
+            src={products.find((product) => product.image)?.image ?? ""}
             alt="ภาพประกอบโซลูชันการชั่งน้ำหนักสำหรับธุรกิจ"
             fill
             sizes="(min-width: 1069px) 45vw, 88vw"

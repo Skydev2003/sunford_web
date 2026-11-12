@@ -2,78 +2,58 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { products } from "../data/products";
 import type { Product } from "../types";
-import { hasDatabase } from "@/lib/env";
-import { getPrisma } from "@/lib/prisma";
-import { getSnapshotProducts } from "@/features/content/server/content-repository";
-import { resolveManagedProduct } from "../data/managed-products";
+import { getSnapshotProducts } from "@/features/content/data/catalog-snapshot";
 import { findCatalogProduct } from "../data/product-lookup";
-import { getDocuments } from "@/features/cms/server/documents";
-import type { ProductMedia } from "@/features/cms/types";
-import { publicPath } from "@/features/content/data/public-paths.mjs";
 import { attachProductTopics } from "./product-topics";
-import { catalogProductCategory } from "../data/catalog-supplements";
 import {
   getOfficialProducts,
   savedWarehouseImage,
 } from "@/features/services/warehouse-product.server";
 import { warehouseCatalog } from "../data/warehouse-products";
+import { attachWarehouseCardFacts } from "../data/warehouse-card-data";
+import { warehouseDetailProduct } from "../data/warehouse-detail-data";
+import { warehouseSiteProducts } from "../data/warehouse-site-data";
+import {
+  readWarehouseCardFacts,
+  readWarehouseComponents,
+} from "@/features/services/warehouse-postgres";
 
 export async function getProducts(): Promise<Product[]> {
   "use cache";
   cacheLife({ stale: 30, revalidate: 60, expire: 300 });
   cacheTag("products");
-  const [official, editorial] = await Promise.all([getOfficialProducts(), getEditorialProducts()]);
-  return attachProductTopics(warehouseCatalog(official.items, editorial, savedWarehouseImage));
+  return (await getCurrentProducts()).products;
 }
 
-async function getEditorialProducts(): Promise<Product[]> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("products");
-  const snapshot = getSnapshotProducts();
-  if (!hasDatabase()) return attachProductTopics(snapshot.length ? snapshot : products);
-  const managed = await getPrisma().product.findMany({
-    where: { published: true, deletedAt: null },
-    orderBy: { sortOrder: "asc" },
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      category: true,
-      categoryId: true,
-      subtitle: true,
-      description: true,
-      image: true,
-      capacity: true,
-      readability: true,
-      connection: true,
-      badge: true,
-      featured: true,
-      sortOrder: true,
-      catalogManaged: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-  // Never append the snapshot here: doing so would resurrect hidden/deleted rows.
-  const media = await getDocuments("product-media");
-  return attachProductTopics(
-    managed
-      .map((row) => {
-        const resolved = resolveManagedProduct(row);
-        const product = {
-          ...resolved,
-          category: catalogProductCategory(resolved),
-          slug: publicPath(`/${resolved.slug}`).slice(1),
-        };
-        const doc = media.find((doc) => doc.id === `product-media:${product.id}` && !doc.deletedAt);
-        if (!doc) return product;
-        const settings = doc.data as unknown as ProductMedia;
-        return { ...product, media: settings, price: settings.price };
-      })
-      .sort((a, b) => a.sortOrder - b.sortOrder),
-  );
+export async function getCurrentProducts(): Promise<{ products: Product[]; readAt: string }> {
+  const [official, editorial] = await Promise.all([getOfficialProducts(), getEditorialProducts()]);
+  const skus = official.items.map((item) => item.sku);
+  const [facts, components] = await Promise.all([
+    readWarehouseCardFacts(skus),
+    readWarehouseComponents(skus),
+  ]);
+  return {
+    products: attachProductTopics(
+      warehouseSiteProducts(
+        attachWarehouseCardFacts(
+          warehouseCatalog(official.items, editorial, savedWarehouseImage),
+          facts,
+        ),
+        components,
+      ),
+    ),
+    readAt: official.readAt,
+  };
 }
+
+export { getProducts as getStorefrontProducts };
+
+async function getEditorialProducts(): Promise<Product[]> {
+  const snapshot = getSnapshotProducts();
+  return attachProductTopics(snapshot.length ? snapshot : products);
+}
+
 export async function getProduct(slug: string) {
-  return findCatalogProduct(await getProducts(), slug);
+  const product = findCatalogProduct(await getProducts(), slug);
+  return product ? warehouseDetailProduct(product) : undefined;
 }

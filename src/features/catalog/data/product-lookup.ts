@@ -15,7 +15,10 @@ export function findCatalogProduct(products: Product[], slug: string) {
   const legacy = getSnapshotProducts().find(
     (product) => product.slug === target || product.sourceId === target,
   );
-  if (legacy) return products.find((product) => product.id === legacy.id);
+  if (legacy)
+    return products.find(
+      (product) => product.id === legacy.id || product.sourceId === legacy.sourceId,
+    );
   return products.find(
     (product) =>
       product.slug.toLowerCase() === target.toLowerCase() ||

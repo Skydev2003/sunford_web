@@ -84,14 +84,30 @@ export function productOverview(
 }
 
 export function productPresentation(product: Product, snapshot?: Product, source?: SourceProduct) {
+  if (product.warehouseSku)
+    return {
+      images: product.warehouseCard?.image ? [product.warehouseCard.image] : [],
+      descriptionHtml: undefined,
+      specifications: product.warehouseSpecifications ?? [],
+    };
   if (product.media)
     return {
-      images: product.media.gallery.map((entry) => entry.image),
+      images:
+        product.warehouseSku && product.image
+          ? [
+              product.image,
+              ...product.media.gallery
+                .map((entry) => entry.image)
+                .filter((image) => image !== product.image),
+            ]
+          : product.media.gallery.map((entry) => entry.image),
       descriptionHtml: product.media.descriptionHtml,
       specifications: product.media.specifications,
     };
   const images = source?.images ?? [];
-  const imageChanged = snapshot && product.image !== snapshot.image;
+  const imageChanged =
+    (snapshot && product.image !== snapshot.image) ||
+    Boolean(product.warehouseSku && product.image);
   const specifications = [...(source?.specifications ?? [])];
   const fields = [
     { key: "capacity", label: "พิกัดน้ำหนัก", pattern: /พิกัดน้ำหนัก|น้ำหนักสูงสุด/ },

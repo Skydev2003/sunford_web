@@ -1,5 +1,4 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { writeFile } from "node:fs/promises";
 import {
   activeStaggerCount,
   expectStaggerMotion,
@@ -65,7 +64,9 @@ const templates = [
 ];
 
 for (const width of [320, 390, 768, 834, 1440]) {
-  test(`content sections reveal and final regions stay static at ${width}px`, async ({ page }) => {
+  test(`only opening content rises and later regions stay static at ${width}px`, async ({
+    page,
+  }) => {
     test.setTimeout(180000);
     await page.setViewportSize({ width, height: 1000 });
     await recordStaggerMotion(page);
@@ -73,35 +74,24 @@ for (const width of [320, 390, 768, 834, 1440]) {
       await page.goto(route);
       await expect(page.locator('[data-stagger-bounce-root="enabled"]')).toHaveCount(1);
       const main = page.locator("main:visible").first();
-      await expectStaggerMotion(main.locator("h1").first());
-      for (const section of await main.locator("section:visible").all()) {
-        if (
-          await section.evaluate((item, excluded) => Boolean(item.closest(excluded)), staticRegions)
-        )
-          continue;
-        const content = await section.evaluate(
-          (item) => item.textContent?.trim() || item.querySelector("img, video"),
-        );
-        if (!content) continue;
-        await section.scrollIntoViewIfNeeded();
-        await expect
-          .poll(() =>
-            section.evaluate((item) =>
-              (window as unknown as StaggerWindow).staggerAnimations.some((animation) =>
-                item.contains((animation.effect as KeyframeEffect).target),
-              ),
-            ),
-          )
-          .toBe(true);
-      }
-      const audit = await main.evaluate((element, excluded) => {
+      const sections = main.locator("section:visible");
+      const lateSectionIndexes = await sections.evaluateAll(
+        (items, excluded) =>
+          items.flatMap((section, index) => {
+            if (
+              section.closest(excluded) ||
+              (!section.textContent?.trim() && !section.querySelector("img, video"))
+            )
+              return [];
+            const bounds = section.getBoundingClientRect();
+            return bounds.bottom <= 0 || bounds.top >= innerHeight ? [index] : [];
+          }),
+        staticRegions,
+      );
+      const audit = await main.evaluate((element) => {
         const visible = (item: HTMLElement) =>
           item.getClientRects().length > 0 &&
           !item.closest('[hidden], [inert], [aria-hidden="true"], dialog, [role="dialog"]');
-        const sections = Array.from(element.querySelectorAll<HTMLElement>("section"))
-          .filter(visible)
-          .filter((section) => !section.closest(excluded))
-          .filter((section) => section.innerText.trim() || section.querySelector("img, video"));
         const targets = Array.from(
           new Set(
             (window as unknown as StaggerWindow).staggerAnimations
@@ -110,35 +100,48 @@ for (const width of [320, 390, 768, 834, 1440]) {
           ),
         );
         return {
-          missing: sections
-            .filter((section) => !targets.some((target) => section.contains(target)))
-            .map(
-              (section) => section.id || section.getAttribute("aria-label") || section.className,
-            ),
+          outsideOpeningViewport: targets.filter((target) => {
+            const bounds = target.getBoundingClientRect();
+            return bounds.bottom <= -17 || bounds.top >= innerHeight + 17;
+          }).length,
           nested: targets.filter((target) =>
             targets.some((ancestor) => ancestor !== target && ancestor.contains(target)),
           ).length,
-          background: sections.every((section) => getComputedStyle(section).translate === "none"),
+          background: Array.from(element.querySelectorAll<HTMLElement>("section"))
+            .filter(visible)
+            .every((section) => getComputedStyle(section).translate === "none"),
         };
-      }, staticRegions);
-      expect(audit.missing, route).toEqual([]);
+      });
+      expect(audit.outsideOpeningViewport, route).toBe(0);
       expect(audit.nested, route).toBe(0);
       expect(audit.background, route).toBe(true);
-      for (const footer of await page.locator("footer:visible").all()) {
-        if (
-          await footer.evaluate((item, excluded) => Boolean(item.closest(excluded)), staticRegions)
-        )
-          continue;
-        await footer.scrollIntoViewIfNeeded();
-        await expect
-          .poll(() =>
-            footer.evaluate((element) =>
-              (window as unknown as StaggerWindow).staggerAnimations.some((animation) =>
-                element.contains((animation.effect as KeyframeEffect).target),
-              ),
+      for (const index of lateSectionIndexes) {
+        const section = sections.nth(index);
+        await section.scrollIntoViewIfNeeded();
+        await page.evaluate(
+          () =>
+            new Promise<void>((resolve) =>
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
             ),
-          )
-          .toBe(true);
+        );
+        expect(
+          await section.evaluate(
+            (element) =>
+              (window as unknown as StaggerWindow).staggerAnimations.filter((animation) =>
+                element.contains((animation.effect as KeyframeEffect).target),
+              ).length,
+          ),
+          route,
+        ).toBe(0);
+        expect(
+          await section.evaluate(
+            (element) =>
+              element
+                .getAnimations({ subtree: true })
+                .filter((animation) => animation.id === "sunford-stagger-bounce").length,
+          ),
+          route,
+        ).toBe(0);
       }
       for (const region of await page.locator(`:is(${staticRegions}):visible`).all())
         await expectStaticRegion(region);
@@ -163,7 +166,7 @@ for (const width of [390, 1440]) {
         "data-controls-ready",
         "true",
       );
-      await expectStaggerMotion(page.locator("#products-title"));
+      await expect(page.locator("#products-title")).toBeVisible();
       const index = page.locator('[data-overview-section="index"]');
       const footer = page.locator("[data-products-footer]");
       await expectStaticRegion(index);
@@ -192,9 +195,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-test("native keyframes visibly overshoot, stagger, settle and leave the section fixed", async ({
-  page,
-}) => {
+test("initial viewport entrance rises once without scale or overshoot", async ({ page }) => {
   await freeze(page);
   await page.goto("/about-us");
   const title = page.locator("main h1");
@@ -211,14 +212,14 @@ test("native keyframes visibly overshoot, stagger, settle and leave the section 
     };
   });
   expect(animation).toEqual({
-    duration: 800,
+    duration: 650,
     iterations: 1,
-    delay: 250,
-    easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+    delay: 80,
+    easing: "ease-out",
     offsets: [0, 1],
   });
-  const samples: { translate: number; scale: number }[] = [];
-  for (const time of [0, 80, 160, 240, 320, 400, 500, 600, 720, 800]) {
+  const samples: { opacity: number; translate: number; scale: string }[] = [];
+  for (const time of [0, 80, 160, 240, 320, 400, 500, 600, 650]) {
     samples.push(
       await title.evaluate(async (element, value) => {
         const a = element.getAnimations().find((item) => item.id === "sunford-stagger-bounce")!;
@@ -226,105 +227,70 @@ test("native keyframes visibly overshoot, stagger, settle and leave the section 
         await new Promise(requestAnimationFrame);
         const style = getComputedStyle(element);
         return {
+          opacity: Number(style.opacity),
           translate: parseFloat(style.translate.split(" ")[1] ?? "0"),
-          scale: parseFloat(style.scale === "none" ? "1" : style.scale),
+          scale: style.scale,
         };
       }, time),
     );
   }
-  expect(samples[0]).toEqual({ translate: 40, scale: 0.8 });
-  expect(Math.min(...samples.map((sample) => sample.translate))).toBeLessThan(0);
-  expect(Math.max(...samples.map((sample) => sample.scale))).toBeGreaterThan(1);
-  expect(samples.at(-1)).toEqual({ translate: 0, scale: 1 });
+  expect(samples[0]).toEqual({ opacity: 0.65, translate: 16, scale: "none" });
+  expect(samples.every((sample) => sample.translate >= 0 && sample.translate <= 16)).toBe(true);
+  expect(
+    samples.every((sample, index) => !index || sample.translate <= samples[index - 1].translate),
+  ).toBe(true);
+  expect(samples.every((sample) => sample.scale === "none")).toBe(true);
+  expect(samples.at(-1)).toEqual({ opacity: 1, translate: 0, scale: "none" });
   await expect(title).toHaveCSS("opacity", "1");
   await expect(page.locator("main")).toHaveCSS("translate", "none");
   await expect(page.locator("main")).toHaveCSS("scale", "none");
   await page.screenshot({ path: test.info().outputPath("about-settled.png") });
 });
 
-test("three chapters paint like the supplied CSS reference at the same timeline times", async ({
-  page,
-}) => {
+test("three opening chapters use the light one-way stagger profile", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await freeze(page);
   await page.goto("/solutions");
   const chapters = page.locator('nav[aria-label="สำรวจกลุ่มธุรกิจ"] li');
   await expect(chapters).toHaveCount(3);
   for (const chapter of await chapters.all()) await expectStaggerMotion(chapter);
+  const profiles = await chapters.evaluateAll((items) =>
+    items.map((item) => {
+      const animation = item
+        .getAnimations()
+        .find((candidate) => candidate.id === "sunford-stagger-bounce")!;
+      const timing = animation.effect!.getTiming();
+      const frames = (animation.effect as KeyframeEffect).getKeyframes();
+      return {
+        duration: timing.duration,
+        delay: timing.delay,
+        easing: timing.easing,
+        opacity: frames.map((frame) => frame.opacity),
+        translate: frames.map((frame) => frame.translate),
+        scale: frames.map((frame) => frame.scale ?? null),
+      };
+    }),
+  );
+  expect(profiles).toEqual(
+    profiles.map((_, index) => ({
+      duration: 650,
+      delay: index * 80,
+      easing: "ease-out",
+      opacity: ["0.65", "1"],
+      translate: ["0px 16px", "0px"],
+      scale: [null, null],
+    })),
+  );
   await page.evaluate(() => {
-    const reference = document.createElement("div");
-    reference.id = "motion-reference";
-    reference.style.cssText = "position:fixed;left:-10000px;top:0;display:flex;gap:16px";
-    reference.innerHTML = `<style>
-      #motion-reference > div { width:110px;height:140px;opacity:0;
-        transform:translateY(40px) scale(0.8);
-        animation:referenceBouncePop 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-      @keyframes referenceBouncePop { to { opacity:1;transform:translateY(0px) scale(1); } }
-    </style><div style="animation-delay:0.1s"></div><div style="animation-delay:0.25s"></div><div style="animation-delay:0.4s"></div>`;
-    document.body.append(reference);
-    for (const card of reference.querySelectorAll("div"))
-      for (const animation of card.getAnimations()) animation.pause();
+    for (const animation of document.getAnimations()) animation.currentTime = 240;
   });
-  const samples = [];
-  for (const time of [0, 100, 180, 250, 330, 400, 500, 750, 1000, 1200]) {
-    const sample = await page.evaluate(async (value) => {
-      const cards = Array.from(document.querySelectorAll('nav[aria-label="สำรวจกลุ่มธุรกิจ"] li'));
-      const references = Array.from(document.querySelectorAll("#motion-reference > div"));
-      for (const card of cards) {
-        const animation = (window as unknown as StaggerWindow).staggerAnimations.find(
-          (item) => (item.effect as KeyframeEffect).target === card,
-        )!;
-        animation.currentTime = value;
-      }
-      for (const card of references)
-        for (const animation of card.getAnimations()) animation.currentTime = value;
-      await new Promise(requestAnimationFrame);
-      return cards.map((card, index) => {
-        const native = getComputedStyle(card);
-        const reference = getComputedStyle(references[index]);
-        const matrix = new DOMMatrix(reference.transform);
-        return {
-          actual: {
-            opacity: Number(native.opacity),
-            translate: parseFloat(native.translate.split(" ")[1] ?? "0"),
-            scale: native.scale === "none" ? 1 : Number(native.scale),
-          },
-          reference: {
-            opacity: Number(reference.opacity),
-            translate: matrix.m42,
-            scale: matrix.m11,
-          },
-        };
-      });
-    }, time);
-    for (const card of sample) {
-      expect(card.actual.opacity).toBeCloseTo(card.reference.opacity, 4);
-      expect(card.actual.translate).toBeCloseTo(card.reference.translate, 3);
-      expect(card.actual.scale).toBeCloseTo(card.reference.scale, 4);
-    }
-    samples.push({ time, cards: sample });
-    if (time === 180) {
-      expect(sample[0].actual.opacity).toBeGreaterThan(0);
-      expect(sample[1].actual.opacity).toBe(0);
-      expect(sample[2].actual.opacity).toBe(0);
-    }
-    if (time === 500)
-      await chapters
-        .first()
-        .locator("..")
-        .screenshot({ path: test.info().outputPath("three-chapter-bounce.png") });
-  }
-  const samplePath = test.info().outputPath("reference-paint.json");
-  await writeFile(samplePath, JSON.stringify(samples, null, 2));
-  await test.info().attach("reference-paint.json", {
-    path: samplePath,
-    contentType: "application/json",
-  });
+  await chapters
+    .first()
+    .locator("..")
+    .screenshot({ path: test.info().outputPath("three-chapter-rise.png") });
 });
 
-test("offscreen content waits for entry and does not replay when scrolled back", async ({
-  page,
-}) => {
+test("offscreen content stays static when scrolled into view", async ({ page }) => {
   await freeze(page);
   await page.goto("/about-us");
   await expectStaggerMotion(page.locator("main h1"));
@@ -332,15 +298,17 @@ test("offscreen content waits for entry and does not replay when scrolled back",
   await expect(target).not.toBeInViewport();
   expect(await staggerCount(target)).toBe(0);
   await expect(target).toHaveCSS("opacity", "1");
+  await expect(target).toHaveCSS("translate", "none");
   await expect(target).toHaveCSS("scale", "none");
   await target.scrollIntoViewIfNeeded();
-  await expectStaggerMotion(target);
-  await expect.poll(() => activeStaggerCount(target)).toBe(1);
+  await expect(target).toBeInViewport();
+  expect(await staggerCount(target)).toBe(0);
+  expect(await activeStaggerCount(target)).toBe(0);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await expect(target).not.toBeInViewport();
   await target.scrollIntoViewIfNeeded();
   await expect(target).toBeInViewport();
-  expect(await staggerCount(target)).toBe(1);
+  expect(await staggerCount(target)).toBe(0);
 });
 
 test("live reduced motion and keyboard focus cancel active reveals without inline styles", async ({
@@ -400,57 +368,6 @@ test("all homepage sections and shared Footer stay excluded through cached histo
   expect(errors).toEqual([]);
 });
 
-test("a queued content notification cannot reveal after returning Home", async ({ page }) => {
-  type QueuedWindow = Window & {
-    queuedReveals: {
-      target: Element;
-      observer: IntersectionObserver;
-      callback: IntersectionObserverCallback;
-    }[];
-  };
-  await page.addInitScript(() => {
-    const state = window as unknown as QueuedWindow;
-    state.queuedReveals = [];
-    const NativeObserver = window.IntersectionObserver;
-    window.IntersectionObserver = class extends NativeObserver {
-      private revealCallback: IntersectionObserverCallback;
-      constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
-        super(callback, options);
-        this.revealCallback = callback;
-      }
-      observe(target: Element) {
-        if (target.matches("main #about-next-heading"))
-          state.queuedReveals.push({ target, observer: this, callback: this.revealCallback });
-        super.observe(target);
-      }
-    };
-  });
-  await page.goto("/about-us");
-  await expect
-    .poll(() => page.evaluate(() => (window as unknown as QueuedWindow).queuedReveals.length))
-    .toBeGreaterThan(0);
-  await expect(page.locator("main #about-next-heading")).toHaveCSS("opacity", "1");
-  await page.locator('main nav a[href="/"]').first().click();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator("[data-stagger-bounce], [data-stagger-bounce-root]")).toHaveCount(0);
-  const replayed = await page.evaluate(() => {
-    const queued = (window as unknown as QueuedWindow).queuedReveals[0];
-    if (!queued) return false;
-    queued.callback(
-      [{ target: queued.target, isIntersecting: true } as IntersectionObserverEntry],
-      queued.observer,
-    );
-    return true;
-  });
-  expect(replayed).toBe(true);
-  await expect(page.locator("[data-stagger-bounce], [data-stagger-bounce-root]")).toHaveCount(0);
-  expect(
-    await page.evaluate(
-      () => document.getAnimations().filter((a) => a.id === "sunford-stagger-bounce").length,
-    ),
-  ).toBe(0);
-});
-
 test("fresh reduced-motion and unsupported-animation visits retain static readable content", async ({
   page,
 }) => {
@@ -489,29 +406,31 @@ test("server HTML adds no motion hiding when JavaScript is disabled", async ({
   }
 });
 
-test("new directory cards reveal once while existing cards retain their state", async ({
-  page,
-}) => {
+test("new and restored directory cards stay static after the opening scan", async ({ page }) => {
   await recordStaggerMotion(page);
   await page.goto("/explore");
+  await expectStaggerMotion(page.locator("main h1"));
+  const openingCount = await page.evaluate(
+    () => (window as unknown as StaggerWindow).staggerAnimations.length,
+  );
   const first = page.locator(".directory-card").first();
-  await first.scrollIntoViewIfNeeded();
-  await expectStaggerMotion(first);
-  await expect.poll(() => activeStaggerCount(first)).toBe(0);
   const original = await first.getAttribute("href");
   const more = page.getByRole("button", { name: /^ดูทั้งหมด \d+ รายการ$/ });
   await more.click();
   await expect(first).toHaveAttribute("href", original!);
-  expect(await staggerCount(first)).toBe(1);
   const extra = page.locator(".directory-card").nth(24);
   await expect(extra).toBeAttached();
   await extra.scrollIntoViewIfNeeded();
-  await expectStaggerMotion(extra);
+  expect(await staggerCount(extra)).toBe(0);
+  expect(await activeStaggerCount(extra)).toBe(0);
   await page.getByRole("textbox", { name: "ค้นหาข้อมูล Sunford" }).fill("ไม่มีข้อมูลตามข้อความนี้");
   await expect(page.locator(".directory-card")).toHaveCount(0);
   await page.getByRole("textbox", { name: "ค้นหาข้อมูล Sunford" }).fill("");
   await expect(page.locator(".directory-card")).toHaveCount(24);
   const restored = page.locator(".directory-card").first();
   await restored.scrollIntoViewIfNeeded();
-  await expectStaggerMotion(restored);
+  expect(await activeStaggerCount(restored)).toBe(0);
+  expect(
+    await page.evaluate(() => (window as unknown as StaggerWindow).staggerAnimations.length),
+  ).toBe(openingCount);
 });

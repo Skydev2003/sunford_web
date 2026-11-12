@@ -4336,14 +4336,22 @@ Root TypeScript, scoped ESLint, 134 catalog tests, scoped Prettier and diff whit
 
 - [x] Reproduce the supplied screenshot with actual Warehouse rows and record the owner's bug-fix authorization.
 - [x] Read current tokens/styles/client-component guide; snapshot owned carousel files and test native row scrolling in a reversible browser experiment.
-- [ ] Add and run failing geometry/reachability regressions before the fix.
-- [ ] Apply the scoped row layout/active-follow/gesture-isolation fix.
-- [ ] Run row and full existing carousel tests on localhost:3000 at mobile/tablet/desktop widths; inspect screenshots and source restoration safety.
-- [ ] Run TypeScript/lint/format checks, document actual results and leave dev running.
+- [x] Add and run failing geometry/reachability regressions before the fix.
+- [x] Apply the scoped row layout/active-follow/gesture-isolation fix.
+- [x] Run row and full existing carousel tests on localhost:3000 at mobile/tablet/desktop widths; inspect screenshots and source restoration safety.
+- [x] Run TypeScript/lint/format checks, document actual results and leave dev running.
 
 ## Impact / Rollback
 
 Only the existing carousel model-selector row changes. Images, source identities, timing and detail transitions remain as before. Restore just the task-owned carousel delta from its snapshot to undo it; keep unrelated dirty files and dev/Warehouse processes intact. No shared style, dependency, data, environment or deployment change.
+
+## Carousel row verification (2026-11-11)
+
+The original 41-label layout failed its new 1440px containment test at x=-682px. The scoped fix passed six new cases against that data. The initial combined run was externally interrupted after nine passing cases, so final verification was resumed against current source rather than reported as a complete pass.
+
+Preserved subsequent owner work: curated36 carousel membership, three labels per group, hidden scrollbars, directory membership and saved image behavior. Fresh current-source run on Node24 dev localhost3000 passes 12/12 carousel tests at 320/390/834/1440/1887px, TypeScript, scoped ESLint and 137/137 catalog tests. Dedicated 390/1887px captures recorded zero console/page errors and were visually inspected. Row bounds are inside the page; labels and active selection remain reachable; scene gestures/detail returns pass. Report and captures are in `docs/warehouse/carousel-model-row-delivery.md` and `output/carousel-model-row-20261111/`.
+
+No source rollback, new application edits, dependency/env/database changes, cache clearing, commit/push/deploy or other process stop in this final pass. Current dev is left running on port3000. Next.js feedback review found a local flex-overflow issue and an externally interrupted test, with no new qualifying framework issue.
 
 # Non-X Warehouse catalog
 
@@ -4372,3 +4380,726 @@ Use products-index-carousel.json for the carousel only, resolve confirmed detail
 Verified on localhost:3002: 103 products with images, including all 75 with saved Warehouse photos. The Next.js optimizer returned image data for all 102 distinct catalog image URLs. Chromium decoded G107169 on its directory card and detail gallery. TypeScript and 137 catalog tests passed.
 
 Pass the existing server-side saved-image resolver into the shared catalog projection. Test the resulting image URLs in the directory and detail gallery, including G107169, and check saved image coverage.
+
+# Plan: Use the saved Warehouse catalog as the sole runtime Warehouse source
+
+## Files and steps
+
+- [x] Record the owner's shared-file selection and SQL-draft deletion approval in `spec.md`.
+- [x] Delete `docs/warehouse/search-quotation-item.sql`. Replace the raw quotation item adapter in `src/features/catalog/data/quotation.ts` with a projection from the published catalog; update `tests/catalog/quotation.test.ts` accordingly.
+- [x] In `src/features/services/warehouse-product.server.ts`, expose the validated saved dataset and its capture date, removing the live fetch and its fallback branch.
+- [x] Update `src/features/catalog/server/product-repository.ts` and `src/app/(site)/service/quotation/page.tsx` to consume the same saved records. Retain public SKU filtering, net prices and the dated print form.
+- [x] In `src/app/api/products/[sku]/image/route.ts`, serve saved assets for eligible SKUs and remove the upstream image proxy.
+- [x] Switch `tests/e2e/warehouse-catalog.spec.ts` and `tests/e2e/warehouse-snapshot.spec.ts` to the snapshot as the runtime reference. Update the runtime/import distinction in `docs/warehouse/local-env-setup.md`.
+- [x] Run typecheck, catalog tests and the directory/image/quotation browser checks and a separate monitored Warehouse URL check. Verify zero upstream requests, SKU parity, VAT, dated PDF and snapshot integrity. Record results in `spec.md` and `plan.md`.
+
+## Impact and rollback
+
+Catalog consumers and quotations show the version included in the deployed build. Updating Warehouse prices requires importing the snapshot and deploying it. Revert the scoped runtime and test changes to restore live-first reads.
+
+## Verification results
+
+Verified 359 unique saved SKUs, 355 public and quotable SKUs, and all 75 saved photo references on disk. The snapshot and photos have no Git diff. A monitored Warehouse URL received zero requests from the saved-data reader, catalog projection, quotation pricing and image handler. TypeScript and scoped ESLint passed; all 137 catalog tests passed. Three Chromium checks passed on localhost:3000 covering catalog parity, saved image delivery, exact capture date in the form and print document, net prices, VAT and multi-page A4 PDF generation.
+
+# Plan: Calm stagger entrance once at page opening
+
+## Files
+
+- `src/components/ui/use-stagger-bounce.ts` — แก้ shared activation/profile ให้ตรงความหมาย “ตอนเปิดแล้วนิ่ง” ที่ผู้ใช้ยืนยัน
+- `tests/e2e/sitewide-stagger-bounce.spec.ts` — เปลี่ยน contract จาก offscreen viewport-entry/overshoot เป็น initial entrance/no-late-animation/settled behavior
+- `tests/e2e/category-intro-motion.spec.ts` — ปรับเฉพาะ assertion ที่ผูกกับ profile เดิม หากผลตรวจพบว่าได้รับผลโดยตรง
+- `tests/e2e/solutions-intro-motion.spec.ts` — ปรับเฉพาะ assertion ที่ผูกกับ profile เดิม หากผลตรวจพบว่าได้รับผลโดยตรง
+- `spec.md` — บันทึก requirement, approval, final contract และผลตรวจ
+- `plan.md` — บันทึก checklist, ขอบเขตไฟล์จริงและผล verification
+- `MEMORY.md` — เพิ่มเฉพาะเมื่อพบ failure pattern ที่ทำซ้ำได้ตามกติกาโปรเจกต์
+
+## Steps
+
+- [x] รับคำตอบเรื่อง initial viewport และ light one-way motion; อัปเดต Spec เป็น `Ready to Code` พร้อมค่าระยะ/เวลา/cadence ที่ตรวจสอบได้
+- [x] แสดง Spec/Plan ฉบับยืนยันและบันทึกการอนุมัติจริงก่อนแก้ shared UI หรือ test files
+- [x] อ่าน Next.js client-component guide ที่ติดตั้งใน `node_modules/next/dist/docs/` และ snapshot เฉพาะไฟล์ในขอบเขตโดยไม่แตะ unrelated dirty changes
+- [x] เพิ่ม focused red regression ที่พิสูจน์ว่า current source ยังสร้าง animation ให้ offscreen target ตอนเลื่อนถึงและมี overshoot
+- [x] แก้ hook ให้เล่น initial entrance ตาม approved profile ครั้งเดียว แล้วทำ target อื่นเป็น static โดยคง hydration/focus/reduced-motion/cleanup/exclusion contracts
+- [x] รัน focused motion suites แบบ sequential พร้อม output directory เฉพาะงาน; ตรวจ first viewport, scroll down/back, dynamic content, reload/client navigation และ exclusions
+- [x] ตรวจจริงใน browser ที่ 390/834/1440px; เก็บ screenshot และ console/page-error evidence โดยไม่เปลี่ยนข้อมูลธุรกิจ
+- [x] รัน TypeScript, scoped ESLint, Prettier และ whitespace checks; อัปเดตผลจริงใน `spec.md`/`plan.md`/work state
+- [x] รัน Next.js agent-feedback reporting pass ก่อนส่งมอบ และรายงานข้อจำกัดที่ยังไม่ตรวจอย่างตรงไปตรงมา
+
+## Impact / Rollback
+
+R1: shared hook กระทบ non-home public routes หลายหน้า. ความเสี่ยงคือ content ด้านล่าง animate ผิดเวลา, initial elements ไม่ settle, dynamic content ถูกซ่อน หรือ keyboard/reduced-motion regression. จำกัดการเปลี่ยนไว้ที่ hook และ tests ที่ยืนยันว่าได้รับผล; ไม่แตะ CSS/layout/component/data. Rollback โดยคืนเฉพาะ task-owned delta จาก snapshot และรักษา unrelated dirty work ทั้งหมด
+
+## Verification Results
+
+- Red regression ยืนยันก่อนแก้ว่า source เดิมใช้ first-entry IntersectionObserver กับทุก target, `scale 0.8→1`, `translateY 40→0px`, 800ms และ overshooting easing
+- Hook ปัจจุบันเล่น opening-only rise `opacity 0.65→1`, `translateY 16→0px`, ไม่มี scale, `650ms ease-out`, stagger `80ms` capped ที่ `320ms`; offscreen/dynamic targets static และ opening scan รองรับ delayed hydration ก่อนปิดตัวเอง
+- Chromium motion suites ผ่าน `41/41` แบบ sequential; hydration suite `tests/e2e/stagger-hydration.spec.ts` ผ่าน `5/5`
+- Browser inspection ผ่านที่ 390/834/1440px: opening target settle, lower content ไม่เริ่ม motion ตอน scroll, ไม่มี horizontal overflow, console error หรือ page error; screenshots อยู่ใน `output/stagger-bounce-once-20261111/`
+- Node 24 TypeScript, scoped ESLint, Prettier ของ task-owned source/tests/MEMORY และ scoped `git diff --check` ผ่าน. Task sections ใน `spec.md`/`plan.md` ตรงกับ Prettier โดยไม่แตะ formatting เก่านอกงาน
+- Next.js agent-feedback pass: ไม่พบ crash, hang, incorrect framework behavior หรือ documentation friction ที่เข้าเกณฑ์; ปัญหา hydration ที่พบเป็น lifecycle ของ shared application hook และถูกบันทึกเป็น project failure pattern ใน `MEMORY.md`
+
+# Plan: Instant navigation for product category routes
+
+- [x] Owner approved the scoped fix with “จัดการ”.
+- [x] Update `src/app/(site)/products/category/[category]/page.tsx` with a synchronous Suspense wrapper and move the existing category resolution into its async child.
+- [x] Run typecheck, lint and browser checks for all five categories and unknown category handling; record results in `spec.md` and `plan.md`.
+
+Impact is limited to the category route loading state. Rollback is removal of the wrapper and restoration of the original page export.
+
+Verification: typecheck, scoped ESLint and Prettier passed. Chromium on localhost:3000 navigated to all five categories at 390px and 1440px without the URL-data diagnostic. Direct visits showed the five correct document titles. The unknown category displayed the not-found UI; the streamed development response had HTTP status 200.
+
+# Plan: Show photographed SKUs in public product listings
+
+- [x] Obtain approval for the display-only scope in spec.md.
+- [x] Add a photographed-product selection in `src/features/catalog/server/product-repository.ts` over the existing catalog. Reuse it for visual lists in `src/features/catalog/server/client-products.ts`, `src/features/catalog/server/product-categories.ts`, `src/app/(site)/page.tsx`, `src/app/(site)/[...path]/page.tsx` and related-product suggestions in `src/app/(site)/products/[slug]/page.tsx`. Preserve full catalog lookup for deep links, quotation and configurator.
+- [x] Adapt the relevant public display assertions in `tests/e2e/warehouse-catalog.spec.ts` and check the directory, categories, search, comparisons, related products and full quotation eligibility. Check restored visibility with a photo in test data, without modifying the saved inventory.
+- [x] Verify scoped lint, TypeScript, catalog tests and mobile/desktop UI. Record verification in `spec.md` and `plan.md`.
+
+Rollback: revert the listing selector and its call sites. Data and images stay in place.
+
+Verified locally: 103 photographed storefront SKUs and 355 quotation choices. All five categories passed at 390, 834 and 1440px. Six related-product links resolved to photographed products. SKU 11 remains reachable and selectable for quotation. Adding a photo to a test fixture restored storefront eligibility without editing the saved inventory. TypeScript, scoped ESLint, 137 catalog tests and eight Chromium tests passed.
+
+# Plan: Direct Warehouse PostgreSQL reads
+
+## Files
+
+- `src/features/services/warehouse-postgres.ts` — separate bounded read-only pg pool, parameterized catalog/image metadata queries and explicit configuration validation; usable by runtime and CLI.
+- `src/features/services/warehouse-storage.ts` — GET-only signed access to the already-used S3 storage, with MIME/size/timeout bounds.
+- `src/features/services/warehouse-product.server.ts` — server-only runtime boundary and version-aware saved-image enrichment.
+- `src/features/catalog/server/product-repository.ts` — use direct Warehouse results with the existing cache, expose a fresh catalog read for quotation; preserve CMS filters.
+- `src/app/(site)/service/quotation/page.tsx` — fresh live catalog/read timestamp and safe source-failure message.
+- `src/app/api/products/[sku]/image/route.ts` — resolve current eligible metadata; use unchanged local photos or direct storage GET.
+- `scripts/snapshot-warehouse.ts` — replace Warehouse API reads with the shared PostgreSQL/storage readers; retain atomic export.
+- `.env.local` — ignored local Warehouse-only variables copied securely from the verified existing connection; preserve CMS values and every unrelated setting.
+- `.env.example` — safe separate CMS/Warehouse variable names without secrets.
+- `tests/catalog/warehouse-postgres.test.ts` — source validation, separate configuration, read-only connection contract, freshness and saved-image version behavior.
+- `tests/e2e/warehouse-snapshot.spec.ts` — update saved-only expectation to fresh PostgreSQL parity, date and printed pricing.
+- `tests/e2e/warehouse-catalog.spec.ts` — compare live source instead of treating the historical snapshot as authoritative; preserve UI regressions.
+- `docs/warehouse/direct-postgres.md`, `docs/warehouse/local-env-setup.md` — setup, source/price/cache/failure contract and actual evidence.
+- `spec.md`, `plan.md`, `MEMORY.md` — maintain approval/contract/results and the connection separation lesson.
+
+## Steps
+
+- [x] Verify current pipeline, Warehouse schema/connection/storage and exact359-row source parity without database writes or credential output.
+- [x] Record owner choice of automatic reads and positive prices, preserving existing CMS/storefront/curated carousel decisions.
+- [x] Snapshot owned dirty files and local config privately; implement the separate readers and meaningful boundary tests.
+- [x] Switch repository/quotation/image/exporter together, configure only new Warehouse env variables and verify no CMS changes.
+- [x] Verify live data, storage, read-only enforcement, source failures/freshness and no Warehouse API requests; run browser/type/lint/catalog/build checks.
+- [x] Update actual results/docs and leave a working local preview; no deployment.
+
+## Impact / Rollback
+
+Live prices are R1 across catalog and quotation. Use verified SELECT sources and the same public adapter, fail safely rather than pricing from stale files, and retain private task-owned snapshots for rollback. Existing CMS Prisma and all unrelated work remain intact. No source database/storage writes or new dependencies.
+
+## Verification results: direct PostgreSQL
+
+- Actual source359 rows match saved names/units/prices; public355 and75 unchanged saved-image versions retained. Source queries are company-scoped, active/saleable/not deleted with price>0; no stock criterion. SHOW transaction_read_only returns on. CMS settings unchanged before/after local configuration.
+- Direct storage GET succeeded with WebP20038bytes. Complete snapshot CLI run in private QA saved359SKUs/75photos with unchanged price/image hashes; live snapshot data and files have no task diff.
+- Catalog142/142, root TypeScript, scoped ESLint and production build664/664 pass. Development browser15/15 and production3/3 pass with Warehouse API3048 off, including responsive catalog, images/details, builder, quotation freshness/date/units/VAT and actual PDF.
+- Isolated failure QA: generic productsAPI503, safe quotation error and no print button. Unit fixtures prove independent configuration, bounded read-only options, invalid/conflicting source rejection, re-read freshness, image version matching and storage MIME/size bounds. Warehouse records were not edited to test price changes.
+- Source helpers and exporter have no Warehouse API fetch. Local Warehouse variables/storage credentials were configured only in ignored `.env.local`; no CMS, migration, dependency, shared layout/style or deployment changes. Other dirty work is preserved. Production and failure QA processes are task-owned and stopped after checks; live dev remains on3000.
+- Setup/results in `docs/warehouse/direct-postgres.md`; the earlier setup file now clearly labels its API workflow historical. Next.js final feedback review found no new qualifying framework issue in this source migration.
+
+# Plan: Image-only Warehouse cache
+
+## Files
+
+- `data/warehouse/images.json` — create image-only metadata for all75 used saved photos, preserving original SKU/identity/version/path.
+- `data/warehouse/products.json` — delete the old359-row product/name/unit/price snapshot after reference migration.
+- `src/features/services/warehouse-product.server.ts` — read the image-only manifest; keep PostgreSQL as sole runtime product/price source.
+- `src/features/services/warehouse-postgres.ts` — compare image metadata directly without requiring the historical product record shape.
+- `scripts/cache-warehouse-images.ts` — create an atomic image-only cache refresher from PostgreSQL/storage.
+- `scripts/snapshot-warehouse.ts` — remove the old product/price exporter.
+- `package.json` — replace `warehouse:snapshot` with `warehouse:images`; no dependency change.
+- `tests/catalog/warehouse-products.test.ts`, `tests/catalog/warehouse-postgres.test.ts` — migrate old snapshot fixtures to explicit synthetic product fixtures and image integrity/version contracts; preserve category assertions.
+- `docs/warehouse/direct-postgres.md` — update cache/file/command contract and record actual cleanup evidence.
+- `spec.md`, `plan.md`, `MEMORY.md` — maintain approval/current state and the image-data dependency lesson.
+
+## Steps
+
+- [x] Trace all old snapshot references and capture private backups, physical image hashes, mapping/CMS hashes and baseline API output.
+- [x] Record the owner's direct cleanup approval and concrete deletion boundary.
+- [x] Extract the image manifest and update runtime/version tests and fixtures before removing old data.
+- [x] Replace the exporter with an image-only refresh command; delete only the old data/script files.
+- [x] Compare full live PostgreSQL/API/catalog/quotation data and preserved hashes; exercise the new command in isolated output.
+- [x] Run scoped formatting/lint/typecheck, full catalog tests, production build and relevant browser checks; update actual results and leave localhost working.
+
+## Impact / Rollback
+
+Only the Warehouse snapshot/cache boundary changes. Preserve physical assets and all existing category/CMS/curated content. Restore only the owned delta from the private backup if required. No recursive delete, database/env mutation, dependency change or deploy.
+
+## Verification Results: image-only cache
+
+Removed the old359-row product/price snapshot and its script. New images.json stores only75image references with four image-identity/path fields. Every one of74physical image files has the originalSHA256, as do category/curated/CMS source files. There are no remaining runtime/CLI/test/package references to the removed JSON/writer/command. Historical documentation references are retained as history.
+
+DirectSQL359records and API355publicSKUs match; public identity, name, unit, net/gross price, image path, category and subgroup fields are byte-equivalent to the pre-task serialized values. Photographed storefront count103 unchanged. The new image refresh command completed in isolated output:75refs, identical paths and no products.json or product/price fields.
+
+Passed143catalog tests, typecheck/scoped ESLint/Prettier/diff, production build664/664, dev browser15/15 and production3/3. Browser checks cover real source parity, cached/direct images/details, category/search/comparison, responsive390/834/1440, builder and dated VAT quotation/PDF. Evidence in output/warehouse-image-only-20261111. Temporary production3065is stopped; local dev3000retained. No new Next framework issue was found during the final reporting pass; no report submitted.
+
+# Plan: ใบเสนอราคา PDF ตามต้นฉบับ QO-072208
+
+อนุมัติให้ใช้ PDF ต้นฉบับเป็นแม่แบบ สร้าง public/images/quotation-template.png และ scripts/quotation-template.mjs สำหรับสกัดแม่แบบสะอาด ใช้ src/features/catalog/data/quotation-pdf.ts สำหรับจัดหน้าและสร้าง PDF ตรงขนาด ใช้ pdf-lib ใน package.json และ lockfiles และสร้างเครื่องมือผู้ขายแบบออฟไลน์ใน tools/quotation-seller/ สำหรับเติมข้อมูลใน PDF ที่ลูกค้าส่งมา ทดสอบ PDF จริง รวมถึงเทียบพิกัดกับต้นฉบับ
+
+- [x] ตรวจต้นฉบับด้วย pdfinfo อ่าน page drawing stream และวัดแถบสีจากภาพที่ฝังใน PDF เทียบกับแบบฟอร์มและสัญญาข้อมูลปัจจุบัน
+- [x] ยืนยันแหล่งข้อมูลฝั่งผู้ขายและแม่แบบ ร่วมกับผู้ใช้ตามหัวข้องานใน spec.md ก่อนแก้แอป
+- [x] ปรับ src/features/catalog/components/quotation-form.tsx และ quotation-form.module.css ในโฟลเดอร์เดียวกัน ให้รับข้อมูลลูกค้าที่ต้องใช้และส่งออกเอกสาร A4 ตามพิกัดจริง ส่วนรายละเอียดผู้ขายใช้แหล่งที่ยืนยัน
+- [x] ใช้ quotationTotals เดิมและเพิ่มการจัดหน้า/ยอดภาษาไทยใน src/features/catalog/data/quotation-pdf.ts จากนั้นยืนยันยอดผ่านชุดทดสอบและใบเทียบ
+- [x] ปรับ tests/e2e/quotation.spec.ts เพื่อตรวจ PDF จริงและเปรียบเทียบภาพเมื่อข้อมูลตรงกับต้นฉบับ พร้อมตรวจเอกสารหลายรายการและ responsive form
+- [x] บันทึกผลและค่าความคลาดที่วัดได้ใน spec.md และ plan.md
+
+ผลตรวจ: ตัวอย่าง A4 หนึ่งหน้า ยอดสุทธิ 9,580.01 บาท เทียบจุดอ้างอิง 33 ตำแหน่งที่ 4 px/mm ต่างสูงสุด 0.25 มม. ส่วนหัว หัวตาราง และแถวชำระเงิน 216,720 พิกเซลไม่มีจุดต่างเกิน 20 ระดับสีต่อช่อง ทั้งหน้ามี 29,750 จาก 997,920 พิกเซลที่ต่างเกินเกณฑ์ รูปอักษรที่สร้างใหม่ยังแตกต่างจากภาพต้นฉบับ ผลเทียบอยู่ใน output/quotation/comparison.json และ difference.png
+
+ทดสอบหน้ารับข้อมูลที่ 390/834/1440px ข้อความยาวและการตัดหลายหน้า ชุด Chromium 9/9 ผ่าน รวมถึงการเลือกชุดสินค้าและราคาสด
+
+# Plan: Warehouse-first versioned product photos
+
+## Files
+
+- `next.config.ts` — permit version queries only for Warehouse cached photos and the existing SKU image route; keep the current no-query rule for other local images. Required by the installed Next version for the approved versioned photo URLs.
+- `src/features/catalog/data/warehouse-products.ts`, `src/features/catalog/types.ts`, `src/features/catalog/data/client-products.ts` — versioned Warehouse-first source, optional CMS fallback and public projection.
+- `src/features/catalog/data/product-presentation.ts` — put selected primary first even when a CMS gallery exists; preserve all rich content.
+- `src/components/ui/product-image.tsx` — optional fallback on load failure, without loops; same behavior for callers without fallback.
+- `src/features/catalog/components/product-gallery.tsx`, `src/app/(site)/products/[slug]/page.tsx` — pass the primary fallback into the gallery.
+- `src/features/catalog/components/catalog-product-card.tsx`, `product-card.tsx`, `catalog-overlays.tsx`, `product-storefront.tsx`, `product-category-mock.tsx`, `products-overview.tsx`, `products-index-content.tsx` — keep Warehouse source ahead of fixed cutouts and pass fallback for actual product photos.
+- `src/features/content/data/weighing-options.ts`, `src/features/content/components/weighing-builder.tsx` — project selected source/fallback into builder cards.
+- `src/features/home/data/category-feature-items.ts`, `src/features/home/components/category-feature-panels.tsx`, `src/features/home/components/hero-product-ribbon.tsx` — forward fallback where these modules render live product photos; preserve campaign assets.
+- `src/features/catalog/components/products-index-carousel.tsx`, `products-index-content.tsx` — keep curated36 membership but prefer live member photos, with existing/curated fallbacks and preserved interactions.
+- `src/app/api/products/[sku]/image/route.ts` — return bytes for versioned routes; retain legacy unversioned cached redirect.
+- `tests/catalog/warehouse-products.test.ts`, `tests/catalog/warehouse-image-priority.test.ts` — source priority/version/no-CMS/gallery and fallback-data assertions.
+- `tests/e2e/warehouse-images.spec.ts`, `tests/e2e/products-index-carousel.spec.ts` — live primary/decode, forced failure fallback, distinct optimizer keys and updated carousel photo identity expectations.
+- `docs/warehouse/direct-postgres.md`, `spec.md`, `plan.md`, `MEMORY.md` — source/cache/CMS contract and actual test evidence.
+
+## Steps
+
+- [x] Trace CMS priority, gallery/cutout bypasses, direct-image redirects and installed Next image cache behavior.
+- [x] Record image-only authorization and clarify that CMS removal is outside scope.
+- [x] Snapshot owned files; add failing source/gallery/version regressions.
+- [x] Implement primary/version/fallback data flow and propagate it through actual product-photo consumers.
+- [x] Test source-version fixtures, real image decoding, failure fallback, optimizer cache keys and no-CMS behavior without DB/storage writes.
+- [x] Run appropriate unit/type/lint/build and product/carousel/quotation browser checks; document results and leave localhost working.
+
+## Impact / Rollback
+
+Shared-image behavior changes only when an explicit fallback is supplied. The Next image configuration accepts queries on the two Warehouse photo paths; other local paths retain their existing no-query policy. This triggers a normal dev configuration reload. Retain all source assets, category/curated memberships and CMS config. No new styles/dependencies or deployment. Restore only task-owned image/config delta to reverse it, preserving unrelated dirty work.
+
+## Verification Results: Warehouse-first photos
+
+- 147/147 catalog tests, TypeScript, scoped ESLint/Prettier and diff checks passed. Node24 production build generated664/664 pages.
+- Final development photo/carousel17/17 and catalog/quotation15/15 passed; production5/5 photo checks plus8/8 selected regression checks passed. Covers Warehouse primary decode, CMS fallback at390/1440, builder primary/failure fallback, all five product categories, search/comparison, kit selection, VAT/PDF and the curated36 carousel across320/390/834/1440/1887 where applicable.
+- Two different source-version URLs returned real optimized image200 responses with separate production MISS keys. Simulated source changes never wrote Warehouse DB/storage, and no image export command was run.
+- The first browser pass identified the installed Next local-query default; next.config.ts now allows version queries on the two Warehouse photo paths. A cold first carousel test also needed its existing data-interactive readiness marker; the final17-case rerun passes.
+- Current API355, photographed membership103 and41 CMS/editorial fallbacks; current local CMS URL is absent and Warehouse reads remain available. Image manifest, taxonomy, curated data and environment match their task-start hashes. No app code was changed in hero-product-ribbon.tsx because it has no active callers; campaign art/3D remain intact.
+- Evidence: output/warehouse-primary-images-20261111, including fallback screenshots, build.log and actual quotation PDFs. Guide: docs/warehouse/direct-postgres.md. No CMS removal, source writes, env/dependency changes or deployment. The final Next feedback review found no new qualifying framework issue: the image-path adjustment follows installed documented configuration semantics.
+- Final verification.json confirms all74 physical photo hashes, product identity/prices/units/categories and image-manifest/mapping/curated/env hashes unchanged. The owned production QA server3065 is stopped; localhost3000/products returns200 and the development listener remains active.
+
+# Plan: เลขใบเสนอราคาและวันที่อัตโนมัติ
+
+- เพิ่มตาราง quotation_issues ใน prisma/schema.prisma และ prisma/migrations/20261111010000_quotation_issues/migration.sql พร้อม route src/app/api/quotations/issue/route.ts และตัวจัดสรรใน src/features/catalog/server/quotation-issues*.ts ทดสอบ registry ในฐานแยก
+- ปรับ quotation-form.tsx, quotation-pdf.ts, ตัวช่วย quotation-issue.ts และเครื่องมือ tools/quotation-seller ให้กรอกหัวเอกสารจากการสร้างใบ ตรวจทุกหน้าและ PDF หลังลงนาม
+- ปรับ tests/e2e/quotation-download.ts และทดสอบวัน/ลำดับ/การลองใหม่ บันทึกวิธีใช้งานและผลจริงใน spec.md/plan.md
+- ผลกระทบเฉพาะการออกใบ ใช้ PostgreSQL ในระบบจริง และไฟล์พัฒนาเฉพาะในเครื่องเมื่อไม่มี CMS URL สามารถย้อนโค้ดโดยรักษาทะเบียนเลขที่ออกไปแล้ว
+
+- [x] ทดสอบ route กับ PostgreSQL 17 ที่แยกไว้และ SQLite ชั่วคราว คำขอซ้ำได้เลขและเวลาเดิม ทะเบียนพัฒนาจริงยังไม่ถูกใช้ในการทดสอบ
+- [x] ตรวจวันข้ามเดือน/ปี, PDF หลายหน้า, ราคาสด, ออกเลขให้ PDF รุ่นเดิมและลองใหม่หลัง HTTP 503 ตรวจหัวเอกสารฝั่งลูกค้าและฝั่งผู้ขายด้วยภาพจาก PDF จริง พร้อม TypeScript และ scoped ESLint
+
+# Plan: Remove CMS reads and retain local editorial content
+
+## Files
+
+- `scripts/audit-paths.mjs` — audit existing working-tree files including new local modules, while skipping removed CMS files still present in the Git index.
+- `src/features/cms/types.ts` → `src/features/site/types.ts` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/server/section-tree.tsx` → `src/features/site/server/section-tree.tsx` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/server/documents.ts` → `src/features/site/server/documents.ts` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/server/categories.ts` → `src/features/site/server/categories.ts` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/data/settings.ts` → `src/features/site/data/settings.ts` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/data/primary-navigation.ts` → `src/features/site/data/primary-navigation.ts` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/data/navigation.ts` → `src/features/site/data/navigation.ts` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/components/site-navigation.tsx` → `src/features/site/components/site-navigation.tsx` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/components/site-header.tsx` → `src/features/site/components/site-header.tsx` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `src/features/cms/components/categories-provider.tsx` → `src/features/site/components/categories-provider.tsx` — preserve local site data/types/components; replace CMS database reads with the local document file.
+- `tests/catalog/category-destinations.test.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/catalog/client-payload.test.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/catalog/navigation.test.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/app/not-found.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/app/layout.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/app/(site)/layout.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/catalog/primary-navigation.test.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/home/server/home-images.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/types.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/home/data/hero-slides.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/components/layout/primary-navigation.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/app/(site)/products/[slug]/page.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/app/(site)/products/page.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/server/product-repository.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/components/layout/header.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/components/layout/footer.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/content/server/content-repository.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/components/contact/floating-contact.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/components/contact/sunford-mascot.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/app/(site)/page.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/pos-overview.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/platforms-overview.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/indicators-overview.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/home/components/hero.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/category-navigation.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/home/components/category-feature.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/catalog-product-card.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/catalog-overlays.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/content/components/contact-page.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/home/components/product-spotlight.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/home/components/sections.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/home/components/source-showcase.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/accessories-overview.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/e2e/home-category-navigation.spec.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/content/components/solutions-overview.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/e2e/product-category-pages.spec.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/e2e/solutions-overview.spec.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/e2e/sitewide-navigation.spec.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `tests/e2e/scales-overview.spec.ts` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/scales-overview.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/product-catalog.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/product-card.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/products-overview.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/features/catalog/components/product-storefront.tsx` — use local site module imports; repositories keep current content and Warehouse contracts.
+- `src/app/api/health/route.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `src/features/catalog/data/managed-products.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `prisma/seed.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `prisma/catalog-import.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `scripts/import-legacy-products.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `scripts/verify-catalog.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `prisma.config.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `package.json` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `scripts/lib/deploy.mjs` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `scripts/vercel-build.mjs` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `scripts/lib/deployment-env.mjs` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `tests/uat/deploy.test.mjs` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `tests/uat/deployment-env.test.mjs` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `tests/catalog/management.test.ts` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `.env.example` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `AGENTS.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `README.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `docs/vercel.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `docs/uat.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `docs/content-sources.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `docs/warehouse/direct-postgres.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `spec.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `plan.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `MEMORY.md` — remove obsolete CMS seed/reader behavior or document/test the new local-content boundary; keep quotation registry and migration history intact.
+- `data/site/content.json` — preserve current site settings/navigation as local documents; no product prices.
+- `tests/catalog/local-site-content.test.ts`, `tests/e2e/local-site-content.spec.ts` — verify local content preservation, independence from CMS tables and live Warehouse/photo fallback.
+
+## Steps
+
+- [x] Record the user's explicit CMS-removal request and current quotation-registry exception; capture task-owned rollback and full product/asset/content baseline.
+- [x] Preserve current local settings/navigation and 159 product-content/401 page sources; migrate CMS helpers to local site content, retaining UI props/routes/styles.
+- [x] Remove CMS product/homepage database reads and obsolete CMS seed/import helpers; keep Prisma only for the separate quotation registry and retain historical migrations without executing them.
+- [x] Change health to the active Warehouse read connection; remove CMS seed from deployment while retaining registry migrations and validate the Warehouse configuration.
+- [x] Run unit/UAT/type/lint/build and dev/production browser checks for content, navigation, photos, categories, builder and quotation where configured; compare protected baselines.
+- [x] Update task results/docs, preserve unrelated quotation work, stop owned QA servers and keep localhost3000 working.
+
+## Impact / Rollback
+
+R1: shared header/footer/layout imports resolve through features/site instead of features/cms; their output/styles stay the same. Local documents replace external CMS reads. Restore only this task's owned delta from its private backup if needed. Current CMS DATABASE_URL is absent, so the preservation baseline is the visible project content, not an unconnected remote CMS. Existing Prisma client/models/migration history and DATABASE_URL/DIRECT_URL are retained solely for the concurrently added quotation issue registry; removing them would break that non-CMS workflow. No live registry/Warehouse/database/storage writes, schema drops, env-secret changes, commit/push or deployment. Browser PDF checks may allocate development-local document numbers. Existing database tables are not deleted.
+
+## Verification Results: CMS removal
+
+- Preserved all355 complete public product records byte-for-byte after sorting;103 photographed entries and41 fallback photos. All1414 public assets,159 product-content records,401 pages, Warehouse source/config/mappings and local env compare equal by hash.
+- Site configuration is9 local records in data/site/content.json; modules moved to features/site. Legacy CMS URLs cannot reactivate reads, proven by two unit tests whose CMS client throws if touched. Removed obsolete CMS seed/import/managed-product code; registry Prisma/history remains unchanged.
+- Passed149 catalog tests,27 UAT tests, TypeScript, scoped lint/format/diff and665/665 build pages with a deliberately unreachable legacy DATABASE_URL. Dev browser9/9 content/photos plus27/27 navigation/catalog/builder/quotation; production13/13 content/health/category/photo/builder checks without CMS. Actual PDF checks passed on the development-local registry.
+- First UAT run exposed a scanner reading removed indexed CMS files. Updated audit-paths.mjs to inspect existing working-tree files plus new site JSON; full27-case rerun passes. No new Next framework issue was retained in the final feedback pass.
+- Evidence and guide: output/cms-removal-20261111/verification.json and docs/warehouse/direct-postgres.md. No database/schema migration/seed, source/storage/env mutation or deployment was performed. Final process cleanup and localhost health are recorded in the verification artifact.
+
+## Plan: Selection sidebar for the weighing builder
+
+- [x] Record the supplied reference and approval in `spec.md`.
+- [x] Updated `src/features/content/components/weighing-builder.tsx` and `src/features/content/components/weighing-builder.module.css` for the summary header and category cards.
+- [x] Updated `tests/e2e/indicator-platform-compatibility.spec.ts` for category controls within populated rows. Chrome passed six sidebar and quotation checks on localhost, including layouts at 390, 834 and 1440px. Inspected mobile and desktop captures. TypeScript and targeted ESLint passed.
+- [x] Recorded verification in `spec.md` and `plan.md`.
+
+The change is local to the guide. Roll back the sidebar markup, scoped styles and matching assertions together.
+
+## Plan: Show each configurator selection on its own quotation line
+
+- [x] Record the requested row behavior and original kit-price contract in spec.md.
+- [x] Changed src/features/catalog/data/quotation.ts and src/features/catalog/components/quotation-form.tsx to carry bundled lines into the form and PDF.
+- [x] Updated tests/catalog/quotation.test.ts, tests/e2e/quotation.spec.ts and tests/e2e/warehouse-catalog.spec.ts for separate rows, quantity changes, totals and PDF.
+- [x] Five browser checks and four quotation unit checks passed. TypeScript and targeted ESLint passed. Inspected the TCS editor screenshot and a rendered two-line buyer PDF.
+
+Impact is limited to quotation handoff and its editor. Reverting the row mapping and form changes together restores the former merged display.
+
+## Plan: Model-only product titles across the website
+
+- [ ] Normalize model titles in src/features/catalog/data/{warehouse-products,catalog-card-names,warehouse-categories}.ts. Keep IDs and the original wording in src/features/catalog/types.ts.
+- [ ] Pass searchable source wording through src/features/catalog/data/client-products.ts and the catalog-overlays, product-category-mock and product-catalog components. Adapt src/features/catalog/data/quotation.ts and components/quotation-form.tsx so the form shows model names and the PDF keeps source descriptions.
+- [ ] Align visible builder names in src/features/content/{data/weighing-options.ts,components/weighing-builder.tsx}. Verify and update affected assertions in tests/catalog/warehouse-products.test.ts and tests/e2e/{quotation,warehouse-catalog}.spec.ts.
+- [ ] Verify live titles, hidden inventory, frontend search and quotation. Record results in spec.md and plan.md.
+
+Shared impact is the catalog display contract. Existing SKU, URL, model associations, search terms, PDF names and pricing remain available. Roll back the display projection and its consumers together.
+
+The home spotlight uses an independent campaign heading. Normalize its product-title prefix in src/features/home/components/product-spotlight.tsx and update tests/e2e/home-links.spec.ts and tests/e2e/home-motion-cleanup.spec.ts. Existing spotlight copy and artwork otherwise stay as configured. The owner explicitly selected the existing SKU as the fallback for records with no model.
+
+Update tests/catalog/local-site-content.test.ts to assert both the published label and the original Warehouse wording. Keep topic classification in src/features/catalog/server/product-topics.ts based on the source description so shortening a title does not reclassify inventory.
+
+Model name verification passed. All 150 catalog tests and 11 targeted Chrome tests passed; the full-title coverage test was rerun after handling drawer variants. Typecheck, scoped lint and format checks passed. Compared all selectable quotation labels and all photographed directory titles against their catalog entries. Direct checks covered hidden detail pages, fallback SKU, the model-only builder-to-quotation handoff, search, comparison and PDF download.
+
+## Plan: Quotation item details popup
+
+- [x] Record approved scope in spec.md.
+- [x] Edited src/features/catalog/components/quotation-form.tsx and quotation-form.module.css for the row action and dialog.
+- [x] Extended tests/e2e/quotation.spec.ts to verify row targeting, keyboard dismissal, responsive placement, and PDF export.
+- [x] All three browser cases, scoped lint and typecheck passed.
+
+The change is local to the quotation editor. Revert these markup, style and test changes together to restore the inline field.
+
+## Plan: Remove customer website and reference inputs
+
+- [x] Removed both inputs and their form reads in src/features/catalog/components/quotation-form.tsx. Verified in Chrome at 390px and 1440px and confirmed a successful buyer PDF download.
+
+## Plan: Searchable quotation product picker
+
+- [x] Carried catalog photos and fallbacks into the quotation picker and selected rows.
+- [x] Updated the three browser suites. Verified dimensions, keyboard selection and return focus, image rendering, name/SKU search, all eligible SKUs, missing product validation, and PDF export.
+- [x] Search regressions passed at 390, 834 and 1440px. Five catalog, handoff and PDF browser checks passed, along with four quotation unit tests, typecheck and scoped lint.
+
+Changes are scoped to the quotation picker. Revert its presentation, image projection and matching browser assertions together.
+
+## Plan: Prevent duplicate models in quotations
+
+- [x] Filtered the model picker against current rows in src/features/catalog/components/quotation-form.tsx.
+- [x] Verified search at 390, 834 and 1440px, SKU aliases, restoring removed/replaced models and PDF totals for 35 distinct models. TypeScript and scoped ESLint passed.
+      Remove the obsolete selected-option highlight in src/features/catalog/components/quotation-form.module.css when selected models no longer appear in results.
+
+## Plan: Flow long quotations across A4 pages
+
+- [x] Update src/features/catalog/data/quotation-pdf.ts to flow rows and keep seller stamps aligned with the final block; preserve old buyer files.
+- [x] Update tests/e2e/quotation-download.ts for the revised file contract. Extend tools/quotation-seller/verify.mjs to verify pagination from rendered PDFs, update tools/quotation-seller/README.md and rebuild output/quotation/SUNFORD-seller.html.
+- [x] Verify the short reference, long pages and seller completion in Chrome; run typecheck and scoped lint, record results in spec.md and plan.md.
+
+Impact and rollback: only exported PDFs and their offline reader change. Keep the updated seller reader for any files already generated with a moved footer.
+
+Verification: Chrome rendered 15 example items across two A4 pages (12 + 3); raster checks found the header only on page one, the payment block only on the last page and signature/QR aligned there. The original one-page reference comparison passed with zero changed pixels in the fixed-artwork comparison regions and all tested field anchors within 1 mm. The 35-model quotation download browser regression, TypeScript and scoped ESLint passed.
+
+## Plan: Simplify quotation item rows
+
+- [x] Remove the row details editor from src/features/catalog/components/quotation-form.tsx and size the quantity label in src/features/catalog/components/quotation-form.module.css.
+- [x] Replace the superseded details-dialog check in tests/e2e/quotation.spec.ts with responsive row checks, verify the form and record results. Rollback is limited to this form, its local styles and the corresponding test.
+      Verified in Chrome at 320, 768 and 1440 px. Both unit labels fit on one line within the quantity column, the details button is absent and desktop PDF download passed. TypeScript and scoped ESLint passed.
+
+## Plan: Enable model selection on the bundled quotation row
+
+- [x] Update src/features/catalog/components/quotation-form.tsx and its quotation-form.module.css to use the existing picker for bundled rows and update their pricing association on selection.
+- [x] Update tests/e2e/quotation.spec.ts and tests/e2e/warehouse-catalog.spec.ts for the editable row. Check the handoff, changing the first model, amounts and PDF export in Chrome.
+- Rollback is limited to the quotation form and its related tests.
+  Verified four Chrome workflows covering first-row replacement and restoration with kit quantity two, duplicate filtering, the mobile builder handoff, live Warehouse totals and PDF download. TypeScript and scoped ESLint passed.
+
+## Plan: Import the missing official SUNFORD product content (2026-11-11)
+
+- [x] Read the official sitemap, source grids including pagination and all product detail endpoints. Compare fresh sanitized content with the current local records. Save the audit, field differences, product-to-collection inventory, seven reviewed SKU matches and two parked products under output/official-product-audit-20261111/.
+- [x] Obtain approval of this import scope under the project instructions before writing application files.
+- [x] Merge verified records only into src/features/content/data/products.json and src/features/content/data/pages.json, source-backed membership into the relevant existing collection records, and seven referenced fallback images into public/images/imported/ where missing. Preserve previously curated records. Update src/features/content/data/import-report.json with provenance.
+- [x] Apply explicit SKU links and existing subgroup IDs in src/features/catalog/data/warehouse-product-mapping.json. Preserve original warehouse-<SKU> identity and link compatibility in src/features/catalog/data/warehouse-products.ts and src/features/catalog/data/product-lookup.ts as needed. Verify original and source routes resolve the same SKU.
+- [x] Update docs/warehouse/sku-category-mapping.csv and docs/warehouse/sku-category-mapping.md to match the seven reviewed associations. Cover category membership, live price and photo precedence, SKU and source URLs in tests/catalog/warehouse-products.test.ts and tests/e2e/warehouse-catalog.spec.ts. Run content validation, targeted tests, typecheck and responsive browser checks.
+- [x] Record verified outcomes in spec.md and plan.md. Rollback is limited to the seven SKU links, imported editorial records, added media and their tests. Existing commercial data and quotation registration are independent.
+      The approved category projection also requires the source-category lookup in src/features/content/data/catalog-snapshot.ts and the updated inventory assertion in tests/catalog/management.test.ts. Import the actual source collection for roller trays into pages.json to retain its verified membership.
+
+Verified on localhost: 151 catalog tests and 11 Chrome cases passed, TypeScript and content validation passed. All 355 SKU/price records and 348 untouched whole records match. Both URL forms resolved for all seven SKUs and all seven photo hashes matched. Evidence: output/official-product-audit-20261111/verification.json.
+
+## Plan: Category filter in the quotation model picker
+
+- [x] Carry the existing Warehouse category in src/features/catalog/data/quotation.ts; use the shared category definitions in src/features/catalog/components/quotation-form.tsx and style the filter in quotation-form.module.css.
+- [x] Verify the six choices, category membership, combined search, duplicate exclusion and responsive behavior in tests/e2e/quotation.spec.ts. Record verification in spec.md and plan.md. Rollback affects only the picker and its category projection.
+      Use the source ID when resolving the editorial snapshot in src/app/(site)/products/[slug]/page.tsx so the preserved Warehouse URL renders the imported rich description.
+
+Verified all menu choices and their Warehouse SKU membership, combined search and selected-model exclusion in Chrome. Browser checks passed at 320, 390, 834 and 1440 px. Four quotation unit tests, TypeScript and scoped ESLint passed.
+
+## Plan: Fix overlapping quantity and price in quotation rows
+
+- [x] Adjust the displayed quantity caption and local field sizing in src/features/catalog/components/quotation-form.tsx and src/features/catalog/components/quotation-form.module.css.
+- [x] Extend tests/e2e/quotation.spec.ts with the reported product and verify the quantity, price and subtotal layout across mobile, tablet and desktop. Record the results. Rollback is local to the form and its test.
+      Update the directly affected local accessory total in tests/catalog/accessory-subcategories.test.ts from 39 to 46. Retain the source title and Warehouse-confirmed feed side in the roller descriptions because the generic source body uses the same side wording for both orientations.
+
+Verified TIS300 at 320, 768 and 1440 px: plain quantity label, field and unit-price boxes separated, quantity two correctly doubles subtotal. Desktop PDF download, TypeScript and scoped ESLint passed.
+
+## Plan: Hide the unspecified PEAK unit across the website
+
+- [x] Normalize the unit in src/features/catalog/data/warehouse-products.ts, support absent display units in src/features/catalog/data/quotation.ts and simplify src/features/catalog/components/quotation-form.tsx. Hide the empty unit row in src/app/warehouse-products-test/page.tsx.
+- [x] Verify site pages, public API, quotation selection and PDF download. Record results in spec.md and plan.md. Changes are limited to the public projection and its consumers.
+
+Verified the public API, Warehouse listing, product directory, TIS300 detail and quotation pages. 190 missing units omitted, 355 priced records retained. Three Chrome viewport checks including PDF export, 15 catalog tests, TypeScript and scoped ESLint passed.
+
+## Plan: Fix URL data outside Suspense on POS subgroup navigation
+
+- [x] Update src/app/(site)/products/category/pos/[group]/page.tsx to split the static boundary from the asynchronous lookup.
+- [x] Check all valid subgroups, category navigation, an unknown group and the route's initial response. Record results in spec.md and plan.md. Rollback affects this page only.
+
+Seven Chrome tests passed for direct visits, reloads and navigation from the category. All three subgroup responses contain the loading fallback and retain their titles and content. Invalid group triggers the streamed Next.js not-found page. TypeScript and scoped ESLint passed.
+
+## Plan: Fix URL data outside Suspense on remaining product subgroups
+
+- [x] Update src/app/(site)/products/category/scales/[group]/page.tsx, src/app/(site)/products/category/indicators/[group]/page.tsx, src/app/(site)/products/category/platforms/[group]/page.tsx and src/app/(site)/products/category/accessories/[group]/page.tsx to render an immediate boundary around the asynchronous content.
+- [x] Verify the public subgroup routes, loading response, missing groups, and mobile/desktop menu navigation. Record results in spec.md and plan.md. Each route change can be reverted independently.
+      The mobile and desktop navigation regression used all API products instead of storefront-visible products. Update its expected inputs in tests/e2e/catalog-subcategory-navigation.spec.ts to reflect the existing storefront photo and category rules, retaining its assertions for all 23 links.
+
+Verified all 23 subgroup pages return their expected title and listing, all 22 dynamic routes render the loading fallback, and all four edited families handle unknown groups. Chrome followed every menu link and checked the result on mobile and desktop (46 navigations). TypeScript and scoped ESLint passed.
+
+## Plan: Audit storefront product reads for instant-navigation insights
+
+- [x] Add page-local Suspense around the existing catalog consumers in src/app/(site)/page.tsx, src/app/(site)/products/page.tsx and src/app/(site)/products/category/scales/industrial/page.tsx. Keep the shared layout, repository/cache policy, product lookup and redirects intact.
+- [x] Probe all categories/subgroups and representative URLs in each other consuming route family, including shared overlays. Check the dev validation messages, actual navigation and Warehouse data; extend the plan only if another uncovered reader is found. Verify TypeScript and scoped lint. Rollback is local to the affected pages.
+      Additional finding from Chrome DevTools: the buying-guide template shares the site catalog overlay and also emits the exact URL insight from its own params read. Update src/app/(site)/guides/[slug]/page.tsx and check all five guide slugs and the existing streamed not-found behavior.
+
+Chrome checked 41 distinct routes with the development HMR channel connected, including all category and subgroup URLs and all five buying guides. No validation warning frames, visible Insights or page errors in the final probes. Home-to-directory and back displayed 110 Warehouse cards. Live catalog SKU/price parity, search/comparison, industrial detail navigation, typecheck and lint passed. The separate homepage spotlight regression expects acs30-jc21, absent as a catalog ID (current product is warehouse-G106094); that pre-existing destination is outside this Suspense change. A transient JSON parse error during the first catalog test did not reproduce on isolated rerun.
+
+## Plan: Show Warehouse listings awaiting a product photo
+
+- [x] Confirm current count, owner go-ahead, existing storefront projection, consumers and placeholder.
+- [x] Remove only the photo membership filter in src/features/catalog/server/product-repository.ts. Keep the named storefront entry point for existing callers.
+- [x] Update the storefront contract in docs/warehouse/direct-postgres.md and replace the superseded photo-hidden assertions in tests/e2e/warehouse-catalog.spec.ts. Compare all directory and quotation SKUs to Warehouse, test missing-photo cards, details, search and category membership at narrow and desktop widths.
+- [x] Run typecheck, relevant browser checks and document results in spec.md and plan.md. Rollback is the previous storefront photo filter and its expectations.
+
+Verified on localhost: 355 distinct directory SKUs match the Warehouse catalog, including 245 actual cards using the existing photo placeholder. Five targeted Chrome cases passed, including 390px and 1440px category/detail navigation, search, comparison and quotation choices. Catalog tests passed 151/151, TypeScript and scoped ESLint passed. Evidence in output/storefront-photo-placeholder/verified.log.
+
+## Plan: Audit all 355 Warehouse SKU categories
+
+- [x] Read all current storefront records, match by exact SKU to Warehouse PostgreSQL master data, inspect available verified facts, compare existing taxonomy and local official product details. Record the owner's authorization for clear assignments only.
+- [x] Update src/features/catalog/data/warehouse-product-mapping.json and docs/warehouse/sku-category-mapping.csv with supported decisions and evidence. In src/features/catalog/data/warehouse-products.ts prevent a category-only review from granting model or editorial identity. Add a targeted regression in tests/catalog/warehouse-products.test.ts.
+- [x] Deliver docs/warehouse/category-audit-355.csv and docs/warehouse/category-review-queue.csv with Thai category labels, before and after membership, photo cohort, evidence, and specific review questions. Summarize current counts in docs/warehouse/sku-category-mapping.md.
+- [x] Validate SKU sets, before/after product payload, group membership, unresolved and photo cohorts, typecheck, catalog tests and representative browser navigation. Record verification here and in spec.md. Rollback is confined to the changed SKU mapping rows, identity guard and associated reports and tests.
+
+Completed and verified on localhost. Exactly 65 category records changed, including 57 from the 245 awaiting photos. The audit contains all 355 products, with 215 confirmed and 140 open questions (125 without photos). Eight partial corrections still need an answer. Verified the full catalog against the actual rendered directory, all 23 subgroup pages including pagination and empty groups, and every SKU/ID/URL, model, unit, price and photo against the before snapshot. All 152 catalog tests, TypeScript, scoped ESLint and CSV consistency checks passed. The results and open questions are in docs/warehouse/category-audit-355.csv and docs/warehouse/category-review-queue.csv.
+
+## Plan: Show zero-priced Warehouse products
+
+Owner authorized displaying zero-priced products with inquiry pricing on 2026-11-11.
+
+- [x] src/features/services/warehouse-postgres.ts — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/types.ts — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/data/client-products.ts — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/catalog-product-card.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/product-card.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/catalog-overlays.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/product-storefront.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/products-index-content.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/catalog/components/products-overview.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/app/(site)/products/[slug]/page.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/features/content/components/weighing-builder.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] src/app/warehouse-products-test/page.tsx — update eligibility, price display/projection or regression as applicable.
+- [x] tests/catalog/warehouse-postgres.test.ts — update eligibility, price display/projection or regression as applicable.
+- [x] Verify catalog tests, types, scoped formatting/lint and browser search/detail at mobile/desktop. Update spec.md / plan.md with results.
+
+Verification passed on 2026-11-11. Catalog unit suite 152/152, TypeScript, scoped ESLint and Prettier. Actual API returns 484 public SKUs including129 inquiry-price products. Browser checked inquiry text for all129 on the products directory. FCS-150-AW31 / G106445 detail and name/SKU search pass at1440px and390px. Paid product detail remains numeric and pricedProducts excludes the zero-price SKU while retaining G106537. No production deployment performed.
+
+## Plan: Warehouse-only product cards
+
+- [x] src/features/services/warehouse-postgres.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/server/product-repository.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/types.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/warehouse-products.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/warehouse-card-data.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/client-products.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/data/catalog-decision-facts.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/server/product-categories.ts — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/components/catalog-product-card.tsx — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/components/product-storefront.tsx — Warehouse card contract, projection, display or regression.
+- [x] src/features/catalog/components/product-category-mock.tsx — Warehouse card contract, projection, display or regression.
+- [x] tests/catalog/warehouse-card-data.test.ts — Warehouse card contract, projection, display or regression.
+- [x] Verify real cards at390/1440px, source field equality, missing values and existing pricing. Update results in spec/plan. Changes are reversible by restoring card projection and its Warehouse fact enrichment.
+
+- [x] tests/catalog/local-site-content.test.ts — extend isolated Warehouse stub for the new read-only card fact query.
+
+Verified:153/153 catalog tests, TypeScript, scoped ESLint/Prettier passed. Live484-product card data matches Warehouse verified facts.97 source photos,69 capacities and38 connection values. Directory/search with missing Warehouse photos and subgroup card facts passed at390px/1440px. Local source content remains available to detail/editorial callers. No deployment.
+
+## Plan: Warehouse-only product details
+
+- [x] src/features/services/warehouse-postgres.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/types.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/data/warehouse-card-data.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/data/warehouse-detail-data.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/server/product-repository.ts — authoritative detail data, rendering or regression.
+- [x] src/features/catalog/data/product-presentation.ts — authoritative detail data, rendering or regression.
+- [x] src/app/(site)/products/[slug]/page.tsx — authoritative detail data, rendering or regression.
+- [x] tests/catalog/warehouse-detail-data.test.ts — authoritative detail data, rendering or regression.
+- [x] tests/catalog/warehouse-image-priority.test.ts — authoritative detail data, rendering or regression.
+- [x] Verify real Warehouse field values/blank states, paid/inquiry prices, image sources, dialogs and metadata on mobile/desktop; catalog tests/typecheck/lint/format; record results.
+
+Verified on2026-11-11.155/155 catalog tests, TypeScript, scoped ESLint and Prettier passed. Browser checked Warehouse-only detail gallery, headings/metadata, all spec rows, dialog interaction, no fallback videos/3D and paid/inquiry prices at390px and1440px. G107572 has no Warehouse photo/description/specs and shows no legacy replacements; G106193 displays its27 verified attributes; G106445 displays17 attributes and inquiry pricing. No page errors observed.
+
+## Plan: Sitewide Warehouse-only product content
+
+- [x] src/features/services/warehouse-postgres.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/types.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/data/warehouse-products.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/data/warehouse-card-data.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/data/warehouse-site-data.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/server/product-repository.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/server/product-topics.ts — authoritative Warehouse data or render integration.
+- [x] src/features/home/components/product-spotlight.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/home/components/category-feature.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/home/data/hero-slides.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/products-index-content.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/products-index-carousel.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/data/weighing-options.ts — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/weighing-builder.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/indicator-platform-compatibility-page.tsx — authoritative Warehouse data or render integration.
+- [x] src/app/(site)/service/quotation/page.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/server/content-repository.ts — authoritative Warehouse data or render integration.
+- [x] src/features/content/data/buying-guides.ts — authoritative Warehouse data or render integration.
+- [x] src/features/content/data/warehouse-content.ts — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/scales-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/indicators-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/platforms-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/pos-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/catalog/components/accessories-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/app/(site)/products/page.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/home/components/source-showcase.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/solutions-overview.tsx — authoritative Warehouse data or render integration.
+- [x] src/features/content/components/solutions-page.tsx — authoritative Warehouse data or render integration.
+- [x] src/app/(site)/[...path]/page.tsx — authoritative Warehouse data or render integration.
+- [x] tests/catalog/warehouse-site-data.test.ts — authoritative Warehouse data or render integration.
+- [x] Adapt only superseded regression expectations; verify source data, responsive routes, zero prices, selection and quotation. Record outcomes.
+
+- [x] src/features/catalog/data/catalog-supplements.ts — stop legacy family inference for unclassified Warehouse SKUs.
+
+- [x] src/features/content/types.ts — mark documents with cleared product content for layout-preserving rendering.
+- [x] tests/catalog/client-payload.test.ts — replace superseded legacy-photo/kit assumptions with current Warehouse contract.
+- [x] tests/catalog/local-site-content.test.ts — replace superseded legacy-photo/kit assumptions with current Warehouse contract.
+- [x] tests/catalog/warehouse-products.test.ts — replace superseded legacy-photo/kit assumptions with current Warehouse contract.
+- [x] src/features/catalog/data/client-products.ts — expose Warehouse grouping to interior listings.
+- [x] src/features/content/components/video-gallery.tsx — restored original implementation after the homepage exception removed the need for empty video slots; no final application change.
+
+- [x] src/features/home/server/home-products.ts and src/app/(site)/page.tsx — scoped homepage source exception to restore prior presentation.
+
+- [x] tests/catalog/warehouse-postgres.test.ts — regress one bounded retry for transient disconnection observed during production generation; data/schema failures still surface.
+
+### Homepage correction and final regression scope
+
+The owner explicitly requested preserving Hero/homepage. Restore its settings, campaign media, story copy and actual videos, with a homepage-only reader. Keep shared layout, Navbar and styles unchanged. Verify at390/1440px that the Hero video and description match the existing homepage data and that the8 distinct stories and12 distinct video links remain present. Empty interior guide paragraphs use positional keys to avoid duplicate-key warnings after legacy prose is cleared. Reversibility remains limited to the listed source projections/renderers; no Warehouse writes or data deletion.
+
+### Verification Results
+
+Verified on2026-11-11:157/157 catalog regressions, TypeScript, scoped ESLint, Prettier and diff checks passed. Final Node24 production build generated795/795 pages with2 workers. Live public API contains484 eligible Warehouse products and no legacy product photo/description/media fallback. Development browser checked homepage and11 interior route families at390/1440px, including software/solutions/guides/configurator, inquiry pricing and search. Inspected homepage screenshots confirm the original Hero video/copy,8 distinct stories and12 distinct video links. Production browser checked homepage plus all5 category overviews at both widths with no console or page errors. Actual quotation selection G106537 at quantity2 yielded net13,065.42,VAT7%914.58,total13,980.00 and an A4 PDF download. Tests mocked document-number issuance; no registry/source data writes or deployment. Confirmed Warehouse builder pairings remain empty until verified source relationships exist. Homepage is the sole approved editorial presentation exception.
+
+Final Next.js feedback review: no framework defect retained; the observed transient database reads, avoidable content processing and duplicate empty React keys were application issues resolved and verified. No feedback submission.
+
+## Plan: Constrain product carousel descriptions
+
+- [x] Confirm the owner's direct bug-fix authorization, inspect existing CSS/mobile clamp and record the spec.
+- [x] `src/features/catalog/components/products-index-carousel.module.css` — apply the existing line-clamp treatment to desktop/tablet at3lines; retain mobile2lines and current typography. No source-text truncation.
+- [x] Verify actual TSS-150-SW31S before/after; check all36 slide descriptions at390/834/1440/1917px, detail opening/full text, navigation and responsive screenshots.
+- [x] Update `spec.md`, `plan.md`, `MEMORY.md` with results and the source-content length lesson.
+
+Impact/Rollback: local carousel summary rendering only, reversible by removing the scoped clamp. Full descriptions, product values and homepage/Hero are unchanged.
+
+### Verification Results
+
+Verified: before the fix,TSS-150-SW31S rendered972 source characters at313.47px height with no desktop clamp. After the scoped CSS change, all36 carousel models passed height/line-clamp checks at390/834/1440/1917px, including a2251-character source summary. Mobile retains2lines; other tested widths show at most3. Capacity/readability stay below the summary; full source text remains intact and unclamped in the existing detail dialog. Previous/next navigation completed a36-model loop at each width, Escape closed details, document width stayed within viewport, and no browser console/page errors occurred. Responsive screenshots inspected. Scoped Prettier and diff checks passed. No source data, Hero/homepage or global files changed. Final Next feedback review found no framework issue; local CSS behavior only.
+
+## Plan: Commit Warehouse migration and carousel overflow separately
+
+Owner authorized separate commits and push to safe. Stage Warehouse source/projection/rendering changes and the required local-site/image pipeline dependencies. Use partial staging for mixed quotation, builder and shared documentation files so unrelated PDF/sidebar/motion work stays local. Stage the carousel summary CSS and its task notes in a second commit. Verify the actual staged tree in an isolated temporary export before pushing; preserve unrelated working files. No production release.
+
+- [x] Review/stage Warehouse files and necessary dependencies, excluding unrelated edits.
+- [x] Validate the staged tree, then commit Warehouse work.
+- [x] Commit carousel overflow CSS and only its related notes separately.
+- [x] Push safe and confirm local/remote commit IDs match; report remaining unrelated work.
+
+### Warehouse commit verification (2026-11-11)
+
+The owner authorized separating Warehouse and carousel commits and pushing safe. The Warehouse commit includes the PostgreSQL/image pipeline and local-site dependencies, with partial quotation and builder staging to leave the independent PDF/numbering/sidebar work local. Tested the actual staged tree in an isolated export:154/154 catalog tests,27/27 UAT, TypeScript and scoped formatting/lint passed. Standalone build generated793/793 pages with Node24 and Webpack. Turbopack's hermetic root rejected the external dependency junction in this temporary export; no application config change was staged. Production smoke verified484 Warehouse products, source photo/description equality, original Hero video, carousel interaction and an actual priced SKU at quantity2 with VAT7%, native print and PDF rendering. Unrelated working files and environment secrets were preserved.
+
+Commit delivery verified: Warehouse2540abf and Carousel80ea89a were pushed to origin/safe. Remote safe equals local80ea89a2ab9ac8f99d2194c1ef2f764e145e48b1. Independent work remains unstaged; only spec/plan delivery notes changed in working files during commit orchestration. QA3068 stopped and the existing development server retained. No production release.
+
+## Plan: Commit remaining work with Warehouse-only documentation
+
+Owner approved all remaining changes except six customer-map deletions on2026-11-12. File scope is the current remaining non-map paths listed below; browser-test adjustments may only replace stale legacy data assumptions with the existing Warehouse-only contract.
+
+- `.env.example`
+- `.gitignore`
+- `MEMORY.md`
+- `README.md`
+- `bun.lock`
+- `docs/vercel.md`
+- `package-lock.json`
+- `package.json`
+- `plan.md`
+- `prisma/schema.prisma`
+- `spec.md`
+- `src/app/(site)/guides/[slug]/page.tsx`
+- `src/app/(site)/products/category/[category]/page.tsx`
+- `src/app/(site)/products/category/accessories/[group]/page.tsx`
+- `src/app/(site)/products/category/indicators/[group]/page.tsx`
+- `src/app/(site)/products/category/platforms/[group]/page.tsx`
+- `src/app/(site)/products/category/pos/[group]/page.tsx`
+- `src/app/(site)/products/category/scales/[group]/page.tsx`
+- `src/app/(site)/products/category/scales/industrial/page.tsx`
+- `src/components/ui/use-stagger-bounce.ts`
+- `src/features/catalog/components/quotation-form.module.css`
+- `src/features/catalog/components/quotation-form.tsx`
+- `src/features/catalog/data/quotation.ts`
+- `src/features/content/components/weighing-builder.module.css`
+- `src/features/content/components/weighing-builder.tsx`
+- `src/features/content/data/import-report.json`
+- `src/features/content/data/pages.json`
+- `src/features/content/data/products.json`
+- `tests/catalog/accessory-subcategories.test.ts`
+- `tests/catalog/management.test.ts`
+- `tests/catalog/quotation.test.ts`
+- `tests/catalog/warehouse-products.test.ts`
+- `tests/e2e/catalog-subcategory-navigation.spec.ts`
+- `tests/e2e/category-intro-motion.spec.ts`
+- `tests/e2e/home-links.spec.ts`
+- `tests/e2e/home-motion-cleanup.spec.ts`
+- `tests/e2e/indicator-platform-compatibility.spec.ts`
+- `tests/e2e/products-index-carousel.spec.ts`
+- `tests/e2e/quotation.spec.ts`
+- `tests/e2e/sitewide-stagger-bounce.spec.ts`
+- `tests/e2e/solutions-intro-motion.spec.ts`
+- `tests/e2e/warehouse-catalog.spec.ts`
+- `tests/e2e/warehouse-snapshot.spec.ts`
+- `docs/warehouse/carousel-model-row-delivery.md`
+- `docs/warehouse/direct-postgres.md`
+- `prisma/migrations/20261111010000_quotation_issues/migration.sql`
+- `public/images/imported/219fb78c6fb389f80c0f.png`
+- `public/images/imported/38303ec55ea3bb7ffe78.png`
+- `public/images/imported/46ef37674777c4f3dee8.png`
+- `public/images/imported/53b33ca95ca919c7c771.png`
+- `public/images/imported/5f9fb0ba57870f1027e0.png`
+- `public/images/imported/8a5f813db042679a548b.png`
+- `public/images/imported/b157754b9e414aedf41d.png`
+- `public/images/quotation-template.png`
+- `scripts/quotation-template.mjs`
+- `src/app/api/quotations/issue/route.ts`
+- `src/features/catalog/data/quotation-issue.ts`
+- `src/features/catalog/data/quotation-pdf.ts`
+- `src/features/catalog/server/quotation-issues-local.mjs`
+- `src/features/catalog/server/quotation-issues.ts`
+- `tests/catalog/quotation-issuance.test.ts`
+- `tests/e2e/quotation-download.ts`
+- `tests/e2e/quotation-issue.spec.ts`
+- `tools/quotation-seller/README.md`
+- `tools/quotation-seller/build.mjs`
+- `tools/quotation-seller/index.html`
+- `tools/quotation-seller/seller.ts`
+- `tools/quotation-seller/verify.mjs`
+
+- [x] Reconcile README, Warehouse/Vercel guides and current spec/memory notes with Warehouse-only and homepage exception.
+- [x] Align affected browser expectations with current source data and confirmed compatibility.
+- [x] Validate complete candidate tree with map files retained:catalog/UAT/type/format, targeted responsive browser/PDF checks and build.
+- [x] Commit quotation/PDF, sidebar, motion, Suspense, reference assets, browser contracts and docs separately.
+- Final handoff: push safe after the documentation commit; record remote-tip equality and exactly6 held map deletions in the canonical commit-remaining-safe work state. This procedure does not require another file edit after publishing.
+
+Impact/Rollback: publication of existing work and documentation alignment only; revert group commits independently. No production release, source database mutation, or staging/restoration of held map deletions.
+
+Additional documentation path in approved scope: `AGENTS.md` — make the current Warehouse-only interior rule and homepage exception explicit.
+
+Additional verification path: `tests/uat/public-paths.test.mjs` — retained reference imports add one legacy collection path; update its exact inventory count while preserving collision and URL-conversion checks.
+
+### Remaining-work verification — 2026-11-12
+
+- Catalog regression157/157 passed under Node24. UAT coverage27unique tests passed after updating the retained archive's legacy-path inventory to112; the4 path checks were rerun successfully. Prisma schema validation, TypeScript, scoped ESLint/Prettier/diff checks and seller-tool build passed.
+- Responsive browser verification covered quotation picker/filter/deduplication/quantity/long PDFs, document-issue retry idempotency, source-driven sidebar/gating,23canonical submenu destinations at both widths, all five product families, current missing-photo states and mobile/desktop history. The focused motion/source integration run passed23/23, including opening-only behavior across5widths, static footer/index regions, reduced motion, original homepage exclusion, complete carousel source matching and direct-PG quotation/PDF.
+- Standalone complete-candidate build with the six map files retained generated795/795 pages under Node24/Webpack with1worker. The first2-worker attempt hit a transient Warehouse connection timeout after compilation/typecheck. No data fallback or application-config workaround was added; the isolated dependency junction requires Webpack because it is outside Turbopack's hermetic root.
+- Production smoke passed for original Hero video,484 Warehouse-only public Product records, exact source photo/description fields, mobile SKU selection,quantity2,VAT7% and numbered A4 PDF. Document issuance was mocked; no production registry migration or Warehouse write was performed.
+- The6 held customer-map deletions were not restored or staged. Their Git object IDs are unchanged in every implementation commit and match the candidate's retained files. Candidate runtime files match the committed runtime files. Final Next feedback review retained no framework defect; external database interruption and test-output directory collision were identified separately.
+
+Implementation groups:7da5530quotation/PDF; a6d3fd9sidebar;62755f8opening motion;010bf61Suspense;5d5b3dereference records;0c035a0browser contracts. The final documentation group records current Warehouse-only rules and the homepage exception. Final safe push and remote-tip equality are recorded in the canonical commit-remaining-safe work state after this documentation commit; no production release is part of this task.

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { defaultNavigation } from "../../src/features/cms/data/navigation";
-import { getPrimaryNavigationItems } from "../../src/features/cms/data/primary-navigation";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
+import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 

@@ -25,7 +25,18 @@ export function ProductsIndexContent({
       (product) =>
         product.id === item.id || (item.warehouseSku && product.warehouseSku === item.warehouseSku),
     );
-    return { ...item, href: current ? `/products/${current.slug}` : undefined };
+    return {
+      id: item.id,
+      categoryId: item.categoryId,
+      categoryLabel: item.categoryLabel,
+      model: current?.name ?? "",
+      subtitle: current?.subtitle ?? "",
+      capacity: current?.capacity ?? "",
+      readability: current?.readability ?? "",
+      connection: current?.connection ?? "",
+      image: current?.image ?? "",
+      href: current ? `/products/${current.slug}` : undefined,
+    };
   });
   return (
     <div className={styles.index} data-products-directory aria-labelledby="products-title">
@@ -59,6 +70,7 @@ export function ProductsIndexContent({
                   <Link href={`/products/${product.slug}`} className={styles.media}>
                     <ProductImage
                       src={product.image}
+                      fallbackSrc={product.fallbackImage}
                       alt={catalogCardName(product)}
                       fill
                       sizes="(max-width: 600px) 80vw, 400px"
@@ -68,7 +80,7 @@ export function ProductsIndexContent({
                     <Link href={`/products/${product.slug}`}>
                       <h3>{catalogCardName(product)}</h3>
                     </Link>
-                    {product.price != null && (
+                    {product.price != null ? (
                       <p>
                         {product.price.toLocaleString("th-TH", {
                           minimumFractionDigits: 2,
@@ -76,7 +88,9 @@ export function ProductsIndexContent({
                         })}{" "}
                         บาท (รวม VAT)
                       </p>
-                    )}
+                    ) : product.warehouseSku ? (
+                      <p>สอบถามราคา</p>
+                    ) : null}
                   </div>
                 </li>
               ))}

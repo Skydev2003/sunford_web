@@ -16,6 +16,7 @@ export type CarouselProduct = {
   readability: string;
   connection: string;
   image: string;
+  fallbackImage?: string;
   href?: string;
 };
 type CarouselProps = { products: CarouselProduct[]; categories: { id: string; label: string }[] };
@@ -83,6 +84,10 @@ type Transition =
   | { source: ReturnType<typeof paintedBox> }
   | { previous: number; direction: number; speed: number };
 const ease = "cubic-bezier(.2,.8,.2,1)";
+function fallbackPhoto(image: HTMLImageElement, product: CarouselProduct) {
+  if (product.fallbackImage && image.getAttribute("src") !== product.fallbackImage)
+    image.src = product.fallbackImage;
+}
 export function ProductsIndexCarousel(props: CarouselProps) {
   if (!props.products.length) return <p role="status">ยังไม่มีสินค้าที่พร้อมแสดงในขณะนี้</p>;
   return <CarouselScene key={props.products.map((product) => product.id).join("|")} {...props} />;
@@ -381,8 +386,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
 
   function open(next: number) {
     const image = images.current[next];
-    if (!image?.naturalWidth) return;
-    transition.current = { source: paintedBox(image) };
+    transition.current = image?.naturalWidth ? { source: paintedBox(image) } : null;
     lastSwitch.current = 0;
     engine.current?.select(next, true);
     setDetail(next);
@@ -476,8 +480,9 @@ function CarouselScene({ products, categories }: CarouselProps) {
               ref={(node) => {
                 images.current[i] = node;
               }}
-              src={p.image}
-              alt={p.model}
+              src={p.image || undefined}
+              onError={(event) => fallbackPhoto(event.currentTarget, p)}
+              alt={p.image ? p.model : ""}
               decoding="async"
               onLoad={(e) => {
                 const img = e.currentTarget;
@@ -563,7 +568,13 @@ function CarouselScene({ products, categories }: CarouselProps) {
               ‹　กลับไปเลือกสินค้า
             </button>
             <div className={styles.hero}>
-              <img key={product.id} ref={hero} src={product.image} alt={product.model} />
+              <img
+                key={product.id}
+                ref={hero}
+                src={product.image || undefined}
+                onError={(event) => fallbackPhoto(event.currentTarget, product)}
+                alt={product.image ? product.model : ""}
+              />
             </div>
             <article>
               <h2 id="carousel-detail-title">{product.model}</h2>
@@ -606,7 +617,11 @@ function CarouselScene({ products, categories }: CarouselProps) {
                     )
                   }
                 >
-                  <img src={p.image} alt="" />
+                  <img
+                    src={p.image || undefined}
+                    onError={(event) => fallbackPhoto(event.currentTarget, p)}
+                    alt=""
+                  />
                 </button>
               ))}
             </div>

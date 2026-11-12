@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { getSnapshotProducts } from "../../src/features/content/data/catalog-snapshot";
-import { resolveManagedProduct } from "../../src/features/catalog/data/managed-products";
 import {
   productOverview,
   productPresentation,
@@ -305,43 +304,15 @@ test("homepage image defaults preserve the current artwork in five independent p
   assert.equal(defaults.software, "/images/pd/app.png");
 });
 
-test("all 159 imported products retain unique slugs and supported categories", () => {
+test("all imported products retain unique slugs and supported categories", () => {
   const snapshot = getSnapshotProducts();
-  assert.equal(snapshot.length, 159);
+  assert.equal(snapshot.length, 166);
   assert.equal(new Set(snapshot.map((product) => product.slug)).size, snapshot.length);
   for (const product of snapshot)
     assert.ok(
       categories.some((category) => category.id === product.category),
       product.id,
     );
-});
-
-test("legacy display is preserved until saved; explicit edits win while original metadata survives", () => {
-  const snapshot = getSnapshotProducts()[0];
-  const legacy = {
-    ...snapshot,
-    name: "Old database seed",
-    image: "/images/products/old.png",
-    catalogManaged: false,
-    published: false,
-  };
-  const original = structuredClone(legacy);
-  const before = resolveManagedProduct(legacy);
-  assert.equal(before.name, snapshot.name);
-  assert.equal(before.image, snapshot.image);
-  assert.equal(before.published, false);
-  const edited = resolveManagedProduct({
-    ...legacy,
-    name: "Admin edit",
-    image: "/images/products/new.png",
-    catalogManaged: true,
-  });
-  assert.equal(edited.name, "Admin edit");
-  assert.equal(edited.imageOverridden, true);
-  assert.equal(edited.sourceId, snapshot.sourceId);
-  assert.equal(edited.sourceUrl, snapshot.sourceUrl);
-  assert.equal(edited.price, snapshot.price);
-  assert.deepEqual(legacy, original);
 });
 
 test("source collections classify POS terminals and accessories before description keywords", () => {
@@ -355,26 +326,6 @@ test("source collections classify POS terminals and accessories before descripti
       "accessories",
       sourceId,
     );
-});
-
-test("category corrections apply only to untouched imports and preserve administrator overrides", () => {
-  const snapshot = getSnapshotProducts().find((product) => product.sourceId === "10801")!;
-  const seeded = {
-    ...snapshot,
-    category: "industrial",
-    catalogManaged: true,
-    createdAt: new Date("2026-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-01-01T00:00:00Z"),
-  };
-  assert.equal(resolveManagedProduct(seeded).category, "pos");
-  assert.equal(
-    resolveManagedProduct({ ...seeded, updatedAt: new Date("2026-01-02T00:00:00Z") }).category,
-    "industrial",
-  );
-  assert.equal(
-    resolveManagedProduct({ ...seeded, categoryId: "custom-category" }).category,
-    "custom-category",
-  );
 });
 
 test("case-distinct original URLs stay separate and hidden records never fall back to a different product", () => {

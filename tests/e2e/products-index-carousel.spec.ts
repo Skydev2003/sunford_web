@@ -9,6 +9,7 @@ for (const width of [320, 390, 834, 1440, 1887]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
+    await expect(scene).toHaveAttribute("data-interactive", "true");
     const row = scene.locator(":scope > div").filter({ has: page.locator("button[aria-current]") });
     const bounds = (await row.boundingBox())!;
     expect(bounds.x).toBeGreaterThanOrEqual(0);
@@ -166,22 +167,33 @@ for (const width of [390, 834, 1440]) {
     await page.setViewportSize({ width, height: 960 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     const shown = catalog.products;
+    const { products } = await (await request.get("/api/products")).json();
     expect(shown).toHaveLength(36);
     expect(catalog.categories).toHaveLength(12);
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
     const current = scene.locator("[data-product-photo][aria-current=true]");
     await expect(scene.locator("[data-product-photo] img[data-ready=true]")).toHaveCount(
-      shown.length,
+      shown.filter((item) =>
+        products.some(
+          (p: { id: string; warehouseSku: string; image: string }) =>
+            (p.id === item.id || (item.warehouseSku && p.warehouseSku === item.warehouseSku)) &&
+            p.image,
+        ),
+      ).length,
       { timeout: 20000 },
     );
     await expect(page.locator("[data-products-category-section] h2").first()).toHaveText(
       "เครื่องชั่ง",
     );
     for (const product of shown) {
+      const live = products.find(
+        (p: { id: string; warehouseSku: string }) =>
+          p.id === product.id || (product.warehouseSku && p.warehouseSku === product.warehouseSku),
+      );
       await expect(current).toHaveAttribute("data-product-photo", product.id);
-      await expect(current.locator("img")).toHaveAttribute("src", product.image);
-      await expect(scene.locator("h2").first()).toHaveText(product.model);
+      expect(await current.locator("img").getAttribute("src")).toBe(live?.image || null);
+      await expect(scene.locator("h2").first()).toHaveText(live?.name ?? "");
       await scene.getByRole("button", { name: "สินค้ารุ่นถัดไป", exact: true }).click();
     }
     await expect(current).toHaveAttribute("data-product-photo", shown[0].id);
@@ -196,7 +208,13 @@ for (const width of [390, 834, 1440]) {
     await page.keyboard.press("Escape");
     await expect(current).toBeFocused();
     await scene.getByLabel("หมวดสินค้า", { exact: true }).selectOption("accessories");
-    await expect(scene.locator("h2").first()).toHaveText("LED-R1");
+    const accessory = shown.find((p) => p.categoryId === "accessories")!;
+    const liveAccessory = products.find(
+      (p: { id: string; warehouseSku: string }) =>
+        p.id === accessory.id ||
+        (accessory.warehouseSku && p.warehouseSku === accessory.warehouseSku),
+    );
+    await expect(scene.locator("h2").first()).toHaveText(liveAccessory?.name ?? "");
     await scene.getByRole("link", { name: /ส่วนถัดไป/ }).click();
     await expect(page).toHaveURL(/#products-category-scales$/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(

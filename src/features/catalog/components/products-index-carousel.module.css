@@ -61,6 +61,12 @@
   font-size: 14px;
   line-height: 1.6;
 }
+.copy p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .copy small,
 .progress small,
 .categories small {
@@ -316,10 +322,7 @@
     width: calc(100% - 64px);
   }
   .copy p {
-    display: -webkit-box;
     -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
     font-size: 12px;
   }
   .models {

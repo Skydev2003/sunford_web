@@ -1,19 +1,19 @@
-import { getSettings } from "@/features/cms/server/documents";
-import { storiesDefaults } from "@/features/cms/data/settings";
-import Link from "next/link";
 import Image from "next/image";
+import { storyCardContent } from "../data/story-cards";
+import { homepageYoutubeVideos } from "../data/youtube-video-links";
+import { getSettings } from "@/features/site/server/documents";
+import { storiesDefaults } from "@/features/site/data/settings";
+import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { getContentPages } from "@/features/content/server/content-repository";
+import { getHomeContentPages } from "@/features/content/server/content-repository";
 import { VideoGallery } from "@/features/content/components/video-gallery";
-import { storyCardContent } from "../data/story-cards";
 import storyStyles from "./stories-section.module.css";
 import { FocusDragScroll } from "@/components/ui/focus-drag-scroll";
-import { homepageYoutubeVideos } from "../data/youtube-video-links";
 
 export async function SunfordStories() {
   const copy = await getSettings("stories", storiesDefaults);
-  const articles = (await getContentPages())
+  const articles = (await getHomeContentPages())
     .filter((page) => page.kind === "article" && !page.path.startsWith("/business/"))
     .slice(0, 8);
   if (!articles.length) return null;

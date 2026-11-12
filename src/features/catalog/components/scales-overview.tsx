@@ -2,15 +2,14 @@ import Link from "next/link";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuides } from "@/features/content/data/buying-guides";
-import { getSettings } from "@/features/cms/server/documents";
+import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
-} from "@/features/cms/data/navigation";
-import { defaultSite } from "@/features/cms/data/settings";
+} from "@/features/site/data/navigation";
+import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
-import { defaultSpotlightImage, defaultSpotlightProductId } from "@/features/home/data/image-slots";
 import styles from "./products-overview.module.css";
 
 async function getCopyrightYear() {
@@ -34,14 +33,13 @@ export async function ScalesOverview() {
     id: section.id,
     title: section.title,
     introduction: section.paragraphs[0],
-    image:
-      images[index].id === defaultSpotlightProductId ? defaultSpotlightImage : images[index].image,
+    image: images[index]?.image ?? "",
     href: "/guides/scales",
     content: (
       <div className={styles.storyBlocks}>
         <section>
-          {section.paragraphs.slice(1).map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {section.paragraphs.slice(1).map((paragraph, paragraphIndex) => (
+            <p key={paragraphIndex}>{paragraph}</p>
           ))}
           {section.links.map((link) => (
             <Link key={link.href} href={localHref(link.href)}>

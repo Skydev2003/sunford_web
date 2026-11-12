@@ -10,9 +10,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CircleHelp } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
-import { getProduct, getProducts } from "@/features/catalog/server/product-repository";
-import { getSettings } from "@/features/cms/server/documents";
-import { defaultSite } from "@/features/cms/data/settings";
+import {
+  getProduct,
+  getProducts,
+  getStorefrontProducts,
+} from "@/features/catalog/server/product-repository";
+import { getSettings } from "@/features/site/server/documents";
+import { defaultSite } from "@/features/site/data/settings";
 import { CatalogProductCard } from "@/features/catalog/components/catalog-product-card";
 import { productCardData } from "@/features/catalog/data/client-products";
 import { catalogCardName } from "@/features/catalog/data/catalog-card-names";
@@ -48,22 +52,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const product = await getProduct((await params).slug);
   return {
-    title: product ? `${product.name} — ${product.subtitle}` : "ไม่พบสินค้า",
-    description: product?.description,
+    title: product ? [product.name, product.subtitle].filter(Boolean).join(" — ") : "ไม่พบสินค้า",
+    description: product?.description || undefined,
   };
 }
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const product = await getProduct((await params).slug);
   if (!product) notFound();
   const site = await getSettings("site", defaultSite);
-  const related = relatedProducts(product, await getProducts());
+  const related = relatedProducts(product, await getStorefrontProducts());
   const family = catalogProductGroup(product);
   const category = productCategoryDefinitions.find((item) => item.path === family);
   const guide = buyingGuides.find((item) => item.productHref === family);
-  const source = getSourceProduct(product.sourceId ?? product.slug);
+  const source = product.warehouseSku
+    ? undefined
+    : getSourceProduct(product.sourceId ?? product.slug);
   const detailsHtml = product.media?.detailsHtml ?? source?.detailsHtml;
-  const videos = getProductUsageVideos(product);
-  const snapshot = getSnapshotProducts().find((row) => row.id === product.id);
+  const videos = product.warehouseSku ? [] : getProductUsageVideos(product);
+  const snapshot = product.warehouseSku
+    ? undefined
+    : getSnapshotProducts().find(
+        (row) => row.id === product.id || (product.sourceId && row.sourceId === product.sourceId),
+      );
   const presentation = productPresentation(product, snapshot, source);
   const summary = productSummary(product, presentation, detailsHtml);
   const descriptionRows = presentation.descriptionHtml
@@ -73,11 +83,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const contentRows = mergeProductContentRows([
     ...(descriptionRows.length
       ? descriptionRows
-      : [{ label: "รายละเอียดสินค้า", value: product.description || "-" }]),
+      : product.description
+        ? [{ label: "รายละเอียดสินค้า", value: product.description }]
+        : []),
     ...presentation.specifications,
     ...technicalRows,
   ]);
-  const attributeRows = contentRows.filter((row) => row.label !== "รายละเอียดสินค้า");
+  const attributeRows = product.warehouseSku
+    ? contentRows
+    : contentRows.filter((row) => row.label !== "รายละเอียดสินค้า");
   const detailGroups = groupProductDetails(attributeRows);
   return (
     <main id="main-content" className={`product-detail container ${styles.page}`}>
@@ -128,6 +142,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   product.price,
                 )}
               </p>
+            ) : product.warehouseSku ? (
+              <p className="detail-price">สอบถามราคา</p>
             ) : null}
             <a
               href={site.line}
@@ -148,10 +164,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             key={`${product.id}:${product.image}`}
             images={presentation.images}
             primaryImage={product.image}
+            fallbackImage={product.fallbackImage}
             preferFirst={Boolean(product.media)}
             name={product.name}
             model={
-              product.id === "acs30-jc21" || product.sourceId === "10609"
+              !product.warehouseSku && (product.id === "acs30-jc21" || product.sourceId === "10609")
                 ? {
                     src: "/models/acs30-jc21.glb",
                     poster: "/images/products/acs30-jc21-cutout.png",
@@ -177,13 +194,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <h2 id="product-information-title">รายละเอียดสินค้า</h2>
         </div>
         {detailGroups.length > 0 && <ProductSpecificationDialogs groups={detailGroups} />}
-        <div id={videos.length ? "product-videos" : undefined} className={styles.videos}>
-          <ProductUsageVideos
-            videos={videos}
-            productName={product.name}
-            channelUrl={productVideoCatalog.channel.url}
-          />
-        </div>
+        {(!product.warehouseSku || videos.length > 0) && (
+          <div id={videos.length ? "product-videos" : undefined} className={styles.videos}>
+            <ProductUsageVideos
+              videos={videos}
+              productName={product.name}
+              channelUrl={productVideoCatalog.channel.url}
+            />
+          </div>
+        )}
       </section>
       {guide && (
         <aside className={styles.guide} aria-label="คู่มือเลือกสินค้าทั่วไป">

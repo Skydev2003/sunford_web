@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { ProductCategoryMock } from "@/features/catalog/components/product-category-mock";
@@ -24,7 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: definition.label };
 }
 
-export default async function ProductCategoryPage({ params }: Props) {
+export default function ProductCategoryPage({ params }: Props) {
+  return (
+    <Suspense fallback={<p role="status">กำลังโหลดหมวดสินค้า…</p>}>
+      <ProductCategoryContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ProductCategoryContent({ params }: Props) {
   const { category: categoryId } = await params;
   if (!productCategoryDefinitions.some(({ id }) => id === categoryId)) notFound();
   if (categoryId === "scales") return <ScalesOverview />;
