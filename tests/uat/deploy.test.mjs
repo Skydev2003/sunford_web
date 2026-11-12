@@ -5,8 +5,7 @@ import { fileURLToPath } from "node:url";
 import { deploymentEnvironment, runDeployment } from "../../scripts/lib/deploy.mjs";
 
 const valid = {
-  DATABASE_URL: "postgresql://user:password@pool.example.com:6543/postgres",
-  DIRECT_URL: "postgresql://user:password@pool.example.com:5432/postgres",
+  QUOTATION_DATABASE_URL: "postgresql://writer:password@warehouse.example.com:5432/warehouse_db",
 };
 
 test("local deployments infer the environment only from main or uat", () => {
@@ -61,7 +60,7 @@ test("deployment rejects mismatched environments and missing credentials before 
     () => deploymentEnvironment({ ...valid, APP_ENV: "uat" }, "main"),
     /Deploy the uat branch/,
   );
-  assert.throws(() => deploymentEnvironment({}, "main"), /Configure DATABASE_URL/);
+  assert.throws(() => deploymentEnvironment({}, "main"), /Configure QUOTATION_DATABASE_URL/);
 });
 
 test("deployment stops immediately after a failed registry migration or build", () => {
@@ -139,7 +138,7 @@ test("Vercel rejects wrong target settings before any database mutation", () => 
     { VERCEL_ENV: undefined },
     { APP_ENV: "uat" },
     { VERCEL_GIT_COMMIT_REF: "uat" },
-    { DIRECT_URL: undefined },
+    { QUOTATION_DATABASE_URL: undefined },
     { VERCEL_ENV: "preview", APP_ENV: "production" },
   ])
     assert.throws(() => deploymentEnvironment({ ...cloud, ...invalid }));

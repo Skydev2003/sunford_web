@@ -1,6 +1,6 @@
 # Deploy บน Vercel
 
-ใช้ Vercel สำหรับ Next.js อ่านสินค้า/ราคาจาก Warehouse PostgreSQL และรูปหลักจาก storage ของ Warehouse หน้าภายในไม่ใช้รูปหรือข้อมูลสินค้าเดิมเติมช่องว่าง ส่วนค่าตั้งเว็บ เนื้อหาทั่วไป และข้อยกเว้นหน้าแรก/Hero อยู่ในโปรเจกต์ ไม่มีการอ่าน CMS ไฟล์ `vercel.json` กำหนด npm, build pipeline และ Function Region เป็น Mumbai (`bom1`) ใกล้ฐานข้อมูลปัจจุบันใน `ap-south-1` หากเปลี่ยน region ของ Supabase ให้ปรับ region นี้ตาม
+ใช้ Vercel สำหรับ Next.js อ่านสินค้า/ราคาจาก Warehouse PostgreSQL และรูปหลักจาก storage ของ Warehouse หน้าภายในไม่ใช้รูปหรือข้อมูลสินค้าเดิมเติมช่องว่าง ส่วนค่าตั้งเว็บ เนื้อหาทั่วไป และข้อยกเว้นหน้าแรก/Hero อยู่ในโปรเจกต์ ไม่มีการอ่าน CMS ทะเบียนเลขของเว็บอยู่แยกใน Warehouse schema ecommerce ไฟล์ `vercel.json` ยังคง Function Region Mumbai (`bom1`) ตาม config เดิม ต้องตรวจการเชื่อมถึง Warehouse จาก region นี้ก่อน cutover
 
 ## ตั้งค่าครั้งแรก
 
@@ -15,15 +15,13 @@
 
 ## Environment Variables
 
-| Variable                  | Production                                                      | Preview                                    |
-| ------------------------- | --------------------------------------------------------------- | ------------------------------------------ |
-| `DATABASE_URL`            | ฐานทะเบียนเลขใบเสนอราคา แยกจาก Warehouse                        | transaction pooler ของ project ทดสอบ       |
-| `DIRECT_URL`              | session pooler/direct endpoint ของทะเบียนเอกสารสำหรับ migration | ไม่จำเป็นสำหรับ build                      |
-| `SUPABASE_URL`            | ตัวเลือกสำหรับรูปอ้างอิงหน้าแรกจาก Storage                      | ตัวเลือกสำหรับรูปอ้างอิงหน้าแรกในระบบทดสอบ |
-| `APP_ENV`                 | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `production`                        | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `uat`          |
-| `NEXT_TELEMETRY_DISABLED` | `1` (เลือกตั้งได้)                                              | `1` (เลือกตั้งได้)                         |
+| Variable                  | Production                                                                   | Preview                                                            |
+| ------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `QUOTATION_DATABASE_URL`  | direct/session connection ของทะเบียน ecommerce.quotation_issues ใน Warehouse | ทะเบียนทดสอบที่เตรียมด้วย setup เดียวกัน แยกจาก counter production |
+| `APP_ENV`                 | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `production`                                     | ไม่ต้องตั้ง; ถ้าตั้งให้เป็น `uat`                                  |
+| `NEXT_TELEMETRY_DISABLED` | `1` (เลือกตั้งได้)                                                           | `1` (เลือกตั้งได้)                                                 |
 
-คัดลอกเฉพาะ value จาก `.env` ไม่ใส่ชื่อ key ซ้ำหรือเครื่องหมายคำพูดครอบ แอปไม่ใช้ Supabase Auth หรือคีย์สำหรับอัปโหลดแล้ว หากมีรูปเดิมใน Storage ให้ตั้ง `SUPABASE_URL` ให้ตรงกับ project ของรูป การเปลี่ยน environment ต้อง redeploy เพราะ config รูปอ่าน URL ตอน build ด้วย
+คัดลอกเฉพาะ value จาก environment ที่ยืนยันแล้ว ไม่ใส่ชื่อ key ซ้ำหรือเครื่องหมายคำพูดครอบ ค่า Warehouse และทะเบียนเป็น server-only แอปไม่ใช้ Supabase Auth/Storage/ฐานเดิมสำหรับข้อมูล runtime แล้ว ลบค่า DATABASE_URL/DIRECT_URL/SUPABASE_* เก่าหลังตรวจ cutover และ redeploy ให้ครบทุก target ที่ใช้งาน
 
 `APP_ENV` ที่สคริปต์อนุมานมีผลกับ process ที่ build เท่านั้น health check จึงอ่าน `VERCEL_ENV` ที่ runtime ด้วย Production จะแสดง `production` และ Preview จะแสดง `uat`
 
@@ -34,9 +32,9 @@
 | Production | `main`                       | ตรวจ config → `db:deploy` → `build` |
 | Preview    | `uat`, feature branch และ PR | ตรวจ config → `build`               |
 
-Production ปฏิเสธ branch/environment ที่ไม่ตรงก่อนแตะฐานข้อมูล ขั้น `db:deploy` คงไว้สำหรับทะเบียนเลขใบเสนอราคาและประวัติ migration เดิม ไม่มี CMS seed การ rollback deployment ไม่ rollback migration ที่สำเร็จแล้ว
+Production ปฏิเสธ branch/environment ที่ไม่ตรงก่อนแตะฐานข้อมูล ขั้น `db:deploy` ใช้สคริปต์ setup เฉพาะ ecommerce.quotation_issues ที่ตรวจ schema/constraints/สิทธิ์ก่อนใช้ รันซ้ำได้โดยไม่รีเซ็ตเลข ประวัติ Prisma migration เดิมเก็บไว้แต่ไม่ถูก execute ไม่มี CMS seed การ rollback deployment ไม่ย้อนเลขที่ออกแล้ว
 
-Preview ไม่รัน migration อัตโนมัติ เตรียมทะเบียนเอกสารในฐานทดสอบก่อนใช้งานออกเลข ห้ามใช้ Warehouse เป็นฐานเขียนเลขเอกสาร งานถอด CMS นี้ไม่รัน migration หรือ DROP ตารางจริง
+Preview ไม่รัน setup อัตโนมัติ เตรียมทะเบียนทดสอบก่อนใช้งานออกเลขและอย่าใช้ counter ร่วมกับ production การเขียน Warehouse ของเว็บไซต์จำกัดเฉพาะตารางทะเบียนที่อนุมัติ สินค้า/สต็อกยัง read-only และไม่ใช้เลขเอกสารภายใน Warehouse ร่วมกัน
 
 ทุก target ต้องตั้ง `WAREHOUSE_DATABASE_URL`, `WAREHOUSE_COMPANY_ID`, `WAREHOUSE_S3_ENDPOINT`, `WAREHOUSE_S3_BUCKET`, `WAREHOUSE_S3_REGION`, `WAREHOUSE_S3_KEY` และ `WAREHOUSE_S3_SECRET` ฝั่งเซิร์ฟเวอร์ ดู [คู่มือ Warehouse](warehouse/direct-postgres.md) เนื้อหา local มากับ build ไม่ต้องตั้งฐาน CMS
 
@@ -55,7 +53,7 @@ bun run deploy
 
 1. ตรวจว่าอยู่ branch `uat`, working tree สะอาด และไม่มี rebase/merge ค้าง
 2. `git fetch origin` แล้ว rebase บน `origin/uat` เพื่อรับงานทีม จากนั้น `git rebase origin/main`
-3. รัน lint, format check, schema validation, UAT/catalogue tests, build และ typecheck ด้วย Bun โดยใช้ catalogue fixtures และปิดค่า Supabase ใน environment ของ process ตรวจงาน จึงไม่อ่านหรือเขียนฐานข้อมูล production จากเครื่อง
+3. รัน lint, format check, schema validation, UAT/catalogue tests, build และ typecheck ด้วย Bun โดยปิดการเชื่อมต่อทะเบียนเขียนใน process ตรวจงาน สินค้ายังคงอ่าน Warehouse ผ่าน pool แบบ read-only ไม่มีการออกเลขจริงหรือแก้ข้อมูล production ระหว่างตรวจ
 4. ตรวจว่าระหว่าง build ไม่มีไฟล์หรือ commit เปลี่ยน และ fetch `main` อีกครั้ง ถ้า `main` มีงานใหม่ที่ยังไม่อยู่ใน revision ที่ตรวจจะหยุด ให้รันใหม่เพื่อ rebase และตรวจอีกครั้ง
 5. `git push origin HEAD:refs/heads/main` จาก `uat` เพื่อให้ Vercel Git integration deploy Production จาก commit ที่ผ่านการตรวจแล้ว
 
@@ -81,16 +79,16 @@ URL ภายในใช้ path ภาษาอังกฤษ ลิงก์
 
 1. รอ Vercel deployment พร้อมและทดสอบหน้าเว็บ/แคตตาล็อก/รูปเดิมก่อน
 2. ถ้ามี custom domain ให้เพิ่มใน Vercel → Settings → Domains แล้วเปลี่ยน DNS ตามค่าที่ Vercel แสดง ตรวจ HTTPS และ `/api/health` ที่ domain จริง
-3. ตรวจรูปเดิมจาก Supabase Storage ที่ domain ใหม่
+3. ตรวจภาพ local/cache และภาพจาก Warehouse Spaces ที่ domain ใหม่
 4. เมื่อยืนยันว่า traffic ใช้งาน Vercel แล้ว ให้ปิด auto-deploy และหยุด service เดิมบน Render ด้วยตนเอง เพื่อไม่ให้ deploy สองระบบเขียน migration ไปฐานข้อมูลพร้อมกัน URL `onrender.com` เป็นของ Render ต้องแจก URL Vercel ใหม่หากไม่ได้ใช้ custom domain
 
 การปรับ repo นี้ยังไม่ได้สร้าง Vercel project, เปลี่ยน DNS หรือหยุด service Render จริง
 
 ## รูปเดิมและการแก้ปัญหา
 
-- รูปเดิมใน `public/images` และ Supabase Storage ยังเปิดได้ ไม่มีหน้าหรือคำสั่งอัปโหลดรูปจากเว็บไซต์แล้ว
-- Migration ต่อไม่ได้: ตรวจ `DIRECT_URL` เป็น session pooler พอร์ต 5432 หรือ direct endpoint ไม่ใช้ transaction pooler 6543 และตรวจว่า Supabase ไม่พักอยู่
-- ออกเลขเอกสารไม่ได้: ตรวจ DATABASE_URL ของทะเบียนเอกสารและ migration quotation_issues ในฐานที่ถูกต้อง ไม่มีการนำ CMS กลับมาใช้
+- รูปอยู่ใน `public/images`/Warehouse cache และ Spaces ตาม metadata ปัจจุบัน ไม่มีหน้าหรือคำสั่งอัปโหลดรูปจากเว็บไซต์แล้ว
+- Setup ทะเบียนต่อไม่ได้: ตรวจ `QUOTATION_DATABASE_URL` เป็น direct/session connection สิทธิ์ของตารางและ schema ecommerce หากพบ schema ไม่ตรงให้หยุดตรวจ ห้ามแก้ด้วย migration ของ CMS เดิม
+- ออกเลขเอกสารไม่ได้: ตรวจ `QUOTATION_DATABASE_URL` และ ecommerce.quotation_issues ในฐานที่ถูกต้อง ไม่มีการ fallback ไป Supabase เดิม
 - Build แจ้ง branch/config: ตรวจ Production Branch, scope ของ `APP_ENV` และ System Environment Variables อย่าใส่ `APP_ENV=production` ครอบทุก target
 - `/api/health` ได้ 503: ตรวจ runtime `WAREHOUSE_DATABASE_URL` และการเชื่อมต่อ Warehouse; ไม่เผย credentials ใน log
 

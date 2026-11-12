@@ -71,15 +71,16 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
   assertReady();
   const revision = git(["rev-parse", "HEAD"]).stdout.trim();
 
-  log("Checking the release with catalogue fixtures...");
+  log("Checking the release with quotation writes disabled...");
   if (runChecks) {
     runChecks();
   } else {
-    // Local .env files may point at production. Validation must not read or write that database.
+    // Disable registry writes during validation. Product reads retain their read-only pool.
     const env = {
       ...process.env,
       DATABASE_URL: "",
       DIRECT_URL: "",
+      QUOTATION_DATABASE_URL: "",
       SUPABASE_URL: "",
       APP_ENV: "ci",
       NEXT_TELEMETRY_DISABLED: "1",
