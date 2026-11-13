@@ -45,27 +45,19 @@ for (const width of [320, 390, 768, 834, 1440]) {
   });
 }
 
-test("industrial search, featured and comparison remain inside the fixed group", async ({
-  page,
-}) => {
+test("industrial search and comparison remain inside the fixed group", async ({ page }) => {
   await page.goto(path);
   const main = page.locator("[data-industrial-scales-page]");
   const search = main.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
-  await main.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
-  await expect(main.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await main.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
+  await expect(
+    main.getByRole("button", { name: /แสดงแบบรายการ|แสดงแบบตาราง|สินค้าแนะนำ/ }),
+  ).toHaveCount(0);
   await search.fill("FEH5KS");
   await expect(main.locator("#mock-product-results article h3")).toHaveText(["FEH5KS"]);
   await search.fill("not-a-model");
   await expect(main.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
   await main.getByRole("button", { name: "ล้างตัวกรองทั้งหมด", exact: true }).click();
   await expect(main.locator("#mock-product-results article")).toHaveCount(21);
-  await main.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-  expect(await main.locator("#mock-product-results article").count()).toBeLessThan(21);
-  await main.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
   await main.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   const controls = main.locator("article[data-model-only] button");
   await controls.nth(0).click();

@@ -3,6 +3,7 @@ import { loadEnvConfig } from "@next/env";
 import selection from "../../src/features/catalog/data/warehouse-storefront-selection.json";
 import type { Product } from "../../src/features/catalog/types";
 import { isPublicWarehouseSku } from "../../src/features/catalog/data/warehouse-products";
+import { warehouseDisplayName } from "../../src/features/catalog/data/catalog-card-names";
 import {
   readWarehouseProducts,
   closeWarehousePool,
@@ -22,11 +23,11 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-test("public product API covers the full active/saleable RPC with unchanged facts and curated names", async ({
+test("public product API covers the full active/saleable RPC with unchanged facts and Warehouse names", async ({
   request,
 }) => {
-  const eligible = await getWarehousePool().query<{ sku: string }>(
-    `SELECT item.item_code::text AS sku
+  const eligible = await getWarehousePool().query<{ sku: string; standard_sale_price: string }>(
+    `SELECT item.item_code::text AS sku, item.standard_sale_price::text AS standard_sale_price
      FROM master_data.master_item AS item
      JOIN master_data.master_unit AS unit
        ON unit.master_unit_id = item.base_master_unit_id
@@ -51,10 +52,15 @@ test("public product API covers the full active/saleable RPC with unchanged fact
     expected.map((item) => item.sku).sort(),
   );
   expect(new Set(products.map((item) => item.warehouseSku)).size).toBe(products.length);
+  const standardPrices = new Map(
+    eligible.rows.map((row) => [row.sku, Number(row.standard_sale_price)]),
+  );
   for (const item of expected) {
     const product = products.find((product) => product.warehouseSku === item.sku)!;
     const choice = selected.get(item.sku);
-    expect(product.name).toBe(choice?.name ?? item.product_name);
+    expect(product.name).toBe(
+      warehouseDisplayName(item.sku, item.product_short_name ?? item.product_name),
+    );
     if (choice) {
       expect(product.warehouseCategoryId).toBe(choice.categoryId);
       expect(product.category).toBe(choice.categoryId);
@@ -62,8 +68,10 @@ test("public product API covers the full active/saleable RPC with unchanged fact
     expect(product.warehouseName).toBe(item.product_name);
     expect(product.description).toBe(item.description?.trim() ?? "");
     const net = Math.round(item.sale_price! * 100);
+    expect(item.sale_price).toBe(standardPrices.get(item.sku));
     expect(product.warehouseNetUnitSatang).toBe(net);
-    expect(product.price).toBe(net === 0 ? null : (net + Math.round(net * 0.07)) / 100);
+    expect(product.price).toBe(net === 0 ? null : item.sale_price);
+    if (product.media) expect(product.media.price).toBe(product.price);
     expect(Boolean(product.image)).toBe(Boolean(item.image_url));
     expect(product.fallbackImage).toBeUndefined();
   }
@@ -88,7 +96,7 @@ test("public product API covers the full active/saleable RPC with unchanged fact
 });
 
 for (const width of [390, 1440]) {
-  test(`all five Excel names, category cards and navbar searches work at ${width}px`, async ({
+  test(`Warehouse names, category cards and item_code searches work at ${width}px`, async ({
     page,
     request,
   }) => {
@@ -114,13 +122,15 @@ for (const width of [390, 1440]) {
         .first()
         .click();
       const finder = page.getByRole("dialog", { name: /^ดู.+ทั้งหมด$/ });
-      await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill(sku);
-      await expect(finder.locator("#mock-product-results article h3")).toHaveText([choice.name]);
+      for (const query of [sku, sku.toLowerCase()]) {
+        await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill(query);
+        await expect(finder.locator("#mock-product-results article h3")).toHaveText([item.name]);
+      }
       await page.screenshot({
         path: test.info().outputPath(`${choice.categoryId}-cards-${width}.png`),
       });
       await finder.locator(`a[href^="/products/${item.slug}"]`).first().click();
-      await expect(page.locator("#product-overview h1")).toHaveText(choice.name);
+      await expect(page.locator("#product-overview h1")).toHaveText(item.name);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
@@ -138,11 +148,11 @@ for (const width of [390, 1440]) {
       }
       await page.getByRole("button", { name: /^ค้นหาสินค้า(?:และข้อมูล)?$/ }).click();
       const search = page.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" });
-      for (const query of [sku, choice.name, item.warehouseName!]) {
+      for (const query of [sku, sku.toLowerCase(), item.name, item.warehouseName!]) {
         await search.fill(query);
         await expect(
           page.locator(`.search-results a[href="/products/${item.slug}"] strong`),
-        ).toHaveText(choice.name);
+        ).toHaveText(item.name);
       }
       await page.keyboard.press("Escape");
       await page.screenshot({
@@ -154,19 +164,29 @@ for (const width of [390, 1440]) {
       products.find((item) => item.warehouseSku === "G105110") ??
       products.find((item) => item.warehouseSku && !selected.has(item.warehouseSku))!;
     expect(added).toBeTruthy();
-    expect(added.name).toBe(added.warehouseName);
+    const addedSource = source.items.find((item) => item.sku === added.warehouseSku)!;
+    expect(added.name).toBe(
+      warehouseDisplayName(
+        addedSource.sku,
+        addedSource.product_short_name ?? addedSource.product_name,
+      ),
+    );
     await page.goto(`/products/${added.slug}`, { waitUntil: "domcontentloaded" });
-    await expect(page.locator("#product-overview h1")).toHaveText(added.warehouseName!);
+    await expect(page.locator("#product-overview h1")).toHaveText(added.name);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
     await page.getByRole("button", { name: /^ค้นหาสินค้า(?:และข้อมูล)?$/ }).click();
     const addedSearch = page.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" });
-    for (const query of [added.warehouseSku!, added.warehouseName!]) {
+    for (const query of [
+      added.warehouseSku!,
+      added.warehouseSku!.toLowerCase(),
+      added.warehouseName!,
+    ]) {
       await addedSearch.fill(query);
       await expect(
         page.locator(`.search-results a[href="/products/${added.slug}"] strong`),
-      ).toHaveText(added.warehouseName!);
+      ).toHaveText(added.name);
     }
     await page.keyboard.press("Escape");
     await page.screenshot({ path: test.info().outputPath(`added-source-product-${width}.png`) });

@@ -6,6 +6,8 @@ import { platformSubcategoryDefinitions } from "../../src/features/catalog/data/
 import { deduplicateConsumableSizes } from "../../src/features/catalog/data/consumable-sizes";
 import { accessorySubcategoryDefinitions } from "../../src/features/catalog/data/accessory-subcategories";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
+import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
+import { productSubcategoryPages } from "../../src/features/catalog/data/product-subcategory-pages";
 
 const materialNames = platformSubcategoryDefinitions.map(({ label }) => label);
 const accessoryNames = accessorySubcategoryDefinitions.map(({ label }) => label);
@@ -82,9 +84,9 @@ for (const width of [320, 390, 768, 1440]) {
         true,
       );
     }
-    await region.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveCount(0);
     await expect(region.locator("article")).toHaveCount(7);
-    await region.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบตาราง", exact: true })).toHaveCount(0);
     await region.getByRole("button", { name: "ระบบ POS", exact: true }).click();
     await region.getByRole("button", { name: "อุปกรณ์เสริม", exact: true }).click();
     await expect(track.getByRole("button", { name: "ทั้งหมด", exact: true })).toHaveAttribute(
@@ -165,12 +167,12 @@ for (const width of [320, 390, 768, 1440]) {
     await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("เลเบล");
     await loadAll(region);
     expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
-    await region.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveCount(0);
     expect((await sizeLinks()).sort()).toEqual([...representatives].sort());
     await region.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
     expect(new Set(await sizeLinks()).size).toBe(7);
     await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
-    await region.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบตาราง", exact: true })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
@@ -235,9 +237,9 @@ for (const width of [320, 390, 768, 1440]) {
     await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("");
     await track.getByRole("button", { name: "ทั้งหมด", exact: true }).click();
     expect((await hrefs(region)).sort()).toEqual([...allLinks].sort());
-    await region.getByRole("button", { name: "แสดงแบบรายการ" }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveCount(0);
     await expect(region.locator("article")).toHaveCount(12);
-    await region.getByRole("button", { name: "แสดงแบบตาราง" }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบตาราง", exact: true })).toHaveCount(0);
     expect(await track.evaluate((element) => getComputedStyle(element).overflowX)).toBe("hidden");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
@@ -286,12 +288,12 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(mock.getByRole("heading")).toHaveText(materialNames[3]);
     await expect(mock.getByText("Mock", { exact: true })).toBeVisible();
     await expect(mock.locator("a, button, img")).toHaveCount(0);
-    await region.getByRole("button", { name: "แสดงแบบรายการ" }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveCount(0);
     await expect(mock).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    await region.getByRole("button", { name: "แสดงแบบตาราง" }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบตาราง", exact: true })).toHaveCount(0);
     await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("ABS");
     await expect(mock).toHaveCount(1);
     await region.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
@@ -639,16 +641,12 @@ test("parent changes reset children and search intersects with the selected demo
     "aria-pressed",
     "false",
   );
-  await region.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
   await region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("zzzz-no-product");
   await expect(region.getByRole("status")).toHaveText("0 รายการ");
   await expect(region.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
   await region.getByRole("button", { name: "ล้างตัวกรองทั้งหมด" }).click();
   await expect(region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })).toHaveValue("");
-  await expect(region.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "false",
-  );
+  await expect(region.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveCount(0);
   const { products } = (await (await request.get("/api/products")).json()) as {
     products: Product[];
   };
@@ -682,46 +680,103 @@ test("missing document models are explicit mocks with no product links or compar
   await expect(page.locator(".compare-bar strong")).toHaveText("0/3");
   await expect(page.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
-  await region.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-  await expect(region.locator("article")).toHaveCount(0);
-  await expect(region.getByRole("status")).toHaveText("0 รายการ");
+  await expect(mock).toHaveCount(1);
+  await expect(region.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveCount(0);
   await region.getByRole("button", { name: "ล้างตัวกรองทั้งหมด" }).click();
   await expect(region.getByRole("status")).toHaveText("146 รายการ");
   await expect(region.locator('article[data-mock-product="true"]')).toHaveCount(0);
 });
 
-test("default order, featured filtering and list view retain real product data without a sort control", async ({
-  page,
-}) => {
-  await page.goto("/products");
-  await page.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).first().click();
-  const region = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
-  await expect(region.getByRole("combobox", { name: "เรียงลำดับสินค้า" })).toHaveCount(0);
-  const recommended = await region.locator("article h3").allTextContents();
-  await region.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-  const featured = await region.locator("article h3").allTextContents();
-  expect(featured.length).toBeGreaterThan(0);
-  expect(featured.length).toBeLessThan(24);
-  expect(featured).toContain("WPS10KS");
-  await region.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-  await expect(region.locator("article h3")).toHaveText(recommended);
-  await region.getByRole("button", { name: "แสดงแบบรายการ" }).click();
-  await expect(region.getByRole("button", { name: "แสดงแบบรายการ" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  expect(
-    await region
-      .locator("#mock-product-results")
-      .evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length),
-  ).toBe(1);
-  await region.getByRole("button", { name: "แสดงแบบตาราง" }).click();
-  expect(
-    await region
-      .locator("#mock-product-results")
-      .evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length),
-  ).toBe(4);
-});
+async function expectGridOnly(region: Locator) {
+  await expect(
+    region.getByRole("button", { name: /^(สินค้าแนะนำ|แสดงแบบรายการ|แสดงแบบตาราง)$/ }),
+  ).toHaveCount(0);
+  await expect(region.getByRole("group", { name: "รูปแบบรายการสินค้า" })).toHaveCount(0);
+  await expect(region.locator("#mock-product-results")).toHaveCSS("display", "grid");
+  if (await region.locator("article").count()) {
+    await expect(region.locator("article").first()).toBeVisible();
+  } else {
+    await expect(region.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
+  }
+}
+
+for (const width of [390, 834, 1440]) {
+  test(`grid-only product lists retain search pagination and comparison at ${width}px`, async ({
+    page,
+  }) => {
+    test.setTimeout(180000);
+    page.setDefaultTimeout(15000);
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    for (const category of productCategoryDefinitions) {
+      await page.goto(`/products/category/${category.id}`);
+      const title = `ดู${category.label}ทั้งหมด`;
+      await page
+        .locator('[data-overview-section="lineup"]')
+        .getByRole("button", { name: title, exact: true })
+        .click();
+      const finder = page.getByRole("dialog", { name: title, exact: true });
+      const region = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+      await expectGridOnly(region);
+      if (category.id === "scales") {
+        const names = region.locator("#mock-product-results article h3");
+        const initial = await names.allTextContents();
+        const search = region.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
+        await search.fill(initial[0]);
+        await expect(names.first()).toHaveText(initial[0]);
+        await search.fill("no-product-for-grid-control-check");
+        await expect(
+          region.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" }),
+        ).toBeVisible();
+        await region.getByRole("button", { name: "ล้างตัวกรองทั้งหมด" }).click();
+        await expect(names).toHaveText(initial);
+        const before = await names.count();
+        await region.getByRole("button", { name: /^ดูเพิ่มเติม \(/ }).click();
+        expect(await names.count()).toBeGreaterThan(before);
+        await search.fill("no-product-for-grid-control-check");
+        await region.getByRole("button", { name: "ล้างตัวกรองทั้งหมด" }).click();
+        await expect(names).toHaveText(initial);
+        await region
+          .getByRole("group", { name: "เครื่องมือรายการสินค้า" })
+          .scrollIntoViewIfNeeded();
+        await page.screenshot({ path: test.info().outputPath(`grid-only-finder-${width}.png`) });
+        await region
+          .getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true })
+          .click();
+        await region
+          .getByRole("button", { name: /^เพิ่มเพื่อเปรียบเทียบ/ })
+          .first()
+          .click();
+        await expect(page.locator(".compare-bar strong")).toHaveText("1/3");
+        await region
+          .getByRole("button", { name: /^นำออกจากเปรียบเทียบ/ })
+          .first()
+          .click();
+        await expect(page.locator(".compare-bar strong")).toHaveText("0/3");
+      }
+      await finder.getByRole("button", { name: "ปิดแคตตาล็อกสินค้า" }).click();
+      if (category.id === "scales") {
+        await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
+      }
+      const child = productSubcategoryPages.find((item) => item.categoryId === category.id)!;
+      await page.goto(child.href);
+      const listing = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
+      await expectGridOnly(listing);
+      if (category.id === "scales") {
+        await listing
+          .getByRole("group", { name: "เครื่องมือรายการสินค้า" })
+          .scrollIntoViewIfNeeded();
+        await page.screenshot({ path: test.info().outputPath(`grid-only-listing-${width}.png`) });
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+    expect(errors).toEqual([]);
+  });
+}
 
 test("comparison remains global across demo groups and enforces three products", async ({
   page,
@@ -907,7 +962,7 @@ for (const viewport of [
     await page.screenshot({
       path: test.info().outputPath(`catalog-${viewport.width}-results.png`),
     });
-    await region.getByRole("button", { name: "แสดงแบบรายการ" }).click();
+    await expect(region.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

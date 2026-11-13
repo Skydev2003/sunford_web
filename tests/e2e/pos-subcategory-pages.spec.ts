@@ -78,17 +78,9 @@ for (const definition of posSubcategoryPages)
     await expect(main.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
     await main.getByRole("button", { name: "ล้างตัวกรองทั้งหมด", exact: true }).click();
     await expect(main.locator("#mock-product-results article h3")).toHaveText(models);
-    await main.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
-    await expect(main.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    await main.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
-    await main.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-    await expect(main.locator("#mock-product-results article h3")).toHaveText(
-      products.filter((product) => product.featured).map(catalogCardName),
-    );
-    await main.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
+    await expect(main.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveCount(0);
+    await expect(main.getByRole("group", { name: "รูปแบบรายการสินค้า" })).toHaveCount(0);
+    await expect(main.getByRole("button", { name: /แสดงแบบรายการ|แสดงแบบตาราง/ })).toHaveCount(0);
     if (products.length) {
       const detail = main.locator("article[data-model-only] a").first(),
         href = (await detail.getAttribute("href"))!;

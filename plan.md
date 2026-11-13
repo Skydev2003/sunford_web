@@ -1,3 +1,103 @@
+## Plan: Export three Warehouse tables to one Desktop HTML file (2026-11-13)
+
+### Files
+
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.html` — create the requested standalone data export.
+- `spec.md`, `plan.md` — record the approved scope and actual verification results only; no application source files change.
+
+### Steps
+
+- [ ] Confirm the Spec is Ready to Code and record the owner's approval for this scope.
+- [ ] In a read-only Warehouse transaction, select every current column and every row scoped to `WAREHOUSE_COMPANY_ID`, ordering `master_item` by item code/ID, `ai_products` by master item/ID, and `ai_product_facts` by product/attribute.
+- [ ] Generate one UTF-8 standalone HTML file with safely escaped values, a simple three-link sidebar, and one readable table section per requested table.
+- [ ] Re-read the generated file, verify its three sections and embedded row/column counts against fresh read-only database metadata/counts, and open it locally for a browser smoke check.
+- [ ] Record verification results and completion state in `spec.md` / `plan.md`.
+
+### Impact / Rollback
+
+- R2, easily reversible. The only deliverable outside project documentation is a new Desktop HTML file. Rollback deletes that exact file after confirming its path. The database remains read-only and application code is untouched.
+- The exported file contains internal product, price, stock-control, image-key, and AI fact metadata. It should be handled as an internal data file and not published publicly without review.
+
+### Verification Results
+
+- Pending approval and generation. Read-only discovery found 32 columns / 732 rows in `master_item`, 7 columns / 138 rows in `ai_products`, and 9 columns / 1,582 rows in `ai_product_facts` for the configured company at discovery time.
+
+## Plan: Align all displayed prices with standard_sale_price (2026-11-13)
+
+### Files / Approved Scope
+
+- [x] Trace RPC price source, catalogue VAT projection and quotation unit-price/totals flow.
+- [x] Owner confirmed and approved direct standard_sale_price display with unchanged separate quotation VAT; finalize necessary paths below under that all-price scope.
+- `src/features/catalog/data/warehouse-products.ts` — expose source price directly in shared catalogue/media price fields; retain net-satang and inquiry handling.
+- `src/features/catalog/components/products-index-content.tsx`, `src/app/warehouse-products-test/page.tsx` — change the two existing gross-price labels to “ก่อน VAT”. No additional price UI or layout changes.
+- `tests/catalog/warehouse-products.test.ts`, `tests/catalog/warehouse-storefront-selection.test.ts` — update explicit gross-price assertions and cover decimal/media/configurator price parity.
+- `tests/e2e/warehouse-catalog.spec.ts`, `tests/e2e/warehouse-storefront-selection.spec.ts` — update old gross-price assumptions; verify every public source/API price, responsive display/labels and separate unchanged quotation VAT.
+- `docs/warehouse/direct-postgres.md`, `spec.md`, `plan.md` — document the approved source-price display contract and actual results.
+- [x] Implement source-price projection and truthful labels, preserving quotation code.
+- [x] Run focused unit/browser checks: full public price parity,390/834/1440px display, quotation totals and PDF.
+- [x] Run TypeScript and scoped lint/format/diff checks; inspect screenshots and record results.
+
+### Impact / Verification
+
+- R2 shared data-contract change: all consumers of `price`/media price show standard_sale_price before VAT. Quotation reads the unchanged net field, calculating document VAT separately. Main risks are stale gross-price labels/assertions or applying VAT twice. Rollback restores only this task's price projection/label/assertion/documentation hunks. No database mutation, dependency/global CSS change or deployment.
+- Implemented direct source-price projection for catalogue/media/configurator and corrected the two existing VAT labels. Quotation source/totals/PDF code and RPC are unchanged.
+- Read-only direct table/RPC/API parity passes for486public SKUs:357positive prices,129inquiry values and0mismatches. Diagnostic page contains no “รวม VAT” label. G106094 now displays1859.81baht, matching the source.
+- Unit34/34 and Chrome6/6 pass. Browser coverage includes source-price card/detail display at390/834/1440px, full public-source price parity, quantity2quotation net/VAT/gross with PDF download, and accessory quotation totals. PDF issuance was intercepted by the existing test helper, so no real quotation number was issued.
+- Inspected six screenshots in `test-results/standard-sale-price/`. TypeScript, scoped ESLint/Prettier and `git diff --check` pass. Full unrelated suites/build not run; no qualifying Next.js feedback candidate, database/RPC write, commit, push or deployment.
+
+## Plan: Remove featured and view controls from product lists (2026-11-13)
+
+### Files
+
+- `src/features/catalog/components/product-category-mock.tsx` — remove featured/view buttons and their obsolete filter/state/handlers; keep default grid and existing ordering/comparison/search/reset.
+- `tests/e2e/product-category-mock.spec.ts`, `tests/e2e/product-category-pages.spec.ts`, `tests/e2e/scales-subcategory-pages.spec.ts`, `tests/e2e/industrial-scales-page.spec.ts`, `tests/e2e/indicator-subcategory-pages.spec.ts`, `tests/e2e/platform-subcategory-pages.spec.ts`, `tests/e2e/pos-subcategory-pages.spec.ts`, `tests/e2e/accessory-subcategory-pages.spec.ts` — update only removed-control expectations; retain remaining search/filter/pagination/comparison coverage and verify controls are absent.
+- `spec.md`, `plan.md` — approval and verification notes.
+
+### Steps
+
+- [x] Record explicit approval for the pictured-control removal across this component's list variants.
+- [x] Remove controls and obsolete local state without changing grid styles or ordering.
+- [x] Run affected browser scenarios, including finder and representative standalone category/subcategory lists at390/834/1440px; inspect screenshots and containment.
+- [x] Run TypeScript, scoped ESLint/Prettier and diff checks; record exact results.
+
+### Impact / Rollback
+
+- R2; this feature component is reused by product listings and finder dialogs. Main risks are stale test interactions, search/reset regression and accidental changes to default ordering. Restore only this task's component/test hunks to roll back; no shared layout/CSS files are in scope.
+
+### Verification Results
+
+- Removed only the approved component controls and obsolete state/filter handlers; retained grid styles, default ordering, search/reset/pagination/comparison. Eight approved regression files now assert the controls are absent.
+- Focused Chrome3/3 at390/834/1440px covers30surfaces: five category finder dialogs and five standalone listings at each width. Search/reset, pagination, initial-order preservation, comparison add/remove/cancel, grid/empty states, containment and zero page errors pass. All six finder/listing screenshots inspected under `test-results/grid-only-controls/`.
+- Test authoring initially tried a global comparison-cancel button while the native finder dialog made the background inert; the final test closes the dialog before canceling globally. Another assertion assumed every Warehouse subgroup was nonempty; final verification accepts and checks the existing truthful empty state. No application workaround was needed for either test assumption.
+- TypeScript, scoped ESLint/Prettier and diff checks pass. Full historical eight-file browser suite not run; current-data focused coverage verifies the changed component. No qualifying Next.js feedback candidate, shared CSS/API/data changes, commit, push or deployment.
+
+## Plan: Show only photographed products in the products carousel (2026-11-13)
+
+### Files
+
+- `src/features/catalog/components/products-index-content.tsx` — omit unresolved/image-empty curated products and categories with no selected product before passing carousel props; preserve lower category sections.
+- `src/features/catalog/data/products-index-carousel.json` — add exact verified SKUs for TIS-150-JE62ZR, CCS-150-JC62Z and LED-R1; replace LP53 slot with current photographed LP50 identity, clearing retired metadata for that slot.
+- `tests/e2e/products-index-carousel.spec.ts` — adapt existing selection/count/category checks to current photographed products; verify every image decodes and each selected name/link is truthful.
+- `spec.md`, `plan.md` — record approval and actual verification.
+
+### Steps
+
+- [x] Record approval for this exact scope before application edits.
+- [x] Update verified identities and filter missing images/products/empty categories.
+- [x] Run existing carousel Chrome suite at its responsive widths, including390/834/1440px; inspect screenshots and every-image decode evidence.
+- [x] Run TypeScript and scoped lint/format/diff checks; record results.
+
+### Impact / Rollback
+
+- R2, limited to this carousel's product selection and matching dropdown options. Current expected result:30products/10categories; no image is borrowed from another SKU. Restore only these selection and test hunks to roll back.
+
+### Verification Results
+
+- Approved selection implemented:30photographed current products/10categories,3per category. Missing-image products and empty categories are excluded only from the first carousel; lower category rails are unchanged.
+- Full Chrome carousel suite passes14/14 across320/390/834/1440/1887px. At390/834/1440px every one of30images decodes, every selected name/counter/detail href matches its live product, and wraparound/detail return/dropdown/gestures/overflow pass. Inspected accessory screenshots at all three widths.
+- Node24 TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No new Next.js feedback candidate, database write, shared style change, commit, push or deployment.
+- Screenshots: `test-results/carousel-with-images/products-index-carousel-ph-b0478--and-detail-return-at-390px-chromium/photographed-accessories-390.png`, `test-results/carousel-with-images/products-index-carousel-ph-20d04--and-detail-return-at-834px-chromium/photographed-accessories-834.png`, `test-results/carousel-with-images/products-index-carousel-ph-0bb14-and-detail-return-at-1440px-chromium/photographed-accessories-1440.png`.
+
 ## Plan: Shorten Excel item_name to concise product/model names (2026-11-12)
 
 - [x] Record exact requested example and item_name-only scope; preserve saved Desktop workbook in temporary backup.
@@ -5706,3 +5806,168 @@ No CSS, ProductsOverview category-root lineup, Warehouse/RPC/API, product type, 
 ### Verification Results
 
 - Pending corrected approval and implementation. Browser evidence matched the supplied sequence to `ProductsIndexContent` cards. The incorrect ProductsOverview JSX/test attempt was fully restored; no application change from this request remains.
+
+## Plan: Use item_short_name as the source for model-only display names (2026-11-13)
+
+### Files
+
+- `docs/warehouse/get-website-products.sql` — add nullable `product_short_name` from trimmed `item_short_name`, retain full `product_name=item_name`, and document the transaction-safe function replacement/ACL contract.
+- `src/features/services/warehouse-postgres.ts` — validate the new RPC field and pass it into the Warehouse product feed without changing price/image/fact/component parsing.
+- `src/features/catalog/data/catalog-card-names.ts` — add a safe display-name resolver around the existing model extractor: return the extracted model when found, otherwise return the complete chosen source text instead of the SKU sentinel.
+- `src/features/catalog/data/warehouse-products.ts` — choose short/full source values, apply the safe model-first resolver, retain full `warehouseName`, set `storefrontName`, and preserve model identity separately.
+- `src/features/catalog/data/warehouse-site-data.ts` — keep verified/extracted `warehouseModelCodes` when the visible name becomes a human-facing short name.
+- `src/features/catalog/data/warehouse-storefront-selection.ts` — stop overriding names from Excel metadata while retaining category overrides, full public membership and X/calibration exclusions.
+- `tests/catalog/warehouse-postgres.test.ts`, `tests/catalog/warehouse-products.test.ts`, `tests/catalog/warehouse-site-data.test.ts`, `tests/catalog/warehouse-storefront-selection.test.ts` — cover RPC validation, model extraction, full-source fallback instead of SKU, full source-name retention, stable model identity and category-only Excel metadata.
+- Proposed additional file, approval pending: `tests/catalog/local-site-content.test.ts` — replace its one obsolete SKU-sentinel assertion with the approved full-source fallback expectation. The application already behaves correctly; this file has not been edited because it was omitted from the approved file list.
+- `tests/e2e/warehouse-storefront-selection.spec.ts`, `tests/e2e/warehouse-catalog.spec.ts` — prove full-source/API name parity, both search names, unchanged SKU/price/category data and responsive short/fallback display.
+- Existing search implementation files are verification-first: `src/features/catalog/components/catalog-overlays.tsx`, `product-catalog.tsx`, `product-category-mock.tsx` and `quotation-form.tsx` already include `warehouseSku`/quotation `id`, both mapped from `item_code`. They are not planned for edits unless the approved browser regression proves a concrete gap; any required edit remains limited to that failing search predicate and must be recorded here before modification.
+- `docs/warehouse/direct-postgres.md` — replace the historical Excel-name runtime policy with Warehouse short/full name precedence and rollout notes.
+- `spec.md`, `plan.md` — record actual approval, implementation result and verification. `MEMORY.md` changes only if implementation reveals a repeatable failure pattern.
+
+No product component, CSS/global layout, selection JSON, media, price, quotation calculation, registry, migration history or source table is planned for modification. If a new application source path is actually required, update this plan and obtain approval before editing it.
+
+### Steps
+
+- [x] Confirm the Spec is `Ready to Code` and record explicit owner approval for the final RPC/application/test scope, including item-code search coverage.
+- [ ] Read the applicable installed Next.js 16 server/cache guidance; capture clean application/test/function baselines, installed function identity/owner/ACL/comment/dependencies and current public name/SKU/price/category snapshots.
+- [ ] Update the checked-in RPC definition, validate it in a rollback-only transaction, then install it transactionally only if preconditions match. Verify the extra field, full-name parity, security properties and zero source-row writes.
+- [ ] Thread `product_short_name` through the reader and catalogue projection. Apply the approved model-first/full-source-fallback rule exactly once, keep `warehouseName=item_name`, preserve model identity, and make Excel selection category-only.
+- [ ] Update focused tests and only the existing browser assertions whose visible text intentionally changes. Do not rewrite model/SKU identity expectations or unrelated regressions.
+- [ ] Prove exact and case-insensitive `item_code` search in Navbar, catalogue/finder/category and quotation surfaces. Change a search predicate only if this approved regression exposes a real gap.
+- [ ] Run focused catalogue tests, then the full catalogue suite, TypeScript, scoped ESLint/Prettier and `git diff --check`. Verify `/api/products` against a fresh read-only short/full-name query.
+- [ ] Run focused Chrome checks at 390px and 1440px for homepage product features, `/products`, category/finder, short-name detail, fallback-name detail, Navbar search, comparison and quotation selection/document wording. Inspect screenshots and overflow/page-error evidence.
+- [ ] Run the mandated Next.js feedback reporting pass, then update `spec.md`/`plan.md` with exact results and remaining limits. No commit, push or deployment without a separate request.
+
+### Impact / Rollback
+
+- R1 function-contract change: the two-argument shared RPC gains one return column. Transactional replacement is atomic, the old app ignores the added column, and no product data is changed. Blast radius includes every live product, image metadata and quotation reader calling the function; the values other than the new field must remain byte-for-value equivalent.
+- Visible blast radius: the current read-only simulation changes87of486public names.269rows display an extracted model and217preserve their chosen source text because no safe model is found. No row is allowed to fall back to an unrelated SKU label. Layout/CSS is intentionally unchanged unless browser evidence proves a concrete regression, which would require a revised plan.
+- Rollback restores application naming/selection/model-projection hunks first, then restores the privately captured prior function definition/comment/ACL in a transaction. Preserve unrelated working-tree changes and never drop source tables or edit Warehouse product rows.
+
+### Verification Results
+
+- Implemented the approved application/RPC paths and installed RPC v2 transactionally after a rollback-only rehearsal. Live verification returns516rows (190nonblank short names,326fallbacks); removing the new field/read time gives the exact pre-change row hash. Owner, STABLE/SECURITY INVOKER, fixed search path and owner-only EXECUTE remain intact; no source row changed.
+- Focused catalogue tests pass34/34; TypeScript passes. The full catalogue suite passes171/172: the only failure is the unedited `tests/catalog/local-site-content.test.ts` fixture expecting the old SKU-sentinel fallback (`G106308`) instead of the newly approved full-source value (`Warehouse source`). Adding that test file to the Plan awaits owner approval.
+- Chrome tests covering API/name parity, exact/lowercase item-code search in Navbar, finder/category and quotation, and responsive390/834/1440px views passed13/16 initially; the three unrelated dev-server warm-up timeouts for an image, homepage opening and mobile navigation all passed3/3 on immediate isolated rerun. No search predicate change was required.
+
+## Plan: Simplify carousel copy and match the reference dropdown (2026-11-13)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.tsx` — keep only the active name in the copy block, replace the native category select with an accessible custom dropdown matching the reference interaction, and remove the pictured link.
+- `src/features/catalog/components/products-index-carousel.module.css` — implement the reference trigger/panel/options/scrollbar/open-close layers and responsive states; remove obsolete subtitle/spec/select/`.skip` presentation rules only when unused by this component.
+- `tests/e2e/products-index-carousel.spec.ts` — replace native-select/link assertions with name-only copy, pointer/keyboard dropdown, animation-state, selection, absence and ordinary-scroll reachability checks at390px/1440px.
+- `spec.md`, `plan.md` — record approval and verification.
+
+### Steps
+
+- [x] Confirm the revised Spec is `Ready to Code` and record owner approval for this exact combined file scope.
+- [x] Capture current carousel geometry/interaction and the reference MP4 open/close states before editing.
+- [x] Implement name-only copy, the accessible reference dropdown and link removal without changing data or carousel/detail behaviour.
+- [x] Update and run the scoped responsive pointer/keyboard/reduced-motion browser regression; inspect open/closed screenshots against the reference pattern.
+- [x] Run scoped Prettier, ESLint, TypeScript and `git diff --check`; record results.
+
+### Impact / Rollback
+
+- R2 and limited to the first `/products` carousel. Visible copy becomes name-only, the category control changes from native select to a custom animated listbox, and the one skip link disappears; source product data and later sections remain unchanged.
+- Main risks are keyboard/focus regression, panel clipping and mobile overlap. Rollback restores the original native select/copy/link, component-local CSS and prior assertions without touching concurrent work.
+
+### Verification Results
+
+- Implemented only the three approved application/test files. The main copy retains the active real name and removes subtitle/spec lines; source data and the detail dialog are unchanged. The native select became a custom12-option Thai category listbox matching the reference's layered open/close timing, chevron, white panel, lavender state and scrollbar. The skip link/local CSS are gone.
+- Chrome passes14/14 at320/390/834/1440/1887px, with dedicated open/close, pointer, keyboard, outside-click, focus, category selection, reduced-motion, touch, detail-return, ordinary-scroll and overflow coverage. Inspected open/closed390px and1440px screenshots against the supplied pattern.
+- Node24 TypeScript, scoped ESLint, scoped Prettier and `git diff --check` pass. No global style, data, dependency, route, commit, push or deployment change. Final Next.js feedback review found no qualifying candidate.
+
+## Plan: Apply SUNFORD dropdown colours and center the product name (2026-11-13)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` — remove the persistent trigger border; replace purple/lavender focus, option and scrollbar accents with the existing SUNFORD red/pale-red theme; center the product heading within the trigger width.
+- `tests/e2e/products-index-carousel.spec.ts` — verify no persistent frame/purple accent, SUNFORD theme colours, centered heading geometry and unchanged dropdown interaction at390px/1440px.
+- `spec.md`, `plan.md` — record approval and verification.
+
+### Steps
+
+- [x] Record explicit approval for this CSS/test-only scope.
+- [x] Apply the alignment/frame/theme adjustments without changing component logic.
+- [x] Run responsive Chrome checks and inspect closed/open screenshots.
+- [x] Run scoped Prettier, ESLint, TypeScript and `git diff --check`.
+
+### Impact / Rollback
+
+- R2, limited to category-control colours/frame and active-heading alignment in the first carousel. Rollback restores only the prior component-local CSS and assertions.
+
+### Verification Results
+
+- CSS-only implementation removes the persistent border, uses SUNFORD `--red` for chevron/focus/scrollbar, pale red `#f8d9dc` for selected/hovered options, and shares one responsive width between trigger and centered heading. No component logic or data changed.
+- Chrome passes14/14 at320/390/834/1440/1887px. Geometry assertions prove heading/dropdown center delta under1px at390/1440px; theme CSS assertions and inspected closed/open screenshots confirm no purple frame/accent and no overflow.
+- Node24 TypeScript, scoped ESLint, scoped Prettier and `git diff --check` pass. No global style, dependency, route, commit, push or deployment change; no Next.js feedback candidate.
+
+## Plan: Hide the category dropdown scrollbar (2026-11-13)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` — hide native scrollbar visuals while retaining overflow scrolling.
+- `tests/e2e/products-index-carousel.spec.ts` — verify hidden scrollbar styling and reachability/selection of the last category at390px/1440px.
+- `spec.md`, `plan.md` — record approval and verification.
+
+### Steps
+
+- [x] Record explicit approval for the CSS/test-only scope.
+- [x] Hide scrollbar visuals without disabling scrolling.
+- [x] Run responsive Chrome interaction checks and inspect screenshots.
+- [x] Run scoped Prettier, TypeScript and `git diff --check`.
+
+### Impact / Rollback
+
+- R2 and limited to scrollbar presentation. Rollback restores only the prior component-local scrollbar rules and assertions.
+
+### Verification Results
+
+- CSS retains vertical overflow but sets Firefox/native `scrollbar-width: none` and hides the WebKit scrollbar pseudo-element at zero size, so no track/thumb/arrows render.
+- Focused Chrome passes2/2 at390px/1440px: hidden-scrollbar CSS, wheel scroll movement, keyboard access to the last of12options, selection, layout containment and screenshots all pass. Inspected both open-state screenshots; no scrollbar is visible.
+- Node24 TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No logic/data/global/dependency/route/commit/deploy change; no Next.js feedback candidate.
+
+## Plan: Use the requested dark-gray dropdown chevron (2026-11-13)
+
+### Files / Steps
+
+- `src/features/catalog/components/products-index-carousel.module.css` — inherit the existing dropdown text colour for the chevron instead of red.
+- `tests/e2e/products-index-carousel.spec.ts` — update the exact computed-colour assertion at390px/1440px.
+- `spec.md`, `plan.md` — record approval and verification.
+- [x] Apply the approved CSS/assertion change, run scoped Chrome/format/diff checks and inspect screenshots.
+
+### Impact / Rollback
+
+- R2; rollback restores the single chevron colour declaration and assertion.
+
+### Verification Results
+
+- The chevron inherits the dropdown text colour `#504a59`; no geometry, animation or component logic changed.
+- Focused Chrome passes2/2 at390px/1440px with exact computed colour `rgb(80, 74, 89)`. Inspected closed/open screenshots show the dark-gray chevron and no overflow.
+- Node24 TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No global/data/dependency/route/commit/deploy change; no Next.js feedback candidate.
+
+## Plan: Neutral trigger focus and centered compact chevron (2026-11-13)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` — remove the focus fill/side bar, use a neutral underline, and center the compact text-chevron group.
+- `tests/e2e/products-index-carousel.spec.ts` — verify neutral focus visuals and text/chevron/product-name center geometry at390px/1440px.
+- `spec.md`, `plan.md` — record approval and verification.
+
+### Steps
+
+- [x] Record explicit approval for this CSS/test-only scope.
+- [x] Apply the focus and alignment refinements without changing component logic.
+- [x] Run responsive Chrome checks and inspect screenshots.
+- [x] Run scoped Prettier, TypeScript and `git diff --check`.
+
+### Impact / Rollback
+
+- R2 and limited to trigger focus/alignment. Rollback restores only the prior component-local CSS and assertions.
+
+### Verification Results
+
+- CSS-only refinement removes the focus fill/side bar/shadow, retains a neutral underline, reduces the text-chevron gap to8px and centers that group within the same width as the product heading.
+- Focused Chrome passes2/2 at390px/1440px. Geometry checks prove dropdown/product center delta under1px, combined control/product center delta under2px and a compact2–12px visual gap. Inspected closed/open screenshots show the requested neutral centered control without overflow.
+- Node24 TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No logic/data/global/dependency/route/commit/deploy change; no Next.js feedback candidate.

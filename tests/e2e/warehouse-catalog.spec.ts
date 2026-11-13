@@ -1,7 +1,7 @@
 import { downloadQuotation } from "./quotation-download";
 import { expect, test } from "@playwright/test";
 import { loadEnvConfig } from "@next/env";
-import { warehouseModelName } from "../../src/features/catalog/data/catalog-card-names";
+import { warehouseDisplayName } from "../../src/features/catalog/data/catalog-card-names";
 import {
   readWarehouseProducts,
   closeWarehousePool,
@@ -13,6 +13,41 @@ test.afterAll(() => closeWarehousePool());
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
+
+for (const width of [390, 834, 1440]) {
+  test(`standard_sale_price displays directly before VAT at ${width}px`, async ({
+    page,
+    request,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const { products } = await (await request.get("/api/products")).json();
+    const item = products.find(
+      (product: { warehouseSku: string }) => product.warehouseSku === "G106094",
+    );
+    const source = (await readWarehouseProducts()).items.find(
+      (product) => product.sku === item.warehouseSku,
+    )!;
+    expect(item.price).toBe(source.sale_price);
+    expect(item.warehouseNetUnitSatang).toBe(Math.round(source.sale_price! * 100));
+    const amount = item.price.toLocaleString("th-TH", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    await page.goto("/products");
+    const card = page.locator(`[data-warehouse-sku="${item.warehouseSku}"]`);
+    await card.scrollIntoViewIfNeeded();
+    await expect(card.locator("p")).toHaveText(`${amount} บาท (ก่อน VAT)`);
+    await expect(page.getByText("รวม VAT", { exact: false })).toHaveCount(0);
+    await page.screenshot({ path: test.info().outputPath(`source-price-card-${width}.png`) });
+    await page.goto(`/products/${item.slug}`);
+    await expect(page.locator(".detail-price")).toContainText(item.price.toLocaleString("th-TH"));
+    await expect(page.locator("#product-overview h1")).toHaveText(item.name);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({ path: test.info().outputPath(`source-price-detail-${width}.png`) });
+  });
+}
 
 test("saved Warehouse photo decodes on the product card and detail page", async ({
   page,
@@ -58,6 +93,8 @@ test("Home search and comparison include Warehouse products awaiting photos", as
   await search.fill("G106308");
   await expect(page.locator(".search-results a")).toHaveCount(1);
   await expect(page.locator(".search-results a")).toContainText("TMS-60-AW31");
+  await search.fill("g106308");
+  await expect(page.locator(".search-results a")).toHaveCount(1);
   await page.keyboard.press("Escape");
   await page.goto("/products?catalog=all");
   const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
@@ -69,6 +106,9 @@ test("Home search and comparison include Warehouse products awaiting photos", as
     await expect(result.locator(".media-placeholder")).toBeVisible();
   }
   await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("G106308");
+  await expect(finder.locator("#mock-product-results article h3")).toHaveText(["TMS-60-AW31"]);
+  await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("g106308");
+  await expect(finder.locator("#mock-product-results article h3")).toHaveText(["TMS-60-AW31"]);
   await finder.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   await finder.getByRole("button", { name: /เพิ่มเพื่อเปรียบเทียบ/ }).click();
   await page.getByRole("button", { name: "ดูการเปรียบเทียบ" }).click();
@@ -156,6 +196,12 @@ test("public catalog lists every eligible RPC SKU once while quotation retains p
     .first()
     .click();
   const select = page.getByRole("list", { name: "รุ่นสินค้า" });
+  const quotationSearch = page.getByRole("searchbox", { name: "ค้นหาชื่อรุ่นหรือ SKU" });
+  for (const query of ["G106308", "g106308"]) {
+    await quotationSearch.fill(query);
+    await expect(select.locator('button[value="G106308"]')).toBeVisible();
+  }
+  await quotationSearch.fill("");
   const labels = await select
     .getByRole("button")
     .evaluateAll((nodes) =>
@@ -166,9 +212,12 @@ test("public catalog lists every eligible RPC SKU once while quotation retains p
   for (const product of official.items.filter(
     (item) => publicSkus.includes(item.sku) && item.sale_price !== null && item.sale_price > 0,
   ))
-    expect(labels[product.sku]).toBe(warehouseModelName(product.sku, product.product_name));
+    expect(labels[product.sku]).toBe(
+      warehouseDisplayName(product.sku, product.product_short_name ?? product.product_name),
+    );
   expect(labels.G106308).toBe("TMS-60-AW31");
-  expect(labels.G107435).toBe("G107435");
+  const fullFallback = official.items.find((product) => product.sku === "G107435")!;
+  expect(labels.G107435).toBe(fullFallback.product_name);
   const options = await select
     .getByRole("button")
     .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("value")).filter(Boolean));
@@ -180,9 +229,7 @@ test("public catalog lists every eligible RPC SKU once while quotation retains p
   const item = products.find((p: { warehouseSku: string }) => p.warehouseSku === "G106308");
   const upstream = official.items.find((p: { sku: string }) => p.sku === item.warehouseSku);
   expect(item.warehouseNetUnitSatang).toBe(Math.round(upstream!.sale_price! * 100));
-  expect(item.price).toBe(
-    (item.warehouseNetUnitSatang + Math.round(item.warehouseNetUnitSatang * 0.07)) / 100,
-  );
+  expect(item.price).toBe(upstream!.sale_price);
   await page.goto(`/products/${item.slug}`);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("TMS-60-AW31");
   await expect(page.locator(".detail-price")).toContainText(item.price.toLocaleString("th-TH"));
@@ -237,6 +284,8 @@ for (const width of [390, 834, 1440]) {
       finder.getByRole("heading", { level: 3, name: "WPS10KS", exact: true }).first(),
     ).toBeVisible();
     await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("G106308");
+    await expect(finder.locator("#mock-product-results article h3")).toHaveText(["TMS-60-AW31"]);
+    await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("g106308");
     await expect(finder.locator("#mock-product-results article h3")).toHaveText(["TMS-60-AW31"]);
     expect(errors).toEqual([]);
     await page.screenshot({ path: test.info().outputPath(`warehouse-${width}.png`) });
@@ -332,7 +381,7 @@ test("a newly linked roller tray can be quoted at its current Warehouse price", 
     )
     .toEqual([
       item.warehouseNetUnitSatang,
-      Math.round(item.price * 100) - item.warehouseNetUnitSatang,
-      Math.round(item.price * 100),
+      Math.round(item.warehouseNetUnitSatang * 0.07),
+      item.warehouseNetUnitSatang + Math.round(item.warehouseNetUnitSatang * 0.07),
     ]);
 });

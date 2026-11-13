@@ -2,7 +2,14 @@
 
 /* eslint-disable @next/next/no-img-element -- These fixed source images are decoded and measured directly for shared-element transitions. */
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 import Link from "next/link";
 import styles from "./products-index-carousel.module.css";
 
@@ -100,7 +107,11 @@ function CarouselScene({ products, categories }: CarouselProps) {
   const scene = useRef<HTMLElement>(null),
     models = useRef<HTMLDivElement>(null),
     dialog = useRef<HTMLDialogElement>(null),
-    hero = useRef<HTMLImageElement>(null);
+    hero = useRef<HTMLImageElement>(null),
+    categoryDropdown = useRef<HTMLDivElement>(null),
+    categoryTrigger = useRef<HTMLButtonElement>(null);
+  const categoryOptions = useRef<Array<HTMLButtonElement | null>>([]);
+  const categoryOpenRef = useRef(false);
   const images = useRef<Array<HTMLImageElement | null>>([]);
   const engine = useRef<{
     move: (steps: number) => void;
@@ -111,9 +122,16 @@ function CarouselScene({ products, categories }: CarouselProps) {
   const [size, setSize] = useState({ w: 1440, h: 740 });
   const [frame, setFrame] = useState({ position: 0, energy: 0, time: 0 });
   const [detail, setDetail] = useState<number | null>(null);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [categoryCursor, setCategoryCursor] = useState(0);
   const active = wrap(Math.round(frame.position)),
     index = detail ?? active,
     product = products[index];
+  const activeCategoryIndex = Math.max(
+    0,
+    categories.findIndex((category) => category.id === products[active].categoryId),
+  );
+  const activeCategory = categories[activeCategoryIndex];
   const group = products.filter((p) => p.categoryId === product.categoryId);
 
   useLayoutEffect(() => {
@@ -127,6 +145,19 @@ function CarouselScene({ products, categories }: CarouselProps) {
       row.scrollLeft = selected.offsetLeft - (row.clientWidth - selected.offsetWidth) / 2;
     }
   }, [active, size.w]);
+
+  useEffect(() => {
+    categoryOpenRef.current = categoryOpen;
+    if (!categoryOpen) return;
+    function closeOnOutsidePointer(event: PointerEvent) {
+      if (event.target instanceof Node && !categoryDropdown.current?.contains(event.target)) {
+        categoryOpenRef.current = false;
+        setCategoryOpen(false);
+      }
+    }
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
+  }, [categoryOpen]);
 
   useEffect(() => {
     const element = scene.current!;
@@ -196,7 +227,9 @@ function CarouselScene({ products, categories }: CarouselProps) {
       if (
         event.ctrlKey ||
         dialog.current?.open ||
-        (event.target instanceof Element && event.target.closest("select, [data-products-models]"))
+        categoryOpenRef.current ||
+        (event.target instanceof Element &&
+          event.target.closest("[data-category-dropdown], [data-products-models]"))
       )
         return;
       event.preventDefault();
@@ -221,10 +254,12 @@ function CarouselScene({ products, categories }: CarouselProps) {
     }
     function beginSwipe(event: TouchEvent) {
       cancelSwipe();
-      if (event.touches.length !== 1 || dialog.current?.open) return;
+      if (event.touches.length !== 1 || dialog.current?.open || categoryOpenRef.current) return;
       if (
         event.target instanceof Element &&
-        event.target.closest("button:not([data-product-photo]), select, a, [data-products-models]")
+        event.target.closest(
+          "button:not([data-product-photo]), a, [data-category-dropdown], [data-products-models]",
+        )
       )
         return;
       swipeStart = event.touches[0];
@@ -385,6 +420,8 @@ function CarouselScene({ products, categories }: CarouselProps) {
   }, [detail, products]);
 
   function open(next: number) {
+    categoryOpenRef.current = false;
+    setCategoryOpen(false);
     const image = images.current[next];
     transition.current = image?.naturalWidth ? { source: paintedBox(image) } : null;
     lastSwitch.current = 0;
@@ -416,6 +453,59 @@ function CarouselScene({ products, categories }: CarouselProps) {
     setDetail(null);
     images.current[index]?.parentElement?.focus({ preventScroll: true });
   }
+  function setCategoryExpanded(open: boolean) {
+    categoryOpenRef.current = open;
+    setCategoryOpen(open);
+  }
+  function focusCategoryOption(next: number) {
+    const wrapped = (next + categories.length) % categories.length;
+    setCategoryCursor(wrapped);
+    requestAnimationFrame(() => categoryOptions.current[wrapped]?.focus());
+  }
+  function openCategoryMenu(next = activeCategoryIndex) {
+    setCategoryExpanded(true);
+    focusCategoryOption(next);
+  }
+  function closeCategoryMenu(returnFocus = false) {
+    setCategoryExpanded(false);
+    if (returnFocus) requestAnimationFrame(() => categoryTrigger.current?.focus());
+  }
+  function selectCategory(next: number) {
+    const firstProduct = products.findIndex((item) => item.categoryId === categories[next].id);
+    if (firstProduct < 0) return;
+    setCategoryCursor(next);
+    engine.current?.select(firstProduct);
+    closeCategoryMenu(true);
+  }
+  function handleCategoryTriggerKeyDown(event: ReactKeyboardEvent<HTMLButtonElement>) {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      openCategoryMenu(activeCategoryIndex);
+    } else if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      openCategoryMenu(event.key === "Home" ? 0 : categories.length - 1);
+    } else if (event.key === "Escape" && categoryOpen) {
+      event.preventDefault();
+      closeCategoryMenu(true);
+    }
+  }
+  function handleCategoryOptionKeyDown(event: ReactKeyboardEvent<HTMLButtonElement>) {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      focusCategoryOption(categoryCursor + (event.key === "ArrowDown" ? 1 : -1));
+    } else if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      focusCategoryOption(event.key === "Home" ? 0 : categories.length - 1);
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      selectCategory(categoryCursor);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      closeCategoryMenu(true);
+    } else if (event.key === "Tab") {
+      setCategoryExpanded(false);
+    }
+  }
   return (
     <section
       ref={scene}
@@ -431,25 +521,57 @@ function CarouselScene({ products, categories }: CarouselProps) {
         }
       }}
     >
-      <div className={styles.copy}>
-        <select
-          aria-label="หมวดสินค้า"
-          value={products[active].categoryId}
-          onChange={(e) =>
-            engine.current?.select(products.findIndex((p) => p.categoryId === e.target.value))
-          }
+      <div className={styles.copy} data-products-carousel-copy>
+        <div
+          ref={categoryDropdown}
+          className={styles.categoryDropdown}
+          data-category-dropdown
+          data-open={categoryOpen}
         >
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+          <button
+            ref={categoryTrigger}
+            type="button"
+            className={styles.categoryTrigger}
+            aria-label={`หมวดสินค้า: ${activeCategory.label}`}
+            aria-haspopup="listbox"
+            aria-expanded={categoryOpen}
+            aria-controls="products-carousel-category-options"
+            onClick={() =>
+              categoryOpen ? closeCategoryMenu(false) : openCategoryMenu(activeCategoryIndex)
+            }
+            onKeyDown={handleCategoryTriggerKeyDown}
+          >
+            <span>{activeCategory.label}</span>
+            <i className={styles.categoryChevron} aria-hidden="true" />
+          </button>
+          <div
+            id="products-carousel-category-options"
+            className={styles.categoryPanel}
+            role="listbox"
+            aria-label="หมวดสินค้า"
+            aria-hidden={!categoryOpen}
+          >
+            {categories.map((category, categoryIndex) => (
+              <button
+                key={category.id}
+                ref={(node) => {
+                  categoryOptions.current[categoryIndex] = node;
+                }}
+                type="button"
+                role="option"
+                className={styles.categoryOption}
+                aria-selected={category.id === activeCategory.id}
+                tabIndex={categoryOpen && categoryIndex === categoryCursor ? 0 : -1}
+                onFocus={() => setCategoryCursor(categoryIndex)}
+                onKeyDown={handleCategoryOptionKeyDown}
+                onClick={() => selectCategory(categoryIndex)}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <h2>{products[active].model}</h2>
-        <p>{products[active].subtitle}</p>
-        <small>
-          {[products[active].capacity, products[active].readability].filter(Boolean).join(" · ")}
-        </small>
       </div>
       {products.map((p, i) => {
         const relative = wrap(i - frame.position + count / 2) - count / 2;
@@ -550,9 +672,6 @@ function CarouselScene({ products, categories }: CarouselProps) {
           </span>
         </small>
       </div>
-      <a className={styles.skip} href="#products-category-scales">
-        ส่วนถัดไป ↓
-      </a>
       <dialog
         ref={dialog}
         className={styles.dialog}

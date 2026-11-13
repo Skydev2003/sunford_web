@@ -17,7 +17,7 @@ export default async function ProductsPage() {
             <p>
               {product.price == null
                 ? "สอบถามราคา"
-                : `ราคา ${product.price.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท (รวม VAT)`}
+                : `ราคา ${product.price.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท (ก่อน VAT)`}
             </p>
           </article>
         ))}

@@ -81,15 +81,9 @@ for (const definition of pages) {
     await expect(main.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
     await main.getByRole("button", { name: "ล้างตัวกรองทั้งหมด", exact: true }).click();
     await expect(main.locator("#mock-product-results article h3")).toHaveText(models.slice(0, 24));
-    await main.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
-    await expect(main.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    await main.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
-    await main.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-    await expect(main.locator("article[data-mock-product]")).toHaveCount(0);
-    await main.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
+    await expect(main.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveCount(0);
+    await expect(main.getByRole("group", { name: "รูปแบบรายการสินค้า" })).toHaveCount(0);
+    await expect(main.getByRole("button", { name: /แสดงแบบรายการ|แสดงแบบตาราง/ })).toHaveCount(0);
     const detail = main.locator("article[data-model-only] a").first();
     const href = (await detail.getAttribute("href"))!;
     expect(href).toContain(`?from=${definition.returnContext}`);

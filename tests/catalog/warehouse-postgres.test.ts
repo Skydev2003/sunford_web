@@ -45,6 +45,7 @@ test("Warehouse configuration never falls back to CMS and enforces bounded read-
 const row = {
   sku: "G123",
   product_name: "สินค้า",
+  product_short_name: "เครื่องชั่ง G123",
   unit: "เครื่อง",
   sale_price: "100.25",
   master_item_id: "84",
@@ -60,6 +61,7 @@ test("source rows preserve exact names/units/net price and reject conflicting or
   const data = warehouseRows([row]);
   assert.equal(data.items[0].sale_price, 100.25);
   assert.equal(data.items[0].unit, "เครื่อง");
+  assert.equal(data.items[0].product_short_name, "เครื่องชั่ง G123");
   assert.equal(
     new URL(data.items[0].image_url!, "https://test.invalid").searchParams.get("master_item_id"),
     "84",
@@ -143,6 +145,9 @@ test("malformed RPC collections are rejected instead of silently losing specific
   })) as unknown as typeof Pool.prototype.query);
   try {
     for (const malformed of [
+      { ...rpcRow, product_short_name: undefined },
+      { ...rpcRow, product_short_name: "" },
+      { ...rpcRow, product_short_name: " G123 " },
       { ...rpcRow, specifications: null },
       { ...rpcRow, components: {} },
       { ...rpcRow, specifications: [{ title: "bad", value_number: 100 }] },

@@ -1,5 +1,17 @@
 import { test, expect } from "@playwright/test";
 import catalog from "../../src/features/catalog/data/products-index-carousel.json";
+import type { ClientProduct } from "../../src/features/catalog/types";
+
+function photographedSelection(products: ClientProduct[]) {
+  return catalog.products.filter((item) =>
+    products.some(
+      (product) =>
+        (product.id === item.id ||
+          (item.warehouseSku && product.warehouseSku === item.warehouseSku)) &&
+        product.image.trim(),
+    ),
+  );
+}
 
 for (const width of [320, 390, 834, 1440, 1887]) {
   test(`model row stays contained and every label remains selectable at ${width}px`, async ({
@@ -161,28 +173,132 @@ test.describe("mobile carousel gestures", () => {
     });
 });
 
+for (const width of [390, 1440]) {
+  test(`name-only copy and reference dropdown work at ${width}px`, async ({ page, request }) => {
+    await page.setViewportSize({ width, height: 960 });
+    await page.goto("/products");
+    const scene = page.locator("[data-products-index-carousel]");
+    const copy = scene.locator("[data-products-carousel-copy]");
+    const dropdown = scene.locator("[data-category-dropdown]");
+    const trigger = dropdown.getByRole("button", { name: /^หมวดสินค้า:/ });
+    const listbox = dropdown.getByRole("listbox", { name: "หมวดสินค้า" });
+    const { products } = await (await request.get("/api/products")).json();
+    const selection = photographedSelection(products);
+    const selectedCategories = catalog.categories.filter((category) =>
+      selection.some((product) => product.categoryId === category.id),
+    );
+    const accessory = selection.find((product) => product.categoryId === "accessories")!;
+
+    await expect(copy.getByRole("heading", { level: 2 })).toBeVisible();
+    await expect(copy.locator(":scope > p, :scope > small")).toHaveCount(0);
+    await expect(dropdown).toHaveAttribute("data-open", "false");
+    await expect(trigger).toHaveCSS("border-top-width", "0px");
+    await expect(trigger.locator("i")).toHaveCSS("color", "rgb(80, 74, 89)");
+    await trigger.focus();
+    await expect(trigger).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(trigger).toHaveCSS("box-shadow", "none");
+    await expect(trigger.locator("span")).toHaveCSS("text-decoration-line", "underline");
+    const alignment = await copy.evaluate((element) => {
+      const dropdown = element.querySelector<HTMLElement>("[data-category-dropdown]")!;
+      const heading = element.querySelector<HTMLElement>("h2")!;
+      const text = dropdown.querySelector<HTMLElement>("button span")!;
+      const chevron = dropdown.querySelector<HTMLElement>("button i")!;
+      const dropdownBox = dropdown.getBoundingClientRect();
+      const headingBox = heading.getBoundingClientRect();
+      const textBox = text.getBoundingClientRect();
+      const chevronBox = chevron.getBoundingClientRect();
+      const headingCenter = headingBox.left + headingBox.width / 2;
+      return {
+        dropdownCenterDelta: Math.abs(dropdownBox.left + dropdownBox.width / 2 - headingCenter),
+        controlCenterDelta: Math.abs((textBox.left + chevronBox.right) / 2 - headingCenter),
+        textChevronGap: chevronBox.left - textBox.right,
+      };
+    });
+    expect(alignment.dropdownCenterDelta).toBeLessThan(1);
+    expect(alignment.controlCenterDelta).toBeLessThan(2);
+    expect(alignment.textChevronGap).toBeGreaterThan(2);
+    expect(alignment.textChevronGap).toBeLessThan(12);
+    await page.screenshot({ path: test.info().outputPath(`category-trigger-closed-${width}.png`) });
+    await trigger.click();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await expect(dropdown).toHaveAttribute("data-open", "true");
+    await expect(listbox).toBeVisible();
+    await expect(listbox.getByRole("option")).toHaveText(
+      selectedCategories.map((item) => item.label),
+    );
+    await expect(listbox.getByRole("option", { selected: true })).toHaveCount(1);
+    await expect(listbox.getByRole("option", { selected: true })).toHaveCSS(
+      "background-color",
+      "rgb(248, 217, 220)",
+    );
+    await expect(listbox).toHaveCSS("scrollbar-width", "none");
+    expect(
+      await listbox.evaluate((element) => getComputedStyle(element, "::-webkit-scrollbar").display),
+    ).toBe("none");
+    await page.screenshot({ path: test.info().outputPath(`category-dropdown-open-${width}.png`) });
+
+    const listboxBounds = (await listbox.boundingBox())!;
+    await page.mouse.move(
+      listboxBounds.x + listboxBounds.width / 2,
+      listboxBounds.y + listboxBounds.height / 2,
+    );
+    await page.mouse.wheel(0, 360);
+    await expect.poll(() => listbox.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+
+    await page.keyboard.press("Escape");
+    await expect(dropdown).toHaveAttribute("data-open", "false");
+    await expect(trigger).toBeFocused();
+    await trigger.press("ArrowDown");
+    await expect(listbox).toBeVisible();
+    await page.keyboard.press("End");
+    const lastOption = listbox.getByRole("option").last();
+    await expect(lastOption).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(trigger).toHaveAccessibleName(/อุปกรณ์เสริม/);
+    await expect(scene.locator("[data-product-photo][aria-current=true]")).toHaveAttribute(
+      "data-product-photo",
+      accessory.id,
+    );
+    await expect(trigger).toBeFocused();
+
+    await trigger.click();
+    const bounds = (await scene.boundingBox())!;
+    await page.mouse.click(bounds.x + bounds.width - 8, bounds.y + 8);
+    await expect(dropdown).toHaveAttribute("data-open", "false");
+    await expect(scene.getByRole("link", { name: /ส่วนถัดไป/ })).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+}
+
 for (const width of [390, 834, 1440]) {
-  test(`curated 36-model carousel and detail return at ${width}px`, async ({ page, request }) => {
+  test(`photographed carousel and detail return at ${width}px`, async ({ page, request }) => {
     test.setTimeout(120000);
     await page.setViewportSize({ width, height: 960 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    const shown = catalog.products;
     const { products } = await (await request.get("/api/products")).json();
-    expect(shown).toHaveLength(36);
-    expect(catalog.categories).toHaveLength(12);
+    const shown = photographedSelection(products);
+    expect(shown.length).toBeGreaterThan(0);
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
     const current = scene.locator("[data-product-photo][aria-current=true]");
+    await expect(scene.locator("[data-product-photo]")).toHaveCount(shown.length);
     await expect(scene.locator("[data-product-photo] img[data-ready=true]")).toHaveCount(
-      shown.filter((item) =>
-        products.some(
-          (p: { id: string; warehouseSku: string; image: string }) =>
-            (p.id === item.id || (item.warehouseSku && p.warehouseSku === item.warehouseSku)) &&
-            p.image,
-        ),
-      ).length,
+      shown.length,
       { timeout: 20000 },
     );
+    expect(
+      await scene.locator("[data-product-photo] img").evaluateAll(async (images) =>
+        Promise.all(
+          images.map(async (element) => {
+            const image = element as HTMLImageElement;
+            await image.decode();
+            return image.naturalWidth > 0 && image.naturalHeight > 0;
+          }),
+        ),
+      ),
+    ).toEqual(shown.map(() => true));
     await expect(page.locator("[data-products-category-section] h2").first()).toHaveText(
       "เครื่องชั่ง",
     );
@@ -194,6 +310,14 @@ for (const width of [390, 834, 1440]) {
       await expect(current).toHaveAttribute("data-product-photo", product.id);
       expect(await current.locator("img").getAttribute("src")).toBe(live?.image || null);
       await expect(scene.locator("h2").first()).toHaveText(live?.name ?? "");
+      await expect(scene.locator("[data-equalizer] small").first()).toHaveText(
+        `${String(shown.indexOf(product) + 1).padStart(2, "0")} / ${shown.length}`,
+      );
+      await current.click();
+      await expect(
+        page.getByRole("dialog").getByRole("link", { name: "ดูรายละเอียดทั้งหมด" }),
+      ).toHaveAttribute("href", `/products/${live.slug}`);
+      await page.keyboard.press("Escape");
       await scene.getByRole("button", { name: "สินค้ารุ่นถัดไป", exact: true }).click();
     }
     await expect(current).toHaveAttribute("data-product-photo", shown[0].id);
@@ -207,7 +331,12 @@ for (const width of [390, 834, 1440]) {
     expect((await request.get(href!)).status()).toBe(200);
     await page.keyboard.press("Escape");
     await expect(current).toBeFocused();
-    await scene.getByLabel("หมวดสินค้า", { exact: true }).selectOption("accessories");
+    const categoryTrigger = scene.getByRole("button", { name: /^หมวดสินค้า:/ });
+    await categoryTrigger.click();
+    await scene
+      .getByRole("listbox", { name: "หมวดสินค้า" })
+      .getByRole("option", { name: "อุปกรณ์เสริม", exact: true })
+      .click();
     const accessory = shown.find((p) => p.categoryId === "accessories")!;
     const liveAccessory = products.find(
       (p: { id: string; warehouseSku: string }) =>
@@ -215,8 +344,13 @@ for (const width of [390, 834, 1440]) {
         (accessory.warehouseSku && p.warehouseSku === accessory.warehouseSku),
     );
     await expect(scene.locator("h2").first()).toHaveText(liveAccessory?.name ?? "");
-    await scene.getByRole("link", { name: /ส่วนถัดไป/ }).click();
-    await expect(page).toHaveURL(/#products-category-scales$/);
+    await page.screenshot({
+      path: test.info().outputPath(`photographed-accessories-${width}.png`),
+    });
+    await expect(scene.getByRole("link", { name: /ส่วนถัดไป/ })).toHaveCount(0);
+    const followingSection = page.locator("#products-category-scales");
+    await followingSection.scrollIntoViewIfNeeded();
+    await expect(followingSection).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

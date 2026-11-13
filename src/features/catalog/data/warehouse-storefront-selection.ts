@@ -39,14 +39,12 @@ export function warehouseStorefrontProducts(
     if (!product.warehouseSku || !isPublicWarehouseSku(product.warehouseSku)) return [];
     const item = bySku.get(product.warehouseSku.toUpperCase());
     if (!item) {
-      const name = product.warehouseName ?? "";
-      return [{ ...product, name, storefrontName: name }];
+      return [{ ...product, storefrontName: product.name }];
     }
     return [
       {
         ...product,
-        name: item.name,
-        storefrontName: item.name,
+        storefrontName: product.name,
         category: item.categoryId,
         warehouseCategoryId: item.categoryId,
         warehouseSubcategoryIds: (product.warehouseSubcategoryIds ?? []).filter((id) =>

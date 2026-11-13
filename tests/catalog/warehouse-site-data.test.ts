@@ -137,6 +137,7 @@ test("sitewide public products exclude every editorial fallback while retaining 
       {
         sku: "G106308",
         product_name: "SUNFORD เครื่องชั่ง TMS-60-AW31",
+        product_short_name: "เครื่องชั่ง TMS-60-AW31",
         unit: "เครื่อง",
         sale_price: 0,
         image_url: null,
@@ -163,6 +164,7 @@ test("sitewide public products exclude every editorial fallback while retaining 
   assert.equal(product.fallbackImage, undefined);
   assert.equal(product.price, null);
   assert.equal(product.warehouseCategoryId, "scales");
+  assert.deepEqual(product.warehouseModelCodes, ["TMS-60-AW31"]);
   const [head] = warehouseSiteProducts([
     { ...raw, warehouseSku: "HEAD", warehouseName: "Indicator AW31", name: "AW31" },
   ]);

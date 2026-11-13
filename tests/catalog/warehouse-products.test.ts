@@ -7,6 +7,7 @@ import {
   warehouseCatalog,
   type WarehouseItem,
 } from "../../src/features/catalog/data/warehouse-products";
+import { warehouseDisplayName } from "../../src/features/catalog/data/catalog-card-names";
 import { getSnapshotProducts } from "../../src/features/content/data/catalog-snapshot";
 import imageCache from "../../data/warehouse/images.json";
 import { existsSync, readFileSync } from "node:fs";
@@ -21,25 +22,43 @@ import { getAccessorySubcategories } from "../../src/features/catalog/data/acces
 
 const editorial = getSnapshotProducts();
 
-test("model titles use the same rules before photo filtering and preserve Warehouse wording", () => {
-  const cases = [
-    ["11", "SUNFORD ACS-30-FC31", "ACS-30-FC31"],
-    ["G109019", "8858847109019 SUNFORD ชิ้นส่วน - Platform CCS 3540", "CCS 3540"],
-    ["G107435", "8858847107435 SUNFORD วัสดุ - กระดาษความร้อน 57x50 บรรจุ 10 ม้วน", "G107435"],
-    ["G-SET03", "จัดชุด - SUNFORD TCS-150-AW31 พร้อมเครื่องพิมพ์ LP50", "TCS-150-AW31 + LP50"],
-    ["new-item", "เครื่องชั่ง รุ่น M50-Pro (5 กก.)", "M50-Pro"],
+test("display titles prefer short names, extract safe models and preserve unextractable source text", () => {
+  const cases: [string, string, string | null, string][] = [
+    ["11", "SUNFORD ACS-30-FC31", null, "ACS-30-FC31"],
+    ["G109019", "8858847109019 SUNFORD ชิ้นส่วน - Platform CCS 3540", null, "CCS 3540"],
+    [
+      "G107435",
+      "8858847107435 SUNFORD วัสดุ - กระดาษความร้อน 57x50 บรรจุ 10 ม้วน",
+      null,
+      "8858847107435 SUNFORD วัสดุ - กระดาษความร้อน 57x50 บรรจุ 10 ม้วน",
+    ],
+    [
+      "G-SET03",
+      "จัดชุด - SUNFORD TCS-150-AW31 พร้อมเครื่องพิมพ์ LP50",
+      null,
+      "TCS-150-AW31 + LP50",
+    ],
+    ["new-item", "ชื่อเต็มไม่ควรถูกใช้", "เครื่องชั่ง รุ่น M50-Pro (5 กก.)", "M50-Pro"],
+    ["G106476", "ชื่อเต็มไม่ควรถูกใช้", "เครื่องชั่ง TSS-60-SW31S", "TSS-60-SW31S"],
+    ["G107015", "ชื่อเต็มไม่ควรถูกใช้", "Adapter", "Adapter"],
   ];
-  for (const [sku, product_name, model] of cases) {
+  for (const [sku, product_name, product_short_name, model] of cases) {
     for (const image_url of [null, "/image?v=1"]) {
       const [product] = warehouseCatalog(
-        [{ sku, product_name, image_url, unit: "ชิ้น", sale_price: 1 }],
+        [{ sku, product_name, product_short_name, image_url, unit: "ชิ้น", sale_price: 1 }],
         [],
       );
       assert.equal(product.name, model);
+      assert.equal(product.storefrontName, model);
       assert.equal(product.warehouseName, product_name);
       assert.equal(product.warehouseSku, sku);
     }
   }
+  assert.equal(warehouseDisplayName("G107015", "Adapter"), "Adapter");
+  assert.equal(
+    warehouseDisplayName("G107435", "8858847107435 SUNFORD วัสดุ - กระดาษความร้อน"),
+    "8858847107435 SUNFORD วัสดุ - กระดาษความร้อน",
+  );
 });
 
 test("catalog uses the saved photo directly and proxies an unsaved Warehouse photo", () => {
@@ -167,9 +186,15 @@ test("API prices/identity replace old prices without reviving deleted or missing
   assert.equal(catalog[0].warehouseSku, item.sku);
   assert.equal(catalog[0].name, "TMS-60-AW31");
   assert.equal(catalog[0].warehouseName, item.product_name);
-  assert.equal(catalog[0].price, 107);
+  assert.equal(catalog[0].price, 100);
   assert.equal(catalog[0].warehouseNetUnitSatang, 10000);
-  assert.equal(warehouseCatalog([{ ...item, sale_price: 200 }], editorial)[0].price, 214);
+  assert.equal(warehouseCatalog([{ ...item, sale_price: 200 }], editorial)[0].price, 200);
+  for (const sale_price of [0.01, 123.45, 1859.81, 1261.68]) {
+    const current = warehouseCatalog([{ ...item, sale_price }], editorial)[0];
+    assert.equal(current.price, sale_price);
+    assert.equal(current.warehouseNetUnitSatang, Math.round(sale_price * 100));
+    if (current.media) assert.equal(current.media.price, sale_price);
+  }
   assert.deepEqual(warehouseCatalog([], editorial), []);
   assert.equal(
     warehouseCatalog(
@@ -216,6 +241,8 @@ test("a complete response validates and partial/conflicting/invalid responses fa
       items: [{ ...item, sale_price }],
     })),
     { total_count: 1, items: [{ ...item, unit: "" }] },
+    { total_count: 1, items: [{ ...item, product_short_name: " " }] },
+    { total_count: 1, items: [{ ...item, product_short_name: " padded " }] },
   ])
     assert.throws(() => parseWarehouseProducts(invalid));
 });
@@ -279,6 +306,6 @@ test("configurator uses Warehouse SKU identity and requires source evidence for 
   const kit = options.find((option) => option.code === "G106308");
   assert.equal(kit?.sku, "G106308");
   assert.equal(kit?.includesHead, false);
-  assert.equal(kit?.price, 107);
+  assert.equal(kit?.price, 100);
   assert(!options.some((option) => option.code === "CableConnector"));
 });

@@ -212,18 +212,9 @@ test("category filters, refresh, navigation history and comparison stay inside t
     "true",
   );
   expect(new URL(page.url()).pathname).toBe("/products/category/scales");
-  await catalog.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
-  await expect(catalog.getByRole("button", { name: "แสดงแบบรายการ", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await catalog.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
-  await catalog.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
-  await expect(catalog.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await catalog.getByRole("button", { name: "สินค้าแนะนำ", exact: true }).click();
+  await expect(catalog.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveCount(0);
+  await expect(catalog.getByRole("group", { name: "รูปแบบรายการสินค้า" })).toHaveCount(0);
+  await expect(catalog.getByRole("button", { name: /แสดงแบบรายการ|แสดงแบบตาราง/ })).toHaveCount(0);
   await catalog.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
   const compare = catalog.locator("article[data-model-only]").first().getByRole("button");
   await expect(compare).toHaveAttribute("aria-pressed", "false");

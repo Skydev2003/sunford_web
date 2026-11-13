@@ -275,6 +275,7 @@
     {
       "id": "sunford-10856",
       "model": "TIS-150-JE62ZR",
+      "warehouseSku": "G108562",
       "categoryId": "scale-floor",
       "categoryLabel": "เครื่องชั่งตั้งพื้น",
       "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
@@ -335,6 +336,7 @@
     {
       "id": "sunford-10867",
       "model": "CCS-150-JC62Z",
+      "warehouseSku": "G108678",
       "categoryId": "scale-pole",
       "categoryLabel": "เครื่องชั่งมีเสา",
       "subtitle": "ชั่งไว ใช้ง่าย คำนวณราคาเที่ยงตรง เก็บกำไรเต็มเม็ดเต็มหน่วย!",
@@ -455,6 +457,7 @@
     {
       "id": "sunford-10725",
       "model": "LED-R1",
+      "warehouseSku": "G107251",
       "categoryId": "accessories",
       "categoryLabel": "อุปกรณ์เสริม",
       "subtitle": "จอแสดงผล SUNFORD LED-R1 แบบตั้งโต๊ะ",
@@ -465,16 +468,17 @@
       "href": "/products/10725"
     },
     {
-      "id": "sunford-10732",
-      "model": "LP53",
+      "id": "warehouse-G107282",
+      "model": "LP50",
+      "warehouseSku": "G107282",
       "categoryId": "accessories",
       "categoryLabel": "อุปกรณ์เสริม",
-      "subtitle": "เครื่องพิมพ์ความร้อนชาร์จไฟได้ SUNFORD LP53(Rechargable)",
+      "subtitle": "",
       "capacity": "",
-      "readability": "203 dpi",
+      "readability": "",
       "connection": "",
-      "image": "/images/imported/fcc2261c57419939a6bc.jpeg",
-      "href": "/products/10732"
+      "image": "",
+      "href": "/products/warehouse-G107282"
     },
     {
       "id": "sunford-10741",

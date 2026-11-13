@@ -11,13 +11,14 @@ import {
 import { findCatalogProduct } from "../../src/features/catalog/data/product-lookup";
 import { pricedProducts } from "../../src/features/catalog/data/quotation";
 
-function liveProduct(sku: string, price = 100) {
+function liveProduct(sku: string, price = 100, shortName = `เครื่องชั่ง MODEL-${sku}`) {
   return warehouseDetailProduct(
     warehouseCatalog(
       [
         {
           sku,
           product_name: `SUNFORD เครื่องชั่ง รุ่นเต็ม ${sku}`,
+          product_short_name: shortName,
           unit: "เครื่อง",
           sale_price: price,
           image_url: null,
@@ -48,16 +49,17 @@ test("saved selection is exactly five NAV families with unique identities and no
   assert.equal(selection.items.find((item) => item.sku === "G107527")?.name, "FCS 3040");
 });
 
-test("selected names survive cards, client search data and repeated detail projection", () => {
+test("Warehouse display names survive cards while selection metadata changes category only", () => {
   for (const categoryId of ["scales", "indicators", "platforms", "pos", "accessories"]) {
     const entry = selection.items.find((item) => item.categoryId === categoryId)!;
     const source = liveProduct(entry.sku);
     const before = structuredClone(source);
     const [product] = warehouseStorefrontProducts([source], "1");
     const detail = warehouseDetailProduct(warehouseDetailProduct(product));
-    assert.equal(detail.name, entry.name);
-    assert.equal(productCardData(product).name, entry.name);
-    assert.equal(clientProductData(detail).name, entry.name);
+    assert.equal(detail.name, source.name);
+    assert.equal(productCardData(product).name, source.name);
+    assert.equal(clientProductData(detail).name, source.name);
+    assert.notEqual(detail.name, entry.name);
     assert.equal(clientProductData(product).warehouseName, source.warehouseName);
     assert.equal(product.warehouseCategoryId, categoryId);
     assert.equal(product.category, categoryId);
@@ -65,9 +67,9 @@ test("selected names survive cards, client search data and repeated detail proje
   }
 });
 
-test("live public products outside Excel remain searchable and routable under their real source name", () => {
+test("live public products outside Excel retain their resolved Warehouse display name", () => {
   const included = liveProduct("G-MK013");
-  const additional = { ...liveProduct("NOT-IN-THE-FIVE-SHEETS"), name: "Old display label" };
+  const additional = liveProduct("NOT-IN-THE-FIVE-SHEETS");
   const before = structuredClone(additional);
   const catalog = warehouseStorefrontProducts([included, additional], "1");
   assert.deepEqual(
@@ -76,9 +78,9 @@ test("live public products outside Excel remain searchable and routable under th
   );
   const product = findCatalogProduct(catalog, additional.warehouseSku!)!;
   assert.equal(findCatalogProduct(catalog, additional.slug), product);
-  assert.equal(product.name, additional.warehouseName);
-  assert.equal(productCardData(product).name, additional.warehouseName);
-  assert.equal(clientProductData(warehouseDetailProduct(product)).name, additional.warehouseName);
+  assert.equal(product.name, additional.name);
+  assert.equal(productCardData(product).name, additional.name);
+  assert.equal(clientProductData(warehouseDetailProduct(product)).name, additional.name);
   assert.equal(product.warehouseCategoryId, additional.warehouseCategoryId);
   assert.deepEqual(additional, before);
   assert.equal(findCatalogProduct(catalog, included.slug)?.warehouseSku, "G-MK013");
@@ -99,7 +101,7 @@ test("X, calibration and legacy-only records stay hidden even without the Excel 
   }
 });
 
-test("selection changes only names and taxonomy, preserving live facts, missing photos and VAT", () => {
+test("selection changes only taxonomy, preserving resolved names, live facts, missing photos and source prices", () => {
   const source = {
     ...liveProduct("G-MK013", 123.45),
     warehouseSpecifications: [{ label: "พิกัด", value: "5 kg" }],
@@ -110,12 +112,16 @@ test("selection changes only names and taxonomy, preserving live facts, missing 
     selected;
   const {
     name: originalName,
+    storefrontName: originalStorefrontName,
     category: originalCategory,
     warehouseCategoryId: originalFamily,
     warehouseSubcategoryIds: originalChildren,
     ...originalFacts
   } = source;
   assert.ok(name && storefrontName && category && warehouseCategoryId);
+  assert.equal(name, originalName);
+  assert.equal(storefrontName, originalName);
+  assert.equal(originalStorefrontName, originalName);
   assert.deepEqual(warehouseSubcategoryIds, source.warehouseSubcategoryIds);
   assert.ok(originalName && originalCategory);
   assert.equal(originalFamily, "scales");
@@ -126,7 +132,7 @@ test("selection changes only names and taxonomy, preserving live facts, missing 
     pricedProducts([selected]).map((item) => item.unitSatang),
     [12345],
   );
-  assert.equal(selected.price, 132.09);
+  assert.equal(selected.price, 123.45);
   const [inquiry] = warehouseStorefrontProducts([liveProduct("G-MK013", 0)], "1");
   assert.equal(inquiry.price, null);
   assert.equal(inquiry.warehouseNetUnitSatang, 0);
@@ -161,9 +167,9 @@ test("wrong-company and ambiguous selection records fail rather than publishing 
 
 test("uncurated homepage and quotation products keep their existing naming and eligibility", () => {
   const source = liveProduct("NOT-IN-THE-FIVE-SHEETS");
-  assert.equal(source.storefrontName, undefined);
+  assert.equal(source.storefrontName, source.name);
   assert.equal(productCardData(source).name, warehouseDetailProduct(source).name);
   assert.equal(pricedProducts([source]).length, 1);
-  assert.equal(warehouseStorefrontProducts([source], "1")[0].name, source.warehouseName);
+  assert.equal(warehouseStorefrontProducts([source], "1")[0].name, source.name);
   assert.equal(pricedProducts([source])[0].documentName, source.warehouseName);
 });

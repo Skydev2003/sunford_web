@@ -62,6 +62,7 @@ type ItemRow = {
   usage_family?: string | null;
   sku: string;
   product_name: string;
+  product_short_name: string | null;
   unit: string;
   sale_price: string;
   master_item_id: string;
@@ -83,6 +84,14 @@ async function readWarehouseRpc(skus: string[] | null = null) {
     [Number(process.env.WAREHOUSE_COMPANY_ID), skus],
   );
   for (const row of result.rows) {
+    if (
+      !Object.hasOwn(row, "product_short_name") ||
+      (row.product_short_name !== null &&
+        (typeof row.product_short_name !== "string" ||
+          !row.product_short_name.trim() ||
+          row.product_short_name !== row.product_short_name.trim()))
+    )
+      throw new Error("Invalid Warehouse RPC short name");
     if (typeof row.sale_price !== "string" || !row.sale_price.trim())
       throw new Error("Invalid Warehouse RPC price");
     if (!Array.isArray(row.specifications) || !Array.isArray(row.components))
@@ -145,6 +154,7 @@ export function warehouseRows(rows: ItemRow[]) {
     items: rows.map((row) => ({
       sku: row.sku,
       product_name: row.product_name,
+      product_short_name: row.product_short_name,
       description: row.description,
       group_name: row.group_name,
       usage_family: row.usage_family,

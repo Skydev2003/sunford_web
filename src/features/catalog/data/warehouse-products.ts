@@ -1,10 +1,11 @@
 import mapping from "./warehouse-product-mapping.json";
-import { warehouseModelName } from "./catalog-card-names";
+import { warehouseDisplayName } from "./catalog-card-names";
 import type { Product } from "../types";
 
 export type WarehouseItem = {
   sku: string;
   product_name: string;
+  product_short_name?: string | null;
   unit: string;
   sale_price: number | null;
   image_url: string | null;
@@ -37,6 +38,11 @@ export function parseWarehouseProducts(data: unknown): {
       item.sku !== item.sku.trim() ||
       typeof item.product_name !== "string" ||
       !item.product_name.trim() ||
+      (item.product_short_name !== undefined &&
+        item.product_short_name !== null &&
+        (typeof item.product_short_name !== "string" ||
+          !item.product_short_name.trim() ||
+          item.product_short_name !== item.product_short_name.trim())) ||
       typeof item.unit !== "string" ||
       !item.unit.trim() ||
       (item.image_url !== null && typeof item.image_url !== "string") ||
@@ -53,6 +59,7 @@ export function parseWarehouseProducts(data: unknown): {
       previous &&
       (previous.sku !== item.sku ||
         previous.product_name !== item.product_name ||
+        previous.product_short_name !== item.product_short_name ||
         previous.unit !== item.unit ||
         previous.sale_price !== item.sale_price ||
         previous.image_url !== item.image_url)
@@ -128,18 +135,16 @@ export function warehouseCatalog(
       const cmsImage = existing?.image || existing?.media?.gallery[0]?.image || "";
       const warehouseImage = warehousePhotoUrl(item, savedImage?.(item));
       const net = item.sale_price === null ? null : Math.round(item.sale_price * 100);
-      const gross =
-        net === null ? null : net + Number((BigInt(net) * BigInt(7) + BigInt(50)) / BigInt(100));
-      if (gross !== null && !Number.isSafeInteger(gross)) return [];
+      if (net !== null && !Number.isSafeInteger(net)) return [];
+      const price = net === null || net === 0 ? null : net / 100;
+      const displaySource = item.product_short_name?.trim() || item.product_name.trim();
+      const displayName = warehouseDisplayName(item.sku, displaySource);
       return [
         {
           id: routeOwner?.id ?? `warehouse-${item.sku}`,
           slug: routeOwner?.slug ?? `warehouse-${encodeURIComponent(item.sku)}`,
-          name: warehouseModelName(
-            item.sku,
-            item.product_name,
-            entry?.name === item.product_name ? entry.modelCodes[0] : undefined,
-          ),
+          name: displayName,
+          storefrontName: displayName,
           warehouseName: item.product_name,
           warehouseGroup: item.group_name ?? "",
           warehouseUsageFamily: item.usage_family ?? "",
@@ -166,10 +171,8 @@ export function warehouseCatalog(
           sortOrder: routeOwner?.sortOrder ?? 1000 + index,
           sourceId: existing?.sourceId,
           sourceUrl: existing?.sourceUrl,
-          media: existing?.media
-            ? { ...existing.media, price: gross === null || net === 0 ? null : gross / 100 }
-            : undefined,
-          price: gross === null || net === 0 ? null : gross / 100,
+          media: existing?.media ? { ...existing.media, price } : undefined,
+          price,
           imageOverridden: existing?.imageOverridden,
           warehouseSku: item.sku,
           warehouseUnit: item.unit.trim() === "ไม่ระบุหน่วย (PEAK)" ? undefined : item.unit.trim(),

@@ -20,30 +20,36 @@ export function ProductsIndexContent({
   const sections = otherIds.length
     ? [...categories, { id: "uncategorized", label: "รายการอื่น ๆ", productIds: otherIds }]
     : categories;
-  const carousel = curatedCarousel.products.map((item) => {
+  const carousel = curatedCarousel.products.flatMap((item) => {
     const current = products.find(
       (product) =>
         product.id === item.id || (item.warehouseSku && product.warehouseSku === item.warehouseSku),
     );
-    return {
-      id: item.id,
-      categoryId: item.categoryId,
-      categoryLabel: item.categoryLabel,
-      model: current?.name ?? "",
-      subtitle: current?.subtitle ?? "",
-      capacity: current?.capacity ?? "",
-      readability: current?.readability ?? "",
-      connection: current?.connection ?? "",
-      image: current?.image ?? "",
-      href: current ? `/products/${current.slug}` : undefined,
-    };
+    if (!current?.image.trim()) return [];
+    return [
+      {
+        id: item.id,
+        categoryId: item.categoryId,
+        categoryLabel: item.categoryLabel,
+        model: current.name,
+        subtitle: current.subtitle ?? "",
+        capacity: current.capacity ?? "",
+        readability: current.readability ?? "",
+        connection: current.connection ?? "",
+        image: current.image,
+        href: `/products/${current.slug}`,
+      },
+    ];
   });
+  const carouselCategories = curatedCarousel.categories.filter((category) =>
+    carousel.some((product) => product.categoryId === category.id),
+  );
   return (
     <div className={styles.index} data-products-directory aria-labelledby="products-title">
       <h1 id="products-title" className={styles.pageTitle}>
         ผลิตภัณฑ์ทั้งหมด
       </h1>
-      <ProductsIndexCarousel products={carousel} categories={curatedCarousel.categories} />
+      <ProductsIndexCarousel products={carousel} categories={carouselCategories} />
       {sections.map((category) => {
         const members = products.filter((product) => category.productIds.includes(product.id));
         return (
@@ -86,7 +92,7 @@ export function ProductsIndexContent({
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}{" "}
-                        บาท (รวม VAT)
+                        บาท (ก่อน VAT)
                       </p>
                     ) : product.warehouseSku ? (
                       <p>สอบถามราคา</p>

@@ -1,9 +1,148 @@
 # Project state
 
-## Current product publication contract (2026-11-12)
+## Task: Export three Warehouse tables to one Desktop HTML file (2026-11-13)
 
+Status: "Ready to Code"
+Approval: "Pending"
+
+### Goal
+
+Create one standalone HTML file on the current user's Desktop containing the configured company's raw rows from `master_data.master_item`, `master_data.ai_products`, and `master_data.ai_product_facts`. Provide a simple sidebar with one link per table and readable tables without decorative presentation.
+
+### Scope In
+
+- Read all columns and all rows belonging to the configured `WAREHOUSE_COMPANY_ID`: currently 732 `master_item`, 138 `ai_products`, and 1,582 `ai_product_facts` rows.
+- Preserve the raw table values, format null/JSON/date values for readable HTML, and escape all cell content before embedding it.
+- Use one self-contained HTML file with three sidebar links and three table sections. Include the table name, row count, column headings, and generated timestamp.
+- Keep database access read-only and omit database URLs, credentials, S3 settings, and other environment values from the export.
+
+### Scope Out
+
+- No database write, schema/RPC change, API call, website/application code change, styling redesign, joined data from additional tables, or deployment.
+- No rows belonging to another company and no filtering to website-public products only.
+
+### UI/UX Brand Alignment
+
+- Reference: owner's request for a plain data-only HTML file with a sidebar.
+- Design: minimal layout CSS only for the sidebar, readable table borders, sticky headings, wrapping long text, and horizontal overflow.
+- Responsive: file remains usable in a desktop browser; mobile optimization is not part of this export.
+
+### Input / Output
+
+- Input: live Warehouse PostgreSQL through the existing `WAREHOUSE_DATABASE_URL` and configured `WAREHOUSE_COMPANY_ID`, read in a read-only transaction.
+- Output: one standalone `.html` file on the current user's Desktop.
+
+### Acceptance Criteria
+
+- [ ] The HTML contains exactly the company-scoped rows read at export time from all three requested tables and every current column in each table.
+- [ ] Sidebar links navigate to `master_item`, `ai_products`, and `ai_product_facts`; each section displays its table name, row count, headings, and rows readably.
+- [ ] Raw values are HTML-escaped; null and JSON values are unambiguous; no credentials or connection settings are embedded.
+- [ ] Independent verification compares exported row/column counts with fresh read-only database counts and checks the HTML opens locally with all three sections.
+
+### Missing Information
+
+- None. The requested three tables, single-file format, Desktop destination, sidebar separation, and plain presentation are explicit.
+
+### Approval Record
+
+- Pending approval of this Spec/Plan before creating the Desktop file.
+
+## Task: Align all displayed prices with standard_sale_price (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner confirmed raw standard_sale_price display and separate quotation VAT"
+
+### Goal / Verified Current State
+
+- Owner requested “ราคาปรับให้ตรงกับ standard_sale_price ทั้งหมดครับ”.
+- Checked-in RPC already selects `master_item.standard_sale_price` as `sale_price`. The catalogue projection treats it as net, adds7% VAT and exposes the gross amount as `price`/media price. Quotations already use the net source through `warehouseNetUnitSatang` and calculate VAT separately once per document.
+- Current API example: SKU G106094 has net185981satang and displayed price1990baht. G106254 has net126168satang and displayed price1350baht.
+- Approved contract: expose/display the source amount directly across storefront consumers and media price fields, change the two existing “รวม VAT” labels to “ก่อน VAT”, retain quotation unit prices from the same source and retain separate quotation VAT calculations. Preserve zero/null inquiry behaviour and product eligibility. This supersedes prior gross storefront-price policy.
+
+### Missing Information
+
+- None. Owner explicitly confirmed: “ใช่ครับ แสดงราคาตรงตาม standard_sale_price ไม่บวก VAT ส่วนใบเสนอราคาคำนวณ VAT แยกตามเดิม อนุมัติให้ดำเนินการครับ”.
+
+### Acceptance / Scope
+
+- [x] Every public positive-priced SKU has `price` equal to its exact source `standard_sale_price` in baht; zero/null remain inquiry. Catalogue media/configurator prices use the same amount.
+- [x] Existing price labels truthfully say “ก่อน VAT”; price display is verified at390/834/1440px.
+- [x] Quotation unit prices remain raw source values, with quantity extended net and7% VAT calculated separately once; quotation totals/PDF regression passes.
+- [x] Scoped unit/browser, TypeScript, lint, format and diff checks pass. No RPC/source-price/database write or new price placement.
+
+### Verification / Current State
+
+- Shared catalogue/media price now equals source net satang divided by100, without the former7% display uplift. Configurator uses the same source price. Existing two VAT labels say “ก่อน VAT”; quotation implementation is unchanged.
+- Direct read-only table/RPC/API comparison passes for all486public products:357positive source prices and129inquiry products,0mismatches. Example G106094 displays1859.81baht instead of1990; quotation retains185981satang as the net unit price.
+- Focused unit tests34/34 and Chrome6/6 pass:390/834/1440px cards/details, all-SKU direct-source parity, quantity2quotation totals/PDF and an accessory quotation. The PDF test intercepts registry issuance and does not issue a real document number. Inspected all six card/detail screenshots. Diagnostic Warehouse page rendered with before-VAT labels and no old gross-VAT label.
+- TypeScript, scoped ESLint/Prettier and `git diff --check` pass. Full unrelated catalogue/browser suites and production build not run. No qualifying Next.js feedback candidate; no database/RPC write, commit, push or deployment.
+
+## Task: Remove featured and view controls from product lists (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner said อนุมัติครับ ดำเนินการตามแผนได้เลย."
+
+### Goal / Scope
+
+- Remove the pictured “สินค้าแนะนำ” toggle and grid/list view switcher from product-list toolbars rendered by `ProductCategoryMock`, including category/subcategory listings and the all-products finder dialog.
+- Always retain the existing default grid presentation. Remove only obsolete featured-filter/view-mode state and handlers; preserve current product ordering, search, category filters, pagination, comparison and product content.
+- Reference: owner's two control screenshots and “หน้าที่เป็นสินค้ารวมเอาออก”. No brand/token/layout redesign; reuse existing toolbar styles. No Warehouse/API/global-style change.
+
+### Acceptance Criteria
+
+- [x] Featured toggle and view switcher are absent from all owning list variants at390/834/1440px; existing grid cards remain visible.
+- [x] Search, category selection, pagination/reset and comparison still work. Existing regressions no longer interact with the removed controls.
+- [x] Scoped TypeScript/lint/format/browser checks pass and responsive screenshots are inspected.
+
+### Missing Information / Approval Record
+
+- None. Owner approved the presented component/test-only plan: “อนุมัติครับ ดำเนินการตามแผนได้เลย.”.
+
+### Verification / Current State
+
+- Removed featured/view controls and their obsolete local state/filter/reset handlers. Lists retain the existing grid, default ordering and comparison tool. Updated the eight approved regression files to assert absence instead of interacting with retired controls.
+- Focused Chrome passes3/3 at390/834/1440px, covering five category finder dialogs and five standalone subcategory listings per width (30surface checks). Search/no-results/reset, pagination, preserved initial order and comparison add/remove/cancel pass. Existing empty Warehouse groups retain their truthful empty state. Page errors0; containment passes.
+- Inspected all six finder/listing screenshots across the three widths. TypeScript, scoped ESLint/Prettier and diff checks pass. The full historical eight-file browser suite was not run; focused current-data checks cover the changed component. No qualifying Next.js feedback candidate, shared CSS/API/data change, commit, push or deployment.
+
+## Task: Show only photographed products in the products carousel (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner said อนุมัติครับ ดำเนินการตามแผนได้เลย"
+
+### Goal / Scope
+
+- Only the first `/products` rotating carousel: select current public Warehouse products with nonblank primary images; omit missing products/images and dropdown categories with no selected products.
+- Restore exact identities for TIS-150-JE62ZR (`G108562`), CCS-150-JC62Z (`G108678`) and LED-R1 (`G107251`); replace unavailable LP53 with photographed LP50 (`G107282`) in the existing accessory slot.
+- Current read-only audit:36slots,10unresolved/image-empty slots. The proposed selection yields30photographed products across10categories. Indicators/platforms have no current public photos and are omitted from this carousel until eligible photos exist.
+- Preserve source-only product text/photos, existing presentation and other page sections. No Warehouse writes or shared CSS changes.
+
+### UI / Input / Output
+
+- Reference: owner screenshot and request to show products with photos in this section; retain existing brand tokens/layout/interaction.
+- Input: existing curated slots and current `/api/products` data. Output: no empty carousel slots, truthful names/links, matching category options and counter.
+- Responsive verification:390px,834px,1440px.
+
+### Acceptance Criteria
+
+- [x] Every selected product resolves to the exact current Warehouse product and its own nonblank image; every carousel image decodes in Chrome.
+- [x] No empty name/image slot or category with no selected product; next/previous, dropdown, counter and detail links match the filtered selection.
+- [x] Scoped browser regression, TypeScript, lint, formatting and diff checks pass; screenshots inspected.
+
+### Missing Information / Approval Record
+
+- None. Owner explicitly approved the presented30-product/10-category selection and file plan: “อนุมัติครับ ดำเนินการตามแผนได้เลย”.
+
+### Verification / Current State
+
+- Server-side carousel projection now omits unresolved products and blank primary images; dropdown options follow the surviving categories. Exact SKU mappings restore the three approved models; LP50 replaces the unavailable LP53 slot with current Warehouse content.
+- Current live selection is30products across10categories,3per category. Full carousel Chrome suite passes14/14 across320/390/834/1440/1887px. All30images decode with positive dimensions at390/834/1440px; all30names, counters and detail hrefs match live products at each width. Existing gestures, wheel, dropdown, detail-return and containment checks pass.
+- Inspected accessory screenshots at390/834/1440px: LED-R1, LP50 and DRW-350 have visible real images, with counter28/30 and no blank slots or horizontal overflow. TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No qualifying Next.js feedback candidate; no commit, push or deployment.
+
+## Current product publication contract (2026-11-13)
+
+- All storefront `price`/media/configurator values use `standard_sale_price` directly before VAT; zero/null remain inquiry. Quotations retain source net unit prices and calculate7% VAT separately once per document, per owner approval on2026-11-13.
 - Publish the full public result of `ecommerce.get_website_products`, retaining `is_active=true AND is_saleable=true` and existing company/deletion/unit/nonnegative-price guards. Continue hiding X-prefixed and calibration SKUs.
-- Excel five-NAV-sheet metadata overrides existing short display names and primary categories only; it no longer limits product visibility. Other live records use their actual Warehouse names and source-evidence taxonomy. The inactive-inclusive SQL proposal was reviewed but never approved or installed.
+- Display names choose trimmed nonblank Warehouse `item_short_name`, otherwise `item_name`; show only a safely extracted machine/model name, or preserve the complete selected source when no model can be extracted. Full `item_name` remains in `warehouseName`. Excel five-NAV-sheet metadata overrides primary categories only and no longer controls names or product visibility. The inactive-inclusive SQL proposal was reviewed but never approved or installed.
 - Verified current public catalogue:486SKUs, including375unchanged existing records and111additional real-source records. Preserve homepage/Hero presentation and layout, quotation/source prices/VAT and all Warehouse-only missing-field rules. Counts are observations, not hardcoded constraints.
 
 ## Task: Shorten Excel item_name to concise product/model names (2026-11-12)
@@ -7748,3 +7887,256 @@ Remove the pictured price presentation from product-category cards on `/products
 
 - Owner said “เอาส่วนแสดงราคาออกครับ” and supplied the price crop.
 - Owner approved the first concrete plan, but browser verification proved that plan named the wrong owning surface. The attempted ProductsOverview source/test edits were fully restored before delivery. Per project process, the corrected source path and `/products`-only blast radius require a fresh approval.
+
+## Task: Use item_short_name as the source for model-only display names (2026-11-13)
+
+Status: "Ready to Code"
+Approval: "Approved — owner approved the model-first/full-source-fallback plan and added item_code search coverage"
+
+### Goal
+
+Use `master_data.master_item.item_short_name` as the primary source for website product names and display only the safely identifiable machine/model name. For rows without a nonblank `item_short_name`, use `item_name` as the fallback source and apply the same extraction. If the selected source contains no safely extractable machine/model name, display that selected source text in full rather than replacing it with a SKU or inventing a name.
+
+### Scope In
+
+- Extend `ecommerce.get_website_products(bigint, text[])` to return the current full `product_name` (`item_name`) and nullable trimmed `product_short_name` from `item_short_name` without changing source rows.
+- Resolve one public display name before it reaches homepage product features, `/products`, category/finder cards, details, Navbar search, comparison and quotation selection: choose trimmed nonblank `product_short_name`, otherwise trimmed `product_name`; run the existing source-grounded model extraction; if extraction returns only the SKU fallback, retain the chosen source text in full.
+- Keep full `item_name` in `warehouseName` for full-name search, traceability and quotation document lines.
+- Retain category overrides from the Excel metadata, but stop using its `name` field after the Warehouse model-only rule is approved.
+- Preserve SKU/product identity and `warehouseModelCodes` independently from visible text so classification, subcategories and configurator behaviour do not depend on a human-facing phrase.
+- Treat Warehouse `item_code` as the searchable SKU identity already carried by RPC `sku` → `warehouseSku` (and quotation product `id`). Preserve and verify item-code search in the Navbar overlay, catalogue/finder/category search and quotation picker; add application search code only if a verified surface does not already include this identity.
+
+### Scope Out
+
+- No write to Warehouse product rows, names, prices, statuses, categories or images.
+- No change to publication eligibility, X/calibration exclusions, URLs/IDs, prices/VAT, facts/components, images, quotation calculations or registry.
+- No layout/CSS/global component, dependency, route, commit, push or production deployment change.
+
+### UI/UX Brand Alignment
+
+- Reference: current model-only product labels and the owner's clarification “ใช้ item_short_name ครับแต่เอาแค่ชื่อเครื่องพอ”.
+- Confirmed examples: `item_short_name = เครื่องชั่ง TMS-60-AW31` displays `TMS-60-AW31`; a blank short name with `item_name = MK845534 SUNFORD เครื่องชั่ง-นับจำนวน KAH5000S 5กก./1ก.` displays `KAH5000S`; a source without a safely extractable model displays its complete selected source text.
+- Responsive: verify representative scale, indicator/POS/accessory, extracted fallback and preserved-full-source rows at 390px and 1440px without changing typography or layout.
+
+### Input / Output
+
+- Verified read-only schema: `item_name` and `item_short_name` are `text NOT NULL`. Current eligible rows are 516:190 with a nonblank short name and326 requiring the fallback source. Current public rows are486:190 short-name sources and296 fallback sources.
+- Approved safe wrapper around the existing extraction:269of486current public rows yield a model candidate;217yield only its SKU sentinel and therefore preserve the chosen source text instead. Compared with the current Excel/full-name display policy,87current public names change. These are observations, not hardcoded limits.
+- Output: a stable model-first `Product.name`/`storefrontName` with a full-source fallback, while `Product.warehouseName=item_name` remains unchanged.
+
+### Acceptance Criteria
+
+- [ ] Display names choose nonblank `item_short_name`, otherwise `item_name`; a safely identified model is displayed alone, while a non-extractable source is displayed in full and never replaced by the SKU sentinel.
+- [ ] Scale examples such as `เครื่องชั่ง TMS-60-AW31` display only `TMS-60-AW31`; valid variants such as suffix `S` are not lost.
+- [ ] Non-machine/descriptive products without a safe model do not become unrelated SKU labels; their selected source text remains exact after trimming.
+- [ ] Full-name search and quotation document lines retain exact `item_name`; SKU set, categories, model/configurator identity and all non-name fields remain unchanged.
+- [ ] Entering an exact or case-insensitive `item_code` finds the matching public product in Navbar search, catalogue/finder/category search and the quotation picker. Hidden X/calibration or otherwise unpublished rows remain unavailable.
+- [ ] RPC security/data invariants, focused/full catalogue tests, TypeScript, scoped lint/format/diff and responsive browser regressions pass.
+
+### Missing Information
+
+- None. The owner confirmed that a fallback `item_name` should be reduced to the machine/model when safely possible and otherwise shown in full. The same no-SKU-sentinel fallback is applied to the primary `item_short_name` source.
+
+### Approval Record
+
+- Owner first requested `item_short_name`, falling back to `item_name` when absent.
+- Owner clarified: “ใช้ item_short_name ครับแต่เอาแค่ชื่อเครื่องพอ”. This supersedes the exact-whole-field display assumption.
+- Owner completed the fallback rule: “ถ้า item_name ก็ไม่มีชื่อที่สามารถเอามาตัดได้ ก็ให้คงชื่อ item_name เต็มๆไว้ให้แสดงหน้าเว็บเลยครับ”. This completed the naming contract before approval.
+- Owner approved the completed plan and added: “โอเคตามนั้นครับ แต่ขอเพิ่มอีกส่วนคือ การค้นหาให้สามารถค้นชื่อ item_code แล้วเจอสินค้าได้ด้วยครับ”. This explicitly approves the model-first/full-source-fallback RPC/application scope plus item-code search verification and any scoped search fix listed in the Plan.
+
+### Risk / Rollout
+
+- R1: the shared RPC return table will gain one field and requires transaction-safe function replacement. No source row is mutated.
+- The display extraction has cross-site and configurator blast radius. Install the backward-compatible RPC field first, then the approved app rule; roll back app naming before restoring the prior function definition/comment/ACL.
+
+## Task: Simplify carousel copy and match the reference dropdown (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner explicitly approved the revised combined Spec/Plan"
+
+### Goal
+
+On the first product carousel of `/products`, show only the active product name in the copy area, replace the native category select with the supplied reference dropdown pattern, and remove the pictured “ส่วนถัดไป ↓” link.
+
+### Scope In
+
+- Keep the active product name (`h2`) and remove its subtitle and capacity/readability line from this carousel presentation only.
+- Replace the native category `<select>` with an accessible custom dropdown using the existing real category labels and selection behaviour.
+- Match the supplied MP4 pattern: bordered trigger and rotating chevron; a white panel expands downward before its options fade in; the current/hovered option uses the reference lavender highlight; the list has a slim scrollbar; closing fades options before the panel collapses.
+- Support pointer, touch, Arrow/Home/End/Enter/Space/Escape keyboard control, focus return, outside-click close and reduced-motion fallback. Selecting a category keeps the current behaviour of moving to its first product.
+- Remove the “ส่วนถัดไป ↓” link and its component-local `.skip` styling.
+- Update the existing carousel browser regression for simplified copy, dropdown states/selection/accessibility, absent link and ordinary-scroll access to the following section.
+
+### Scope Out
+
+- No change to product data, active product name source, product images, carousel movement/detail dialog, following sections, Navbar, global styles, routes or ordinary page scrolling.
+- Do not copy the reference's placeholder “State”, “Select state” or sample US-state options; those are demonstrative content, not instructions. Use the website's existing Thai category labels and font.
+
+### UI/UX Brand Alignment
+
+- Reference: owner-supplied product screenshot, `C:/Users/cityc/Downloads/5c47301f9452e91845e445baed388728.mp4`, and the requests “ลบ” and “แสดงแค่ชื่อสินค้าส่วนดรอปดาวเอาตามรูปแบบคลิปนี้100%”.
+- The reference video was inspected across its14.74-second timeline: panel and option layers animate separately, selected/hover state is lavender, the arrow flips, and the panel uses a bounded scroll region. Implement that interaction structure exactly while substituting real SUNFORD content.
+- Responsive: verify name-only copy, dropdown open/close/selection and ordinary scrolling at 390px and1440px without overflow or collision with the carousel.
+
+### Acceptance Criteria
+
+- [x] The carousel copy shows the active product name only; subtitle and capacity/readability are absent from this presentation without changing source data or the detail dialog.
+- [x] The custom category dropdown matches the reference's trigger, chevron, expanding/collapsing panel, delayed option fade, lavender current/hover state and slim scrollbar using real category labels.
+- [x] Pointer/touch, keyboard, outside click, Escape, focus and reduced-motion behaviour work; selecting a category moves to its first real product.
+- [x] No visible or accessible “ส่วนถัดไป ↓” link remains.
+- [x] The next product section remains reachable through ordinary page scrolling without horizontal overflow.
+- [x] Scoped format, lint, TypeScript and browser checks pass.
+
+### Missing Information
+
+- None.
+
+### Approval Record
+
+- Owner first requested “ลบ” and supplied the “ส่วนถัดไป ↓” screenshot.
+- Before approving that narrow plan, the owner added a product screenshot and MP4 reference and requested: “แสดงแค่ชื่อสินค้าส่วนดรอปดาวเอาตามรูปแบบคลิปนี้100%”. The revised combined scope was then presented for approval.
+- Owner explicitly replied “อนุมัติ” to the revised combined scope covering name-only copy, the reference dropdown and link removal.
+
+### Verification / Current State
+
+- The first `/products` carousel now renders only its real active product name beneath the category control. Subtitle and capacity/readability source values remain available elsewhere and were not mutated.
+- The category control is an accessible custom listbox using the12existing Thai category labels. Its trigger/chevron, separately timed white panel and option fade, lavender selected/hover state, bounded scrollbar and close sequence follow the supplied MP4 pattern. Pointer, outside click, Arrow/Home/End/Enter/Space/Escape/Tab, focus return and reduced-motion paths are covered.
+- The “ส่วนถัดไป ↓” link and only its local styles were removed. Ordinary page scrolling still reaches `#products-category-scales`; carousel movement,36real products, images, model row, detail dialog and later sections remain functional.
+- Chrome carousel regression passes14/14 across320/390/834/1440/1887px, including touch gestures and new name/dropdown checks at390/1440px. Open and closed screenshots at both widths were inspected; no horizontal overflow was observed.
+- TypeScript, scoped ESLint, scoped Prettier and `git diff --check` pass. No dependency, global style, data, route, commit, push or deployment change; no qualifying Next.js feedback candidate.
+
+## Task: Apply SUNFORD dropdown colours and center the product name (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner explicitly approved the revised SUNFORD-theme CSS/test scope"
+
+### Goal / Scope
+
+- On the first `/products` carousel only, remove the persistent purple border from the category trigger while retaining its chevron, open/close animation, options and selection behaviour.
+- Replace the remaining purple/lavender dropdown accents with the existing SUNFORD `--red` token and a restrained pale-red selection/hover background, including the scrollbar and keyboard focus cue.
+- Center the active product name horizontally within the same responsive width as the dropdown trigger.
+- Preserve product data, typography size, carousel/detail behaviour, category selection, keyboard focus visibility and every other page section.
+
+### Reference / Responsive
+
+- Reference: the owner's supplied screenshots and requests “เอากรอบม่วงออกปรับให้ชื่อสินค้าอยู่ตรงกลางระหว่าง dropdown” and “เปลี่ยนเป็นสีของธีมบริษัท”. Theme source: `--red: #d7192d` in `src/styles/base.css`.
+- Verify closed/open states at390px and1440px, with no overflow or alignment regression.
+
+### Acceptance Criteria
+
+- [x] The closed trigger has no purple frame; keyboard focus remains visible in SUNFORD red without restoring the persistent frame.
+- [x] Selected/hovered options and the scrollbar use SUNFORD red/pale red with no remaining purple accent.
+- [x] The product name is centered under the dropdown across its responsive width.
+- [x] Existing dropdown interaction and scoped responsive regressions pass.
+
+### Missing Information
+
+- None.
+
+### Approval Record
+
+- Owner requested the alignment/frame adjustment, then added “เปลี่ยนเป็นสีของธีมบริษัท” with a screenshot identifying the purple option highlight and scrollbar. The revised CSS/test scope was presented for approval.
+- Owner explicitly replied “อนุมัติ” to the revised scope covering frame removal, SUNFORD theme colours and centered product-name alignment.
+
+### Verification / Current State
+
+- Removed the persistent trigger border. The chevron, keyboard focus cue and scrollbar now use `var(--red)`; selected/hovered options use pale red `#f8d9dc`. No purple accent remains in this control.
+- The trigger and active product heading share one responsive width (300px desktop,280px mobile maximum), and their measured horizontal centers differ by less than1px at390px and1440px.
+- Chrome carousel regression passes14/14 across320/390/834/1440/1887px. Closed/open screenshots at390px and1440px were inspected; dropdown interaction, touch gestures, detail return, ordinary page scrolling and horizontal containment remain intact.
+- TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No component logic, data, global style, dependency, route, commit, push or deployment change; no qualifying Next.js feedback candidate.
+
+## Task: Use the requested dark-gray dropdown chevron (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner replied “y” to the exact CSS/test-only scope"
+
+### Goal / Scope
+
+- Change only the first `/products` carousel dropdown chevron from SUNFORD red to the requested dark gray, matching the dropdown text colour `#504a59` shown in the supplied screenshot.
+- Preserve its size, position, rotation, animation and every other dropdown style/behaviour.
+
+### Acceptance Criteria
+
+- [x] Chevron computes to `rgb(80, 74, 89)` in closed/open states at390px and1440px.
+- [x] Scoped format and Chrome checks pass with no other visual or logic change.
+
+### Approval Record
+
+- Owner supplied the arrow reference and said “ลูกศรสีนี้ครับ”. After the exact CSS/test-only scope was presented, the owner replied “y”, approving it.
+
+### Verification / Current State
+
+- The chevron now inherits the dropdown text colour `#504a59`; its size, position, rotation and animation are unchanged.
+- Focused Chrome passes2/2 at390px and1440px. Computed-style assertions confirm `rgb(80, 74, 89)`, and inspected closed/open screenshots show the requested dark-gray chevron without overflow.
+- TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No component logic, data, global style, dependency, route, commit, push or deployment change; no qualifying Next.js feedback candidate.
+
+## Task: Neutral trigger focus and centered compact chevron (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner replied y to the presented CSS/test-only plan"
+
+### Goal / Scope
+
+- Remove the pale-red trigger background and red left focus bar pictured in the first `/products` carousel dropdown.
+- Keep keyboard focus identifiable through a neutral text underline without adding a filled colour or frame.
+- Place the category text and chevron close together as one centered group, sharing the same center line as the centered product name below.
+- Preserve the red dropdown option highlight, hidden scrollbar, animation, selection and all component logic/data.
+
+### Reference / Acceptance Criteria
+
+- Reference: the supplied screenshot and request “สีส่วนนี้ไม่ต้องใส่และปรับลูกศรให้ชิดข้อความกว่านี้พร้อมให้อยู่กึ่งกลางระหว่างข้อความสินค้าด้วยครับ”.
+- [x] Trigger focus has no tinted fill, side bar or persistent frame; neutral focus remains visible.
+- [x] Category text and chevron are close together and their group center aligns with the product-name center within1px at390px/1440px.
+- [x] Dropdown interactions and scoped checks pass without overflow.
+
+### Missing Information
+
+- None.
+
+### Approval Record
+
+- Owner requested the pictured visual refinement. The concrete CSS/test-only scope was then presented for approval.
+- Owner replied “y”, approving the presented neutral-focus and centered compact-chevron plan.
+
+### Verification / Current State
+
+- Trigger focus now keeps a white background with no shadow/side bar/frame and uses a neutral text underline. The category text and red chevron use an8px layout gap and are centered as one group above the centered product name.
+- Focused Chrome passes2/2 at390px and1440px. Geometry assertions confirm the trigger and product-name centers differ by under1px, the combined text-chevron visual center differs by under2px, and the gap remains between2px and12px. Closed/open screenshots at both widths were inspected with no overflow.
+- TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No component logic, data, global style, dependency, route, commit, push or deployment change; no qualifying Next.js feedback candidate.
+
+## Task: Hide the category dropdown scrollbar (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner explicitly approved the scrollbar CSS/test scope"
+
+### Goal / Scope
+
+- Hide the visible scrollbar track, thumb and native scrollbar arrows in the first `/products` carousel category dropdown.
+- Preserve mouse-wheel, touch, trackpad and keyboard scrolling so all12categories remain reachable.
+- No dropdown sizing, animation, colours, product data, component logic or other page changes.
+
+### Reference / Acceptance Criteria
+
+- Reference: the owner's supplied scrollbar screenshot and request “เอา scroll ออก”.
+- [x] No visible scrollbar or arrows remain at390px and1440px.
+- [x] All12options remain reachable and selectable by pointer/touch/keyboard without overflow.
+- [x] Scoped format, TypeScript and Chrome regressions pass.
+
+### Missing Information
+
+- None.
+
+### Approval Record
+
+- Owner requested removal of the pictured scrollbar. The concrete CSS/test-only scope was then presented for approval.
+- Owner explicitly replied “อนุมัติ” to hiding the scrollbar visuals while preserving scrolling interaction.
+
+### Verification / Current State
+
+- The category panel retains `overflow-y: auto` but uses `scrollbar-width: none` and a hidden zero-size WebKit scrollbar, removing the track, thumb and native arrows without changing panel size or interaction.
+- Focused Chrome checks pass2/2 at390px and1440px. Assertions confirm both scrollbar implementations are hidden, wheel scrolling changes `scrollTop`, and keyboard End/Enter still reaches/selects the final category. Open screenshots at both widths were inspected with no visible scrollbar or overflow.
+- TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No component logic, data, global style, dependency, route, commit, push or deployment change; no qualifying Next.js feedback candidate.
+
+## Task: Assess master_data for the specification builder (2026-11-13)
+
+Status: "Complete". Approval: owner requested a read-only feasibility assessment. Verified current company 1 RPC has 516 eligible products, 87 with specification arrays and three with component arrays (four component lines). Existing builder reads the supported-indicator and supported-platform fact titles or explicit head component links. Live attribute definitions for those relationships, load-cell model/count, structure material and ports exist, but the currently eligible verified RPC facts contain no supported-head/platform values and the existing builder derives zero head/platform pairs. Existing components are on SKU 11, G106155 and G106193 and yield no indicator inclusion. Use verified facts to drive capacity/readability/material/dimension/connection filters where present. Confirmed pairs require populated verified relationship data or explicit component membership. No application or Warehouse data changed.

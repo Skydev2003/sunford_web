@@ -107,6 +107,12 @@ export function warehouseModelName(sku: string, name: string, mappedModel?: stri
   return sku;
 }
 
+export function warehouseDisplayName(sku: string, sourceName: string): string {
+  const source = sourceName.trim();
+  const model = warehouseModelName(sku, source);
+  return model === sku ? source : model;
+}
+
 export function catalogCardName(
   product: Pick<Product, "name" | "sourceId"> &
     Partial<Pick<Product, "warehouseModelCodes" | "warehouseSku">>,

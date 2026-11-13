@@ -3,16 +3,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ChevronLeft,
-  ChevronRight,
-  GitCompareArrows,
-  Grid2X2,
-  List,
-  Package,
-  Search,
-  Star,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, GitCompareArrows, Package, Search } from "lucide-react";
 import { CategoryFeatureIcon } from "@/features/home/components/category-feature-icons";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
@@ -92,8 +83,6 @@ export function ProductCategoryMock({
 }) {
   const [category, setCategory] = useState(categoryId ?? "all");
   const [subcategory, setSubcategory] = useState(subcategoryId ?? "all");
-  const [featured, setFeatured] = useState(false);
-  const [mode, setMode] = useState<"grid" | "list">("grid");
   const [pagination, setPagination] = useState({ key: "", limit: 24 });
   const subcategoryTrack = useRef<HTMLDivElement>(null);
   const categoryTrack = useRef<HTMLElement>(null);
@@ -144,12 +133,10 @@ export function ProductCategoryMock({
         ...missingModels.map((entry) => ({ model: entry.model })),
       ];
   const matching = entries
-    .filter(
-      ({ model, product }) =>
-        (!featured || product?.featured) &&
-        `${model} ${product?.warehouseSku ?? ""} ${product?.name ?? ""} ${product?.warehouseName ?? ""} ${product?.subtitle ?? ""} ${product?.description ?? ""}`
-          .toLowerCase()
-          .includes(normalizedQuery),
+    .filter(({ model, product }) =>
+      `${model} ${product?.warehouseSku ?? ""} ${product?.name ?? ""} ${product?.warehouseName ?? ""} ${product?.subtitle ?? ""} ${product?.description ?? ""}`
+        .toLowerCase()
+        .includes(normalizedQuery),
     )
     .sort((a, b) =>
       activeSubcategory?.entries
@@ -158,7 +145,7 @@ export function ProductCategoryMock({
     );
   const realCount = matching.filter((entry) => entry.product).length;
   const mockCount = matching.length - realCount;
-  const filterKey = `${category}:${subcategory}:${normalizedQuery}:${featured}`;
+  const filterKey = `${category}:${subcategory}:${normalizedQuery}`;
   const limit = pagination.key === filterKey ? pagination.limit : 24;
   const applyCategory = useCallback(
     (id: string, childId = "all") => {
@@ -486,50 +473,17 @@ export function ProductCategoryMock({
             {realCount} รายการ{mockCount > 0 && ` · ${mockCount} รุ่นตัวอย่าง (Mock)`}
           </p>
           <div className={styles.tools} role="group" aria-label="เครื่องมือรายการสินค้า">
-            <button
-              type="button"
-              aria-pressed={featured}
-              onClick={() => {
-                setFeatured(!featured);
-                setPagination({ key: "", limit: 24 });
-              }}
-            >
-              <Star size={17} aria-hidden="true" />
-              สินค้าแนะนำ
-            </button>
             <button type="button" aria-pressed={compareMode} onClick={startCompare}>
               <GitCompareArrows size={17} aria-hidden="true" />
               เลือกสินค้าเพื่อเปรียบเทียบ
             </button>
-            <div className={styles.views} role="group" aria-label="รูปแบบรายการสินค้า">
-              <button
-                type="button"
-                aria-label="แสดงแบบตาราง"
-                aria-pressed={mode === "grid"}
-                onClick={() => setMode("grid")}
-              >
-                <Grid2X2 size={18} aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                aria-label="แสดงแบบรายการ"
-                aria-pressed={mode === "list"}
-                onClick={() => setMode("list")}
-              >
-                <List size={19} aria-hidden="true" />
-              </button>
-            </div>
           </div>
           {compareMode && (
             <p className={styles.compareHint}>เลือกได้สูงสุด 3 รุ่น จากนั้นกดดูการเปรียบเทียบ</p>
           )}
         </div>
 
-        <div
-          id="mock-product-results"
-          className={`${styles.grid} ${mode === "list" ? `${styles.list} ${cardStyles.list}` : ""}`}
-          aria-label="รายการสินค้า"
-        >
+        <div id="mock-product-results" className={styles.grid} aria-label="รายการสินค้า">
           {matching.slice(0, limit).map(({ product, model }) =>
             product ? (
               <CatalogProductCard
@@ -575,7 +529,6 @@ export function ProductCategoryMock({
               onClick={() => {
                 selectCategory("all");
                 setQuery("");
-                setFeatured(false);
               }}
             >
               ล้างตัวกรองทั้งหมด
