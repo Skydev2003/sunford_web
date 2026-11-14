@@ -1,26 +1,114 @@
-## Plan: Export three Warehouse tables to one Desktop HTML file (2026-11-13)
+## Plan: Remove service/operational rows and gloves from Website (2026-11-13)
 
 ### Files
 
-- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.html` — create the requested standalone data export.
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx` — edit only Website rows after approval.
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.backup-<timestamp>.xlsx` — exact rollback copy.
+- `spec.md`, `plan.md` — record approved set and verified results; no application source changes.
+
+### Steps
+
+- [x] Resolve the six borderline rows: owner selected the broader 74-row removal set.
+- [x] Record explicit approval to execute this final 74-row Spec/Plan.
+- [x] Hash/lock-check and back up the workbook; validate the exact approved removal SKU set against current Website data.
+- [x] Build a candidate by copying all sheets and removing only approved Website rows, preserving retained cells/styles/order and rebuilding the filter range.
+- [x] Verify removed/retained SKU sets, row/column counts, all existing non-Website cells/features, candidate reopen and ZIP integrity.
+- [x] Hash-guard the source, replace it only if unchanged/unlocked, then reopen and verify the final workbook.
+- [x] Record final results and backup path.
+
+### Impact / Rollback
+
+- R1 same-file Website-row deletion, mitigated by exact backup, explicit SKU-set verification, candidate-first generation and source hash guard. Rollback restores the backup.
+
+### Verification Results
+
+- Complete. Removed exactly 74 approved Website rows and retained 416 unique SKUs in their source A–Z order. Website remains 43 columns with filter `A1:AQ417`; no column became all-empty.
+- Full parity passed for 17,888 retained Website cells/styles and 132,528 cells/styles in the five unchanged sheets. No removal-rule row remains; the six real calibration-name scales remain. Final reopen/external-link/ZIP checks pass.
+- Final file SHA-256 `4f5df40693cdc8375641d0baab7680adb3a7b6de1b052e72a2a4c4cad62d4793`; rollback file `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.backup-20261113-165907.xlsx` retains source SHA-256 `c4cee2e596a7e8ec3778dc4ffec71c3b515a17f1ff7bffa1dea524fce77f91c7`.
+
+## Plan: Add a website-only worksheet while preserving Product (2026-11-13)
+
+### Files
+
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx` — read-only approved source; preserve all five current sheets and leave this externally locked file untouched.
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx` — approved final output because the original remained externally locked; create without overwriting an existing file.
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.backup-<timestamp>.xlsx` — create an exact pre-change rollback copy.
+- `spec.md`, `plan.md` — record approval and verified results; no application source changes.
+
+### Steps
+
+- [x] Confirm Ready to Code and record approval of the concrete 43-column live website layout.
+- [x] Hash/lock-check the current workbook, create and hash-verify a timestamped backup, then capture one bounded read-only `readWarehouseProducts()` snapshot.
+- [x] Build `Website` in a temporary candidate with nine core columns, 33 `spec_<title>` columns, one components JSON column, A–Z SKU ordering, blank missing cells, filter, frozen header and readable widths.
+- [x] Verify every item/core value, all formatted facts/components and output columns against the captured website snapshot. Compare every existing workbook cell/style/filter/view/link with the pre-change backup.
+- [x] Re-read the live website contract and compare every core value, spec and component with the captured candidate snapshot; regenerate if any value changed.
+- [x] Reopen/ZIP-check the candidate, then write the approved new Desktop filename without overwriting an existing file and reverify the final file. Leave the locked original untouched.
+- [x] Record final counts, hashes, backup path and verification results in Spec/Plan.
+
+### Impact / Rollback
+
+- R2 approved new-file delivery because the original remained externally locked. The original and exact timestamped backup remain untouched; rollback deletes only the new output after confirming its exact path.
+
+### Verification Results
+
+- Complete. Delivered `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx` with the five unchanged source sheets plus Website: 490 sorted rows, 43 columns, 1,366 verified spec values and four components.
+- Full existing-workbook parity passed for 132,528 cells/styles and sheet features. Candidate-to-snapshot full parity and an independent fresh live-to-snapshot canonical hash comparison both passed; canonical dataset SHA-256 `a7be06efce7839f0ed421c817620ef00165f1afdb120ef5184428741aa8b7739`.
+- Final XLSX reopen/filter/freeze/unique-SKU/external-link/ZIP checks pass. Final file SHA-256 `c4cee2e596a7e8ec3778dc4ffec71c3b515a17f1ff7bffa1dea524fce77f91c7`; locked original remains byte-identical to backup `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.backup-before-website-20261113-162128.xlsx`.
+
+## Plan: Merge the three edited Warehouse worksheets into Product (2026-11-13)
+
+### Files
+
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx` — preserve all current content and add only a `Product` worksheet.
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.backup-<timestamp>.xlsx` — create an exact rollback copy before replacement.
+- `C:\Users\cityc\Desktop\SUNFORD_master_item_company1_2026-11-12.xlsx` — read-only ID bridge; do not modify.
+- `spec.md`, `plan.md` — record approval and verified results; no application source changes.
+
+### Steps
+
+- [x] Confirm the Spec is Ready to Code and record owner approval for this merge structure.
+- [x] Hash and copy the edited workbook to the timestamped backup; read all three current source sheets and the original item-code/ID mapping without modifying either input.
+- [x] Validate unique/nonblank keys and complete joins: 732 unique item codes, 138 unique AI master-item IDs, 1,582 unique product/attribute fact pairs across 33 attributes.
+- [x] Build `Product` in a temporary candidate: one A–Z row per edited master item, prefixed AI columns, pivoted non-empty fact-field columns, blank missing cells, filter, frozen header, and readable widths.
+- [x] Compare every existing workbook cell/style/filter/view/native feature against the pre-change file, verify complete merge/value parity and candidate ZIP/reopen integrity, then confirm the edited source hash is unchanged before same-file replacement.
+- [x] Reopen and verify the final Desktop workbook, record results, and retain the backup for rollback.
+
+### Impact / Rollback
+
+- R1 because the user-edited workbook is replaced in place. Risk is loss of manual edits or a mismatched join if the file changes concurrently. Mitigation: exact timestamped backup, unique-key validation, candidate-first generation, full existing-workbook parity, and pre-replacement hash guard.
+- Rollback restores the timestamped backup to the original filename. Source worksheets remain untouched in the delivered workbook.
+
+### Verification Results
+
+- Complete. Added only `Product` to the same edited workbook, with 732 sorted rows and 147 columns. Joined 138/138 AI products and 1,582/1,582 facts across 33 attributes; emitted 128 fact columns with at least one non-empty value and checked 6,312 non-empty fact-field cells.
+- Verified all 24,777 existing cells/styles and existing sheet dimensions/filters/views/links unchanged. Final XLSX reopens with filter/frozen header, zero external links and valid ZIP. Final SHA-256 `e9015ac311e5593a2ebc1173d1793707aea03fc9dd8533fd5476516941efc581`.
+- Retained exact rollback file `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.backup-25691113-154637.xlsx` with original SHA-256 `05858edaa49ce280c626f5930ee2245fdc207578e444d0f10bd8a3540a71f0f1`. `WSS3KS_LED` is the sole post-source item and correctly has blank unrecoverable relationship/AI cells.
+
+## Plan: Export three Warehouse tables to one editable Desktop Excel file (2026-11-13)
+
+### Files
+
+- `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx` — create the requested editable workbook.
 - `spec.md`, `plan.md` — record the approved scope and actual verification results only; no application source files change.
 
 ### Steps
 
-- [ ] Confirm the Spec is Ready to Code and record the owner's approval for this scope.
-- [ ] In a read-only Warehouse transaction, select every current column and every row scoped to `WAREHOUSE_COMPANY_ID`, ordering `master_item` by item code/ID, `ai_products` by master item/ID, and `ai_product_facts` by product/attribute.
-- [ ] Generate one UTF-8 standalone HTML file with safely escaped values, a simple three-link sidebar, and one readable table section per requested table.
-- [ ] Re-read the generated file, verify its three sections and embedded row/column counts against fresh read-only database metadata/counts, and open it locally for a browser smoke check.
-- [ ] Record verification results and completion state in `spec.md` / `plan.md`.
+- [x] Confirm the Spec is Ready to Code and record the owner's approval for this scope.
+- [x] In one read-only Warehouse transaction, profile non-null counts and select every company-scoped row, omitting only columns whose non-null count is zero. Order `master_item` by item code/ID, `ai_products` by master item/ID, and `ai_product_facts` by product/attribute.
+- [x] Generate one editable XLSX with a `สารบัญ` navigation sheet and one plain, filtered, frozen-header data sheet per requested table. Keep row-level SQL nulls blank and serialize JSON values as readable text.
+- [x] Reopen the generated XLSX and verify sheet names, index links, row/column counts, omitted-column rule, typed/null/JSON values, filters, frozen panes, ZIP integrity, and absence of external links against fresh read-only database results.
+- [x] Record verification results and completion state in `spec.md` / `plan.md`.
 
 ### Impact / Rollback
 
-- R2, easily reversible. The only deliverable outside project documentation is a new Desktop HTML file. Rollback deletes that exact file after confirming its path. The database remains read-only and application code is untouched.
+- R2, easily reversible. The only deliverable outside project documentation is a new Desktop XLSX file. Rollback deletes that exact file after confirming its path. The database remains read-only and application code is untouched.
 - The exported file contains internal product, price, stock-control, image-key, and AI fact metadata. It should be handled as an internal data file and not published publicly without review.
 
 ### Verification Results
 
-- Pending approval and generation. Read-only discovery found 32 columns / 732 rows in `master_item`, 7 columns / 138 rows in `ai_products`, and 9 columns / 1,582 rows in `ai_product_facts` for the configured company at discovery time.
+- Complete. Final file: `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx` (298,417 bytes; SHA-256 `a45ea2df8a19ee550567b7727562c235223ceca200cc5473c69ba831a1010fa7`).
+- Read-only snapshot and fresh database verification both report `master_item` 732 × 32, `ai_products` 138 × 7, and `ai_product_facts` 1,582 × 9. No all-null columns were omitted. Full comparison passed for 38,628 data cells; 7,948 SQL nulls reopen blank.
+- Final XLSX reopens with four expected sheets, internal index links, header filters, frozen panes, zero external links and valid ZIP structure. No application/database/schema/dependency/release changes.
 
 ## Plan: Align all displayed prices with standard_sale_price (2026-11-13)
 
@@ -5971,3 +6059,46 @@ No product component, CSS/global layout, selection JSON, media, price, quotation
 - CSS-only refinement removes the focus fill/side bar/shadow, retains a neutral underline, reduces the text-chevron gap to8px and centers that group within the same width as the product heading.
 - Focused Chrome passes2/2 at390px/1440px. Geometry checks prove dropdown/product center delta under1px, combined control/product center delta under2px and a compact2–12px visual gap. Inspected closed/open screenshots show the requested neutral centered control without overflow.
 - Node24 TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No logic/data/global/dependency/route/commit/deploy change; no Next.js feedback candidate.
+## Plan: Remove thread products and audit other Website items (2026-11-14)
+
+### Files / Steps
+
+- Desktop `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx`: remove only the 20 explicit thread rows from Website, preserving all other contents.
+- Desktop timestamped `sunford-warehouse-master-ai-data-with-website.backup-thread-<timestamp>.xlsx`: exact rollback copy. Temporary candidate and verification script under a unique TEMP directory.
+- `spec.md`, `plan.md`: record requested scope and actual results.
+- [x] Inspect current workbook and identify explicit thread rows and other groups.
+- [x] Backup/hash-check, build candidate, compare all existing and retained cells/styles/features, reopen and ZIP-check.
+- [x] Original is open in Excel: deliver a new `sunford-warehouse-master-ai-data-with-website-no-thread.xlsx` on Desktop, leaving source untouched. Verify final file and deliver `sunford-website-other-items-review.md` with audit findings.
+
+### Verification
+
+20 thread SKUs removed; 396 × 43 Website data remains. Full parity: 17,028 retained Website cells and 132,528 non-Website cells/styles/native metadata. Final reopen/ZIP/hash verification passed. Output SHA-256 `e404ec2242b46286f368c02918a5067bb8722b8476d6ee6e61e366fd90216046`; exact backup is `sunford-warehouse-master-ai-data-with-website.backup-thread-20261114-084544.xlsx` on Desktop. Original unchanged.
+
+### Impact / Rollback
+
+R2 with exact backup and hash guard; restore backup to reverse this exact Website-only deletion. No database or application change.
+
+## Plan: Hide fees, gloves and threads from the live website (2026-11-14)
+
+- [x] Confirm requested scope using previous 74 operational/PPE and 20 thread exclusions; include independently confirmed DEVAPP fee.
+- [x] Update `src/features/catalog/data/warehouse-products.ts` with one metadata-aware public-item predicate and existing SKU guards; use it in parser/catalog.
+- [x] Update `src/features/services/warehouse-postgres.ts` to apply the same predicate to RPC rows before items/facts/components/image metadata are returned.
+- [x] Add regression coverage in `tests/catalog/warehouse-products.test.ts` and `tests/catalog/warehouse-postgres.test.ts`; add `tests/e2e/warehouse-product-exclusions.spec.ts` for shared API and list/detail checks at 390/1440px.
+- [x] Run scoped unit tests, TypeScript, ESLint/formatting, live read-only parity and browser checks. Use task-owned development server if none exists.
+- [x] Update `docs/warehouse/direct-postgres.md`, `spec.md`, `plan.md` with verified contract/results.
+
+Verification: focused 32/32; full catalogue 171/174 with three unrelated stale name/gross-price assertions (details in spec). Chrome API/SSR 3/3 at 390/1440px, explicitly JavaScript-disabled; interactive search remained unverified due development browser interaction timeouts. Live 395-item exact SKU parity with no-thread workbook minus DEVAPP and complete source-field parity; 1,366 facts/four components preserved. TypeScript/lint/format/app diff checks pass. Production build/deploy not run. Task-owned server stopped after checks.
+
+Impact: shared product visibility changes across consumers, including fresh quotation choices and homepage product feed. Preserve homepage campaign media and components; no UI redesign. Rollback restores this task's predicate/reader hunks. No commit/push/deployment or Warehouse write.
+
+## Plan: Verify interactive search and repair stale catalogue tests (2026-11-14)
+
+- [x] Diagnose search using actual accessible names, direct Chrome interaction and CPU sampling. Earlier timeout targets a nonexistent button on products pages; actual Webpack search flow succeeds.
+- [x] Update `tests/e2e/warehouse-product-exclusions.spec.ts` to use the real search button, JavaScript-enabled search/open/close/navigation plus exclusion regression at390/834/1440px. Verify on default Turbopack; compare Webpack if necessary without changing project configuration.
+- [x] Update `tests/catalog/local-site-content.test.ts`, `tests/catalog/warehouse-detail-data.test.ts`, `tests/catalog/warehouse-image-priority.test.ts` to match approved source-name/raw-price contracts.
+- [x] Run the full catalogue suite, TypeScript, scoped lint/format and interactive Chrome checks. Preserve existing application source and product exclusions.
+- [x] Update `spec.md`, `plan.md`, `MEMORY.md` with the corrected diagnosis, measured results and any actual limitation; stop task-owned server.
+
+Verification: full catalogue174/174; JavaScript-enabled Chrome5/5 in26.9s on default Turbopack/Node24. Includes homepage and products/detail search across390/834/1440px, clear/close/reopen/result navigation and hidden exclusions, no product-flow page errors. Screenshot review390/1440 passes. TypeScript/scoped lint/format/app diff checks pass. Only test/documentation files changed in this task; no application fix or framework workaround was needed after correct selectors. No build/deploy.
+
+Impact: test/documentation-only based on reproduced evidence; preserve production UI/data logic. Revert these hunks to roll back. No production deployment.

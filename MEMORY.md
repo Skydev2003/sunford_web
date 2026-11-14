@@ -1,5 +1,23 @@
 # Project Memory
 
+## Match the active search button before diagnosing a hang (2026-11-14)
+
+- Observed: search tests timed out waiting for `ค้นหาสินค้า` on products/detail routes and the failure was initially reported as a frozen search page.
+- Root cause: only the homepage Header uses that accessible name; PrimaryNavigation on the other routes uses `ค้นหาสินค้าและข้อมูล`. The application remained responsive.
+- Correct behavior: inspect the active route's rendered accessible name and confirm a direct search flow before diagnosing hydration or browser hangs. Keep JavaScript enabled in interactive regressions; test both navigation variants. Correct selectors passed five Chrome tests on default Turbopack without application/config changes. This supersedes the earlier unverified-search limitation.
+
+## Keep name and price assertions aligned with approved contracts (2026-11-14)
+
+- Observed: three older catalogue tests expected an SKU sentinel or a107gross price even though approved runtime contracts preserve unextractable source names and display100raw source price.
+- Root cause: prior migrations left stale assertions in local-site-content, warehouse-detail-data and warehouse-image-priority tests.
+- Correct behavior: assert the selected source name when no safe model is extractable and use standard_sale_price directly; keep quotation VAT calculations separately tested. All174catalogue tests pass after correcting these expectations.
+
+## Do not equate COMPONENT with a scale part (2026-11-14)
+
+- Observed: Website export included 20 textile thread products and eight packaging/rubber/raw-material rows with usage_family COMPONENT.
+- Root cause: technical usage family distinguishes product roles but does not establish relevance to weighing equipment.
+- Correct behavior: inspect item names, descriptions and actual groups before treating COMPONENT rows as scale parts. Do not remove related POS/printer/accessory products merely because they are not scales. Workbook cleanup changes Excel only; it does not update the live website eligibility contract.
+
 ## Budget the visible height of frozen spreadsheet rows
 
 - Observed: exported group worksheets froze5rows totaling196points, including a45point empty spacer and70point header. Tall body rows left only a few products visible in Excel; the user reported the layout as a bug.

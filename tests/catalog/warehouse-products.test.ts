@@ -222,12 +222,53 @@ test("identical records appear once; X is excluded and calibration charges remai
     total_count: rows.length + 1,
     items: [...rows, rows[0]],
   });
-  assert.equal(parsed.total_count, 6);
+  assert.equal(parsed.total_count, 2);
   assert.deepEqual(
     warehouseCatalog(parsed.items, []).map((p) => p.warehouseSku),
     ["11", "G106612"],
   );
 });
+test("website visibility excludes operational groups and explicit glove/thread names but keeps real equipment", () => {
+  const hidden: WarehouseItem[] = [
+    ...["ค่าบริการ", "ค่าขนส่ง", "ส่วนลด", "บัตรกำนัล", "ถุงมือและอุปกรณ์ป้องกัน"].map(
+      (group_name, index) => ({ ...items[0], sku: `NEW-GROUP-${index}`, group_name }),
+    ),
+    ...[
+      "M00001 ด้าย TC3.5 ขาว",
+      "M000102 ด้ายTC3.5เทา (เลิกใช้)",
+      "ถุงมือกันบาด",
+      "Protective Gloves",
+      "ค่าบริการ Subscription โปรแกรมรายเดือน",
+      "ค่าพัฒนาโปรแกรม",
+      "บริการ - ค่าขนส่ง",
+      "Customized fee : 500 kg",
+      "Calibration Fee Type 3",
+    ].map((product_name, index) => ({ ...items[0], sku: `NEW-NAME-${index}`, product_name })),
+    { ...items[0], sku: "NEW-SHORT", product_short_name: "ด้าย PP" },
+    ...["DEVAPP", "G109767", "G109774", "G109781", "G109798", "G107992", "G108005"].map((sku) => ({
+      ...items[0],
+      sku: sku.toLowerCase(),
+    })),
+  ];
+  const visible = [
+    { ...items[0], sku: "SCALE", product_name: "SUNFORD S1 (Free Certificate of calibration)" },
+    { ...items[0], sku: "PART", product_name: "ชิ้นส่วน - Indicator AW31" },
+    { ...items[0], sku: "POS", product_name: "SUNFORD Connect POS - Basic" },
+    { ...items[0], sku: "PRINTER", product_name: "เครื่องพิมพ์ LP50" },
+    { ...items[0], sku: "LABEL", product_name: "สติกเกอร์เลเบล" },
+    { ...items[0], sku: "M00009", product_name: "ถุงใส", group_name: "วัตถุดิบ" },
+    { ...items[0], sku: "HARDWARE", product_name: "Thread adapter", description: "ค่าบริการ" },
+  ];
+  const mixed = [...hidden, ...visible];
+  const parsed = parseWarehouseProducts({ total_count: mixed.length, items: mixed });
+  assert.deepEqual(parsed.items, visible);
+  assert.equal(parsed.total_count, visible.length);
+  assert.deepEqual(
+    warehouseCatalog(mixed, []).map((product) => product.warehouseSku),
+    visible.map((item) => item.sku),
+  );
+});
+
 test("a complete response validates and partial/conflicting/invalid responses fail closed", () => {
   const item = items[0];
   assert.deepEqual(parseWarehouseProducts({ total_count: 1, items: [item] }).items, [item]);

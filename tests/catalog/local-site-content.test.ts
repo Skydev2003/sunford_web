@@ -80,9 +80,9 @@ test("the product repository uses Warehouse prices and local content without any
   const { products } = await repository.getCurrentProducts();
   assert.equal(products.length, 1);
   assert.equal(products[0].warehouseSku, "G106308");
-  assert.equal(products[0].name, "G106308");
+  assert.equal(products[0].name, "Warehouse source");
   assert.equal(products[0].warehouseName, "Warehouse source");
-  assert.equal(products[0].price, 107);
+  assert.equal(products[0].price, 100);
   assert.match(products[0].image, /^\/api\/products\/G106308\/image\?v=current$/);
   assert.equal(products[0].fallbackImage, undefined);
   assert.equal(products[0].warehouseSpecifications?.length, 1);

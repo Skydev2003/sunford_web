@@ -1,20 +1,272 @@
 # Project state
 
-## Task: Export three Warehouse tables to one Desktop HTML file (2026-11-13)
+## Task: Verify interactive search and repair stale catalogue tests (2026-11-14)
 
-Status: "Ready to Code"
-Approval: "Pending"
+Status: "Complete"
+Approval: "Owner requested fixing search and failing tests before proceeding"
+
+### Goal / Evidence / Scope
+
+- Diagnose the previously reported search hang and restore reliable JavaScript-enabled verification. Direct Chrome reproduction on Webpack confirms the search opens, finds G106094, excludes M00001 and closes normally. The earlier test used the Header-only accessible name ค้นหาสินค้า on a products page whose PrimaryNavigation button is actually ค้นหาสินค้าและข้อมูล. CPU profiling showed mostly idle execution rather than a blocked application loop.
+- Correct the browser test to use the appropriate real button and JavaScript enabled; exercise search via SKU, lowercase SKU/model, hidden fees/gloves/threads, close/reopen and result navigation on 390/834/1440px, including default Turbopack development verification. Preserve existing product filters and UI/brand/CSS. No application edit is justified by this evidence unless actual interaction failure is reproduced.
+- Repair three stale test files: local-site-content source-name fallback must be Warehouse source rather than SKU sentinel, and all three price fixtures must expect the previously approved raw100 price rather than obsolete107 VAT-inclusive price. Retain their other database-isolation/spec/photo assertions.
+- Files: `tests/e2e/warehouse-product-exclusions.spec.ts`, `tests/catalog/local-site-content.test.ts`, `tests/catalog/warehouse-detail-data.test.ts`, `tests/catalog/warehouse-image-priority.test.ts`, plus `spec.md`, `plan.md`, `MEMORY.md` for corrected diagnosis and results. No database, API contract, global component/style, dependency, deployment or unrelated test changes.
+- Acceptance: JavaScript-enabled browser search and hidden detail checks pass on mobile/tablet/desktop, no fake SSR-only interaction claim; all catalogue tests pass, TypeScript/lint/format pass. Missing information: none. Rollback restores only this task's test/documentation hunks.
+
+### Verification / Current State
+
+- Corrected the prior diagnosis: products AND product-detail routes use PrimaryNavigation's actual accessible label `ค้นหาสินค้าและข้อมูล`; only the homepage Header uses `ค้นหาสินค้า`. Previous timeouts targeted a nonexistent button. Direct Chrome flows and CPU profiles showed responsive/mostly idle execution, not a blocked search application. No application component, styling or framework config edit was needed.
+- Removed `javaScriptEnabled: false` from the exclusion regressions and restored real interactive testing. Added homepage Header coverage plus mobile390/tablet834/desktop1440 flows: open, uppercase/lowercase SKU, model search, hidden SKU/no-match results, clear, Escape, reopen, click result, navigate detail, reopen search on detail, close button and hidden-route not-found UI. No page errors in the three full product flows. Inspected390/1440 screenshots; existing layout preserved.
+- Default Turbopack under Node24: all five Chrome tests pass in26.9seconds; no repeated refresh prevented completion. This supersedes the earlier SSR-only testing limitation and unverified-search notes. No new qualifying Next.js feedback candidate; the previously opened feedback form is left user-owned and is not resubmitted.
+- Updated three stale unit-test files to the already-approved source-name fallback (`Warehouse source`) and raw100 price. Full catalogue suite174/174 passes. TypeScript, scoped ESLint, Prettier and application/test diff checks pass. No production build/deployment claimed.
+- Task-owned server stopped after verification; prior application product exclusions retained. No database write, commit or push.
+
+
+## Task: Hide fees, gloves and threads from the live website (2026-11-14)
+
+Status: "Complete"
+Approval: "Owner directly requested implementing the website filter after reviewing Excel-only exclusions"
+
+- Goal: apply the agreed operational/PPE/thread exclusion to the shared website feed, catalogue, search, details and fresh quotation choices. Keep Warehouse records and the existing live status/price/VAT rules unchanged.
+- Rules: exclude exact service/shipping/discount/voucher/PPE groups, explicit glove/thread names, the four previously selected WEWEIGHT subscription SKUs, mask/apron SKUs and DEVAPP (confirmed development fee). Retain genuine scales including free calibration certificates, parts, POS, printer/label products, and the eight non-thread raw materials not approved for removal.
+- Implementation scope: `src/features/catalog/data/warehouse-products.ts`, `src/features/services/warehouse-postgres.ts`; regressions in the two corresponding `tests/catalog/warehouse-*.test.ts` files; focused browser coverage in `tests/e2e/warehouse-product-exclusions.spec.ts`; `docs/warehouse/direct-postgres.md`, `spec.md`, `plan.md` for the contract and evidence. No shared UI/CSS, dependency, SQL/RPC write, deployment or database mutation.
+- Presentation: retain existing UI/responsive layout and truthful empty/missing-data states. Check actual live feed parity, retained scale/part identities and browser list/detail behavior at mobile and desktop widths. Existing cache timing still applies.
+- Acceptance: no excluded item in shared feed, facts or catalog; excluded image metadata unavailable; retained source values unchanged; hidden details not found, visible lists/search unaffected. Missing information: none.
+
+### Verification / Current State
+
+- Added one shared metadata-aware `isPublicWarehouseItem` predicate; parser, catalogue and RPC readers apply it. Direct item/fact/component/image metadata reads use the same exclusion rules. Warehouse statuses, database contents and existing cache/VAT rules remain unchanged.
+- Read-only live comparison: 516 raw RPC rows become 395 public items, exactly matching all 396 SKUs in the final no-thread workbook minus confirmed DEVAPP fee. All retained full/short names, description, unit, group, usage, net source price and image URLs match raw source values. Retained 1,366 facts and four component rows. Six sample excluded image metadata reads return null; genuine scales/parts/printers and non-thread raw material remain.
+- Focused unit tests 32/32 pass; full catalogue suite 171/174. The three failures are existing unrelated stale expectations: `local-site-content.test.ts` expects SKU rather than preserved source name; `warehouse-detail-data.test.ts` and `warehouse-image-priority.test.ts` expect 107 rather than the already-established raw source price 100. This change does not modify naming or price calculations; those unrelated files were left unchanged.
+- TypeScript, scoped ESLint/Prettier and application/test diff checks pass. Chrome API and server-rendered list/detail checks pass 3/3 at 390/1440px, including hidden image 404s and streamed not-found output for hidden details. Development not-found responses may stream HTTP 200 with a 404 fallback marker, so checks assert either actual 404 or that framework marker and absence of product content.
+- Browser checks with JavaScript enabled could not complete search-button interaction: Turbopack repeatedly refreshed the page; Webpack removed that refresh loop but interaction still timed out. Final browser tests explicitly disable JavaScript and validate SSR, not hydration/search interaction. Search/quotation data are covered by the shared filtered feed and unit/live checks; no claim of successful interactive search testing or production build.
+- Task-owned development server stopped after verification. No database/RPC write, commit, push or production deployment.
+
+
+## Task: Remove thread products and audit other Website items (2026-11-14)
+
+Status: "Complete"
+Approval: "Owner directly requested removal of thread items and a read-only audit of other non-scale/part items"
+
+### Goal / Scope
+
+- Edit only Website in the latest Desktop `sunford-warehouse-master-ai-data-with-website.xlsx`. Remove the 20 products in group วัตถุดิบ whose product names explicitly identify ด้าย. Retain Product and all five other worksheets.
+- Preserve every retained cell, style, column, filter/freeze and source row order. Expected Website result: 396 rows, 43 columns. Back up the exact current workbook and use a candidate/hash guard before replacement.
+- Audit all remaining groups by actual names/descriptions. Report eight non-thread raw material rows, DEVAPP (ค่าพัฒนาโปรแกรม), CPDPX8ZFI3 (Test Ketshopweb), and the POS/software/printer/accessory/consumable categories. Do not remove these additional rows under an inspection-only request.
+- Input/reference: owner's screenshot and latest edited workbook; no database read/write or website code change. Plain existing Excel presentation retained; responsive not applicable. Missing information: none for thread deletion; other deletions require owner direction.
+
+### Acceptance Criteria
+
+- [x] Exactly 20 explicit thread SKUs removed, 396 unique rows retain source order and values; 43 columns/filter/freeze verified.
+- [x] All five non-Website sheets remain unchanged; backup, full retained-cell comparison and XLSX reopen/ZIP checks pass.
+- [x] Other non-scale/part groups and specific suspect records reported with no unrequested deletions.
+
+### Verification / Current State
+
+- Delivered new Desktop `sunford-warehouse-master-ai-data-with-website-no-thread.xlsx` because Excel had the original open. Original hash remains `4f5df40693cdc8375641d0baab7680adb3a7b6de1b052e72a2a4c4cad62d4793`.
+- Removed exactly M00001–M00008 and M000101–M000112 (20 thread rows). Website now contains 396 unique rows × 43 columns, retains source order, filter A1:AQ397 and frozen header. Verified all 17,028 retained cells/styles and all 132,528 cells/styles in the five other sheets, together with sheet views, column dimensions and native metadata. Saved workbook reopen and ZIP integrity pass.
+- Final SHA-256 `e404ec2242b46286f368c02918a5067bb8722b8476d6ee6e61e366fd90216046`, 751,899 bytes. Exact rollback file: Desktop `sunford-warehouse-master-ai-data-with-website.backup-thread-20261114-084544.xlsx`.
+- Audit report: Desktop `sunford-website-other-items-review.md`; identifies eight non-thread raw-material items, DEVAPP development fee, CPDPX8ZFI3 test record, and the remaining POS/software/printer/peripheral/consumable/bundle/weight groups. These audit-only records remain. Raw-material COMPONENT values do not prove a product is a scale part.
+- No database read/write or website/application change.
+
+
+## Task: Remove service/operational rows and gloves from Website (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner selected 74 rows and then explicitly said อนุมัติ"
 
 ### Goal
 
-Create one standalone HTML file on the current user's Desktop containing the configured company's raw rows from `master_data.master_item`, `master_data.ai_products`, and `master_data.ai_product_facts`. Provide a simple sidebar with one link per table and readable tables without decorative presentation.
+Remove the owner's unwanted service/operational and glove entries from the `Website` worksheet in `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx`, while preserving all other products and every non-Website worksheet.
 
 ### Scope In
 
-- Read all columns and all rows belonging to the configured `WAREHOUSE_COMPANY_ID`: currently 732 `master_item`, 138 `ai_products`, and 1,582 `ai_product_facts` rows.
-- Preserve the raw table values, format null/JSON/date values for readable HTML, and escape all cell content before embedding it.
-- Use one self-contained HTML file with three sidebar links and three table sections. Include the table name, row count, column headings, and generated timestamp.
-- Keep database access read-only and omit database URLs, credentials, S3 settings, and other environment values from the export.
+- Final selected removal set: 74 Website rows total.
+- Remove 36 operational rows by exact `group_name`: `ค่าบริการ` (24), `ค่าขนส่ง` (10), `ส่วนลด` (1), and `บัตรกำนัล` (1).
+- Remove 32 actual glove products whose product name explicitly contains `ถุงมือ` or the standalone word `glove`, restricted to the group `ถุงมือและอุปกรณ์ป้องกัน`.
+- Also remove four WEWEIGHT subscription rows in `โปรแกรมและสิทธิ์ใช้งาน`: `G109767`, `G109774`, `G109781`, and `G109798`.
+- Also remove the two non-glove PPE rows in the glove/PPE group: `G107992` Hygienic Face Mask and `G108005` Professional Barista Apron.
+- Preserve A–Z SKU ordering, the existing 43-column Website layout, header/filter/freeze/widths, and blank-cell behavior. Remove a column only if it becomes empty for every remaining row.
+- Create an exact timestamped backup and candidate-first verification before replacing the Website workbook.
+
+### Scope Out
+
+- Do not change `Product`, `master_item`, `ai_products`, `ai_product_facts`, or `สารบัญ`; do not write Warehouse or change website code.
+- Keep six real scale products whose names say `Free Certificate of calibration`; they are products in the scale group, not service-fee rows.
+
+### UI/UX Brand Alignment
+
+- Reference: owner's request “ลบค่าบริการต่างๆถุงมือ” and current Website sheet data.
+- Design: no visual redesign; retain the existing plain editable grid.
+- Responsive: not applicable.
+
+### Input / Output
+
+- Input: current Website worksheet with 490 rows.
+- Output: same workbook with 416 Website rows under the selected 74-row removal set, plus an exact pre-change backup.
+
+### Acceptance Criteria
+
+- [x] Exactly the approved 74-SKU operational/PPE set is absent; no real scale or other retained product is removed accidentally.
+- [x] Remaining Website rows are unique and preserve the approved A–Z source order; every retained cell equals the pre-change sheet and all-empty columns are absent.
+- [x] All five non-Website sheets retain every value/style/filter/view/link unchanged.
+- [x] Backup/hash guard, saved-XLSX reopen, filter/freeze and ZIP integrity pass.
+
+### Missing Information
+
+- None. Owner selected the broader 74-row set.
+
+### Approval Record
+
+- Owner requested “ลบค่าบริการต่างๆถุงมือ”, explicitly selected “74 รายการ” including the four WEWEIGHT subscriptions, mask and apron, then said “อนุมัติ” to execute the updated Spec/Plan.
+
+### Verification / Current State
+
+- Updated only the `Website` worksheet in `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx`. Removed exactly 74 unique SKUs: 36 operational-group rows, 32 explicit glove products and the six approved extra rows.
+- Website now has 416 unique SKU rows and the same 43 non-empty columns. Retained order is exactly the pre-change A–Z source order; filter is `A1:AQ417` and the header remains frozen at `A2`.
+- Compared all 17,888 retained Website cells and styles with their pre-change SKU rows. Verified no approved removal-rule row remains and all six real scale products mentioning free calibration certificates remain.
+- Compared all 132,528 cells/styles in the five non-Website sheets plus their dimensions, filters, frozen panes and links; they are unchanged. Final XLSX reopens with six sheets, zero external links and valid ZIP integrity.
+- Final SHA-256: `4f5df40693cdc8375641d0baab7680adb3a7b6de1b052e72a2a4c4cad62d4793` (754,499 bytes). Exact pre-change backup: `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.backup-20261113-165907.xlsx`, SHA-256 `c4cee2e596a7e8ec3778dc4ffec71c3b515a17f1ff7bffa1dea524fce77f91c7`.
+- No Warehouse/database write, application source change, schema/dependency change, commit, push or deployment was performed.
+
+## Task: Add a website-only worksheet while preserving Product (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner approved the concrete 43-column layout, then approved a new output file after the original remained externally locked"
+
+### Goal
+
+Keep `Product` and every existing worksheet unchanged, then add one editable worksheet named `Website` to `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx`. The new sheet must contain only the products and fields that the current website actually consumes after its existing Warehouse/RPC/public-SKU filtering.
+
+### Scope In
+
+- Read data through the existing server-side `readWarehouseProducts()` contract, not by manually trimming Product. Current discovery: raw RPC 516 rows; actual website projection 490 items, 1,366 verified facts across 33 distinct titles, and four component rows.
+- Create one A–Z SKU row per current website product. Core columns: `sku`, `product_name`, `product_short_name`, `description`, `unit`, `group_name`, `usage_family`, `sale_price`, and `image_url`.
+- Pivot the 33 verified specification titles into readable `spec_<title>` columns using the same value precedence as the website: text, otherwise number plus unit, otherwise options. Current discovery found zero conflicting product/title values.
+- Add one `components` column containing an editable JSON array of component SKU/quantity pairs for that product; leave it blank when no components exist.
+- Keep missing values blank, freeze the header, add an autofilter, use readable widths, and preserve the exact before-VAT `sale_price` contract.
+- Create an exact timestamped backup and candidate-first verification. Refuse same-file replacement if the edited workbook changes or becomes locked during processing.
+
+### Scope Out
+
+- No change or deletion to `Product`, the original three data sheets, or `สารบัญ`; no removal of user edits.
+- No unfiltered raw RPC rows, internal relationship/company IDs, AI descriptions/versions, fact source/notes/verification columns, unverified facts, inactive AI facts, or inactive/non-saleable/internal website-excluded products.
+- No database write, RPC/schema/application/dependency change, commit, push, or deployment.
+
+### UI/UX Brand Alignment
+
+- Reference: the current website Warehouse contract and the owner's approval to create a clean Website worksheet.
+- Design: plain editable Excel grid, one row per SKU, readable field/spec names, frozen header, filter, and sensible widths without decorative styling.
+- Responsive: not applicable; this is a Desktop Excel workbook.
+
+### Input / Output
+
+- Input: current live read-only `readWarehouseProducts()` output plus the user-edited Desktop workbook.
+- Output: `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx`, containing the exact approved workbook candidate plus `Website`. The externally locked original remains untouched; an exact pre-change backup is also retained.
+
+### Acceptance Criteria
+
+- [x] `Website` row count, SKU set/order, nine core values, image URLs and before-VAT prices exactly match a single read-only website-data snapshot.
+- [x] All 1,366 verified facts are represented in 33 titled specification columns with the website's current formatting; no conflicting/unverified fact is silently included.
+- [x] All four component rows are represented under their root SKU without loss; missing fields remain blank and no all-empty output column is retained.
+- [x] All five existing sheets, including Product, retain every existing value/style/filter/view/link; only Website is added.
+- [x] Backup/hash guard, saved-XLSX reopen, filter/freeze/ordering, external-link check and ZIP integrity pass before delivery.
+
+### Missing Information
+
+- None if the owner accepts the concrete 43-column live website layout above. Counts describe the read-only discovery snapshot and will be revalidated immediately before generation.
+
+### Approval Record
+
+- Owner first said “ตามที่แนะนำ” for keeping Product and adding Website, then explicitly said “อนุมัติ” after reviewing the concrete 490-row, 43-column live website layout, preservation and backup plan.
+- The original workbook remained locked by a non-Excel background process after Excel was closed. The owner explicitly approved the safe fallback “อนุมัติไฟล์ใหม่” and required the data to match; final delivery therefore requires a fresh full-data parity check, not counts alone.
+
+### Verification / Current State
+
+- Created `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website.xlsx` without overwriting the locked original. It contains the five unchanged source sheets plus `Website`.
+- Captured one read-only website snapshot: 490 current website products, nine core fields, 1,366 verified product/title values across 33 titles, zero conflicts and four component rows under three root SKUs. Generated 43 Website columns and 490 A–Z unique SKU rows; empty values remain blank, filter is `A1:AQ491`, and the header is frozen at `A2`.
+- Candidate verification compared all 132,528 existing cells/styles plus existing sheet dimensions, filters, frozen panes, links and native features with the exact backup. Full Website cell parity passed against the captured snapshot, including all core values, specification formatting and component JSON.
+- Immediately before delivery, a second independent live `readWarehouseProducts()` read produced the exact same canonical dataset hash `a7be06efce7839f0ed421c817620ef00165f1afdb120ef5184428741aa8b7739`; no SKU, core value, spec or component changed.
+- Final XLSX reopens with six expected sheets, 490 × 43 Website data, 1,366 spec values, four components, zero external links and valid ZIP integrity. Final SHA-256: `c4cee2e596a7e8ec3778dc4ffec71c3b515a17f1ff7bffa1dea524fce77f91c7` (766,068 bytes).
+- The locked original remained untouched: its SHA-256 still equals the exact backup at `e9015ac311e5593a2ebc1173d1793707aea03fc9dd8533fd5476516941efc581`. Backup: `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.backup-before-website-20261113-162128.xlsx`.
+- No database write, RPC/schema/application/dependency change, commit, push or deployment was performed.
+
+## Task: Merge the three edited Warehouse worksheets into Product (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner said อนุมัติ for the one-row-per-product pivot merge"
+
+### Goal
+
+Add one editable worksheet named `Product` to the user-edited Desktop workbook `sunford-warehouse-master-ai-data.xlsx`. Produce one row per `master_item.item_code`, merge the matching `ai_products` row, and pivot the matching `ai_product_facts` rows into columns so missing AI values are filled on the same product row without losing distinct facts.
+
+### Scope In
+
+- Treat the currently edited Desktop workbook as authoritative for retained columns, user edits, and row membership in its three source sheets.
+- Preserve all existing worksheets and values unchanged; add only a new `Product` worksheet.
+- Use the untouched Desktop source workbook `SUNFORD_master_item_company1_2026-11-12.xlsx` only to recover the deleted `master_item_id` by the unique `item_code`, enabling the approved relationships `master_item.master_item_id → ai_products.master_item_id → ai_product_facts.product_id`.
+- Start with all 732 current `master_item` rows, one row per unique `item_code`, sorted A–Z. Append the 138 matching `ai_products` records with `ai_product_` prefixes for colliding names.
+- Pivot 1,582 fact rows across 33 distinct `attribute_id` values. Use `fact_<attribute_id>_<field>` columns for non-empty `value_text`, `value_number`, `value_options`, `verification`, `source`, and `notes` fields; omit any generated column that is empty for all products.
+- Keep row-level missing values as blank cells. Add filters, freeze the header, and set readable widths without decorative styling.
+- Create a timestamped backup before replacing the same edited workbook, and refuse replacement if the source file changes during processing.
+
+### Scope Out
+
+- No database/API read or write, no attribute-name lookup from a fourth table, no changes to the three source worksheets, no deletion of source rows/sheets, and no application/code/deployment change.
+- Do not treat repeated `product_id` fact rows as duplicate products: verified discovery shows each `(product_id, attribute_id)` pair is unique and represents a different fact.
+
+### UI/UX Brand Alignment
+
+- Reference: the owner's edited workbook and request for a new sheet named `Product`.
+- Design: plain editable data grid with one header row, autofilter, frozen header, A–Z item-code ordering, and readable column widths.
+- Responsive: not applicable; this is a Desktop Excel workbook.
+
+### Input / Output
+
+- Input: the current edited `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx` plus the original Desktop workbook only for the item-code-to-master-item-ID bridge.
+- Output: the same edited workbook with a new `Product` worksheet and a timestamped backup of the exact pre-change file.
+
+### Acceptance Criteria
+
+- [x] `Product` has exactly 732 data rows, unique nonblank `item_code` values sorted A–Z, and the source `master_item` fields remain identical to the edited sheet.
+- [x] All 138 `ai_products` rows join to exactly one Product row; all 1,582 facts join to exactly one matching AI product with no duplicate `(product_id, attribute_id)` collision or dropped non-empty fact field.
+- [x] Missing cells stay blank, all-empty generated columns are absent, and value types remain editable without bigint/identifier precision loss.
+- [x] The three source sheets and every other existing sheet/value/style/filter/view remain unchanged; only `Product` is added.
+- [x] Backup/hash guard, saved-XLSX reopen, links/formulas/native features, row/column parity, sorting, filters, frozen header, and ZIP integrity are verified before delivery.
+
+### Missing Information
+
+- None if the owner accepts the explicit one-row-per-product pivot structure above. Attribute columns will use the existing numeric `attribute_id` because no fourth-table lookup is in scope.
+
+### Approval Record
+
+- Approved on 2026-11-13. After reviewing the 732/138/1,582-row discovery and the explicit one-row-per-product, 33-attribute pivot, backup, and same-file update plan, the owner said “อนุมัติ”.
+
+### Verification / Current State
+
+- Updated `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx` in place after an unchanged-source hash guard. Added only `Product`; retained `สารบัญ`, `master_item`, `ai_products`, and `ai_product_facts`.
+- `Product` has 732 A–Z unique item-code rows and 147 columns: 12 retained edited master fields, one recovered relationship ID, six prefixed AI-product fields, and 128 non-all-empty fact fields across 33 attribute IDs. All 138 AI rows and all 1,582 unique product/attribute facts joined; 6,312 non-empty fact-field values were checked.
+- The untouched source workbook contains 731 item-code/ID bridges. The one newer edited item `WSS3KS_LED` has no row in that source and no AI record among the three requested sheets; it remains in Product with its unavailable relationship/AI cells blank rather than being dropped or guessed.
+- Full semantic parity passed for all 24,777 existing cells and their styles, plus existing sheet dimensions, filters, frozen panes and links. Final reopen confirms 732 × 147 Product data, filter `A1:EQ733`, frozen header, zero external links and valid ZIP structure.
+- Final SHA-256: `e9015ac311e5593a2ebc1173d1793707aea03fc9dd8533fd5476516941efc581` (664,049 bytes). Exact pre-change backup: `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.backup-25691113-154637.xlsx`, SHA-256 `05858edaa49ce280c626f5930ee2245fdc207578e444d0f10bd8a3540a71f0f1` (237,575 bytes).
+- No database/API read or write, application source change, schema/dependency change, commit, push or deployment was performed.
+
+## Task: Export three Warehouse tables to one editable Desktop Excel file (2026-11-13)
+
+Status: "Complete"
+Approval: "Approved — owner said อนุมัติ after confirming separate worksheets in one Excel file"
+
+### Goal
+
+Create one editable Excel workbook on the current user's Desktop containing the configured company's raw rows from `master_data.master_item`, `master_data.ai_products`, and `master_data.ai_product_facts`. Use an index sheet plus one worksheet per table for simple navigation and readable, editable data without decorative presentation.
+
+### Scope In
+
+- Read all rows belonging to the configured `WAREHOUSE_COMPANY_ID`: currently 732 `master_item`, 138 `ai_products`, and 1,582 `ai_product_facts` rows.
+- Omit a column only when every company-scoped row is SQL `NULL`. Keep any column that has at least one non-null value; represent row-level SQL `NULL` values as empty editable Excel cells. Current discovery found no all-null columns, so all current 32 / 7 / 9 columns remain.
+- Preserve raw values, write JSON values as readable JSON text, and write dates/numbers/booleans as editable cell values where supported.
+- Use one workbook with a `สารบัญ` sheet containing links to the three data sheets, plus `master_item`, `ai_products`, and `ai_product_facts` worksheets. Include row/column counts and export time in the index only; keep data sheets as plain tables with frozen headers and filters.
+- Keep database access read-only and omit database URLs, credentials, S3 settings, and other environment values from the workbook.
 
 ### Scope Out
 
@@ -23,29 +275,37 @@ Create one standalone HTML file on the current user's Desktop containing the con
 
 ### UI/UX Brand Alignment
 
-- Reference: owner's request for a plain data-only HTML file with a sidebar.
-- Design: minimal layout CSS only for the sidebar, readable table borders, sticky headings, wrapping long text, and horizontal overflow.
-- Responsive: file remains usable in a desktop browser; mobile optimization is not part of this export.
+- Reference: owner's revised request for an editable Excel file, with all-null columns omitted and partly populated columns retained.
+- Design: plain worksheets; only bold headers, filters, frozen header rows, sensible column widths, and an index sheet for navigation.
+- Responsive: not applicable; deliverable is a desktop Excel workbook.
 
 ### Input / Output
 
 - Input: live Warehouse PostgreSQL through the existing `WAREHOUSE_DATABASE_URL` and configured `WAREHOUSE_COMPANY_ID`, read in a read-only transaction.
-- Output: one standalone `.html` file on the current user's Desktop.
+- Output: one editable `.xlsx` file on the current user's Desktop.
 
 ### Acceptance Criteria
 
-- [ ] The HTML contains exactly the company-scoped rows read at export time from all three requested tables and every current column in each table.
-- [ ] Sidebar links navigate to `master_item`, `ai_products`, and `ai_product_facts`; each section displays its table name, row count, headings, and rows readably.
-- [ ] Raw values are HTML-escaped; null and JSON values are unambiguous; no credentials or connection settings are embedded.
-- [ ] Independent verification compares exported row/column counts with fresh read-only database counts and checks the HTML opens locally with all three sections.
+- [x] The workbook contains exactly the company-scoped rows read at export time from all three requested tables.
+- [x] Columns that are SQL `NULL` for every row are absent; columns with at least one non-null value remain, and row-level nulls are blank cells.
+- [x] The index links navigate to all three data sheets; data sheets have editable values, frozen headers, filters, readable widths, and no unnecessary decoration.
+- [x] JSON/date/number/boolean values retain their meaning and no credentials or connection settings are embedded.
+- [x] Independent verification compares workbook row/column counts and representative typed/null values with fresh read-only database results, then reopens the saved XLSX successfully.
 
 ### Missing Information
 
-- None. The requested three tables, single-file format, Desktop destination, sidebar separation, and plain presentation are explicit.
+- None. The revised Excel format, null-column rule, three requested tables, Desktop destination, editable values, and plain presentation are explicit.
 
 ### Approval Record
 
-- Pending approval of this Spec/Plan before creating the Desktop file.
+- Approved on 2026-11-13. Owner clarified that each requested table name must be a separate worksheet inside one Excel file, then explicitly said “อนุมัติ”.
+
+### Verification / Current State
+
+- Created `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data.xlsx` with `สารบัญ`, `master_item`, `ai_products`, and `ai_product_facts` sheets. Data sheets contain 732 × 32, 138 × 7, and 1,582 × 9 data rows/columns respectively, excluding each header row.
+- A repeatable-read, read-only snapshot and a fresh post-export query agree on all three row counts and non-all-null column counts. No current company-scoped column was all null, so all 48 source columns remain. Verified all 38,628 exported data cells against the snapshot; 7,948 SQL-null cells reopen as blank cells.
+- Workbook reopens successfully with index hyperlinks, frozen headers, filters, readable widths, typed integers/numerics/booleans, JSON text and exact bigint/timestamp text. ZIP integrity passes, external links are zero, and final SHA-256 is `a45ea2df8a19ee550567b7727562c235223ceca200cc5473c69ba831a1010fa7` (298,417 bytes).
+- No database write, application source change, API/RPC/schema change, dependency change, commit, push, or deployment was performed.
 
 ## Task: Align all displayed prices with standard_sale_price (2026-11-13)
 

@@ -27,7 +27,7 @@ test("Warehouse photo overrides CMS with a versioned URL and keeps CMS as fallba
     "2026-11-11T01:00:00Z",
   );
   assert.equal(product.fallbackImage, cms.image);
-  assert.equal(product.price, 107);
+  assert.equal(product.price, 100);
 });
 
 test("source-version changes automatically change local and proxy cache keys without an export command", () => {

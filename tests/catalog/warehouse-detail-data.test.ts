@@ -78,7 +78,7 @@ test("Warehouse details preserve verified fact types, zero numeric values and te
   );
   const detail = warehouseDetailProduct(enriched);
   assert.equal(detail.description, "Warehouse-only description");
-  assert.equal(detail.price, 107);
+  assert.equal(detail.price, 100);
   const view = productPresentation(detail);
   assert.equal(view.images.length, 1);
   assert.deepEqual(view.specifications, [

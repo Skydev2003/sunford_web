@@ -135,6 +135,42 @@ test("one RPC result preserves nested specifications and components without mult
   }
 });
 
+test("hidden RPC products cannot leak items, facts, components or image metadata", async () => {
+  const original = { ...process.env };
+  process.env.WAREHOUSE_DATABASE_URL = "postgresql://warehouse-test/db";
+  process.env.WAREHOUSE_COMPANY_ID = "1";
+  const hidden = [
+    { ...rpcRow, sku: "SERVICE", group_name: "ค่าบริการ" },
+    { ...rpcRow, sku: "GLOVE", product_name: "ถุงมือผ้าฝ้าย" },
+    { ...rpcRow, sku: "M00001", product_name: "M00001 ด้าย TC3.5 ขาว" },
+    { ...rpcRow, sku: "DEVAPP" },
+  ];
+  let rows = [rpcRow, ...hidden];
+  const query = mock.method(Pool.prototype, "query", (async () => ({
+    rows,
+  })) as unknown as typeof Pool.prototype.query);
+  try {
+    const feed = await readWarehouseProducts();
+    assert.deepEqual(
+      feed.items.map((item) => item.sku),
+      [rpcRow.sku],
+    );
+    for (const item of hidden) {
+      rows = [item];
+      assert.deepEqual((await readWarehouseProducts()).items, []);
+      assert.deepEqual(await readWarehouseCardFacts([item.sku]), []);
+      assert.deepEqual(await readWarehouseComponents([item.sku]), []);
+      assert.equal(await readWarehouseImage(item.sku), null);
+    }
+    rows = [rpcRow];
+    assert.equal((await readWarehouseImage(rpcRow.sku))?.master_item_id, rpcRow.master_item_id);
+  } finally {
+    query.mock.restore();
+    await closeWarehousePool();
+    process.env = original;
+  }
+});
+
 test("malformed RPC collections are rejected instead of silently losing specifications", async () => {
   const original = { ...process.env };
   process.env.WAREHOUSE_DATABASE_URL = "postgresql://warehouse-test/db";

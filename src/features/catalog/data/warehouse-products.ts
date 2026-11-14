@@ -14,10 +14,42 @@ export type WarehouseItem = {
   usage_family?: string | null;
 };
 
-const warehouseOnlyFees = new Set(["72", "CALIBRATION FEE TYPE 2", "S000005", "S000006"]);
+const warehouseOnlySkus = new Set([
+  "72",
+  "CALIBRATION FEE TYPE 2",
+  "S000005",
+  "S000006",
+  "DEVAPP",
+  "G109767",
+  "G109774",
+  "G109781",
+  "G109798",
+  "G107992",
+  "G108005",
+]);
+const warehouseOnlyGroups = new Set([
+  "ค่าบริการ",
+  "ค่าขนส่ง",
+  "ส่วนลด",
+  "บัตรกำนัล",
+  "ถุงมือและอุปกรณ์ป้องกัน",
+]);
 
 export function isPublicWarehouseSku(sku: string) {
-  return !/^x/i.test(sku) && !warehouseOnlyFees.has(sku.toUpperCase());
+  return !/^x/i.test(sku) && !warehouseOnlySkus.has(sku.toUpperCase());
+}
+
+export function isPublicWarehouseItem(
+  item: Pick<WarehouseItem, "sku" | "product_name" | "product_short_name" | "group_name">,
+) {
+  if (!isPublicWarehouseSku(item.sku) || warehouseOnlyGroups.has(item.group_name?.trim() ?? ""))
+    return false;
+  const names = [item.product_name, item.product_short_name ?? ""];
+  return !names.some((name) =>
+    /ถุงมือ|\bgloves?\b|(?:^|\s)ด้าย|ค่าบริการ|ค่าพัฒนาโปรแกรม|ค่าสอบเทียบ|ค่าขนส่ง|ค่าจัดส่ง|\b(?:service|customized|shipping|calibration)\s*fee\b/i.test(
+      name,
+    ),
+  );
 }
 
 export function parseWarehouseProducts(data: unknown): {
@@ -67,7 +99,7 @@ export function parseWarehouseProducts(data: unknown): {
       throw new Error("Conflicting Warehouse SKU");
     skus.set(key, item);
   }
-  const items = [...skus.values()].filter((item) => !/^x/i.test(item.sku));
+  const items = [...skus.values()].filter(isPublicWarehouseItem);
   return { total_count: items.length, items };
 }
 
@@ -121,7 +153,7 @@ export function warehouseCatalog(
 ): Product[] {
   const content = new Map(editorial.map((item) => [item.id, item]));
   return items
-    .filter((item) => isPublicWarehouseSku(item.sku))
+    .filter(isPublicWarehouseItem)
     .flatMap((item, index): Product[] => {
       const entry = bySku.get(item.sku);
       const verified = verifiedBySku.get(item.sku);

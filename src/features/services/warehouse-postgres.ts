@@ -1,6 +1,6 @@
 import { Pool, type PoolConfig, type QueryResultRow } from "pg";
 import type { WarehouseCardFact } from "../catalog/data/warehouse-card-data";
-import { parseWarehouseProducts } from "../catalog/data/warehouse-products";
+import { isPublicWarehouseItem, parseWarehouseProducts } from "../catalog/data/warehouse-products";
 
 export function warehouseConnectionOptions(
   env: Record<string, string | undefined> = process.env,
@@ -122,7 +122,7 @@ async function readWarehouseRpc(skus: string[] | null = null) {
         throw new Error("Invalid Warehouse RPC component");
     }
   }
-  return result.rows;
+  return result.rows.filter(isPublicWarehouseItem);
 }
 
 function rpcFacts(rows: RpcRow[]): WarehouseCardFact[] {
