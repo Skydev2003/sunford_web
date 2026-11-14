@@ -17,6 +17,7 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "hooks:install": "git config --local core.hooksPath .githooks",
     "content:import": "node scripts/import-sunford.mjs",
     "warehouse:images": "tsx scripts/cache-warehouse-images.ts",
     "content:validate": "node scripts/validate-import.mjs",

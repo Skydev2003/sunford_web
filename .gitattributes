@@ -1,2 +1,3 @@
 # Preserve the bytes checked by the scale reference manifest.
 docs/sunford-scale-categories.md text eol=lf
+.githooks/* text eol=lf

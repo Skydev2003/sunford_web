@@ -1,3 +1,40 @@
+## Plan: Prevent formatting failures from reaching deployment (2026-11-14)
+
+### Files
+
+- `.githooks/pre-commit` — create a native check-only hook using `bun run format:check`, with actionable failure guidance; no auto-formatting or staging.
+- `package.json` — add the explicit `hooks:install` command without dependencies or install lifecycle changes.
+- `.gitattributes` — retain existing rule and enforce LF for hook files on Windows.
+- `spec.md`, `plan.md` — record scope, approval, installation/rollback instructions and actual verification.
+- `MEMORY.md` — record why earlier scoped checks missed final documentation changes and require final repository-wide formatting verification.
+- Local Git configuration — after approval and a fresh existing-hook check, set only this checkout's `core.hooksPath` using `bun run hooks:install`; new clones require the same command.
+
+### Steps
+
+- [x] Reproduce the two-file failure, apply formatting-only repair, and verify the full repository check passes.
+- [x] Inspect release/CI checks, Prettier configuration, current hooks and Windows line-ending settings.
+- [x] Obtain owner approval for this concrete workflow scope before changing hook/package/attributes/configuration files. Owner replied `อนุมัติ`.
+- [x] Implement the hook, explicit installer command and LF attribute; keep existing release and CI checks.
+- [x] Verify actual accepted/rejected commits in an isolated temporary Git fixture, including unchanged staged and working content after rejection.
+- [x] Recheck existing hook configuration, install locally, and inspect the effective configuration and hook line endings. Stage only the new hook with executable Git mode so Linux/macOS clones can run it too.
+- [x] Update verification records, then run `bun run format:check` through the actual hook and working/staged `git diff --check` on the final documentation state.
+
+### Impact / Rollback
+
+- R2; ordinary local commits incur a repository-wide formatting check and are blocked if it fails. No production behavior or dependency change.
+- No active hook configuration was found during diagnosis; recheck before installation and stop rather than replace a newly discovered custom setup.
+- Rollback removes this task's hook/package/attribute changes and restores the previously recorded local hook configuration (unset `core.hooksPath` only if this task installed it and it remains unchanged).
+- Local hooks can be bypassed and do not validate future merge/rebase results; CI and release formatting checks remain necessary.
+
+### Verification Results
+
+- Existing two-file repair is blank-line-only; full `bun run format:check` and `git diff --check` passed before this proposal was documented.
+- Owner explicitly approved the presented scope. Hook, package command and LF attribute are implemented, and `bun run hooks:install` sets only the local `core.hooksPath` to `.githooks` after confirming no existing configuration or active pre-commit hook.
+- Real temporary-repository commit tests pass: valid Markdown commits, malformed Markdown is blocked, failure guidance is present, and rejection leaves HEAD, index diff, working bytes and partial-staging status unchanged. Evidence fixture: `C:\Users\cityc\AppData\Local\Temp\sunford-format-hook-ek_806e1`.
+- Fresh clone with `core.autocrlf=true` retains LF hook bytes and executable Git mode `100755`. The real project has the same LF attribute and executable mode; only the new hook was staged to preserve that mode.
+- Final `git hook run pre-commit` runs the full `bun run format:check` successfully; both working and staged `git diff --check` pass. No application or dependency change; no project commit, push, deployment or database write. No qualifying Next.js feedback candidate.
+- Setup for a new checkout: `bun run hooks:install`. Correction flow: format reported files (or `bun run format`), review the diff, stage intended corrections, and retry the commit. Checks inspect the working tree, so final corrections must be staged. Keep CI/release validation enabled.
+
 ## Plan: Remove service/operational rows and gloves from Website (2026-11-13)
 
 ### Files
@@ -6059,6 +6096,7 @@ No product component, CSS/global layout, selection JSON, media, price, quotation
 - CSS-only refinement removes the focus fill/side bar/shadow, retains a neutral underline, reduces the text-chevron gap to8px and centers that group within the same width as the product heading.
 - Focused Chrome passes2/2 at390px/1440px. Geometry checks prove dropdown/product center delta under1px, combined control/product center delta under2px and a compact2–12px visual gap. Inspected closed/open screenshots show the requested neutral centered control without overflow.
 - Node24 TypeScript, scoped ESLint/Prettier and `git diff --check` pass. No logic/data/global/dependency/route/commit/deploy change; no Next.js feedback candidate.
+
 ## Plan: Remove thread products and audit other Website items (2026-11-14)
 
 ### Files / Steps

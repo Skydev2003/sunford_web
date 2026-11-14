@@ -1,5 +1,42 @@
 # Project state
 
+## Task: Prevent formatting failures from reaching deployment (2026-11-14)
+
+Status: "Complete"
+Approval: "Approved — owner replied อนุมัติ to the concrete pre-commit Spec/Plan"
+
+### Goal / Evidence
+
+- Owner asked why the repeated formatting failure occurs and whether it can be prevented. The verified repair adds one missing blank line in `plan.md` and removes three duplicate blank lines in `spec.md`; full `bun run format:check` passes afterward. Earlier scoped checks did not validate these final documentation edits.
+- Current release and CI both check formatting, but this checkout has no configured `core.hooksPath` and only sample Git hooks. Catch formatting problems before ordinary local commits while preserving release/CI validation.
+
+### Scope / Input / Output
+
+- Add a native `.githooks/pre-commit` that runs the existing repository-wide `bun run format:check`. On failure, stop the commit and explain how to format, review and stage the correction. Do not modify or stage files automatically.
+- Add `hooks:install` in `package.json` to configure this repository's local `core.hooksPath`; install it in this checkout after approval and rechecking that no custom hook configuration would be replaced. New checkouts require the documented install command.
+- Preserve LF hook line endings through `.gitattributes`, including on Windows with `core.autocrlf=true`.
+- Keep existing Prettier rules, dependencies, application behavior, CI and deployment scripts unchanged. No automatic install lifecycle, commit, push or deployment.
+- UI/UX/brand/responsive: not applicable; development workflow only. Missing information: none.
+
+### Acceptance Criteria
+
+- [x] Ordinary local commits run the formatting check after hook installation; a clean temporary fixture can commit, and an intentionally malformed Markdown fixture cannot.
+- [x] A rejected commit leaves working files and staged content unchanged; the message explains the correction workflow.
+- [x] Hook checkout uses LF; `bun run format:check` and `git diff --check` pass after all documentation edits.
+- [x] Installation is repository-local, preserves any newly discovered existing hook setup, and has a documented rollback. Explicit hook bypasses and formatting changes introduced by later merges/rebases remain covered by CI/release checks rather than a guarantee from the local hook.
+
+### Approval Record
+
+- Owner requested the cause and a permanent remedy, then explicitly replied `อนุมัติ` to this concrete pre-commit workflow Spec/Plan. Approval covers the hook, package command, LF attribute, local installation and verification; no production deployment is authorized by this approval.
+
+### Verification / Current State
+
+- Native check-only hook and `bun run hooks:install` are implemented. Installation was performed after confirming there was no configured hook path or active local pre-commit hook; local `core.hooksPath` is now `.githooks`.
+- Real Git commits in an isolated temporary repository verify that valid formatting passes and malformed Markdown is rejected with actionable guidance. Rejection preserves HEAD, staged diff, working-file bytes and partially staged status. A fresh clone with `core.autocrlf=true` preserves hook LF bytes and executable mode `100755`.
+- Only the new hook is staged to preserve its executable Git mode on Windows; unrelated files are not staged. No real project commit, push, deployment, database or application change.
+- Final real-project `git hook run pre-commit` runs the full `bun run format:check`; working and staged `git diff --check` pass. No qualifying Next.js feedback candidate.
+- New checkouts must run `bun run hooks:install`. The check examines the working tree; review and stage the final formatted corrections before committing. Hooks can be bypassed, so existing CI and post-rebase release validation remain required.
+
 ## Task: Verify interactive search and repair stale catalogue tests (2026-11-14)
 
 Status: "Complete"
@@ -21,7 +58,6 @@ Approval: "Owner requested fixing search and failing tests before proceeding"
 - Updated three stale unit-test files to the already-approved source-name fallback (`Warehouse source`) and raw100 price. Full catalogue suite174/174 passes. TypeScript, scoped ESLint, Prettier and application/test diff checks pass. No production build/deployment claimed.
 - Task-owned server stopped after verification; prior application product exclusions retained. No database write, commit or push.
 
-
 ## Task: Hide fees, gloves and threads from the live website (2026-11-14)
 
 Status: "Complete"
@@ -41,7 +77,6 @@ Approval: "Owner directly requested implementing the website filter after review
 - TypeScript, scoped ESLint/Prettier and application/test diff checks pass. Chrome API and server-rendered list/detail checks pass 3/3 at 390/1440px, including hidden image 404s and streamed not-found output for hidden details. Development not-found responses may stream HTTP 200 with a 404 fallback marker, so checks assert either actual 404 or that framework marker and absence of product content.
 - Browser checks with JavaScript enabled could not complete search-button interaction: Turbopack repeatedly refreshed the page; Webpack removed that refresh loop but interaction still timed out. Final browser tests explicitly disable JavaScript and validate SSR, not hydration/search interaction. Search/quotation data are covered by the shared filtered feed and unit/live checks; no claim of successful interactive search testing or production build.
 - Task-owned development server stopped after verification. No database/RPC write, commit, push or production deployment.
-
 
 ## Task: Remove thread products and audit other Website items (2026-11-14)
 
@@ -68,7 +103,6 @@ Approval: "Owner directly requested removal of thread items and a read-only audi
 - Final SHA-256 `e404ec2242b46286f368c02918a5067bb8722b8476d6ee6e61e366fd90216046`, 751,899 bytes. Exact rollback file: Desktop `sunford-warehouse-master-ai-data-with-website.backup-thread-20261114-084544.xlsx`.
 - Audit report: Desktop `sunford-website-other-items-review.md`; identifies eight non-thread raw-material items, DEVAPP development fee, CPDPX8ZFI3 test record, and the remaining POS/software/printer/peripheral/consumable/bundle/weight groups. These audit-only records remain. Raw-material COMPONENT values do not prove a product is a scale part.
 - No database read/write or website/application change.
-
 
 ## Task: Remove service/operational rows and gloves from Website (2026-11-13)
 

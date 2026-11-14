@@ -766,3 +766,9 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 
 - Hidden retained service markup matched the shared descendant paper selector and left other routes pale gray. Select wrapper themes from active pathname attributes; do not infer the active route from retained descendants. Compare direct visits with actual link/back/forward navigation at390/834/1440px.
 - Immediate builder-to-service-to-back navigation left the shared footer with inline display:none in5/5probes; waiting for hydration avoided it in3/3controls. Browser instrumentation identified React hideOrUnhideDehydratedBoundary as the writer. A footer-only Fragment keyed by pathname restores visible footer DOM in5/5rapid probes; an added Suspense boundary alone did not help. Keep the key confined to the footer to preserve page/builder state, and verify immediate navigation as well as settled pages when changing this workaround.
+
+## Final documentation formatting gate (2026-11-14)
+
+- Release formatting failed because final `plan.md`/`spec.md` edits contained missing/duplicate blank lines; earlier scoped application/test formatting checks did not cover that final documentation state.
+- Correct behavior: finish all documentation updates, format every changed supported file, then run the full `bun run format:check` before handing off a commit/release. Any later edit invalidates that formatting result. Preserve the release/CI gates.
+- Owner approved the native check-only `.githooks/pre-commit`; this checkout now uses local `core.hooksPath=.githooks`. For new checkouts, inspect existing hooks before running `bun run hooks:install`; do not replace custom hooks silently. Keep LF bytes and executable Git mode. The hook never formats or stages files; after correcting formatting, review and stage the intended changes before retrying a commit. Existing CI/release checks remain necessary for bypassed hooks and later merge/rebase results.

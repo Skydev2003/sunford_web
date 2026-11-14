@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if ! bun run format:check; then
+  printf '\nCommit stopped: formatting check failed.\n' >&2
+  printf 'Run bun run format, review the changes, then git add the files you intend to commit and try again.\n' >&2
+  exit 1
+fi
