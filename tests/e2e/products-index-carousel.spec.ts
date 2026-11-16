@@ -22,7 +22,14 @@ for (const width of [320, 390, 834, 1440, 1887]) {
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
     await expect(scene).toHaveAttribute("data-interactive", "true");
-    const row = scene.locator(":scope > div").filter({ has: page.locator("button[aria-current]") });
+    const sceneBounds = (await scene.boundingBox())!;
+    expect(Math.abs(sceneBounds.y + sceneBounds.height - 960)).toBeLessThan(1);
+    const nextSectionBounds = (await page
+      .locator("[data-products-category-section]")
+      .first()
+      .boundingBox())!;
+    expect(Math.abs(nextSectionBounds.y - 960)).toBeLessThan(1);
+    const row = scene.locator("[data-products-models]");
     const bounds = (await row.boundingBox())!;
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
@@ -67,7 +74,7 @@ test.describe("mobile carousel gestures", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
-    const row = scene.locator(":scope > div").filter({ has: page.locator("button[aria-current]") });
+    const row = scene.locator("[data-products-models]");
     const model = await scene.locator("h2").first().innerText();
     const bounds = (await row.boundingBox())!;
     const y = bounds.y + bounds.height / 2;
@@ -91,7 +98,7 @@ test.describe("mobile carousel gestures", () => {
     }
   });
   for (const surface of ["background", "photo"] as const)
-    test(`${surface} swipes select one model horizontally and scroll the page vertically`, async ({
+    test(`${surface} swipes select products natively and scroll the page vertically`, async ({
       page,
       context,
     }) => {
@@ -99,7 +106,8 @@ test.describe("mobile carousel gestures", () => {
       await page.goto("/products");
       const scene = page.locator("[data-products-index-carousel]");
       const current = scene.locator("[data-product-photo][aria-current=true]");
-      await expect(current.locator("img")).toHaveAttribute("data-ready", "true");
+      await expect(scene.locator("[data-products-mobile-rail]")).toBeVisible();
+      await expect(current.locator("img")).toBeVisible();
       const labels = await scene
         .locator("[data-product-photo]")
         .evaluateAll((photos) => photos.map((photo) => photo.getAttribute("aria-label") ?? ""));
@@ -116,22 +124,12 @@ test.describe("mobile carousel gestures", () => {
               throw Error("Expected a visible product photo");
             return { x, y };
           }
-          const r = el.getBoundingClientRect();
-          for (
-            let y = Math.max(90, r.top + 30);
-            y < Math.min(innerHeight - 100, r.bottom - 30);
-            y += 12
-          ) {
-            for (const x of [195, 150, 240, 135, 255]) {
-              if (
-                [-22, 0, 22].every((ox) =>
-                  [-22, 0, 22].every((oy) => document.elementFromPoint(x + ox, y + oy) === el),
-                )
-              )
-                return { x, y };
-            }
-          }
-          throw Error("No visible carousel background found");
+          const rail = el.querySelector("[data-products-mobile-rail]")!;
+          const r = rail.getBoundingClientRect();
+          const card = el
+            .querySelector('[data-product-photo][aria-current="true"]')!
+            .getBoundingClientRect();
+          return { x: Math.min(innerWidth - 8, card.right + 8), y: r.top + r.height / 2 };
         }, surface);
         await session.send("Input.dispatchTouchEvent", {
           type: "touchStart",
@@ -142,15 +140,19 @@ test.describe("mobile carousel gestures", () => {
             type: "touchMove",
             touchPoints: [{ x: x + (dx * step) / 8, y: y + (dy * step) / 8 }],
           });
+          await page.waitForTimeout(20);
         }
         if (Math.abs(dy) > Math.abs(dx)) await page.waitForTimeout(180); // Release after the drag, avoiding a kinetic fling.
         await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
       }
       try {
         const initial = await page.evaluate(() => scrollY);
-        await swipe(-120, 5);
-        await expect(current).toHaveAttribute("aria-label", labels[1]);
-        await swipe(120, -4);
+        await swipe(-220, 5);
+        await expect(current).not.toHaveAttribute("aria-label", labels[0]);
+        const afterSwipe = await current.getAttribute("aria-label");
+        await swipe(220, -4);
+        await expect(current).not.toHaveAttribute("aria-label", afterSwipe!);
+        await current.press("Home");
         await expect(current).toHaveAttribute("aria-label", labels[0]);
         expect(await page.evaluate(() => scrollY)).toBe(initial);
         await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -173,11 +175,12 @@ test.describe("mobile carousel gestures", () => {
     });
 });
 
-for (const width of [390, 1440]) {
+for (const width of [390, 834, 1440]) {
   test(`name-only copy and reference dropdown work at ${width}px`, async ({ page, request }) => {
     await page.setViewportSize({ width, height: 960 });
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
+    await expect(scene).toHaveAttribute("data-interactive", "true");
     const copy = scene.locator("[data-products-carousel-copy]");
     const dropdown = scene.locator("[data-category-dropdown]");
     const trigger = dropdown.getByRole("button", { name: /^หมวดสินค้า:/ });
@@ -229,8 +232,11 @@ for (const width of [390, 1440]) {
     await expect(listbox.getByRole("option", { selected: true })).toHaveCount(1);
     await expect(listbox.getByRole("option", { selected: true })).toHaveCSS(
       "background-color",
-      "rgb(248, 217, 220)",
+      "rgb(245, 245, 247)",
     );
+    const hoveredOption = listbox.getByRole("option", { selected: false }).first();
+    await hoveredOption.hover();
+    await expect(hoveredOption).toHaveCSS("background-color", "rgb(245, 245, 247)");
     await expect(listbox).toHaveCSS("scrollbar-width", "none");
     expect(
       await listbox.evaluate((element) => getComputedStyle(element, "::-webkit-scrollbar").display),
@@ -253,6 +259,7 @@ for (const width of [390, 1440]) {
     await page.keyboard.press("End");
     const lastOption = listbox.getByRole("option").last();
     await expect(lastOption).toBeFocused();
+    await expect(lastOption).toHaveCSS("background-color", "rgb(245, 245, 247)");
     await page.keyboard.press("Enter");
     await expect(trigger).toHaveAccessibleName(/อุปกรณ์เสริม/);
     await expect(scene.locator("[data-product-photo][aria-current=true]")).toHaveAttribute(
@@ -284,21 +291,25 @@ for (const width of [390, 834, 1440]) {
     const scene = page.locator("[data-products-index-carousel]");
     const current = scene.locator("[data-product-photo][aria-current=true]");
     await expect(scene.locator("[data-product-photo]")).toHaveCount(shown.length);
-    await expect(scene.locator("[data-product-photo] img[data-ready=true]")).toHaveCount(
-      shown.length,
-      { timeout: 20000 },
-    );
-    expect(
-      await scene.locator("[data-product-photo] img").evaluateAll(async (images) =>
-        Promise.all(
-          images.map(async (element) => {
-            const image = element as HTMLImageElement;
-            await image.decode();
-            return image.naturalWidth > 0 && image.naturalHeight > 0;
-          }),
+    if (width >= 760) {
+      await expect(scene.locator("[data-product-photo] img[data-ready=true]")).toHaveCount(
+        shown.length,
+        { timeout: 20000 },
+      );
+      expect(
+        await scene.locator("[data-product-photo] img").evaluateAll(async (images) =>
+          Promise.all(
+            images.map(async (element) => {
+              const image = element as HTMLImageElement;
+              await image.decode();
+              return image.naturalWidth > 0 && image.naturalHeight > 0;
+            }),
+          ),
         ),
-      ),
-    ).toEqual(shown.map(() => true));
+      ).toEqual(shown.map(() => true));
+    } else {
+      expect(await scene.locator("[data-product-photo] img").count()).toBeLessThan(10);
+    }
     await expect(page.locator("[data-products-category-section] h2").first()).toHaveText(
       "เครื่องชั่ง",
     );
@@ -308,7 +319,20 @@ for (const width of [390, 834, 1440]) {
           p.id === product.id || (product.warehouseSku && p.warehouseSku === product.warehouseSku),
       );
       await expect(current).toHaveAttribute("data-product-photo", product.id);
-      expect(await current.locator("img").getAttribute("src")).toBe(live?.image || null);
+      await expect(current.locator("img")).toBeVisible();
+      await expect
+        .poll(
+          () =>
+            current.locator("img").evaluate((image) => {
+              const img = image as HTMLImageElement;
+              return img.complete && img.naturalWidth > 0;
+            }),
+          { timeout: 20_000 },
+        )
+        .toBe(true);
+      const src = (await current.locator("img").getAttribute("src"))!;
+      const source = new URL(src, "http://localhost").searchParams.get("url") ?? src;
+      expect(source).toBe(live?.image || null);
       await expect(scene.locator("h2").first()).toHaveText(live?.name ?? "");
       await expect(scene.locator("[data-equalizer] small").first()).toHaveText(
         `${String(shown.indexOf(product) + 1).padStart(2, "0")} / ${shown.length}`,
@@ -324,11 +348,28 @@ for (const width of [390, 834, 1440]) {
     await current.click();
     const modal = page.getByRole("dialog");
     await expect(modal).toBeVisible();
+    await expect(modal.locator("article > p")).toHaveCount(0);
+    await expect(modal.locator("article h2")).toHaveText(
+      await scene.locator("h2").first().innerText(),
+    );
+    const back = modal.getByRole("button", { name: "กลับไปเลือกสินค้า" });
+    await page.keyboard.press("Tab");
+    await back.focus();
+    await expect(back).toBeFocused();
+    await expect(back).toHaveCSS("outline-style", "none");
+    await expect(back).toHaveCSS("text-decoration-line", "underline");
+    await expect(back).toHaveCSS("background-color", "rgb(29, 29, 31)");
+    await page.screenshot({ path: test.info().outputPath(`detail-no-description-${width}.png`) });
     const href = await modal
       .getByRole("link", { name: "ดูรายละเอียดทั้งหมด" })
       .getAttribute("href");
     expect(href).toBe("/products/warehouse-G106094");
     expect((await request.get(href!)).status()).toBe(200);
+    await back.click();
+    await expect(modal).not.toBeVisible();
+    await expect(current).toBeFocused();
+    await current.click();
+    await expect(modal).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(current).toBeFocused();
     const categoryTrigger = scene.getByRole("button", { name: /^หมวดสินค้า:/ });

@@ -1,3 +1,314 @@
+## Plan: Navbar first — inspect and fix existing UI (2026-11-16)
+
+Status: "Ready to Code"
+Approval: "Pending — Navbar-first priority confirmed; revised implementation scope awaits approval"
+
+### Goal / Sequence
+
+- รอบแรกตรวจและแก้ Navbar หน้าแรก/หน้าภายในตามดีไซน์และพฤติกรรมที่อนุมัติไว้แล้ว
+- Footer เป็นรอบถัดไปหลัง Navbar ผ่านเกณฑ์และสรุปผลแล้ว; ยังไม่แก้หรือสร้าง test สำหรับ Footer ในรอบนี้
+
+### Files — proposed maximum edit scope
+
+- `src/components/layout/header.tsx` — Navbar หน้าแรก: เมนู desktop/mobile, hover/click/touch, keyboard, focus และการปิดเมนู
+- `src/components/layout/primary-navigation.tsx` — Navbar หน้าภายใน: ตรวจ/แก้พฤติกรรมเดียวกัน รวมเมนูหลังเปลี่ยนหน้าและ Back/Forward
+- `src/styles/header.css` — เฉพาะ Navbar หน้าแรก: ระยะ ตัวอักษร ปุ่ม focus และ responsive โดยคงดีไซน์เดิม
+- `src/features/catalog/components/products-overview.module.css` — เฉพาะ selector ของ Navbar และ submenu รวม responsive/focus; ห้ามแก้ selector ของ Footer หรือเนื้อหาสินค้า
+- `src/styles/responsive.css` — เฉพาะ selector Navbar หน้าแรกที่มีอยู่ในไฟล์นี้; ห้ามเปลี่ยน container หรือ layout ส่วนอื่น
+- `tests/e2e/navbar-ui-review.spec.ts` — สร้างชุดตรวจเฉพาะ Navbar เพื่อเติมช่องว่างจาก regression เดิมและเก็บภาพ/geometry; ไม่ทำซ้ำกรณีที่มีอยู่แล้วโดยไม่จำเป็น
+- `tests/e2e/all-products-navbar.spec.ts` — เพิ่ม regression เฉพาะปัญหาที่ตรวจพบในเมนูและตำแหน่งปุ่ม หากชุดเดิมยังไม่ครอบคลุม
+- `tests/e2e/navigation-hover-intent.spec.ts` — เพิ่ม regression เฉพาะปัญหา hover/keyboard/history ที่ตรวจพบ หากชุดเดิมยังไม่ครอบคลุม
+- `spec.md`, `plan.md` — บันทึกขอบเขต การอนุมัติ รายการปัญหา ผลตรวจจริง และไฟล์ที่เปลี่ยน
+
+แก้เฉพาะไฟล์ที่จำเป็นตาม baseline ไม่บังคับให้ทุกไฟล์เปลี่ยน และไม่ถือว่า source ที่อ่านมี bug จนกว่าจะมีหลักฐานจากการตรวจ
+
+### Read-only / Out of scope
+
+- อ่าน `src/features/site/components/site-header.tsx`, `src/features/site/components/site-navigation.tsx`, `src/components/layout/use-header-surface.ts` และข้อมูล navigation เพื่อยืนยัน wiring/contract โดยไม่แก้
+- อ่าน `src/styles/base.css`, `src/app/globals.css`, `src/app/layout.tsx`, `src/app/(site)/layout.tsx` และ `src/features/catalog/components/catalog-route-frame.tsx` เป็น reference เท่านั้น
+- ไม่แก้ Footer ทั้งสองชุด, `src/components/layout/footer.tsx`, `src/styles/footer.css`, `src/features/catalog/components/products-overview.tsx` หรือ CSS ของ Footer ในไฟล์ร่วม
+- ไม่เปลี่ยนโลโก้ สีหลัก ฟอนต์หลัก รายการ/ข้อความ/URL เมนู Hero, Motion, carousel, ข้อมูลสินค้า Warehouse/API ใบเสนอราคา dependency หรือโครงสร้าง component
+- ไม่ commit/push/deploy
+
+### Steps / Acceptance
+
+- [x] ตรวจ source ยืนยัน Navbar สองชุดและไฟล์ CSS ที่ใช้งานจริง
+- [x] แยกขอบเขต Navbar ออกจาก Footer ตามคำสั่งล่าสุดของผู้ใช้
+- [ ] ได้รับการอนุมัติ Spec/Plan รอบ Navbar นี้ก่อนแก้แอปพลิเคชันหรือสร้าง test
+- [ ] เก็บภาพและรายการปัญหาก่อนแก้บน `/`, `/products`, `/products/category/scales`, `/about-us`, `/contact-us` ที่ 390×844, 834×1112, 1440×900
+- [ ] ตรวจเพิ่มที่ 320px, 768px, 833/834px, 1023/1024px รวมมือถือแนวนอน 844×390 โดยใช้ touch/coarse pointer ตามบริบท
+- [ ] ตรวจโลโก้ รายการเมนู ปุ่มค้นหา/เปรียบเทียบ/เปิดเมนูตามที่มีจริง: ไม่ล้น viewport ไม่ถูก clip ไม่ทับกัน และรับ input ได้จริง
+- [ ] ตรวจเมนูทุกกลุ่ม: hover ตาม delay เดิม, click, touch, เปิด/สลับ/ปิด, เลื่อนถึงลิงก์สุดท้าย, click ภายนอก และนำทางไปปลายทางเดิม รวม modified click ของลิงก์
+- [ ] ตรวจ Tab/Shift+Tab, Enter/Space ตามชนิด control, ArrowDown ที่มีอยู่ และ Escape; focus มองเห็นได้ ไม่เข้าถึงเมนูที่ซ่อน ไม่มี focus trap ค้าง และคืน focus ไป trigger ที่ยังมีอยู่
+- [ ] ตรวจปุ่มค้นหา/เปรียบเทียบจาก Navbar เปิด/ปิดได้ตาม contract เดิม โดยไม่ขยายไปแก้ overlay/store; แยก tooltip dismissal จาก dialog dismissal ตามเดิม
+- [ ] ตรวจ scroll บน/กลางหน้า เมนูไม่บัง control หรือเหลือ backdrop หลังปิด; แยก overlay ที่ตั้งใจบังเนื้อหาออกจาก defect
+- [ ] ตรวจเปลี่ยนหน้า คลิกลิงก์หน้าเดิม Back/Forward และ resize ข้าม breakpoint: ไม่มีเมนูค้าง ไม่เปิดซ้ำจาก hover เก่า ไม่เหลือ inert/scroll lock
+- [ ] แก้เฉพาะ defect ที่มีหลักฐานและอยู่ในไฟล์/selector ที่ระบุ; หากต้องเพิ่มไฟล์หรือเปลี่ยนดีไซน์ ให้อัปเดต Spec/Plan และรับอนุมัติส่วนที่เพิ่มก่อน
+- [ ] ตรวจซ้ำพร้อมภาพก่อน/หลังขนาดและสถานะเดียวกัน รวมเมนูปิด/เปิดและ focus บนมือถือ แท็บเล็ต เดสก์ท็อป
+- [ ] รัน `bun run typecheck`, ESLint เฉพาะ TS/TSX ที่เปลี่ยน, Prettier เฉพาะไฟล์ที่เปลี่ยน, test ใหม่ (หากสร้าง) และ regression ที่เกี่ยวข้องบน Node 24
+- [ ] สรุปปัญหาที่พบ/แก้ หลักฐาน ไฟล์จริง และข้อจำกัด Navbar ก่อนเริ่มกำหนดขอบเขต Footer
+
+### Regression / Evidence
+
+- ใช้ `tests/e2e/all-products-navbar.spec.ts`, `tests/e2e/navigation-hover-intent.spec.ts`, `tests/e2e/sitewide-navigation.spec.ts` และกรณีที่เกี่ยวข้องใน `tests/e2e/site-navigation-surfaces.spec.ts` ตรวจทั้ง Header และ PrimaryNavigation
+- อ่าน `tests/e2e/navigation-accessibility.spec.ts` ประกอบ แต่ยืนยัน selector/route กับ UI ปัจจุบันก่อนใช้; ไม่แก้ expectation เก่าเพื่อให้ผ่านโดยไม่มี contract รองรับ
+- เก็บภาพและ geometry ก่อน/หลังไว้ใน task-specific directory ใต้ TEMP และระบุ path จริงเมื่อสร้าง; ใช้ output directory แยกกันในการรันแต่ละครั้ง
+- ความล้มเหลวเดิมที่พบใน baseline ต้องรายงานแยกจาก regression ของการแก้ครั้งนี้
+
+### Impact / Rollback
+
+- Navbar ใช้ร่วมหลายหน้า การแก้ CSS/interaction อาจกระทบการนำทางทั้งเว็บ จึงตรวจทั้งสองชุดบนหน้าแรก สินค้า และเนื้อหา รวม breakpoint/scroll/history
+- คง component และ route wiring เดิม; CSS ในไฟล์ร่วมจำกัด selector Navbar ไม่เปลี่ยน global token/container
+- ย้อนเฉพาะ hunk ของงานนี้โดยรักษาการเปลี่ยนแปลงเดิมของผู้ใช้ ไม่ reset/clean ทั้งโครงการ
+
+### Verification Results
+
+- ตรวจ source แล้ว: SiteNavigation เลือก Header สำหรับ `/` และ PrimaryNavigation สำหรับหน้าภายใน; PrimaryNavigation ใช้ products-overview.module.css
+- พบชุดทดสอบเดิมครอบคลุมเมนูทั้งหมด hover intent และ geometry รอบ 834–1024px จึงใช้เป็น regression ก่อนเพิ่มกรณีใหม่
+- ยังไม่ได้ตรวจ runtime/browser หรือแก้ Navbar; การตรวจรอบนี้ยืนยันขอบเขตไฟล์เท่านั้น
+- เอกสารผ่าน `bun x --no-install prettier --check spec.md plan.md` และ `git diff --check -- spec.md plan.md`; ตรวจยืนยันว่าเนื้อหานอกหัวข้องานที่แทนที่ยังเหมือนเดิม
+
+## Plan: Center phone product model and category (2026-11-14)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` - phone-scoped centered copy grid with equal32px side gutters; preserve existing child width and subsequent landscape flex override.
+- `spec.md`, `plan.md` - record owner instruction, bounded CSS scope and actual verification. Temporary geometry probe/screenshots under TEMP; no new permanent tests needed for this reversible alignment correction.
+
+### Steps
+
+- [x] Confirm explicit owner adjustment request, read current CSS and capture the limited plan before application edits.
+- [x] Capture before geometry for320/393/430/735/759 portrait,852x393 coarse landscape,834 tablet and1440 desktop.
+- [x] Apply scoped copy alignment; verify model/category centers within1px of viewport/card, dropdown/product/detail use and unchanged landscape/desktop geometry; inspect screenshot.
+- [x] Format final documentation/CSS, run full formatting/diff checks and record results.
+
+### Impact / Rollback
+
+- R2: phone copy positioning only. Main risk is accidentally changing compact landscape or dropdown width; compare before/after geometry. Restore this task's scoped CSS rule to roll back, preserving earlier changes.
+
+### Verification Results
+
+- Temporary Playwright Chrome geometry probe passed five phone portraits320/393/430/735/759px; heading/category centers match the viewport exactly and product card within0.02px. Next/category/detail/Escape checks passed for each width.
+- Compared before/after heading/category/copy bounds at852x393 coarse landscape,834px tablet and1440px desktop: unchanged within1px. Corrected phone screenshot inspected. Before/after JSON and screenshots: `C:/Users/cityc/AppData/Local/Temp/sunford-phone-title-center-20261114`.
+- Repository-wide `bun run format:check` and `git diff --check` passed. This result-only documentation update is formatted and checked separately with the modified CSS. No new permanent tests, TypeScript/application logic changes, build, commit or deployment. Existing user server left running; physical-iPhone validation not run. No new framework feedback candidate.
+
+## Plan: Native product rail for phones (2026-11-14)
+
+**Goal:** Replace the phone orbit carousel with a clear, native horizontally scrolling product rail while preserving desktop and product-detail contracts.
+
+**Architecture:** Keep category/model/detail ownership in the existing parent. Add a small phone-only rail with browser-native scrolling, settled-index callbacks and nearby optimized images. Resolve viewport mode before mounting either gallery, and keep desktop and phone controller lifecycles separate.
+
+**Tech Stack:** Existing Next.js16/React19/TypeScript5/CSS Modules and ProductImage; Node24 for project validation, no dependency additions.
+
+**Spec:** `spec.md` — Native product rail for phones. Execute natively in this session after approval, following `superpowers:executing-plans`; no agent delegation is needed for this bounded component task.
+
+### Files
+
+- `src/features/catalog/components/products-mobile-rail.tsx` — create native rail, settled selection/control interface, near-viewport image loading and mobile tap/focus behavior.
+- `src/features/catalog/components/products-mobile-rail.module.css` — create78% centered cards/16px gaps, scroll snap, sharp photo layout and compact landscape treatment.
+- `src/features/catalog/components/products-index-carousel.tsx` — integrate responsive mode and separate rail/desktop controllers, share existing category/model/modal state, preserve desktop behavior and disable phone modal zoom/trail effects. Export an internal CarouselControls type for the existing move/select interface.
+- `src/features/catalog/components/products-index-carousel.module.css` — scope existing copy/models/progress positioning to phone-rail mode where necessary; retain viewport-fit, gray highlight and neutral back-button rules.
+- `tests/e2e/products-mobile-rail.spec.ts` — create meaningful native touch/image-loading/selection/orientation/focus/containment regressions.
+- `tests/e2e/products-index-carousel.spec.ts` — adapt mobile-only assertions/locators to native rail and optimized nearby images; keep desktop orbit/image/detail coverage rather than weakening it.
+- `spec.md`, `plan.md` — record approval, final contracts and actual verification. Temporary performance captures/screenshots may live under TEMP/output; no shared/global source-file changes.
+
+### Review Focus
+
+- Diagonal/vertical swipes on a photo must scroll the page, and horizontal scrolling must not trigger a detail click.
+- Category jumps, first/last items and button wrap must select the correct product without cloning/loading the entire list.
+- Offscreen/broken/late-loading images must not shift rail geometry or cause all original images to download during hydration.
+- Orientation/viewport changes and modal return must preserve a valid selection, focus and only one active controller.
+- Small320px screens and852×393 phone landscape must keep product controls/detail reachable while834px portrait tablets retain desktop behavior.
+
+### Task 1: Phone rail and parent integration
+
+**Interfaces:** MobileProductsRail consumes `products: CarouselProduct[]`, `activeIndex: number`, `onActiveChange(index: number): void`, `onOpen(index: number): void`, and its own `controlsRef` containing `move(steps: number): void` / `select(index: number, immediate?: boolean): void`. Parent keeps a separate desktop engine ref; no shared-ref cleanup race. Existing public CarouselProps remain unchanged.
+
+- [x] Record approach selection and prepare/self-review the concrete design, file boundaries and acceptance cases.
+- [x] Receive approval of this implementation Spec/Plan before application/test edits. Owner replied `อนุมัติ`.
+- Execution ruling: continue in the existing dirty `uat` working tree and preserve all earlier approved changes; no worktree copy, commit or delegation. The approved plan explicitly scopes this as native execution in the current session.
+- Compact-layout ruling: inspected320px screenshots exposed overlapping model/progress controls and blank neighboring photo edges. Keep78% cards on normal portrait screens, use64% on portraits at most700px high and38% on short landscape, and reserve separate footer space. This implements the planned compact treatment; the tradeoff is smaller product photos on short screens, reversible in the two scoped CSS modules.
+- Final native self-review: found that a non-drag gap tap left gesture state blocking later wheel/native scroll selection. Added a failing real-mouse horizontal-scroll regression, then removed the stale gesture guard from settled selection. Swipe-click suppression remains confined to click handling; verify the expanded full suite after this fix.
+- [x] Read the installed Next.js CSS/Image/client-rendering guidance and inspect existing test markers. Capture a same-environment local baseline before changes; retain production evidence only as separate context.
+- [x] Add failing native-rail cases:393px viewport has a native snap rail with clear neighbors/no duplicates; touch swipes change settled selection, vertical/diagonal motion scrolls, and near-image requests remain bounded. Include category/model/arrow/wrap and tap-after-swipe assertions.
+- [x] Implement the isolated rail and CSS using existing ProductImage. Observe image proximity with one rail viewport of horizontal margin, without eagerly mounting/decoding every source image. Use scrollend with a passive debounced fallback for settled index; no per-frame React animation, cloned images or effect library.
+- [x] Integrate the portrait/coarse-landscape mode and gallery hydration gate in the parent. Stop/clean up the desktop orbit effect in phone mode, route controls to the active engine, synchronize selection on resize, and restore focus to the selected native card after detail close.
+- [x] Preserve existing detail markup/links/specs and disable its zoom/trail blur only for phones; keep current first-section fit, gray dropdown and desktop animation contracts.
+- [x] Run native touch cases at320/393/430px and852×393, including reduced motion, source-image failure, delayed image, phone/desktop resizing and modal return. Assert actual control/data outcomes and optimized underlying Warehouse source/version, not identical raw/optimized URL strings.
+
+### Task 2: Regression and performance validation
+
+- [x] Adapt the existing mobile carousel cases to stable data markers/native rails and lazy images; retain all desktop cases at834/1440/1887px and product-detail identity/return checks. Remove mobile expectations that require all30 photos to decode before interaction.
+- [x] Run `bun run test:e2e -- tests/e2e/products-mobile-rail.spec.ts tests/e2e/products-index-carousel.spec.ts` against a task-approved local server. Inspect phone portrait/landscape, tablet and desktop screenshots; verify short/tall viewport fit and no horizontal page overflow.
+- [x] Repeat the same eight-horizontal-swipe/four-vertical-gesture profiling procedure in the same local environment and cache state before/after; compare task time, long tasks, style writes and initial image requests. Record limits; no claim of actual iPhone recovery from Chromium emulation alone.
+- [x] Run `bun run typecheck`, scoped ESLint and relevant catalogue checks; use Node24 where available and explicitly report runtime/build limitations. Do not publish or restart a user-owned server unnecessarily.
+- [x] Update final Spec/Plan results, run full `bun run format:check` and `git diff --check`, and hand off for the owner's iPhone15Pro retest. No commit, push or deployment unless separately instructed.
+
+### Impact / Rollback
+
+- R2 but changes the phone carousel mechanism and image hydration/loading. Main risks are double-engine/image mounting, scroll-versus-tap handling, missing-image layout, category synchronization and orientation cleanup; each has a named regression above.
+- Desktop/gallery source and shared modal are touched only to integrate mode ownership; desktop screenshots/interaction tests must verify preservation. No shared ProductImage/global stylesheet/Header/Warehouse/API changes are included.
+- Rollback removes the two new rail files and restores only this task's parent/CSS/test hunks; retain earlier gray/dropdown/viewport-fit/modal/Header work and unrelated edits.
+
+### Verification Results
+
+- Completed approved rail/CSS/parent integration and all listed regressions. Final browser suite24/24 passed via `bunx --no-install playwright test tests/e2e/products-mobile-rail.spec.ts tests/e2e/products-index-carousel.spec.ts` with PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 and PLAYWRIGHT_CHANNEL=chrome. Final artifacts: `C:/Users/cityc/AppData/Local/Temp/sunford-native-phone-verified-20261114`.
+- Node24.22.3 `bun run typecheck`, scoped ESLint of both carousel components and both test files, and `bun run test:catalog`174/174 passed. Final repository-wide `bun run format:check` and `git diff --check` passed; final documentation was formatted before repeating those checks.
+- Initial phone probes393x659/852 DPR3:3 image elements mounted,2 loaded at capture, zero direct-original gallery requests. Normal local CPU4x eight-swipe comparison:7561 to392 style mutations (94.8% fewer),30 loaded to5 mounted/4 loaded at end; p95 sampled interval97.2 to76.2ms. Horizontal long tasks remain32 to33, longest220 to219ms; no assertion that all jank is removed. Vertical probes observe0 long tasks/0 style writes. Responsive-image naturalWidth is density-corrected, so do not compare decoded-memory estimates against raw original dimensions.
+- Inspected final phone screenshots including320px control separation,393x659/852 neighbors,852x393 landscape and preserved834/1440px tablet/desktop orbit. `output/mobile-products-performance-20261114/native-implementation.md` links copied before/after JSON and reviewable phone screenshots.
+- Existing Node22 development server on3000 left running; validation commands used cached Node24. Production build and physical Safari/iPhone15Pro retest were not run. No commit, push or deployment. No new qualifying Next.js framework feedback candidate.
+
+## Plan: Investigate real-phone product scrolling and assess a mobile rail (2026-11-14)
+
+### Files / Artifacts
+
+- `spec.md`, `plan.md` — record the owner's device/live URL, read-only scope, measurements, limitations and pending decisions.
+- `output/mobile-products-performance-20261114/report.md` — investigation findings and mobile approach comparison.
+- `output/mobile-products-performance-20261114/interaction-comparison.json` — copied instrumented normal/reduced-motion metrics.
+- `output/mobile-products-performance-20261114/live-mobile-products.png` — screenshot of the actual deployed mobile page.
+- Temporary profiling scripts/raw captures under TEMP; no application/test/configuration edits or new project dependencies.
+
+### Steps
+
+- [x] Ask device/browser/live URL; owner supplied iPhone15Pro and the production products URL.
+- [x] Inspect carousel animation, touch/wheel handling, ResizeObserver, image decode/loading and the Stories reference component.
+- [x] Capture live image dimensions/loading and compare eight horizontal swipes/four vertical gestures with normal/reduced motion at4× CPU slowdown using an iPhone viewport/touch profile.
+- [x] Save evidence/report, distinguish deployed versus local versions, and propose realistic mobile approaches without implementing a redesign.
+- [x] Receive the real-phone gesture detail: owner confirmed horizontal left/right product swiping, matching the measured workload hotspot.
+- [ ] Receive browser/iOS details where needed for physical-device diagnosis and the owner's mobile-direction decision; do not claim the physical freeze is resolved.
+- [x] Format/check final documentation and preserve unrelated working changes.
+
+### Impact / Rollback
+
+- Read-only production browsing/profiling and local report/documents only. Synthetic gestures change temporary UI state without business-data writes. No production mutation, mobile prototype, application fix, commit or deployment.
+- Remove only this task's report/doc hunks to roll back. Future mobile work needs its own approved concrete design/file scope and physical-device validation.
+
+### Verification Results
+
+- Actual live page HTTP200;30 carousel photos load despite only seven visible. Initial27 image responses5.62MiB; all30 natural dimensions imply162.2MiB RGBA pixel storage, not measured phone RAM.
+- Instrumented Chromium4× CPU comparison: normal horizontal17 long tasks/max164ms/p95 interval145.8ms/8,438 style mutations; reduced motion8/156ms/7.5ms/608. Vertical probes complete without long tasks; no real-iPhone root-cause or fix claim.
+- Reference code uses scroll-driven blur/scale and repeated cards; recommended native rail should reuse the pictured visual arrangement rather than that effect engine. No prototype was built or benchmarked.
+- Raw captures and scripts are in `C:\Users\cityc\AppData\Local\Temp\sunford-mobile-performance-20261114`; report/summary/screenshot are copied into the output directory. Owner confirmed horizontal product swiping as the real trigger. Physical browser behavior/root cause remains unverified; implementation is pending owner direction. No qualifying Next.js framework issue identified in this investigation.
+
+## Plan: Simplify carousel detail back focus and description (2026-11-14)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` — override only the dialog back button's red focus outline with a neutral text underline; retain its black pill presentation.
+- `src/features/catalog/components/products-index-carousel.tsx` — remove only the dialog's rendered `product.subtitle` paragraph; preserve product data/contracts and other views.
+- `tests/e2e/products-index-carousel.spec.ts` — extend existing detail assertions for no description paragraph, neutral focused back button and preserved return/specification behavior.
+- `spec.md`, `plan.md` — record explicit approval and actual verification.
+
+### Steps
+
+- [x] Identify the exact dialog, inherited red focus outline and subtitle paragraph from the screenshots/source.
+- [x] Obtain approval of this added local CSS/JSX/test scope. Owner replied `อนุมัติทั้ง 3 งาน`, approving both dialog refinements and the homepage black submenu.
+- [x] Read applicable installed Next.js guidance and apply the back-button-only focus override and paragraph removal without unrelated cleanup.
+- [x] Verify390/834/1440px dialog open/focus/back/Escape/product switching and retained model/image/specifications/links; inspect screenshots.
+- [x] Run relevant carousel Chrome regressions, scoped ESLint/TypeScript as applicable, then update results before final full repository formatting and whitespace checks.
+
+### Impact / Rollback
+
+- R2, limited to the carousel's full-screen detail. Description removal changes article height; verify layout and focus on mobile/tablet/desktop. Keyboard focus is retained with a neutral underline.
+- Rollback restores only the removed paragraph and this task's focus override/assertions; preserve the existing gray highlight and viewport-fit hunks. No global style/data/route/commit/deployment change.
+
+### Verification Results
+
+- Implemented only the focused back-button neutral underline/outline removal and dialog subtitle-paragraph removal; product data, specs, image, links and other consumers remain.
+- Carousel15/15 passes; all three responsive detail screenshots inspected. New checks confirm no paragraph, retained model/link, outline none, underline and black button, plus back-click/Escape return. Existing gray dropdown, viewport fit and gesture/detail-switch regressions remain green.
+- TypeScript, final scoped lint, full final repository formatting and diff checks pass. Evidence: `C:\Users\cityc\AppData\Local\Temp\sunford-black-menu-clean-detail-20261114`, including three `detail-no-description-<width>.png` files. Existing Node22 server retained; no production/Node24 build, commit, push or deployment. No qualifying Next.js feedback candidate.
+
+## Plan: Unify homepage submenu backgrounds as black (2026-11-14)
+
+### Files
+
+- `src/styles/header.css` — shared stylesheet: replace the white all-products override with an active-homepage-scoped open-menu black palette, including mobile open state; preserve closed tones and interior navigation.
+- `tests/e2e/all-products-navbar.spec.ts` — extend existing homepage/menu checks for black surfaces, consistent menu switching and preserved interior/mobile behavior.
+- `tests/e2e/adaptive-nav.spec.ts` — update expanded-menu palette expectations and distinguish the actual homepage Header/interior PrimaryNavigation contract while preserving closed adaptive-tone checks.
+- `spec.md`, `plan.md` — record scope, approval and actual results.
+
+### Steps
+
+- [x] Trace Header palette overrides, route ownership and active-homepage marker; reproduce the white all-products and translucent dark category surfaces in Chrome.
+- [x] Obtain approval of the specific shared stylesheet and test scope before editing application/test files. Owner replied `อนุมัติทั้ง 3 งาน`.
+- [x] Read installed Next.js CSS guidance and replace only the targeted open-menu override using the existing homepage marker and dark text palette.
+- [x] Update affected existing assertions and verify every homepage submenu over Hero/story at834/1440/1900px, plus mobile nested menus at390px; inspect screenshots and test keyboard/dismissal behavior. Runtime confirms current story background is black, not the stale light expectation.
+- [x] Verify direct interior visits and homepage-to-interior/back navigation retain existing light interior colors; run the relevant navbar/adaptive regressions and scoped ESLint.
+- [x] Record actual results/limits, then run full final `bun run format:check` and `git diff --check`. Preserve the existing development server and unrelated working changes.
+
+### Impact / Rollback
+
+- Shared stylesheet change with regression risk to open-header foreground/surface contrast and retained-route themes. Restrict selectors to active `[data-home-route]` and open-menu state; check desktop/mobile and direct/client navigation to contain that risk.
+- R2; rollback restores only this task's palette override and corresponding assertions. No Header component, layout, global token, Hero media/content or interior-navigation style edits; no deployment.
+
+### Verification Results
+
+- Current Chrome reproduction over the dark Hero: all-products panel/glass `rgb(250, 250, 252)` with dark text; scales/indicator panels `rgba(17, 17, 17, 0.97)` and glass `rgba(17, 17, 17, 0.5)` with light text. Shared `data-nav-tone` is dark in all three cases, confirming the special override is the mismatch.
+- Implemented active-homepage/open-state black panel/glass and readable light foreground. Added semantic `header` specificity to outrank the compiler-grouped dark palette; closed adaptive and interior rules are untouched. Prior carousel/gray-highlight changes are preserved.
+- Final targeted navbar/adaptive verification:26 cases pass in the final navbar run and the corrected SSR-baseline case passes1/1 separately, covering all27 cases. Every desktop submenu is black over Hero/story at834/1440/1900px; mobile390px, switching, keyboard/modified links, Escape/outside dismissal, containment and direct/client interior navigation pass. Combined with carousel15/15, all42 scoped cases are verified across final targeted runs.
+- Updated existing stale expectations to observed contracts: current story is black, interior routes use PrimaryNavigation, `/Indicator` is unsuitable for a no-JavaScript SSR navigation assertion, canonical `/contact-us` supplies the real interior header, and closed homepage SSR retains its existing light base palette. No application workaround or claim of dark no-JavaScript navigation.
+- Inspected final black desktop/mobile/wide menus and unchanged light interior menu; artifacts under `C:\Users\cityc\AppData\Local\Temp\sunford-black-menu-final-20261114` and `sunford-black-menu-ssr-verified-20261114`.
+- TypeScript, final scoped lint, full final repository format and whitespace checks pass. Existing Node22 server left running; production/Node24 build and physical-device testing not run. No Hero, global token/layout/component, interior style, data/dependency/database, commit/push/deployment change.
+- Managed Next.js feedback pass: ran `npx --no-install next internal agent-feedback-instructions` once and prepared one anonymized CSS cascade/grouping draft for owner review. No report is submitted; the verified more-specific selector is the local workaround.
+
+## Plan: Fit the first products section to the viewport (2026-11-14)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` — replace the local fixed/clamped section height with `100dvh` minus116/99/95px at the existing735/834px navigation/ribbon breakpoints; retain gray highlights and other styling.
+- `tests/e2e/products-index-carousel.spec.ts` — extend existing layout checks to assert first-section/next-section viewport alignment; retain prior gray-highlight and interaction assertions.
+- `spec.md`, `plan.md` — record scope, approval and actual verification.
+
+### Steps
+
+- [x] Inspect carousel sizing/ResizeObserver and measure current top chrome. Source/Chrome confirm116px mobile and95px tablet/desktop offsets; source confirms99px at735–833px.
+- [x] Obtain approval of the exact viewport-fit interpretation and file scope before application/test edits. Owner replied `อนุมัติ`.
+- [x] Read the installed Next.js CSS guide and apply only the approved local height/media-query changes and existing test assertions.
+- [x] Verify geometry and inspect screenshots at320×568,390×844,834×1112,1440×640,1440×900 and1897×917; include resize behavior and extra735/833px breakpoint probes. Confirm controls, active product, gray dropdown and scrolling to the next section.
+- [x] Run the carousel Chrome regression file, scoped ESLint, final full repository formatting and whitespace checks; update results before the final formatting check. Reused the existing healthy development server and left it running.
+
+### Impact / Rollback
+
+- R2 and component-local; section height changes product geometry through its existing responsive size observer. Short screens lose the old530px minimum, so check clipping/controls there explicitly; tall screens lose the770px maximum.
+- Navigation and ribbon are not edited; their current breakpoint heights determine the local offsets. If those shared heights change later, update and reverify the carousel offsets in the same task. No global file expansion is needed.
+- Rollback restores only this task's height/media-query and geometry-assertion hunks, preserving the previous gray-highlight work and unrelated changes.
+
+### Verification Results
+
+- Previous section bottoms were740.55px in844px mobile,865px in1112px tablet and761px in900px desktop. The local height now uses viewport minus116/99/95px offsets; approved gray-highlight changes are preserved.
+- Full Chrome carousel file passes15/15 in1.9minutes. Extended existing layout tests prove first-section/next-section viewport alignment at320/390/834/1440/1887px; existing gesture, scrolling, keyboard, gray-dropdown and detail-return checks also pass.
+- Additional8/8 live probes at320×568,390×844,735×900,833×900,834×1112,1440×640,1440×900 and1897×917 pass after height resizing: exact viewport boundary, contained active-photo/controls/dropdown, gray selected option, no horizontal overflow and normal scrolling to later content. Inspected mobile/tablet/breakpoint/short-desktop/wide-desktop screenshots, including the smallest open dropdown.
+- Evidence: `C:\Users\cityc\AppData\Local\Temp\sunford-viewport-fit-20261114\geometry.json` and adjacent `viewport-<width>x<height>.png` / `dropdown-<width>x<height>.png`; complete suite artifacts in `sunford-viewport-carousel-regression-20261114` under TEMP.
+- Scoped ESLint, final repository-wide formatting and `git diff --check` pass. Local server/test runtime is Node22; no Node24 production build, physical-device browser-chrome or unrelated suite claim. Existing server left running; no shared style/logic/dependency/data/commit/push/deployment change. No qualifying Next.js feedback candidate.
+
+## Plan: Use a gray category dropdown highlight (2026-11-14)
+
+### Files
+
+- `src/features/catalog/components/products-index-carousel.module.css` — change only the local option-highlight token from pink/red to existing `var(--paper)` gray.
+- `tests/e2e/products-index-carousel.spec.ts` — update the existing selected-highlight expectation; verify hover/focus and include834px alongside390/1440px in the focused dropdown checks.
+- `spec.md`, `plan.md` — record the explicit approval and actual verification results.
+
+### Steps
+
+- [x] Identify the pictured dropdown, its shared hover/focus/selected rule and the existing neutral token.
+- [x] Obtain approval of this local CSS/test Spec/Plan before application/test edits. Owner replied `yep`.
+- [x] Read the installed Next.js CSS guide, then change the local highlight and existing test expectations only.
+- [x] Run focused Chrome dropdown checks at390/834/1440px; inspect screenshots and verify hover/focus/selected gray, selection, scrolling and open/close behavior. Reused the existing healthy port3000 server and left it running.
+- [x] Run scoped ESLint, final full `bun run format:check` and `git diff --check`; update actual results before the final formatting check.
+
+### Impact / Rollback
+
+- R2; affects only option-highlight backgrounds in the first `/products` carousel dropdown. Hover, keyboard focus and selected states share the same local color. No global component/token/style or application logic changes.
+- Rollback restores the prior local highlight value and corresponding test expectations.
+
+### Verification Results
+
+- Local CSS changes only `--category-highlight` from `#f8d9dc` to `var(--paper)` (`#f5f5f7`). Existing focused tests expect gray for selection, hover and keyboard focus, include834px and wait for carousel interactivity.
+- Chrome3/3 passes in22.6s at390/834/1440px. Verified computed gray backgrounds, selection, scrolling, keyboard navigation, open/close, retained trigger/chevron/alignment and horizontal containment. Inspected all three open-menu screenshots; hover and selected rows are gray and layout is preserved.
+- Evidence: `C:\Users\cityc\AppData\Local\Temp\sunford-gray-dropdown-20261114`, including `category-dropdown-open-390.png`, `category-dropdown-open-834.png` and `category-dropdown-open-1440.png` under the respective test directories.
+- Scoped ESLint and final repository-wide formatting/whitespace checks pass. Existing local server uses Node22 and was left running; Node24 production build and unrelated browser tests were not run. No dependency/lockfile, application logic, global style, product data, commit, push or deployment change. No qualifying Next.js feedback candidate.
+
 ## Plan: Prevent formatting failures from reaching deployment (2026-11-14)
 
 ### Files
@@ -6140,3 +6451,15 @@ Impact: shared product visibility changes across consumers, including fresh quot
 Verification: full catalogue174/174; JavaScript-enabled Chrome5/5 in26.9s on default Turbopack/Node24. Includes homepage and products/detail search across390/834/1440px, clear/close/reopen/result navigation and hidden exclusions, no product-flow page errors. Screenshot review390/1440 passes. TypeScript/scoped lint/format/app diff checks pass. Only test/documentation files changed in this task; no application fix or framework workaround was needed after correct selectors. No build/deploy.
 
 Impact: test/documentation-only based on reproduced evidence; preserve production UI/data logic. Revert these hunks to roll back. No production deployment.
+
+## Plan: Merge ai_attributes labels and units into the Excel workbook (2026-11-14)
+
+- [x] Inspect latest Desktop workbook, source lock and company-scoped attribute metadata.
+- [x] Back up `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website-no-thread.xlsx`; build temporary candidate with joined fact labels/units, readable Product headers, raw ai_attributes and Attribute_Mapping plus index links.
+- [x] Create `C:\Users\cityc\Desktop\sunford-warehouse-master-ai-data-with-website-no-thread-with-attributes.xlsx` without overwriting an existing file; never modify the open source.
+- [x] Independently verify every source cell/style/native feature except approved labels/index additions, all attribute/fact/header joins, missing-unit blanks, numeric fidelity, fresh live attribute parity, XLSX reopen/ZIP integrity and final/source/backup hashes.
+- [x] Update spec.md/plan.md with actual output/backup and verification; attach deliverable.
+
+Verification: all149,599existing cells/styles checked except intended128header text changes; all1,582facts joined and33IDs resolved; used units10defined/23blank preserved. New155×12raw attribute sheet,128×8mapping sheet; Website396rows unchanged. Fresh live155-row attribute parity and final8-sheet reopen/ZIP/external-link checks pass. Final SHA-256 `2e3e6ca1f9268332fff3067f3825a5a9099a870cb54733e182efc9f5d775594e`. Exact backup: Desktop `sunford-warehouse-master-ai-data-with-website-no-thread.backup-attributes-20261114-145255.xlsx`; source unchanged. No database/app change.
+
+Files: only the new Desktop XLSX, exact timestamped source backup, temporary snapshot/builder/candidate under TEMP, and spec.md/plan.md notes. No app/database writes. R2 rollback: retain original and backup; remove only exact new output if requested.

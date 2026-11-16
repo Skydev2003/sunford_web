@@ -3,9 +3,19 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  height: clamp(530px, 74svh, 770px);
+  height: calc(100dvh - 116px);
   background: white;
   color: #1d1d1f;
+}
+@media (min-width: 735px) {
+  .scene {
+    height: calc(100dvh - 99px);
+  }
+}
+@media (min-width: 834px) {
+  .scene {
+    height: calc(100dvh - 95px);
+  }
 }
 .touchHint {
   display: none;
@@ -42,7 +52,7 @@
 }
 .categoryDropdown {
   --category-accent: var(--red);
-  --category-highlight: #f8d9dc;
+  --category-highlight: var(--paper);
   position: relative;
   pointer-events: auto;
   width: var(--category-control-width);
@@ -332,6 +342,11 @@
   border-radius: 999px;
   font-size: 13px;
 }
+.scene .back:focus-visible {
+  outline: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .hero {
   height: min(510px, 56svh);
   position: relative;
@@ -421,6 +436,11 @@
     top: 22px;
     width: calc(100% - 64px);
   }
+  .scene[data-mobile-rail] .copy {
+    display: grid;
+    justify-items: center;
+    left: 32px;
+  }
   .models {
     right: 20px;
     left: 20px;
@@ -443,6 +463,50 @@
   }
   .thumbs {
     justify-content: center;
+  }
+}
+.scene[data-mobile-rail] {
+  touch-action: auto;
+}
+.scene[data-mobile-rail] .models {
+  bottom: 116px;
+}
+.scene[data-mobile-rail] .progress {
+  bottom: 16px;
+}
+.scene[data-mobile-rail] .mouseHint {
+  display: none;
+}
+.scene[data-mobile-rail] .touchHint {
+  display: inline;
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .scene[data-mobile-rail] .copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    top: 8px;
+    left: 20px;
+    width: calc(100% - 40px);
+  }
+  .scene[data-mobile-rail] .categoryDropdown {
+    width: 240px;
+  }
+  .scene[data-mobile-rail] .copy h2 {
+    width: auto;
+    max-width: 46%;
+    margin: 0;
+    font-size: 24px;
+  }
+  .scene[data-mobile-rail] .models {
+    left: 52%;
+    right: 20px;
+    bottom: 18px;
+  }
+  .scene[data-mobile-rail] .progress {
+    left: 25%;
+    bottom: 8px;
+    width: min(260px, 44%);
   }
 }
 @media (prefers-reduced-motion: reduce) {

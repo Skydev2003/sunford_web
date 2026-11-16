@@ -8,9 +8,11 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import Link from "next/link";
+import { MobileProductsRail } from "./products-mobile-rail";
 import styles from "./products-index-carousel.module.css";
 
 export type CarouselProduct = {
@@ -27,6 +29,19 @@ export type CarouselProduct = {
   href?: string;
 };
 type CarouselProps = { products: CarouselProduct[]; categories: { id: string; label: string }[] };
+export type CarouselControls = {
+  move: (steps: number) => void;
+  select: (index: number, immediate?: boolean) => void;
+};
+const phoneQuery =
+  "(max-width: 759px), (hover: none) and (pointer: coarse) and (max-height: 500px)";
+const subscribePhone = (notify: () => void) => {
+  const media = matchMedia(phoneQuery);
+  media.addEventListener("change", notify);
+  return () => media.removeEventListener("change", notify);
+};
+const phoneSnapshot = () => matchMedia(phoneQuery).matches;
+const serverPhoneSnapshot = () => null;
 type PosePoint = [number, number, number];
 const desktop: PosePoint[] = [
   [330, 1000, 40],
@@ -113,10 +128,9 @@ function CarouselScene({ products, categories }: CarouselProps) {
   const categoryOptions = useRef<Array<HTMLButtonElement | null>>([]);
   const categoryOpenRef = useRef(false);
   const images = useRef<Array<HTMLImageElement | null>>([]);
-  const engine = useRef<{
-    move: (steps: number) => void;
-    select: (index: number, immediate?: boolean) => void;
-  } | null>(null);
+  const engine = useRef<CarouselControls | null>(null);
+  const mobileControls = useRef<CarouselControls | null>(null);
+  const phone = useSyncExternalStore(subscribePhone, phoneSnapshot, serverPhoneSnapshot);
   const transition = useRef<Transition | null>(null),
     lastSwitch = useRef(0);
   const [size, setSize] = useState({ w: 1440, h: 740 });
@@ -124,6 +138,10 @@ function CarouselScene({ products, categories }: CarouselProps) {
   const [detail, setDetail] = useState<number | null>(null);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [categoryCursor, setCategoryCursor] = useState(0);
+  const controls = phone ? mobileControls : engine;
+  const selectMobile = useCallback((next: number) => {
+    setFrame({ position: next, energy: 0, time: 0 });
+  }, []);
   const active = wrap(Math.round(frame.position)),
     index = detail ?? active,
     product = products[index];
@@ -133,6 +151,15 @@ function CarouselScene({ products, categories }: CarouselProps) {
   );
   const activeCategory = categories[activeCategoryIndex];
   const group = products.filter((p) => p.categoryId === product.categoryId);
+
+  useEffect(() => {
+    const element = scene.current!;
+    const resize = new ResizeObserver(() =>
+      setSize({ w: element.clientWidth, h: element.clientHeight }),
+    );
+    resize.observe(element);
+    return () => resize.disconnect();
+  }, []);
 
   useLayoutEffect(() => {
     const row = models.current;
@@ -160,6 +187,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
   }, [categoryOpen]);
 
   useEffect(() => {
+    if (phone !== false) return;
     const element = scene.current!;
     element.dataset.interactive = "true";
     for (const image of images.current) {
@@ -172,8 +200,8 @@ function CarouselScene({ products, categories }: CarouselProps) {
           .catch(() => {});
     }
     const media = matchMedia("(prefers-reduced-motion: reduce)");
-    let current = 0,
-      target = 0,
+    let current = Number(element.dataset.activeIndex ?? 0),
+      target = current,
       raf = 0,
       last = 0,
       energy = 0,
@@ -298,18 +326,13 @@ function CarouselScene({ products, categories }: CarouselProps) {
     element.addEventListener("touchmove", trackSwipe, { passive: true });
     element.addEventListener("touchend", finishSwipe, { passive: false });
     element.addEventListener("touchcancel", cancelSwipe, { passive: true });
-    const resize = new ResizeObserver(() =>
-      setSize({ w: element.clientWidth, h: element.clientHeight }),
-    );
     const settle = () => jump(Math.round(target));
-    resize.observe(element);
     element.addEventListener("wheel", wheel, { passive: false });
     media.addEventListener("change", settle);
     engine.current = { move, select };
     return () => {
       engine.current = null;
       stop();
-      resize.disconnect();
       media.removeEventListener("change", settle);
       element.removeEventListener("wheel", wheel);
       element.removeEventListener("touchstart", beginSwipe);
@@ -317,7 +340,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
       element.removeEventListener("touchend", finishSwipe);
       element.removeEventListener("touchcancel", cancelSwipe);
     };
-  }, [count, wrap]);
+  }, [count, wrap, phone]);
 
   useLayoutEffect(() => {
     if (detail === null) return;
@@ -327,7 +350,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
     if (!modal.open) modal.showModal();
     modal.scrollTop = 0;
     const media = matchMedia("(prefers-reduced-motion: reduce)");
-    if (media.matches || !effect) return;
+    if (phone || media.matches || !effect) return;
     let cancelled = false,
       ghost: HTMLImageElement | undefined;
     const animations: Animation[] = [];
@@ -417,26 +440,28 @@ function CarouselScene({ products, categories }: CarouselProps) {
       media.removeEventListener("change", clean);
       window.removeEventListener("resize", clean);
     };
-  }, [detail, products]);
+  }, [detail, products, phone]);
 
   function open(next: number) {
     categoryOpenRef.current = false;
     setCategoryOpen(false);
     const image = images.current[next];
-    transition.current = image?.naturalWidth ? { source: paintedBox(image) } : null;
+    transition.current = !phone && image?.naturalWidth ? { source: paintedBox(image) } : null;
     lastSwitch.current = 0;
-    engine.current?.select(next, true);
+    controls.current?.select(next, true);
     setDetail(next);
   }
   function switchDetail(next: number, direction: number, now: number) {
     if (detail === null || detail === next) return;
-    transition.current = {
-      previous: detail,
-      direction,
-      speed: Math.min(1.8, Math.max(1, 260 / Math.max(80, now - lastSwitch.current))),
-    };
+    transition.current = phone
+      ? null
+      : {
+          previous: detail,
+          direction,
+          speed: Math.min(1.8, Math.max(1, 260 / Math.max(80, now - lastSwitch.current))),
+        };
     lastSwitch.current = now;
-    engine.current?.select(next, true);
+    controls.current?.select(next, true);
     setDetail(next);
   }
   function categoryStep(step: number, now: number) {
@@ -451,7 +476,14 @@ function CarouselScene({ products, categories }: CarouselProps) {
   function close() {
     dialog.current?.close();
     setDetail(null);
-    images.current[index]?.parentElement?.focus({ preventScroll: true });
+    if (phone) {
+      scene.current
+        ?.querySelectorAll<HTMLButtonElement>("[data-product-photo]")
+        .forEach((button) => {
+          if (button.dataset.productPhoto === products[index].id)
+            button.focus({ preventScroll: true });
+        });
+    } else images.current[index]?.parentElement?.focus({ preventScroll: true });
   }
   function setCategoryExpanded(open: boolean) {
     categoryOpenRef.current = open;
@@ -474,7 +506,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
     const firstProduct = products.findIndex((item) => item.categoryId === categories[next].id);
     if (firstProduct < 0) return;
     setCategoryCursor(next);
-    engine.current?.select(firstProduct);
+    controls.current?.select(firstProduct);
     closeCategoryMenu(true);
   }
   function handleCategoryTriggerKeyDown(event: ReactKeyboardEvent<HTMLButtonElement>) {
@@ -511,13 +543,16 @@ function CarouselScene({ products, categories }: CarouselProps) {
       ref={scene}
       className={styles.scene}
       data-products-index-carousel
+      data-mobile-rail={phone === true || undefined}
+      data-interactive={phone === true || undefined}
+      data-active-index={active}
       aria-label="เลือกดูสินค้า"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.target !== scene.current) return;
         if (["ArrowRight", "ArrowLeft"].includes(e.key)) {
           e.preventDefault();
-          engine.current?.move(e.key === "ArrowRight" ? 1 : -1);
+          controls.current?.move(e.key === "ArrowRight" ? 1 : -1);
         }
       }}
     >
@@ -573,54 +608,64 @@ function CarouselScene({ products, categories }: CarouselProps) {
         </div>
         <h2>{products[active].model}</h2>
       </div>
-      {products.map((p, i) => {
-        const relative = wrap(i - frame.position + count / 2) - count / 2;
-        const visible = Math.abs(relative) <= 3.4;
-        const point = visible ? pose(relative, size.w, size.h) : null;
-        return (
-          <button
-            key={p.id}
-            type="button"
-            hidden={!visible}
-            className={styles.photo}
-            data-product-photo={p.id}
-            aria-label={"ดูรายละเอียด " + p.model}
-            aria-current={i === active}
-            tabIndex={Math.abs(relative) < 2.4 ? 0 : -1}
-            onClick={() => open(i)}
-            style={
-              point
-                ? {
-                    transform: `translate3d(${point.x - 200}px,${point.y - 160}px,0) scale(${point.size / 400})`,
-                    zIndex: Math.round(10 - Math.abs(relative)),
-                    opacity: Math.min(1, (3.4 - Math.abs(relative)) / 0.7),
-                  }
-                : undefined
-            }
-          >
-            <img
-              ref={(node) => {
-                images.current[i] = node;
-              }}
-              src={p.image || undefined}
-              onError={(event) => fallbackPhoto(event.currentTarget, p)}
-              alt={p.image ? p.model : ""}
-              decoding="async"
-              onLoad={(e) => {
-                const img = e.currentTarget;
-                void img
-                  .decode()
-                  .then(() => {
-                    img.dataset.ready = "true";
-                  })
-                  .catch(() => {
-                    if (img.naturalWidth) img.dataset.ready = "true";
-                  });
-              }}
-            />
-          </button>
-        );
-      })}
+      {phone === true && (
+        <MobileProductsRail
+          products={products}
+          activeIndex={active}
+          onActiveChange={selectMobile}
+          onOpen={open}
+          controlsRef={mobileControls}
+        />
+      )}
+      {phone === false &&
+        products.map((p, i) => {
+          const relative = wrap(i - frame.position + count / 2) - count / 2;
+          const visible = Math.abs(relative) <= 3.4;
+          const point = visible ? pose(relative, size.w, size.h) : null;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              hidden={!visible}
+              className={styles.photo}
+              data-product-photo={p.id}
+              aria-label={"ดูรายละเอียด " + p.model}
+              aria-current={i === active}
+              tabIndex={Math.abs(relative) < 2.4 ? 0 : -1}
+              onClick={() => open(i)}
+              style={
+                point
+                  ? {
+                      transform: `translate3d(${point.x - 200}px,${point.y - 160}px,0) scale(${point.size / 400})`,
+                      zIndex: Math.round(10 - Math.abs(relative)),
+                      opacity: Math.min(1, (3.4 - Math.abs(relative)) / 0.7),
+                    }
+                  : undefined
+              }
+            >
+              <img
+                ref={(node) => {
+                  images.current[i] = node;
+                }}
+                src={p.image || undefined}
+                onError={(event) => fallbackPhoto(event.currentTarget, p)}
+                alt={p.image ? p.model : ""}
+                decoding="async"
+                onLoad={(e) => {
+                  const img = e.currentTarget;
+                  void img
+                    .decode()
+                    .then(() => {
+                      img.dataset.ready = "true";
+                    })
+                    .catch(() => {
+                      if (img.naturalWidth) img.dataset.ready = "true";
+                    });
+                }}
+              />
+            </button>
+          );
+        })}
       <div
         ref={models}
         className={styles.models}
@@ -634,7 +679,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
             <button
               key={p.id}
               aria-current={p.id === products[active].id}
-              onClick={() => engine.current?.select(products.indexOf(p))}
+              onClick={() => controls.current?.select(products.indexOf(p))}
             >
               {p.model}
             </button>
@@ -642,7 +687,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
       </div>
       <div className={styles.progress} data-equalizer>
         <div>
-          <button aria-label="สินค้ารุ่นก่อนหน้า" onClick={() => engine.current?.move(-1)}>
+          <button aria-label="สินค้ารุ่นก่อนหน้า" onClick={() => controls.current?.move(-1)}>
             ‹
           </button>
           <span className={styles.ticks} aria-hidden="true">
@@ -660,7 +705,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
               );
             })}
           </span>
-          <button aria-label="สินค้ารุ่นถัดไป" onClick={() => engine.current?.move(1)}>
+          <button aria-label="สินค้ารุ่นถัดไป" onClick={() => controls.current?.move(1)}>
             ›
           </button>
         </div>
@@ -697,7 +742,6 @@ function CarouselScene({ products, categories }: CarouselProps) {
             </div>
             <article>
               <h2 id="carousel-detail-title">{product.model}</h2>
-              <p>{product.subtitle}</p>
               <dl>
                 {[
                   ["พิกัดสูงสุด", product.capacity],

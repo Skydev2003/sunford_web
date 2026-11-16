@@ -37,12 +37,15 @@
   --nav-shadow: #000000e6;
   --nav-panel-shadow: #00000073;
 }
-.site-header.is-menu-open:has(.submenu-panel[data-all-products].is-active) {
-  --nav-panel: #fafafc;
-  --nav-glass: #fafafc;
-  --nav-ink: #1d1d1f;
-  --nav-muted: #626976;
-  --nav-hover: #111827;
+[data-home-route] header.site-header.is-menu-open,
+[data-home-route] header.site-header:has(.mobile-nav) {
+  --line: #ffffff1f;
+  --nav-panel: #000;
+  --nav-glass: #000;
+  --nav-ink: #cfcfcf;
+  --nav-muted: #999;
+  --nav-hover: #fff;
+  --nav-hover-surface: #ffffff14;
 }
 .nav-glass {
   position: absolute;

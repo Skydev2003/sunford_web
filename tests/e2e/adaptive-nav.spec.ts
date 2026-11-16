@@ -22,6 +22,13 @@ async function beneathNav(page: Page, selector: string) {
     );
 }
 
+async function expectInteriorNavigation(page: Page) {
+  const header = page.locator("[data-products-header]:visible");
+  await expect(header).toHaveCount(1);
+  await expect(header).toHaveCSS("background-color", "rgba(250, 250, 252, 0.8)");
+  await expect(page.locator(".site-header:visible")).toHaveCount(0);
+}
+
 for (const width of [1440, 390]) {
   test(`opening overlay does not change the navigation surface at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -34,7 +41,7 @@ for (const width of [1440, 390]) {
     await expectTone(page, "dark");
   });
 
-  test(`navigation follows dark and light sections, including expanded menus at ${width}px`, async ({
+  test(`navigation preserves homepage dark surfaces, including expanded menus at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -46,25 +53,31 @@ for (const width of [1440, 390]) {
     await beneathNav(page, "#product-experience");
     await expectTone(page, "dark");
     await beneathNav(page, "#story");
-    await expectTone(page, "light");
+    await expectTone(page, "dark");
     const header = page.locator(".site-header");
     if (width >= 1400) {
       await header.locator(".desktop-nav a").first().focus();
       await expect(header.locator("#desktop-submenu")).toBeVisible();
       await expect(header.locator("#desktop-submenu")).toHaveCSS(
         "background-color",
-        "rgba(255, 255, 255, 0.97)",
+        "rgb(0, 0, 0)",
       );
-      await expect(header.locator(".submenu-group").first()).toHaveCSS("color", "rgb(39, 49, 66)");
+      await expect(header.locator(".submenu-group").first()).toHaveCSS(
+        "color",
+        "rgb(207, 207, 207)",
+      );
     } else {
       await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       await expect(header.locator("#mobile-navigation")).toBeVisible();
       await header.locator("#mobile-navigation summary").first().click();
       await expect(header.locator(".mobile-nav-panel a").first()).toBeVisible();
     }
-    await expectTone(page, "light");
+    await expect(header).toHaveAttribute("data-nav-tone", "dark");
+    await expect(header.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+    await expect(header).toHaveCSS("color", "rgb(207, 207, 207)");
     await page.screenshot({ path: test.info().outputPath(`light-menu-${width}.png`) });
     await page.keyboard.press("Escape");
+    await expectTone(page, "dark");
     await beneathNav(page, "#product-experience");
     await expectTone(page, "dark");
     await page.screenshot({ path: test.info().outputPath(`dark-${width}.png`) });
@@ -77,9 +90,12 @@ for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/Indicator");
-    await expectTone(page, "light");
+    await expectInteriorNavigation(page);
     await page.screenshot({ path: test.info().outputPath(`indicator-light-${width}.png`) });
-    await page.getByRole("link", { name: "Sunford หน้าหลัก", exact: true }).click();
+    await page
+      .locator("[data-products-header]:visible")
+      .getByRole("link", { name: "SUNFORD หน้าแรก", exact: true })
+      .click();
     await expect(page).toHaveURL(/\/$/);
     await expectTone(page, "dark");
     await page
@@ -87,14 +103,14 @@ for (const width of [1440, 390]) {
       .getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" })
       .click();
     await expect(page).toHaveURL(/\/contact-us$/);
-    await expectTone(page, "light");
+    await expectInteriorNavigation(page);
     await page.goBack();
     await expect(page).toHaveURL(/\/$/);
     await expectTone(page, "dark");
   });
 }
 
-test("navigation has a light internal-page and dark homepage fallback without JavaScript", async ({
+test("server-rendered navigation preserves the existing base palettes without JavaScript", async ({
   browser,
   baseURL,
 }) => {
@@ -103,12 +119,15 @@ test("navigation has a light internal-page and dark homepage fallback without Ja
     baseURL,
     viewport: { width: 1440, height: 900 },
   });
-  await page.goto("/Indicator");
+  await page.goto("/contact-us");
+  await expect(page.locator("[data-products-header]")).toHaveCSS(
+    "background-color",
+    "rgba(250, 250, 252, 0.8)",
+  );
+  await page.goto("/");
   await expect(page.locator(".nav-glass")).toHaveCSS(
     "background-color",
     "rgba(255, 255, 255, 0.72)",
   );
-  await page.goto("/");
-  await expect(page.locator(".nav-glass")).toHaveCSS("background-color", "rgba(17, 17, 17, 0.5)");
   await page.close();
 });

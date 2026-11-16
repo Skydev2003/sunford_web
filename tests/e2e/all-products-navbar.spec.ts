@@ -32,6 +32,11 @@ for (const route of routes) {
     await allProducts.hover();
     await expect(allProducts).toHaveAttribute("aria-expanded", "true");
     const panel = nav.locator("[data-all-products]:visible");
+    if (route === "/") {
+      await expect(nav.locator("#desktop-submenu")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+      await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+      await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
+    }
     await expect(panel.locator("a")).toHaveCount(11);
     await expect(panel.locator("p")).toHaveText([
       "สำรวจผลิตภัณฑ์",
@@ -84,6 +89,10 @@ for (const route of routes) {
         );
       const nav = header(page, route);
       await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+      if (route === "/") {
+        await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+        await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
+      }
       const link = nav.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true });
       await expect(link).toBeVisible();
       await nav.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).tap();
@@ -96,6 +105,48 @@ for (const route of routes) {
       expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
     } finally {
       await context.close();
+    }
+  });
+}
+
+for (const width of [834, 1440, 1900]) {
+  test(`all homepage submenus stay black over Hero and story content at ${width}px`, async ({
+    page,
+  }) => {
+    test.setTimeout(90_000);
+    await visit(page, "/", width);
+    const nav = header(page, "/");
+    const links = nav.locator('.desktop-nav a[aria-controls="desktop-submenu"]');
+    const count = await links.count();
+    expect(count).toBeGreaterThan(1);
+    for (const selector of ["[data-hero-scene]", "#story"]) {
+      await page.locator(selector).evaluate((element) =>
+        scrollTo({
+          top: element.getBoundingClientRect().top + scrollY + 20,
+          behavior: "instant",
+        }),
+      );
+      for (let index = 0; index < count; index++) {
+        await links.nth(index).hover();
+        await expect(links.nth(index)).toHaveAttribute("aria-expanded", "true");
+        await expect(nav.locator("#desktop-submenu")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+        await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+        await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
+      }
+      await page.screenshot({
+        path: test
+          .info()
+          .outputPath(`${selector === "#story" ? "story" : "hero"}-black-${width}.png`),
+      });
+      await page.keyboard.press("Escape");
+      await expect(nav.locator("#desktop-submenu")).not.toBeVisible();
+      await links.first().hover();
+      await expect(links.first()).toHaveAttribute("aria-expanded", "true");
+      await page.locator(".nav-backdrop").click({ position: { x: width - 10, y: 990 } });
+      await expect(nav.locator("#desktop-submenu")).not.toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
     }
   });
 }
