@@ -305,7 +305,7 @@
 .layout {
   grid-template-columns: 1fr;
   gap: 28px;
-  padding-block: 52px 44px;
+  padding-block: var(--section-space);
 }
 .gallery {
   width: 100%;
@@ -459,7 +459,7 @@
   .layout {
     grid-template-columns: minmax(0px, 1fr) minmax(0px, 1.05fr);
     gap: 38px;
-    padding-block: 64px 48px;
+    padding-block: var(--section-space);
   }
   .gallery {
     width: 100%;
@@ -495,7 +495,7 @@
   }
   .layout {
     gap: clamp(28px, 3vw, 48px);
-    padding-block: 48px 36px;
+    padding-block: var(--section-space);
   }
   .copy > p:not(:global(.eyebrow)) {
     font-size: 14px;

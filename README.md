@@ -19,6 +19,8 @@ npm run dev
 
 ## โครงสร้าง
 
+เริ่มดูแลโปรเจกต์ด้วย [คู่มือหาไฟล์ใน VS Code](docs/project-guide.md): อธิบายหน้าที่แต่ละส่วน พร้อมตาราง “อยากแก้อะไร ให้เปิดไฟล์ไหน” และแหล่งค่ากลางที่มีให้ใช้แล้ว ดูรายละเอียดการจัด Explorer และโค้ดกลางใน [บันทึกงาน](docs/vscode-organization-proposal-20261117.md)
+
 ```text
 src/
   app/                       # Route composition, metadata, error boundaries, API

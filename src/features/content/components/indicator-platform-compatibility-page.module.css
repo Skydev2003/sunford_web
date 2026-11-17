@@ -1,5 +1,6 @@
 .page {
-  padding: 24px max(48px, calc((100% - 1180px) / 2)) 84px;
+  padding: var(--section-space-compact) max(var(--page-gutter), calc((100% - 1180px) / 2))
+    var(--section-space);
   background: var(--paper);
   color: var(--ink);
 }
@@ -28,7 +29,7 @@
   display: grid;
   gap: 7px;
   list-style: none;
-  padding: 26px 62px 26px 26px;
+  padding: var(--card-padding-content) 62px var(--card-padding-content) var(--card-padding-content);
 }
 .page summary::-webkit-details-marker {
   display: none;
@@ -69,8 +70,8 @@
   font-weight: 600;
 }
 .body {
-  margin: 0 26px;
-  padding: 22px 0 26px;
+  margin: 0 var(--card-padding-content);
+  padding: var(--card-padding-content) 0 var(--card-padding-content);
   border-top: 1px solid #dedee3;
   overflow-wrap: anywhere;
   line-height: 1.65;
@@ -108,13 +109,13 @@
   color: #a51728;
 }
 .page {
-  padding-inline: 32px;
+  padding-inline: max(var(--page-gutter), calc((100% - 1180px) / 2));
 }
 .page summary {
-  padding-left: 20px;
+  padding-left: var(--card-padding-content);
 }
 .body {
-  margin-inline: 20px;
+  margin-inline: var(--card-padding-content);
 }
 .guideTitle {
   margin: 56px 0 18px;
@@ -154,13 +155,13 @@
 }
 @media (min-width: 40rem) {
   .page {
-    padding-inline: max(48px, 50% - 590px) max(48px, 50% - 590px);
+    padding-inline: max(var(--page-gutter), calc((100% - 1180px) / 2));
   }
   .page summary {
-    padding-left: 26px;
+    padding-left: var(--card-padding-content);
   }
   .body {
-    margin-inline: 26px;
+    margin-inline: var(--card-padding-content);
   }
 }
 @media (min-width: 48rem) {

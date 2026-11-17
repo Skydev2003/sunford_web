@@ -110,7 +110,8 @@ for (const width of [320, 390, 600, 768, 834, 1024, 1440, 1920]) {
     await expect(main.locator(":scope > header")).toHaveCount(0);
     const nav = await page.locator("[data-products-header]:visible").boundingBox();
     const builder = await main.getByRole("region", { name: "เลือกอุปกรณ์จัดชุด" }).boundingBox();
-    expect(builder!.y - nav!.y - nav!.height).toBeCloseTo(24, 0);
+    const entrySpacing = width >= 1280 ? 32 : width >= 768 ? 24 : 16;
+    expect(builder!.y - nav!.y - nav!.height).toBeCloseTo(entrySpacing, 0);
     await expect(main.locator("details")).toHaveCount(5);
     await expect(main.locator("details[open]")).toHaveCount(0);
     if ([390, 834, 1440].includes(width))

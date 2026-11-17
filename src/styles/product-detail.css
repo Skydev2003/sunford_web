@@ -340,7 +340,7 @@
   padding-top: 55px;
 }
 .product-detail {
-  padding-block: 30px 50px;
+  padding-block: var(--section-space-compact) var(--section-space);
 }
 @media (min-width: 40rem) {
   .related-products .product-grid {
@@ -350,7 +350,7 @@
 }
 @media (min-width: 48rem) {
   .product-detail {
-    padding-top: 24px;
+    padding-top: var(--section-space-compact);
   }
   .product-overview {
     display: flex;
@@ -457,7 +457,7 @@
     padding-top: 90px;
   }
   .product-detail {
-    padding-block: 40px 80px;
+    padding-block: var(--section-space-compact) var(--section-space);
   }
 }
 @media (min-width: 64rem) {

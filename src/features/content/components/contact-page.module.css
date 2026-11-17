@@ -111,7 +111,7 @@
   color: #5d6d81;
   font-size: 12px;
   line-height: 1.8;
-  white-space: nowrap;
+  white-space: normal;
 }
 .holiday {
   margin-top: 3px;
@@ -490,7 +490,7 @@ a.channel:not(.lineChannel):hover {
   color: #283c54;
 }
 .locationBody {
-  padding-inline: 22px;
+  padding-inline: var(--card-padding-content);
 }
 .locationIcon,
 .locationLabel {
@@ -519,7 +519,7 @@ a.channel:not(.lineChannel):hover {
   display: none;
 }
 .heroContainer {
-  width: calc(100% - 40px);
+  width: calc(100% - var(--page-gutter) * 2);
 }
 .breadcrumb {
   padding-top: 22px;
@@ -527,7 +527,7 @@ a.channel:not(.lineChannel):hover {
 .hero {
   grid-template-columns: 1fr;
   gap: 12px;
-  padding-block: 24px 16px;
+  padding-block: var(--section-space-compact);
 }
 .introduction .eyebrow {
   margin-bottom: 16px;
@@ -558,7 +558,7 @@ a.channel:not(.lineChannel):hover {
   gap: 12px;
 }
 .channel {
-  padding: 20px 18px;
+  padding: var(--card-padding-content);
   min-height: 118px;
 }
 .channelCopy {
@@ -570,7 +570,7 @@ a.channel:not(.lineChannel):hover {
 .channelCopy strong {
   padding-right: 0;
   font-size: 21px;
-  white-space: nowrap;
+  white-space: normal;
 }
 .channelCopy .email {
   font-size: 17px;
@@ -589,7 +589,7 @@ a.channel:not(.lineChannel):hover {
   padding-block: 18px 32px;
 }
 .locations {
-  padding-block: 32px 36px;
+  padding-block: var(--section-space);
 }
 .sectionHeading {
   margin-bottom: 24px;
@@ -601,7 +601,7 @@ a.channel:not(.lineChannel):hover {
   height: 112px;
 }
 .locationBody {
-  padding: 0 22px 22px;
+  padding: 0 var(--card-padding-content) var(--card-padding-content);
 }
 .locationIcon {
   top: 20px;
@@ -629,7 +629,7 @@ a.channel:not(.lineChannel):hover {
   .hero {
     grid-template-columns: repeat(2, minmax(0px, 1fr));
     gap: 16px;
-    padding-block: 24px;
+    padding-block: var(--section-space-compact);
   }
   .introduction .eyebrow {
     margin-bottom: 14px;
@@ -660,7 +660,7 @@ a.channel:not(.lineChannel):hover {
     gap: 14px;
   }
   .channel {
-    padding: 22px 18px;
+    padding: var(--card-padding-content);
     min-height: 132px;
   }
   .channelCopy {
@@ -691,7 +691,7 @@ a.channel:not(.lineChannel):hover {
     padding-block: 18px 36px;
   }
   .locations {
-    padding-block: 48px 52px;
+    padding-block: var(--section-space);
   }
   .sectionHeading {
     margin-bottom: 28px;
@@ -703,7 +703,7 @@ a.channel:not(.lineChannel):hover {
     height: 128px;
   }
   .locationBody {
-    padding: 0px 22px 22px;
+    padding: 0 var(--card-padding-content) var(--card-padding-content);
   }
   .locationIcon {
     top: 22px;
@@ -727,7 +727,7 @@ a.channel:not(.lineChannel):hover {
 }
 @media (min-width: 48rem) {
   .heroContainer {
-    width: calc(100% - 64px);
+    width: calc(100% - var(--page-gutter) * 2);
   }
 }
 @media (min-width: 64rem) {
@@ -774,13 +774,13 @@ a.channel:not(.lineChannel):hover {
 }
 @media (min-width: 80rem) {
   .locationBody {
-    padding-inline: 22px 22px;
+    padding-inline: var(--card-padding-content);
   }
   .locationGrid {
     gap: 20px;
   }
   .heroContainer {
-    width: calc(100% - 96px);
+    width: calc(100% - var(--page-gutter) * 2);
   }
   .introduction h1 span {
     font-size: clamp(20px, 2vw, 27px);

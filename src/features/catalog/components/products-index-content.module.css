@@ -158,7 +158,7 @@
 }
 
 .cardCopy {
-  padding: 22px;
+  padding: var(--card-padding-content);
 }
 
 .cardCopy h3 {
@@ -200,7 +200,7 @@
   }
 
   .cardCopy {
-    padding: 24px 28px 30px;
+    padding: var(--card-padding-content);
   }
 
   .cardCopy h3 {

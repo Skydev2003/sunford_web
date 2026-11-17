@@ -1,0 +1,24 @@
+{
+  "explorer.compactFolders": false,
+  "explorer.sortOrder": "default",
+  "explorer.excludeGitIgnore": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": true,
+  "explorer.fileNesting.patterns": {
+    "*.tsx": "${capture}.module.css, ${capture}.css",
+    "package.json": "bun.lock, package-lock.json"
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "src/generated": true,
+    "next-env.d.ts": true,
+    "**/*.tsbuildinfo": true,
+    "test-results": true,
+    "playwright-report": true,
+    "output": true,
+    "outputs": true,
+    "work": true,
+    ".playwright-cli": true
+  }
+}

@@ -4,6 +4,7 @@ import { ProductsIndexCarousel } from "./products-index-carousel";
 import type { ClientProduct } from "../types";
 import type { ProductCategory } from "../data/mock-categories";
 import { catalogCardName } from "../data/catalog-card-names";
+import { formatPrice } from "../data/price-format";
 import curatedCarousel from "../data/products-index-carousel.json";
 import styles from "./products-index-content.module.css";
 
@@ -88,13 +89,7 @@ export function ProductsIndexContent({
                       <h3>{catalogCardName(product)}</h3>
                     </Link>
                     {product.price != null ? (
-                      <p>
-                        {product.price.toLocaleString("th-TH", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}{" "}
-                        บาท (ก่อน VAT)
-                      </p>
+                      <p>{formatPrice(product.price)} บาท (ก่อน VAT)</p>
                     ) : product.warehouseSku ? (
                       <p>สอบถามราคา</p>
                     ) : null}

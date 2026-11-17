@@ -181,7 +181,7 @@
   --story-window-width: 100%;
   --story-card-width: min(74vw, 320px);
   --story-gap: 12px;
-  padding-block: 32px 24px;
+  padding-block: var(--section-space);
 }
 .heading {
   align-items: flex-start;
@@ -201,7 +201,7 @@
     --story-window-width: calc(100vw - 64px);
     --story-card-width: calc((var(--story-window-width) - 32px) / 3);
     --story-gap: 16px;
-    padding-block: 32px 28px;
+    padding-block: var(--section-space);
   }
   .heading {
     align-items: flex-end;

@@ -86,7 +86,7 @@
   color: white;
 }
 .software-catalog {
-  padding-bottom: 70px;
+  padding-bottom: var(--section-space);
 }
 .software-filters {
   display: flex;
@@ -128,7 +128,7 @@
   transform: scale(1.03);
 }
 .software-card-copy {
-  padding: 26px;
+  padding: var(--card-padding-content);
 }
 .software-card h2 {
   font-size: 22px;
@@ -168,7 +168,7 @@
   padding: 12px;
 }
 .explore-page {
-  padding-bottom: 90px;
+  padding-bottom: var(--section-space);
 }
 .directory-controls {
   display: flex;
@@ -247,7 +247,7 @@
   line-height: 1.95;
   color: #46464b;
   overflow-wrap: anywhere;
-  padding-block: 25px;
+  padding-block: var(--section-space);
 }
 .source-prose > div,
 .source-prose > section {
@@ -343,7 +343,7 @@
 }
 .source-empty {
   text-align: center;
-  padding-bottom: 50px;
+  padding-bottom: var(--section-space);
 }
 .source-empty p {
   margin: 30px 0 20px;
@@ -352,7 +352,7 @@
 .source-attribution {
   display: flex;
   justify-content: center;
-  padding-block: 35px 65px;
+  padding-block: var(--section-space-compact) var(--section-space);
   font-size: 12px;
   color: var(--muted);
 }
@@ -765,7 +765,7 @@
   padding-inline: 24px;
 }
 .content-heading {
-  padding-block: 42px 30px;
+  padding-block: var(--section-space);
 }
 .content-heading h1 {
   font-size: 34px;
@@ -787,7 +787,7 @@
   gap: 12px;
 }
 .directory-card-copy {
-  padding: 24px 18px;
+  padding: var(--card-padding-content);
 }
 .directory-card h2 {
   font-size: 17px;
@@ -811,7 +811,7 @@
   min-height: 220px;
 }
 .source-related {
-  padding-block: 35px;
+  padding-block: var(--section-space);
 }
 .source-showcase {
   grid-template-columns: 1fr;
@@ -861,7 +861,7 @@
   height: 210px;
 }
 .source-attribution {
-  padding-bottom: 45px;
+  padding-bottom: var(--section-space);
 }
 .full-catalog .catalog-search {
   flex-basis: 100%;
@@ -955,7 +955,7 @@
 }
 @media (min-width: 48rem) {
   .content-heading {
-    padding-block: 65px 45px;
+    padding-block: var(--section-space);
   }
   .content-heading h1 {
     font-size: clamp(32px, 4.5vw, 58px);
@@ -977,7 +977,7 @@
     gap: 16px;
   }
   .directory-card-copy {
-    padding: 28px;
+    padding: var(--card-padding-content);
   }
   .directory-card h2 {
     font-size: 20px;
@@ -1001,7 +1001,7 @@
     min-height: 300px;
   }
   .source-related {
-    padding-block: 60px;
+    padding-block: var(--section-space);
   }
   .source-showcase {
     grid-template-columns: repeat(2, minmax(0px, 1fr));
@@ -1054,7 +1054,7 @@
     height: 255px;
   }
   .source-attribution {
-    padding-bottom: revert;
+    padding-bottom: var(--section-space);
   }
   .full-catalog .catalog-search {
     flex-basis: 360px;

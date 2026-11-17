@@ -1,4 +1,11 @@
 :root {
+  --page-gutter: 1.25rem;
+  --section-space: 2rem;
+  --section-space-compact: 1rem;
+  --section-space-feature: 3rem;
+  --card-padding-compact: 1rem;
+  --card-padding-content: 1.5rem;
+  --card-padding-feature: 2rem;
   /* Below: keep negative layers inside their existing isolated section. */
   --z-background: -2;
   --z-decoration: -1;
@@ -180,18 +187,24 @@ html {
   scroll-padding-top: 80px;
 }
 .container {
-  width: calc(100% - 40px);
+  width: calc(100% - var(--page-gutter) * 2);
 }
 @media (min-width: 48rem) {
   html {
     scroll-padding-top: 100px;
   }
-  .container {
-    width: calc(100% - 64px);
+  :root {
+    --page-gutter: 2rem;
+    --section-space: 3rem;
+    --section-space-compact: 1.5rem;
+    --section-space-feature: 4rem;
   }
 }
 @media (min-width: 80rem) {
-  .container {
-    width: calc(100% - 96px);
+  :root {
+    --page-gutter: 3rem;
+    --section-space: 4rem;
+    --section-space-compact: 2rem;
+    --section-space-feature: 5rem;
   }
 }

@@ -821,3 +821,9 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Observed: task-isolated QA outputs accumulated about 46.8 GiB; 53 inactive generated build roots accounted for about 42.0 GiB.
 - Root cause: complete build output and development caches were retained alongside small verification records across repeated runs.
 - Correct behavior: When the owner authorizes artifact cleanup, select only verified inactive build roots under output; check process cwd/arguments and native build locks, retain reports/screenshots/source backups, preserve build provenance separately, and verify retained evidence with hashes before and after deletion. Record the exact deletion manifest and keep the active project build intact.
+
+## Serialize Warehouse-backed validation (2026-11-17)
+
+- Observed: an 11-worker production build lost a Warehouse connection; a one-worker build completed. Later browser validation overlapping static generation recorded Warehouse statement timeouts and error pages.
+- Root cause: verified database connection/query failures during validation; the underlying database capacity or timeout cause was not established. An error page can make otherwise unrelated UI selectors disappear.
+- Correct behavior: finish Warehouse-backed production builds before starting browser sweeps. Use the documented process-only worker control when needed, keep one browser worker, inspect server logs and the actual error page before classifying a missing selector, and retain failed attempts separately. Do not change database limits, application queries or test assertions to hide infrastructure failures.

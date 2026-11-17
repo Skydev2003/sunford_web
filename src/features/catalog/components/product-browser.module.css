@@ -570,7 +570,7 @@
   margin: 16px 8px;
 }
 .card {
-  padding: 11px 12px 15px;
+  padding: var(--card-padding-compact);
 }
 .grid {
   gap: 10px;
@@ -684,7 +684,7 @@
     margin: 18px 10px;
   }
   .card {
-    padding: 14px 16px 17px;
+    padding: var(--card-padding-compact);
   }
   .grid {
     gap: 14px;

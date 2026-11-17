@@ -10,6 +10,7 @@ import { ChevronDown, ImageIcon, Printer, Plus, Search, SlidersHorizontal, X } f
 import { productCategoryDefinitions } from "../data/mock-categories";
 import { ProductImage } from "@/components/ui/product-image";
 import { Modal } from "@/components/ui/modal";
+import { formatPrice } from "../data/price-format";
 import {
   quotationTotals,
   seller,
@@ -19,11 +20,7 @@ import {
 } from "../data/quotation";
 import styles from "./quotation-form.module.css";
 
-const money = new Intl.NumberFormat("th-TH", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-const amount = (satang: number) => money.format(satang / 100);
+const amount = (satang: number) => formatPrice(satang / 100);
 const pickerCategories = [{ id: "all", label: "ผลิตภัณฑ์ทั้งหมด" }, ...productCategoryDefinitions];
 type Selection = {
   key: number;

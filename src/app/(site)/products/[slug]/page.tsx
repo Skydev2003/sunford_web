@@ -20,6 +20,7 @@ import { defaultSite } from "@/features/site/data/settings";
 import { CatalogProductCard } from "@/features/catalog/components/catalog-product-card";
 import { productCardData } from "@/features/catalog/data/client-products";
 import { catalogCardName } from "@/features/catalog/data/catalog-card-names";
+import { formatBaht } from "@/features/catalog/data/price-format";
 import { getSourceProduct } from "@/features/content/server/content-repository";
 import { ProductGallery } from "@/features/catalog/components/product-gallery";
 import { getSnapshotProducts } from "@/features/content/data/catalog-snapshot";
@@ -137,11 +138,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </table>
             )}
             {product.price != null ? (
-              <p className="detail-price">
-                {new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(
-                  product.price,
-                )}
-              </p>
+              <p className="detail-price">{formatBaht(product.price)}</p>
             ) : product.warehouseSku ? (
               <p className="detail-price">สอบถามราคา</p>
             ) : null}

@@ -372,7 +372,7 @@
 }
 .addressCard {
   order: 2;
-  padding: 10px 14px;
+  padding: var(--card-padding-compact);
   border: 1px solid var(--service-line);
   border-radius: 13px;
   background: #fff;
@@ -458,7 +458,7 @@
   gap: 18px;
 }
 .steps {
-  padding-inline: 21px;
+  padding-inline: var(--card-padding-content);
 }
 .contactHeading {
   gap: 10px;
@@ -483,14 +483,14 @@
 .extra,
 .note,
 .instructionsFooter {
-  margin-inline: 21px;
+  margin-inline: var(--card-padding-content);
 }
 .tabs button:not(:last-child)::after {
   display: none;
 }
 .hero {
   align-items: flex-start;
-  padding-block: 25px;
+  padding-block: var(--section-space-compact);
 }
 .helpLink {
   font-size: 11px;
@@ -506,7 +506,7 @@
   grid-row: span 2;
 }
 .page :global(.container) {
-  width: calc(100% - 32px);
+  width: calc(100% - var(--page-gutter) * 2);
 }
 .breadcrumb {
   padding-top: 20px;
@@ -514,7 +514,7 @@
 }
 .hero {
   display: block;
-  padding: 23px 0;
+  padding: var(--section-space-compact) 0;
 }
 .hero h1 {
   font-size: 28px;
@@ -556,7 +556,7 @@
 }
 .panelHeading {
   align-items: flex-start;
-  padding: 21px 16px 19px;
+  padding: var(--card-padding-content);
   gap: 12px;
 }
 .panelIcon {
@@ -581,7 +581,7 @@
 }
 .steps {
   gap: 8px;
-  padding: 0 13px 18px;
+  padding: 0 var(--card-padding-content) var(--card-padding-content);
 }
 .steps li {
   padding: 12px 11px;
@@ -624,7 +624,7 @@
   grid-template-columns: minmax(0, 1fr);
 }
 .contactCard {
-  padding: 25px;
+  padding: var(--card-padding-content);
 }
 .contactCard h2 {
   font-size: 17px;
@@ -649,7 +649,7 @@
 }
 @media (min-width: 40rem) {
   .page :global(.container) {
-    width: calc(100% - 48px);
+    width: calc(100% - var(--page-gutter) * 2);
   }
   .breadcrumb {
     padding-top: 24px;
@@ -657,7 +657,7 @@
   }
   .hero {
     display: flex;
-    padding: 10px 0px 8px;
+    padding: var(--section-space-compact) 0;
   }
   .hero h1 {
     font-size: clamp(22px, 2.2vw, 25px);
@@ -699,7 +699,7 @@
   }
   .panelHeading {
     align-items: center;
-    padding: 18px 20px 15px;
+    padding: var(--card-padding-content);
     gap: 13px;
   }
   .panelIcon {
@@ -724,7 +724,7 @@
   }
   .steps {
     gap: 3px;
-    padding: 0px 18px 8px;
+    padding: 0 var(--card-padding-content) var(--card-padding-content);
   }
   .steps li {
     padding: 8px 12px;
@@ -770,7 +770,7 @@
     grid-template-columns: minmax(0px, 1fr) minmax(0px, 1fr);
   }
   .contactCard {
-    padding: 20px;
+    padding: var(--card-padding-content);
   }
   .contactCard h2 {
     font-size: 15px;
@@ -823,7 +823,7 @@
   }
   .hero {
     align-items: center;
-    padding-block: 10px 8px;
+    padding-block: var(--section-space-compact);
   }
   .helpLink {
     font-size: 11px;
@@ -895,7 +895,7 @@
     gap: 14px;
   }
   .steps {
-    padding-inline: 18px 18px;
+    padding-inline: var(--card-padding-content);
   }
   .contactHeading {
     gap: 12px;
@@ -918,19 +918,19 @@
     font-size: 16px;
   }
   .extra {
-    margin-inline: 18px;
+    margin-inline: var(--card-padding-content);
   }
   .note {
-    margin-inline: 18px;
+    margin-inline: var(--card-padding-content);
   }
   .instructionsFooter {
-    margin-inline: 18px;
+    margin-inline: var(--card-padding-content);
   }
   .serviceLayout {
     grid-template-columns: minmax(0px, 2.35fr) minmax(0px, 1fr);
   }
   .page :global(.container) {
-    width: calc(100% - 64px);
+    width: calc(100% - var(--page-gutter) * 2);
   }
   .tabs {
     gap: 18px;
@@ -943,7 +943,7 @@
     font-size: 13px;
   }
   .panelHeading {
-    padding: 12px 18px 10px;
+    padding: var(--card-padding-content);
     gap: 12px;
   }
   .panelIcon {
@@ -969,6 +969,26 @@
   }
 }
 @media (min-width: 80rem) and (max-height: 800px) {
+  .page :global(.container) {
+    width: calc(100% - 4rem);
+  }
+  .hero {
+    padding-block: 0.625rem 0.5rem;
+  }
+  .panelHeading {
+    padding: 0.75rem 1.125rem 0.625rem;
+  }
+  .steps {
+    padding: 0 1.125rem 0.5rem;
+  }
+  .extra,
+  .note,
+  .instructionsFooter {
+    margin-inline: 1.125rem;
+  }
+  .addressCard {
+    padding: 0.625rem 0.875rem;
+  }
   .contactCard {
     padding: 16px;
   }

@@ -1,5 +1,5 @@
 .page {
-  padding-bottom: 64px;
+  padding-bottom: var(--section-space);
   background: transparent;
   color: #20232b;
 }
@@ -8,7 +8,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  padding-block: 28px;
+  padding-block: var(--section-space-compact);
   color: #69707c;
 }
 .breadcrumb span {

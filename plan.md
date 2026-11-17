@@ -8125,3 +8125,400 @@ Status: "Complete — legacy tests and scoped regressions passed; no commit/push
 - Full project formatting and final scoped diff checks run after these documentation updates; the full format result is retained in the verification receipt.
 - Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-pos-nav-fixture-20261117/ (catalog.log/source-baseline.json/verification-report.md/verification.json).
 - No application/browser/build/deployment changes were required or claimed. No qualifying Next.js feedback candidate. User must commit this repair before retrying the normal release flow.
+
+## Plan: Solutions UI audit and scoped cleanup proposal (2026-11-17)
+
+### Approval Boundary
+
+ผู้ใช้ขอ “ตรวจของเดิม ... แล้วทำ Spec/Plan ... ก่อน” อนุมัติการตรวจและเอกสารเท่านั้น Phase A SOL-01ถึงSOL-04 ด้านล่างยังรออนุมัติ; Phase Bเนื้อหาจริงยังNeed Information ไม่ถูกอนุมัติพร้อมงานUI
+
+### Files — documentation authorized now
+
+- spec.md — เพิ่มหัวข้องาน/ผลตรวจ/ข้อเสนอPhase Aและข้อมูลที่ต้องขอPhase B โดยรักษาประวัติเดิม
+- plan.md — เพิ่มmanifest/ชิ้นงาน/verification/rollbackของงานนี้
+- docs/solutions-ui-audit-20261117.md — รายงานหลักฐานปัจจุบันและรายการจุดที่ควรเก็บ เพื่อใช้reviewแยกจากประวัติยาว
+
+### Files — proposed Phase A implementation, do not edit until approval
+
+- src/features/content/components/solutions-page.tsx — เลือกempty stateเมื่อไม่มีเนื้อหาที่อนุญาตแสดง แม้warehouseOnly; H1/copy/contact/backและbreadcrumbเดิม ไม่แตะsanitizerกลาง
+- src/features/content/components/solutions-page.module.css — scopedempty-state wrapping/spacing/focusเฉพาะที่จำเป็น ใช้font/ปุ่มเดิม
+- src/features/content/data/solutions.ts — short display-label mapแยกจาก14source records; ไม่แก้exportsolutions/solutionsIndexหรือcanonicaltitles
+- src/features/content/components/solutions-overview.tsx — ใช้displaylabelsเฉพาะการ์ด/aria-labelและไม่render pว่าง; คงgroups/paths/order/heroimageprovider
+- src/features/content/components/solutions-overview.module.css — จำกัดHero slot, sectionpadding, cardminheightตามค่าที่เสนอ; page-local overridesเท่านั้น
+- tests/e2e/solutions-overview.spec.ts — explicit reviewedshortlabels14รายการ, geometryและdetail navigation assertionsที่ตรวจempty-stateจริง; คงrail/touch/history/cachecoverage ไม่คาดว่าarticleว่างคือความสำเร็จ
+- tests/e2e/solutions-empty-state.spec.ts — สร้างregressionที่ตรวจ14routes, H1/CTA/back, absenceofblankshell/namelessanchors และWarehouse-only/nonlegacyrendering
+- spec.md / plan.md / docs/solutions-ui-audit-20261117.md — ผลimplementationจริงภายหลังอนุมัติ แยกbaselineออกจากafter
+
+ไฟล์ร่วมอ่านอย่างเดียว: src/styles/base.css, src/features/catalog/components/products-overview.module.css, route/layout/Header/Footer, warehouse-content.ts/content-repository.ts, solutions.json, navigation/primary-navigation, package/lockfiles. ไม่รวมไฟล์อื่นในmanifest; หากต้องเพิ่มให้แก้แผนและขออนุมัติส่วนเพิ่ม
+
+### Steps — planning pass
+
+- [x] อ่านAGENTS/Spec/Memory, ตรวจcleanbaselinecb59a10และactive route/data policy
+- [x] ตรวจไฟล์renderer/CSS/source/title inventoryรวมcontractsและtestsปัจจุบัน
+- [x] อ่านTailwindofficialv4.3หัวข้อresponsive/overflow/focus และinstalledNextCLI docsก่อนเปิดownpreview
+- [x] Browseraudit5overviewwidths/28detailcontexts/6othergroupdestinations พร้อมscreenshots/anchor/keyboard; แยกสิ่งที่ผ่านออกจากข้อมูลที่ขาด
+- [x] เขียนข้อเสนอที่reviewได้และPhase B Need Information โดยไม่แก้แอป
+- [x] ตรวจformat/diff/sourcehashes, แนบเอกสาร/หลักฐานและปิดownserver/browserก่อนส่งมอบ
+
+### Steps — Phase A after approval
+
+- [ ] บันทึกapprovalจริงของSpec/Planและยืนยันbaselineใหม่ก่อนแก้; sourceอาจเปลี่ยนหลังplanning
+- [ ] SOL-01: สร้างfailingbehaviorcheckสำหรับ14detailsก่อนแก้ แล้วแก้empty-stateเฉพาะrenderer/CSSที่ระบุ; ยืนยันsourcecontentถูกเว้นตามนโยบาย
+- [ ] SOL-02: เพิ่มdisplay-labelmapตามตารางSpecและใช้ในoverviewเท่านั้น; testsใช้explicitexpectedlabelsอิสระจากimplementation; คง14href/orderและ18businesslinks
+- [ ] SOL-03: เก็บemptyparagraph/Hero/cards/sectionspacingตามค่าที่เสนอ ไม่ลดfont/เพิ่มbreakpoint/แก้sharedCSS
+- [ ] SOL-04: ทดสอบcontent-navigationตามmatrixด้านล่างและตรวจภาพbefore/after; แก้เฉพาะregressionในscope
+- [ ] RunNode24: bun run typecheck --incremental false, scopedESLint, bun run test:catalog, bun run test:uat, bun run format:check, git diff --check
+- [ ] Runexisting solutions-overview.spec.tsและsolutions-intro-motion.spec.ts + newempty-state suite บนactualpreview; กำหนดPLAYWRIGHT_BASE_URL/isolatedoutputoutsidecheckout ไม่เพิ่มserverในconfig
+- [ ] Productionbuildผ่านbun run buildตามenvironmentที่ได้รับอนุมัติและpreviewsmoke index/detail/Contact/history; ไม่deployและไม่อ้างfieldperformanceจากdev
+- [ ] อัปเดตผลตรวจ/ข้อจำกัดในเอกสาร ตรวจsourcehashscope ปิดownprocessesและส่งให้เจ้าของcommitเอง
+
+### Browser Verification Matrix
+
+- Overview320/390/768/1023/1024/1279/1280/1440px:14cards,3groups/18links,containedtitle/CTA/image, no documentoverflow, sectionspacingและHeroheightตามSpec; verticalscrollยังปกติ
+- All14detailsที่390/1440:1nonemptyH1,neutralcopy,contact/backaccessiblelinks,ไม่มีemptyarticleหรือnamelessanchors; normal/reducedบนตัวแทนRS232/POSที่390/1440
+- Mobiletouchrailเลื่อนได้ถึงDriver; keyboardTab/Enterพร้อมfocusvisible,modified-clickเปิดnativehref,anchorทุก3กลุ่ม,reload/back/forwardและ200%zoomที่390/1440ข้อความไม่ถูกตัด
+- Cross-route:overview→detail→Contact→Back และoverview→หมวดสินค้า→Back มีactiveHeader/Footerเพียงชุดเดียว; ไม่submitฟอร์มหรือทำDBwrite
+- Read-onlyunchanged:rawsolutions.json/canonicaltitles/routealiases/Warehouseprojection/sharedstyles/Nav/Footer และsourceนอกmanifest; รูปไม่fallbackจากlegacy
+- Empty/fullcontentboundary:ควรตรวจexistingpopulatednon-Warehousefixtureโดยisolatedtestinputถ้ามี เพื่อยืนยันrenderbranchเดิมไม่เสีย ไม่เพิ่มเนื้อหาสมมติลงเว็บ
+- Existingno-JavaScriptstreamedvisibility limitationต้องรายงานตรงไปตรงมา ไม่ขยายรอบนี้เป็นarchitecturefix; production/realphone/Safariเป็นสิ่งที่ยังไม่ผ่านplanningaudit
+
+### Impact / Rollback
+
+- ScopedR2; componentSolutionsPageเป็นdetailร่วม14routesในfamilyนี้เท่านั้น; CSSสองไฟล์และdisplaylabelsไม่เปลี่ยนAPI/DB/routes
+- Risks:ชื่อaccessibleของการ์ดเปลี่ยน, empty-stateเปลี่ยนlayoutรายละเอียดทุกหน้า, Heroย่อแล้วต้องไม่ตัดข้อความ/ภาพ; ตรวจmatrixและfrozen-sourcehashes
+- ย้อนเฉพาะtask-ownedhunksจากbaselineที่บันทึกไว้ ห้ามgitreset/checkoutทับงานคนอื่น; เอกสารbaselineคงไว้ให้ตรวจประวัติ
+- ส่วนกลางไม่อยู่ในรายการแก้ หากพบเหตุจำเป็นต้องแก้ให้หยุดจุดนั้นและเสนอscope/risks/rollbackก่อน
+
+### Verification Results — planning only
+
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-solutions-audit-20261117/audit.json และscreenshots/source-baseline.json; รายงานอ่านง่ายอยู่docs/solutions-ui-audit-20261117.md
+- Localoverview5sizesและ14details×2sizesตรวจจริง; HTTP200ทุกrouteในชุดตรวจ,14detailsไม่มีarticletext/H1/contactCTA,ไม่มีdocumentoverflowหรือpageerror; keyboardDriverและbusiness-3anchorผ่าน
+- ยังไม่runimplementationtests/buildหรือแก้UI; approvalpendingและcompanycontentยังไม่ยืนยัน ไม่เปลี่ยนสถานะงานในNotion
+
+- ตรวจ SHA-256 ของ application source 287 ไฟล์เทียบกับ baseline: ไม่มีไฟล์เปลี่ยน; Git Changes มีเฉพาะ spec.md, plan.md และรายงานใหม่ 1 ไฟล์ ไม่มี staged changes
+- Prettier ของเอกสารทั้ง 3 ไฟล์และ git diff --check ผ่าน ปิด task-owned browser tabs และ dev server 3114 แล้ว ไม่เปลี่ยนบริการของเจ้าของ
+- ข้อจำกัดเพิ่ม: dev server บันทึก hydration attribute mismatch, คำแนะนำ LCP image eager และ uncached-data/static-route diagnostics ระหว่างตรวจหมวดสินค้าปลายทาง แม้ route ที่ตรวจตอบ200และ batch ไม่พบ pageerror จึงไม่อ้างว่า console/server สะอาด; ยังไม่ได้วิเคราะห์สาเหตุหรือแก้ส่วนร่วมในรอบ planning นี้ ไม่ยืนยันว่าเป็น Next.js defect และไม่มี verified framework feedback candidate
+
+## Plan: Sitewide padding standards from Apple HIG (2026-11-17)
+
+### Approval Boundary
+
+ขอบเขตตอนนี้คือauditและSpec/Planเท่านั้น ค่าทั้งหมดในSpecเป็นข้อเสนอ; ต้องมีownerapprovalจริงก่อนแก้CSS/Tests งานโซลูชันเฉพาะเรื่องก่อนหน้านี้พักไว้ และการอนุมัติPADไม่รวมSOL-01/02หรือปรับHeroimage/cardheight
+
+Current amendment: รวม PAD-04 card audit/proposal และ Apple HIG Layout-only design reference แล้ว; ลำดับหลังอนุมัติคือ PAD-01 → PAD-02 → PAD-04 → PAD-03 การอนุมัติเริ่มตรวจ/เขียนแผนไม่ใช่การอนุมัติแก้แอป
+
+### Files — authorized documentation now
+
+- spec.md — เพิ่มข้อกำหนดpadding/หลักฐาน/ค่าที่เสนอ/ข้อยกเว้น/approvalboundary และบันทึกsolutionproposalพักไว้
+- plan.md — เพิ่มรายการไฟล์/phase/checks/rollbackของPADโดยคงแผนเดิม
+- docs/sitewide-padding-audit-20261117.md — สร้างรายงานสั้นพร้อมcurrentvsproposed/matrix/sourceinventoryและข้อจำกัด
+
+### Files — PAD-01 proposed, pending approval
+
+- src/styles/base.css — semantic4tokensและ.containerwidthalias ใช้48/80remเดิม ไม่เปลี่ยนmax1180/font/brand
+- src/features/content/components/after-sales-page.module.css — pagecontainerรับdefaultgutter; compactheroโดยคงtab/card/stepsinsets
+- src/features/content/components/contact-page.module.css — heroContainer/locationsoutergutterและordinarysectionpadding; คงmax1180/cards/art
+- src/features/content/components/indicator-platform-compatibility-page.module.css — outergutter/maxcenter1180และpageblock คงbuilderinner
+- src/features/catalog/components/quotation-form.module.css — pageoutergutter/block; คงmax960และform/PDF/VATgeometry
+
+### Files — PAD-02 proposed, pending approval
+
+- src/features/catalog/components/products-overview.module.css — --overview-gutteralias, chaptersและordinarysectionrole; ไม่แตะprioritybottom32/playback/heroTrack9%/6.25%/imageinsets/sceneheights/Nav
+- src/features/catalog/components/product-directory.module.css — listing/related outersectionroleโดยคงcardpaddingและwidegutter
+- src/features/content/components/solutions-overview.module.css — แทนlistingpadding96/pagebottom100ด้วยsectiontoken; ไม่แก้Heroaspectratio/cardminheight/font/title/labels/ภาพ
+- src/features/content/components/solutions-page.module.css — เฉพาะouterwrapper/pagebottom/breadcrumbspacing ไม่แตะsourcearticleinner/empty-statebranch
+- src/styles/content.css — content-heading/source/guide/software/explore outersectionowners; ไม่แตะimportedHTML/innerprose/cardstyling/embeddedmedia
+- src/styles/catalog-page.css — full-catalogและnot-found outerblockroles คงcontrols/empty-stateinner
+- src/styles/product-detail.css — outer.product-detail entry/bottom โดยคงproduct-overview viewportscene/gallery/table/relatedgeometry
+- src/features/content/components/about-page.module.css — normalflowhero/story/principles outerblock; คงmax1100/nextStepcardinsets/ภาพ
+- src/features/home/components/brand-story.module.css — natural-flowsectionouterpaddingเท่านั้น คงgallery/label/scenecontrolinsets
+- src/features/home/components/stories-section.module.css — natural-flowsectionouterpadding คงrail/card/tileinsets
+- src/styles/footer.css — normalfooterblock/contactbannerrolesและcontaineraliasที่จำเป็น; คงmax1280/grouping/accordion/linkhitboxes
+
+รายการข้างบนเป็นขอบเขตสูงสุดของไฟล์CSSที่จะขออนุมัติ ไม่ต้องสร้างdiffในไฟล์ที่รับtokenจากparentได้โดยไม่แก้ การเพิ่มไฟล์อื่นต้องอัปเดตSpec/Planและขออนุมัติเพิ่มก่อน
+
+### Files — PAD-03 tests/docs proposed, pending approval
+
+- tests/e2e/sitewide-spacing.spec.ts — สร้างbehavior/geometryregressionใช้existingroute/rolemarkersและexplicitexpectedtokens/exceptionprofiles
+- spec.md / plan.md / docs/sitewide-padding-audit-20261117.md — อัปเดตresultsของแต่ละphaseจริงหลังอนุมัติ
+
+Existing tests ที่รันซ้ำโดยไม่วางแผนแก้: tests/e2e/solutions-overview.spec.ts, tests/e2e/solutions-intro-motion.spec.ts, tests/e2e/sitewide-navigation.spec.ts, tests/e2e/mobile-first-responsive.spec.ts, tests/e2e/product-detail.spec.ts, tests/e2e/quotation.spec.ts, tests/e2e/quotation-issue.spec.ts, tests/e2e/contact-locations.spec.ts และ tests/e2e/tooltip-contact-hydration.spec.ts; service coverage ใช้ mobile-first-responsive และ regression ใหม่ตามขอบเขต ไม่สร้าง expected จาก implementation เอง
+
+Read-only: appTSXทั้งหมด, package/lock/config/route, Navbar/primary-navigation, Warehouseproviders/data/snapshots, printPDFgenerator, 3D/cinematic/carousel/mobile-rail/layoutoffsets, solutions-source.css และCSSที่ไม่มีactivecaller ไม่normalizeCSSที่ไม่ได้renderเพราะพบชื่อในinventory
+
+### Steps — audit and planning now
+
+- [x] อ่านstandingAGENTS/Spec/Memoryและtask-observercontext; บันทึกcb59a10/เอกสารsolutionproposalที่มีอยู่ก่อนเริ่ม
+- [x] เก็บ287sourcehashes; parse54CSSครบรวมpadding/margin/gap/max-width/scroll-padding และแยกrole/exceptions
+- [x] ตรวจAppleHIGLayoutและTailwindv4.3padding/max-width/responsive; แยกguidanceออกจากSUNFORDnumericproposal
+- [x] Browserbaseline28routes×4widths=112contextsและSearch4widths พร้อมscreenshots; เก็บfailedTurbopackattemptsแยกจากWebpackbaselineที่สำเร็จ
+- [x] เขียนค่ากลาง/profile/phase/filemanifest/acceptance/rollbackที่reviewได้
+- [x] ตรวจscope/format/diff/sourcehashes ปิดownpreview/browser แนบรายงานก่อนส่งมอบ
+
+### Steps — after owner approves
+
+- [ ] บันทึกข้อความapprovalจริงของPAD-01ถึง03และค่าตาราง; capturebaselineใหม่ก่อนแก้และreconcileงานที่อาจเข้ามาระหว่างรอ
+- [x] PAD-01: เพิ่มtokensและmapouterguttersโดยไม่แก้rootfont/breakpoints/maxwidth; ตรวจservice/contact/quote/builderและshared.containerทั้ง5widthsก่อนเดินต่อ
+- [x] PAD-02a: content/software/policy/about/normalHome/Footer sectionroles ตรวจภาพและkeyboardก่อน
+- [x] PAD-02b: overview/subcategory/solutions/productdetailoutersectionroles ตรวจnative rail/anchor/motion/clearance; ไม่ยกเลิกexceptionsที่มีเหตุผลเชิงgeometry
+- [ ] PAD-03: เพิ่มexplicitspacingcontracttests ตรวจbothpaddingและmargin/boundingboxes; ทดสอบnestedwrapperว่าไม่เพิ่มgutterซ้ำ ไม่ใช้textleftของheadingcenteredเป็นpagegutter
+- [ ] RunNode24 typecheck/scopedlint/catalog/UAT/fullformat/gitdiffcheck; runrelatedbrowserregressionsตามmanifestจริง และproductionbuild/previewsmokeตามprojectscripts
+- [x] เก็บbefore/afterภาพพร้อมviewport/rootfontsize/motionstate/sourceprovider คงรายงานfailedattempts แยกข้อจำกัดrealphone/Safari/no-JSตามจริง
+- [x] ตรวจPDFA4/VAT/selecteditemsโดยmockissuance ไม่writeWarehouse/registryจริง; sourcehashesนอกmanifestต้องไม่เปลี่ยน
+- [ ] อัปเดตSpec/Plan/results ปิดเฉพาะownpreview/browserแล้วส่งให้เจ้าของcommitเอง ไม่stage/commit/push/deploy
+
+### Verification Matrix — proposed implementation
+
+- All28baselinefamiliesที่320/390/768/1024/1280/1440/1920; ทั้ง5category/ตัวแทนsubcategory/emptyIOS/realSKUdetail/solutions index+detail/ERP/MES/service/contact/builder/quote/policiesรวมHomeและExplore
+- Boundaryrepresentativesที่767/768,1023/1024,1279/1280; shortlandscapeและzoom200%บนcontent/quote/service/builder ไม่ใช้fixedheightปิดข้อความ
+- ตรวจrootcomputedtokens,physical4padding/marginsides,centeredframe/firstcard/railscrollpadding,documentoverflow และheading-to-bodyalignmentภายในหน้า
+- Normal/reducedmotionบนHome/overview/content ตรวจsticky/navoffset/anchor/focus/history; NativeTouchและkeyboardยังเข้าถึงcard/CTAสุดท้ายได้
+- DesktopHeaderและmobilemenu/search/compare/sharedFooterหนึ่งชุด; overlay21/28px/profileเดิม; เปรียบเทียบframegeometryนอกscopeกับfrozenbaseline
+- Producthero/controlclearance/minheight/scrollsnapเดิมต้องคง; mainpaddingที่เปลี่ยนไม่ไปแทนstagepadding
+- Print/PDFใช้CSS/rendererเดิมและA4geometryเท่าbaseline; ไม่เปลี่ยนbusinessdata/ราคา/VAT/issuance
+- Staticchecksใช้package.jsonscriptsจริง; applicationtestsยังไม่รันในplanningpassเพราะยังไม่มีimplementation
+
+### Impact / Rollback
+
+- R1: baseCSSและsharedoverview/footer/contentกระทบหลายroute แม้ไม่มีbusinesslogicchange; เสี่ยงcardwrap/ภาพ/anchors/firstscreen/printstyleinheritance
+- ทำทีละphaseพร้อมcheckpoint; ถ้าgeometryexceptionจำเป็นต้องเปลี่ยนให้อัปเดตขอบเขตและขออนุมัติก่อน ไม่เพิ่มheightfix/fontsizefixกลบปัญหา
+- ย้อนเฉพาะtaskhunks/phaseจากbaselineใหม่ ไม่มีDBmigration ไม่ใช้reset/checkoutทั้งไฟล์ทับเอกสารsolutionproposalหรือchangesของผู้ใช้
+
+### Verification Results — planning only
+
+- Sourceinventory54CSSparseครบ ไม่มีparseerror; 878paddingdeclarations/353expressionsรวมหลายrole ไม่ใช่รายการที่จะreplaceทั้งหมด
+- Webpackbaseline112contextsตอบ200/ไม่มีdocumentoverflow; Search4contextsเก็บgeometryแล้ว; หลักฐานในtemp/report แยกTurbopackfailedattempts
+- UI/sourceยังไม่แก้; ไม่มีtypecheck/build/fullfunctionalsuiteในรอบนี้ ไม่มีProduction/Safari/realphonecertification
+- รอผลfinaldocumentformat/sourcehash/scope/cleanupก่อนส่งมอบ
+
+- Final: เอกสาร Spec/Plan/report ผ่าน Prettier และ git diff --check; SHA-256 source ทั้ง287ไฟล์ตรงbaseline ไม่มี application/test/config changes หรือ staged changes คง solution proposal เดิมไว้และระบุ on hold
+- ปิด own Webpack preview3116 และ task browser แล้ว; artifacts อยู่tempนอกcheckout ไม่มี DB/Notion write หรือ commit/push/deploy
+- Next feedback reporting instructions อ่านหนึ่งครั้งตาม managed AGENTS block: repeated development reload/context-destroyed มีสองfailedattemptsก่อนWebpackworkaround จัดทำ anonymous review draftหนึ่งเรื่องไว้ให้เจ้าของตรวจ ไม่ส่งรายงานแทนเจ้าของ
+
+### Amendment: PAD-04 card padding and Apple HIG-only reference (2026-11-17)
+
+Implementation approval recorded: เจ้าของตอบ “อนุมัติ” หลังข้อเสนอรวม PAD-01/02/03/04 จึงเริ่มแก้เฉพาะ manifest ที่ระบุได้ คงข้อยกเว้นและ no commit/push/deploy; planning-only ข้างล่างเป็นประวัติก่อนอนุมัติ
+
+#### Authorization now
+
+- ผู้ใช้ตอบ “โอเคเริ่มได้” หลังข้อเสนอให้ตรวจcardและเพิ่มSpec/Planก่อนแก้โค้ด แล้วกำหนด “อิงจาก Apple HIG Layout 100%นะครับ”
+- อนุมัติเฉพาะcardaudit/เอกสารและเปลี่ยนdesignreferenceเป็นAppleHIGสำหรับงานspacingทั้งหมด; ไม่มีการอนุมัติapplicationimplementationในexchangeนี้
+- Numericcardvaluesเป็นSUNFORDproposal ไม่ใช่Applemetrics; historicalTailwindreferencesเก็บเป็นประวัติ ไม่มีบทบาทเลือกดีไซน์ของPADในปัจจุบัน
+
+#### Documentation files authorized now
+
+- spec.md — เพิ่มowneramendment/HIGtraceability/ตัวอย่างcardจริง/roles/acceptanceและขอบเขตapproval
+- plan.md — เพิ่มPAD-04manifestและจัดลำดับตรวจรับไว้หลังcardphase
+- docs/sitewide-padding-audit-20261117.md — อัปเดตreferenceปัจจุบันและcardphaseโดยรักษาผลauditเดิม
+- docs/card-padding-audit-20261117.md — สร้างรายงานcurrent/proposedcardpaddingและข้อยกเว้นสำหรับreview
+
+#### Application files proposed for PAD-04 — approval pending
+
+เพิ่มจากหรือขยายขอบเขตไฟล์PAD-01/02เดิม เฉพาะselectorsที่ระบุ:
+
+- src/styles/base.css — เพิ่ม3semanticcardtokens ไม่ใช้globalresetกับทุกcard
+- src/features/catalog/components/product-browser.module.css — activeCatalogProductCard.card padding compact; รักษา.list .copy/rightclearanceและcomparebuttonplacement
+- src/features/catalog/components/products-index-content.module.css — cardCopyเป็นcontentowner; root/imageยัง0/edge-to-edge ไม่แก้leadCopyที่ไม่มีactivecaller
+- src/features/catalog/components/products-overview.module.css — lineupCopyแนวข้าง/serviceCard/storyCopy; คงtop/bottomcomposition/bottom80controlclearanceและmediageometry
+- src/features/content/components/solutions-overview.module.css — solutionCard/businessCardcontentpadding; ไม่รวมHero/cardheight/ชื่อ/รูปจากSOLproposal
+- src/features/content/components/after-sales-page.module.css — panelHeading/steps/content/contactCard/addressCardzones; คงnumberindentและshort-heightoverride
+- src/features/content/components/contact-page.module.css — channel/locationBodycontentpadding; คงarrowclearance/imagebodytop0/icon/artplacement
+- src/features/content/components/about-page.module.css — nextStepcontent/featurepadding; ปุ่ม/actions/gapและหลักการ์ดอื่นคงเดิม
+- src/features/catalog/components/quotation-form.module.css — seller/formและitemrowsตามrole; คงinput/button/table/PDF/VAT/issuance
+- src/features/content/components/weighing-builder.module.css — .cards articlecompacttoken คงworkspace/selection/compatibility/controls
+- src/features/content/components/indicator-platform-compatibility-page.module.css — summary/bodycontentowner; คงplusrightclearanceและnativeaccordion
+- src/styles/content.css — software-card-copy/directory-card-copy; root/imagefullbleedและsourceprose/legacyHTMLคงเดิม
+- tests/e2e/card-spacing.spec.ts — สร้างcardgeometry/realcontent/focus/accordion/formregressions ใช้explicitexpectedrolesและexceptioncontracts
+- spec.md / plan.md / docs/sitewide-padding-audit-20261117.md / docs/card-padding-audit-20261117.md — ผลจริงหลังimplementation
+
+ยังไม่แก้filesข้างบนในplanningpassนี้ ExistingPAD03testfileใช้ร่วมกับcardtestได้โดยไม่สร้างabstractionใหม่ ไม่เพิ่มJSXmarkers/route/state/dependenciesหรือแก้appTSXโดยไม่มีmanifestเพิ่ม
+
+#### Steps — card audit now
+
+- [x] อ่านscopeเดิมและคำสั่งล่าสุด แยกcardauditapprovalออกจากapplicationapproval
+- [x] อ่านAppleHIGLayoutโดยตรง แยกprinciplesกับSUNFORDnumericproposals; ไม่ใช้Tailwindเป็นdesignsource
+- [x] ยืนยันactivecardrenderersและCSSowner ใช้browser12routes×3widths=36contexts; เก็บ48sampleclasscombinationsโดยไม่เรียกว่าทั้งหมดเป็นcard
+- [x] จำแนกroot/copy/header/body/feature/controls/decorationและexceptions ไม่ตีความdecorativescrolloverflowเป็นcontentfailure
+- [x] อัปเดต4เอกสาร/ตรวจformat/sourcehashscope/ปิดownpreview3118/แนบรายงาน
+
+#### Implementation order after explicit approval
+
+Necessary fixture amendment for the approved spacing contract: tests/e2e/indicator-platform-compatibility.spec.ts changes only the guide-entry padding expectation from fixed24px to the approved16/24/32px by viewport. Existing Services-navigation cases in this file are unrelated legacy selectors; preserve them and report baseline verification separately rather than changing Navbar behavior in this task.
+
+Fit verification amendment within approved card-text acceptance: Contact .channelCopy strong/.schedule may wrap normally after a measured 200% text-size failure. Keep font/height/min-height/control geometry unchanged; these two whitespace declarations are the only non-padding fit adjustment in the approved Contact CSS. Verify the same probe again after the change.
+
+Short-height checkpoint: preserve Service hero10px/8px (0.625rem/0.5rem) in its existing80rem/max-height800px exception. The standard desktop compact padding made main extend to733.28px on a720px screen. This is the approved preservation of short-height composition within the existing Service CSS manifest, not a height/layout redesign. Recheck the existing service-tabs case, both short-screen motion cases and updated production spacing/geometry before delivery.
+
+Short-height refinement from actual five-tab replay: restore the same baseline query's container32px edge, panelHeading12/18/10px, steps0/18/8px, extra/note/footer inline18px and address10/14px, in rem equivalents. Keep hero10/8px/contact16px. Hero-only correction was insufficient; the complete existing scene composition yields706px main bottom and identical665.75px policy top for all five tabs. Preserve ordinary tokens outside this query and do not add heights/fonts/layout changes.
+
+Operational record required by AGENTS.md: append only to MEMORY.md after repeated Warehouse failures during validation. Record observed build/query failures and require serialized build/browser phases; do not infer a database capacity limit or change Warehouse/app configuration. This documentation addition is authorized by the existing project-memory instruction.
+
+- [x] PAD-01 ขอบหน้าและtokens → PAD-02 sectionrolesตามแผนเดิม โดยAppleHIGเป็นdesignreferenceเดียว
+- [x] PAD-04a activeproduct/solution/business/software/directorycards; aliascompact/contentที่textownerและตรวจ320/390/768/1440
+- [x] PAD-04b service/contact/About/Builder/accordion/Quotationzones; ตรวจshortheight/longtext/compare/formerrorsด้วยdataจริงและไม่writeDB
+- [ ] PAD-03ตรวจรับรวม: การเปลี่ยนcardpaddingต้องไม่เพิ่มparentgutterซ้ำ ไม่เบียดtext/control และไม่เปลี่ยนfunctionalgeomของscene
+- [ ] รันstatic/catalog/UAT/relatedbrowser/buildchecksตามแผนเดิม + card-spacing.spec.ts; ตรวจsource/appoutsideapprovedmanifestไม่เปลี่ยน
+- [x] บันทึกbefore/after/ข้อจำกัดจริง คืนเฉพาะtaskhunksหากไม่ผ่าน ไม่ลดfont/ซ่อนข้อความเพื่อให้paddingตรงเลข
+
+#### HIG traceability and risk
+
+- Alignment/grouping → paddingownerและtext/CTAalignment; Adaptability → roleตามavailablecardwidth/ข้อความ ไม่ตามdeviceชื่ออย่างเดียว
+- Text-sizechanges → contentไม่ถูกfixedheightบัง ต้องตรวจactualtextresize/zoom; Safeareas → controlsไม่ซ้อนภาพ/ขอบ/แถบระบบ โดยไม่เพิ่มsafeinsetซ้ำ
+- R1 sharedcardsหลายหน้า: ลดพื้นที่textเมื่อเพิ่มpadding, บีบnarrowcatalog, กระทบabsolutecontrolsและlayeredservicepanels; แบ่งimplementationตามfamilyและย้อนhunkscardphaseได้
+- เมื่อrequiredpaddingทำให้cardไม่fit ให้หยุดเฉพาะfamilyและเสนอheight/layoutdeltaที่มีหลักฐาน ไม่ลามแก้scene/Data/PDF
+
+#### Verification — planning pass
+
+- LocalWebpackpreview3118/Node24.22.3/Next16.4.6/Edgeheadless; 36contextsตอบ200ทั้งหมด/0pageerrors/0consolewarning-errorในชุดนี้ เป็นgeometryauditไม่ใช่fullfunctionalsuiteหรือProduction
+- Sourcebaseline287ไฟล์และcards-audit.json/cards-summary.jsonอยู่tasktemp; screenshotsไม่ถูกเขียนในsourcecheckout
+- HIGLayoutไม่มีnumericweb-cardpadding; defaults16/24/32เป็นproposalที่รอownerapprovalและไม่ได้รับรองHIGcomplianceทั้งหมด
+- Finalformat/hash/scope/cleanupresultsจะบันทึกหลังอัปเดตเอกสาร
+
+- Final: เอกสาร4ไฟล์ผ่าน Prettier และ git diff --check; SHA-256 source287ไฟล์ตรงbaseline ไม่มี application/tests/config หรือ staged changes ปิด own preview3118และPlaywrightbrowserแล้ว
+- มีเฉพาะSpec/Plan/reportsที่เปลี่ยนในรอบนี้; ไม่commit/push/deploy/DB/Notionwrite และไม่เพิ่มNextfeedbackdraftซ้ำเพราะรอบWebpackนี้ไม่มีframeworkfrictionใหม่
+
+### Implementation results — approved PAD-01/02/04 and PAD-03 verification (2026-11-17)
+
+- เจ้าของอนุมัติด้วยข้อความ “อนุมัติ”; ปรับ CSS19ไฟล์/146declaration changes ตาม manifest รวม7semantic tokens: page20/32/48px, standard32/48/64px, compact16/24/32px, feature48/64/80px และcard16/24/32px ใช้rem/thresholdเดิม ไม่มีrootfontหรือdependencyใหม่
+- Apple HIG Layout เป็นแหล่งอ้างอิงการออกแบบเพียงแหล่งเดียว; ตัวเลขเป็นค่าประยุกต์ของ SUNFORD ที่เจ้าของอนุมัติ ไม่ใช่ตัวเลขที่AppleบังคับหรือการรับรองHIG100%
+- คงmax-width/overview6.25vw, Hero/ภาพ/height/control/PDF geometry และsceneexceptions; Serviceจอเตี้ยใช้compositionเดิมทั้งชุดตามรายละเอียดข้างบน Contactเพียง2จุดอนุญาตwrapเพื่ออ่านข้อความที่ขยาย200%
+- Dedicated padding/card20/20ผ่านบนproduction; final acceptance38/39ผ่าน (3.3นาที) รวมServiceทุกแท็บ/short-screen normal+reduced motion/solutions anchors+14ปลายทาง+history/keyboard/native touch/tooltip/delayed hydration/mockเลขPDF ข้อที่ไม่ผ่านคือsolutions-overview.spec.ts:152ยังเรียกปุ่มHeader Compareเก่า “เลือกสินค้าเพื่อเปรียบเทียบ” ไม่แก้เทสต์นอกmanifestหรือพฤติกรรมแอปเพื่อให้ผ่าน
+- Current Search/Compare26/26ผ่านแยกชุดบนproduction; browser28routefamilies×7widths=196กรณีตอบ200ทั้งหมด ไม่มีdocumentoverflow/pageerror มี3consolewarnings (CSSpreload2,WindowsGPU1) จึงไม่อ้างว่าconsoleสะอาด
+- ตรวจroot tokens/gutter/4sides/rolepadding/hero bottom32ด้วยtestและcomputedmeasurements; 200%textresizeผ่านContact/Service และQuote/Builderที่390/1440px ไม่ใช่การรับรองnative browserzoomทุกหน้า
+- FinalService1280×720ทั้ง5แท็บ main bottom706px/policy top665.75pxเท่ากัน; Footerมือถือ3accordionsใช้keyboardเปิด/ปิดได้ ภาพหลังแก้ตรวจด้วยตาแล้ว
+- Catalog202/202, UAT28/28, Node24typecheck/scopedESLintผ่าน; finalproductionbuild706/706ผ่านโดยCIRCLE_NODE_TOTAL=2 (1worker, process-only) ไม่มีการแก้config/DB
+- PDF/VAT/35selectedSKU/A4หลายหน้าผ่านในrelatedrun; issuance mockเท่านั้น ไม่มีการออกเลขจริงหรือเขียนWarehouse
+- Broader dev117-case runหยุดเมื่อWarehousestatementtimeoutทำให้แสดงerrorboundary: completed66pass/18fail/33notcompleted มีทั้งobsoleteNav/contentfixtures, data/timeouts และService-spacingregressionที่แก้แล้ว เก็บfailedattemptsไว้ ไม่อ้างว่าfullE2Eผ่าน
+- Sourceguardไม่มีunexpected/forbiddenchange: applicationเปลี่ยนเฉพาะ19CSS; TSX/data/routes/API/lock/config/PDF/businesslogicเดิม มี2newE2Eและแก้guide-entryexpectedpaddingเพียงจุดเดียวในexistingfixture MEMORY.mdเพิ่มoperationalnoteตามAGENTS.md
+- ข้อจำกัด: ไม่รับรองSafari/มือถือจริง/nativebrowserzoom/no-JSทั้งเว็บ; Solutionsเนื้อหาว่างเดิมและงานSOLยังพักไว้ ไม่เพิ่มscopeไปแก้Nav/data/Comparefixture
+- หลักฐาน: [Verification report](C:/Users/cityc/AppData/Local/Temp/sunford-padding-implementation-20261117/verification-report.md), [Receipt](C:/Users/cityc/AppData/Local/Temp/sunford-padding-implementation-20261117/verification.json), [Production measurements](C:/Users/cityc/AppData/Local/Temp/sunford-padding-implementation-20261117/after-sweep.json)
+
+#### Remaining validation limits
+
+- [x] ปรับทุกphaseตามmanifestและตรวจdedicatedpadding20/20 พร้อมSourceguard
+- [x] Serviceจอเตี้ยทุกแท็บ/short-screenและFooterkeyboardผ่านบนproductionรุ่นสุดท้าย
+- [x] บันทึกfailedattempts/ข้อจำกัดและหลักฐานให้เจ้าของcommitเอง
+- [x] Final Node24 typecheck/scopedESLint/fullformat/gitdiffcheckผ่าน Sourceguard19CSS/146declarations/0unexpected; root tokens196contextsตรงทุกค่า ปิดownpreview3120/3121แล้ว Gitindex/HEADไม่เปลี่ยน ไม่มีNextframeworkcandidateใหม่
+- [ ] Full related E2E green: ยังมีobsoletefixturesและWarehousefailuresตามผลจริง ไม่รวมการซ่อมfixtureเหล่านี้ในpaddingงานนี้
+- [ ] Native browserzoom200%/Safari/มือถือจริง/no-JS certification: ยังไม่ได้ตรวจ; ผล200%ในงานนี้เป็นactualtextsizeprobeร่วมกับresponsivewidths
+
+Rollback: ย้อนเฉพาะ19CSS/test hunksของPADจากtaskbaselinecb59a10 โดยรักษาเอกสารและงานเดิมของเจ้าของ ไม่มีDBmigrationหรือข้อมูลที่ต้องกู้คืน
+
+## Plan: VS Code Explorer organization, beginner project map and shared price formatting (2026-11-17)
+
+Status: "Complete — approved manifest implemented and verified; limitations recorded"
+
+### Files — authorized documentation in this pass
+
+- `docs/project-guide.md` — สร้างคู่มือภาษาไทย: folder/filetype/page→component→style→data และregistryค่ากลางที่มีอยู่จริง
+- `docs/vscode-organization-proposal-20261117.md` — สร้างaudit/settingspreview/pricecontractsและขอบเขตที่ให้เจ้าของตรวจ
+- `spec.md` — appendเฉพาะTaskนี้ พร้อมscope/AC/approval/currentstate ไม่แก้headingsงานอื่น
+- `plan.md` — appendแผนนี้และผลplanningverification
+
+### Files — proposed implementation after approval
+
+- `.vscode/settings.json` — สร้างเฉพาะworkspaceExplorerkeysตามpreview; mergeหากมีไฟล์เกิดขึ้นระหว่างรอ
+- `README.md` — เพิ่มลิงก์คู่มือและข้อเสนอในหัวข้อโครงสร้างเท่านั้น
+- `src/features/catalog/data/price-format.ts` — สร้างpureformatPrice/formatBahtแบบnumberบาท→string ไม่มีReact/DB/env/validationเพิ่ม
+- `src/features/catalog/components/products-index-content.tsx` — ใช้formatPriceแทนtoLocaleString2digitsที่มีอยู่เดิม
+- `src/features/catalog/components/quotation-form.tsx` — ใช้formatPrice; คงlocalamount(satang)/100และbusinesslogicเดิม
+- `src/app/(site)/products/[slug]/page.tsx` — ใช้formatBahtแทนcurrencyTHBinlineformatterเดิม
+- `src/features/content/components/weighing-builder.tsx` — ใช้formatBahtแทนlocalbahtformatterเดิมทั้ง3calls
+- `tests/catalog/price-format.test.ts` — สร้างmeaningfulexplicitexpectedoutputsที่แยกdecimal/currencyและกรณีเศษ/rounding/largevalues
+- `docs/project-guide.md`, `docs/vscode-organization-proposal-20261117.md`, `spec.md`, `plan.md` — บันทึกapprovalจริง สถานะinstalledและverificationจริงหลังทำ
+
+รายการนี้ครบทุกไฟล์ที่จะสร้าง/แก้ ไม่มีfiledelete หากจำเป็นต้องเพิ่มไฟล์นอกนี้ให้อัปเดตขอบเขตและรับapprovalส่วนเพิ่มก่อน
+
+### Steps — planning now
+
+- [x] อ่านกติกา/เอกสารและตรวจworkingtreeที่มีPADchangesอยู่เดิม เก็บbaselineนอกcheckout
+- [x] ตรวจNextprojectstructureจากinstalleddocs และVSCodefeaturesจากMicrosoft/Context7และinstalledpackageversion
+- [x] ทำsource/calleraudit แยกexistingtokens/activecomponents/priceformatsที่เท่ากันกับvariationsที่ต้องคง
+- [x] เตรียมownerreadableguide/settingspreview/Spec/Planพร้อมmanifestและrollback
+- [x] ตรวจformat/JSONpreview/locallinks/sourcehash/diffของเอกสาร4ไฟล์และบันทึกผล
+- [x] ให้เจ้าของตรวจและอนุมัติSpec/Planนี้; ผู้ใช้ตอบ “อนุมัติครับ เริ่มทำทั้ง 3 ส่วนตามแผนได้เลยครับ”
+
+### Steps — implementation after approval
+
+- [x] ยืนยันStatusReadytoCodeและบันทึกapprovalจริง ตรวจbaseline/concurrentchangesใหม่ เลือกNode24ที่ตรวจversionแล้ว (24.22.3)
+- [x] เปิดVSCodeprojectตรวจeffectiveExplorerpreferencesก่อนแก้ เก็บภาพbeforeโดยไม่ปิดงานของเจ้าของ
+- [x] ตั้งworkspaceExplorerตามpreviewและเพิ่มREADMEentry ตรวจUIจริง/restorevisibility/ไม่มีย้ายหรือลบไฟล์ เก็บภาพafter
+- [x] บันทึกbaselineราคาจริงของProductsindex/Productdetail/Builder/Quotationที่320/768/1440ก่อนrefactor โดยไม่issueเลขจริง
+- [x] สร้างpriceformattestsแบบexplicitexpectedstringsและcapturepreexistingformatcontract ก่อนเปลี่ยนcaller
+- [x] สร้าง2helpers/เปลี่ยน4callerเฉพาะformatting ตรวจnull/zero/inquiry/VAT/conversion/markupไม่เปลี่ยน
+- [x] รันformattertestsและbunruntest:catalog/Node24typecheck/scopedESLint/Prettier พร้อมdiff/hashscopechecks
+- [x] ตรวจbrowserafterราคาของ4จุด/3widthsเทียบbaselineรวมUnicode/overflow/console และหน่วยเงิน ไม่แก้markup/style/dataเพื่อผ่าน
+- [x] ไม่เรียกrealPOST/api/quotations/issue (0attempt); ไม่ตรวจPDFdownloadจึงไม่มีการเรียกdownloadhelperในงานนี้
+- [x] รันproductionbuildหลังbrowserจบ ไม่ทำWarehouse-heavyphasesพร้อมกัน บันทึกenvironment/datafailureจริงโดยไม่แก้pool/dependencies
+- [x] อัปเดต4docs/AC/checklists/limitationsพร้อมevidenceและรักษางานเดิม ไม่commit/push/deploy
+
+### Impact / Rollback
+
+- WorkspaceExplorerR2: มีผลvisibilityและsearch/indexของรายการที่ซ่อน; ไม่มีผลdisk/build/import undoเฉพาะaddedkeysไม่ล้างuserpreferences
+- Nestingใช้ชื่อ ไม่ตามimports; expandeddefaultช่วยเห็นCSS ผู้ใช้ต้องขยายก่อนcopy/move/deleteรายตัวตามMicrosoftdocs
+- PricehelperR1: เปลี่ยนการนำเสนอราคาใน4จุดร่วมกัน แม้ไม่เปลี่ยนยอดเงินก็ต้องตรวจbyte/stringparityและหน่วยบาท/สตางค์ ย้อนเฉพาะimports/callsและhelperใหม่ได้
+- NoCSS/layout/sharedUI/data/routes/DB/lockfilesเปลี่ยน; tokenvaluesของPADคงเดิม ไม่มีdesignmetricsใหม่ที่ต้องเลือก
+- ไม่ใช้gitreset/checkoutทั้งไฟล์ทับงานเดิม Spec/Planต้องย้อนเฉพาะหัวข้องานนี้
+
+### Verification Results — planning
+
+- VSCodeinstalled1.146.0ตรวจmetadataจริง; .vscode/settings.jsonยังไม่มี ณbaseline
+- ตรวจ26คู่TSX/moduleCSSและ4activepricecallers ยืนยันcurrencydefault2/decimal2แยกจากoverviewdefault/storefront0/PDFen-US
+- Existingdependenciesตรวจpackage/bunlock/npm-lockแล้ว พบrootversiondriftเดิมตามproposal ไม่เปลี่ยนlockfiles; PATHNode22.14.0ต้องใช้Node24ตอนimplementation
+- BaselineSHA-2561962tracked/untracked-nonignoredfilesพร้อมGitHEAD/statusเก็บtasktemp ไม่มีenvvaluesถูกรายงานหรือคัดลอกเข้าเอกสาร
+- ยังไม่ได้ตั้งVSCode/แก้app/รันbuildหรือbrowserของimplementation; รอplanningformat/link/JSON/sourceguardresults
+
+### Final Planning Verification
+
+- Prettier4docs/gitdiffcheckผ่าน; local48linksตรงไฟล์จริงทั้งหมด; settingspreviewvalidJSONและ17protectedpathsไม่เข้าhidepatternsใหม่
+- Sourceguard:1962baselinefiles/1960unchanged/เฉพาะSpecPlanappend+2newdocs; SpecPlanpreexistingprefixbyteidenticalและHEADคงเดิม ไม่มีapp/tests/config/README/settingschangesจากงานนี้
+- Linkverifierแก้ให้รองรับCommonMarkanglewrappedURLที่Prettierสร้างแล้วผ่าน ไม่แก้ลิงก์ที่ถูกต้องเพื่อผ่านตัวตรวจ
+- หลักฐานplanning-verification.jsonในtasktempนอกcheckout; ไม่มีimplementationverificationหรือVSCodeUIclaim ไม่มีNextframeworkcandidateที่ต้องส่ง
+- ณจบรอบวางแผนรอownerapprovalเพียงขั้นเดียว ต่อมาเจ้าของอนุมัติแล้วตามrecordข้างบนและส่งมอบตามFinalImplementationVerification ไม่มีstaging/commit/push/deploy/DBwrite
+
+### Final Implementation Verification
+
+- NativeVSCode1.146.0: เห็นCSSใต้hero-scene.tsx/2lockfilesใต้package.json, folderlevelsแยกและhiddenartifactsหาย คืนnode_modulesfalse→trueผ่าน เปิดguideMarkdownPreviewแล้ว ภาพตรวจผ่านComputerUseในแชต
+- Baselinebrowser12contextsผ่านก่อนเปลี่ยนcaller; Sourceเก็บก่อนแก้และruntimeoldformatsตรวจNode24แล้ว NewtestsREDเพราะhelperยังไม่มี→GREEN2/2หลังสร้าง Fullcatalog204/204ไม่มีskip/retry
+- Node24.22.3typecheck--incrementalfalse/scopedESLintผ่าน; productionbuild706/706ผ่าน ไม่มีwarnings/errorsในbuildlog ใช้1workerจากCIRCLE_NODE_TOTAL=2เฉพาะprocess ไม่แก้Nextconfig
+- Afterbrowser12/12และexactparity957textsรวมUnicode/formatting/quotationunit/net/VAT/gross ทั้ง3widths Warehousepricedigestเท่ากัน 0pageerror/consolewarnings/documentoverflow/POSTattempt
+- Builder0selectableheadsทั้ง3widthsเพราะยังไม่มีverifiedpairs: ตรวจ13cardpricesและemptytotal ไม่มีการเลือกkitจริง ไม่เพิ่มfixture/ข้อมูลหรือforceปุ่มเพื่อผ่านprobe failedinspectionattempts2ครั้งแรกเก็บไว้และแก้probeตามcontractจริง
+- Scopeguard1964baseline/1955unchanged/12ownedfiles(9existing+3new) ไม่มีunexpected/deletedfile ทั้ง4callerเท่ากับapprovedsubstitutionsหลังPrettier ไม่มีCSS/financial/data/routechangeและoldSpecPlanprefixbyteidentical
+- 51locallinksรวมREADMEผ่าน; JSONsettingsตรงapprovedpreview Finalscopedformat/gitdiffcheck/sourceguardตรวจหลังบันทึกdocsก่อนส่งมอบ
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-vscode-implementation-20261117/verification-report.md และscope-verification.json/browser-before.json/browser-after.json/links-verification.json/catalog.log/build.log พร้อม24captures
+- ปิดownpreview3124/testbrowserแล้ว owner3000คงอยู่ GitHEAD/indexคงเดิม ไม่มีstaging/commit/push/deploy/DBwrite ไม่มีNextframeworkfeedbackcandidate
+- ไม่อ้างfullE2E/PDFdownload/Safari/realdevice/productiondeploymentหรือselectedkitpriceUIcoverage; npm-lock/PATHNodeเดิมคงเดิม ไม่ใช่blockerของmanifestที่ตรวจด้วยNode24แล้ว
+
+## Plan: Guided tour of active homepage files and shared values (2026-11-17)
+
+### Files
+
+- `docs/homepage-tour.md` — สร้างคู่มืออ่านทีละส่วน พร้อมsourceconnections/styleowners/shareddataและแบบฝึกอ่านHero
+- `docs/project-guide.md` — เพิ่มลิงก์ไปhomepagewalkthroughใกล้ต้นเอกสาร
+- `spec.md` — appendเฉพาะTaskนี้พร้อมcurrentstateและverification
+- `plan.md` — appendเฉพาะแผน/ผลตรวจงานนี้
+
+### Steps
+
+- [x] ยืนยันscopeเป็นexplanation/docs-onlyตามคำขอ ไม่ต้องมีapplicationimplementationapprovalเพราะไม่มีการแก้app
+- [x] เก็บbaseline1967files/HEADและต้นฉบับ3docsนอกcheckout อ่านactivepage/layout/component/data/CSSowners
+- [x] ตรวจหน้าแรกผ่านisolatedbackgroundtabบนserverเดิม3000 จับ7sectionheadings/4categorylabels/แหล่งvideo/absenceของส่วนที่ปิดอยู่
+- [x] เตรียมคู่มือHeader→7sections→Footer+sharedresources แยกdefaults/overrides/literaltextและactive/unusedbranchให้ชัด
+- [x] ตรวจlocallinks/Prettier/diff/hashscopeและยืนยันoriginaldocsส่วนอื่นคงเดิม
+- [x] ปิดเฉพาะtabของงานและบันทึกverificationจริงในSpec/Plan/workstateก่อนส่งมอบ
+
+### Impact / Rollback
+
+- เอกสาร4ไฟล์เท่านั้น ไม่มีUI/application/test/config/data/dependency/DBchange
+- ย้อนเฉพาะnewhomepageguide/newlinkและTasknotes ไม่ใช้reset/checkoutทั้งไฟล์ทับงานก่อนหน้า
+- ไม่มีtypecheck/build/fullregressionจำเป็นสำหรับdocumentation-only ไม่อ้างผลเหล่านั้นในรอบนี้
+
+### Verification Results
+
+- Localhomepageมี7mainsectionsตรงpageimports; HeroMP4และJC21Spotlightvideoเรนเดอร์จริง มี4categorybuttons ไม่มีannouncement/contactbannerบนHome
+- Screenshotและrendered-home.jsonอยู่tasktemp; ตรวจว่าmodel-viewer0ไม่อ้าง3Dจากชื่อไฟล์เก่า SourcegetSettingsmergeและallactiveCSS/dataownersอ่านแล้ว
+- กำลังตรวจformat/locallinks/hashscopeก่อนfinal ไม่มีappcodeถูกแก้
+
+- Final: 116locallinksครบ/Prettier4docs/gitdiffcheckผ่าน;1967baselinefiles1964unchanged/3modifieddocs+1newdoc/0unexpectedapplicationchange OriginalSpecPlanprefixเหมือนเดิมและprojectguideเพียงเพิ่มtourlink GitHEADคงเดิม
+- NativeVSCodehomepage-tourMarkdownPreviewเปิดและเห็นแผนผังแล้ว Isolatedbrowsertabปิดแล้ว ไม่มีserver/tabของเจ้าของถูกปิด ไม่มีapp/test/config/datachange/DBwrite/staging/commit/push/deployหรือNextfeedbackcandidate
+- Receipt C:/Users/cityc/AppData/Local/Temp/sunford-homepage-tour-20261117/verification.json; read-onlyrender/sourceinspectionเท่านั้น ไม่รันหรืออ้างbuild/fullregressionในงานเอกสารนี้

@@ -1,5 +1,5 @@
 .full-catalog {
-  padding-block: 70px;
+  padding-block: var(--section-space);
   min-height: 70vh;
 }
 .catalog-search {
@@ -33,7 +33,7 @@
   color: var(--muted);
 }
 .not-found {
-  padding-block: 120px;
+  padding-block: var(--section-space-feature);
 }
 .not-found h1 {
   font-size: 29px;
@@ -42,7 +42,7 @@
   flex-wrap: wrap;
 }
 .full-catalog {
-  padding-top: 42px;
+  padding-top: var(--section-space);
 }
 .catalog-search,
 .catalog-search input {
@@ -50,7 +50,7 @@
 }
 @media (min-width: 48rem) {
   .full-catalog {
-    padding-top: revert;
+    padding-top: var(--section-space);
   }
   .catalog-search {
     width: revert;

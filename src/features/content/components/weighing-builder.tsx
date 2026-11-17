@@ -6,6 +6,7 @@ import { Monitor, Layers, Cable, Search, Check, Plus, ChevronRight, Trash2 } fro
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./weighing-builder.module.css";
 import { quotationTotals } from "@/features/catalog/data/quotation";
+import { formatBaht } from "@/features/catalog/data/price-format";
 
 import type { WeighingOption } from "../data/weighing-options";
 const categories = [
@@ -13,7 +14,6 @@ const categories = [
   { kind: "platform", label: "แท่นชั่ง", icon: Layers },
   { kind: "accessory", label: "อุปกรณ์เสริม", icon: Cable },
 ] as const;
-const baht = new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" });
 
 function optionName(option: WeighingOption) {
   if (option.displayName) return option.displayName;
@@ -119,7 +119,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
           <div>
             {priced || !selected.length ? (
               <>
-                <strong>{baht.format(totalPrice)}</strong>
+                <strong>{formatBaht(totalPrice)}</strong>
                 <small>รวม VAT</small>
               </>
             ) : (
@@ -161,7 +161,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                         {item.kind === "head" && platform?.includesHead
                           ? "รวมในราคาแท่นชั่งแล้ว"
                           : item.price !== null && item.price > 0
-                            ? baht.format(item.price)
+                            ? formatBaht(item.price)
                             : "สอบถามราคา"}
                       </span>
                       <a
@@ -290,7 +290,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                       </a>
                     )}
                   <span>
-                    {o.price !== null && o.price > 0 ? baht.format(o.price) : "สอบถามราคา"}
+                    {o.price !== null && o.price > 0 ? formatBaht(o.price) : "สอบถามราคา"}
                   </span>
                 </div>
                 <button
