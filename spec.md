@@ -1,5 +1,419 @@
 # Project state
 
+## Task: Verify, commit and push authorized backlog before Navbar implementation (2026-11-16)
+
+Status: "Verified and delivered — source backlog pushed; documentation receipt prepared for the closing commit"
+Approval: "Owner explicitly requested commit and push of pending work"
+
+### Goal / Scope / Approval Record
+
+- User: “ก่อนเริ่มคอมมิตและพุทงานค้างก่อน” — อนุมัติให้ตรวจ บันทึก commit และ push งานค้างก่อนเริ่มโค้ด Navbar แผนใหม่
+- สาขา `uat` ตรงกับ `origin/uat` ที่ `4bb4e0a` หลัง fetch. Candidate72files: application/assets45, tests24, documents3; ไม่มี deletion และไม่มี staged changes ก่อนเริ่ม
+- รวมงานที่อนุมัติไว้แล้ว: Navbar8menus/3columns/95entries พร้อม compact32px/shop parity, actual-origin/history state restoration, shared Footer และ transparent product placeholders พร้อม tests/docs
+- ไม่เริ่มแผน Navbar104entries ซึ่งยังรอ implementation approval. ไม่เปลี่ยน Warehouse/quotation issuance, dependencies, held map modules/assets หรือ production; ใช้ fast-forward push ไป `origin/uat` เท่านั้น
+- Scope ในรอบนี้คือ review/checks/เอกสาร/Git delivery; ไม่แก้ source หากไม่มี failure ที่ต้องแก้ตามขอบเขตเดิม
+
+### Acceptance / Current Verification
+
+- [x] ตรวจ diff/manifest และ remote; ไม่มี map module changes/deletions ที่เคยสั่งพัก
+- [x] Node24.22.1: catalog185/185, UAT28/28, TypeScript, full ESLint, full Prettier และ production build ผ่าน
+- [x] Production probe: เปิด category finder โดยไม่มี URL query แล้วกลับจาก detail คืน dialog/คำค้น WPS ได้
+- [x] ตรวจครบ266current affected Chrome casesจากlatestreportต่อไฟล์:111จากรอบแรก/125จากfollow-up/30จากรอบสุดท้าย17พฤศจิกายน; ไม่อ้างว่าเป็นsingleclean266run. Source45filesไม่เปลี่ยนระหว่างตรวจ; ปรับเฉพาะ5testfixturesตามหลักฐาน
+- [x] Commit source/tests69filesผ่านpre-commithookและpushสำเร็จ: `4640ffa2fbfd4e37454edc6f269c2443f6801d02` (`feat(ui): ปรับ Navbar, Footer และคืนสถานะการนำทาง`); remote `origin/uat` ตรงกับsourcecommitหลังpush
+- [x] เตรียม3documentfilesเป็นclosingcommitแยกจากsource; ให้ตรวจfinalremoteSHA/cleanworkingtreeหลังpushและบันทึกผลในexternalGitreceipt/workstate โดยไม่แก้เอกสารซ้ำเพื่อใส่hashของตัวเอง
+- หลักฐานใน `C:/Users/cityc/AppData/Local/Temp/sunford-backlog-commit-20261116/` และ `sunford-backlog-*-20261116` logs/JSON ใน TEMP; runtimeตรวจบน local production build ที่3001 ไม่ใช่ production deployment
+- Finalbrowser30/30ผ่าน17พฤศจิกายน พร้อมcoverage266ตามlatestreportต่อไฟล์ในverification-receipt.json. Catalog185/185,TypeScript/fullESLintตรวจซ้ำผ่าน; UAT28/buildผ่านและsource45ยังhashเดิม. ไม่มีapplicationchangeระหว่างเตรียมcommit นอกจาก5existingtestfixturesที่แก้ตามหลักฐาน
+- ข้อจำกัดที่พบ: directinitial`#stories`ไม่เลื่อนเข้าเป้าในlocalbuild; ไม่รวมการแก้ในงานdeliveryนี้. Reloadtestกำหนดscrollpreconditionเองและยังตรวจhash/query/resetตามเดิม; ไม่อ้างว่ารับรองinitialnativefragmentlanding
+
+## Task: Selected data-supported Navbar tree and readiness (2026-11-16)
+
+Status: "Ready to Code — phase A Navbar only; phases B/C deferred"
+Approval: "Structure selected and documentation authorized; implementation pending owner review"
+
+### Goal
+
+ใช้แผนผังล่าสุดที่ผู้ใช้เลือกเป็นข้อกำหนดสำหรับ Navbar ทั้ง 8 เมนู/3 คอลัมน์ แยกปลายทางที่เปิดได้จากเมนูที่ต้องเพิ่มหน้า/จัดกลุ่มและเมนูที่รอข้อมูล. รอบนี้อัปเดตเอกสารและสรุปเท่านั้น ยังไม่แก้ application
+
+### Scope In / Scope Out
+
+- รอบปัจจุบัน: แก้เฉพาะ `spec.md`, `plan.md` และหลักฐาน review นอก source; ตรวจ source/data ที่มีอยู่แบบอ่านอย่างเดียว
+- Phase A ที่เสนอให้อนุมัติภายหลัง: ปรับ labels/order/column headings/destinations ใน primary-navigation data ให้ตรง matrix; เปิดเฉพาะ A และแสดง B/C จาง/กดไม่ได้ใน Header ทั้งสองแบบ
+- คง 8 main links, native navigation, logo alignment, content-sized columns/gap32px, shop icon, search/comparison, hover/touch/keyboard/Escape/cached Back/Forward และ responsive contracts เดิม
+- ไม่สร้างหน้าหรือ classifier ของ B ใน phase A; ไม่เติมข้อมูลของ C; ไม่เพิ่ม services/solution copy, ไม่แก้ราคา/RPC/storage/eligibility/quotation/Footers/layout/styles/dependencies และไม่ commit/push/deploy
+- การเลือกหัวอ่าน/แท่นเป็นทางเข้ารายการสินค้า ไม่เป็นคำรับรองความเข้ากันได้. หน้า guide ยังเปิดได้แต่ข้อมูลปัจจุบันมี confirmed pair 0 คู่
+
+### UI/UX Brand Alignment
+
+- Reference: แผนผัง 8 เมนูในข้อความก่อนหน้าที่ผู้ใช้เลือก; อ้าง current Header/PrimaryNavigation, `src/styles/base.css` และ `src/styles/header.css` โดยอ่านก่อน implementation และคงภาพลักษณ์เดิม
+- Column headings เปลี่ยนตามแต่ละเมนูได้ตาม matrix ไม่บังคับใช้ “การใช้งาน” กับทุกเมนู. คง 3 คอลัมน์และ mobile stacked groups
+- Responsive verification หลัง phase A: 320/390/834/1024/1440px, phone landscape และ simulated200%zoom; วัด hitboxes/overflow/long-label wrapping และเมนูแท่นชั่งคอลัมน์แรก 10 รายการ
+- ไม่เพิ่ม badge “A/B/C” หรือคำว่า “[เพิ่ม]” ใน UI; ตัวอักษรสถานะเป็นเอกสารตรวจรับเท่านั้น. B/C ใช้ disabled rendering เดิม
+
+### Input / Output / Readiness Contract
+
+- Input ข้อมูล: company1 live read-only snapshot วันที่16พฤศจิกายน2026เวลา21:12น. ประเทศไทย จากงาน proposal ก่อนหน้า; RPC516/public395 SKU และ current transforms/selection. ไม่อ้างว่าได้อ่าน DB ใหม่ในงานเอกสารนี้
+- Source audit ปัจจุบัน: category/subcategory registry, source content paths, current disabled declarations และ renderer contracts. HTTP probe ที่127.0.0.1:3001เชื่อมต่อไม่ได้ จึงยังไม่ยืนยัน runtime/production readiness รอบใหม่
+- Output phase A ที่วางแผน: 104 submenu positions = 100 จากแผนผังที่เลือก + 4 เมนูวัสดุแท่นชั่งเดิมที่ข้อความท้ายข้อเสนอระบุให้คงจางไว้. วาง4รายการต่อท้ายคอลัมน์สินค้าในเมนูแท่นชั่ง ไม่เพิ่มคอลัมน์ที่4. ไม่เพิ่ม iOS/solution links ที่ไม่ได้อยู่ในแผนผังนี้
+- Counts ตามสถานะ: A71/B22/C11 submenu positions; ปลายทางไม่ซ้ำ A28/B19/C8 รวม55. รวม main links8เป็น112positions: อนุญาตเปิด79/disabled33ในค่าเริ่มต้นของ phase A
+- Counts ข้างต้นเป็นแผนใหม่; แอปยังใช้ treeเดิม95submenupositionsในขณะที่เขียนเอกสารนี้
+- **A — เปิดใช้ได้:** มีปลายทางเดิมและข้อมูล/หน้าที่ตรงกับ label. ใช้ canonical href ที่ระบุ; aliases ยังคง resolve เดิม. saved explicit disabled flags ยังคงมีผล; ไม่ force-enable รายการที่เจ้าของเคยปิดเฉพาะไว้
+- **B — ต้องเพิ่มหน้าหรือการจัดกลุ่ม:** มีหลักฐานสินค้า แต่ยังขาด destination registration, precise membership หรือหน้าเฉพาะที่ตรง label. B href ใน matrix เป็น “proposed target” เท่านั้น ไม่อ้างว่า route นั้นมีอยู่จริง. ใน phase A ห้ามแทนด้วยหน้ารวมเพื่อทำเหมือนพร้อม
+- **C — รอข้อมูล/เนื้อหา:** มี route/ชื่อหัวข้อบางส่วนแต่ไม่มี product evidence หรือเอกสารพร้อมพอ. ห้ามใช้แม่แบบ/ข้อมูลสินค้าเก่า/วัสดุจาน/ชื่อซีรีส์มาเติมสเปก
+- กฎ B/C: ไม่มี href บน DOM ที่ disabled, ไม่มี click handler/prefetch/Tab stop, ใช้ aria-disabled ตาม renderer เดิม; สถานะตาม canonical destination เดียวกันทุกบริบท
+- ข้อความ “สอบถาม…” ทุกจุดใช้ `/contact-us` เดิม; “ขอใบเสนอราคา” ใช้ `/service/quotation`; ไม่สร้าง endpoint/form ใหม่
+- การเปิด B/C ภายหลังต้องตรวจข้อมูล+ปลายทาง+membership+interaction และมี Spec/Plan/อนุมัติของงานนั้น ไม่เปิดอัตโนมัติเพียงเพราะสินค้าปรากฏหรือมีภาพใหม่
+
+### Selected Tree / Exact Destination Matrix
+
+| เมนูหลัก             | คอลัมน์ 1                                                                                                                                                                                                                          | คอลัมน์ 2                                                                                                                     | คอลัมน์ 3                                                                                                   |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ผลิตภัณฑ์ทั้งหมด     | สินค้า: เครื่องชั่ง [A]; อินดิเคเตอร์แท่นชั่ง [A]; โครงสร้างแท่นชั่ง [A]; ระบบ POS [A]; อุปกรณ์เสริม [A]                                                                                                                           | การใช้งาน: คำนวณราคาและงานขาย [A]; งานผลิตและอุตสาหกรรม [A]; ครัวและกาแฟ [A]; ซอฟต์แวร์ POS [A]                               | ช่วยเหลือ: คู่มือและสเปก [C]; ลงทะเบียนรับประกัน [A]; เงื่อนไขรับประกัน [A]; ติดต่อฝ่ายบริการ [A]           |
+| เครื่องชั่ง          | สินค้า: เครื่องชั่งทั้งหมด [A]; คำนวณราคา [A]; งานผลิตและอุตสาหกรรม [A]; ครัวและกาแฟ [A]; Checkweigher [B]; ชุดเครื่องชั่ง [B]; งานวิเคราะห์ [C]                                                                                   | คุณสมบัติ: กันน้ำ [A]; นับจำนวนชิ้น [B]; เตือนน้ำหนักขาด–เกิน [B]; ตั้งโต๊ะ [A]; ตั้งพื้น [A]                                 | ช่วยเหลือ: คู่มือและสเปก [C]; ขอใบเสนอราคา [A]; ลงทะเบียนรับประกัน [A]; ติดต่อฝ่ายบริการ [A]                |
+| อินดิเคเตอร์แท่นชั่ง | สินค้า: อินดิเคเตอร์ทั้งหมด [A]; หน้าจอ LCD [A]; หน้าจอ LED [A]; กันน้ำ [C]                                                                                                                                                        | การใช้งาน: เชื่อมต่อ RS232 [B]; ดูโครงสร้างแท่นชั่ง [A]; ดูจอแสดงผลและไฟเตือน [A]                                             | ช่วยเหลือ: คู่มือเลือกหัวอ่านและแท่นชั่ง [A]; ขอใบเสนอราคา [A]; เงื่อนไขรับประกัน [A]; ติดต่อฝ่ายบริการ [A] |
+| โครงสร้างแท่นชั่ง    | สินค้า: แท่นชั่งทั้งหมด [A]; ซีรีส์ TCS / TSS [B]; ซีรีส์ FCS / FSS [B]; ซีรีส์ BCS / BSS [B]; ซีรีส์ DCS / DSS [B]; ซีรีส์อื่น ๆ [B]; เหล็กคาร์บอน [C]; สแตนเลส SUS304 [C]; สแตนเลส SUS201 [C]; พลาสติก ABS [C]                   | เลือกอุปกรณ์ร่วม: ดูอินดิเคเตอร์แท่นชั่ง [A]; ดูชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย [A]; ดูโหลดเซลล์และอะไหล่อิเล็กทรอนิกส์ [B] | ช่วยเหลือ: คู่มือเลือกหัวอ่านและแท่นชั่ง [A]; สอบถามรุ่นและสเปก [A]; ขอใบเสนอราคา [A]; ติดต่อฝ่ายบริการ [A] |
+| ระบบ POS             | สินค้า: ระบบ POS ทั้งหมด [A]; เครื่อง POS [B]; เวิร์กสเตชัน [B]; ชุด POS [B]; ซอฟต์แวร์และสิทธิ์ใช้งาน [A]                                                                                                                         | ระบบและอุปกรณ์: Android [A]; Windows [A]; เครื่องพิมพ์ [B]; สแกนเนอร์และลิ้นชัก [B]                                           | ช่วยเหลือ: คู่มือและสเปก [C]; ขอใบเสนอราคา [A]; ลงทะเบียนรับประกัน [A]; ติดต่อฝ่ายบริการ [A]                |
+| อุปกรณ์เสริม         | สินค้า: อุปกรณ์เสริมทั้งหมด [A]; จอแสดงผลและไฟเตือน [A]; สายและหัวต่อ [A]; เครื่องพิมพ์ [B]; สแกนเนอร์ ลิ้นชัก และอุปกรณ์ POS [B]; ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย [A]; โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์ [B]; ลูกตุ้มน้ำหนัก [B] | วัสดุสิ้นเปลือง: กระดาษและฉลากทั้งหมด [A]; กระดาษความร้อน [B]; ฉลากและสติ๊กเกอร์ [B]                                          | ช่วยเหลือ: สอบถามอุปกรณ์ที่ใช้ร่วมกัน [A]; ขอใบเสนอราคา [A]; เงื่อนไขรับประกัน [A]; ติดต่อฝ่ายบริการ [A]    |
+| จัดสเปค              | เลือกอุปกรณ์: เลือกอินดิเคเตอร์ [A]; เลือกแท่นชั่ง [A]; ดูอุปกรณ์เสริม [A]; เปิดหน้าจัดสเปค [A]                                                                                                                                    | ตรวจสอบก่อนเลือก: คู่มือเลือกหัวอ่านและแท่นชั่ง [A]; สอบถามความเข้ากันได้ [A]                                                 | ช่วยเหลือ: ขอใบเสนอราคา [A]; เงื่อนไขรับประกัน [A]; ติดต่อฝ่ายบริการ [A]                                    |
+| บริการ               | บริการ: บริการหลังการขาย [A]; ลงทะเบียนรับประกัน [A]; ขอใบเสนอราคา [A]                                                                                                                                                             | ซอฟต์แวร์และเอกสาร: ซอฟต์แวร์และสิทธิ์ใช้งาน [A]; ดาวน์โหลดซอฟต์แวร์ [C]; คู่มือและสเปก [C]                                   | ช่วยเหลือ: เงื่อนไขรับประกัน [A]; นโยบายยกเลิกและคืนสินค้า [A]; เกี่ยวกับ SUNFORD [A]; ติดต่อเรา [A]        |
+
+| ตำแหน่ง | เมนู                                | สถานะ | ปลายทาง                                        |
+| ------- | ----------------------------------- | ----- | ---------------------------------------------- |
+| 1.1.1   | เครื่องชั่ง                         | A     | `/products/category/scales`                    |
+| 1.1.2   | อินดิเคเตอร์แท่นชั่ง                | A     | `/products/category/indicators`                |
+| 1.1.3   | โครงสร้างแท่นชั่ง                   | A     | `/products/category/platforms`                 |
+| 1.1.4   | ระบบ POS                            | A     | `/products/category/pos`                       |
+| 1.1.5   | อุปกรณ์เสริม                        | A     | `/products/category/accessories`               |
+| 1.2.1   | คำนวณราคาและงานขาย                  | A     | `/products/category/scales/price`              |
+| 1.2.2   | งานผลิตและอุตสาหกรรม                | A     | `/products/category/scales/industrial`         |
+| 1.2.3   | ครัวและกาแฟ                         | A     | `/products/category/scales/kitchen`            |
+| 1.2.4   | ซอฟต์แวร์ POS                       | A     | `/applications-and-softwares`                  |
+| 1.3.1   | คู่มือและสเปก                       | C     | `/technical-specification`                     |
+| 1.3.2   | ลงทะเบียนรับประกัน                  | A     | `/warranty/register`                           |
+| 1.3.3   | เงื่อนไขรับประกัน                   | A     | `/warranty/policy`                             |
+| 1.3.4   | ติดต่อฝ่ายบริการ                    | A     | `/contact-us`                                  |
+| 2.1.1   | เครื่องชั่งทั้งหมด                  | A     | `/products/category/scales`                    |
+| 2.1.2   | คำนวณราคา                           | A     | `/products/category/scales/price`              |
+| 2.1.3   | งานผลิตและอุตสาหกรรม                | A     | `/products/category/scales/industrial`         |
+| 2.1.4   | ครัวและกาแฟ                         | A     | `/products/category/scales/kitchen`            |
+| 2.1.5   | Checkweigher                        | B     | `/products/category/scales/checkweigher`       |
+| 2.1.6   | ชุดเครื่องชั่ง                      | B     | `/products/category/scales/sets`               |
+| 2.1.7   | งานวิเคราะห์                        | C     | `/products/category/scales/analytical`         |
+| 2.2.1   | กันน้ำ                              | A     | `/products/category/scales/water-dust`         |
+| 2.2.2   | นับจำนวนชิ้น                        | B     | `/products/category/scales/counting`           |
+| 2.2.3   | เตือนน้ำหนักขาด–เกิน                | B     | `/products/category/scales/checkweighing`      |
+| 2.2.4   | ตั้งโต๊ะ                            | A     | `/products/category/scales/benchtop`           |
+| 2.2.5   | ตั้งพื้น                            | A     | `/products/category/scales/floor`              |
+| 2.3.1   | คู่มือและสเปก                       | C     | `/technical-specification`                     |
+| 2.3.2   | ขอใบเสนอราคา                        | A     | `/service/quotation`                           |
+| 2.3.3   | ลงทะเบียนรับประกัน                  | A     | `/warranty/register`                           |
+| 2.3.4   | ติดต่อฝ่ายบริการ                    | A     | `/contact-us`                                  |
+| 3.1.1   | อินดิเคเตอร์ทั้งหมด                 | A     | `/products/category/indicators`                |
+| 3.1.2   | หน้าจอ LCD                          | A     | `/products/category/indicators/lcd`            |
+| 3.1.3   | หน้าจอ LED                          | A     | `/products/category/indicators/led`            |
+| 3.1.4   | กันน้ำ                              | C     | `/products/category/indicators/waterproof`     |
+| 3.2.1   | เชื่อมต่อ RS232                     | B     | `/products/category/indicators/rs232`          |
+| 3.2.2   | ดูโครงสร้างแท่นชั่ง                 | A     | `/products/category/platforms`                 |
+| 3.2.3   | ดูจอแสดงผลและไฟเตือน                | A     | `/products/category/accessories/displays`      |
+| 3.3.1   | คู่มือเลือกหัวอ่านและแท่นชั่ง       | A     | `/guides/indicator-platform-compatibility`     |
+| 3.3.2   | ขอใบเสนอราคา                        | A     | `/service/quotation`                           |
+| 3.3.3   | เงื่อนไขรับประกัน                   | A     | `/warranty/policy`                             |
+| 3.3.4   | ติดต่อฝ่ายบริการ                    | A     | `/contact-us`                                  |
+| 4.1.1   | แท่นชั่งทั้งหมด                     | A     | `/products/category/platforms`                 |
+| 4.1.2   | ซีรีส์ TCS / TSS                    | B     | `/products/category/platforms/tcs-tss`         |
+| 4.1.3   | ซีรีส์ FCS / FSS                    | B     | `/products/category/platforms/fcs-fss`         |
+| 4.1.4   | ซีรีส์ BCS / BSS                    | B     | `/products/category/platforms/bcs-bss`         |
+| 4.1.5   | ซีรีส์ DCS / DSS                    | B     | `/products/category/platforms/dcs-dss`         |
+| 4.1.6   | ซีรีส์อื่น ๆ                        | B     | `/products/category/platforms/other-series`    |
+| 4.1.7   | เหล็กคาร์บอน                        | C     | `/products/category/platforms/carbon-steel`    |
+| 4.1.8   | สแตนเลส SUS304                      | C     | `/products/category/platforms/sus304`          |
+| 4.1.9   | สแตนเลส SUS201                      | C     | `/products/category/platforms/sus201`          |
+| 4.1.10  | พลาสติก ABS                         | C     | `/products/category/platforms/abs`             |
+| 4.2.1   | ดูอินดิเคเตอร์แท่นชั่ง              | A     | `/products/category/indicators`                |
+| 4.2.2   | ดูชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย | A     | `/products/category/accessories/mechanical`    |
+| 4.2.3   | ดูโหลดเซลล์และอะไหล่อิเล็กทรอนิกส์  | B     | `/products/category/accessories/electronics`   |
+| 4.3.1   | คู่มือเลือกหัวอ่านและแท่นชั่ง       | A     | `/guides/indicator-platform-compatibility`     |
+| 4.3.2   | สอบถามรุ่นและสเปก                   | A     | `/contact-us`                                  |
+| 4.3.3   | ขอใบเสนอราคา                        | A     | `/service/quotation`                           |
+| 4.3.4   | ติดต่อฝ่ายบริการ                    | A     | `/contact-us`                                  |
+| 5.1.1   | ระบบ POS ทั้งหมด                    | A     | `/products/category/pos`                       |
+| 5.1.2   | เครื่อง POS                         | B     | `/products/category/pos/terminals`             |
+| 5.1.3   | เวิร์กสเตชัน                        | B     | `/products/category/pos/workstations`          |
+| 5.1.4   | ชุด POS                             | B     | `/products/category/pos/sets`                  |
+| 5.1.5   | ซอฟต์แวร์และสิทธิ์ใช้งาน            | A     | `/applications-and-softwares`                  |
+| 5.2.1   | Android                             | A     | `/products/category/pos/android`               |
+| 5.2.2   | Windows                             | A     | `/products/category/pos/windows`               |
+| 5.2.3   | เครื่องพิมพ์                        | B     | `/products/category/accessories/printers`      |
+| 5.2.4   | สแกนเนอร์และลิ้นชัก                 | B     | `/products/category/accessories/pos`           |
+| 5.3.1   | คู่มือและสเปก                       | C     | `/technical-specification`                     |
+| 5.3.2   | ขอใบเสนอราคา                        | A     | `/service/quotation`                           |
+| 5.3.3   | ลงทะเบียนรับประกัน                  | A     | `/warranty/register`                           |
+| 5.3.4   | ติดต่อฝ่ายบริการ                    | A     | `/contact-us`                                  |
+| 6.1.1   | อุปกรณ์เสริมทั้งหมด                 | A     | `/products/category/accessories`               |
+| 6.1.2   | จอแสดงผลและไฟเตือน                  | A     | `/products/category/accessories/displays`      |
+| 6.1.3   | สายและหัวต่อ                        | A     | `/products/category/accessories/cables`        |
+| 6.1.4   | เครื่องพิมพ์                        | B     | `/products/category/accessories/printers`      |
+| 6.1.5   | สแกนเนอร์ ลิ้นชัก และอุปกรณ์ POS    | B     | `/products/category/accessories/pos`           |
+| 6.1.6   | ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย   | A     | `/products/category/accessories/mechanical`    |
+| 6.1.7   | โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์    | B     | `/products/category/accessories/electronics`   |
+| 6.1.8   | ลูกตุ้มน้ำหนัก                      | B     | `/products/category/accessories/weights`       |
+| 6.2.1   | กระดาษและฉลากทั้งหมด                | A     | `/products/category/accessories/consumables`   |
+| 6.2.2   | กระดาษความร้อน                      | B     | `/products/category/accessories/thermal-paper` |
+| 6.2.3   | ฉลากและสติ๊กเกอร์                   | B     | `/products/category/accessories/labels`        |
+| 6.3.1   | สอบถามอุปกรณ์ที่ใช้ร่วมกัน          | A     | `/contact-us`                                  |
+| 6.3.2   | ขอใบเสนอราคา                        | A     | `/service/quotation`                           |
+| 6.3.3   | เงื่อนไขรับประกัน                   | A     | `/warranty/policy`                             |
+| 6.3.4   | ติดต่อฝ่ายบริการ                    | A     | `/contact-us`                                  |
+| 7.1.1   | เลือกอินดิเคเตอร์                   | A     | `/products/category/indicators`                |
+| 7.1.2   | เลือกแท่นชั่ง                       | A     | `/products/category/platforms`                 |
+| 7.1.3   | ดูอุปกรณ์เสริม                      | A     | `/products/category/accessories`               |
+| 7.1.4   | เปิดหน้าจัดสเปค                     | A     | `/guides/indicator-platform-compatibility`     |
+| 7.2.1   | คู่มือเลือกหัวอ่านและแท่นชั่ง       | A     | `/guides/indicator-platform-compatibility`     |
+| 7.2.2   | สอบถามความเข้ากันได้                | A     | `/contact-us`                                  |
+| 7.3.1   | ขอใบเสนอราคา                        | A     | `/service/quotation`                           |
+| 7.3.2   | เงื่อนไขรับประกัน                   | A     | `/warranty/policy`                             |
+| 7.3.3   | ติดต่อฝ่ายบริการ                    | A     | `/contact-us`                                  |
+| 8.1.1   | บริการหลังการขาย                    | A     | `/service`                                     |
+| 8.1.2   | ลงทะเบียนรับประกัน                  | A     | `/warranty/register`                           |
+| 8.1.3   | ขอใบเสนอราคา                        | A     | `/service/quotation`                           |
+| 8.2.1   | ซอฟต์แวร์และสิทธิ์ใช้งาน            | A     | `/applications-and-softwares`                  |
+| 8.2.2   | ดาวน์โหลดซอฟต์แวร์                  | C     | `/software/download`                           |
+| 8.2.3   | คู่มือและสเปก                       | C     | `/technical-specification`                     |
+| 8.3.1   | เงื่อนไขรับประกัน                   | A     | `/warranty/policy`                             |
+| 8.3.2   | นโยบายยกเลิกและคืนสินค้า            | A     | `/cancel-and-return/policy`                    |
+| 8.3.3   | เกี่ยวกับ SUNFORD                   | A     | `/about-us`                                    |
+| 8.3.4   | ติดต่อเรา                           | A     | `/contact-us`                                  |
+
+### Deferred B Backlog / Missing Information
+
+- Deferred phase B/C Status: "Need Information — exact membership, product evidence or content readiness must be resolved in the separate delivery scope"
+- Scales: Checkweigher, sets, counting, checkweighing. ข้อมูลที่ตรวจได้คือ4/15/37/16 SKUตามลำดับ; ห้ามเหมารวมฟังก์ชันขาด–เกินว่าเป็นระบบอัตโนมัติ
+- Indicators: RS232 มี3 SKUตามสเปก; optional Bluetooth ไม่ใช่ built-in wireless. ต้องมีหมวดและปลายทางตรงนี้ก่อนเปิด
+- Platforms: proposed5series groupsครอบคลุม38 SKUแบบไม่ซ้ำ (7/8/7/6/10). ใช้ prefixชื่อจริงเท่านั้น ไม่แปลซีรีส์เป็นวัสดุ ขนาด พิกัดหรือ compatibility
+- POS: เครื่องPOS6/workstation8/sets15; ต้องตกลง membership ที่ชัดและไม่เหมารวม OS จากชื่อรุ่น. ตัวเลือก Android7/Windows1 ปัจจุบันรวมแพ็กเกจ/ซอฟต์แวร์ ไม่ใช่ฮาร์ดแวร์ล้วน
+- Accessories: printers9, POS peripheralsอย่างน้อย7ที่ระบุชัด, electronicsอย่างน้อย8, weights1, thermal-paper8, labels13. หมวด POS เดิม17รวมเครื่องพิมพ์และยัง disabled; ห้ามเปิดหน้ากลุ่มเดิมแทนการแยกสมาชิกที่เสนอ
+- B รวม19 proposed destinations/22ตำแหน่ง; การออกแบบ classifier/route implementation เต็มของ B ยังอยู่นอก phase A และต้องมี Spec/Plan แยก
+- C รวม8ปลายทาง/11ตำแหน่ง: analytical1, indicator-waterproof1, platform materials4, technical-specification และ software/download. ต้องมีข้อมูลรายSKU/เอกสารและ download targets ที่ตรวจได้ก่อนเปิด
+- สำหรับ phase A ไม่มีข้อมูลที่ขาด เพราะ B/C disabled; สำหรับ B/C ยังต้องตรวจและยืนยันข้อมูล/เกณฑ์ตามข้างต้น จึงไม่ถือว่า Ready to Code สำหรับ phase เหล่านั้น
+- Source395SKU ยังมีuncategorized19 (แพ็ก8/วัตถุดิบ8/สินค้าอื่น3); ไม่ใช้ Navbar task แอบเปลี่ยนการเผยแพร่หรือจับกลุ่มรายการเหล่านี้
+
+### Acceptance Criteria
+
+- [x] บันทึก exact tree8menus/3columnsพร้อม104ตำแหน่งและcanonical/proposed hrefครบ; แยก A/B/Cและนับปลายทางไม่ซ้ำได้
+- [x] บันทึกข้ออนุมัติโครงสร้างแยกจาก implementation approval และจัดทำ file manifest/verification/rollback ในplan
+- [ ] หลังอนุมัติ phase A: both renderersใช้ selected matrix ทุกlabel/order/column heading ตรงกัน; main8ยัง native links และ B/C disabled33positionsโดยค่าเริ่มต้น
+- [ ] A71positionsใช้ปลายทางจริงที่ตรง label; ก่อนเปิดต้องตรวจ runtime/browser ของ A28unique destinationsและmain links ไม่ใช้ HTTP200อย่างเดียวเป็นหลักฐานหน้ามีเนื้อหา
+- [ ] ไม่มี B/C ถูกเปิดจาก aliases/การซ้ำข้ามคอลัมน์; saved-disabled flagsไม่สูญหาย; disabledไม่มีhref/Tab stop/handler/prefetch
+- [ ] Responsive/hitbox/hover/touch/keyboard/Escape/native modified links/cache history/search/catalog comparison/shop iconผ่าน regression matrix
+- [ ] Node24typecheck/scopedlint/format/catalog tests/affectedbrowser tests/diffผ่านพร้อมหลักฐานจริงและขอบเขตที่ยังตรวจไม่ได้
+
+### Approval Record / Current State
+
+- User: “ใช้โครงสร้างนี้ครับ ช่วยอัปเดต Spec/Plan ให้ตรงกัน แยกเมนูที่เปิดใช้ได้กับเมนูที่ต้องเพิ่มหน้าหรือรอข้อมูล แล้วสรุปให้ดูก่อนเริ่มแก้โค้ดครับ”
+- อนุมัติการเลือกโครงสร้างและการแก้เอกสารเท่านั้น; ยังไม่อนุมัติเริ่ม implementation phase A/B/C. ไม่ตีความความเงียบเป็นการอนุมัติ
+- หัวข้อนี้แทน proposal tree และ exact labels/counts ของงาน Navbarเดิมสำหรับงานถัดไป; รักษาประวัติและ implementation verification เดิมไว้ ไม่แก้ผลตรวจ95รายการเก่าให้ดูเหมือนเป็นผล104รายการใหม่
+- เอกสาร/หลักฐาน review: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-selected-tree-20261116/`; app/data contracts ยังไม่เปลี่ยน
+
+## Task: Propose data-supported submenus for eight Navbar groups (2026-11-16)
+
+Status: "Complete — proposal only"
+Approval: "Owner requested proposal and explicitly said not to change code"
+
+### Goal / Scope / Brand Alignment
+
+- เสนอเมนูย่อยของ Navbar ทั้ง 8 กลุ่มจากข้อมูลจริงปัจจุบัน คงกลุ่มหลัก/3 คอลัมน์และข้อตกลงแสดงรายการที่ยังไม่พร้อมแบบจาง/กดไม่ได้; ไม่แก้ application, Warehouse หรือ deploy
+- Reference: primary-navigation.ts, category/subcategory registries, current Warehouse data transforms, product facts และ storefront selection. ไม่มี UI change จึงยังไม่มี responsive implementation
+
+### Input / Output / Current State
+
+- บริษัท 1 snapshot วันที่ 16 พฤศจิกายน 2026 เวลา 21:12 น. ประเทศไทย: REPEATABLE READ READ ONLY/ROLLBACK; RPC 516 และ public predicate 395 SKU; current transforms ได้ scales193/indicators13/platforms38/pos36/accessories96/uncategorized19
+- แยกหมวดย่อยเดิมที่มีสมาชิกจากข้อเสนอที่ยังต้องเพิ่ม route/classification: นับชิ้น37, เตือนขาด–เกิน16, Checkweigher4, ชุดเครื่องชั่ง15, อินดิเคเตอร์ RS2323, ซีรีส์แท่นชั่ง38, เครื่อง POS6, workstation8, ชุด POS15, เครื่องพิมพ์9, กระดาษ8/ฉลาก13, ลูกตุ้ม1; จำนวนบางกลุ่มซ้อนกันได้
+- 19 SKU ที่ยังไม่เข้าห้าหมวดหลัก = แพ็ก8/วัตถุดิบ8/สินค้าอื่น3; ไม่จัดหรือเผยแพร่ใหม่โดยอนุมาน
+- วัสดุโครง/analytical/indicator-waterproof/iOS ยังข้อมูลไม่พอ. Existing getWeighingOptions พร้อม RPC component lines ได้ 0 คู่ที่ยืนยันการจับหัวอ่าน/แท่น; ไม่เสนอรับรองคู่จากชื่อรุ่น
+- รายงานข้อเสนอทั้ง 8 กลุ่มและ 3 คอลัมน์พร้อม readiness notes: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-submenu-proposal-20261116/proposal.md`; ไม่แก้ data contracts
+
+### Acceptance / Missing Information / Approval Record
+
+- [x] ตรวจข้อมูลบริษัท 1 สดและจำลอง current transforms/selection; ระบุจำนวนเป็น SKU และไม่อ้างว่าเป็นจำนวนรุ่นหรือการยืนยัน production rendering
+- [x] เสนอครบ 8 กลุ่ม; ระบุ existing destinations เทียบกับ data-supported new grouping และรายการที่ยังไม่พร้อม
+- [x] แยก Checkweigher จากฟังก์ชันเตือนขาด–เกิน, ระดับ IP จากข้อความกันน้ำ, วัสดุจานจากโครง และชื่อซีรีส์จากสเปก
+- ข้อมูลสำหรับ proposal ครบ; implementation ยังไม่ได้อนุมัติ. User: “ช่วยเสนอเมนูย่อยของแต่ละกลุ่ม Navbar โดยใช้ข้อมูลที่มีจริงตอนนี้ ... ยังไม่ต้องแก้โค้ด”
+
+## Task: Audit available product subgroups in Warehouse (2026-11-16)
+
+Status: "Complete — read-only analysis"
+Approval: "Owner requested inspection; no implementation approval requested or implied"
+
+### Goal / Scope / Reference
+
+- ตรวจว่าข้อมูลกลุ่มย่อย เช่น กันน้ำและงานวิเคราะห์ มีใน `master_item_group` หรือตารางที่เกี่ยวข้องหรือไม่ และแยกข้อมูลจริงออกจากแม่แบบ/ช่องว่าง
+- อ่านบริษัท 1 เท่านั้น; ไม่แก้ application, Warehouse, Navbar, shared UI หรือ deploy. UI/UX และ responsive ไม่เกี่ยวข้องเพราะไม่มีการเปลี่ยนหน้าจอ
+
+### Findings / Verification
+
+- Snapshot หลักวันที่ 16 พฤศจิกายน 2026 เวลา 15:48 น. ประเทศไทย ใช้ REPEATABLE READ READ ONLY และ ROLLBACK; ตรวจ schema และข้อมูลตารางประกอบเพิ่มเติมด้วย connection ที่บังคับ read-only
+- `master_item_group` มี 21 กลุ่ม ใช้งาน 17; เป็นโครงสร้างชั้นเดียว ไม่มี parent/subgroup field. `master_item_type` เป็นประเภทเชิงระบบ ไม่ใช่หมวดการใช้งานย่อย
+- `ai_attributes` มี 155 หัวข้อ แต่มี facts จริงเพียง 33 หัวข้อ. ใน RPC ที่ผ่าน public predicate 395 SKU มีสเปกคำนวณราคา 18, นับจำนวนชิ้น 37, เตือนน้ำหนักขาด–เกิน 16, ชนิดหน้าจอ 81, วัสดุจาน/แท่น 49, พิกัดสูงสุด 69 และค่าละเอียด 70 SKU; จำนวนครอบคลุมทุกกลุ่มสินค้าและซ้อนกันได้ ไม่ใช่จำนวนเครื่องชั่งเฉพาะหมวด
+- ข้อความจุดเด่น verified ระบุตัวเครื่องกันน้ำใน ACS-30-JC81 (`G106186`) และ ACS-30-JE81 (`G106414`); ข้อความของ WPK5000 ระบุช่องแบตเตอรี่ จึงไม่ใช้รับรองว่าทั้งเครื่องกันน้ำ. หัวข้อระดับ IP/ส่วนที่กันน้ำมีนิยามแต่ไม่มี facts
+- `ai_attribute_templates` มี 14 แม่แบบ รวมเครื่องชั่งคิดราคา/งานผลิต/งานวิเคราะห์/งานครัวและกาแฟ/บุคคล; แม่แบบระบุชัดว่าไม่ใช่การรับรองฟังก์ชันรายสินค้า. ยังไม่มีหลักฐานจัดสินค้ารายรุ่นเป็น analytical balance; ข้อความวิเคราะห์ใน facts ที่พบหมายถึงการวิเคราะห์ทางสถิติ
+- `ai_occupations` มี 15 กลุ่มการใช้งาน; `ai_product_occupations` ผูกสินค้าจริงเพียง 3 ความสัมพันธ์ สถานะ ready: ค้าส่งและตลาดสด 1 (suitable), ร้านกาแฟ 1 และเบเกอรี่ 1 (conditional). ห้องปฏิบัติการและ QC ยังไม่มีสินค้าผูกตรง; use-case ห้องแลปของสินค้าหนึ่งรายการไม่ใช่การยืนยัน analytical balance
+- `ecommerce.catalog_labels` และ `ecommerce.product_content` ไม่มีแถวบริษัท 1. วัสดุโครงสร้าง/รูปแบบติดตั้ง/ระบบปฏิบัติการมีหัวข้อแต่ยังไม่มี facts; ห้ามนำวัสดุจาน/แท่นไปยืนยันวัสดุโครงสร้าง
+
+### Acceptance / Current State / Approval Record
+
+- [x] ยืนยันโครงสร้างกลุ่มและแหล่งข้อมูลย่อยจากฐานจริง พร้อมแยก definitions, populated facts, templates และ product assignments
+- [x] ตรวจตัวอย่างกันน้ำ/งานวิเคราะห์และระบุช่องว่าง; ไม่อนุมานสเปกจากชื่อรุ่นหรือแม่แบบ
+- [x] เก็บรายงานและหลักฐานที่ `C:/Users/cityc/AppData/Local/Temp/sunford-group-audit-20261116/`; ไม่เปลี่ยน data contract
+- ข้อมูลสำหรับการตรวจครั้งนี้ครบ; การจัดเมนูหรือเพิ่มข้อมูลเป็นงานถัดไปที่ยังไม่ได้อนุมัติ. อนุมัติการอ่านจากคำขอ “ตรวจสอบให้หน่อยครับจาก master_item_group ... ข้อมูลย่อยพวกนี้มีในตารางไหม”
+
+## Task: Product image placeholder from owner reference (2026-11-16)
+
+Status: "Complete"
+Approval: "Approved — owner explicitly approved this Spec/Plan on 2026-11-16"
+
+### Goal
+
+ใช้ไอคอนเครื่องชั่งกับกล่องตามภาพที่ผู้ใช้แนบ แสดงแทนพื้นที่รูปสินค้าที่ว่างหรือโหลดรูปไม่ได้ทั่ว public site และกลับเป็นรูปสินค้าจริงเมื่อข้อมูล Warehouse รอบถัดไปส่งรูปมา
+
+### Scope In
+
+- สร้าง SVG คมชัดตามภาพอ้างอิงของผู้ใช้: เครื่องชั่งสีเทา กล่องเส้นประ เครื่องหมายบวกสีแดง พื้นหลังโปร่งใสตามคำสั่งล่าสุด พร้อมข้อความเดิม “ยังไม่มีข้อมูลสินค้าเครื่องชั่ง” สีเข้มในพื้นที่ที่มีขนาดพอ; thumbnail เล็กใช้ไอคอนและ accessible label
+- ใช้สำหรับรูปสินค้าใน directory, category/subcategory, catalog/cards, search/compare, detail/gallery, desktop carousel/mobile rail, builder, quotation UI และพื้นที่รูปสินค้าในหน้าแรก/solutions ที่ใช้ component เหล่านี้
+- สินค้าจริงที่ผ่านกฎเผยแพร่ยังคงชื่อ SKU ราคาและลิงก์เดิม แม้ไม่มีรูป; curated carousel ที่พบสินค้าจริงแล้วไม่ตัดออกเพียงเพราะไม่มีรูป โดยคง curated membership เดิม
+- ช่องรูปตัวแทนหมวดที่มีอยู่แต่ไม่มีสินค้าหรือรูป ใช้ไอคอนเดียวกันโดยไม่สร้างแถวสินค้า ชื่อ ราคา หรือลิงก์สมมติ
+- เปลี่ยนเฉพาะ fallback ของรูปสินค้า; ProductImage ใช้กับสื่ออื่นด้วย จึงต้องมีตัวเลือกแยกสำหรับสินค้าและรักษา fallback ทั่วไปของบทความ ซอฟต์แวร์ วิดีโอและสื่อ editorial
+- เมื่อ src/version ใหม่มาถึง component ต้องลองรูปใหม่ได้หลังจากเคยแสดง placeholder; กรณี error ไม่วนขอรูปซ้ำไม่สิ้นสุด
+
+### Scope Out
+
+- ไม่แก้ RPC/SQL/storage/ฐานข้อมูล/cache timing, ไม่เพิ่ม polling/realtime หรือ dependency, ไม่แก้กฎ eligibility/หมวด/ราคา/การออกเลขและ PDF ใบเสนอราคา
+- ไม่ดึงภาพสินค้าเก่ามาเติม Warehouse; ไม่เปลี่ยนรูป/วิดีโอ/Hero ที่มีจริงหรือการออกแบบ Navbar/Footer/history
+- ไม่เพิ่มสินค้าสมมติให้รายการว่าง และไม่เปิดเมนู disabled อัตโนมัติ; commit/push/deploy แยกจากงานนี้
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพแนบ `C:/Users/cityc/AppData/Local/Temp/codex-clipboard-c071e285-151c-40db-8c3a-f2108ce00008.png`; ตรวจ `src/styles/base.css` และ styles ของผู้ใช้ component แล้ว
+- Design: รักษารูปทรง/องค์ประกอบของภาพแนบ ใช้ font เดิมของเว็บกับข้อความแยกจาก SVG; คงขนาดช่องรูป อัตราส่วน layout และ interaction ปัจจุบัน ไม่ยืดหรือ crop ไอคอน
+- Responsive: ตรวจ 320/390/834/1440px รวม thumbnail 36/48/65/76px, การ์ดและ gallery; ไม่ล้นและไม่เพิ่มความสูงผิดบริบท
+
+### Input / Output
+
+- Input: ภาพอ้างอิงและคำขอผู้ใช้ในแชตนี้; `src/components/ui/product-image.tsx`, product consumers และ Warehouse source ปัจจุบัน
+- Output หลังอนุมัติ: SVG และ fallback ร่วมสำหรับรูปสินค้า ครอบคลุม component ที่มีเงื่อนไขข้ามรูปในปัจจุบัน พร้อมหลักฐาน browser และผลตรวจ
+
+### Acceptance Criteria
+
+- [x] ไม่มี src/ไม่มีรูปจาก Warehouse/รูปโหลดล้มเหลว แสดงไอคอนตามภาพใน product surfaces ที่ render จริง โดยไม่ใช้รูปสินค้าอื่นแทน; ข้อจำกัด selected builder thumbnail ระบุด้านล่าง
+- [x] ภาพจริงที่โหลดได้ยังแสดงตามเดิม; สินค้าจริงที่ไม่มีรูปยังค้นหา เปิด detail และเลือกใช้งานได้ตามสิทธิ์เดิม
+- [x] component ที่ยัง mount อยู่เปลี่ยนจากไม่มีรูปหรือ src ที่เคยเสียเป็น src/version ใหม่ได้เมื่อได้รับ props ใหม่; ทดสอบทั้งสำเร็จและล้มเหลวโดยไม่เขียนฐานข้อมูล
+- [x] รักษา RPC, versioned image URL, cache configuration และกฎเผยแพร่; ไม่อ้างว่าหน้าเปิดค้างรับภาพใหม่ทันที
+- [x] ภาพคมชัดและไม่ล้นที่ viewport/thumbnail matrix; มี accessible label และสื่ออื่นยังใช้ empty state เดิม
+- [x] TypeScript, scoped ESLint/Prettier/diff check, catalog tests และ browser regressions ที่เกี่ยวข้องผ่าน พร้อมบันทึกข้อจำกัด
+
+### Missing Information
+
+- ไม่มีสำหรับแผน fallback นี้; ใช้กลไก refresh เดิมตามคำขอ ไม่ตีความเป็นคำขอเพิ่ม live polling
+
+### Approval Record
+
+- ผู้ใช้: “อนุมัติครับ ดำเนินการตาม Spec/Plan ได้เลย ใช้ไอคอนตามภาพแทนรูปสินค้าที่ว่างทุกส่วน และให้รูปจริงขึ้นแทนเมื่อได้รับข้อมูลจาก RPC รอบถัดไปครับ” — อนุมัติ implementation ตาม manifest และ fallback/refresh contract ของงานนี้
+- ผู้ใช้เพิ่มเติมระหว่าง implementation: “ใช้พื้นหลังสีขาวนะครับสำหรับภาพ” — อนุมัติให้พื้นหลัง SVG/ช่อง fallback เป็นสีขาวและใช้ข้อความสีเข้มเพื่ออ่านได้ชัด โดยรักษาขอบเขตไฟล์เดิม
+- ผู้ใช้แก้ไขล่าสุด: “ตัดพื้นหลังออกด้วย” — แทนที่คำขอพื้นหลังขาวด้วย SVG โปร่งใสและ wrapper ที่ไม่วาดแผ่นพื้นหลัง เพื่อใช้พื้นเดิมของแต่ละพื้นที่; คงข้อความสีเข้มและไอคอนเดิม
+
+### Current State / Data Contract
+
+- ตรวจ source แล้ว: RPC `ecommerce.get_website_products` ผ่าน server-only pg reader; `getProducts` ใช้ `cacheLife({ stale: 30, revalidate: 60, expire: 300 })`. หลังครบ revalidate ต้องมี request จึงเริ่ม background refresh; ไม่มี timer ผลักข้อมูลเข้าหน้าที่เปิดค้าง
+- รูป Warehouse ใช้ `/api/store/products/image?master_item_id=…&v=updated_at`; local cached bytes ใช้ได้เมื่อ version ตรงกันเท่านั้น. การเปลี่ยนรูปต้นทางต้องปรากฏใน metadata/version ที่ RPC คืนมา
+- ProductImage ปัจจุบันมี generic icon และเก็บ failedSources ตาม URL; carousel ใช้ raw img และมี filter ตัดสินค้าที่ไม่มีรูป, builder/quotation มี branch ข้าม component จึงแก้ shared fallback อย่างเดียวไม่ครบ
+- Implemented: `public/images/product-image-placeholder.svg` โปร่งใสจริง (canvas alpha ที่มุมภาพ=0), scoped CSS และ `ProductImage.placeholder="product"`; ค่าเริ่มต้น `"media"` คง generic fallback. สินค้าไม่มีรูปไม่ถูกเขียนให้มีภาพจริงสมมติใน data layer
+- Desktop carousel ใช้ asset เดียวกันกับ error tracking ตาม source URL และ transitions; directory คง curated actual products ที่ไม่มีรูป. Builder/quotation เลิกข้าม fallback สำหรับสินค้าจริงที่ไม่มีรูป; ช่องที่ยังไม่ได้เลือกสินค้าไม่สร้างสินค้าสมมติ
+- Verification: catalogue185/185; combined Chrome37/37 (0 flaky/skipped); Warehouse missing-photo/accessory regressions5/5; เพิ่ม settled-image checks บน7routes×2viewports ผ่าน2/2 ไม่มี complete/broken main images หลัง hydration. รูปจริง/version recovery ตรวจด้วย browser props fixture ของ component จริงและ adapter สำหรับ next/image ร่วมกับ live optimizer/error checks บน public routes
+- ข้อจำกัด: ข้อมูลจัดชุดปัจจุบันไม่มีคู่สินค้าให้เลือกจริง จึงไม่ render selected-item thumbnail; ตรวจ branch wiring และ shared thumbnail geometry36/48/65/76px แต่ยังไม่ทดสอบเลือกคู่จริง. Hero ribbon/model files ไม่มีทุก renderer ใน homepage ปัจจุบัน; ไม่เพิ่มทางเข้าเพื่อให้ทดสอบได้
+- ไม่รัน production build, full-repository E2E, full warehouse-storefront-selection browser suite, Safari หรือ physical devices; ไม่แก้ Warehouse/SQL/storage/cache timing, ไม่เพิ่ม polling, ไม่ commit/push/deploy. Protected source12files ตรงกับ baseline hashes; diff Navbar/history/Footer และ concurrent workspace edits ยังคงอยู่
+- หลักฐานและ source receipt: `C:/Users/cityc/AppData/Local/Temp/sunford-product-placeholder-20261116/`
+
+## Task: Remaining UI and history restoration across the public site (2026-11-16)
+
+Status: "Ready to Code"
+Approval: "Approved — owner explicitly approved all remaining work including actual-origin history restoration and sitewide Footer amendment"
+
+### Implementation approval (2026-11-16)
+
+- Owner: “อนุมัติครับ ดำเนินการตามแผนงานที่เหลือได้เลย ทั้งการย้อนกลับคืนตำแหน่งและสถานะเดิม รวมถึง Footer ใหม่ทุกหน้า โดยเอาบล็อกแผนที่ออกและคงโทนสี ฟอนต์ และแบรนด์เดิมครับ”
+- Covers the existing explicit owner/file manifest and four-column Footer amendment. R1 shared restoration/Footer changes are reversible by reverting only these task hunks; preserve the earlier Navbar diff. Reload, external/modified links, business data and issuance remain unchanged.
+- Implementation uses document-lifetime memory only (no browser storage), a namespaced browser-history entry identity for domain state, scroll and origin. Reload naturally discards snapshots. Restore only on history traversal.
+
+### Goal
+
+ทำให้การย้อนกลับคืนต้นทางจริง ตำแหน่ง และสถานะเดิมของทุก public-site flow ที่มีอยู่ รวมตรวจเก็บ Footer ปุ่ม ตัวอักษร และระยะห่างเฉพาะรายการค้าง โดยคงดีไซน์ที่อนุมัติและรักษางาน Navbar ที่เสร็จแล้ว
+
+### Scope In
+
+- ทุก public App Router template (15 templates; routes หมวด/หมวดย่อย/สินค้า/เนื้อหาและ aliases) รวม home, finder/listing, detail, search/compare, content/software, service/contact, builder/quotation draft, map/media/dialog และ Footer สองชุด
+- ปุ่มกลับหน้ารายละเอียดคืนต้นทางจริงพร้อม state; Browser Back/Forward ในแท็บเดิมคืน window/nested scroll, query/filter, expanded result count, selected/tab/rail/gallery และ form/draft selection ตาม flow matrix ใน plan.md
+- รองรับการกลับหลังมากกว่า 3 distinct routes ซึ่ง DOM/state เดิมอาจไม่อยู่ใน Activity cache และ URL เดิมที่เป็นคนละ history entry
+- แก้เฉพาะ confirmed H1/H2 และ defect ที่พิสูจน์ใน flow/owner/selector ตาม manifest; ส่วนที่ผ่านอยู่แล้วเพิ่ม coverage โดยไม่ refactor โดยไม่มีเหตุ
+- ผู้ใช้อนุมัติการลงมือทำตามแผนที่เหลือและ Footer amendment แล้ว (2026-11-16)
+
+### Scope Out
+
+- Reload คง behavior เดิม; ไม่เพิ่มจำสถานะข้ามแท็บ/ข้าม session, ไม่เปลี่ยน Router หรือสร้าง history entry ทุกคลิก
+- เมนู Navbar/tooltip/drag/busy/decorative animation phase ไม่เปิดคืนตาม snapshot; ไม่เปลี่ยนผล clear/reset เมื่อผู้ใช้กด X/reset อย่างตั้งใจ
+- ไม่ออกแบบใหม่ ไม่เปลี่ยน brand tokens/font family/menu/copy ธุรกิจ Footer ใช้หมวดเดียวกันตาม amendment ล่าสุดโดยคง brand palette และไม่ refactor animation/Hero/media features
+- ไม่เปลี่ยน Warehouse/API, product/software content, pricing/compatibility, quotation registry/issuance/PDF, CMS/admin, dependency, commit/push/deploy
+- `warehouse-products-test`, tools/quotation-seller, scripts/admin/diagnostics และเว็บไซต์ภายนอกอยู่นอก UI ของ public site; ตรวจเฉพาะลิงก์ภายนอกที่เว็บไซต์แสดง ไม่ควบคุม state ฝั่งปลายทาง
+- ไม่จัดระเบียบ/ย้าย/ลบประวัติ .md และไม่เขียนทับ diff งาน Navbar เดิม
+
+### Footer scope amendment (2026-11-16)
+
+- ผู้ใช้ขอให้นำ coverage/map block ในภาพออกทั้งหมด และจัด Footer ใหม่; ยืนยันให้จัดหมวดเดียวกันทุกหน้า รวมหน้าสินค้าแล้ว
+- เสนอ 4 กลุ่ม: SUNFORD/ติดต่อ, ผลิตภัณฑ์, โซลูชันและซอฟต์แวร์, บริการและช่วยเหลือ พร้อม legal/privacy/cookie/warranty/return/copyright และกลับด้านบนในแถบล่าง โดยใช้ข้อมูลและ routes ที่มีจริง
+- Desktop4columns/tablet2columns/mobile brand-contact ตามด้วย native accordions; คง logo/font/brand palette ตาม context เดิม และไม่เปลี่ยน Hero/Navbar หรือธุรกิจอื่น
+- นำ coverage markup และปุ่มเปิดแผนที่ออกจาก Footer; ไม่ลบ map assets/data/modules เพียงเพราะเอาทางเข้าออก. Coverage ของ map จาก Footer ในแผนเดิมจึงเป็น removed-entrypoint ไม่บังคับสร้างทางเข้าใหม่
+- ใช้ W3C/WCAG เรื่อง semantic regions, labeled nav, focus, contrast, target size และreflow เป็นเกณฑ์; รูปแบบ/จำนวนคอลัมน์เป็น design proposal ไม่ใช่ข้อกำหนดสากลตายตัวหรือคำรับรอง compliance ทั้งเว็บไซต์
+- เพิ่ม proposed files: src/features/site/data/footer-navigation.ts (ใหม่) และ src/features/home/components/home-page.module.css (เฉพาะ Footer overrides) รวมกับ Footer owners/tests เดิมตาม plan.md
+- ต้องพิสูจน์ว่า footer groups/targets ตรงกันทุกบริบท, ไม่มี coverage/map trigger/ช่องว่างค้าง และ keyboard/mobile/reflow ผ่าน; ห้ามเพิ่ม newsletter/payment badges/นโยบายหรือข้อมูลบริษัทที่แต่งขึ้น
+- User answer “จัดหมวดเดียวกันทุกหน้า รวมหน้าสินค้า (แนะนำ)” เป็นการเลือกแนวทาง; Footer layout และ implementation amendment ได้รับอนุมัติในข้อความล่าสุดแล้ว
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพ Week 2 วันที่ 7, สัญญาดีไซน์ที่ยังมีผลใน spec.md/MEMORY.md, src/styles/base.css และ component/style ปัจจุบันที่อนุมัติ
+- Design: คง logo/red/ink/paper/font/layout/responsive/interaction เดิม; เปลี่ยนเฉพาะ defect มีภาพ/DOM/geometry รองรับ; ไม่มีเหตุให้ normalize ตัวอักษร/ปุ่มทั้งเว็บ
+- Responsive: 390×844, 834×1112, 1440×900; เพิ่ม 320/768, 833/834, 1023/1024 และ 844×390 touch landscape
+
+### Input / Output
+
+- Input: repo/runtime ปัจจุบัน, browser audit read-only, existing tests, existing Navbar 97/97 baseline และคำตอบผู้ใช้สองข้อเรื่อง return origin/ขอบเขตแท็บเดิม
+- Output หลังอนุมัติ: origin/history snapshot แบบจำกัดขอบเขต, state owners ที่มี defect ได้รับการแก้, Footer/shared UI เก็บเฉพาะจุดค้าง, before/after evidence และ flow coverage report ที่แยก pass/fail/not-rendered/blocked
+- Confirmed H1: Finder → detail → ปุ่มลูกศรกลับพาไป /products ไม่คืน popup ต้นทาง. Confirmed H2: ผ่าน 5 distinct routes แล้วย้อนกลับ popup scroll หาย 650px → 0px แม้ query ยังอยู่
+- Passing examples ที่ต้องรักษา: finder Browser Back แบบสั้น, Explore query/scroll, software hash/internal navigation, quotation draft/service tab แบบสั้น และ Footer layout/accordion ที่ตรวจเบื้องต้น
+
+### Acceptance Criteria
+
+- [ ] มี per-flow before/after state tuple และหลักฐานตาม matrix ใน plan.md ครบทุก interactive family ที่แสดงจริง ไม่ใช่เพียงตรวจ URL หรือ surface สี
+- [ ] Browser Back/Forward และปุ่มกลับจริงคืน entry/origin ถูกต้อง รวม popup/rail, การผ่านเกิน cache, repeated same URL และ A→B→C; direct entry/modified/external link มี fallback ที่ไม่พาย้อนออกนอกเว็บ
+- [ ] ค่าที่ผู้ใช้เลือกและ draft ตรงเดิม, scroll same viewport คลาดไม่เกิน 4px หลัง layout พร้อม; viewport/data เปลี่ยนคืน logical anchor ที่ยังมีอยู่
+- [ ] ไม่แย่ง scroll/focus ของผู้ใช้ ไม่เหลือ inert/scroll lock ไม่เปิดเมนู/tooltip/autoplay เอง ไม่สร้าง POST/quotation issue ซ้ำ และไม่เปลี่ยน Reload behavior
+- [ ] Footer ทั้งสองชุดและปุ่ม/ตัวอักษร/ระยะที่แสดงจริงตรวจครบ viewport/input matrix; ไม่ล้น/ทับ/ตัด control และมี focus ที่มองเห็นได้ตามดีไซน์เดิม
+- [ ] ใหม่และ existing affected tests ผ่าน รวม Navbar 97 regression, TypeScript, ESLint/Prettier/diff checks; ระบุข้อจำกัดข้อมูล/อุปกรณ์/production ตามจริง
+- [ ] เปลี่ยนเฉพาะ approved manifest/subset ที่มีหลักฐาน; งาน Navbar เดิม/data contracts ไม่ถูกเขียนทับ และไม่มี implementation ก่อนอนุมัติแผนนี้
+
+### Missing Information
+
+- ไม่มีสำหรับการอนุมัติ scope นี้: ผู้ใช้ยืนยันต้นทางจริงและ Back/Forward ในแท็บเดิมแล้ว
+- Coverage gap ปัจจุบัน: software index มี 0 cards จึงยังทำ index-card → detail ไม่ได้; ไม่เพิ่มข้อมูลเก่าเพื่อทดสอบ ให้ตรวจ empty/hash/internal navigation และรายงาน not-rendered จนมีข้อมูลจริง
+- หากพบว่าต้องเปลี่ยนดีไซน์/ข้อความธุรกิจหรือไฟล์นอก manifest ให้ขอข้อมูลและอนุมัติส่วนนั้นเพิ่มก่อน
+
+### Approval Record
+
+- ผู้ใช้ขอ “ตรวจสอบและกำหนดขอบเขตงานที่เหลือให้ครบ ... แล้วสรุปแผนให้ผมดูก่อนแก้” เมื่อ 2026-11-16 — อนุมัติให้ audit/ทำแผนเท่านั้น
+- คำตอบผู้ใช้: “กลับต้นทางจริงพร้อมสถานะเดิม (แนะนำ)” และ “Back/Forward ในแท็บเดิม; Reload คงพฤติกรรมเดิม (แนะนำ)” เป็น requirement clarification ไม่ใช่ implementation approval
+- อนุมัติ implementation จริงตามข้อความล่าสุดของผู้ใช้ในหัวข้อ Implementation approval ด้านบน ครอบคลุมงาน history และ Footer amendment ทั้งหมด
+
+### Current State / Data Contracts
+
+- Implementation ดำเนินการแล้ว กำลังตรวจ integration/regression ตาม matrix; ยังไม่ commit/push/deploy
+- UI-only contract: history.state.sunfordReturn เป็น metadata ที่เพิ่มโดยรักษา Next metadata; id แยกแต่ละ entry, parent ระบุต้นทาง/จำนวนขั้นย้อน, native hash entries clone state และรักษาต้นทางจริง. ใช้ memory ภายใน document เท่านั้น; Reload/new tab เริ่มตามพฤติกรรมเดิม. ไม่แก้ route/API/database/business contracts
+
 ## Task: Merge ai_attributes labels and units into the Excel workbook (2026-11-14)
 
 Status: "Complete"
@@ -8709,8 +9123,8 @@ Approval: "Approved — owner explicitly approved the scrollbar CSS/test scope"
 
 ## Task: Navbar first — inspect and fix existing UI (2026-11-16)
 
-Status: "Ready to Code"
-Approval: "Pending — Navbar-first priority confirmed; revised implementation scope awaits approval"
+Status: "Complete"
+Approval: "Approved — อนุมัติครับ แก้ Navbar ทุกหน้า ตามขอบเขตนี้ได้เลย คงหน้าตาเดิมไว้และยังไม่แตะ Footer ครับ"
 
 ### Goal
 
@@ -8721,7 +9135,7 @@ Approval: "Pending — Navbar-first priority confirmed; revised implementation s
 - Navbar หน้าแรก (Header) และหน้าภายใน (PrimaryNavigation) เฉพาะโลโก้ เมนู/submenu ปุ่ม ระยะ ตัวอักษร focus และ responsive ภายในรายการไฟล์/selector ใน plan.md
 - ตรวจ baseline ก่อนแก้ แก้เฉพาะปัญหาที่พิสูจน์ได้โดยคง contract เดิม ไม่ถือว่าทุกไฟล์ต้องเปลี่ยน
 - ตรวจเมาส์ touch คีย์บอร์ด scroll การนำทาง/history และ resize พร้อมภาพก่อน/หลัง
-- ขั้นปัจจุบันส่งมอบขอบเขตและเกณฑ์ตรวจ ยังไม่แก้แอปพลิเคชันหรือสร้าง test
+- อนุมัติให้แก้ Navbar แล้ว: ปิด desktop/mobile menu state ใน layout-effect cleanup เมื่อ route ถูกซ่อน พร้อม regression ประวัติการนำทาง; คง CSS และ Footer เดิม
 
 ### Scope Out / Next Phase
 
@@ -8738,19 +9152,19 @@ Approval: "Pending — Navbar-first priority confirmed; revised implementation s
 
 ### Input / Output
 
-- Input: source/ชุดทดสอบปัจจุบันและภาพบรีฟ; เก็บ runtime baseline หลังอนุมัติแผนนี้
-- Output: รายการปัญหา Navbar, การแก้แบบจำกัดขอบเขต (เมื่อพบปัญหา), regression และภาพก่อน/หลังพร้อมข้อจำกัด
+- Input: source/ชุดทดสอบ ภาพบรีฟ และ runtime baseline ที่ตรวจจริงก่อนแก้
+- Output: ปิด transient menu state เมื่อ route ถูกซ่อนใน Header/PrimaryNavigation, regression cached navigation และหลักฐานก่อน/หลัง
 
 ### Acceptance Criteria
 
 - [x] แยกไฟล์ Navbar และขอบเขตตรวจออกจาก Footer ใน plan.md
-- [ ] มี baseline และหลักฐานก่อนแก้สำหรับ Navbar ทั้งสองชุดบนหน้าตัวแทนที่กำหนด
-- [ ] โลโก้/เมนู/ปุ่มอยู่ใน viewport ไม่ clip/ทับกัน กดและเลื่อนถึงปลายเมนูได้บนชุดขนาดที่กำหนด
-- [ ] hover/click/touch/keyboard เปิด สลับ ปิด และนำทางได้ตาม contract เดิม; focus มองเห็นได้และคืนจุดที่เหมาะสมเมื่อปิด
-- [ ] เปลี่ยนหน้า หน้าเดิม Back/Forward scroll และ resize ไม่ทิ้งเมนู backdrop inert หรือ scroll lock ค้าง
-- [ ] ปุ่มค้นหา/เปรียบเทียบใน Navbar ทำงานตามที่มีอยู่เดิม; ไม่เปลี่ยนฟังก์ชัน overlay ภายใน
-- [ ] ตรวจภาพก่อน/หลังสถานะเดียวกัน พร้อม typecheck/lint/format และ regression ที่เกี่ยวข้อง; แยกผลล้มเหลวเดิมและสิ่งที่ตรวจไม่ได้
-- [ ] สรุปผล Navbar ก่อนเริ่ม Footer และไม่เปลี่ยนไฟล์/selector นอกแผน
+- [x] มี baseline และหลักฐานก่อนแก้สำหรับ Navbar ทั้งสองชุดบนหน้าตัวแทนที่กำหนด
+- [x] โลโก้/เมนู/ปุ่มอยู่ใน viewport ไม่ clip/ทับกัน กดและเลื่อนถึงปลายเมนูได้บนชุดขนาดที่กำหนด
+- [x] hover/click/touch/keyboard เปิด สลับ ปิด และนำทางได้ตาม contract เดิม; focus มองเห็นได้และคืนจุดที่เหมาะสมเมื่อปิด
+- [x] เปลี่ยนหน้า หน้าเดิม Back/Forward scroll และ resize ไม่ทิ้งเมนู backdrop inert หรือ scroll lock ค้าง
+- [x] ปุ่มค้นหา/เปรียบเทียบใน Navbar ทำงานตามที่มีอยู่เดิม; ไม่เปลี่ยนฟังก์ชัน overlay ภายใน
+- [x] ตรวจภาพก่อน/หลังสถานะเดียวกัน พร้อม typecheck/lint/format และ regression ที่เกี่ยวข้อง; แยกผลล้มเหลวเดิมและสิ่งที่ตรวจไม่ได้
+- [x] สรุปผล Navbar ก่อนเริ่ม Footer และไม่เปลี่ยนไฟล์/selector นอกแผน
 
 ### Missing Information
 
@@ -8759,8 +9173,240 @@ Approval: "Pending — Navbar-first priority confirmed; revised implementation s
 ### Approval Record
 
 - ผู้ใช้ขอให้กำหนดขอบเขตงานวันที่ 7 แล้วกำหนดลำดับว่า Navbar ก่อน เมื่อเสร็จจึงทำ Footer
-- คำขอล่าสุดรวมการจัดทำขอบเขตแก้ไขและตรวจสอบ; ยังไม่มีการอนุมัติ Spec/Plan ฉบับ Navbar-only ที่จัดทำครั้งนี้
+- ผู้ใช้อนุมัติเมื่อ 2026-11-16: “อนุมัติครับ แก้ Navbar ทุกหน้า ตามขอบเขตนี้ได้เลย คงหน้าตาเดิมไว้และยังไม่แตะ Footer ครับ” ครอบคลุม Header/PrimaryNavigation และ regression ตามขอบเขตเดิม
+
+### Verification / Current State
+
+- Navbar ทั้งสองชุดรีเซ็ต desktop/mobile open state ใน layout-effect cleanup เมื่อ route ถูกซ่อน; กลับด้วย Back/Forward แล้วไม่คืนเมนูเปิด แต่ยังใช้ hover/click/touch/keyboard เดิม
+- Props, routes, menu destinations และ data contracts ไม่เปลี่ยน; ไม่แก้ CSS/Footer และไม่มี deployment
+- Chrome regression รอบสุดท้าย 97/97, targeted cached-menu 9/9, static checks ผ่าน; geometry ก่อน/หลัง 15 กรณี/130 controls ไม่เปลี่ยน (0px delta)
+- ประวัติผลตรวจและข้อจำกัดอยู่ใน plan.md หัวข้อเดียวกัน รวม baseline development hydration warnings ที่ยังอยู่นอก scope นี้
 
 ## Task: Assess master_data for the specification builder (2026-11-13)
 
 Status: "Complete". Approval: owner requested a read-only feasibility assessment. Verified current company 1 RPC has 516 eligible products, 87 with specification arrays and three with component arrays (four component lines). Existing builder reads the supported-indicator and supported-platform fact titles or explicit head component links. Live attribute definitions for those relationships, load-cell model/count, structure material and ports exist, but the currently eligible verified RPC facts contain no supported-head/platform values and the existing builder derives zero head/platform pairs. Existing components are on SKU 11, G106155 and G106193 and yield no indicator inclusion. Use verified facts to drive capacity/readability/material/dimension/connection filters where present. Confirmed pairs require populated verified relationship data or explicit component membership. No application or Warehouse data changed.
+
+## Task: Propose Navbar grouping from all Warehouse item groups (2026-11-16)
+
+Status: "Need Information"
+Approval: "Read-only audit/proposal authorized; implementation pending"
+
+### Goal / Scope
+
+- ผู้ใช้ขอให้ตรวจ master_item_group ทั้งหมดและเสนอ Navbar สำหรับ .co ให้ดูก่อน โดยยังไม่แก้โค้ด รอบนี้อ่านข้อมูลและส่งข้อเสนอเท่านั้น
+- ไม่เปลี่ยน application/test/config/routes, Warehouse, การเผยแพร่สินค้า หรืองาน Navbar/history/Footer เดิม
+
+### UI/UX Brand Alignment / Input / Output
+
+- Reference: navigation.ts, primary-navigation.ts และห้าหมวดสินค้าเดิมใน mock-categories.ts; เป็นข้อเสนอจัดข้อมูล ยังไม่เปลี่ยนดีไซน์
+- Input: schema จริง, master_item_group/master_item/master_item_type ของบริษัท 1 และ product RPC อ่านวันที่ 16 พฤศจิกายน 2026 เวลา 13:37 น.; ใช้ isPublicWarehouseItem ปัจจุบันตรวจ feed
+- Output: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-groups-20261116/navbar-proposal.md` พร้อมตารางครบ 21 กลุ่มและ inventory.json
+- เสนอเมนูหลัก ผลิตภัณฑ์ / โซลูชันและซอฟต์แวร์ / จัดสเปค / บริการ / เกี่ยวกับเรา / ติดต่อเรา; ใต้ผลิตภัณฑ์คงห้าหมวดเดิมและทางลัดชุดพร้อมใช้งาน
+- Responsive: ยังไม่ implement; เมื่อเลือกแนวทางแล้วต้องวาง Spec/Plan และตรวจ mobile/tablet/desktop ก่อนส่งมอบ UI
+
+### Acceptance Criteria / Verification / Current State
+
+- [x] ตรวจครบทุกกลุ่ม: 21 กลุ่ม ใช้งาน 17, inactive/deleted 4; บริษัท 1 เป็นบริษัทเดียวที่พบในตาราง
+- [x] ตรวจรายการจริง: 732 รายการทั้งหมด, active/nondeleted 519, RPC 516 และผ่าน public predicate 395; ผลรวมรายกลุ่มตรงกัน ไม่มี active item ไร้กลุ่ม
+- [x] เสนอการแยก COMPONENT ตาม SKU เป็น Indicator/Platform/อะไหล่; OTHER มี Checkweigher; PACKAGED_PRODUCT มีทั้งชุดเครื่องชั่งและ POS; ไม่ย้ายข้อมูล Warehouse
+- [x] แก้ข้อเสนอเบื้องต้นตามหลักฐาน: ห้ามตัด is_service_item=true ทั้งหมด เพราะ SCALE 86, POS_SYSTEM 7 และ SOFTWARE 10 รายการมี flag นี้; item_usage_family=PRODUCT ก็ครอบคลุมค่าบริการ/ขนส่ง/ส่วนลดด้วย
+- [x] แยกจำนวนผ่าน feed จากจำนวนหมวดที่เสนอ; RAW_MATERIAL ยังผ่าน feed 8 รายการ เสนอทบทวนก่อนเปลี่ยนเผยแพร่ และคงข้อห้ามโฆษณาบริการ Calibration
+- อ่านด้วย REPEATABLE READ READ ONLY/default_transaction_read_only และจบ ROLLBACK; ไม่มี database mutation หรือ framework feedback candidate จากงานนี้
+
+### Missing Information / Approval Record
+
+- งานตรวจและข้อเสนอเสร็จแล้ว; implementation ยังต้องให้เจ้าของเลือกเมนูหลัก/ชื่อกลุ่ม และยืนยัน SKU กำกวมใน OTHER/ชุดสินค้า รวมการเผยแพร่วัตถุดิบ 8 รายการ จากนั้นจัดทำขอบเขตไฟล์และรับอนุมัติก่อนเขียนโค้ด
+- การอนุมัติจริง: “ช่วยดู master_item_group ทั้งหมดที่มี แล้วเสนอการจัดกลุ่ม Navbar ให้เหมาะกับเว็บ .co ของผมหน่อยครับ สรุปให้ดูก่อน ยังไม่ต้องแก้โค้ด” อนุมัติเฉพาะ audit/proposal นี้
+
+### Owner clarification: preserve existing main Navbar (2026-11-16)
+
+- ผู้ใช้ยืนยัน “อยากได้กลุ่ม nav แบบเดิม ... จัดระเบียบเมนูย่อย” จึงยกเลิกข้อเสนอ 6 เมนูหลักก่อนหน้า คงทั้ง 8 เมนูเดิม: ผลิตภัณฑ์ทั้งหมด, เครื่องชั่ง, อินดิเคเตอร์แท่นชั่ง, โครงสร้างแท่นชั่ง, ระบบ POS, อุปกรณ์เสริม, จัดสเปค, บริการ; ยังเป็น proposal เท่านั้น
+- ตรวจ feed เวลา 13:47 ผ่าน data transforms ปัจจุบันได้ 395 รายการ: scales193/indicators13/platforms38/pos36/accessories96/uncategorized19. ไม่ใช่ browser rendering และไม่ยืนยัน deployment
+- Gap: เพิ่มทางลัดชุดพร้อมใช้; แยกเครื่องพิมพ์/ลูกตุ้มน้ำหนัก/โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์จากหมวดกว้าง; ให้ SOFTWARE เข้าถึงจาก POS โดยคงซอฟต์แวร์ในบริการ
+- Empty current memberships: scale-analytical0, indicator-waterproof0, pos-ios0 และ platform-material ทั้งสี่หมวด0 แม้มี platform38. ตรวจข้อมูลก่อน ซ่อนทางเข้าเมนูว่างได้ตามแผนที่อนุมัติภายหลัง ไม่อนุมานว่าไม่มีสินค้าหรือลบ routes/data
+- เสนอแยกเมนูย่อยเครื่องชั่งตามการใช้งานกับรูปแบบ/คุณสมบัติ และทบทวนคำรับรอง “กันน้ำและกันฝุ่น 100%” ให้ตรงหลักฐาน ข้อเสนอฉบับปรับปรุงอยู่รายงานเดิมและ submenu-coverage.json
+- Current state: อ่านข้อมูลและปรับเอกสารเท่านั้น การเปลี่ยน shared Navbar/หมวดย่อย/routes/publish filters ยังไม่มี implementation approval
+
+## Task: Eight-menu Navbar with three columns and destination audit (2026-11-16)
+
+Status: "Complete — Navbar-disabled phase only"
+Approval: "Approved — owner authorized Navbar-only implementation with all eight menus, three columns and dimmed non-interactive unavailable entries"
+
+### Goal
+
+จัดเมนูย่อยของเมนูหลักเดิมทั้ง 8 ให้เป็น 3 คอลัมน์ตามแผนผังล่าสุด ใช้ชื่อสั้น เข้าถึงสินค้า/การใช้งาน/ความช่วยเหลือได้ตรงความต้องการ และตรวจว่าทุกลิงก์มีหน้าที่มีข้อมูลตรงชื่อ ไม่พิจารณาเพียง HTTP 200
+
+หัวข้อนี้เป็นข้อตกลง Navbar ล่าสุด แทนข้อเสนอ 6 เมนูหลักและข้อเสนอให้ผลิตภัณฑ์ทั้งหมด/จัดสเปคไม่มี dropdown ก่อนหน้า ไม่ยกเลิกงาน Footer/history ที่อนุมัติแยกไว้
+
+### Scope In
+
+- OwnerอนุมัติเฟสNavbar-disabledแล้ว: ทำเฉพาะA/CตามmanifestและอัปเดตSpec/Plan โดยไม่ทำB/สร้างหน้า/เติมข้อมูล; รักษางานFooter/historyและdiffที่มีอยู่ก่อน
+- คงชื่อ ลำดับ และ URL เมนูหลักเดิมทั้ง 8; ทั้ง Header หน้าแรกและ PrimaryNavigation หน้าภายในใช้รายการเดียวกัน desktop/mobile
+- หลังอนุมัติ implementation จัด 3 คอลัมน์ตามตารางนี้ โดยคอลัมน์แรกใช้ชื่อ สินค้า / เลือกอุปกรณ์ / บริการ ตามบริบท อีกสองคอลัมน์ใช้ การใช้งาน / ช่วยเหลือ
+- ตรวจทุกเมนูหลักและเมนูย่อยเป็นราย occurrence (เมนูหลัก × คอลัมน์ × label × href) แม้หลายรายการใช้ URL เดียวกัน รวมปลายทางหลัง redirect, anchors, เนื้อหา, membership, software download และลิงก์ภายนอก
+- รอบimplementationแรกทำNavbarพร้อมสถานะจาง/กดไม่ได้สำหรับรายการไม่พร้อมเท่านั้น; การเพิ่ม6หน้าหมวดหรือเติมข้อมูล/เนื้อหาเลื่อนไปเฟสถัดไปที่ต้องอนุมัติแยก ไม่แอบใช้หน้ารวมแทนหน้าที่ชื่อสื่อความหมายเฉพาะ
+
+### Selected menu contract
+
+ลำดับรายการในแต่ละช่องเป็นลำดับแสดงผล ใช้ชื่อในตารางเป็นข้อความเมนู ไม่เพิ่ม ดูทั้งหมด / ตามการใช้งาน หรือคำซ้ำกับเมนูหลัก
+
+| เมนูหลัก             | สินค้า / เลือกอุปกรณ์ / บริการ                                                                                                                                    | การใช้งาน                                                          | ช่วยเหลือ                                                              |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| ผลิตภัณฑ์ทั้งหมด     | เครื่องชั่ง; อินดิเคเตอร์; แท่นชั่ง; POS; อุปกรณ์เสริม                                                                                                            | ร้านค้าและตลาด; ครัวและกาแฟ; โรงงาน; ห้องแล็บ                      | คู่มือและสเปก; ลงทะเบียนรับประกัน; เงื่อนไขรับประกัน; ติดต่อฝ่ายบริการ |
+| เครื่องชั่ง          | คำนวณราคา; อุตสาหกรรม; งานวิเคราะห์; ครัวและกาแฟ; กันน้ำ; ตรวจน้ำหนักอัตโนมัติ; ชุดพร้อมใช้                                                                       | เชื่อม POS; พิมพ์ฉลาก; งานเปียกชื้น                                | คู่มือและสเปก; ลงทะเบียนรับประกัน; เงื่อนไขรับประกัน; ติดต่อฝ่ายบริการ |
+| อินดิเคเตอร์แท่นชั่ง | LCD; LED; กันน้ำ                                                                                                                                                  | ตรวจน้ำหนักขาด–เกิน; ส่งข้อมูล RS232; ส่งข้อมูลไร้สาย; ต่อจอภายนอก | คู่มือและสเปก; ลงทะเบียนรับประกัน; เงื่อนไขรับประกัน; ติดต่อฝ่ายบริการ |
+| โครงสร้างแท่นชั่ง    | เหล็กคาร์บอน; สแตนเลส SUS304; สแตนเลส SUS201; พลาสติก ABS                                                                                                         | งานโรงงาน; ตรวจน้ำหนักขาด–เกิน; งานเปียกชื้น                       | คู่มือและสเปก; ลงทะเบียนรับประกัน; เงื่อนไขรับประกัน; ติดต่อฝ่ายบริการ |
+| ระบบ POS             | Android; Windows; ชุดพร้อมใช้; ซอฟต์แวร์                                                                                                                          | เชื่อมเครื่องชั่ง; พิมพ์ฉลากและบาร์โค้ด; พิมพ์ฉลากจาก POS          | คู่มือและสเปก; ลงทะเบียนรับประกัน; เงื่อนไขรับประกัน; ติดต่อฝ่ายบริการ |
+| อุปกรณ์เสริม         | จอและไฟเตือน; สายและหัวต่อ; เครื่องพิมพ์; สแกนเนอร์และลิ้นชัก; ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย; โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์; กระดาษและฉลาก; ลูกตุ้มน้ำหนัก | ต่อจอภายนอก; ส่งข้อมูล RS232; เชื่อม POS; พิมพ์ฉลาก                | คู่มือและสเปก; ลงทะเบียนรับประกัน; เงื่อนไขรับประกัน; ติดต่อฝ่ายบริการ |
+| จัดสเปค              | อินดิเคเตอร์; แท่นชั่ง; เปิดหน้าจัดสเปค                                                                                                                           | งานโรงงาน; ตรวจน้ำหนักขาด–เกิน; งานเปียกชื้น                       | คู่มือและสเปก; เงื่อนไขรับประกัน; ติดต่อฝ่ายบริการ                     |
+| บริการ               | หลังการขาย; ลงทะเบียนรับประกัน; ขอใบเสนอราคา                                                                                                                      | โซลูชันธุรกิจ; ซอฟต์แวร์; ดาวน์โหลด                                | คู่มือและสเปก; เงื่อนไขรับประกัน; เกี่ยวกับเรา; ติดต่อเรา              |
+
+### UI/UX Brand Alignment
+
+- Reference: แผนผัง 8 เมนู × 3 คอลัมน์ที่ผู้ใช้เลือก, ภาพ flyout สองคอลัมน์การใช้งาน/ช่วยเหลือ, src/styles/base.css, Header และ PrimaryNavigation ปัจจุบัน
+- คง logo, brand palette/font, homepage black surface/interior palette, top-level spacing และลำดับเดิม; ปรับเฉพาะเนื้อหา/heading/3-column geometry ของ panel และทางเปิดเมนูจัดสเปค
+- Desktop วาง 3 คอลัมน์; mobile เรียง สินค้า/เลือกอุปกรณ์/บริการ → การใช้งาน → ช่วยเหลือ ภายใน disclosure เดิม ไม่บีบ 3 คอลัมน์ในมือถือ
+- Main links ที่กดตรงได้เดิมยังเข้าหน้าหลักได้พร้อมทางเปิด submenu แยกใน mobile/touch; จัดสเปคต้องเพิ่มทางเปิด panel โดยไม่ทำให้ URL หน้าจัดสเปคเข้าถึงไม่ได้ บริการคง trigger behavior เดิม ไม่เพิ่ม interaction ใหม่ที่ไม่จำเป็น
+- Responsive: 320×740, 390×844, 768×1024, 834×1112, 1024×768, 1440×900; ตรวจขอบ 833/834 และ 1023/1024 กับ touch landscape844×390 และ zoom200%
+
+### Input / Output and Data Contracts
+
+- Input: master_item_group/master_item/master_item_type บริษัท1 และ RPC/verified facts ของ Warehouse; เอกสาร site/content เดิมสำหรับปลายทางทั่วไป การอนุมัติโครงสร้างไม่ใช่การอนุมัติเติมข้อมูลสินค้า/เนื้อหาที่ขาด
+- NavigationItem ที่มี links + groups รองรับ 1 primary column + 2 secondary columns อยู่แล้ว ใช้ submenuLabel เป็นชื่อคอลัมน์แรก; ขยายชนิดของlinksทั้งสองจุดด้วยoptional disabled เพื่อส่งสถานะเดียวกันผ่านnormalizerและrenderers ไม่เพิ่มstate/store/persistence
+- สินค้า/รูป/สเปก/ราคาและสมาชิกหมวดใช้ Warehouse เท่านั้น; ไม่เปลี่ยน public-item predicate, จำนวน SKU ที่เผยแพร่, pricing, compatibility หรือ quotation issuance
+- แยกการจัดกลุ่มเพื่อการค้นหาจากการซ้ำ SKU: สินค้าหนึ่งตัวอยู่ในหลายคุณสมบัติได้ แต่ไม่สร้าง record หรือราคาซ้ำ และไม่บังคับย้าย group ใน Warehouse
+- ไม่กรอง is_service_item=true ทั้งหมด และไม่ใช้ item_usage_family=PRODUCT เป็นหลักฐานพร้อมเผยแพร่; ไม่เติมวัสดุ/IP/OS จากข้อมูลเก่า รุ่นใกล้เคียง หรือเดาจากชื่อ
+- Preserve canonical URLs, old subcategory pages และ context/return IDs; ตั้งโต๊ะ/ตั้งพื้น/มีเสายังอยู่ในหน้าสินค้าและ URL เดิม ไม่ต้องอยู่ใน Navbar
+- Output หลัง implementation ได้รับอนุมัติ: เมนูครบตามตาราง, readiness manifestและหลักฐาน ready/disabled ต่อรายการ; รายการพร้อมเป็นลิงก์จริง รายการไม่พร้อมเป็นข้อความจางที่มีdisabled semanticsและไม่มีhref/eventnavigation ไม่ใช้href="#"หรือredirectไปหน้ารวมผิดเรื่อง
+
+### Destination audit: current evidence
+
+ตรวจ local development server127.0.0.1:3001ด้วย HTTP GET/HTML และ source registry วันที่16พฤศจิกายน2026; 49 URL เดิม/ที่ต้องใช้ตอบ200 ไม่มีHTTP error แต่ยังไม่ใช่ browser click หรือ production verification การนับ productLinks รวม breadcrumb จึงไม่ใช้แทนจำนวนสินค้าหรือยืนยันว่าหน้าพร้อม
+
+| หมวดผลตรวจ                                    | รายการ / ปลายทางจริง                                                                                                                                                                                                                               | สิ่งที่พบ / สิ่งที่ยังขาด                                                                                                                                                                                   |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| มีหน้าและข้อมูลหลัก                           | /products, /products/category/scales, /products/category/indicators, /products/category/platforms, /products/category/pos, /products/category/accessories                                                                                          | มีหน้าหมวด; membership ตาม data audit395SKU ไม่แปลว่าทุก SKU มีสเปก/รูปครบ                                                                                                                                  |
+| มีหน้าสินค้าย่อย                              | scales/price, scales/industrial, scales/kitchen, scales/water-dust; indicators/lcd, indicators/led; pos/android, pos/windows; accessories/displays, accessories/cables, accessories/mechanical, accessories/consumables ภายใต้ /products/category/ | ตอบ200และ data audit มีสมาชิก; ต้อง clickจริงและตรวจว่าชื่อสั้นตรงผลรายการหลัง implement                                                                                                                    |
+| มีหน้าแต่รายการว่าง                           | /products/category/scales/analytical; /products/category/indicators/waterproof; /products/category/platforms/carbon-steel, /sus304, /sus201, /abs                                                                                                  | สองหมวดแรก0และวัสดุแท่นทั้ง4หมวด0ใน data audit แม้หมวดแท่นรวม38; ยังไม่รู้ว่าไม่มีสินค้าเหมาะสมหรือขาด verified facts; เก็บในโครงสร้างและซ่อนทางเข้าที่ยังไม่พร้อมตาม contractเดิม                          |
+| ยังไม่มีหน้าหมวดเฉพาะตามชื่อใหม่              | ตรวจน้ำหนักอัตโนมัติ; ชุดเครื่องชั่ง; ชุด POS; เครื่องพิมพ์; โหลดเซลล์/อะไหล่อิเล็กทรอนิกส์; ลูกตุ้มน้ำหนัก                                                                                                                                        | ไม่มี dedicated entry ใน current subcategory registries ทั้ง6รายการ ไม่ได้อ้างว่าURLสมมติเคยทดสอบ404; แผนเสนอเพิ่มหน้าผ่าน templateเดิมหลังอนุมัติ                                                          |
+| มีหน้าแต่ขอบเขตยังกว้างกว่าชื่อใหม่           | /products/category/accessories/pos สำหรับ สแกนเนอร์และลิ้นชัก                                                                                                                                                                                      | ปัจจุบันรวมเครื่องพิมพ์ด้วย ต้องแยกสมาชิกเมื่อมีหน้าพิมพ์เฉพาะ ไม่เพียงเปลี่ยนข้อความเมนู                                                                                                                   |
+| มีหน้าแต่เนื้อหาบทความว่าง                    | /solutions/checkweighing, /solutions/rs232, /solutions/wireless, /solutions/external-display, /solutions/wet-environments, /solutions/pos, /solutions/label-printing, /solutions/pos-label-printing                                                | ตอบ200แต่ articleTextว่างและไม่มีheadingบทความที่มีข้อความ; มีbreadcrumb/โครงหน้า/ลิงก์ต้นฉบับเท่านั้น; warehouse-content.ts ล้างเนื้อหาสินค้าเดิมตามนโยบาย จึงห้าม restore legacy content เพื่อแก้โดยพลการ |
+| มีหน้าแต่ข้อมูลช่วยเหลือไม่พร้อม              | /technical-specification                                                                                                                                                                                                                           | ตอบ200แต่ mainมีข้อความ75ตัวอักษร ไม่มีบทความ/ไฟล์คู่มือที่ยืนยัน และมีลิงก์บทความข้อความว่างในHTML ต้องมีแหล่งเนื้อหาที่อนุมัติก่อนถือว่า คู่มือและสเปก ผ่าน                                               |
+| มีรายการซอฟต์แวร์ แต่ยังยืนยันดาวน์โหลดไม่ได้ | /applications-and-softwares; /software/download                                                                                                                                                                                                    | มีรายการWarehouse6และลิงก์รายละเอียดสินค้า; HTMLหน้าดาวน์โหลดไม่พบ direct PDF/APK/ZIP/EXE/MSI link จึงยังไม่ผ่านการตรวจ ดาวน์โหลด ที่ใช้งานได้ ไม่อนุมานว่าลิงก์ข้อมูลสินค้าเป็นไฟล์ดาวน์โหลด               |
+| มีหน้าบริการ/บริษัท                           | /service; /service/quotation; /warranty/register; /warranty/policy; /about-us; /contact-us                                                                                                                                                         | ตอบ200และมีหัวข้อ/ข้อมูล; ลงทะเบียนมีเนื้อหาและทางออกแบบฟอร์มภายนอก การส่งฟอร์มจริง/ออกใบเสนอราคาอยู่นอก audit นี้                                                                                          |
+| มีหน้าจัดสเปค                                 | /guides/indicator-platform-compatibility                                                                                                                                                                                                           | ตอบ200และมีหน้าจัดสเปค; ไม่ถือว่ามีคู่ compatibilityครบ การตรวจเมนูต้องไม่เปลี่ยนกฎจับคู่หรือออกเอกสาร                                                                                                      |
+
+#### Destination mapping for selected labels
+
+- เมนูหลัก: ผลิตภัณฑ์ทั้งหมด→/products; ห้าหมวด→/products/category/{scales,indicators,platforms,pos,accessories}; จัดสเปค→/guides/indicator-platform-compatibility; บริการ→/service
+- คอลัมน์สินค้าผลิตภัณฑ์ทั้งหมดและเลือกอุปกรณ์ในจัดสเปค ใช้ canonicalหมวดด้านบน; เปิดหน้าจัดสเปค ใช้ URLguideเดิม
+- เครื่องชั่ง คำนวณราคา/อุตสาหกรรม/งานวิเคราะห์/ครัวและกาแฟ/กันน้ำ→scales/{price,industrial,analytical,kitchen,water-dust}; Indicator LCD/LED/กันน้ำ→indicators/{lcd,led,waterproof}; วัสดุแท่น→platforms/{carbon-steel,sus304,sus201,abs}; POS Android/Windows→pos/{android,windows} ภายใต้ /products/category/
+- อุปกรณ์ จอและไฟเตือน/สายและหัวต่อ/สแกนเนอร์และลิ้นชัก/ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย/กระดาษและฉลาก→accessories/{displays,cables,pos,mechanical,consumables} ตามลำดับ แต่ pos ต้องทำ membershipให้ตรงชื่อใหม่
+- ซอฟต์แวร์ในPOSและบริการ→/applications-and-softwares; ดาวน์โหลด→/software/download; ไม่ใช้ URLdownload แทนหน้าขายสิทธิ์ และต้องตรวจไฟล์จริงก่อนเปิดทางดาวน์โหลด
+- การใช้งาน ร้านค้าและตลาด→scales/price, ครัวและกาแฟ→scales/kitchen, โรงงาน/งานโรงงาน→scales/industrial, ห้องแล็บ→scales/analytical ภายใต้ /products/category/; ห้องแล็บมี readiness gapเดียวกับงานวิเคราะห์
+- เชื่อมPOS/เชื่อมเครื่องชั่ง→/solutions/pos; พิมพ์ฉลาก/พิมพ์ฉลากและบาร์โค้ด→/solutions/label-printing; พิมพ์ฉลากจากPOS→/solutions/pos-label-printing; งานเปียกชื้น→/solutions/wet-environments; ตรวจน้ำหนักขาด–เกิน→/solutions/checkweighing; ส่งข้อมูลRS232→/solutions/rs232; ส่งข้อมูลไร้สาย→/solutions/wireless; ต่อจอภายนอก→/solutions/external-display; โซลูชันธุรกิจ→/solutions
+- ช่วยเหลือ คู่มือและสเปก→/technical-specification; ลงทะเบียนรับประกัน→/warranty/register; เงื่อนไขรับประกัน→/warranty/policy; ติดต่อฝ่ายบริการ/ติดต่อเรา→/contact-us; หลังการขาย→/service; ขอใบเสนอราคา→/service/quotation; เกี่ยวกับเรา→/about-us
+- หกหน้าหมวดที่ยังไม่มี: proposed URLs ใน plan.md เป็นข้อเสนอสร้างใหม่ ไม่ใช่URLที่มีอยู่แล้ว ต้องอนุมัติ file/data scope ก่อนเปิดลิงก์
+
+### Scope Out
+
+- ไม่แตะ Footer/history restoration ที่กำลังทำอยู่, Hero/media/carousel, global layouts/base tokens, CMS/admin, dependency, database/RPC/SQL/storage, public visibility หรือข้อมูลรายการสินค้า
+- ไม่สร้างเนื้อหาโซลูชัน คู่มือ ไฟล์ซอฟต์แวร์ หรือบริการใหม่จากการเดา; ไม่โฆษณา Calibration; ไม่เปลี่ยน compatibility/ใบเสนอราคา/VAT/PDF/issuance
+- ไม่ลบหมวด/URLเดิมเพราะสมาชิกว่าง ไม่บังคับสร้างรายการในWarehouse และไม่ขยายแก้ทุกหน้าที่ auditพบปัญหาโดยอัตโนมัติ
+- ไม่commit/push/deploy และไม่ส่งฟอร์มจริงหรือทำธุรกรรมจากการตรวจเมนู
+
+### Acceptance Criteria
+
+- [x] เมนูหลัก8รายการชื่อ/ลำดับ/URLตรงเดิม ทั้งสองrenderersมี3คอลัมน์ตาม selected contract desktop และลำดับเดียวกันบนmobile; ชื่อสั้นไม่มีคำซ้ำที่ตัดไปแล้ว
+- [x] ทุก occurrence มีสถานะready/missing-page/empty-data/empty-content/wrong-target/blockedพร้อมหลักฐานและผลแสดงenabled/disabled; readyจึงมีhrefจริง ไม่ถือHTTP200ว่าreadyเสมอไป
+- [x] เฉพาะรายการreadyกดถึงหน้าที่ตรงlabel ไม่404/soft404/redirectวน/ผิดเรื่อง; productlistingมีสมาชิกตรงWarehouseและcontentอ่านได้; ดาวน์โหลดยังdisabledไม่ถือว่าพร้อม
+- [x] รายการไม่พร้อมยังแสดงครบตามตารางเป็นตัวหนังสือจางและกดไม่ได้ในทุกcontext/viewport ไม่ซ่อน ไม่ลบ ไม่พาไปหน้าโล่งหรือหน้ารวมแทน; pointer/touchไม่navigate/newtab และไม่มีkeyboardactivation/router/prefetchเพราะไม่มีhref/handler/Tabstop
+- [x] Disableditemsไม่มีhref/onclicknavigationและไม่อยู่ในTaborder แต่screenreaderยังอ่านชื่อและสถานะunavailableได้ ไม่ใช้aria-hidden; keyboardข้ามdisabledไปenabledแรกและEscapeคืนfocusผ่าน
+- [x] hover/click/touch/keyboard/Escape/outside-click/focus/resize/scroll lock ผ่าน; main linkกดตรงยังเข้าถึงได้; Back/Forwardไม่เปิดเมนูค้างและsurface/statechecksที่ตรวจซ้ำผ่าน
+- [x] ตรวจcontrolboundingboxes/overlap/overflowรอบbreakpoints พร้อมscreenshotsทุกเมนูสองcontext; zoom200%จำลองCSSviewport720×450/DSF2จาก1440×900 ไม่ใช่browserUIหรืออุปกรณ์จริง
+- [x] scopedstatic/unit/browsercasesผ่านหลังปรับfixtures/selectorsล้าสมัย รวมcatalogue/oldroutes/Navbarlifecycle; แยกrunlog/การตรวจซ้ำตามจริง ไม่อ้างfull165runครั้งเดียวผ่าน
+- [x] อัปเดตSpec/Planด้วยผลจริงแล้ว ไม่อ้างว่าทุกปลายทางพร้อมเนื้อหา
+
+### Missing Information
+
+- ไม่มีข้อมูลจำเป็นค้างสำหรับเฟสNavbar-disabled; ผู้ใช้อนุมัติcodeแล้ว และเฟสนี้implement/ตรวจสอบเสร็จแล้ว
+- เฟสเปิดใช้งานครบทุกลิงก์ยังNeed Information: membership/ข้อมูลverifiedของ6หน้าที่ขาดและหมวดว่าง รวมเนื้อหาโซลูชัน8หน้า คู่มือ/สเปก และแหล่งไฟล์ดาวน์โหลดที่เจ้าของอนุมัติ; ต้องมีSpec/Planและapprovalแยก ห้ามเติมจากlegacyที่นโยบายไม่อนุญาต
+
+### Approval Record / Current State
+
+- Owner: “ใช้โครงสร้างนี้ครับ ช่วยอัปเดต spec.md และ plan.md ระบุไฟล์ที่ต้องแก้กับวิธีตรวจสอบให้ผมดูก่อน ยังไม่ต้องแก้โค้ดครับ” — เลือกโครงสร้างล่าสุดและอนุมัติเฉพาะเอกสาร/แผน ไม่ใช่code
+- Ownerเพิ่มเติม: “เพิ่มการตรวจสอบเมนูด้วยนะครับว่าหากกดดไปแล้วส่วนไหนไม่มีหน้า page ที่สามารถกดเข้าไปดูข้อมูลได้บ้าง” — รวมdestination/content audit ในงานนี้
+- Completed this round: source/route inspection, local49URLHTTPaudit, semantic content checks11targets และเอกสาร; ยังไม่ได้แก้code/สร้างpage/แก้data/ทดสอบbrowserclickของเมนูใหม่ ไม่มีqualifyingNext.jsframeworkfeedbackจากauditนี้
+- Evidence: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-groups-20261116/destination-http-audit.json`, `destination-content-audit.json`, `submenu-coverage.json` (ไฟล์หลังเป็นsnapshotdataauditก่อนหน้า ไม่ใช่freshproductioncount)
+
+### Owner amendment: dim unavailable items instead of hiding (2026-11-16)
+
+- Implementation approval: “อนุมัติครับ เริ่มแก้ Navbar ตาม spec.md และ plan.md ได้เลย คงครบ 8 เมนู 3 คอลัมน์ เมนูที่ข้อมูลไม่พร้อมให้จางและกดไม่ได้ ยังไม่สร้างหน้าใหม่หรือเติมข้อมูล และตรวจสอบให้ครบก่อนสรุปผลครับ” — ครอบคลุมเฟสA/CเฉพาะNavbar-disabled ไม่ครอบคลุมB/content/deploy
+
+- Owner: “เมนูที่ยังไม่มีข้อมูลทำตัวหนังสือจางไว้ก่อนครับและกดเข้าไม่ได้ และสรุปแผนให้ก่อนเริ่ม” — เลือกพฤติกรรมdisabledและขอสรุปก่อนเริ่ม ไม่ใช่การอนุมัติให้เขียนโค้ดทันที
+- ข้อนี้แทนคำแนะนำซ่อนรายการไม่พร้อมในทุกproposal/auditก่อนหน้า รวมข้อความซ่อนในตารางhistoricalevidenceของงานนี้; คงรายการและลำดับครบ8×3ตามselectedtable
+- สถานะพร้อมเป็นลิงก์ตามเดิม; สถานะยังไม่มีหน้า/สินค้า0/บทความหรือคู่มือว่าง/ไฟล์ดาวน์โหลดไม่ยืนยัน/ปลายทางไม่ตรงชื่อ เป็นข้อความจางและdisabledทุกจุดที่อ้างถึงปลายทางนั้น ไม่ตัดสินจากlabelอย่างเดียว
+- Mainmenus8รายการคงenabledเมื่อมีหน้าหลักพร้อม เช่นโครงสร้างแท่นชั่งยังเปิดหน้ารวม38รายการได้ แม้submenuวัสดุทั้ง4ยังdisabled; จัดสเปคเปิดpanelและเข้าหน้าguideเดิมได้โดยไม่เปลี่ยนcompatibility
+- Disabledsemanticที่เสนอ: renderเป็นspan role=link aria-disabled=true โดยไม่มีhref, tabIndex, click/onNavigate handler หรือrouterprefetch; เก็บชื่อให้screenreaderอ่านได้ ไม่มีaria-hidden ไม่ใช้pointer-events:noneหรือpreventDefaultอย่างเดียวเพื่อจำลองdisabledanchorที่ยังมีhref
+- ใช้สีmutedของpaletteเดิมให้จางกว่าลิงก์enabledแต่ยังอ่านออก ตรวจhomeblack/interiorlightแยกกัน; ไม่ลดopacityทั้งcolumn/panel ไม่เปลี่ยนfont/spacing ไม่เพิ่มป้าย/tooltip/ข้อความเตือนในproductflowโดยไม่ได้ขอ
+- Availabilityใช้ผลตรวจที่ยืนยันก่อนimplementationในsharednavigationdata ไม่เพิ่มfetch/polling/databasewritesหรือระบบเช็กอัตโนมัติทุกครั้งที่เปิดmenu การเปิดdisableditemในอนาคตต้องมีหลักฐานpage/datareadyและทดสอบซ้ำ
+- รอบนี้แก้เฉพาะSpec/Plan; scopeimplementationปัจจุบันไม่สร้าง6หน้าหรือเติมcontent และไม่แก้classification/visibility/stock/ราคา
+
+### Final implementation / verification — Navbar-disabled phase
+
+- Implemented application6files: types.ts optionaldisabled, primary-navigation.ts shared8×3/95entry/readiness, Header/PrimaryNavigation span-disabledrenderingและguidepanel, CSS2filesเฉพาะnavselectors; navigation.tsเก็บsource23subcategoriesเดิมโดยไม่ต้องแก้ ไม่สร้างpageหรือเติมdata
+- Actualinventory: main8และsubmenu95รวม103จุด; submenu54ready/41disabled รวมmainเป็น62ready/41disabled. เก็บreadiness-manifest.jsonครบทุกoccurrence
+- GoldenlabelsจากselectedSpecตรง95/95; catalogue184/184; Node24.22.3TypeScriptและscopedESLintผ่าน
+- Browsernew23casesตรวจครบด้วยfullrun22passและtouchcaseล่าสุดที่เพิ่มเวลา/coverageผ่านการตรวจซ้ำ:95entries×4contextsรวม380occurrences, disabled4pointergesturesทุกentry, native-touch41×2, geometry8viewports×2renderers×8menus, keyboard/guideและzoomlayoutsimulationผ่าน
+- Regressiontargetedล่าสุด: Home/accessibility19/19, touch-hover2/2, surface/sitewide45/45, directcategory2/2, categoryURL/history/SSR1/1 และrelatedhistory/sharedUI4/4ผ่าน; ชุดbroad165เริ่มต้นถูกหยุดเมื่อhelperเดิมรอFooterลิงก์ที่พับอยู่ แล้วรันไฟล์/กรณีที่ได้รับผลต่อครบ ไม่อ้างว่าเป็นsingleclean165run
+- Initialfailuresมาจากobsolete labels/counts/modal/staticH1/hiddenfirstmatch/closeddisclosureและtestbudget; ปรับเฉพาะtestsตามconditionalmanifestโดยคงsemantic/geometry/focuschecksไว้ ไม่มีการแก้Footer/historyappโดยงานNavbar. ไฟล์ของงานอื่นเปลี่ยนพร้อมกันในsharedworkspaceจึงไม่อ้างwholeworkspaceunchanged
+- FinalNextfeedbackreportingpass: ไม่มีqualifyingframeworkcandidateจากงานนี้. ไม่buildเพราะไม่เปลี่ยนroutes/staticparams ไม่commit/push/deploy ไม่รันdbmigrationหรือissuance
+- Evidence/report: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-implementation-20261116/verification-report.md` พร้อมreadinessmanifest/logs/screenshots/baseline; localChrome/devserverเท่านั้น ไม่มีproduction/Safari/physical-deviceverification
+
+## Task: Compact Navbar submenu columns and shared shop icon (2026-11-16)
+
+Status: "Complete — local verification passed"
+Approval: "Approved requested follow-up scope — owner directly requests tighter submenus on every page and the homepage shop icon on interior pages"
+
+### Goal / Scope In
+
+- ทำคอลัมน์เมนูย่อยให้ชิดขึ้นทุกหน้า โดยเปลี่ยนจากfixed1120px/fractionaltracksเป็นความกว้างตามข้อความ: primary fit-contentสูงสุด360px อีก2คอลัมน์max-content ช่องว่าง32px; 32pxเป็นimplementationchoiceภายในคำขอ ไม่ใช่ตัวเลขที่ผู้ใช้ระบุ
+- คง8เมนู/3คอลัมน์/95submenus/41disabledเดิม, logoalignment, typography/brandpaletteและระยะระหว่างแถวเดิม; mobileยังเรียงแนวตั้งและเลื่อนเข้าถึงทุกลิงก์ได้
+- PrimaryNavigationใช้shopbagSVG/aria-label/Tooltip/hrefเดียวกับHeaderที่ถูกต้องแล้ว: https://sunfordshop.com/ แบบnativeanchorในtabเดิม รองรับmodifiedclickตามbrowser
+- แทนที่ปุ่มcomparisonในตำแหน่งขวาของinteriorNavbarด้วยshoplinkตามคำขอ; การเข้าcomparisonจากtoolbarของcatalogueยังทำงาน ไม่แก้store/modal/catalogueimplementation
+
+### Scope Out
+
+- พักงานcopy/ชื่อรุ่น/carouselไว้; ไม่สร้างหน้า/เติมข้อมูล/ปรับRPC/placeholder/stock/pricing/issuance ไม่แก้Footer/historyงานอื่น ไม่commit/push/deploy
+- ไม่รวมHeaderสองชุดเป็นcomponentใหม่ ไม่แก้Tooltipcomponentกลางหรือเพิ่มdependencies ไม่เปลี่ยนเมนูdisabledให้active
+
+### UI/UX Brand Alignment / Input / Output
+
+- Reference: Header shopanchor/SVGปัจจุบันและ8×3contractที่อนุมัติ, src/styles/base.css, header.cssและproducts-overview.module.css
+- Baseline1440: คอลัมน์indicatorhomeเริ่มx224/698.56/1024.28, interior224/661.17/954.58; all-productsช่องว่างtrack72pxพร้อมพื้นที่ว่างในtrackมาก ส่วนothers28/32pxแต่trackยืด จึงแค่ลดgapไม่พอ
+- Output: spacingแบบcontent-sizedทั้ง2renderersและshopicon/linkที่ตรงกันบนhome/ภายใน/สินค้า/quotation; รักษารูปแบบmobilemenuเปิดเดิม
+- Responsiveตรวจ320/390/768/833/834/1023/1024/1440pxและtouchlandscape844×390; screenshotbefore/afterและcolumn/controlsboundingboxes
+
+### Acceptance Criteria
+
+- [x] ทั้ง8panelsสองrenderersคอลัมน์ชิดตามข้อความ gap32pxบนdesktop; ไม่มีกรอบยืดเพื่อกินพื้นที่ส่วนที่ไม่จำเป็น ยังไม่ชน/clipชื่อยาว
+- [x] 8main/3columns/95entriesและdisabledsemanticsเดิมตรงSpec; mobileยังเลื่อนและactivateลิงก์พร้อมได้
+- [x] shopทุกcontextใช้SVGpath/ขนาด/aria-label/Tooltip/href/targetเหมือนhomepage; ไม่มีcomparisonbadge/actionบนNavbarภายในแล้ว
+- [x] mouse/EnterและCtrl-clickของshopเป็นnative navigationโดยไม่เรียกcomparison; browsertestinterceptexternalresponseเพื่อไม่ขึ้นกับร้านค้าจริง ไม่อ้างว่าตรวจcheckoutภายนอก
+- [x] comparisonจากcatalogtoolbarยังเลือก/เปิด/ปิดได้; ค้นหา/เมนู/hover/Escape/BackForwardและNavbarboundsผ่าน
+- [x] Node24TypeScript/scopedlint/format/diffและaffectedbrowserchecksผ่าน มีbefore/aftergeometry และpreserveexistingdiffs
+
+### Missing Information / Approval Record
+
+- ไม่มีข้อมูลที่ขาดสำหรับscopeนี้; เลือกปรับช่องว่างระหว่างคอลัมน์ ไม่เปลี่ยนrowspacingหรือขนาดตัวอักษร
+- User: “ส่วนนี้เอาไว้ก่อนช่วยปรับเมนูย่อยของ navbar ให้ชิดกันอีกครับมันไกลกันเกินและปรับให้ทุกหน้าด้วยและมีไอค่อนร้านค้าตรงnavbarหน้าแรกที่ถูกต้อปรับให้หน้าอื่นๆเป็นเหมือนกันด้วย” เป็นคำสั่งตรงให้แก้spacing/shopparityภายในNavbarเดิม ครอบคลุมsharedCSS/PrimaryNavigation; ไม่อนุมัติงานชื่อรุ่นหรือการเพิ่มฟีเจอร์อื่น
+- ข้อนี้แทนข้อกำหนดเก่าที่คงcomparisontriggerบนinteriorNavbarไว้; ไม่ลบcomparisonfeatureในcatalogue
+
+### Impact / Rollback / Current State
+
+- R1 sharedNavbarมีผลทุกหน้า ความเสี่ยงคือlonglabelsชนใกล้834px, iconboundsเปลี่ยนและtestfixtureเรียกoldHeadercomparebutton; rollbackเฉพาะhunks3appfilesของงานนี้จากbaselineในTEMP ไม่ย้อนงานNavbar/Footer/historyก่อนหน้า
+- ทำเสร็จและตรวจใน local Chrome: เปลี่ยนแอป 3 ไฟล์และ test 3 ไฟล์ โดยคงข้อมูลเมนูเดิมและงานอื่นที่ทำพร้อมกันไว้ ผลตรวจครบ 112 กรณีจากหลายรอบ รวมรอบแก้ fixture แล้วทดสอบใหม่ ไม่ใช่การรัน 112 กรณีผ่านในครั้งเดียว
+- วัดครบ 48 panels ที่ 834/1024/1440px ช่องว่างเป็น 32px ทั้งหมด; ตัวอย่าง indicator ที่ 1440px คอลัมน์หน้าแรกเริ่ม x224/305.02/456.64 แทน x224/698.56/1024.28 และหน้าภายในเป็น x224/311.38/466.92 แทน x224/661.17/954.58
+- Node24 TypeScript, ESLint เฉพาะไฟล์, Prettier และ diff check ผ่าน ไม่มี Next.js feedback candidate ใหม่ที่ยืนยันว่าเป็นปัญหาของ framework งานนี้ไม่ได้ build/deploy หรือแก้ฐานข้อมูล
+- หลักฐานและภาพก่อน/หลัง: C:/Users/cityc/AppData/Local/Temp/sunford-navbar-compact-shop-20261116/verification-report.md และ final-receipt.json; ทดสอบร้านค้าด้วย response จำลอง ไม่ได้ตรวจ checkout จริง อุปกรณ์สัมผัส/ซูมเป็นการจำลองใน Chrome
+- Regression fixture amendment: ชุดวัด Home/interior ใน `tests/e2e/home-category-navigation.spec.ts` ต้องรวม anchor ร้านค้าใหม่ด้วย การเพิ่มไฟล์ test นี้ใน Plan ใช้ตรวจผลคำขอเดิม ไม่เปลี่ยนขอบเขตแอปหรือเกณฑ์เปรียบเทียบระยะ 1px

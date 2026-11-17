@@ -1,7 +1,520 @@
-## Plan: Navbar first — inspect and fix existing UI (2026-11-16)
+## Plan: Verify, commit and push authorized backlog before Navbar implementation (2026-11-16)
+
+### Files / Scope
+
+- Git candidate72pathsบันทึกทุกpath/hashใน `C:/Users/cityc/AppData/Local/Temp/sunford-backlog-commit-20261116/candidate-manifest.json`; application/assets45, tests24, documents3. ไม่เพิ่มไฟล์ source นอก candidate
+- `spec.md`, `plan.md` — บันทึกการอนุมัติ delivery/ผลตรวจ/ขอบเขต; `MEMORY.md` มี6บรรทัดจากงานก่อนหน้าอยู่ในcandidate ไม่แก้เพิ่มโดยไม่มีเหตุ
+- รวม source/tests ที่เป็นงาน Navbar95/history/Footer/placeholder เดิมที่อนุมัติแล้ว ไม่ implement104-entry Navbar และไม่ลบ customer-map modules/assets
+- แบ่ง commit source+tests ที่เกี่ยวเนื่องกันเพราะหลายไฟล์มีงานร่วมกัน และ commitเอกสาร/แผนใหม่แยก; ไม่แก้ประวัติที่ push แล้ว
+
+### Steps
+
+- [x] ยืนยัน user authorization, branch/remote, fetch และ source/test/document manifest; รักษางานที่สั่งพัก
+- [x] Review changes และรัน Node24catalog185/185, UAT28/28, typecheck, full ESLint, full format และ production build
+- [x] เปิด local production server3001 และตรวจ manual category finder return โดยไม่เพิ่ม/เปลี่ยน URL query
+- [x] ตรวจครบ266current Chrome casesจาก20affected/newbrowserfiles (อีก4testfilesเป็นcatalogunit tests); outputเฉพาะงาน ไม่ทำ business writes/ออกเลขใบเสนอราคา. ใช้latestreportต่อไฟล์:111+125+30ผ่านครบ ไม่ใช่singleclean266run
+- [x] ตรวจ finalsourcehashเทียบcandidate/diffcheckและสถานะ staged; stage69source/testfilesตาม explicitNULpathmanifest. Source45ไม่เปลี่ยน;5testfixturesแก้ตามหลักฐานและผ่านrerun; fullformatตรวจผ่านhookก่อนแต่ละcommit
+- [x] Commit source/testsผ่านpre-commithookและpush `uat`แล้ว: `4640ffa2fbfd4e37454edc6f269c2443f6801d02`; ยืนยันremoteSHAตรงโดยไม่force/directmainpush
+- [x] อัปเดตผลตรวจและเตรียม3documentfilesสำหรับclosingcommit. ขั้นส่งมอบสุดท้ายต้องcommit/pushเอกสารผ่านhook แล้วตรวจfinalremote/localSHAและcleanworkingtree; บันทึกผลpost-pushในgit-delivery.json/workstateแทนการแก้เอกสารหลังpush
+
+### Impact / Rollback / Verification Limits
+
+- Push `uat` เผยแพร่การเปลี่ยนแปลงที่ตรวจแล้วบนสาขาพัฒนา; ไม่รัน `bun run deploy` หรือ push main. หากต้องย้อนภายหลังให้ revert เฉพาะ commit ของงานนี้ ไม่ reset/force push และไม่ทับงานอื่น
+- Browserตรวจบน localproductionbuildและinstalledChrome; ไม่อ้างว่าเป็นfullE2Eทุกไฟล์/Safari/physicalphone/productiondeployment. Browser266เป็นaffected-suiteที่เลือกจากcandidate
+- ปัญหาของ fixture/เส้นทางที่เลิกใช้ต้องพิสูจน์ก่อนแก้; หากไม่แก้ source ให้คงhashของ45applicationfilesตรงcandidate
+- Next.js feedback reporting review: ยังไม่มี qualifying framework candidate; standardoutside-rootlockfilewarningไม่ใช่crash/incorrectbehavior
+
+### Verification Results
+
+- Static/catalog/UAT/build checks ผ่านตามSpec. Combined browserรอบแรก131passed/3failed/132notrunจากmax-failures; ห้ามอ้าง266ผ่านในรอบเดียว
+- Confirmed fixture corrections ในscopeก่อนcommit: `tests/e2e/home-category-navigation.spec.ts` รอactiveheaderและscopeheadingตามcategorymarkerก่อนassertเพื่อไม่จับhomeheadingระหว่างtransition; `tests/e2e/navigation-reload.spec.ts` ใช้canonicalWarehouseSKUrouteแทนobsolete404และตั้งscrollก่อนreloadโดยตรง. รักษาURL/hash/reset/heading/errorassertions ไม่ suppress React errors
+- Deep-link probe: initial#storiesauto-scrollไม่ได้ลงเป้าในlocalproductionทั้งcurrentและการแทนnavigation-startscriptจากHEAD; ไม่ใช้reloadtestเป็นการรับรองinitialnativeanchorauto-scrollและไม่แก้featureนั้นในงานcommitนี้
+- Application45filesยังhashตรงcandidateเดิม; restageเฉพาะ2testfixturesหลังchecks และรันfailed/remainingcasesให้ครบก่อนpush. เก็บหลักฐานรอบแรก/diagnosticsไว้ ไม่ลบหรือเปลี่ยนผลเก่า
+- Follow-up155casesได้150passed/3failed/2notrun. เพิ่ม3fixturecorrectionsในcandidateเดิม: `tests/e2e/navigation.spec.ts` ตรวจindexH1และfinderclosedเมื่อเลือกดูทั้งหมดแทนคาดfinderค้าง; `tests/e2e/warehouse-storefront-selection.spec.ts` เทียบRPCหลังcurrentpublicpredicateรวมชื่อ/กลุ่มไม่ใช่ตัดXอย่างเดียว; `tests/e2e/products-index-carousel.spec.ts` ยอมรับplaceholderจากbrokenimageเฉพาะเมื่อมีหลักฐานrequestรูปนั้นล้มเหลวจริง. ไม่แก้กฎเผยแพร่หรือsource45files; ต้องรัน3ไฟล์นี้ซ้ำและตรวจcoverageunionครบ266cases
+- Final3-file run17พฤศจิกายน:30/30ผ่าน. Node24assertionsตรวจcurrentinventory266casesและเลือกlatestreportต่อไฟล์ได้111จากinitial7files +125จากfollow-up10files +30จากfinal3files; ไม่มีcaseขาด/skip/failในชุดผลล่าสุดที่เลือก. เก็บinitialfailuresครบและไม่อ้างsinglecleanrun
+- ตรวจซ้ำ17พฤศจิกายน:catalog185/185,TypeScriptและfullESLintผ่าน; UAT28/28และproductionbuildผ่าน16พฤศจิกายนโดยsource45ยังhashเดิม. Results/limitationsอยู่verification-receipt.json; ไม่ได้verifyinitialnative#storieslandingหรือproductiondeployment
+- Sourcecommit69filesและpush17พฤศจิกายนสำเร็จ:4640ffa2fbfd4e37454edc6f269c2443f6801d02. FullrepositoryPrettierผ่านpre-commithookจริง ไม่ใช้no-verify; เหลือเฉพาะ3documentfilesก่อนclosingcommit
+- FinalGitreceiptเก็บlocal/remoteSHA,cleanstatusและcommitlistหลังpushใน `C:/Users/cityc/AppData/Local/Temp/sunford-backlog-commit-20261116/git-delivery.json`; ไม่pushmain/ไม่deploy และ104-entryNavbarimplementationยังpendingapproval
+
+## Plan: Selected data-supported Navbar tree and readiness (2026-11-16)
+
+Status: "Documentation complete; phase A implementation pending approval"
+Approval: "Structure selected; owner requested summary before code"
+
+### Files — รอบปัจจุบัน
+
+- `spec.md` — บันทึก exact selected104positions/3columns, A/B/C destinations, scope/approval/contracts
+- `plan.md` — บันทึก phase A manifest/steps/verification/rollback และแยก B/C backlog
+- `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-selected-tree-20261116/` — selected-tree.json, matrix.md, source-audit.json, protected-code-hashes.json และหลักฐาน review; ไม่อยู่ใน application source
+
+### Files — Phase A หลังได้รับอนุมัติเท่านั้น
+
+- `src/features/site/data/primary-navigation.ts` — ไฟล์แอปเพียงไฟล์เดียวที่วางแผนแก้: labels/order/3column headings, canonical destinations/readinessตามSpec. ขยาย parameterหัวข้อคอลัมน์ของ helperเดิมเฉพาะที่จำเป็น ไม่สร้าง abstraction/dependencyใหม่
+- `tests/catalog/primary-navigation.test.ts` — เปลี่ยนexact-tree/readiness checksจากสเปก95รายการเก่าเป็นหัวข้อselectedใหม่; ตรวจ104positions/71A/22B/11C, 33disabled,8mainlinks, column headingsรายเมนู และsaved-disabled/nonmutation/aliases
+- `tests/e2e/navbar-three-columns.spec.ts` — ปรับ95/41เป็น104/33และคอลัมน์รายเมนูตามmatrix; คงการคลิกทุกentry/disabled touch/focus/geometry/shop/search/comparison/historyเดิม
+- `tests/e2e/all-products-navbar.spec.ts` — ปรับready anchors11→12ในall-productsและlabelsตามtreeใหม่; คงalignment/nativeCtrl/mobile/hover assertions
+- `tests/e2e/home-category-navigation.spec.ts` — ปรับlabel/headings/all-link expectationsที่เดิมห้ามมีดูทั้งหมด ให้ตรงselected tree; คงmain category routes/font/gap/hitbox regressions
+- `tests/e2e/navigation-accessibility.spec.ts` — ปรับfirst-focus label/orderเมื่อมี“เครื่องชั่งทั้งหมด” และชื่อหลังการขาย/ซอฟต์แวร์ใหม่; คงtrusted keyboard/touch/disabled assertions
+- `tests/e2e/navigation.spec.ts` — ปรับcolumn heading expectationsรายmenu; ไม่เปลี่ยนinteraction contract
+- `tests/e2e/sitewide-navigation.spec.ts` — ปรับheadingและชื่อซอฟต์แวร์ตามselectedtreeทั้งdirect/cachedmobile/desktop; คงnavigation/search/historyassertions
+- `spec.md`, `plan.md` — บันทึกapprovalจริง/checklist/ผลตรวจและlimitationsหลัง implementation
+
+### Explicit Read-only / Out of Phase A
+
+- `src/components/layout/header.tsx`, `src/components/layout/primary-navigation.tsx`, `src/components/layout/navigation-start.ts`, `src/features/site/types.ts`, `src/features/site/data/navigation.ts`, `src/styles/header.css`, `src/styles/base.css`, layouts/Footers/sharedUI — อ่านเพื่อยืนยันrenderer/brandเท่านั้น; ไม่แก้ในmanifestนี้
+- Product classifier/category registries/subcategory pages/routes/server readers/storefront selection/price/quotation/RPC/storage — ไม่แก้. B19destinationsเป็น backlog ไม่ใช่อนุมัติสร้าง19ไฟล์ page.tsx
+- หาก10rowplatformcolumnหรือlonglabelsทำให้ต้องแก้sharedCSS/renderer ให้อัปเดตSpec/Planระบุไฟล์/ผลกระทบและขออนุมัติขอบเขตเพิ่มก่อนแก้; ไม่ลด/ซ่อนรายการหรือย่อชื่อที่เลือกเอง
+- Read-only regressions: `tests/catalog/navigation.test.ts`, `tests/catalog/category-destinations.test.ts`, `tests/e2e/navigation-hover-intent.spec.ts`, `tests/e2e/site-navigation-surfaces.spec.ts`, `tests/e2e/tooltips.spec.ts` และhistory regressionsเดิม. หากต้องเปลี่ยนfixtureนอกmanifest ต้องปรับplanก่อน ไม่ขยายไฟล์เงียบๆ
+
+### Steps — Documentation
+
+- [x] อ่านstate/memory/workstateและตรวจcurrentnavigation/renderers/tests/category/contentregistries
+- [x] ถ่ายทอดแผนผังที่เลือก100รายการ + retainedmaterial4เป็น exact104position matrix; แยกสถานะA71/B22/C11และA28/B19/C8unique destinations
+- [x] ยืนยันAทุกปลายทางมีอยู่ในsourceและสถานะเดียวกันทุกบริบท; ระบุproposedBpathsว่าไม่ใช่existingroutes
+- [x] แยกstructureapprovalกับimplementationapproval พร้อมphaseAmanifestและB/Cbacklog
+- [x] ตรวจMarkdown/diff/matrix invariantsและprotected code hashes; จัดเตรียมสรุปให้เจ้าของก่อนเริ่มcode
+
+### Steps — Phase A ยังไม่เริ่ม
+
+- [ ] ได้รับอนุมัติSpec/PlanphaseAจริงและบันทึกในSpec; จับbaselinehunks/hashesของownedfilesโดยรักษางานอื่น
+- [ ] ตรวจpackage/lockfiles, Node24และinstalledNextLink/navigationguideใน `node_modules/next/dist/docs/` ก่อนแก้code
+- [ ] ตรวจA28unique destinations+mainlinksในbrowser/runtimeที่พร้อม; หากcontent/behaviorไม่ตรง ให้แก้readinessเอกสารก่อน ไม่เปิดลิงก์เพียงเพราะHTTP200
+- [ ] แก้primary-navigation.tsตาม104positionmatrix: main8,3columns,exactlabels,headers,order; readinessตามcanonicaldestination และretain saveddisabledflags
+- [ ] B/C33positionsใช้disabledspanเดิม ไม่มีhref/action/Tabstop/prefetch; Aปลายทางพร้อมใช้nativeanchorsตามเดิม. ไม่สร้างBpages/classifierหรือเติมCdata
+- [ ] ปรับ7testfilesตามmanifestโดยคงbehaviorassertions; currentdefaultnavigation/23legacychildrenและcategoryaliasesนอกงานยังคงเดิม
+- [ ] รัน `bun run test:catalog`, Node24 `bun run typecheck`, scopedESLint/Prettier และdiffcheckเฉพาะงาน; ไม่แก้failuresนอกscopeโดยพลการ
+- [ ] รันaffectedbrowser7filesตามmanifestและread-onlyhover/site-navigation/tooltips/historyregressions; แยกoutputdirเฉพาะงาน
+- [ ] Browserทั้งHomeHeaderและinteriorPrimaryNavigationที่320/390/834/1024/1440px: 8panels/104entries,3columnsdesktop,stackedmobile, no viewport-clipped hitboxes/bodyoverflow; 10rowplatformcolumn/labelsยาวยังใช้งานได้
+- [ ] Keyboard/touch/hover/Escape/outsideclick/landscape/simulated200%zoom, normalclick/Enter/nativeCtrlด้วยcontextpageevent, disabled33ไม่มีnavigation, activeheaderเดียวหลังcachedBackForwardและmenuปิดเมื่อเปลี่ยนroute
+- [ ] ตรวจshopicon/nativeURL, search/catalogcomparisonและguideexistingpageยังใช้ได้ตามข้อจำกัด0confirmedpair; ไม่มีการรับรองpairใหม่
+- [ ] อัปเดตSpec/Plan/evidence/limitationsและNextfeedbackreportingreviewก่อนส่งมอบ; no commit/push/deploy
+
+### Deferred B/C Delivery Gates
+
+- B:19unique targets ต้องมีexactmembership/positiveandnegativefixtures/route registry+existingdynamicpage/metadata/return-contextและresponsivebehaviorที่ตรวจได้ ก่อนเปิด. บางหมวดต้องเพิ่มpredicate/registryไม่ใช่สร้างไฟล์pageใหม่เสมอ; ใช้genericrouteเดิมเมื่อเหมาะสม
+- Electronics/POSperipheralsและpackageditemsที่กำกวมต้องยืนยันรายSKUก่อนเพิ่มสมาชิก; ไม่ให้ชื่อcomponentในbundleจัดparentผิด และไม่ขยายsource395SKU
+- C: ต้องมีverifiedproductfacts/technicaldocs/downloadtargetsจริง; ไม่ใช้templatepresence/oldeditorial/materialofpan/modelnameแทนหลักฐาน
+- B/Cต้องมีSpec/PlanmanifestและapprovalแยกจากphaseA; รายการยังจางระหว่างรอ ไม่มีautopublish
+
+### Impact / Rollback
+
+- dataไฟล์เดียวถูกใช้โดยHeaderทุกหน้า จึงมีblast radiusทั้งsite; เปลี่ยนเฉพาะเนื้อหาเมนูโดยคงrenderer/styles/lifecycle. ความเสี่ยงคือlabelsยาว, platformcolumn10rows, focusorderและtestsที่ยังอิง95/41หรือheadingเหมือนกันทุกเมนู
+- RollbackเฉพาะphaseAdata/testhunksจากbaseline; ไม่revertทั้งไฟล์ที่มีdiffของงานอื่น ไม่restoreทั้งworkingtree และไม่แตะWarehouse
+- ข้อสมมติที่ยืนยันแล้ว: rendererใช้dynamicgroup.label/submenuLabelและdisabledflagอยู่แล้ว จึงไม่ต้องเปลี่ยนprops/types/sharedCSSในแผนนี้
+- ข้อจำกัดวันนี้: localserver3001เชื่อมต่อไม่ได้; Aเป็นsource/content-readinessauditพร้อมหลักฐานก่อนหน้า ไม่ใช่runtime/productionverificationใหม่
+
+### Verification Results — รอบเอกสาร
+
+- Source audit: A28uniquehrefอยู่ในcategory/subcategory/contentregistriesหรือexistingdedicatedroutes; 104positionsมีA71/B22/C11และcanonicalstatusไม่ขัดกัน; B19proposedtargets/C8unreadytargets
+- อ่านsnapshot21:12ของงานproposalเดิม ไม่อ่านDBซ้ำหรือเปลี่ยนข้อมูล; ตรวจsourcefreshและเก็บ421src/testhashesก่อนeditเอกสาร
+- Node24.22.1 assertions ผ่าน: 8menus/24columns/104positionsตรง selected-tree.json ทุกlabel/order/header/href/status; A71/B22/C11และunique28/19/8; proposedphaseAmanifestมี1app/7test/2docfilesและทุกpathมีจริง
+- Protected421src/testfilesมีSHA256ตรงbaselineหลังแก้เอกสารทั้งหมด; ไม่แก้application/tests/database. เก็บผลใน verification.json
+- Prettierตรวจspec.md/plan.mdและgitdiffwhitespaceผ่าน; code/browserimplementationยังไม่เริ่ม. Reportingreviewไม่พบNext.jsframeworkfeedbackcandidate; local3001ไม่พร้อมจึงไม่มีruntime/productionverificationใหม่
+
+## Plan: Propose data-supported submenus for eight Navbar groups (2026-11-16)
+
+### Files / Scope
+
+- `spec.md`, `plan.md` — บันทึก proposal และผลตรวจเท่านั้น; รักษางานเดิม
+- `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-submenu-proposal-20261116/` — JSON หลักฐาน/รายงาน proposal; ไม่เปลี่ยน application, tests, dependencies, Warehouse หรือ deployment
+
+### Steps / Verification
+
+- [x] อ่าน state/memory และ Navbar 8 กลุ่ม/3 คอลัมน์/disabled policy ปัจจุบัน
+- [x] อ่าน RPC/groups/attributes ของบริษัท 1 ใน bounded read-only transaction และ ROLLBACK
+- [x] ใช้ current projection/classification/storefront selection ตรวจ 395 SKU และผลรวมทุกหมวด
+- [x] ตรวจสมาชิกหมวดย่อยเดิมและ candidate groups จากค่าจริง; แยก missing destinations ออกจาก missing product facts
+- [x] ตรวจซีรีส์แท่นชั่งครบ 38 SKU ไม่ซ้ำ และ builder compatibility พร้อม component lines ได้ 0 คู่
+- [x] จัดทำข้อเสนอครบ 8 กลุ่มโดยไม่แก้ source code; ตรวจรายงาน/เอกสารก่อนส่งมอบ
+
+### Verification Results
+
+- Node 24.22.1 assertions ผ่าน: company1/read-only, 395 unique SKU/ผลรวมทุกหมวด, counts หมวดย่อยเดิมและ candidate groups, 38 platform series แบบไม่ซ้ำ, 0 confirmed compatibility pairs และตารางครบ 8 เมนู
+- Prettier ตรวจ `spec.md`, `plan.md` และ `proposal.md` ผ่าน; `git diff --check -- spec.md plan.md` ผ่าน. Reporting review ไม่พบ qualifying Next.js feedback candidate
+
+### Impact / Rollback / Limits
+
+- อ่านข้อมูลเท่านั้น; ย้อนเฉพาะหัวข้อเอกสารและรายงานนี้ได้ ไม่เปลี่ยน shared navigation หรือ data contracts
+- ไม่มี UI implementation จึงไม่รัน build/browser; ความพร้อมของ routes ตรวจจาก source/registry/disabled declarations ไม่ใช่ live HTTP. ไม่มี qualifying Next.js feedback candidate
+- การเลือกเมนูจาก proposal ต้องมี implementation Spec/Plan แยกก่อนแก้โค้ด
+
+## Plan: Audit available product subgroups in Warehouse (2026-11-16)
+
+### Files / Scope
+
+- `spec.md`, `plan.md` — เพิ่มผล audit เท่านั้น ไม่เขียนทับงานอื่น
+- `C:/Users/cityc/AppData/Local/Temp/sunford-group-audit-20261116/` — หลักฐาน read-only JSON และรายงาน ไม่อยู่ใน application source
+- ไม่แก้แอป, Warehouse, Navbar, dependency, shared UI หรือ deployment; คำขอของผู้ใช้อนุมัติการอ่านและวิเคราะห์นี้แล้ว
+
+### Steps / Results
+
+- [x] อ่าน project state, memory, instructions และ current data reader/classifier
+- [x] ตรวจ schema/ข้อมูลบริษัท 1 ผ่าน bounded read-only pg connections; snapshot หลักใช้ REPEATABLE READ และ ROLLBACK
+- [x] ตรวจ flat item groups, item types, attributes/facts, templates, occupations และ ecommerce category/tag storage
+- [x] แยกกันน้ำทั้งเครื่องจากช่องแบตเตอรี่ และงานวิเคราะห์จาก statistical analysis/template labels
+- [x] ตรวจ counts ของ facts ที่ผ่าน current public predicate โดยระบุ population รวมทุกกลุ่มและการซ้อนกันได้
+- [x] บันทึกผล audit และรายงาน; ไม่มี application change จึงไม่ต้อง build/browser tests. ตรวจไฟล์ Markdown และ whitespace ก่อนส่งมอบ
+
+### Verification Results
+
+- Node 24.22.1: assertions ผ่านสำหรับ read-only snapshot, ผลรวม 21 กลุ่ม/732 รายการ, 155 หัวข้อ/33 หัวข้อมีค่า, distinct SKU ใน public feed 395 รายการและ counts ในรายงาน, ช่องว่างสเปก, 14 templates และ 15 occupations/3 ความสัมพันธ์
+- Node 24 Prettier `--check spec.md plan.md` และรายงานผ่าน; `git diff --check -- spec.md plan.md` ผ่าน. ไม่มี framework feedback candidate หลัง reporting review
+
+### Impact / Rollback
+
+- ไม่มี database/application mutation; ลบเฉพาะหัวข้อ audit นี้และรายงานชั่วคราวได้ โดยรักษางานอื่น
+- Next.js feedback pass: ไม่มี qualifying candidate; ความผิดพลาดระหว่างเรียกตัววิเคราะห์ชั่วคราวไม่ใช่ framework issue
+
+## Plan: Product image placeholder from owner reference (2026-11-16)
+
+Status: "Complete"
+Approval: "Approved — owner explicitly approved this Spec/Plan on 2026-11-16"
+
+### Files
+
+รายการต่อไปนี้เป็นขอบเขตสูงสุดที่เสนอ แก้เฉพาะส่วนรูปสินค้าในแต่ละไฟล์ ไม่แก้ diff งานเดิม:
+
+- `public/images/product-image-placeholder.svg` — สร้างไอคอน vector ตามภาพแนบ พื้นหลังโปร่งใสตามคำสั่งล่าสุด โดยข้อความสีเข้มใช้ font เว็บแยกจากภาพ; ไม่วาดแผ่นพื้นหลังใน wrapper
+- `src/components/ui/product-image.tsx` — เพิ่มตัวเลือก fallback สำหรับรูปสินค้า รักษาพฤติกรรมสื่อทั่วไปและรองรับ src ใหม่หลัง error
+- `src/components/ui/product-image.module.css` — สร้าง style เฉพาะ fallback สินค้า ให้พอดี fill/ขนาดปกติและซ่อนข้อความใน thumbnail เล็ก; ไม่แก้ global styles/base tokens
+- `src/features/catalog/components/catalog-product-card.tsx`, `src/features/catalog/components/product-card.tsx`, `src/features/catalog/components/catalog-overlays.tsx` — เลือก fallback สินค้าใน card/search/compare
+- `src/features/catalog/components/product-category-mock.tsx`, `src/features/catalog/components/products-overview.tsx`, `src/features/catalog/components/product-storefront.tsx` — เลือก fallback สินค้าในรูปสินค้าและช่องรูปตัวแทนหมวดเดิม
+- `src/features/catalog/components/product-gallery.tsx`, `src/features/catalog/components/product-model-viewer.tsx` — fallback รูปสินค้าบน detail/gallery/poster เมื่อรูปไม่มีหรือเสีย
+- `src/features/catalog/components/products-index-content.tsx` — ใช้ fallback สินค้าใน directory และให้ curated item ที่พบสินค้าจริงแต่ไม่มีรูปยังแสดง; ไม่สร้าง item เมื่อไม่พบสินค้าจาก Warehouse
+- `src/features/catalog/components/products-index-carousel.tsx`, `src/features/catalog/components/products-index-carousel.module.css` — ใช้ asset เดียวกันใน raw img/detail/transition ของ desktop เมื่อไม่มีรูปหรือโหลดล้มเหลว พร้อมข้อความในพื้นที่เหมาะสม โดยรักษา animation และ selection เดิม
+- `src/features/catalog/components/products-mobile-rail.tsx` — เลือก fallback สินค้าใน rail โดยคง native scroll/nearby image loading
+- `src/features/catalog/components/quotation-form.tsx`, `src/features/catalog/components/quotation-form.module.css` — ให้ thumbnail สินค้าขาดรูปใช้ fallback ร่วมแทน icon แยก โดยคงช่องว่างตอนยังไม่เลือกสินค้า
+- `src/features/content/components/weighing-builder.tsx` — ให้การ์ดและ thumbnail สินค้าจริงที่ไม่มีรูปแสดง fallback แทนการซ่อนรูป/ใช้ icon แยก
+- `src/features/home/components/category-feature-panels.tsx`, `src/features/home/components/hero-product-ribbon.tsx`, `src/features/home/components/hero-product-model.tsx` — เลือก fallback ใหม่เฉพาะช่องรูปสินค้า; คงภาพ Hero/editorial ที่มีจริง
+- `src/features/content/components/solutions-overview.tsx` — fallback สำหรับพื้นที่รูปสินค้าประกอบ solutions เดิม
+- `tests/e2e/product-image-placeholder.spec.ts` — สร้าง browser coverage แบบจำลอง missing/error → versioned real image โดยไม่เขียน Warehouse; ตรวจ responsive และสื่อทั่วไปไม่ถูกเปลี่ยน
+- `tests/e2e/products-index-carousel.spec.ts`, `tests/e2e/products-mobile-rail.spec.ts` — ปรับ expectation ที่ผูกกับการตัดสินค้าที่ไม่มีรูป และเพิ่ม regression การนำทาง/รูปจริง/การโหลดใกล้เคียง
+- `tests/e2e/warehouse-catalog.spec.ts`, `tests/e2e/warehouse-storefront-selection.spec.ts` — ปรับเฉพาะ selector จาก generic media placeholder เป็น product placeholder ใน assertions เดิมที่ได้รับผลตรงจาก behavior ที่อนุมัติ; ไม่เปลี่ยนเงื่อนไขข้อมูล/การนำทางหรือเพิ่มขอบเขตแอป
+- `spec.md`, `plan.md` — บันทึกข้อกำหนด การอนุมัติจริง และผลตรวจงานนี้โดยรักษาประวัติเดิม
+
+### Steps
+
+- [x] ตรวจภาพแนบ source และกลไก RPC/image version/cache เดิม พร้อมตรวจ package.json กับ bun.lock/package-lock.json: Next16.4.3/React19.3/TypeScript5 และ Node24 ตาม engines
+- [x] อ่าน Next guide ที่ติดตั้งใน `node_modules/next/dist/docs/01-app/03-api-reference/04-functions/cacheLife.md` และตรวจหัวข้อ Image API; ไม่มีเหตุให้เปลี่ยน data refresh contract
+- [x] รับการอนุมัติ Spec/Plan นี้ก่อนแก้ application/assets/tests — บันทึกข้อความจริงใน spec.md แล้ว
+- [x] สร้าง SVG และ product-only fallback ที่มี accessible label และคง generic media fallback
+- [x] เชื่อม product consumers ตาม manifest; จัดการ raw img, image guards และ curated actual products ที่ไม่มีรูป โดยรักษาข้อมูล/สิทธิ์เดิม. ไม่ต้องแก้ quotation-form.module.css เพราะ shared component รองรับ36pxแล้ว
+- [x] ตรวจ browser ทุก surface family: home product areas, directory/desktop carousel/mobile rail, category/subcategory, search/compare, detail/gallery, builder, quotation UI และ solutions; selected builder thumbnail ไม่ render เพราะไม่มีคู่ที่เลือกได้จริง และ inactive Hero renderers ตรวจ source เท่านั้น
+- [x] ตรวจ no src, failing src, รูปจริง, missing → รูปจริง และ failed URL → version ใหม่ โดยใช้ fixture/test route interception ที่ไม่แก้ข้อมูล production; ไม่เพิ่มหน้า debug ลงแอป
+- [x] ตรวจ 320/390/834/1440px และ thumbnail36/48/65/76/96px พร้อม screenshots/geometry, keyboard/accessible names, carousel detail return และ native phone scroll; Alpha SVG ที่มุม=0
+- [x] รัน `bun run test:catalog`, `bun run typecheck`, scoped ESLint/Prettier, affected Playwright suites และ `git diff --check`; ผลตามรายการด้านล่าง
+- [x] อัปเดตผลจริงและข้อจำกัดใน Spec/Plan; formatting/checks รอบสุดท้ายครอบคลุมเอกสารนี้
+
+### Impact / Rollback
+
+- Shared UI R1: ProductImage ใช้ทั้งสินค้าและสื่อทั่วไป ต้องเปิด fallback ใหม่อย่างชัดเจนเฉพาะ product consumers เพื่อลดผลกระทบ; ทดสอบ generic media control ด้วย
+- Carousel/rail ต้องรักษา aspect ratio, natural image dimensions, transition และ nearby loading; placeholder ต้องไม่เกิด broken image/ขอ src ว่าง/overflow หรือกลายเป็นรูปข้อมูลสินค้าจริง
+- คง RPC/SQL/storage/cache timing/eligibility/ราคา/quotation registry และ global styles เดิม; ไม่เพิ่ม polling จึงไม่รับรองว่าหน้าเปิดค้างจะเปลี่ยนรูปเองทันที
+- ย้อนกลับได้โดย revert เฉพาะ hunks/asset ของงานนี้ รักษา diff Navbar/history/Footer และงานที่มีอยู่แล้ว ห้าม reset checkout หรือย้อนฐานข้อมูล
+
+### Verification Results
+
+- Planning audit only: ยืนยัน branch จุดรูปทั้งหมดจาก file inspection และ metadata-version/cache contract จาก source; ไม่ใช้จำนวนสินค้าจากบันทึกเก่าเป็นจำนวน live ปัจจุบัน
+- Implemented หลัง owner approval;21application/asset files,5browser test files และ2docs. รักษา diff ที่มีอยู่และบันทึก hash receipt; quotation-form.module.css ในขอบเขตสูงสุดไม่จำเป็นต้องแก้
+- Node24.22.3: `bun run test:catalog`185/185; `bun run typecheck` ผ่าน; scoped ESLint ผ่าน และตรวจรูปแบบ/diff whitespace ตามไฟล์ที่แก้
+- Combined Playwright3files:37/37ผ่าน,0flaky/0skipped (`final-browser-report.json`). Missing-photo/accessory regressions5/5ผ่าน (`warehouse-regression-final.json`). Strengthened settled-image checks2/2ผ่าน (`settled-images-report.json`),7routesต่อviewport390/1440และไม่มี broken main images หลัง hydration
+- Initial failures เป็น expectation เดิมที่คาด source=null/ชื่อ generic placeholder, selector อ้าง inactive Hero ribbon และการคลิกก่อนปลายทาง navigationพร้อม; ปรับ assertions ให้ตรง approved contract/active renderer และยืนยัน URL ก่อนตรวจ detail. ทุกกรณีที่รันซ้ำผ่าน โดยไม่เปลี่ยน business data หรือแก้ระบบ navigation
+- Actual selected builder thumbnails ยังไม่ render เพราะไม่มีคู่ที่เลือกได้จริง; branch wiring/shared thumbnail geometryผ่าน แต่ไม่อ้างว่าทดสอบ real pair selection. ไม่สร้างข้อมูลหรือปลด compatibility เพื่อทดสอบ
+- Generic editorial/software/video fallback คงเดิม; category stories/accordion ที่ใช้ Warehouse product photos เลือก product fallback ตาม category context. ใช้ transparent wrapper และ theme text color เดิมหลังคำสั่งตัดพื้นหลังล่าสุด
+- Protected source12files (RPC/server/storage/catalog eligibility/cache/global tokens/dependency manifests) hashesตรงกับ baseline; unrelated Navbar/header/test/CSS edits ถูกพบระหว่างงานและรักษาไว้
+- หลักฐาน: `C:/Users/cityc/AppData/Local/Temp/sunford-product-placeholder-20261116/`; ไม่รัน production build/full E2E/full storefront-selection suite/Safari/physical devices และไม่ commit/push/deploy. ไม่มี Next.js feedback candidate ที่ยืนยันว่าเป็น framework issue ในงานนี้
+
+## Plan: Remaining UI and history restoration across the public site (2026-11-16)
 
 Status: "Ready to Code"
-Approval: "Pending — Navbar-first priority confirmed; revised implementation scope awaits approval"
+Approval: "Approved — owner explicitly approved all remaining work including actual-origin history restoration and sitewide Footer amendment"
+
+### Implementation approval (2026-11-16)
+
+- Owner: “อนุมัติครับ ดำเนินการตามแผนงานที่เหลือได้เลย ทั้งการย้อนกลับคืนตำแหน่งและสถานะเดิม รวมถึง Footer ใหม่ทุกหน้า โดยเอาบล็อกแผนที่ออกและคงโทนสี ฟอนต์ และแบรนด์เดิมครับ”
+- Covers the existing explicit owner/file manifest and four-column Footer amendment. R1 shared restoration/Footer changes are reversible by reverting only these task hunks; preserve the earlier Navbar diff. Reload, external/modified links, business data and issuance remain unchanged.
+- Implementation uses document-lifetime memory only (no browser storage), a namespaced browser-history entry identity for domain state, scroll and origin. Reload naturally discards snapshots. Restore only on history traversal.
+
+### Goal / Confirmed contract
+
+- ผู้ใช้ขอให้ตรวจและกำหนดขอบเขตงานที่เหลือให้ครบก่อนแก้: Back/Forward กลับตำแหน่งและสถานะเดิมทุกส่วน รวม Footer ปุ่ม ตัวอักษร และระยะห่าง โดยคงดีไซน์ที่อนุมัติ
+- ผู้ใช้ตอบยืนยัน: ปุ่มลูกศรกลับหน้ารายละเอียดให้กลับต้นทางจริงพร้อมสถานะเดิม; ขอบเขตคือ Back/Forward ในแท็บเดิม ส่วน Reload คงพฤติกรรมเดิม ไม่เพิ่มการจำข้ามแท็บ/ข้าม session
+- งาน Navbar ที่ตรวจผ่าน 97/97 เป็น baseline ที่ต้องรักษา; diff เดิม 4 application/test files และ Spec/Plan ต้องไม่ถูกเขียนทับ
+- Implementation approved 2026-11-16. Preserve prior Navbar changes; implement and verify the remaining phases below.
+
+### Footer amendment — owner request and proposed design (2026-11-16)
+
+- ผู้ใช้ขอให้นำบล็อกแผนที่ “ครอบคลุมทั่วประเทศ / จัดส่งทั่วประเทศไทย พร้อมทีมดูแลและให้คำปรึกษา” ตามภาพออก และจัด Footer ใหม่ตามแนวทางสากลที่เหมาะสม
+- ผู้ใช้เลือก “จัดหมวดเดียวกันทุกหน้า รวมหน้าสินค้า (แนะนำ)” แล้ว; ข้อนี้ขยายข้อกำหนดเดิมที่คงโครงสร้าง Footer สองแบบไว้ และผู้ใช้อนุมัติ layout/implementation ฉบับนี้ในข้อความล่าสุดแล้ว
+- Approaches: (1) เปลี่ยนเฉพาะ Footer ตามภาพ — ปรับน้อยแต่ IA ต่างจากหน้าสินค้า; (2) ใช้หมวด/ลำดับลิงก์ร่วมทุกหน้า คง theme เดิมของแต่ละ context — ผู้ใช้เลือกแบบนี้. ไม่จำเป็นต้องรวม renderer ทั้งหมดเป็น component ใหม่
+- นำออกเฉพาะ coverage block/trigger ใน Footer รวมทั้ง customer map dialog ที่เปิดจาก trigger นี้จะไม่มีทางเข้าจาก Footer; ไม่ลบไฟล์แผนที่ รูป SVG, geometry/data หรือระบบอื่นโดยไม่จำเป็น
+
+#### Proposed information architecture
+
+| พื้นที่             | ข้อมูล/ลิงก์ที่มีอยู่จริง                                                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SUNFORD / ติดต่อ    | โลโก้และ tagline เดิม, โทรศัพท์/อีเมล/ที่อยู่จาก site settings, รู้จัก SUNFORD (/about-us), ติดต่อเรา (/contact-us), social links เดิมที่มีข้อมูล |
+| ผลิตภัณฑ์           | /products และ 5 families: scales, indicators, platforms, pos, accessories ตาม canonical routes ปัจจุบัน                                           |
+| โซลูชันและซอฟต์แวร์ | /solutions, ERP/MES จาก sunford constants เดิม, /applications-and-softwares                                                                       |
+| บริการและช่วยเหลือ  | /service, /service/quotation, /guides/indicator-platform-compatibility, /software/download, /warranty/register                                    |
+| แถบล่าง             | © ปีปัจจุบัน SUNFORD, /privacy-policy-and-cookie-policy, /warranty/policy, /cancel-and-return/policy และกลับด้านบน                                |
+
+- Desktop เสนอ 4 columns ข้างต้น; tablet 2 columns; mobile วาง brand/contact ก่อน แล้วกลุ่มลิงก์พับได้ด้วย native details/summary. ลำดับข้อมูลตรงกันทุกขนาดและทุกหน้ารวมสินค้า
+- รักษาโลโก้ ฟอนต์ตระกูลเดิม และสีแบรนด์: home dark/interior palette ตาม context เดิม; ไม่เพิ่มสีใหม่/ภาพตกแต่งแทนแผนที่. Contact CTA/banner เดิมคงไว้ โดยไม่เพิ่ม section/ข้อความโฆษณาใหม่
+- ลิงก์หลักเสนอ 14px/line-height ประมาณ 1.6, heading ใช้ semibold ที่โปรเจกต์มีอยู่; legal text ต้องอ่านได้/ขยายได้และ contrast ผ่าน. ตัวเลขเหล่านี้เป็นข้อเสนอ design ไม่ใช่ขนาดฟอนต์ที่ WCAG บังคับ
+- ปุ่มและ accordion หลักมือถือเสนอ touch target 44px เพื่อใช้งานสะดวก; ตรวจ WCAG2.2 AA target minimum 24px/spacing/exceptions ตามจริง ไม่อ้างว่า AA บังคับทุกลิงก์เป็น44px
+- semantic footer/contentinfo, labeled navigation groups, headings, focus visible, Tab/Enter/Space ตาม native control; footer ที่เป็น page landmark ต้องมีหนึ่งชุดที่มองเห็นต่อหน้า
+- ไม่เพิ่ม newsletter, payment/security badges, ช่องทาง/เวลาทำการ/ข้อกำหนดกฎหมาย หรือบริการ Calibration ที่ไม่มีข้อมูลอนุมัติ; privacy/cookie/warranty/return ใช้หน้าเดิมที่ตรวจ HEAD ได้200แล้ว ไม่เขียนนโยบายใหม่
+
+#### Additional files / boundaries
+
+- `src/features/site/data/footer-navigation.ts` — เสนอสร้างชุดหมวด/ลิงก์ร่วมจาก route/site constants เดิม ให้ Footer หน้าแรก/หน้าภายใน/สินค้าตรงกัน โดยไม่แก้ Navbar data
+- `src/features/home/components/home-page.module.css` — แก้เฉพาะ footer overrides และ selector ของ coverage ที่ถูกนำออก; ห้ามแก้ Hero/sections/motion
+- ใช้รายการเดิม `src/components/layout/footer.tsx`, `src/styles/footer.css`, `src/styles/responsive.css`, `src/features/catalog/components/products-overview.tsx`, `src/features/catalog/components/products-overview.module.css` เฉพาะ Footer markup/style; ถ้าต้องแก้ root layout/route wiring ให้ขอขอบเขตเพิ่ม
+- `tests/e2e/shared-ui-review.spec.ts` — footer navigation parity, absent coverage block, responsive/keyboards/link targets/landmark/contrast; `tests/e2e/customer-map.spec.ts` ปรับความคาดหวังที่ผูกกับทางเข้า Footer ให้ตรงกับการนำออก ไม่แกล้งสร้าง trigger เพื่อให้ legacy cases ผ่าน
+- เอกสาร spec.md/plan.md บันทึกเฉพาะ amendment นี้; งานคืนตำแหน่ง/state และ Navbar diff เดิมคงอยู่
+
+#### Design acceptance / impact
+
+- [x] อนุมัติ Footer design/Spec/Plan amendment ก่อนแก้ application/test/data module
+- [ ] ทุกหน้ารวมสินค้าใช้หมวด/ลำดับ/ปลายทางเดียวกัน; ไม่มี coverage block, map trigger หรือช่อง grid ว่างจากการเอาบล็อกออก
+- [ ] ลิงก์/ข้อมูลติดต่อจริงครบ ไม่สร้าง href ว่างหรือ placeholder; ปุ่มกลับด้านบนทำงานและไม่เปลี่ยน browser history/reset context เกินการกดนั้น
+- [ ] ตรวจ home, /products, category, detail, content, service/quotation และ404 ที่320/390/834/1440, reflow/zoom, keyboard/focus และ mobile accordion; Footer ยังคง static ไม่เข้า stagger motion
+- [ ] เทียบภาพก่อน/หลังและตรวจ regression navigation/state ที่เกี่ยวข้อง; ไม่รับรอง WCAG ทั้งเว็บไซต์จากการตรวจ Footer เพียงส่วนเดียว
+- R1: เปลี่ยน Footer ร่วมและ CSS overrides กระทบทุกหน้า; แยก patch จากงาน history, ตรวจหนึ่ง Footer ที่มองเห็น/no duplicate landmark และย้อนเฉพาะ hunk ของ Footer หากมี regression โดยรักษางาน Navbar เดิม
+
+#### References and verified inputs
+
+- W3C page regions: https://www.w3.org/WAI/tutorials/page-structure/regions/
+- WCAG2.2 focus visible: https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html
+- Target size minimum: https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html
+- Reflow: https://www.w3.org/WAI/WCAG22/Understanding/reflow.html
+- Contrast minimum: https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
+- /about-us, /contact-us, privacy/cookie, warranty และcancel/return routes ตรวจ HEAD200 ใน local runtime; source/footer owners ตรวจแล้ว. รอบนี้ยังไม่แก้ Footer source/test
+
+### Coverage / Definition of state
+
+- ครอบคลุม 15 public App Router page templates พร้อม dynamic category/subcategory/product/content routes และ alias ที่ชี้ template เดียวกัน; สำรวจ stateful TSX 36 modules เพื่อแยกส่วนที่แสดงจริง/ส่วนอ้างอิง/ส่วนตกแต่ง
+- URL path/query/hash, window scroll, nested scroll, expanded/paginated results, filter/query, selected item/slide/tab/gallery, draft selections/form values และ focus/trigger ต้องแยกต่อ history entry; URL เดิมที่เข้าคนละรอบห้ามใช้ snapshot เดียวทับกัน
+- เมนู Navbar, tooltip, drag gesture, loading/busy flag และ decorative animation phase ไม่ใช่สถานะที่เปิดคืน; รักษาเมนูปิดตาม contract งาน Navbar เดิม
+- Popup ต้นทางที่ใช้เลือก/ค้นหาก่อนเข้ารายละเอียดให้คืนได้พร้อมเนื้อหาและตำแหน่งเมื่อกลับมาที่ entry นั้น; การกด X/Escape โดยเจตนายังคงผล reset/clear เดิม เช่น ปิด comparison แล้วล้างรายการตาม contract เดิม
+- Browser Back/Forward ใช้ page history จริง; ปุ่มกลับภายใน map/step/overlay คืนลำดับภายในของมัน ไม่สร้าง history entry ใหม่ให้ทุก checkbox, filter, zoom หรือ pan
+- ลิงก์หมวดหมู่/breadcrumb/โลโก้/CTA ที่บอกปลายทางชัดเจนยังนำทางตามชื่อเดิม; ใช้ต้นทางจริงกับ control ที่ทำหน้าที่กลับ ไม่ดักทุกลิงก์เป็น router.back
+
+### Flow matrix — acceptance after implementation
+
+| กลุ่ม                                           | ต้องคืนเมื่อย้อนกลับ                                                   | การตรวจหลัก                                                                                     |
+| ----------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| หน้าแรก                                         | window scroll, หมวด/slide/rail ที่ผู้ใช้เลือก                          | section/card → detail → Back; Forward; ไม่ replay opening/motion ที่ถูกยกเว้น                   |
+| Products index และ family overview ทั้ง 5 กลุ่ม | scroll หน้า/rail, category/model, hero/accordion, finder เปิดตามต้นทาง | รายการ/rail/finder → detail; คืนจุดเดิมหลังผ่านมากกว่า 3 routes                                 |
+| รายการหมวดย่อยทุก family                        | query/filter, จำนวนที่แสดงเพิ่ม, ตำแหน่งสินค้าหรือ rail                | เลือกสินค้ากลาง/ท้ายรายการ → Back และปุ่มกลับ; SKU เดิมยังมองเห็น                               |
+| รายละเอียดสินค้า                                | origin stack, gallery/model ที่เลือก, scroll และ focus                 | A → B → C → Back/Forward หลายครั้ง; direct entry/modified click มี fallback                     |
+| Search/Finder/Compare                           | query/filter/selected IDs, popup scroll, parent scroll และ focus       | เปิดรายละเอียดจาก popup → กลับ popup เดิม; ปุ่มปิดจริงยัง clear ตามเดิม                         |
+| Explore/บทความ/คู่มือ/โซลูชัน/นโยบาย            | query/category/show-more, scroll หน้า/rail                             | index → content → Back รวม alias/hash และ long-page links                                       |
+| Software                                        | selected hash/category และ scroll                                      | filter → detail หรือ internal link → Back; ข้อมูลว่างทดสอบ empty state ไม่แต่ง card             |
+| Service/Contact                                 | service tab/step/accordion และ scroll                                  | เปลี่ยน tab → ไปอีกหน้า → Back; contact anchors และปุ่มลิงก์เดิม                                |
+| จัดสเปค                                         | head/platform/accessories ที่เลือก, step/query/group, rail/scroll      | รายละเอียดในแท็บเดิมถ้ามี หรือ quotation → Back; ไม่เปลี่ยน compatibility/price rules           |
+| Quotation draft                                 | fields, rows/quantity/bundles, picker query/category/scroll            | ไปหน้าอื่นแล้ว Back รวม cache eviction; ไม่ submit/ออกเลข/PDF ซ้ำจากการคืน state                |
+| Map/Media/Specification dialogs                 | ลำดับ parent, selection ที่เกี่ยวข้อง, trigger/focus และ parent scroll | drill-down → ปุ่มกลับ; X/Escape; nested dialogs; ไม่มี scroll lock/inert ค้างหรือ autoplay ใหม่ |
+| Footer/ปุ่ม/ตัวอักษร/ระยะ                       | Footer สองแบบและ accordion มือถือ, focus, link targets, layout         | click/touch/Tab/Enter/Escape, ต้น/กลาง/ท้ายหน้า, mobile/tablet/desktop, error/404/empty states  |
+
+### Findings already verified — not assumed defects
+
+- H1: Finder `/products?catalog=all` ใส่ WPS และเลื่อน popup 650px → รายละเอียด → Browser Back คืน query WPS/scroll 650px ได้อยู่แล้ว; ปุ่มลูกศรบน detail ไป `/products` และไม่คืน popup ต้นทาง จึงต้องแก้ตาม policy ที่ผู้ใช้ยืนยัน
+- H2: Flow เดิมผ่าน 5 distinct routes แล้ว Back กลับ source: query WPS ยังอยู่ แต่ popup scroll หาย 650px → 0px. ต้องรองรับการคืนสถานะเมื่อ Activity/route cache ไม่เก็บ DOM เดิมแล้ว
+- P1: Explore query และ scroll 1865px คืนได้ในการทดสอบที่ทำ; software hash และ scroll จาก footer navigation คืนได้; quotation contact draft และ service tab คืนได้ใน flow สั้นที่ตรวจ ห้าม refactor ส่วนที่ผ่านโดยไม่มีหลักฐานเพิ่ม
+- P2: Footer ทั้งสองแบบที่ 320/390/834/1440px รวม 8 กรณี ไม่พบ horizontal overflow/control clipped; Footer สินค้าบนมือถือ click/Enter เปิดปิด accordion ผ่าน. ยังต้องตรวจ links/Back context/focus และ global UI ในชุดสมบูรณ์ก่อนปิดงาน
+- G1: software index ปัจจุบันแสดง 0 cards จึงยังทดสอบ source-index → software-detail จาก card จริงไม่ได้; ตรวจ hash/empty state/การย้อนจาก internal link แทน และบันทึกเป็น coverage gap ไม่เติมข้อมูลเก่าหรือสร้าง card
+- ข้อมูลนี้คือ audit ตัวแทนก่อนทำแผน ไม่ใช่ผลทดสอบครบทุก interaction/ทุก record ทั้งโปรเจกต์
+
+### Implementation approach / Boundaries
+
+- ใช้ Next/browser scroll restoration และ Activity เดิมก่อน; แก้ origin link และจุดที่ reset/recreate state ผิดจังหวะ โดยไม่แทน Router หรือ remount ทุกหน้าด้วย key ใหม่
+- เสนอ helper ใหม่เพียง `src/features/site/history/return-state.ts` สำหรับ context/snapshot ต่อ history entry ที่จำเป็นกับ H1/H2 และ gaps ที่ยืนยัน; เก็บ ID/ค่า UI เท่าที่จำเป็น ไม่คัดลอก product payload/images หรือเพิ่ม dependency
+- เชื่อมผ่าน CatalogRouteFrame ที่มีอยู่และ state owners ที่จำเป็น; รักษา Next history.state metadata, query/hash, native links, Ctrl/Cmd-click และ external/new-tab behavior
+- คืน state ก่อนคืน scroll; รอ hydration/content/image layout ที่จำเป็นแบบมีขอบเขต หยุดการคืนหากผู้ใช้เริ่มเลื่อนใหม่ ไม่ทำ loop scroll/focus ที่แย่งผู้ใช้
+- Snapshot ใช้กับต้นทาง/entry เดิมเท่านั้น ไม่ทำให้การเปลี่ยนหมวดหรือกด reset ใหม่เสียพฤติกรรมล้าง query เดิม; ถ้าสินค้าหรือ element หายให้ clamp/fallback โดยไม่เติมข้อมูลสินค้าเอง
+- Direct product URL หรือ context ไม่ใช่ same-origin/ไม่มี entry ที่พิสูจน์ได้ ใช้ from-category ที่ตรวจ allowlist หรือ `/products` ตาม fallback เดิม ไม่พาผู้ใช้ย้อนออกนอกเว็บไซต์
+- UI reference คือ approved contracts ใน spec.md/MEMORY.md, tokens ใน base.css และ component ที่ใช้อยู่; Footer ใช้หมวดและลำดับร่วมตาม amendment ล่าสุด โดยคง palette ตาม context; ไม่เปลี่ยนโลโก้ ฟอนต์หลัก หรือ motion profile
+- เปลี่ยน CSS เฉพาะ defect มีหลักฐาน เช่น ล้น/ทับ/ตัดข้อความ/กดไม่ได้/focus หาย หรือผิด reference ที่อนุมัติ; ไม่เพิ่มบริการ Calibration หรือแต่งสินค้า/ข้อความธุรกิจ
+
+### Files — explicit ownership manifest, not an instruction to change every file
+
+- `spec.md`, `plan.md` — เฉพาะงานนี้ การอนุมัติ flow contracts และผลตรวจ; ไม่จัดระเบียบประวัติเอกสารเก่า
+- รายการ paths ด้านล่างและ additional Footer files เป็น inventory ของเจ้าของ state/style/test ที่เกี่ยวข้อง; แก้จริงเฉพาะไฟล์ที่รองรับ H1/H2 หรือ defect ที่พิสูจน์และอยู่ใน flow/selector ที่อนุมัติ. ก่อนเริ่มแต่ละช่วงระบุ subset และหลักฐานใน Plan ห้ามแก้ทุกไฟล์โดยอัตโนมัติ
+- ถ้าต้องแก้ไฟล์นอก manifest, เปลี่ยน contract/ดีไซน์ หรือขยายไป backend ให้หยุดส่วนนั้นและขออนุมัติขอบเขตเพิ่มก่อน
+
+#### History and product origin
+
+คืน origin ต่อ history entry และ scroll ของหน้าหรือ container โดยคง Next history metadata; navigation-start.ts เปลี่ยนได้เฉพาะ Back/Forward โดยห้ามเปลี่ยน Reload ที่อนุมัติแล้ว
+
+- `src/features/site/history/return-state.ts` — เสนอสร้างใหม่
+- `src/features/catalog/components/catalog-route-frame.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/components/layout/navigation-start.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-return-link.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/catalog-product-card.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-card.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-category-mock.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/products-overview.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/catalog-overlays.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/stores/catalog-store.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+
+#### Product and content state owners
+
+คืนเฉพาะ state การเลือก/ค้นหา/แสดงเพิ่ม/ตำแหน่งที่พิสูจน์ว่าหาย; ไม่แก้ข้อมูลหรือฟังก์ชันธุรกิจ
+
+- `src/features/catalog/components/products-index-content.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/products-index-carousel.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/products-mobile-rail.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-gallery.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-model-viewer.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-catalog.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/app/(site)/products/[slug]/product-specification-dialogs.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/content-directory.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/software-catalog.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/weighing-builder.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/quotation-form.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/after-sales-page.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/video-gallery.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+
+#### Home, media and map state owners
+
+คงรายการ/slide/model ที่ผู้ใช้เลือกและลำดับแผนที่เมื่อใช้ปุ่มกลับภายใน; ไม่เปลี่ยน Hero, motion profile, particle, รูป หรือเริ่ม media อัตโนมัติใหม่
+
+- `src/features/home/components/category-feature-panels.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/home/components/customer-story-gallery.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/home/components/spotlight-product-video.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/home/components/section-two-video.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/home/components/showcase-tile.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/home/components/hero-scene.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/home/components/hero-product-model.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/customer-map/components/customer-coverage.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/customer-map/components/customer-map-dialog.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/customer-map/components/map-canvas.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/customer-map/hooks/use-map-camera.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+
+#### Shared UI and Footer
+
+Footer สองชุด, การคืน focus/scroll หลังปิด overlay, ปุ่มและ focus ที่มองเห็นได้; จำกัด CSS เฉพาะ selector ที่มี defect
+
+- `src/components/layout/footer.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/components/ui/modal.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/components/ui/tooltip.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/components/ui/drag-scroll.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/components/ui/focus-drag-scroll.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/components/contact/floating-contact.tsx` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/styles/base.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/styles/footer.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/styles/responsive.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/styles/content.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/styles/overlays.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/styles/product-detail.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/components/ui/focus-drag-scroll.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+
+#### Local styles only when a defect is proven
+
+ตรวจและแก้เฉพาะ overflow, overlap, focus, ข้อความถูกตัด หรือระยะผิดจาก reference ที่อนุมัติ; ไม่ normalize ทุก component ให้เหมือนกัน
+
+- `src/features/catalog/components/products-overview.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-category-mock.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/product-browser.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/products-index-content.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/products-index-carousel.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/products-mobile-rail.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/catalog-overlays.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/catalog/components/quotation-form.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/app/(site)/products/[slug]/product-detail.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/weighing-builder.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/about-page.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/contact-page.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/after-sales-page.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/solutions-page.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/solutions-overview.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `src/features/content/components/video-focus.module.css` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+
+#### New focused tests
+
+สร้างหลังอนุมัติและใช้กรณี failure จริง; unit test เฉพาะ history entry/origin/fallback และ integration กับ Next metadata
+
+- `tests/catalog/return-state.test.ts` — เสนอสร้างใหม่
+- `tests/e2e/history-restoration.spec.ts` — เสนอสร้างใหม่
+- `tests/e2e/shared-ui-review.spec.ts` — เสนอสร้างใหม่
+
+#### Existing tests; edit only relevant fixtures/readiness/coverage
+
+ขยาย coverage ที่เกี่ยวข้อง คง assertions ที่ยังตรง contract ใช้ live Warehouse identity ไม่แก้ข้อมูลให้ตรง fixture เก่า
+
+- `tests/e2e/navigation-reload.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/product-detail.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/product-category-mock.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/products-index-carousel.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/products-mobile-rail.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/compare-mode.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/software-catalog.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/source-content.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/indicator-platform-compatibility.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/quotation.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/customer-map.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/after-sales.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/contact-locations.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/home-links.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/drag-scroll.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/tooltips.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/video-focus.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+- `tests/e2e/site-navigation-surfaces.spec.ts` — ตรวจ/แก้เฉพาะ defect ที่ยืนยัน
+
+### Read-only references and existing checks
+
+- `src/components/layout/header.tsx`, `src/components/layout/primary-navigation.tsx`, `tests/e2e/navigation-hover-intent.spec.ts`, `tests/e2e/sitewide-navigation.spec.ts` — งาน Navbar ที่เสร็จแล้ว ใช้ regression และรักษา diff เดิม; รอบนี้ไม่แก้เพิ่มเติมโดยไม่มี defect ใหม่
+- `src/app/layout.tsx`, `src/app/(site)/layout.tsx`, `src/app/globals.css`, `src/styles/header.css`, `src/components/ui/use-stagger-bounce.ts` — reference/wiring/motion contract เท่านั้น ไม่เพิ่มไฟล์ส่วนกลางเหล่านี้ในขอบเขตแก้
+- App Router `page.tsx` ทั้ง 15 public templates, `src/app/error.tsx`, `src/app/not-found.tsx`, `src/app/(site)/not-found.tsx` — ตรวจการประกอบและ empty/error/404 behavior; เปลี่ยนได้เฉพาะไฟล์ UI owners ที่อยู่ใน manifest ถ้าต้องแก้ route module ต้องขอ scope เพิ่ม
+- อ่าน `src/features/catalog/data/product-subcategory-pages.ts`, `src/features/content/data/static-content-params.ts`, navigation/content data และ installed Next docs ประกอบ โดยไม่แก้ data/contracts
+- คงชุด Navbar 97 cases เป็น regression floor; tests ใหม่ต้องตรวจ scroll ของ window และ containers จริง ไม่ใช้ helper ที่ scrollTo(0) ก่อนวัด
+
+### Steps — approval then four bounded implementation phases
+
+- [x] ตรวจ Changes เดิมและเก็บ hash ของ 4 application/test files ที่มี diff ก่อน audit
+- [x] สำรวจ route/state/style ownership และตรวจตัวแทนจริง; แยก confirmed defects, passing cases และ coverage gaps
+- [x] รับคำยืนยันเรื่องปุ่มกลับต้นทางจริง และ Back/Forward ในแท็บเดิมโดย Reload คงเดิม
+- [x] ผู้ใช้อนุมัติ Spec/Plan งานที่เหลือนี้ก่อนแก้แอปพลิเคชัน/test/helper
+- [ ] Phase 1 — แก้ H1/H2 ก่อน: origin/return link และคืน scroll หน้า/popup/rail ต่อ entry หลัง cache eviction; เขียน failing tests ก่อนแก้
+- [ ] Phase 2 — เติม state restoration เฉพาะ gaps ของ flow matrix: รายการ/ค้นหา/เปรียบเทียบ/สื่อ/เนื้อหา/จัดสเปค/quotation/map; รักษา state ที่ native ทำได้อยู่แล้วและ reset ที่เป็นการกดโดยเจตนา
+- [ ] Phase 3 — ตรวจและเก็บ Footer สองชุด ปุ่ม focus ตัวอักษร และระยะเฉพาะจุดค้าง ตาม reference; เก็บภาพก่อน/หลัง ห้ามออกแบบใหม่
+- [ ] Phase 4 — ทดสอบรวมทุก public template/ทุก interactive flow ที่แสดงจริง รวม source เดิมซ้ำหลาย entry, Back/Forward หลายรอบ, มากกว่า 3 distinct routes, deep/direct/hash links, popup origins และ resized viewport
+- [ ] ทดสอบ 390×844, 834×1112, 1440×900; targeted 320px, 768px, 833/834, 1023/1024 และ 844×390 touch landscape; keyboard/mouse/touch พร้อมรูปและ geometry
+- [ ] เกณฑ์ scroll same viewport: delta ไม่เกิน 4px หลัง layout พร้อม; ถ้า viewport/data เปลี่ยนต้องคืน logical anchor/selection ที่ยังมีอยู่ให้อยู่ในมุมมอง ไม่ยึด pixel เก่าจนผิดสินค้า
+- [ ] ตรวจค่า query/filter/expanded/rows/quantity/selection ต้องตรงเดิม และ focus อยู่ใน control ที่ยังมีอยู่; ไม่มี menu/tooltip เปิดเอง, autoplay ใหม่, inert/scroll lock หรือ POST/issuance ซ้ำ
+- [ ] รัน meaningful unit tests ใหม่, affected E2E + Navbar 97 regression, TypeScript, scoped ESLint/Prettier และ diff check บน Node 24; output แต่ละ run แยก TEMP
+- [ ] สรุปทุก flow ว่า pass/fail/not-rendered/blocked พร้อมหลักฐานและไฟล์จริง; gap ข้อมูลห้ามสรุปผ่านทั้งโปรเจกต์ หากเกณฑ์ที่จำเป็นยังตรวจไม่ได้
+- [ ] อัปเดตเฉพาะหัวข้องานนี้และส่งให้ตรวจ Changes/local runtime โดยไม่ commit/push/deploy
+
+### Impact / Rollback
+
+- R1: entry-state/helper และ base/modal/scroll/typography styles กระทบหลายหน้า; เสี่ยง restore ผิด entry, overwrite Next history metadata, แย่ง scroll/focus, duplicate navigation หรือ draft reset. ทดสอบทั้ง source/destination/container และ entry เดิมซ้ำก่อนขยาย phase
+- แยก patches ตาม phase/owner และเก็บ before snapshot ก่อนแก้; ย้อนเฉพาะ hunk ของงานนี้ รักษา Navbar diff เดิม ไม่ git reset/clean ทั้งโครงการ
+- ไม่มี migration, API/DB write, quotation numbering/PDF layout/business rules, data import, dependency หรือ deployment change
+
+### Audit evidence before implementation (historical planning pass)
+
+- Browser read-only: finder Browser Back ผ่าน context/650px; custom return ไม่คืน popup; 5-route cache eviction ทำให้ 650px → 0px; Explore/software hash/quotation draft/service tab short flows ผ่าน
+- Footer 8 viewport cases ไม่พบ overflow/clipped controls; product Footer accordion mobile click/Enter ผ่าน และตรวจภาพ shared/product Footer แล้ว
+- ไม่ submit แบบฟอร์ม ไม่ออกเลขใบเสนอราคา/สร้าง PDF ไม่ส่งข้อความ/เปิดเว็บไซต์ภายนอกเพื่อทำธุรกรรม
+- หลักฐาน/route inventory/state inventory/file manifest อยู่ใน C:/Users/cityc/AppData/Local/Temp/sunford-remaining-ui-audit-20261116; browser automation ปิดแล้ว; source/test hash เดิมต้องตรงหลังจัดทำเอกสาร
+- ยังไม่ได้ทำ full new E2E matrix, ไม่ build/deploy และไม่ได้แก้ application/test/helper ในรอบนี้
+
+### Implementation / verification progress (2026-11-16)
+
+- Implemented approved owner subset only: document-memory return-state helper, early history metadata integration, CatalogRouteFrame wiring, actual-origin ProductReturnLink, existing state owners, modal/specification/carousel cleanup, shared Footer data/renderers/styles. Previously approved Navbar files remain unchanged from their pre-task hashes.
+- RED evidence: original H1 custom Back lost finder URL; H2 cache eviction reset 650px to0. Expanded tests exposed same-URL entry overwrite, native-hash reset and hidden carousel dialog interception. These now pass targeted rounds; independent source review also led to zero-position scroll capture, unambiguous visible-element ordinals, and focusable visible main for back-to-top.
+- Domain state uses native entry identity rather than segment cache identity. Cache records primitive selections/draft IDs; builder resolves remembered codes against current Warehouse options. No browser storage, new dependencies, routes, API or DB writes.
+- Passed so far: full catalog179/179 (174 existing+5 history metadata tests), scoped ESLint and Node24 TypeScript. Current history suite12/12 passed before the expanded responsive/zero-scroll/pagination round. Footer28 route/viewport checks plus contrast passed in the21/25 integration run; remaining four were then investigated and fixed/test-corrected.
+- Browser evidence runs and screenshots are under C:/Users/cityc/AppData/Local/Temp/sunford-ui-remaining/. Navbar97 and final affected suites remain to run against the final revision.
+- Live data constraints: public products395;0products expose multiple gallery images, software listing0cards, and unavailable compatibility pairs are never fabricated. These interaction branches must be reported as not-rendered/data-limited; source/empty-state/metadata checks remain possible.
+
+## Plan: Navbar first — inspect and fix existing UI (2026-11-16)
+
+Status: "Complete"
+Approval: "Approved — อนุมัติครับ แก้ Navbar ทุกหน้า ตามขอบเขตนี้ได้เลย คงหน้าตาเดิมไว้และยังไม่แตะ Footer ครับ"
 
 ### Goal / Sequence
 
@@ -18,9 +531,17 @@ Approval: "Pending — Navbar-first priority confirmed; revised implementation s
 - `tests/e2e/navbar-ui-review.spec.ts` — สร้างชุดตรวจเฉพาะ Navbar เพื่อเติมช่องว่างจาก regression เดิมและเก็บภาพ/geometry; ไม่ทำซ้ำกรณีที่มีอยู่แล้วโดยไม่จำเป็น
 - `tests/e2e/all-products-navbar.spec.ts` — เพิ่ม regression เฉพาะปัญหาที่ตรวจพบในเมนูและตำแหน่งปุ่ม หากชุดเดิมยังไม่ครอบคลุม
 - `tests/e2e/navigation-hover-intent.spec.ts` — เพิ่ม regression เฉพาะปัญหา hover/keyboard/history ที่ตรวจพบ หากชุดเดิมยังไม่ครอบคลุม
+- `tests/e2e/sitewide-navigation.spec.ts` — เพิ่มการรอ Navbar hydration ก่อนทดสอบโฟกัส โดยใช้สถานะ enabled ของปุ่มเดิม ไม่เปลี่ยนเงื่อนไขการเข้าถึงเมนูหรือโฟกัส
 - `spec.md`, `plan.md` — บันทึกขอบเขต การอนุมัติ รายการปัญหา ผลตรวจจริง และไฟล์ที่เปลี่ยน
 
 แก้เฉพาะไฟล์ที่จำเป็นตาม baseline ไม่บังคับให้ทุกไฟล์เปลี่ยน และไม่ถือว่า source ที่อ่านมี bug จนกว่าจะมีหลักฐานจากการตรวจ
+
+### Approved implementation refinement
+
+- ผู้ใช้อนุมัติ Navbar ทุกหน้า โดยคงหน้าตาเดิมและไม่แตะ Footer; แก้จริงเฉพาะ lifecycle cleanup ใน header.tsx และ primary-navigation.tsx พร้อม regression ใน navigation-hover-intent.spec.ts
+- ยืนยัน baseline: ชุดหลัก 42/44; ประวัติ Back/Forward ล้มเหลวซ้ำ 2/2 และ browser ที่ไม่จำลองเวลายืนยันได้แม้ pointer อยู่นอก Navbar; กรณีคลิกจากหน้าแรกไม่ผ่านครั้งแรกแต่ผ่านการรันทวน 2/2 จึงติดตามแยก
+- ภาพ/geometry ก่อนแก้ 15 กรณีหลักและ 12 breakpoint ไม่พบ control ล้น/ถูกบัง; ยังไม่มีเหตุให้แก้ CSS
+- ชุดขยายครั้งแรก 96/97: trace ที่ 834px ยืนยันว่าทดสอบ programmatic focus ขณะปุ่ม Navbar ยัง disabled; เพิ่ม readiness assertion ใน sitewide-navigation.spec.ts ตามรูปแบบเดิมของชุด navigation ก่อนตรวจ keyboard โดยไม่เปลี่ยน app behavior หรือผ่อน assertion
 
 ### Read-only / Out of scope
 
@@ -34,19 +555,19 @@ Approval: "Pending — Navbar-first priority confirmed; revised implementation s
 
 - [x] ตรวจ source ยืนยัน Navbar สองชุดและไฟล์ CSS ที่ใช้งานจริง
 - [x] แยกขอบเขต Navbar ออกจาก Footer ตามคำสั่งล่าสุดของผู้ใช้
-- [ ] ได้รับการอนุมัติ Spec/Plan รอบ Navbar นี้ก่อนแก้แอปพลิเคชันหรือสร้าง test
-- [ ] เก็บภาพและรายการปัญหาก่อนแก้บน `/`, `/products`, `/products/category/scales`, `/about-us`, `/contact-us` ที่ 390×844, 834×1112, 1440×900
-- [ ] ตรวจเพิ่มที่ 320px, 768px, 833/834px, 1023/1024px รวมมือถือแนวนอน 844×390 โดยใช้ touch/coarse pointer ตามบริบท
-- [ ] ตรวจโลโก้ รายการเมนู ปุ่มค้นหา/เปรียบเทียบ/เปิดเมนูตามที่มีจริง: ไม่ล้น viewport ไม่ถูก clip ไม่ทับกัน และรับ input ได้จริง
-- [ ] ตรวจเมนูทุกกลุ่ม: hover ตาม delay เดิม, click, touch, เปิด/สลับ/ปิด, เลื่อนถึงลิงก์สุดท้าย, click ภายนอก และนำทางไปปลายทางเดิม รวม modified click ของลิงก์
-- [ ] ตรวจ Tab/Shift+Tab, Enter/Space ตามชนิด control, ArrowDown ที่มีอยู่ และ Escape; focus มองเห็นได้ ไม่เข้าถึงเมนูที่ซ่อน ไม่มี focus trap ค้าง และคืน focus ไป trigger ที่ยังมีอยู่
-- [ ] ตรวจปุ่มค้นหา/เปรียบเทียบจาก Navbar เปิด/ปิดได้ตาม contract เดิม โดยไม่ขยายไปแก้ overlay/store; แยก tooltip dismissal จาก dialog dismissal ตามเดิม
-- [ ] ตรวจ scroll บน/กลางหน้า เมนูไม่บัง control หรือเหลือ backdrop หลังปิด; แยก overlay ที่ตั้งใจบังเนื้อหาออกจาก defect
-- [ ] ตรวจเปลี่ยนหน้า คลิกลิงก์หน้าเดิม Back/Forward และ resize ข้าม breakpoint: ไม่มีเมนูค้าง ไม่เปิดซ้ำจาก hover เก่า ไม่เหลือ inert/scroll lock
-- [ ] แก้เฉพาะ defect ที่มีหลักฐานและอยู่ในไฟล์/selector ที่ระบุ; หากต้องเพิ่มไฟล์หรือเปลี่ยนดีไซน์ ให้อัปเดต Spec/Plan และรับอนุมัติส่วนที่เพิ่มก่อน
-- [ ] ตรวจซ้ำพร้อมภาพก่อน/หลังขนาดและสถานะเดียวกัน รวมเมนูปิด/เปิดและ focus บนมือถือ แท็บเล็ต เดสก์ท็อป
-- [ ] รัน `bun run typecheck`, ESLint เฉพาะ TS/TSX ที่เปลี่ยน, Prettier เฉพาะไฟล์ที่เปลี่ยน, test ใหม่ (หากสร้าง) และ regression ที่เกี่ยวข้องบน Node 24
-- [ ] สรุปปัญหาที่พบ/แก้ หลักฐาน ไฟล์จริง และข้อจำกัด Navbar ก่อนเริ่มกำหนดขอบเขต Footer
+- [x] ได้รับการอนุมัติ Spec/Plan รอบ Navbar นี้ก่อนแก้แอปพลิเคชันหรือสร้าง test
+- [x] เก็บภาพและรายการปัญหาก่อนแก้บน `/`, `/products`, `/products/category/scales`, `/about-us`, `/contact-us` ที่ 390×844, 834×1112, 1440×900
+- [x] ตรวจเพิ่มที่ 320px, 768px, 833/834px, 1023/1024px รวมมือถือแนวนอน 844×390 โดยใช้ touch/coarse pointer ตามบริบท
+- [x] ตรวจโลโก้ รายการเมนู ปุ่มค้นหา/เปรียบเทียบ/เปิดเมนูตามที่มีจริง: ไม่ล้น viewport ไม่ถูก clip ไม่ทับกัน และรับ input ได้จริง
+- [x] ตรวจเมนูทุกกลุ่ม: hover ตาม delay เดิม, click, touch, เปิด/สลับ/ปิด, เลื่อนถึงลิงก์สุดท้าย, click ภายนอก และนำทางไปปลายทางเดิม รวม modified click ของลิงก์
+- [x] ตรวจ Tab/Shift+Tab, Enter/Space ตามชนิด control, ArrowDown ที่มีอยู่ และ Escape; focus มองเห็นได้ ไม่เข้าถึงเมนูที่ซ่อน ไม่มี focus trap ค้าง และคืน focus ไป trigger ที่ยังมีอยู่
+- [x] ตรวจปุ่มค้นหา/เปรียบเทียบจาก Navbar เปิด/ปิดได้ตาม contract เดิม โดยไม่ขยายไปแก้ overlay/store; แยก tooltip dismissal จาก dialog dismissal ตามเดิม
+- [x] ตรวจ scroll บน/กลางหน้า เมนูไม่บัง control หรือเหลือ backdrop หลังปิด; แยก overlay ที่ตั้งใจบังเนื้อหาออกจาก defect
+- [x] ตรวจเปลี่ยนหน้า คลิกลิงก์หน้าเดิม Back/Forward และ resize ข้าม breakpoint: ไม่มีเมนูค้าง ไม่เปิดซ้ำจาก hover เก่า ไม่เหลือ inert/scroll lock
+- [x] แก้เฉพาะ defect ที่มีหลักฐานและอยู่ในไฟล์/selector ที่ระบุ; หากต้องเพิ่มไฟล์หรือเปลี่ยนดีไซน์ ให้อัปเดต Spec/Plan และรับอนุมัติส่วนที่เพิ่มก่อน
+- [x] ตรวจซ้ำพร้อมภาพก่อน/หลังขนาดและสถานะเดียวกัน รวมเมนูปิด/เปิดและ focus บนมือถือ แท็บเล็ต เดสก์ท็อป
+- [x] รัน `bun run typecheck`, ESLint เฉพาะ TS/TSX ที่เปลี่ยน, Prettier เฉพาะไฟล์ที่เปลี่ยน, test ใหม่ (หากสร้าง) และ regression ที่เกี่ยวข้องบน Node 24
+- [x] สรุปปัญหาที่พบ/แก้ หลักฐาน ไฟล์จริง และข้อจำกัด Navbar ก่อนเริ่มกำหนดขอบเขต Footer
 
 ### Regression / Evidence
 
@@ -63,10 +584,18 @@ Approval: "Pending — Navbar-first priority confirmed; revised implementation s
 
 ### Verification Results
 
-- ตรวจ source แล้ว: SiteNavigation เลือก Header สำหรับ `/` และ PrimaryNavigation สำหรับหน้าภายใน; PrimaryNavigation ใช้ products-overview.module.css
-- พบชุดทดสอบเดิมครอบคลุมเมนูทั้งหมด hover intent และ geometry รอบ 834–1024px จึงใช้เป็น regression ก่อนเพิ่มกรณีใหม่
-- ยังไม่ได้ตรวจ runtime/browser หรือแก้ Navbar; การตรวจรอบนี้ยืนยันขอบเขตไฟล์เท่านั้น
-- เอกสารผ่าน `bun x --no-install prettier --check spec.md plan.md` และ `git diff --check -- spec.md plan.md`; ตรวจยืนยันว่าเนื้อหานอกหัวข้องานที่แทนที่ยังเหมือนเดิม
+- Root cause: Next Cache Components เก็บ route ด้วย Activity; layout-effect cleanup เดิมเคลียร์ timer แต่ไม่รีเซ็ต state เมนู ทำให้หน้าที่แคชไว้กลับมาพร้อมเมนูเปิด
+- แก้จริง 6 ไฟล์: header.tsx, primary-navigation.tsx, navigation-hover-intent.spec.ts, sitewide-navigation.spec.ts, spec.md และ plan.md; ไม่แก้ CSS, Footer, layout, ข้อมูลสินค้า หรือ dependencies
+- Red ก่อนแก้: regression ใหม่ 8 กรณี ผ่าน 4/ไม่ผ่าน 4; /products และหมวด scales คืนเมนูเปิดทั้ง keyboard และ touch mobile. หลังแก้ targeted 9/9 ผ่าน
+- รอบยืนยันสุดท้าย: Chrome navigation 97/97 ผ่าน (5.0 นาที), รวม all-products-navbar, navigation-hover-intent, sitewide-navigation และ site-navigation-surfaces; ไม่มี retry/flaky/skipped ในรอบนี้
+- ชุดขยายรอบแรก 96/97; trace ยืนยัน test โฟกัสก่อน hydration ขณะปุ่ม Navbar ยัง disabled ที่ 834px จึงเพิ่มรอ enabled ของปุ่มเดิมโดยคง focus assertions ทั้งหมด; focused rerun 3/3 และรอบเต็มสุดท้าย 97/97 ผ่าน
+- Browser โดยไม่จำลองเวลา: เมนูหลัง Back/Forward ปิดครบ 4 flow รวม keyboard ที่ pointer อยู่นอก Navbar และ pointer ค้างบน trigger
+- ภาพก่อน/หลังครบ 5 หน้า × 3 ขนาด × เมนูเปิด/ปิด; geometry ของ 130 controls ใน 15 กรณีตรงกันทุกค่า (max delta 0px), ไม่พบปุ่มล้น/ถูกบัง/disabled; Escape ปิดเมนูครบ
+- ตรวจขอบ breakpoint เพิ่ม 12 กรณีและ touch landscape 844×390 อีก 2 กรณีผ่าน; search เปิด/ปิด 6/6 และ compare mode เข้า/ยกเลิก 3/3 ไม่เหลือ inert/scroll lock
+- TypeScript (`bun run typecheck --incremental false`), ESLint เฉพาะ 4 TSX/TS test ที่แก้, Prettier เฉพาะไฟล์ที่แก้ และ git diff --check ผ่าน; runtime Node 24.22.3/Next 16.4.3 dev/Turbopack
+- หลักฐาน: C:/Users/cityc/AppData/Local/Temp/sunford-navbar-baseline-20261116 (baseline, red, green, after, verified-regressions และ JSON report); เปิด Node24 dev server ที่ http://127.0.0.1:3001 ให้เจ้าของตรวจต่อ และปิด browser automation แล้ว
+- ข้อจำกัด: ไม่ได้ build/deploy production หรือทดสอบอุปกรณ์จริง; hydration warnings ที่พบใน baseline development logs ไม่ใช่สิ่งที่แก้ใน scope transient menu นี้. ไม่มี qualifying Next.js framework feedback candidate หลังตรวจ root cause ตามเอกสาร Activity
+- ไม่ commit/push/deploy; งานจัดระเบียบเอกสารและ Footer ยังพักไว้
 
 ## Plan: Center phone product model and category (2026-11-14)
 
@@ -6463,3 +6992,223 @@ Impact: test/documentation-only based on reproduced evidence; preserve productio
 Verification: all149,599existing cells/styles checked except intended128header text changes; all1,582facts joined and33IDs resolved; used units10defined/23blank preserved. New155×12raw attribute sheet,128×8mapping sheet; Website396rows unchanged. Fresh live155-row attribute parity and final8-sheet reopen/ZIP/external-link checks pass. Final SHA-256 `2e3e6ca1f9268332fff3067f3825a5a9099a870cb54733e182efc9f5d775594e`. Exact backup: Desktop `sunford-warehouse-master-ai-data-with-website-no-thread.backup-attributes-20261114-145255.xlsx`; source unchanged. No database/app change.
 
 Files: only the new Desktop XLSX, exact timestamped source backup, temporary snapshot/builder/candidate under TEMP, and spec.md/plan.md notes. No app/database writes. R2 rollback: retain original and backup; remove only exact new output if requested.
+
+## Plan: Propose Navbar grouping from all Warehouse item groups (2026-11-16)
+
+### Files
+
+- `spec.md`, `plan.md` — เพิ่มผลตรวจและขอบเขต proposal โดยรักษางานเดิม
+- `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-groups-20261116/inventory.json` — snapshot อ่านอย่างเดียวสำหรับยืนยันตัวเลข/รายการ
+- `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-groups-20261116/navbar-proposal.md` — ข้อเสนอและตารางครบทุกกลุ่มให้เจ้าของเปิดอ่าน
+- ไม่มี application/test/config files ในขอบเขตแก้ไข และยังไม่กำหนด implementation manifest จนเจ้าของเลือกแนวทาง
+
+### Steps
+
+- [x] ยืนยันว่าผู้ใช้อนุมัติเฉพาะตรวจข้อมูลและข้อเสนอ ห้ามแก้โค้ด
+- [x] ตรวจ schema/ทุกกลุ่ม/รายการจริงใน read-only transaction และเทียบ product RPC กับ predicate ของโค้ดปัจจุบัน
+- [x] เสนอเมนูหลักและการจับคู่กลุ่ม พร้อมข้อยกเว้นราย SKU และจุดที่ต้องให้เจ้าของตัดสินใจ
+- [x] เขียนรายงาน อัปเดต Spec/Plan และตรวจจำนวนกลุ่ม/ผลรวม รวมยืนยันว่า source นอกเอกสารไม่เปลี่ยน
+
+### Impact / Rollback
+
+- ไม่มีผลต่อเว็บไซต์หรือฐานข้อมูล; เป็นข้อเสนอที่ยังไม่อนุมัติ implementation ย้อนกลับได้ด้วยการนำเฉพาะหัวข้อเอกสาร/รายงานของงานนี้ออก ไม่แตะ diff เดิม
+
+### Verification Results
+
+- Live company 1: 21 groups = 17 active/nondeleted + 4 inactive/deleted; 732 items, 519 active/nondeleted, ไม่มี active item ไร้กลุ่ม
+- RPC 516 รายการ; เรียก isPublicWarehouseItem ปัจจุบันได้ 395; ผลรวมรายกลุ่ม 395 ตรงกัน ตรวจกลุ่ม COMPONENT/OTHER/RAW_MATERIAL/PACKAGED_PRODUCT จากรายการจริง
+- ตรวจ source hashes, scoped Markdown formatting และ diff whitespace ก่อนส่งมอบ; ไม่ต้องรัน build/browser tests เพราะไม่มี code/UI change
+- ข้อจำกัด: ยังไม่ได้จัดหมวดราย SKU ทุกตัวหรือทดสอบ proposed Navbar ใน browser/production; รอการเลือกแนวทางและขอบเขต implementation
+
+### Submenu-only revision after owner clarification
+
+- [x] ยึดทั้ง 8 เมนูหลักเดิม ยกเลิกข้อเสนอเปลี่ยนเมนูหลัก 6 รายการ; ไม่มี application changes
+- [x] ประมวลผล live feed ผ่าน existing catalog/fact/classification/storefront transforms พร้อม defaultNavigation/primary-navigation เพื่อเทียบเมนูย่อยจริง เก็บ `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-groups-20261116/submenu-coverage.json`
+- [x] ปรับรายงานเดิมเป็นข้อเสนอเพิ่ม/แยก/ซ่อนชั่วคราว พร้อมแยก gap ข้อมูลจากสินค้าที่ไม่มีขาย
+- Verification: current transforms395products; platform38แต่materialsubgroups0ทุกกลุ่ม; analytical/indicatorwaterproof/iOS0. Countsเป็นdata-derivedไม่ใช่browser/production; ไม่มีcode/route/database/deploychange. Scoped Markdown formatting/diff checks และ source hashes ตรวจซ้ำก่อนส่งมอบ
+- Final verification: scoped Markdown formatting และ `git diff --check -- spec.md plan.md` ผ่าน; เมนูหลัก8และผลรวมหมวด395ผ่าน. Source hashes19ไฟล์ต่างจาก baseline รอบ auditก่อนหน้าและ whole-tree diff check พบ whitespaceใน product-gallery.tsx ซึ่งเป็น diffนอกงานนี้ จึงไม่อ้างว่า sourceทั้งworkspaceคงเดิม ไม่แก้หรือย้อน diffเหล่านั้น งานข้อเสนอรอบนี้ใช้การแก้เอกสารเท่านั้น
+
+## Plan: Eight-menu Navbar with three columns and destination audit (2026-11-16)
+
+### Authorization / Delivery Gate
+
+- ผู้ใช้เลือกแผนผังล่าสุดครบ8เมนูและ3คอลัมน์แล้ว พร้อมขอเพิ่มตรวจปลายทาง แต่ยืนยัน ยังไม่ต้องแก้โค้ด รอบนี้อนุญาตให้แก้เฉพาะ spec.md/plan.md และเก็บaudit artifactsนอกsource tree
+- Specหัวข้อเดียวกันมี selected menu tableและlabel→destination mapping เป็นข้อกำหนดหลัก ไม่ใช้ข้อเสนอ6เมนูหรือdirect-onlyก่อนหน้า
+- Ownerเลือกให้รายการไม่พร้อมแสดงจางและกดไม่ได้แทนการซ่อนแล้ว; Specเป็นReady to CodeสำหรับNavbarเฟสนี้เท่านั้น โดยapplicationimplementationยังPendingapproval ส่วน6หน้าที่ขาด/ข้อมูล/เนื้อหา/ไฟล์ดาวน์โหลดเป็นเฟสถัดไปที่ยังNeed Information
+- Filesด้านล่างเป็นmanifestเสนอให้ตรวจ ไม่ใช่สิทธิ์เริ่มแก้; ไม่ใช้การอนุมัติFooter/historyก่อนหน้าแทนการอนุมัติNavbarงานใหม่นี้
+
+### Files — documentation in this round
+
+- `spec.md` — เพิ่มexact8×3menucontract, approval record, input/data contracts, route/content gaps และacceptance criteria
+- `plan.md` — เพิ่มfilemanifest, dependency order, destinationaudit, regressionmatrix, sharedimpact/rollback และผลตรวจจริง
+- `MEMORY.md` — บันทึกrepeatabletestfailureเรื่องลิงก์ปลายทางซ้ำในpanelที่ปิด/retainedDOMตามglobalAGENTS; ข้อสังเกตเฉพาะงาน ไม่เปลี่ยนappscope
+- Evidenceที่อ่าน/สร้างนอกsource: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-groups-20261116/destination-http-audit.json`, `destination-content-audit.json`, `submenu-coverage.json`; ไม่สร้างapplication/test filesในรอบนี้
+
+### Files — A. shared Navbar implementation after approval
+
+| Path                                                           | งานที่เสนอ / ขอบเขต                                                                                                                                                          |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/site/data/navigation.ts`                         | แก้short labelsและแหล่งลิงก์ที่existingnormalizerใช้ รักษาsavedsitecontentและเมนูที่ไม่ได้เผยแพร่ผ่านHeader; ไม่มีCMS/data rewrite                                           |
+| `src/features/site/data/primary-navigation.ts`                 | ประกอบเมนูหลัก8และ3คอลัมน์จากselectedcontract, label/href/headingเดียวกันทั้งสองrenderers รวมจัดสเปคและบริการ; ไม่คงลิงก์ที่auditไม่พร้อมเป็นลิงก์หลอก                       |
+| `src/components/layout/header.tsx`                             | ให้heading/hasSubmenu/desktop-mobileตรง3คอลัมน์, จัดสเปคมีpanelพร้อมทางเข้าหน้าตรง; preserveexisting hoverintent/hashnavigation/layout-effectmenu-reset                      |
+| `src/components/layout/primary-navigation.tsx`                 | รองรับจัดสเปคแบบmainlink+submenuในdesktop/touch/mobile รักษาพฤติกรรมบริการและfocus/keyboard/historyresetเดิม; ไม่เขียนทับงานlifecycleที่มีอยู่                               |
+| `src/styles/header.css`                                        | เฉพาะflyout selectorsตั้ง3columnsและความกว้าง/overflowให้ทุก8เมนู รวมจัดสเปค/บริการ; homepageblackpaletteและnavbaralignmentคงเดิม                                            |
+| `src/features/catalog/components/products-overview.module.css` | เฉพาะclassesที่PrimaryNavigationใช้อยู่ เช่น menuContent/menuPrimary/menuGroup/productMenuContent และresponsive; ห้ามเปลี่ยนpagecarousel/Footer/layoutselectorsอื่นในไฟล์นี้ |
+
+ใช้ NavigationItem.links + 2 groups และsubmenuLabelเดิม โดยเพิ่ม `src/features/site/types.ts` เข้าmanifestAเพื่อขยายlinksในNavigationGroupและNavigationItemด้วยoptional disabled; defaultเมื่อไม่ระบุยังเป็นenabledเพื่อไม่กระทบconsumerเดิม Renderersต้องpreserveflagผ่านnormalization/mapping. ไม่เสนอแก้SiteNavigation/SiteHeader/global layouts/base.cssหรือเพิ่มdependency/serverqueries/polling/stocklogic/statepersistence. รูปแบบavailabilityอิงauditที่ตรวจยืนยันก่อนimplement
+
+### Files — B. necessary product destination support, separately gated by data and approval
+
+ส่วนBทั้งหมดเป็นเฟสถัดไป ไม่อยู่ในimplementationเฟสNavbar-disabledปัจจุบัน จำเป็นเมื่อจะเปิด6เมนูที่ยังไม่มีหน้าตรงชื่อ ภายใต้approvalข้อมูลและfilemanifestแยก; การเปลี่ยนNavbarไม่สร้างหน้าขึ้นมาเอง หน้าเหล่านี้ใช้currentdynamictemplatesได้ จึงยังไม่เสนอสร้าง app/page.tsxใหม่
+
+| Path                                                     | งานที่เสนอเมื่อข้อมูลพร้อม                                                                                                                                            |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/catalog/data/warehouse-classification.ts`  | เพิ่มverifiedmembershipของCheckweigher/ชุดเครื่องชั่ง/ชุดPOS/เครื่องพิมพ์/โหลดเซลล์-อะไหล่/ลูกตุ้ม; แยกprinterออกจากscanner-drawerเมื่อใช้ชื่อใหม่ ห้ามเดาวัสดุ/IP/OS |
+| `src/features/catalog/data/scale-subcategories.ts`       | เพิ่มdefinitions/membershipของตรวจน้ำหนักอัตโนมัติและชุดพร้อมใช้ โดยไม่เพิ่มรุ่น/specจำลองในlegacydata                                                                |
+| `src/features/catalog/data/scale-subcategory-pages.ts`   | เพิ่มid/slug/title/returncontextของ2หน้าที่ขาด คงold8subcategoriesและindustrialrouteเดิม                                                                              |
+| `src/features/catalog/data/pos-subcategories.ts`         | เพิ่มชุดPOSพร้อมใช้ รักษาAndroid/Windows/iOSเดิมและเงื่อนไขข้อมูลที่ยืนยัน                                                                                            |
+| `src/features/catalog/data/accessory-subcategories.ts`   | เพิ่มprinter/electronics/weightdefinitionsและแก้membershipPOSaccessoriesให้ตรงscanner-drawer; labelsของหน้ากับNavbarไม่ต้องยาวเท่ากันแต่ความหมายตรงกัน                |
+| `src/features/catalog/data/product-subcategory-pages.ts` | ลงทะเบียนslugs/id/returncontextsของpos/accessoriesใหม่ให้dynamicroute/staticparamsและBackcontextรู้จัก                                                                |
+| `src/features/catalog/data/category-destinations.ts`     | เฉพาะหากยืนยันให้legacyprinteraliasชี้หน้าprinterใหม่; preserve query/hash และไม่เปลี่ยนaliasอื่นโดยไม่จำเป็น                                                         |
+
+ไม่แก้ warehouse-products.ts/publicpredicate, warehouse-storefront-selection.json, RPC/SQL, master_item_group, legacyproductmapping/modeldata หรือimagesเพื่อทำให้จำนวนหมวดดูครบ หากpipelineทิ้งsubcategoryใหม่เพราะexistingstorefrontoverride ต้องพิสูจน์และเสนอsubsetแก้ก่อนขยายmanifest
+
+#### Six missing destinations — proposed, not existing URLs
+
+| เมนู                                       | หน้าเสนอใช้templateเดิมหลังอนุมัติ           | หลักฐานสมาชิกที่ต้องมี                                                                    |
+| ------------------------------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| เครื่องชั่ง → ตรวจน้ำหนักอัตโนมัติ         | `/products/category/scales/checkweigher`     | ExactSKUที่เป็นCheckweigher; ไม่ใช้หน้าโซลูชันเตือนขาด–เกินแทนเครื่องตรวจน้ำหนักอัตโนมัติ |
+| เครื่องชั่ง → ชุดพร้อมใช้                  | `/products/category/scales/sets`             | ชุดWarehouseที่ยืนยันสินค้าหลักเป็นเครื่องชั่ง; ไม่รวมชุดPOSทั้งหมด                       |
+| POS → ชุดพร้อมใช้                          | `/products/category/pos/sets`                | ชุดWarehouseที่ยืนยันสินค้าหลักเป็นPOS                                                    |
+| อุปกรณ์ → เครื่องพิมพ์                     | `/products/category/accessories/printers`    | PRINTERที่ผ่านpublicpredicateปัจจุบัน; ไม่เปลี่ยนSKUเผยแพร่                               |
+| อุปกรณ์ → โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์ | `/products/category/accessories/electronics` | Loadcell/PCB/Adapter/Batteryและรายการที่ยืนยันหน้าที่จากWarehouse                         |
+| อุปกรณ์ → ลูกตุ้มน้ำหนัก                   | `/products/category/accessories/weights`     | WEIGHTที่ผ่านfeed; ไม่โฆษณาบริการCalibration                                              |
+
+ชื่อslugเป็นข้อเสนอเพื่อให้reviewขอบเขตได้ ไม่เปิดหรือทดสอบURLเหล่านี้ในฐานะหน้าที่มีอยู่ปัจจุบัน ต้องอนุมัติroute/dataส่วนนี้ก่อนcode
+
+### Files — C. tests proposed after implementation approval
+
+- `tests/catalog/navigation.test.ts` — แก้assertionslabels/defaultnormalizationที่เกี่ยวข้องโดยไม่ลบnonmutation/compatibilitychecks
+- `tests/catalog/primary-navigation.test.ts` — ตรวจexact8menus/3columns, selectedorder/labels, mainURLเดิม, guidepanelและremovalofstalecopies; เปลี่ยนexpectationเดิมที่บังคับguideไม่มีsubmenu
+- `tests/e2e/navbar-three-columns.spec.ts` — สร้างใหม่เพื่อclickทุกselectedoccurrenceผ่านHeaderและPrimaryNavigation, destination/contentreadiness, 3columngeometryและmobileorder; HTML200ไม่ใช่passconditionเพียงอย่างเดียว
+- `tests/e2e/all-products-navbar.spec.ts`, `tests/e2e/navigation-accessibility.spec.ts`, `tests/e2e/navigation.spec.ts`, `tests/e2e/sitewide-navigation.spec.ts` — แก้เฉพาะassertions/selectorsของlabel/order/guidepanelที่เปลี่ยน รักษาinteractionและdirect-navigationcoverage
+- หากทำB: `tests/catalog/warehouse-site-data.test.ts`, `tests/catalog/scale-subcategory-pages.test.ts`, `tests/catalog/product-subcategory-pages.test.ts`, `tests/catalog/category-destinations.test.ts` — membershipต้องตรงหลักฐาน ไม่รวมค่าบริการ/PPE/threadผิด, metadata/returncontexts/aliasesเก่าคงอยู่
+- หากทำB: `tests/e2e/catalog-subcategory-navigation.spec.ts`, `tests/e2e/accessory-subcategory-pages.spec.ts`, `tests/e2e/pos-subcategory-pages.spec.ts`, `tests/e2e/scales-subcategory-pages.spec.ts` — ตรวจหน้าหมวดใหม่/เก่า, productlinks/back-origin/query/scroll และ404ของslugไม่รู้จัก
+- Existing regressionที่รันแต่ไม่เสนอแก้: `tests/e2e/navigation-hover-intent.spec.ts`, `tests/e2e/navigation-reload.spec.ts`, `tests/e2e/site-navigation-surfaces.spec.ts`, `tests/e2e/home-category-navigation.spec.ts`, `tests/e2e/history-restoration.spec.ts`, `tests/e2e/shared-ui-review.spec.ts`; หากพบassertionผูกกับlabelเก่าต้องตรวจและเพิ่มsubsetในmanifestก่อนแก้ ไม่ลดassertionเพื่อให้ผ่าน
+- SiteNavigation, appdynamicpagefiles, product-category-mock, Footer/history owners และcontentrenderersเป็นread-only referenceในเฟสปัจจุบัน; types.tsเพิ่มเข้าAตามdisabledamendmentด้านบน ส่วนBและtestsของBเลื่อนไปเฟสถัดไป
+
+### Destination audit / verification procedure
+
+1. สร้างinventoryจากeffective navigationที่ทั้งสองrenderersใช้ เก็บrowต่อเมนูหลัก/column/label/proposed-or-live-target รวมmainlinks; เปรียบเทียบselectedtable8×3และระบุenabled/disabledตามreadiness โดยทุกรายการยังมองเห็นได้
+2. Normalizealiases/query/hashและแยกexistingURLกับproposedURL จากนั้นGETทุกuniqueexistingtarget ติดตามredirect/status/finalURL ตรวจnotFound/soft404/redirectวน และตรวจanchorปลายทางมีอยู่ ไม่ใช้HEADหรือstatus200อย่างเดียว
+3. ตรวจmain/sectionที่ผู้ใช้เห็น: headingตรงเรื่อง, articleมีข้อความสาระไม่ใช่breadcrumb/emptyheadings/โครงplaceholder; หน้าสินค้าต้องมีสมาชิกและกดรายละเอียดSKUที่ถูกต้อง เปรียบเทียบกับWarehouse-onlymembership แยก0SKUจากข้อมูลจับคู่ไม่ครบ
+4. คู่มือ/ดาวน์โหลดต้องมีเอกสารหรือไฟล์จริง ตรวจtarget/contenttypeหรือทางเข้าที่ชัดเจน; ลิงก์productdetailไม่เท่ากับdownload ทดสอบexternalformว่ามีทางออกจริงโดยไม่กรอก/submit และไม่ออกใบเสนอราคาเพื่อทดสอบเมนู
+5. Browserตรวจทุกoccurrenceบนhomeและinterior: enabledต้องclickถึงหน้าตรงชื่อหลังhydrate ส่วนdisabledต้องเห็นข้อความจาง/aria-disabledไม่มีhref และclick/touch/middle/modifiedclick/Enter/Spaceไม่navigate/newtab/prefetch ไม่ใส่disabledในTaborderแต่screenreaderอ่านได้; สถานะเดียวกันทุกcontext
+6. Desktopตรวจhover/click/ArrowDown/Tab/ShiftTab/Escape/outsideclick; mobiletouchเปิด/กลับ/ปิดdisclosureและdirectmainlinkได้; guidepanelใหม่ต้องมีทางไปguideตรงและไม่เพิ่มmenulock
+7. ตรวจBack/Forwardผ่าน3+routesและsameURLentry, focus/scroll/navigationreset, query/draftเดิม, no orphaned backdrop/inert/scrolllock; preserveapprovedhistoryimplementationและreloadcontract
+8. ตรวจviewportsในSpec, zoom200%, main8labels/controlbounds, overlap/clipping, bodyoverflowและpanelverticalscroll; เก็บscreenshotsทุก8panelsที่1440และ390ทั้งสองrenderers รวมboundarycases834/1024 และtouchlandscape
+9. รายงานสถานะรายrowเป็น ready / missing-page / empty-data / empty-content / wrong-target / blocked พร้อมเหตุผลและหลักฐาน ไม่รวมรายการhidden/blockedเป็นpassของเมนูครบทั้งหมด
+
+### Steps
+
+- [x] บันทึกข้อความเลือกโครงสร้างและข้อห้ามแก้โค้ด พร้อมเพิ่มการตรวจpage/contentตามคำสั่งเสริม
+- [x] อ่านdata flow, renderers, CSSowners, dynamicroutes, sourcecontentpolicyและtests เพื่อระบุmanifestจริง
+- [x] ตรวจ49existingURLsด้วยGETและsemanticHTML11targets แยก6missingdedicatedpages/emptymembership/emptycontent/downloadgap
+- [x] อัปเดตSpec/PlanโดยรักษาประวัติและงานFooter/historyที่กำลังทำอยู่
+- [x] ผู้ใช้เลือกแสดงรายการไม่พร้อมแบบจาง/disabledแทนการซ่อน; SpecReady to CodeเฉพาะNavbarเฟสA/Cที่เกี่ยวข้อง ไม่ต้องเติมcontent/สร้างpageในเฟสนี้
+- [x] รับอนุมัติimplementationของเฟสNavbar-disabledจริงก่อนcode; ownerอนุมัติ8menus/3columns/visible-disabledและตรวจครบเมื่อ2026-11-16 ส่วนBและcontentยังรอข้อมูล/approvalแยก
+- [x] ก่อนcodeอ่านinstalledNextguides Linking/Link/Page/generateStaticParamsตามpathsที่ระบุแล้ว
+- [x] เก็บbaselineworkingdiff/ภาพ/ผลtestsแยกจากงานอื่น และยืนยันreadinessของลิงก์enabled; รายการไม่พร้อมใช้disabled ไม่มีการทำBหรือเติมcontentในเฟสนี้
+- [x] ทำAdata→renderers→CSSเฉพาะNavbar และtestsCตามdependency; ไม่แก้ชื่อหมวด/เนื้อหาสินค้าทั้งเว็บเพื่อย่อคำในNavbar
+- [x] Node24catalogue184/184, TypeScript, scopedESLintผ่าน; Prettier/diffchecksตรวจหลังfinaldocs; ไม่buildเพราะไม่มีB/staticparamschange ไม่รันdb:deploy/vercel-build/deploy
+- [x] รันbrowsermatrixด้วยChromechannelและแยกoutputdirectoriesนอกsourcetree; ตรวจทุกready/disabledoccurrenceและupdatedregressionsครบ ผลตามfinalverificationด้านล่าง
+- [x] อัปเดตSpec/Plan/report/readinessmanifestและตรวจNextfeedbackcandidateแล้ว ไม่มีqualifyingframeworkissue ไม่submitfeedback
+
+### Impact / Rollback
+
+- R2สำหรับเอกสารรอบนี้; R1สำหรับimplementationเพราะsharedNavbarแสดงทุกหน้าและBมีผลclassification/subcategorylisting/backcontextทั่วcatalogue
+- ความเสี่ยง: guideจากdirectlinkเป็นlink+panel, controlsล้นใกล้834px, ชื่อสั้นทำให้selectorsเก่าไม่ตรง, aliases/returncontextผิด, membershipใหม่หลุดเพราะstorefrontoverride และหน้าHTTP200แต่เนื้อหาว่าง
+- Rollback: ย้อนเฉพาะhunksของงานNavbarและnewsubcategoryregistrations/testsที่ทำในรอบนั้นจากbaselineก่อนเริ่ม; ไม่revertทั้งไฟล์ที่มีdiffFooter/history/Navbarlifecycleของงานอื่น ไม่ลบSKU/ตาราง/รูป/เนื้อหาWarehouse
+- การแก้เนื้อหาโซลูชัน/คู่มือ/ดาวน์โหลดที่ขาดเป็นscopeเพิ่ม ต้องมีแหล่งข้อมูลและfilemanifestที่อนุมัติใหม่ก่อนแก้; แผนนี้ไม่อนุญาตrestorelegacyproductcontentใน warehouse-content.ts
+
+### Verification Results — documentation/audit only
+
+- Existing49URLsทั้งหมด200 ไม่มีHTTP404/5xxในlocalaudit; นี่ไม่ใช่หลักฐานว่าnewmenusclickผ่านหรือว่าproductionพร้อม
+- registry/sourceauditไม่พบdedicatedpageสำหรับ6เมนูใหม่; accessories/posมีหน้าจริงแต่ยังรวมprinter; analytic/indicatorwaterproof/platformmaterialsเป็น0จากearlierdataaudit
+- SemanticHTML11targets: solutions8หน้ามีarticleTextว่าง, technical-specificationไม่มีบทความ/ไฟล์คู่มือที่ยืนยัน, software/downloadมีproductdetail6แต่ไม่พบdirectdownloadfileในHTML; warranty/registerมีเนื้อหา ไม่submitform
+- Contentถูกล้างตามWarehouse-onlypolicyในwarehouse-content.ts จึงไม่จัดปัญหานี้เป็นNextframeworkbugและไม่เติมเนื้อหาเก่าเอง; รอบนี้ไม่มีqualifyingNextfeedbackcandidate
+- Finalchecks: selectedtableครบ8เมนู×3คอลัมน์, 95submenuoccurrencesและ8mainlinks รวม103จุดที่ต้องตรวจหลังimplementation; manifestพบexistingpaths33รายการและproposednewtest1รายการ ไม่มีpathที่อ้างว่ามีอยู่แต่หาไม่พบ
+- `bunx --no-install prettier --check spec.md plan.md` และ `git diff --check -- spec.md plan.md` ผ่าน. ไม่รันapplicationtypecheck/build/e2eเพราะรอบนี้แก้เอกสารเท่านั้น
+- Sourcehashเทียบbaselineรอบเอกสารพบ `tests/e2e/history-restoration.spec.ts` เปลี่ยนระหว่างงานจากงานอื่นในsharedworkspace จึงไม่อ้างwholeworkspaceunchanged และไม่แก้/ย้อนdiffนั้น งานNavbarรอบนี้ทำเฉพาะSpec/Planกับread-onlyaudit
+
+### Amendment: visible dimmed unavailable menus — current implementation scope
+
+- Implementationเริ่มตามข้อความอนุมัติจริงของownerแล้ว ทำA/CเฉพาะNavbar-disabled; บันทึกก่อนหน้าในหัวข้อเอกสารเป็นประวัติ ไม่ใช่ข้อห้ามเริ่มงานหลังapproval
+- Testsubsetที่ต้องปรับในเฟสA: `tests/catalog/category-destinations.test.ts` เปลี่ยนจำนวนrelatedlinksจากcontractเก่าเป็น3/4/3/3/4 โดยคงassertionว่าlegacyaliasesกับcanonicalURLsให้projectionเหมือนกัน ไฟล์นี้อยู่manifestCเดิมแล้วและไม่มีการแก้appalias/dataของB
+- ตามconditionalregressionmanifestC: เพิ่มsubset `tests/e2e/home-category-navigation.spec.ts` เฉพาะexpectationsของlabel/heading/จำนวนและdisabledstateที่เปลี่ยนตามselectedcontract ไม่เปลี่ยนgeometry/darkpalette/directnavigationassertions; sourceproduction scopeไม่ขยาย
+- ตามconditionalregressionmanifestC: `tests/e2e/navigation-hover-intent.spec.ts` เฉพาะtouchchildselectorให้scopeไปmobilepanelที่visible เพราะลิงก์priceมีสำเนาในall-productsที่ปิดอยู่แล้ว ไม่เปลี่ยนhoverdelay/timingหรือassertionปลายทาง
+- ตามconditionalregressionmanifestC: `tests/e2e/site-navigation-surfaces.spec.ts` เฉพาะhelperนำทางไปserviceเปิดnativeFooterdisclosureก่อนเมื่อmobileซ่อนลิงก์ และscopeพร้อมใช้งานก่อนคลิก; คงassertionssurface/history/scroll/inertเดิมทั้งหมด ไม่แก้Footerหรือrestorestateของapp
+
+- รอบนี้เอกสารเท่านั้น หลังผู้ใช้อนุมัติcodeจึงทำA7ไฟล์ (navigation.ts, primary-navigation.ts, types.ts, Header, PrimaryNavigation และCSS2ไฟล์) พร้อมtestsCที่เกี่ยวข้อง โดยไม่ทำB/สร้างpage/เติมข้อมูล
+- คง8เมนูหลัก/3คอลัมน์/95submenuoccurrencesและ8mainlinks รายการmissing-page/empty-data/empty-content/wrong-target/blockedแสดงจางและกดไม่ได้ ใช้statusหลังnormalizecanonicaltargetให้ทุกสำเนาของลิงก์ตรงกัน เช่นงานวิเคราะห์กับห้องแล็บต้องdisabledร่วมกัน
+- รายการเริ่มต้นdisabledจากaudit: 6หน้าสินค้าใหม่; งานวิเคราะห์/ห้องแล็บ; Indicatorกันน้ำ; วัสดุแท่น4รายการ; solutions8ปลายทางทุกoccurrence; คู่มือและสเปก; ดาวน์โหลดที่ยังไม่มีไฟล์ยืนยัน; สแกนเนอร์และลิ้นชักเมื่อปลายทางยังรวมprinterไม่ตรงscope ห้ามdisabledmainแท่นชั่งหรือซอฟต์แวร์ที่มีรายการแล้วตามไปด้วย
+- คง8mainURLเดิม รายการreadyยังเป็นLink; disabledrenderเป็นspan role=link aria-disabled=trueไม่มีhref/tabIndex/navigationhandler/prefetch ไม่ต้องใช้preventDefaultหรือpointer-eventsอย่างเดียว ไม่มีcursor/hoverunderlineที่สื่อว่ากดได้ สีจางใช้existingmutedpaletteและตรวจอ่านได้บนdark/lightโดยไม่dimทั้งคอลัมน์
+- MissingpageproposedpathsในBคงเป็นreferenceในเอกสาร/manifest ห้ามสร้างลิงก์activeไปURLเหล่านั้นหรือfallbackผิดเรื่องเพื่อให้renderครบ; รายการdisabledไม่มีhrefในDOM
+- Testamendment: `tests/catalog/primary-navigation.test.ts` ตรวจavailabilitydefault/backwardcompatibilityและaliasduplicateflags; `tests/catalog/navigation.test.ts` ตรวจdisabledไม่หายหลังnormalizer; `tests/e2e/navbar-three-columns.spec.ts` ตรวจมองเห็นครบ/enabledtarget/disabledsemanticsและgestureblocking/taborder ทั้งสองrenderersและทุกviewportในSpec
+- Accessibility/interactionchecksต้องตรวจfocusเคลื่อนข้ามdisabledไปenabledได้ Escapeกลับtriggerตามเดิม; disabledtextยังอยู่ในaccessibilitytree ถ้าmenukeyboardhelperเดิมเลือกanchorตัวแรก ให้หาลิงก์enabledแรกโดยไม่focusdisabledspan
+- Regression: disabledclickไม่เปลี่ยนURL/scroll/historyentry ไม่เปิดtabหรือoverlay ไม่ทำให้panel/scrolllockค้าง; การคีย์Enter/Spaceทดสอบว่ารายการไม่activate ไม่สร้างnavigation โดยไม่ดักSpaceทั่วdocumentจนเสียnative scrolling
+- ก่อนcodeอ่านNextguidesตามแผนเดิม; หลังcodeรันtypecheck/scopedlint/format/catalogueและaffectedbrowserregressions ไม่มีdb/deploy/fullcontentchanges ผลตรวจเอกสารamendmentบันทึกหลังscopedchecksผ่าน
+- Amendmentverification: exactmainmenus8/submenuentries95ยังครบ, Ready to CodeเฉพาะNavbar-disabledและcodeapprovalpending; manifestเพิ่มtypes.tsแล้ว. ScopedPrettierและ `git diff --check -- spec.md plan.md` ผ่าน งานนี้แก้เอกสารเท่านั้น ระหว่างเทียบsourcehashพบreturn-state/history-restoration/shared-ui-reviewtestsเปลี่ยนจากงานอื่น จึงไม่อ้างwholeworkspaceunchangedและไม่แตะdiffเหล่านั้น
+
+### Final verification — approved Navbar implementation
+
+- CompletedA/C: application6filesและtestsตามmanifest/conditionals; ไม่จำเป็นต้องแก้navigation.tsเพราะsourcelegacy23definitionsคงอยู่ได้ ไม่มีB/หน้าใหม่/เนื้อหา/ข้อมูลราคา/DB/deploy
+- Actualmain8/submenus95ตรงSpecทุกlabel/ลำดับ; 54submenusreadyและ41disabled รวมmain62ready/41disabled. ทุกdisabledเป็นspanrolelinkaria-disabledไม่มีhref/tabstop/navigationhandler/prefetch ใช้mutedpaletteเดิมและอ่านได้ทั้งdark/light
+- Node24.22.3: fullcatalogue184/184pass, tsc--noEmit--incrementalfalsepass, scopedESLintทุกchangedTS/TSXpass; scopedPrettier/diffหลังfinaldocsบันทึกในfinalreceipt
+- Newbrowsercoverage23cases: fullrun22passและtouch/zoomcaseแก้testbudget30→120sตามจำนวนactionsพร้อมเพิ่มnative-touchcoverageแล้วlatestcasepass; ไม่ปิดassertions/skipfailure. 95entries×4contexts=380occurrences, readyclickมีpage/content, disabledclick/middle/Ctrl/Cmdไม่navigate/newtab/historychange; native-tap41×2ผ่าน
+- Geometry/semantics8widths320/390/768/833/834/1023/1024/1440ทั้งสองrenderersและ8panelsผ่าน; screenshots32ภาพสำหรับ390/1440; เพิ่มtouch844×390และzoom200%-layoutsimulation720×450/DSF2ผ่าน ไม่อ้างnativebrowserUI/physicaldevice
+- UpdatedHome/accessibility19/19pass; nativehover-touch2/2pass; directfamily2/2pass; categoryURL/history/SSR1/1pass; surface/sitewide45/45pass. Broad165runเริ่มต้นมีobsoletefixturesและถูกหยุดหลังhelperรอclosedFooterdisclosureซ้ำ จึงใช้ผลsuccessของกรณีไม่เปลี่ยนร่วมกับtargetedrerunsของทุกfailure ไม่อ้างsingle165/165cleanrun
+- Broadrelatedstate4failuresก่อนหน้า latestisolated4/4pass (finder834,relateddetail,phone-rail,quotation-backtotop) โดยงานนี้ไม่แก้apphistory/Footer; testsของงานอื่นเปลี่ยนระหว่างการตรวจจึงระบุrunและsourcehashข้อจำกัดไว้
+- Baselineและevidenceอยู่ `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-implementation-20261116/`; reportหลักverification-report.md, readiness-manifest.json, catalogue-final.log และแต่ละbrowseroutput. ชุดregressionที่ปรับเพิ่มเติมเฉพาะselectedlabel/visibility/helperอยู่conditionalmanifestด้านบน
+- Scopeguard: preservedpreexistingHeader/PrimaryNavigationlifecyclehunksและFooter/historysourceที่ไม่ได้แก้โดยงานนี้; externalchangesระหว่างงานรวมnavigation-startและtestfilesของอีกงาน ไม่revertและไม่อ้างwholeworkspaceunchanged
+- FinalNextfeedbackreportingpassไม่มีqualifyingcandidate. Build/production/Safari/physicaldeviceอยู่นอกverificationรอบนี้ ไม่มีcommit/push/deployหรือDBmutation
+- Finalreceipt: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-implementation-20261116/final-receipt.json` บันทึกผลและhash20ไฟล์ของงานนี้; scopedPrettier/diffchecksหลังfinaldocsผ่าน และfocusednavigation/normalization/alias21/21ผ่านอีกครั้งกับSpecฉบับสุดท้าย
+
+## Plan: Compact Navbar submenu columns and shared shop icon (2026-11-16)
+
+### Files
+
+- `spec.md`, `plan.md` — บันทึกคำขอspacing/shopparity ขอบเขตผลกระทบและผลตรวจ
+- `src/styles/header.css` — เฉพาะdesktopsubmenu--wide/all-products tracks/gapและprimarywrap; ไม่แก้palette/font/topNavbarspacing
+- `src/features/catalog/components/products-overview.module.css` — เฉพาะNavmenu3columns/gapและnavToolsanchor sizing/mobileopenvisibility; ห้ามเปลี่ยนpage/carousel/Footerselectors
+- `src/components/layout/primary-navigation.tsx` — แทนcomparetrigger/subscriptions/badgeที่ไม่ใช้ด้วยnative shopanchor+TooltipและSVGเดียวกับHeader; คงfinder/search/navhistoryเดิม
+- `tests/e2e/navbar-three-columns.spec.ts` — เพิ่มactualcompactgeometry/shopiconparity/nativeactivation และcatalog-toolbarcomparisonregression; ใช้existing8menu/disabledchecks
+- `tests/e2e/tooltips.spec.ts` — เฉพาะ2comparison-entryfixturesให้เปิดfinderและใช้catalogtoolbarแทนHeadercompareที่ถูกแทนตามคำขอ คงtooltip/content/placement/actionassertionsเดิม
+- `tests/e2e/home-category-navigation.spec.ts` — ปรับตัวเลือกในชุดวัดระยะให้รวมลิงก์ร้านค้าของทั้งสอง Navbar; เดิมเลือกปุ่มและ `.header-shop` จึงข้าม anchor ใหม่ในหน้าภายในและเทียบตำแหน่งผิดตัว คงเกณฑ์ระยะไม่เกิน 1px ตามเดิม เป็นการปรับ test ให้ตรงคำขอ ไม่เพิ่มขอบเขตแอป
+- Read-onlyreferences/regressions: Header.tsx, types/navigationdata, Tooltipกลาง, comparisonstore/catalogue และall-products/navbarhover/home/sitewidespecs; ไม่เพิ่มไฟล์appหรือtestใหม่
+
+### Steps / Verification
+
+- [x] ยืนยันscopeจากคำขอโดยตรงและบันทึกSpecReady to Codeก่อนแก้application; พักงานชื่อรุ่นตามowner
+- [x] อ่านstyles/owners/NextLinkguideและshopcontractเดิม; เก็บbaseline3panels×2renderersที่1440และsourcecopies/hashes
+- [x] ทำcontent-sizedtracks fit-content(360px)/max-content/max-content +32pxทั้ง2renderers; คงlogooriginและ3columns ส่วนmobileคงstackเดิม
+- [x] แทนinteriorcompareiconด้วยshopnativeanchorที่ใช้SVG/href/label/Tooltipเหมือนhome; stylesปุ่ม/anchorขนาดตรงกัน ไม่เพิ่มไอคอนที่สาม
+- [x] Browser: วัดbefore/aftercolumnstartsและgapทุก8menusสองrenderersที่834/1024/1440, boundary/mobilechecksเดิม และshopทุกcontextที่390/834/1440; ตรวจSVGเทียบreferenceและทุกhitboxอยู่viewport
+- [x] Browser: interceptเฉพาะshopresponseทดสอบsame-tabclick/Enterและmodifiedclick ไม่ทดสอบซื้อ/checkout; comparisontoolbarเลือก2สินค้า/เปิดdialog/ปิดยังใช้ได้
+- [x] รันscopedNavbargeometry, all-products/hover/home/sitewide/tooltipที่ได้รับผล โดยoutputdirเฉพาะงานนอกsource; ไม่รันทุกproducttestที่ไม่เกี่ยวกับscope
+- [x] Node24typecheck/scopedESLint/Prettier/diff; ตรวจsourcehashแยกexternalplaceholder/historydiffsโดยไม่ย้อนทับ
+- [x] อัปเดตSpec/Plan/reportและNextfeedbackpassก่อนส่งมอบ ไม่มีDB/build/deploy
+
+### Impact / Rollback
+
+- SharedCSS/PrimaryNavigationกระทบทุกหน้าแต่ไม่เปลี่ยนmenudataหรือfeaturesอื่น ย้อนเฉพาะงานนี้3apphunksจากbaseline ไม่revertทั้งworkingtree
+- การนำcomparetriggerออกเป็นผลที่ownerขอให้interiorเหมือนhomepage; cataloguecomparisonคงเดิมและมีregressionยืนยัน ส่วนlegacycompare-mode.specที่อ้าง.header-compareเก่าไม่ใช้เป็นหลักฐานของentrypointปัจจุบัน
+
+### Verification Results
+
+- หลักฐาน: C:/Users/cityc/AppData/Local/Temp/sunford-navbar-compact-shop-20261116/ มีภาพก่อน/หลัง, before-geometry.json, after-geometry.json (48 panels, gap32px), scope-audit.json, verification-report.md และ final-receipt.json
+- Browser cases มีผลผ่านครบ 112 กรณีจากหลายรอบ: รอบแรก 20 ผ่าน/2 fixture timeout; native rerun 2 ผ่านหลังใช้ context page event สำหรับ external new tab; regression 82 ผ่าน/8 fixture fail; home spacing rerun 8 ผ่านหลังนับ anchor ร้านค้าด้วย เกณฑ์ geometry ไม่เปลี่ยนและไม่มี app fix เพิ่มจากผลทดสอบ
+- Responsive 16 กรณีตรวจ 8 panels/95 entries ทุกครั้งที่ 320/390/768/833/834/1023/1024/1440px; shop parity 6 routes × 3 widths, native click/Enter/Ctrl-click 2 renderers, compare toolbar 2 สินค้า/เปิดปิด modal, touch/landscape/zoom, hover/history/search/Tooltip ผ่าน
+- Node24.22.3 `tsc --noEmit`, ESLint 4 ไฟล์ TS/TSX, Prettier 8 ไฟล์ และ scoped `git diff --check` ผ่าน Initial TypeScript พบ 4 errors ในไฟล์ placeholder test ที่ทำพร้อมกัน; เจ้าของงานนั้นแก้แล้ว final rerun ผ่าน โดยงาน Navbar ไม่แก้ไฟล์นั้น
+- ตรวจ hash ของ 424 ไฟล์ที่มี baseline: แยกการเปลี่ยนจากงาน placeholder ไว้ใน scope-audit.json; Header, navigation data/types, Tooltip และ SiteNavigation ไม่เปลี่ยนจากต้นงานนี้ ตรวจ diff 3 app files เทียบ baseline แล้วมีเฉพาะ spacing/shop ตามขอ
+- End-of-task observer/Next feedback review: ไม่มี candidate ใหม่ที่ยืนยันว่าเป็นปัญหา framework; ไม่รัน feedback command เมื่อไม่มี candidate ข้อจำกัด: local headless Chrome, touch/zoom จำลอง, shop response จำลอง; ไม่ได้ build, deploy หรือทดสอบ checkout จริง

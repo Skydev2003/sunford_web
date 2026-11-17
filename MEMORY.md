@@ -772,3 +772,9 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Release formatting failed because final `plan.md`/`spec.md` edits contained missing/duplicate blank lines; earlier scoped application/test formatting checks did not cover that final documentation state.
 - Correct behavior: finish all documentation updates, format every changed supported file, then run the full `bun run format:check` before handing off a commit/release. Any later edit invalidates that formatting result. Preserve the release/CI gates.
 - Owner approved the native check-only `.githooks/pre-commit`; this checkout now uses local `core.hooksPath=.githooks`. For new checkouts, inspect existing hooks before running `bun run hooks:install`; do not replace custom hooks silently. Keep LF bytes and executable Git mode. The hook never formats or stages files; after correcting formatting, review and stage the intended changes before retrying a commit. Existing CI/release checks remain necessary for bypassed hooks and later merge/rebase results.
+
+## Scope navigation tests to the open panel (2026-11-16)
+
+- Observed: adding the approved three-column menus repeated a category destination inside the closed all-products panel; an existing touch test selected that hidden first match. Other fixtures expected old labels, a removed modal entry point, or a Footer link inside a closed native disclosure.
+- Root cause: tests treated a destination as unique across all retained/closed DOM and tied readiness to obsolete navigation markup.
+- Correct behavior: scope submenu selectors to the visible active panel, open native disclosures before following their links, and verify current canonical page/content after navigation. Keep disabled entries in label/structure assertions, but assert that they have no href or Tab stop and never treat them as active links. Preserve hover timing, geometry, focus and destination checks when updating fixtures.
