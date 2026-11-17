@@ -2,7 +2,7 @@
 
 ## Task: Fix product tooltip and Contact hydration before UAT delivery (2026-11-17)
 
-Status: "Ready to Code — authorized fixes; verification pending"
+Status: "Verified and delivered — source/tests on origin/uat; closing receipt outside source"
 Approval: "Approved — owner requests both fixes, retesting and commit/push; includes completed parallel work in separate commits"
 
 ### Goal / Scope
@@ -20,6 +20,7 @@ Approval: "Approved — owner requests both fixes, retesting and commit/push; in
 - `src/components/layout/primary-navigation.tsx` — synchronize transient mobile state and skip imperative inert for elements owned by the new renderer; retain other pages' existing handling.
 - `src/features/content/components/contact-page.tsx`, `src/components/layout/footer.tsx` — replace only native root tags with the React-owned equivalent; same tags/attributes/classes/children in browser DOM.
 - `tests/e2e/tooltip-contact-hydration.spec.ts` — targeted startup/animation/hydration regressions, including delayed client delivery and early mobile menu open; existing tooltip/Navbar/history suites are regression references.
+- `tests/e2e/hicks-law-catalog.spec.ts` — align the completed parallel review's stale indicator/zoom fixtures with current Warehouse membership/facts; no product/UI changes.
 - Reconcile only stale count/order/label fixtures in `tests/catalog/primary-navigation.test.ts`, `tests/e2e/navbar-three-columns.spec.ts`, `tests/e2e/home-category-navigation.spec.ts`, `tests/e2e/navigation-accessibility.spec.ts` against the frozen99-entry matrix below. Do not change `src/features/site/data/primary-navigation.ts`: c9b9a278… was already its baseline hash when this task began.
 - `spec.md`, `plan.md`, `MEMORY.md` — actual approval, evidence, result/rollback and reusable root-cause lessons. Existing parallel notes retained.
 - Brand reference: current base.css, product summary, Contact, Footer and Navbar renderers. Verify320/390/834/1440px; no text/font/color/layout redesign.
@@ -143,12 +144,23 @@ The owner edited submenu content and then requested shortest-first ordering in t
 
 ### Acceptance / Approval / Delivery
 
-- [ ] First-hover product tooltip opens with normal motion; summary help hitbox remains stable; hover/focus/Escape/touch and reduced motion remain correct.
-- [ ] Early mobile menu on Contact produces no hydration warnings, keeps background actually inert and keyboard confined, and restores both after close/navigation/history.
-- [ ] Existing7tooltip cases and relevant Navbar/animation/history/parallel product-readiness regressions pass; fresh Node24 typecheck/lint/catalog/UAT/format/build checks recorded as appropriate.
-- [ ] Review and validate completed parallel dependency/product-review changes and owner-edited99-entry Navbar; stage exact groups, pass pre-commit hooks and push uat without force. Keep source hashes and remote/local receipt; no main/deploy.
+- [x] First-hover product tooltip opens with normal motion; summary help hitbox remains stable; hover/focus/Escape/touch and reduced motion remain correct.
+- [x] Early mobile menu on Contact produces no hydration warnings, keeps background actually inert and keyboard confined, and restores both after close/navigation/history.
+- [x] Existing7tooltip cases and relevant Navbar/animation/history/parallel product-readiness regressions pass; fresh Node24 typecheck/lint/catalog/UAT/format/build checks recorded as appropriate.
+- [x] Review and validate completed parallel dependency/product-review changes and owner-edited99-entry Navbar; stage exact groups, pass pre-commit hooks and push uat without force. Keep source hashes and remote/local receipt; no main/deploy.
 - Missing Information: none for fixing or delivery scope. No automatic approval inferred; actual user approvals quoted above.
 - Impact: shared animation, UI store, Navbar and Footer; React state ownership changes only background inert and summary animation. Rollback only this task's hunks/new renderer; preserve prior Navbar and parallel source. Baseline patches/hashes captured in `C:/Users/cityc/AppData/Local/Temp/sunford-tooltip-contact-fixes-20261117/`.
+
+### Verified behavior / delivery evidence
+
+- Both defects reproduced before fixes: tooltip help hitbox moved14.74/15.07px at390/1440 under normal motion; early Contact menu produced an extra-inert hydration mismatch at320/390. Preserve raw RED reports.
+- GREEN: existing tooltip7plusnew2 passed9/9; final development focused4cases repeated3times passed12/12. Production focused4 also passed within the broader regression. Contact assertions retain actual main/footer inert, Tab confinement, Escape focus, menu reopening and Back cleanup, with no ignored console errors.
+- Production build: installed Next16.4.6 default Turbopack completed706/706 static pages. Node24catalog185/185, UAT28/28, typecheck and full ESLint passed. No application edits after that build; current owner-edited Navbar SHA256 remains c9b9a278869d69666e2cf6612e0eb3e9f4a731d314681ad38feeb0ebf246897c.
+- Responsive browser evidence at320/390/834/1440: Contact has no horizontal overflow; product help tooltip visible; console/page error arrays empty. Screenshots and raw reports live in the task evidence directory above. Navbar/motion matrix33/33 passed, including eight panels and three columns across breakpoint boundaries.
+- Final affected navigation run40/40 passed, including all99entries from Home/Contact at390/1440:396entry checks,71ready/28disabled in each context. Latest successful production selections across14files total209unique cases (116from the broad run outside Hicks,33matrix/motion,20all-products,40finalnavigation). This is a verified union of separate reports, not a single209-case run. `verified-browser-union.json` records every case and its source report; initial failed runs remain available.
+- Follow-up fixtures compare current Warehouse facts and category membership: SW31 connection text, LED-R5 accessory without invented facts, and zoomed WPS10KS facts. Empty waterproof classification does not invent a filter. Home verifies each primary entry's own href or disabled/no-href state and retains the all-category link, regardless of shortest-first order. No data/UI changes for these fixtures.
+- Concurrent existing commit a5def05 contains the26previously pending paths and is preserved. Follow-up e95e3e4 covers production hydration-bundle testing;7b19c55 covers verified Warehouse/shortest-first fixtures. Both pre-commit full-format hooks passed. Source/tests pushed only to origin/uat; local and remote both verified at7b19c5501d9b094e325043e60fd8d06a97763274. `source-push-receipt.json` records that delivery. These three documents form the closing commit; its final remote/local SHA and clean-tree receipt are written outside source as `delivery-receipt.json`, alongside `verification-report.md`. No main push or production deployment.
+- Next feedback instruction pass read once. Current verified defects are application animation/inert ownership and stale test assumptions; an unavailable borrowed dev process and one server listener warning do not establish a recurring framework issue. No qualifying framework report draft or submission. Original dev disappearance remains unattributed; task-owned dev3000 replacement is available, production3110 is temporary.
 
 ## Task: Verify, commit and push authorized backlog before Navbar implementation (2026-11-16)
 

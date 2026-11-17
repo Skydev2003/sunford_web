@@ -796,3 +796,9 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - A summary tooltip lost hover because the global entrance animation translated its ancestor table16px; fonts and Header readiness were insufficient. Keep `.detail-weighing` outside stagger translation and test first-hover hitbox stability with normal motion as well as reduced motion.
 - Early mobile navigation wrote inert onto Contact's streamed main before hydration and produced an attribute mismatch. Let React-owned native Contact/Footer elements select transient navigation state through the existing store's server snapshot; skip imperative mutations for those elements and for ProductsOverview's existing callback-owned background. Keep actual inert, focus trapping and cleanup rather than suppressing warnings.
 - Escape could remove the document keydown handler before it restored focus. Restore the mobile trigger in the Header's own Escape handler before closing, and test after Tab has moved focus into a submenu.
+
+## Reconcile fixtures with the owner's current data (2026-11-17)
+
+- Observed: historical Navbar104-entry/first-link assumptions and legacy product-fact expectations failed against the owner's99-entry shortest-first tree and Warehouse-only cards.
+- Root cause: fixtures treated historical menu order and category metadata as current rendered facts; the shortest item can also be disabled.
+- Correct behavior: capture and preserve task-start owner data hashes, verify the latest explicit owner edits, and compare each current link's own href or disabled/no-href state. Check product facts against actual Warehouse values and omit missing facts/empty filters. Update only proven stale fixtures, retain failing reports, and preserve commits created concurrently during validation.
