@@ -104,25 +104,54 @@ for (const width of [320, 390, 834, 1440]) {
   });
 }
 
-test("indicator facts use verified display membership without presenting legacy display weights", async ({
+test("indicator facts use verified display membership and accessories omit unavailable facts", async ({
   page,
+  request,
 }) => {
+  const {
+    products,
+  }: {
+    products: {
+      name: string;
+      warehouseSubcategoryIds?: string[];
+      warehouseCard?: { connection?: string };
+    }[];
+  } = await (await request.get("/api/products")).json();
+  const source = products.find((product) => product.name === "SW31")!;
+  expect(source.warehouseSubcategoryIds).toContain("indicator-led");
+  expect(source.warehouseCard?.connection?.trim()).toBeTruthy();
   await page.goto("/products/category/indicators?subcategory=indicator-led");
   const catalog = page.getByRole("region", { name: catalogName });
-  await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("LED-R5");
+  await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("SW31");
   const card = catalog
     .locator("article")
-    .filter({ has: page.getByRole("heading", { name: "LED-R5", exact: true }) });
+    .filter({ has: page.getByRole("heading", { name: "SW31", exact: true }) });
   await expect(card).toBeVisible();
-  await expect(card.locator("[data-product-facts]")).toContainText("หน้าจอLED");
+  await expect(card.locator("[data-product-facts]")).toContainText(
+    source.warehouseCard!.connection!.trim(),
+  );
   await expect(card.locator("[data-product-facts]")).not.toContainText("พิกัดน้ำหนัก");
   await expect(card.locator("[data-product-facts]")).not.toContainText("ค่าละเอียด");
   await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("");
-  await catalog.getByRole("button", { name: "กันน้ำ", exact: true }).click();
-  const realCards = catalog.locator("article[data-decision-facts]");
-  expect(await realCards.count()).toBeGreaterThan(0);
-  for (const card of await realCards.all())
-    await expect(card.locator("[data-product-facts]")).toContainText("กันน้ำ");
+  const waterproof = products.filter((product) =>
+    product.warehouseSubcategoryIds?.includes("indicator-waterproof"),
+  );
+  const waterproofFilter = catalog.getByRole("button", { name: "กันน้ำ", exact: true });
+  if (waterproof.length) {
+    await waterproofFilter.click();
+    const realCards = catalog.locator("article[data-decision-facts]");
+    await expect(realCards).toHaveCount(waterproof.length);
+    expect((await realCards.getByRole("heading", { level: 3 }).allTextContents()).sort()).toEqual(
+      waterproof.map((product) => product.name).sort(),
+    );
+  } else await expect(waterproofFilter).toHaveCount(0);
+  await page.goto("/products?category=accessories");
+  await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("LED-R5");
+  const display = catalog
+    .locator("article")
+    .filter({ has: page.getByRole("heading", { name: "LED-R5", exact: true }) });
+  await expect(display).toBeVisible();
+  await expect(display.locator("[data-product-facts]")).toHaveCount(0);
 });
 
 for (const width of [390, 1440]) {
@@ -185,15 +214,12 @@ for (const width of [390, 1440]) {
 
 test("decision facts and controls remain readable at200percent CSS zoom", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto("/products/category/platforms");
-  await page
-    .locator('[data-overview-section="lineup"]')
-    .getByRole("button", { name: "ดูโครงสร้างแท่นชั่งทั้งหมด", exact: true })
-    .click();
+  await page.goto("/products?category=scales");
+  const catalog = page.getByRole("region", { name: catalogName });
+  await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("WPS10KS");
   await page.evaluate(() => {
     document.documentElement.style.zoom = "2";
   });
-  const catalog = page.getByRole("region", { name: catalogName });
   await expect(
     catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }),
   ).toBeVisible();

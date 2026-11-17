@@ -117,9 +117,18 @@ for (const width of [1400, 1440, 1920]) {
       await expect(panel.locator(".submenu-group-secondary > p")).toHaveText(
         definition.groups!.map((group) => group.label),
       );
+      for (const item of expected) {
+        const link = panel
+          .locator(".submenu-group-primary")
+          .getByRole("link", { name: item.label, exact: true });
+        if (item.disabled) {
+          await expect(link).toHaveAttribute("aria-disabled", "true");
+          await expect(link).not.toHaveAttribute("href");
+        } else await expect(link).toHaveAttribute("href", item.href);
+      }
       await expect(
-        panel.getByRole("link", { name: expected[0].label, exact: true }),
-      ).toHaveAttribute("href", definition.href);
+        panel.locator(`.submenu-group-primary a[href="${definition.href}"]`),
+      ).toHaveCount(1);
     }
     await header.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
     const panel = header.locator(".submenu-panel.is-active");
