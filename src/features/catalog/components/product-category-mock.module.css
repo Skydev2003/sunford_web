@@ -503,7 +503,13 @@
 .guideCard:hover h3 {
   color: var(--red);
 }
-@media (min-width: 700px) {
+.subcategoryScroller {
+  flex-basis: 100%;
+}
+.views {
+  margin-left: auto;
+}
+@media (min-width: 48rem) {
   .browser {
     padding: 56px 32px 80px;
   }
@@ -545,8 +551,14 @@
   .count {
     flex: 1;
   }
+  .subcategoryScroller {
+    flex-basis: 320px;
+  }
+  .views {
+    margin-left: revert;
+  }
 }
-@media (min-width: 1100px) {
+@media (min-width: 80rem) {
   .browser {
     padding-inline: 48px;
   }
@@ -584,14 +596,6 @@
   }
   .list {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-@media (max-width: 699px) {
-  .subcategoryScroller {
-    flex-basis: 100%;
-  }
-  .views {
-    margin-left: auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {

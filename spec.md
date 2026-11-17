@@ -1,5 +1,123 @@
 # Project state
 
+## Task: Sitewide Mobile-first responsive migration with Tailwind breakpoints (2026-11-17)
+
+Status: "Implemented — responsive verified; independent Catalog/no-JavaScript limitations recorded"
+Approval: "Approved — owner authorized all phases including Header1024; preserve design/CSS, test each phase, no commit/push"
+
+### Goal
+
+ปรับ Responsive ทุก public page/template เป็น Mobile-first ใช้ Tailwind default viewport breakpoints ผ่าน CSS/CSS Modules เดิม คงดีไซน์ของแต่ละรูปแบบและพฤติกรรมเดิม ดำเนินการหลังเจ้าของอนุมัติครบทุกPhaseและHeader1024แล้ว
+
+ข้อกำหนดที่ได้รับ: Mobile-first ทั้งเว็บ, Breakpoint ตาม Tailwind, คงดีไซน์, ใช้ CSS เดิม, ไม่ติดตั้ง Tailwind และเสนอแผนก่อน implementation
+
+### Scope In
+
+- Home, Products/Explore, category/subcategory/detail, Search/Comparison, Header ทั้งสองแบบ/Footer/background/Tooltip/contact controls, Service/Contact/About/software/solutions/guide/builder/quotation form รวมสถานะ empty/disabled/missing-image/not-found/error ที่มีอยู่จริง
+- ย้ายค่าจอเล็กเป็น base แล้วเพิ่ม min-width จากเล็กไปใหญ่ เฉพาะจุดที่ Component ต้องเปลี่ยน ไม่ต้องใช้ครบ5breakpointsทุกComponent; ตรวจทั้ง global cascade และ CSS Modules
+- เปลี่ยน JavaScript viewport queries และ image sizes ให้ตรง CSS ของ Component คง SSR/server snapshot, native links, focus/inert/scroll cleanup และ history semantics
+- เก็บ baseline ใหม่จาก working tree หลัง RSP-01/owner Navbar editsนิ่ง รวม pending changes และทำตาม phase/exact candidate manifest ใน plan.md
+
+### Scope Out
+
+- ไม่แก้ config/dependency/stack ไม่ commit/push/deploy หรือเขียนข้อมูลธุรกิจ; application/test changes จำกัด approved manifest
+- ไม่ติดตั้ง Tailwind/UI library/plugin ไม่ใช้ @theme/@apply ไม่เปลี่ยน styling system และไม่เพิ่ม breakpoint library/abstraction
+- ไม่เปลี่ยนโลโก้ สี font family/weight ข้อความ รูป/ข้อมูลสินค้า Routes/Props/API/ราคา/VAT/เลข quotation หรือเปิดเมนูที่ยัง disabled
+- ไม่ refactor state/history/animation/data loading ไม่คืนใช้ Component ที่ไม่มี caller และไม่แก้ legacy product data
+- ไม่ใช้ viewport breakpoints แทน container queries, hover/pointer, reduced-motion, orientation, height queries, print rules หรือกฎภายใน third-party iframe
+- ไม่แก้ PDF generator/DB/คลังภาพ ไม่เพิ่มคอลัมน์หรือขยาย max-width เพียงเพื่อใช้ 2xl
+
+### UI/UX Brand Alignment
+
+- Reference: [Tailwind Responsive design](https://tailwindcss.com/docs/responsive-design) เปิด17พฤศจิกายน2026 แสดง v4.3; src/styles/base.css, active renderers/CSS ปัจจุบัน, RSP-01ที่ตรวจแล้ว และ owner Navbar changes ล่าสุด
+- Invariants: คง design tokens, typography, hierarchy/order, logo/product aspect ratio, ปุ่ม/การ์ด/ระยะของแต่ละ variant, motion profiles และ reduced-motion behavior ใช้ variant เดิมในช่วงใหม่ ไม่ลด font เพื่อฝืน desktop menuให้พอดี
+- การย้าย breakpoint ทำให้บางความกว้างเปลี่ยนว่าใช้ mobile/tablet/desktop variant ใด จึงไม่รับประกัน pixel-identical ทุกความกว้างเดิม ความเปลี่ยนแปลงตาม mapping ด้านล่างได้รับอนุมัติแล้ว โดยไม่ขยายเป็น redesign
+- คง viewport meta เดิม รองรับตั้งแต่320 CSS px; ไม่ตั้ง body min-width เพื่อซ่อน overflow
+
+### Target Breakpoint Contract
+
+| ชื่ออ้างอิง | Threshold CSS/JS    | ค่าเทียบ px เมื่อ initial font16px | หน้าที่                                                    |
+| ----------- | ------------------- | ---------------------------------: | ---------------------------------------------------------- |
+| Base        | ไม่ครอบ width query |                         ต่ำกว่า640 | Mobile defaults; fit320px                                  |
+| sm          | 40rem               |                                640 | จอเล็กกว้างขึ้นเมื่อจำเป็น                                 |
+| md          | 48rem               |                                768 | Tablet/detail/cards/rail ตาม Component                     |
+| lg          | 64rem               |                               1024 | Desktop Header ทั้งสองแบบและ desktop compact               |
+| xl          | 80rem               |                               1280 | Large desktop variants เดิม                                |
+| 2xl         | 96rem               |                               1536 | Wide viewport/size hintsเมื่อมี use case; คง max-widthเดิม |
+
+- CSS layout ใช้ mobile base + @media(min-width:40rem)/48rem/64rem/80rem/96rem เรียงขึ้น; active bundled CSS ต้องไม่มี nonstandard viewport thresholds Rangeพิเศษใช้ lower/upper boundsจากชุดเดียวกัน เช่น width >=64rem และ width <80rem
+- Base มีผลทุกขนาดจน override ไม่ใช้ sm เป็นคำแทนมือถือทุกเครื่อง ไม่เปลี่ยน root font-sizeเพื่อให้ breakpoint fit; remใน media query อิง initial browser font ไม่ใช่ body14px
+- CSS/JS/sizes ใช้ thresholdชุดเดียวกัน เก็บ contractกลางใน Specและใช้ rem literals ไม่ใช้ CSS custom property ใน native media conditionและไม่เพิ่ม tooling
+- Image sizesเป็น first-match list ต้องเรียงเงื่อนไขให้ตรง slot จริง ไม่คัดลอกลำดับ CSS min-widthที่ทำให้เงื่อนไขแรกกินทุกจอ
+
+### Proposed Mapping / Expected Range Changes
+
+| กลุ่มกฎเดิม                                          | เป้าหมายที่เสนอ                                                           | ผลที่ต้องตรวจ                                                                                |
+| ---------------------------------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 380/420/480/540/560/575.98/576/600/640               | Mobile base และ sm40remตามหน้าที่; fluid wrapping/clamp/minmaxสำหรับจอแคบ | คง320/390 ไม่เก็บ custom narrow breakpointหรือรวมเงื่อนไขซ่อนคนละ feature                    |
+| 699/700,720/721,734/735,759/760/761,767/768,800/801  | md48remสำหรับ tablet/detail/cards/rail                                    | บางช่วงใช้variantแคบกว่าหรือกว้างกว่าเดิมจนถึง768; CSS/phone-modeJSเปลี่ยนพร้อมกัน           |
+| Header833/834 และcompact834–1023                     | lg64rem ทั้งHeader/PrimaryNavigation/background offsets                   | **834–1023ใช้ mobile menu**; desktopเริ่ม1024; mergeเฉพาะ compact-font overrideที่ไม่ใช้แล้ว |
+| Products index scene offset735และ834                 | md48remและlg64remตามลำดับ                                                 | scene budgetตรงHeader48/44px ไม่เหลือช่องว่างหรือรูปถูกตัด                                   |
+| 900/991.98/992/1000/1023/1024                        | lg64remสำหรับsidebar/multi-column                                         | ช่วง900–1023อาจใช้variantแคบกว่าเดิม; คง gutterค่าของvariantเดิม                             |
+| 1056/1069/1099/1100/1101/1199.98/1200/1201/1280/1400 | xl80remสำหรับlarge layout/spacing/decorative treatment                    | large variantเริ่ม1280; desktop1440คงvariantเดิม                                             |
+| 1600ในimage hint                                     | 2xl96rem                                                                  | คง slot/max-widthและตรวจขนาดภาพที่เลือก                                                      |
+
+ข้อยกเว้นที่กำหนดไว้: nav rulesใน products-overview และ site-backgroundใช้ lgตามHeader; solutions-overview body gridเดิม834ใช้lgและhero splitเดิม1069ใช้xl; Service stepsเดิม801ใช้mdคู่กับ workspace; products-index-carouselคง coarse-pointer/short-height fallbackเดิม เปลี่ยน width759เป็น width <48rem
+
+ตารางจับคู่ตามหน้าที่ ไม่ใช่ search/replace ทุกliteral ถ้าvariantเดิมไม่fitที่thresholdใหม่ ให้หยุดเฉพาะphaseนั้น เก็บหลักฐานและเสนอแก้Spec/Planก่อน redesignหรือเพิ่มbreakpointนอกชุดนี้
+
+### Input / Output
+
+- Source inventory17พฤศจิกายน2026:54CSSfiles,41filesมี108viewport-width media rules;31TS/TSXfilesมี46บรรทัด viewport clauses รวม5filesเกี่ยวกับruntime queryและ26files image hints ไม่ถือว่าทุกไฟล์มี active caller
+- Input: current working tree/owner navigation/RSP-01, Warehouse-only contract, existing CSS และ public route registryที่จะเก็บใหม่ก่อน implementation ไม่ hardcodeจำนวนเมนูจากประวัติ
+- Outputหลังอนุมัติ: public UIใช้Mobile-first/Tailwind-width contract, CSS/JS/sizesตรงกัน, design variantsเดิม และ baseline/after/regression evidence
+- Source inventory/ข้อเสนอแยก: C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/mobile-first-plan/
+
+### Acceptance Criteria
+
+- [x] เสนอSpec/Plan พร้อม thresholds/mapping/exact candidate files/phase gates/ผลกระทบ ก่อนแก้application
+- [x] Active CSSทุกpublictemplateเป็นmobile base +ascending standard min-width; CSS/JS/sizesไม่มีnonstandard viewport thresholdที่ยังใช้งาน แยกcontainer/non-width/third-party/unused sourceอย่างมีหลักฐาน
+- [x] Headerทั้งสองแบบแสดงmobileต่ำกว่า64remและdesktopตั้งแต่64rem; visible controls/linksอยู่ในviewport ไม่ซ้อน และhit-testได้แม้bodyใช้overflow:clip
+- [x] Public route matrixไม่มีdocument overflow/ข้อความหรือปุ่มถูกclip; internal rails/comparison tablesเลื่อนถึงรายการท้ายได้
+- [x] Golden comparisonคงcolors/fonts/logo/order/media/controlsและค่าของvariantเดิมที่320/390/1440; ความต่างเพราะช่วงย้ายbreakpointตรงmappingและมีหลักฐาน ไม่ลดfontเพื่อปิดregression
+- [x] ตรวจต่ำกว่า/ตรง/สูงกว่า640/768/1024/1280/1536; ตรวจold critical widths720/735/759/800/833/834/900/1069/1100/1400 รวมlandscape/short-height/normal/reduced motion
+- [x] Resizeขณะmenuเปิดไม่ค้างinert/scroll lock; hover/touch/keyboard/Tab/Escape/focus/native links/ready-disabled/cached Back-Forward/historyทำงานตามcontractเดิม
+- [x] Home Hero/opening/logo docking, Products carousel/mobile rail/swipe/shared-element, catalog filters, detail spec/Tooltip, Search/Comparison, Footer disclosure และService/Contact/guide/quotation interactionsผ่าน
+- [x] RSP-01 Thumbnailคง65×65pxทั้ง3image states/page-onlyไม่เกิดช่องว่าง; Warehouse missing fields/zero-price inquiryไม่ถูกเติมข้อมูล
+- [ ] Typecheck/Lint/Catalog/UAT/relevant existing-new Browser regression/final format/production buildผ่าน; ตรวจ localproductionหลังCSSchunking รายงานข้อจำกัดSafari/devices/real zoomตามที่ตรวจได้จริง
+- [x] ทุกphaseมีsource hashes/after evidence/known limitsและupdatedspec/plan; ไม่commit/push/deployหากไม่ได้รับคำสั่งเพิ่ม
+
+### Missing Information
+
+- ไม่มีข้อมูลจำเป็นขาดสำหรับขอบเขตที่อนุมัติ ข้อจำกัดใน Verification Results เป็นผลตรวจจริงและงานเดิมนอก Responsive scope ไม่ใช่การอนุมัติเพิ่มจาก Agent
+- ก่อนimplementationต้องfreeze current source/route/menu/baselineใหม่หลังงานอื่นนิ่ง เพราะมีpending changes/งานNavbarเกิดพร้อมกัน ใช้ข้อมูลจริงตอนนั้น ไม่ใช้snapshotเก่าเป็นข้อบังคับ
+
+### Approval Record
+
+- 17พฤศจิกายน2026 เจ้าของขอSpec/Plan Mobile-first/Tailwind breakpointsทั้งเว็บ คงดีไซน์/CSSเดิม ไม่ติดตั้งTailwind และกำชับยังไม่แก้โค้ด
+- ต่อมา17พฤศจิกายน2026 เจ้าของระบุ: “อนุมัติ Spec/Plan ครับ รวมย้าย Header ไปที่ 1024px ลงมือปรับ Mobile-first ตามแผนทีละ Phase คงดีไซน์และ CSS เดิม ไม่ติดตั้ง Tailwind ทดสอบแต่ละช่วงก่อนทำต่อ ยังไม่ต้อง commit/push ครับ” อนุมัติครบทุกphaseและmanifestเดิม โดยต้องผ่านgateก่อนทำต่อ ไม่มีcommit/push/deploy
+
+### Current State / Impact
+
+- Implementation complete within approved scope; active Responsive suite29/29ผ่านทั้งDevและProduction. คงRSP-01/ownerNavbar/concurrentSearch changes. ทุกPhaseมีgateและหลักฐาน; ไม่commit/push/deploy
+- Blast radiusสูง: globalcascade, Header/body offsets, SSR-sensitive media state, image loading, gestures/history และtestfixtures ใช้phase gates/rollbackเฉพาะงาน ไม่ resetทั้งworking tree
+
+### Planning Verification
+
+- ตรวจexisting manifest pathsครบและไม่มีmigrationtestfileถูกสร้าง; scopedPrettier/whitespaceตรวจเอกสารผ่าน ยังไม่รันBrowser/build/testsใหม่เพราะงานนี้เป็นการเสนอแผน
+- protectedbaseline446filesตรวจพบsource5filesในกลุ่มNavbarเปลี่ยนระหว่างวางแผน บันทึกในplanning-receipt.jsonและเก็บไว้ ไม่มีsource/test/config/dependency editจากงานวางแผนนี้ จึงต้องเก็บfreshbaselineอีกครั้งหลังได้รับอนุมัติ
+
+### Implementation Verification / Current State
+
+- Header64remและmobilebase+40/48/64/80/96remใช้จริงใน43CSS/28TSX candidates;14existingE2E/newmatrix1. Unused Home3modules/3TSXไม่เปิดใช้งาน; runtime audit31routesไม่มีnonstandardviewportthreshold
+- FinalDev108passed/1Comparison30s timeout; rerun4/4ผ่าน. FinalProduction49Responsive/Searchpassed และ6No-JavaScript failuresจากstreamed hidden main. Responsive acceptance29/29ทั้งสองenvironment,31routes×6widthsและ17templates×29widths,normal/reduced/keyboard/hitboxes/history/Searchผ่าน
+- Footer/Not-found40productioncontextsผ่าน; currentCSSเทียบfrozenCSSที่10families×320/390/1440รวม1522elementsให้0font/color/boxdifferences. Historicalbaselineบางcontextเก็บก่อนstreamพร้อม ใช้925matchedtext samplesจริงและ42after+4openHeadercaptures ไม่อ้างpixel-identicalทุกหน้า
+- Typecheck/Lint/UAT28/Build706ผ่าน. Catalog198/202:4failuresเป็นfixturesของPOSrelatedlinks92→90ที่งานอื่นเปลี่ยน(ตรวจtask-startdiffแล้ว). ACของการผ่านทุกglobaltestยังไม่ทำเครื่องหมาย; ไม่แก้fixtures/dataนอกscope
+- No-JavaScript6failuresยังไม่แก้architecture; streamingใช้inline-script DOMswapตามinstalledNextdocs. ไม่ใช่newverifiedNextframeworkdefect จึงไม่มีfeedbackcandidateใหม่
+- Evidence/report: C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/mobile-first-run/verification-report.md และ verification-receipt.json
+
+- Final formatting: changed source/tests+Spec/Planผ่าน; fullformatcheckเตือนเฉพาะMEMORY.mdเดิมที่hashตรงtask-start จึงคงไฟล์read-only. gitdiffcheckผ่าน. ปิดownpreview3112/PID38128และownbrowserแล้ว; ownerDev3000/PID16732คงอยู่
+
 ## Task: Fix product tooltip and Contact hydration before UAT delivery (2026-11-17)
 
 Status: "Verified and delivered — source/tests on origin/uat; closing receipt outside source"
@@ -9694,3 +9812,616 @@ Approval: "Approved — owner explicitly resolved both pending decisions on 2026
 - Current navigation resolves to the same 29 tested-ready destinations, with 71 ready and 33 disabled submenu positions. No runtime enablement changes were necessary.
 - Chromium verifies 20 controls, 18 fixed technical-pass results and 2 fixed owner-resolved results; private status changes, legacy-note migration and note restoration work without horizontal overflow at 320/390/736/1024px and without page errors.
 - Prettier and scoped whitespace checks pass. `owner-decision-verification.json` records 424 unchanged source/test/dependency files, unchanged original technical manifest and all 24 baseline image hashes. No additional website tests, application change or deployment is claimed by this documentation follow-up.
+
+## Task: Responsive audit and scoped search-thumbnail correction (2026-11-17)
+
+Status: "Completed — RSP-01 implemented and verified locally"
+Approval: "Approved — owner authorized RSP-01 implementation and responsive/search verification; no commit/push"
+
+### Goal
+
+ตรวจ Responsive ปัจจุบันตามหลักการใน Tailwind Responsive design และแก้ RSP-01 ที่ยืนยันจาก audit ตาม manifest เดิม เจ้าของอนุมัติ implementation และตรวจ Responsive/Search ซ้ำแล้ววันที่17พฤศจิกายน2026 โดยยังไม่ commit/push ประวัติ audit ก่อนอนุมัติคงไว้ด้านล่าง
+
+### Scope In
+
+- ตรวจ source/CSS tokens และ Browser ของ local working tree ที่ `http://127.0.0.1:3000` รวม Home, product overview/category/subcategory/detail, content/service, quotation form และ guide
+- บันทึกผล 33 routes / 411 geometry observations ครบ 30 internal Header destinations รวม Home; เพิ่ม 49 short-height observations และ simulated-touch subset
+- เสนอ RSP-01: แก้การแบ่งพื้นที่ Thumbnail/ข้อความใน shared Search results ด้วย selector เฉพาะใน `src/styles/overlays.css` กำหนดรูปจริงและ placeholder ให้คงขนาด 65×65px โดยใช้ data attribute ที่มีอยู่แล้ว
+- หลังอนุมัติเท่านั้น: เพิ่ม `tests/e2e/responsive-search-results.spec.ts` เพื่อยืนยันมีรูป/ไม่มีรูป/รูปโหลดผิดพลาด ชื่อยาว ผลค้นหาหน้าเนื้อหาที่ไม่มี Thumbnail และการเปิดจาก Header ทั้งสองแบบ
+
+### Scope Out
+
+- ไม่แก้ application/test files นอก manifest นี้ ไม่ commit/push/deploy ไม่ส่งฟอร์มหรือเขียนข้อมูลธุรกิจ; รอบ audit ก่อนอนุมัติไม่มี application/test implementation
+- ไม่เพิ่ม Tailwind/dependency ไม่เปลี่ยนสี font ข้อความ รูปสินค้า route หรือ Warehouse/API contract
+- ไม่แปลง media queries ทั้งเว็บ ไม่บังคับใช้ breakpoints ของ Tailwind ไม่เพิ่ม Container query หรือ shared token โดยไม่มี defect ที่ต้องใช้
+- ไม่แก้ Header, PrimaryNavigation, Modal, ProductImage, layout, base.css, globals.css, Footer หรือ stylesheet อื่นนอก manifest นี้
+- ไม่ถือว่าการตรวจตัวแทนสินค้า 3 หน้าแทนการรับรองรายละเอียดสินค้าทุกรายการหรือ browser/อุปกรณ์จริงทุกชนิด
+
+### UI/UX Brand Alignment
+
+- Reference: [Tailwind Responsive design](https://tailwindcss.com/docs/responsive-design), `src/styles/base.css`, `src/styles/overlays.css`, `src/components/ui/product-image.tsx`, `src/features/catalog/components/catalog-overlays.tsx` และผล Browser ปัจจุบัน
+- Design: รักษาหน้าตา Search overlay, Typography, สี, ระยะ gap เดิม รูป placeholder และชื่อเต็มจาก Warehouse เปลี่ยนเฉพาะ flex sizing ของ direct Thumbnail/กล่องข้อความ ไม่เพิ่ม DOM wrapper
+- Implementation reference: เปิด [Tailwind flex](https://tailwindcss.com/docs/flex) และ [min-width](https://tailwindcss.com/docs/min-width) วันที่17พฤศจิกายน2026 เอกสารแสดง v4.3 ประยุกต์ fixed thumbnail/no grow-shrink และ flexible text/min-width0 เป็น CSS เดิม; 65×65px เป็นขนาดที่ Component กำหนดอยู่แล้ว ไม่ใช่ Tailwind default คงขนาดนี้ทุก viewport
+- Placeholder padding จำกัด4px เฉพาะ Search Thumbnail โดยประมาณจาก6%ของขนาด65pxเดิม (3.9px) แทน6%ของความกว้างทั้งแถวที่ Browser เคยคำนวณ14.625–35.625pxต่อด้าน; textใช้ min-width0/overflow-wrap:anywhere ไม่ตัดชื่อหรือเปลี่ยน font/gap
+- Responsive: ใช้ CSS เดิมที่ยืดหยุ่นได้ในทุกความกว้าง เป้ารับงาน 320/390/600/768/834/1440px และ 667×375; คง Header breakpoint 834px และ horizontal rails/table scrolling ที่ตั้งใจไว้
+
+### Input / Output
+
+- Input: package.json ระบุ Next 16.4.6/React 19.3.1, CSS และ DOM ของ local runtime; browser viewport meta คือ `width=device-width, initial-scale=1`
+- Repro: Search จาก Home หรือ Product → `G107404` → canonical row `/products/warehouse-G107404` ซึ่งไม่มี Warehouse image และมีชื่อยาว ใช้ WPS10KS เป็นกรณีรูปจริง
+- Evidence: 320px placeholder กว้าง 81.89px และข้อความ 104.11px; 390px placeholder 146.83px และข้อความ 109.17px ขณะที่รูปจริงกว้าง 65px; ยืนยันด้วย touch ทั้งสอง Header
+- Root cause: `.search-results > a > div` ใน overlays.css ใช้ `flex: 1` กับทั้งข้อความและ placeholder ที่เป็น direct div; computed placeholder flex เป็น `1 1 0%`
+- Output หลังอนุมัติ: Thumbnail 65×65px คงที่ ข้อความใช้พื้นที่ที่เหลือและ wrap ได้ โดยผลค้นหาที่ไม่มี Thumbnail ยังใช้พื้นที่ตามเดิม ไม่มี document/Dialog overflow
+- Audit report และ JSON/screenshots: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/responsive-audit/responsive-audit-report.md`
+
+### Acceptance Criteria
+
+- [x] ส่งผลตรวจที่แยก source conventions, runtime defect, false positives และข้อจำกัด ไม่ให้คะแนนเปอร์เซ็นต์ที่ไม่มีเกณฑ์รองรับ
+- [x] ยังไม่มี application/test implementation ในงาน audit; ตรวจ 438 src/tests baseline hashes ตรงกันหลัง Browser audit
+- [x] หลังอนุมัติ: รูปจริง/ไม่มีรูป/รูปโหลดผิดพลาดคงขนาด 65×65px ภายใน ±1 CSS px ไม่ยืดหรือหด และกล่องข้อความมีพื้นที่ที่เหลือพร้อมอ่านชื่อเต็ม
+- [x] Search overlay ไม่ล้นแนวนอนที่ 320/390/600/768/834/1440px และ 667×375; ผลค้นหา page/service ที่ไม่มี Thumbnail ไม่เกิดคอลัมน์ว่าง
+- [x] ตรวจทั้ง Home Header และ interior Header: เปิด Search, ค้นหา, ล้างคำค้น, ติดตาม canonical result link, ปิด และ Escape/focus ทำงานตามเดิม
+- [x] เก็บ before/after screenshot และ geometry สำหรับ long-name/no-image ที่ 320/390/834/1440px ร่วมกับ image-present/error cases
+- [x] ผ่าน scoped browser regression, typecheck, lint, formatting และ production build ตาม Plan หลังมี implementation จริง
+
+### Missing Information
+
+- ไม่มีข้อมูลที่จำเป็นขาดสำหรับ RSP-01 และได้รับอนุมัติ manifest แล้ว การรับรอง Safari/iOS/อุปกรณ์จริง/keyboard/browser zoom อยู่นอกหลักฐานปัจจุบัน
+
+### Approval Record
+
+- 17 พฤศจิกายน 2026: ผู้ใช้อนุมัติให้ตรวจและจัดทำ Spec/Plan พร้อมกำชับยังไม่แก้โค้ด
+- ต่อมา17พฤศจิกายน2026 เจ้าของระบุ: “อนุมัติ Spec/Plan แก้ RSP-01 เรื่อง Placeholder ในผลค้นหาครับ ลงมือแก้ตามขอบเขตที่เสนอ แล้วทดสอบ Responsive และการค้นหาซ้ำก่อนสรุปผล ยังไม่ต้อง commit/push” ครอบคลุม overlays.css, regression file ใหม่ และ spec.md/plan.md ตาม manifest เดิม
+
+### Current State / Verification Results
+
+- RSP-01 แก้แล้วเฉพาะ Search sizing ใน overlays.css พร้อม regression ใหม่ ข้อมูล/Props/routes/API contracts ไม่เปลี่ยน ไม่มี commit/push/deploy จากงานนี้
+- 21 representative routes ×15 widths +12 remaining enabled Header destinations ×8 widths =411 observations ทุกหน้าตอบ200 ไม่พบ document overflow หรือ Header controls หลุดแนวนอน; 7 routes ×7 short-height widths =49 observations ไม่พบ document overflow หรือการตัด Home Hero copy/CTA
+- Menu bottom hit-test ผ่าน320/390/667/833×375; simulated touch บน Home/Product ที่320/390 และ spec Dialog ที่320×568/667×375 ผ่านกรณีที่บันทึก ไม่มี pageerrors ใน scan/touch rerun
+- Scanner false positives ถูกคัดออก: screen-reader-only text, rail items, pseudo-element hit area และ decorative service connectors ไม่ถือเป็น Responsive defects
+- ข้อจำกัด: local Chromium/emulated touch; ไม่ใช่ production/all-products/all-flows/Safari/physical-device certification; fullpage initial captures บางภาพยังไม่โหลด offscreen lazy assets ไม่มี business mutation และไม่รัน build/lint/typecheck ใหม่เพราะยังไม่แก้ application
+
+### RSP-01 Implementation Verification — 2026-11-17
+
+- RED: regression ก่อนแก้ที่390pxล้มเหลวตรงขนาด placeholder146.83pxแทน65px เก็บ red.json/trace/screenshot ก่อนแก้แยกไว้
+- GREEN Development:16new Search cases (2Headers×7viewport sizes +2normal-motion touch flows) และ2existing comparison cases ผ่าน ไม่มี skipped/flaky; geometry ครบ missing/image/forced-image-error โดยไม่แก้ข้อมูลสินค้า
+- GREEN Local Production:18/18casesชุดเดียวกันผ่านบน task-owned preview3112 จาก build ปัจจุบัน; ไม่ใช่ production deployment
+- Before/after320/390/834/1440px: Thumbnail81.89/146.83/303.63/303.63px →65pxทุกขนาด; พื้นที่ข้อความ104.11/109.17/232.38/232.38px →121/191/471/471px คงชื่อเต็มและ placeholder เดิม
+- Node24.22.3: full ESLint, standalone typecheck และ build706/706pages ผ่าน; scoped Prettier และ whitespace diff ผ่านหลังอัปเดตเอกสาร
+- Scope audit พบเพียง overlays.css เปลี่ยนจากงานนี้ใน existing src/tests พร้อม regression file ใหม่; primary-navigation.ts มีการแก้ต่างหากระหว่างตรวจซึ่งเก็บไว้ ไม่แก้/ย้อนกลับหรือรวมเป็นผลงาน RSP-01 ข้อกำหนด Tailwind ใน AGENTS.md/MEMORY.md เดิมคงไว้
+- ผลและภาพก่อน/หลังอยู่ใน `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/rsp-01/verification-report.md`; การรับรองจำกัด local Chromium/emulated touch ไม่รวม Safari/physical devices/real software keyboard/browser zoom
+
+## Task: Record Tailwind documentation as the standing design reference (2026-11-17)
+
+Status: "Completed — documentation only"
+Approval: "Approved — owner explicitly requested recording this standing reference"
+
+### Goal / Scope In
+
+บันทึกคำสั่งเจ้าของให้ใช้ [Tailwind CSS Docs](https://tailwindcss.com/docs) เป็นแหล่งอ้างอิงหลักด้านเทคนิคทุกครั้งที่ต้องใช้ข้อมูลในการออกแบบหรือเลือก/ปรับค่ากลาง โดยครอบคลุม Core Concepts ตามภาพแนบ ไม่จำกัดเฉพาะ Responsive บันทึกใน AGENTS.md และ MEMORY.md เพื่อใช้ต่อในงานออกแบบภายหลัง
+
+### Scope Out
+
+- ไม่มีการเปลี่ยน application, tests, dependency, stack หรือค่ากลางจริงในรอบนี้ ไม่ติดตั้ง Tailwind ไม่เปิด Dark mode หรือเพิ่ม feature จากหัวข้อในเอกสาร
+- ไม่ถือเป็นการอนุมัติ implementation RSP-01 หรือการแปลง CSS/breakpoints ทั้งเว็บ
+
+### UI/UX Brand Alignment / Input / Output
+
+- Reference: ลิงก์ Docs และภาพ Core Concepts ที่เจ้าของส่ง; ตรวจเว็บไซต์จริงวันที่17พฤศจิกายน2026 แสดง v4.3 โดยหน้า `/docs` redirect ไป installation; [Theme variables](https://tailwindcss.com/docs/theme) เป็นตัวอย่างหัวข้อค่ากลางที่ตรวจแล้ว
+- Input: คำสั่ง “บันทึกการออกแบบของค่ากลางโดยอิงจากเว็บนี้เสมอเมื่อมีการต้องใช้ข้อมูลในการออกแบบ”
+- Output: กติกาถาวรให้เปิดอ่าน official docs ฉบับปัจจุบันตามหัวข้องาน บันทึก URL/วันที่/เวอร์ชันที่แสดง/ค่าพร้อมหน่วย/เหตุผลใน Spec และแยก Tailwind default ออกจาก SUNFORD token ไม่ตรึงเอกสารอนาคตไว้ที่ v4.3
+- Design: ประยุกต์หลักการกับ CSS Modules/CSS เดิม รักษาแบรนด์/ค่าที่เจ้าของอนุมัติ ความแตกต่างจากเอกสารต้องอธิบายใน Spec/Plan ก่อนเสนอเปลี่ยน
+- Responsive: ไม่เกี่ยวข้องกับการตรวจ UI รอบใหม่ เพราะงานนี้แก้เฉพาะข้อกำหนดเอกสาร
+
+### Acceptance Criteria
+
+- [x] AGENTS.md และ MEMORY.md ระบุให้ใช้ Tailwind official docs ทุกครั้งที่ต้องใช้ข้อมูลออกแบบค่ากลาง พร้อมวิธีบันทึกที่มา
+- [x] คงข้อกำหนดแบรนด์/Stack และสถานะ RSP-01 ไม่เพิ่มการอนุมัติ application change
+- [x] ตรวจ formatting และ diff ของเอกสารทั้ง4ไฟล์: Prettier และ `git diff --check` ผ่าน; Git status มีเฉพาะ4เอกสาร ไม่มี application/test/dependency change
+
+### Missing Information / Approval Record
+
+- ไม่มีข้อมูลจำเป็นขาดสำหรับการบันทึกนโยบายนี้; เจ้าของอนุมัติการบันทึกโดยตรงในข้อความล่าสุดวันที่17พฤศจิกายน2026
+
+## Task: Direct Navbar overview links and matching chapter labels (2026-11-17)
+
+Status: "Complete — focused verification passed"
+Approval: "Approved — owner requested direct main-menu overview navigation and confirmed matching labels under overview images"
+
+### Goal / Approval Record
+
+- Owner requests removing submenu entries that point back to that menu's own overview, making each main Navbar name navigate directly instead.
+- Owner confirmed: “ใช่ เปลี่ยนชื่อใต้รูปในหน้ารวมให้ตรง Navbar”.
+- This request expands the previous data-only task to the two existing Navbar renderers and overview image captions. Keep the existing submenus accessible by hover/keyboard on desktop and separate disclosure controls on mobile.
+
+### Scope In / Current Contract
+
+- Remove links whose canonical href equals their parent menu href from that menu's primary and secondary/help columns, including redundant builder guide links; retain cross-category links and subcategory all-items links such as consumables.
+- All eight top-level names remain native links to their current href on Home, interior and overview pages. Services follows the same pattern; mobile name navigates and the adjacent arrow opens the submenu.
+- Overview image captions use the current matching Navbar label for that category/subcategory; do not change Warehouse names, category membership, page headings, route slugs, photos or product data.
+- Preserve existing submenu order, unavailable destinations, three-column layout and hover suppression.
+
+### UI/UX Brand Alignment / Input / Output
+
+- Reference: owner's three attached screenshots, existing Header/PrimaryNavigation, current primary-navigation.ts and category overview chapters.
+- No new design tokens or styling decision: reuse existing mobile link/disclosure row and current type/color/spacing.
+- Output: direct main links, no same-parent overview duplicates within dropdowns, matching chapter captions.
+- Responsive verification: both Navbar renderers at390/834/1440px, mobile separate arrow/name activation, desktop hover/focus/ArrowDown/Escape, and all five category overview captions.
+
+### Scope Out
+
+- New destinations, enabling disabled categories, extra features, new dependencies, shared stylesheet changes, product/source/database changes, commit/push/deploy.
+
+### Acceptance Criteria
+
+- [x] All eight top-level hrefs have native links in desktop and mobile navigation in both renderers.
+- [x] No submenu link equals its own parent href; cross-category and different-subcategory all-items links remain.
+- [x] Name activation reaches its canonical destination; separate disclosure still opens submenu; keyboard and modifier clicks retain native behavior.
+- [x] Chapter captions match the matching current Navbar labels, with canonical fallback for any category absent from Navbar.
+- [x] Verify source invariants, scoped browser regression, TypeScript, ESLint, formatting and file scope.
+
+### Missing Information / Impact / Rollback
+
+- None: caption meaning explicitly confirmed. No data-readiness change.
+- Shared Header changes affect all pages: risk is loss of Services/mobile submenu access or broken keyboard focus. Verify both variants and existing hover/focus behavior.
+- R2: revert only this task's data/renderer/caption/test hunks; preserve preceding owner edits and concurrent Search CSS/doc work. No database rollback.
+
+### Verification Results — 2026-11-17
+
+- Focused Chromium regression `navbar-overview-links.spec.ts`:11/11passed in one final run (3.0m), no retries/skips. Home and Contact at390/834/1440 cover all8native main links, actual click/Enter navigation, separate mobile disclosure, desktop hover/ArrowDown/Escape and parent-link exclusion. Services Control-click opens its overview in another tab without navigating the origin page.
+- Five category overview pages at all3widths show chapter captions matching current Navbar labels; headings remain canonical. The existing benchtop chapter still opens its original canonical listing. Screenshots saved outside source;390chapter and834submenu images visually inspected.
+- Source invariants:8main menus,92submenu positions (68ready/24disabled), no parent-self href in any submenu column. Retained different-child all-items link for consumables, three columns and existing unavailable states.
+- TypeScript `--noEmit --incremental false`, scopedESLint, scopedPrettier and `git diff --check` passed. Installed available CLI Node22 was used for checks; the existing development server was reused without changing runtime/dependencies.
+- Initial new-harness failures are retained separately: caption assertion included ProductImage's accessibility placeholder text, and closed Home panels retain a DOM bounding box while inert/aria-hidden. Corrected only test selectors/state assertion; no application workaround.
+- Evidence: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-direct-overview-20261117-final/`. Initial failed run remains in the same parent directory without the `-final` suffix.
+- Current State / Contract: main name navigates to its current href; disclosure is a separate mobile action; dropdowns omit links to their own parent. Chapter display names follow Navbar while category data/routes/headings stay unchanged.
+- Limits: localChrome/emulated widths only; no fullrepositoryE2E/build/production/Safari/physical-device certification, commit/push/deploy or database writes. Older historical Navbar count/tree/Services-button expectations were not rewritten under this focused7-file scope.
+- No qualifying verified Next.js framework issue remained for the feedback reporting pass. Task-observer review found no new reusable lesson beyond existing fixture/Unicode guidance.
+
+## Task: Short single-line Navbar and overview category names (2026-11-17)
+
+Status: "Complete — short labels and single-line geometry verified"
+Approval: "Approved — owner replied ตามนี้เลย to the exact nine-row shortening table and single-line caption recommendation"
+
+### Goal / Approval Record
+
+- Apply the nine approved label replacements in primary-navigation.ts: คำนวณราคาหน้าร้าน→คำนวณราคา; อุตสาหกรรมงานผลิต→อุตสาหกรรม; งานวิเคราะห์ความแม่นยำสูง→งานวิเคราะห์; งานครัวและกาแฟ→ครัวและกาแฟ; กันน้ำและกันฝุ่น100%→กันน้ำ–กันฝุ่น; จอแสดงผลและไฟเตือน→จอและไฟเตือน; ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย→ชิ้นส่วนแท่น; สแกนเนอร์ลิ้นชักและอุปกรณ์POS→อุปกรณ์POS; กระดาษและฉลากทั้งหมด→กระดาษและฉลาก. Preserve the spaces shown in the approved table for source labels.
+- Existing caption resolution already follows Navbar labels. Make category chapter captions single-line, with intrinsic item width and existing horizontal scrolling; retain full canonical page headings and product data.
+
+### Scope / UI Brand / Input / Output
+
+- Change only primary-navigation labels, scoped chapter CSS, current focused browser regression and Spec/Plan.
+- Preserve all hrefs, readiness, parent-link removal/main navigation, chapter order, photos, type sizes/colors/gaps and all breakpoints.
+- Reference: owner-approved label table and attached scales/accessory screenshots; existing chapter style94pxminimum on mobile and108pxfrom735px.
+- Technical reference per standing policy: https://tailwindcss.com/docs/white-space and https://tailwindcss.com/docs/flex, read2026-11-17, displayedv4.3. Apply white-space:nowrap and non-growing/non-shrinking intrinsic flex items through existing CSS Modules; no Tailwind installation or token change.
+- Keep existing94px/108px as minimum item widths,90×58px/100×72px image boxes and20px/24px gaps. Allow an item to widen for a longer unchanged platform/category label. No ellipsis/clipping or font reduction.
+- Risk: nowrap within fixed columns could overlap neighbouring labels; use intrinsic item width and verify label/item geometry plus native horizontal scroll at320/390/834/1440.
+- Rollback: restore only this follow-up's label/CSS/test hunks and task notes; preserve prior direct-navigation and concurrent Search changes. No data rollback.
+
+### Acceptance Criteria
+
+- [x] Nine approved phrases are replaced consistently wherever they occur in Navbar data; existing href/readiness/column membership unchanged.
+- [x] All overview chapter captions stay on one line with no overlap/clipping; full names remain available in canonical page content.
+- [x] Existing image size/font/gaps remain; rail scrolls to the final category without document overflow.
+- [x] Verify five category overview routes at320/390/834/1440 and both Navbar renderers with new labels at390; scoped static checks pass.
+
+### Missing Information
+
+- None; exact wording and intended single-line/scroll approach were approved.
+
+### Verification Results — 2026-11-17
+
+- Approved9phrases updated in11Navbar positions; before/after source assertions confirm unchanged hrefs, disabled states, column membership and main labels. Existing caption resolver uses the same shortened labels.
+- Real pre-change layout failure retained:390px “คำนวณราคาหน้าร้าน” caption measured36px against18px single-line height. The initial separate /products probe used a chapter selector on its different custom index renderer; corrected the test scope to the5actual category overview rails before accepting the real layout failure.
+- Final chapter matrix4/4passed in48.4s: all5category overviews at320/390/834/1440 (20page/viewport combinations). Each caption fits one line and its item without clipping; images retain90×58px or100×72px; horizontal rails can reach the final category; no document overflow; canonical chapter navigation and page headings remain unchanged.
+- Home and Contact direct-navigation/disclosure checks at390 both passed on current application source. Current acceptance is6latest passing cases across2runs (2main-navigation +4chapter cases), not a single clean6-case run.
+- The earlier6-case run passed5and failed one new scroll assertion: some narrow rails overflow only because of trailing padding while the last item is already visible. Updated the test to explicitly exercise scrollTo-end before asserting scrolling; reran all4chapter cases successfully. No application workaround.
+- TypeScript, scopedESLint, scopedPrettier and diff checks passed. Final screenshots of320scales and1440accessories visually inspected.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-short-captions-20261117-chapters-final/; main-navigation passes are in sunford-short-captions-20261117-final. Red proof is separately retained in sunford-short-captions-20261117-red-layout.
+- CSS changes are limited to intrinsic chapter item width with existing94/108pxminimum and white-space:nowrap on the final caption span. Existing fonts, gaps, image sizes and breakpoints remain.
+- Existing /products custom index carousel is outside this chapter-rail task. No fullrepositoryE2E/build/production/Safari/device/commit/push/deploy claim or database changes.
+- Next feedback / task-observer pass: no new qualifying framework issue; test-scope and scroll-assumption corrections stayed in verification code.
+
+## Task: Clean unused output build artifacts (2026-11-17)
+
+Status: "Verified cleanup"
+Approval: "Approved — owner requested deletion of unused old builds in output while retaining reports, screenshots and current-work files."
+
+- Scope: generated Next.js build roots under `output/` only; no application code, dependencies, active root `.next`, Git history or data-contract changes.
+- Result: removed 53 inactive build roots, 42.03 GiB logical data. Project 55.03 -> 13.33 GiB; output 46.76 -> 5.18 GiB at verification.
+- Evidence: all 32,601 retained output files matched their SHA-256 baseline. All 1,848 preserved build metadata/diagnostic files matched verified archive copies.
+- Evidence archive: `output/_build-evidence-20261117-134217-03ed7a`. Operation receipt and deleted-build manifest are retained there.
+- Reversibility: archived reports/metadata remain. Removed compiled builds require rebuilding from the retained source snapshot and its lockfile if later needed.
+
+## Task: Search phase 1 — ranking, normalization and multi-word matching (2026-11-17)
+
+Status: "Completed — implemented and verified locally; unrelated legacy test failures recorded"
+Approval: "Approved — owner authorized phase 1 implementation and responsive search verification; no commit/push"
+
+### Goal
+
+ปรับการค้นหาจากปุ่ม Search ใน Header ให้สินค้าที่ตรง SKU/รุ่นอยู่ก่อน จัดรูปคำค้นให้สม่ำเสมอ และค้นหลายคำที่อยู่คนละตำแหน่งได้ ตามข้อ1–3ที่ผู้ใช้เลือก เจ้าของอนุมัติ Spec/Plan แล้ว ลงมือและตรวจตามหลักฐานท้ายหัวข้อนี้โดยไม่ commit/push
+
+### Baseline Before Implementation / Evidence
+
+- `src/app/(site)/layout.tsx` ส่งผล `getClientProducts()` และ `getPageSearchIndex()` ให้ `CatalogOverlays` ค้นในเบราว์เซอร์ ไม่มี search request ต่อ keystroke
+- `catalog-overlays.tsx` ใช้ lowercase + trim + includes ของข้อความต่อกัน จึงต้องพบคำค้นเป็นข้อความติดกัน และผลเรียงตาม input เดิม สินค้าแสดง40รายการแรก หน้าข้อมูล20รายการหลังสินค้า
+- `clientProductData()` ส่ง `warehouseModelCodes` ที่มาจากข้อมูลรุ่นตรวจสอบแล้วอยู่ใน `ClientProduct` แต่ `OverlayProduct` ยังไม่ได้ประกาศ field นี้ ไม่ต้องแก้ server projection หรือเพิ่ม payload เพื่อใช้งาน
+- Search สอง Header ใช้ Overlay เดียวกัน ส่วน finder/filter ใน ProductsOverview เป็นคนละ flow และไม่รวมในงานนี้
+- อ่าน installed Next16.4.6 guide `node_modules/next/dist/docs/01-app/01-getting-started/05-server-and-client-components.md` แล้ว: คง boundary เดิม อ่านข้อมูลฝั่ง server และทำ interactive search ฝั่ง client
+
+### Scope In
+
+- ข้อ1: จัดอันดับเฉพาะผลสินค้า โดยใช้ SKU/รุ่นที่มีจริง ชื่อแสดงผล ชื่อจาก Warehouse และข้อความที่ Search เดิมอ่านอยู่
+- ข้อ2: จัดรูป query และข้อมูลสำหรับเปรียบเทียบเท่านั้น ไม่แก้ค่าต้นฉบับ ไม่เปลี่ยนข้อความที่ผู้ใช้พิมพ์หรือชื่อที่แสดง
+- ข้อ3: ค้นหลายคำแบบ AND: ทุกคำต้องพบในสินค้ารายการเดียวกัน แต่พบคนละ field หรือคนละตำแหน่งได้ และสลับลำดับคำได้
+- หน้าข้อมูล/บริการใช้ text normalization และ AND บน title/path ด้วย แต่รักษาลำดับหน้าต้นฉบับและอยู่หลังสินค้าเช่นเดิม ไม่รวมคะแนนหน้าข้อมูลกับสินค้า
+- ใช้ pure helper เดียวสำหรับกติกาค้นหา และประกาศ optional model field ใน OverlayProduct ตามข้อมูลที่มีอยู่แล้ว
+
+### Scope Out
+
+- คำพ้อง คำสะกดผิด fuzzy/semantic/AI search การเดาคำ หรือการสร้าง alias รุ่น/สเปกใหม่
+- Backend search, endpoint ใหม่, Debounce/AbortController, analytics/history ใหม่, dependencies หรือ search service
+- เปลี่ยน UI/CSS/ค่ากลาง/Responsive/Navbars/Modal/Tooltip/Comparison/ProductsOverview finder หรือเพิ่ม highlight/group heading/pagination
+- เปลี่ยน Warehouse/RPC/ข้อมูลสินค้า/หมวด/ราคา/รูป/route/การเปิดเมนู และการ commit/push/deploy
+
+### Approved Matching Contract
+
+**Text normalization**
+
+1. ใช้ Unicode NFC, lowercase, trim และรวม whitespace ต่อกันเป็นช่องว่างเดียว ทั้ง query และ searchable text เก็บสระ/วรรณยุกต์ไทย ตัวเลข จุดทศนิยม slash และเครื่องหมายอื่นไว้
+2. แยกคำด้วย whitespace และตัดคำซ้ำ ไม่ตัดคำภาษาไทยอัตโนมัติ ไม่แยกตัวอักษรกับตัวเลข ไม่เทียบหน่วยหรือแปลงพิกัดน้ำหนัก คำไทยที่พิมพ์ติดกันยังต้องพบเป็น substring ตามลำดับนั้น
+3. Query ว่างหรือมีแต่ whitespace ใช้พฤติกรรมเริ่มต้น: สินค้าตามลำดับ input40รายการแรก ไม่มีหน้าข้อมูล และ caption เริ่มต้นเดิม
+
+**Identifier normalization — จำกัดเฉพาะการเปรียบเทียบรหัส**
+
+- ใช้กับ `warehouseSku` และ `warehouseModelCodes` ที่มีอยู่จริงเท่านั้น ไม่ดึงรุ่นจากคำอธิบาย ไม่ใช้ slug เป็นรุ่น และไม่แต่ง fallback metadata
+- รหัส/query ที่เป็น ASCII letters/digits/ช่องว่าง/เครื่องหมายขีดกลาง ASCII และมีทั้งตัวอักษรกับตัวเลข อนุญาตให้ตัดเฉพาะ whitespace และขีดกลางเพื่อเทียบรหัส เช่น `WPS-10KS`, `wps 10ks`, `WPS10KS` เทียบเป็น key เดียวกัน
+- ไม่ตัดตัวเลข ไม่แปลง O/0 หรือ I/1 ไม่ลบจุด/slash/เครื่องหมายอื่น ตัวเลขล้วนไม่ใช้การ compact แบบรหัส รุ่น6กับ10ยังต่างกัน
+- ถ้า query ทั้งชุดที่ compact แล้วตรงหรือเป็น prefix ของ identifier จริง ให้รับเป็นการค้นรหัส แม้ผู้ใช้เว้นช่องว่างกลางรุ่น; กรณีอื่นใช้ AND ของแต่ละ text token
+- Prefix ตัวอักษรล้วน เช่น `WPS` ยังเทียบต้น SKU/รุ่นได้ด้วย normalized text ปกติ ไม่ต้องใช้ compact key
+
+**Candidate eligibility / Ranking**
+
+- สินค้าเข้า candidate เมื่อทุก token พบอย่างน้อยหนึ่ง field ใน SKU, model codes, name, warehouseName, subtitle, description หรือชื่อ category ปัจจุบัน; แต่ละ token ตรวจแยก field ไม่สร้างคำที่ข้ามรอยต่อ field โดย token ที่เป็นรหัสใช้ identifier normalization เดียวกัน เช่น `เครื่องชั่ง wps-10ks`; whole-query identifier match/prefix รองรับช่องว่างภายในรหัสตามกติกาข้างต้น
+- หลังได้ candidate ให้ใช้ระดับแรกที่ตรงจากตารางนี้ ไม่รวมคะแนนจากจำนวนครั้งที่คำซ้ำในคำอธิบาย
+
+| ลำดับ | เงื่อนไข                                                                                            |
+| ----- | --------------------------------------------------------------------------------------------------- |
+| 1     | Query ทั้งชุดหรือ token หนึ่งตรง SKU เต็ม หลัง normalize ตามชนิดข้อมูล                              |
+| 2     | Query ทั้งชุดหรือ token หนึ่งตรง model code เต็ม หรือ query ทั้งชุดตรงชื่อเต็มใน name/warehouseName |
+| 3     | Query ทั้งชุดหรือ token หนึ่งเป็น prefix ของ SKU/model code                                         |
+| 4     | Query ทั้งชุดหรือ token หนึ่งเป็น prefix ของชื่อ/คำในชื่อ                                           |
+| 5     | ทุก token พบใน name/warehouseName โดยไม่จำเป็นต้องติดกัน และไม่เข้าเงื่อนไขก่อนหน้า                 |
+| 6     | ทุก token พบครบโดยอาศัย subtitle/description/category หรือหลาย field ร่วมกัน                        |
+
+- ทุกระดับยังต้องผ่าน candidate eligibility ก่อน เช่น query `เครื่องชั่ง WPS10KS` ให้รุ่นWPS10KSที่มีคำว่าเครื่องชั่งจริงมาก่อนรุ่นอื่นที่กล่าวถึงWPS10KSเฉพาะใน description ไม่รับสินค้าเพียงเพราะมีคำตรงหนึ่งคำ
+- Prefix ของคำในชื่อแบ่งคำด้วย whitespace เช่นเดียวกับ query ไม่เพิ่ม Thai tokenizer รุ่น/ชื่อที่ไม่มี metadata ใช้เฉพาะ field ที่มีจริง จึงไม่ถูกยกระดับด้วยรุ่นที่คาดเดา
+- คะแนนเสมอกันรักษาลำดับ input เดิม ค้นหาไม่ mutate/sort array props ไม่เปลี่ยนลำดับหน้าแค็ตตาล็อกหรือรายการเปรียบเทียบ
+- จัดอันดับ candidate ทั้งหมดก่อนตัด40รายการ จำนวนที่รายงานคือจำนวนสินค้าที่ match ทั้งหมด หน้าข้อมูลยังตัด20รายการหลังกรองและตามหลังสินค้า ไม่เพิ่มผลซ้ำจากหลาย field
+
+### UI/UX Brand Alignment
+
+- Reference: Search Overlay ปัจจุบัน, `src/styles/base.css`, `src/styles/overlays.css` รวม RSP-01 และ Header ทั้งสองแบบ; ไม่เลือกค่ากลางหรือปรับดีไซน์ใหม่ จึงไม่มีการเสนอ Tailwind token/breakpoint ใหม่ในงานนี้
+- Design: รักษา DOM หลัก สี Typography ภาพ65×65px ปุ่มล้าง ข้อความ/empty state ลิงก์เดิม และ Escape/คืนโฟกัส ใช้ค้นทันทีในเบราว์เซอร์โดยไม่เพิ่มการหน่วง
+- Responsive: ตรวจ Home และหน้ารายละเอียดสินค้าที่320/390/834/1024/1440px เพื่อครอบคลุมทั้ง Header ปัจจุบันและงานย้าย breakpoint ที่แยกอนุมัติแล้ว ผลชุดค้นหานี้ไม่ถือเป็นการรับรองงานย้าย Responsive ทั้งเว็บ
+
+### Input / Output / Data Contract
+
+- Input: ผล Warehouse ที่ฉายเป็น ClientProduct ปัจจุบัน, optional `warehouseModelCodes`, categories จาก provider, SearchPage title/path และ `overlayQuery` เดิม ไม่เพิ่ม field ที่อ่านจาก DB/API
+- Output: รายการสินค้าที่ผ่าน eligibility และเรียงตาม tier อย่างคงที่ พร้อมผลหน้าเนื้อหาที่ผ่าน AND; object identity/ค่า fields/slugs เดิมไม่เปลี่ยน
+- เพิ่ม optional `warehouseModelCodes` ใน OverlayProduct ตาม Product ที่มีอยู่แล้ว ไม่มี caller ต้องส่งค่าใหม่ ไม่มีการแก้ StorefrontProduct/ClientProduct payload หรือ data-loading/cache contract
+- Helper ใหม่อยู่ใน `src/features/catalog/data/catalog-search.ts` ใช้ TypeScript/JavaScript เดิม ไม่มี browser-only API และไม่มี mutable global index; memoize การเตรียม searchable fields ใน Overlay ตาม products/categories และจัด query ต่อการพิมพ์ ไม่เพิ่ม state/effect/fetch
+
+### Acceptance Criteria
+
+- [x] Exact SKU/model อยู่ก่อน prefix และการพบรุ่นเฉพาะใน description; ผูก assertion กับ SKU/slug ที่คาดหวัง ไม่ใช้แค่จำนวนผล
+- [x] ชุดทดสอบรหัสที่ยืนยันแล้วครอบคลุม case/space/hyphen; `WPS-10KS` เทียบ `WPS10KS` ได้ และไม่ collapse เป็น `WPS6KS`, `10` ไม่เท่ากับ `1.0`, `A/B` ไม่กลายเป็น `AB`
+- [x] ค้นหลายคำข้าม field ได้ สลับคำได้ คำซ้ำไม่เพิ่มคะแนน และขาดแม้หนึ่งคำต้องไม่เข้า candidate; คงสระ/วรรณยุกต์ไทย
+- [x] SKU/model missing ไม่ throw หรือแต่งข้อมูล คะแนนเสมอรักษาลำดับ input และไม่ mutate input; exact result ที่เดิมอยู่นอก40รายการขึ้นมาแสดงหลัง ranking
+- [x] Query ว่าง/whitespace, จำนวนสินค้าทั้งหมด, limit40/20, page-only/no-result และ canonical navigation เป็นไปตาม contract
+- [x] ใช้ชุด unit fixtures ที่มีตัวอย่างใกล้กัน/ตัวลวง และ Browser ตรวจสินค้าจริงจาก Warehouse โดยไม่แก้ข้อมูลธุรกิจ ไม่ถือ synthetic fixture เป็นข้อมูลผลิตภัณฑ์จริง
+- [x] Browser ของทั้งสอง Header ผ่าน query normalization, multi-word, clear, no results, result link, Escape/focus และไม่ล้นหน้าจอ; thumbnail geometry65px/Comparison regression ปัจจุบันผ่าน ส่วน fixtureเก่าที่ไม่ผ่านแยกด้านล่าง
+- [x] Affected catalog tests/focused E2E ผ่าน; typecheck/scoped lint/format/diff และ source scope ผ่าน ไม่มี search request ต่อ keystrokeเพิ่มจากงานนี้; full catalog มี7legacy Navbar failuresที่ไม่เกี่ยวกับงานนี้ตามรายละเอียดด้านล่าง
+
+### Missing Information
+
+- ไม่มีข้อมูลธุรกิจที่จำเป็นขาดสำหรับข้อ1–3 ใช้ข้อมูลที่ส่งมาอยู่แล้ว กติกา AND/ranking/identifier normalization ในเอกสารนี้ได้รับอนุมัติ ไม่ถือว่ามี synonym/model alias เพิ่มเติมที่ได้รับอนุมัติ
+
+### Approval Record / Current State
+
+- ผู้ใช้ระบุ: “โอเคครับ เริ่มข้อ 1–3 ก่อน ช่วยจัดทำ Spec/Plan ให้ผมตรวจอนุมัติก่อนลงมือแก้ครับ” อนุญาตการเตรียมเอกสารเท่านั้น
+- ต่อมาผู้ใช้อนุมัติ: “อนุมัติ Spec/Plan ข้อ 1–3 ครับ ลงมือแก้ตามขอบเขตที่เสนอ แล้วทดสอบการค้นหาทั้งมือถือ แท็บเล็ต และเดสก์ท็อปก่อนสรุปผล ยังไม่ต้อง commit/push ครับ” ครอบคลุม7ไฟล์ใน Plan และกติกาที่เสนอ โดยไม่อนุมัติ scope out
+- ในรอบเสนอแผน Ready to Code หมายถึงข้อมูลครบแต่ยังไม่อนุมัติเขียนโค้ด ต่อมาจึงเริ่ม implementation หลังบันทึกคำอนุมัติจริงข้างต้น
+- งาน Mobile-first และ Navbar ที่ทำคู่ขนานมีเจ้าของขอบเขตแยกกัน ต้องเก็บ working tree ล่าสุดเป็น baseline ตอนเริ่ม implementation และรักษาการแก้เหล่านั้น
+
+### Implementation Verification — 2026-11-17
+
+- แก้ application3ไฟล์ตาม manifest: helperใหม่, optional model type และ Overlay integration; เพิ่ม unit/E2E2ไฟล์ ไม่เปลี่ยน server/client payload, Warehouse, CSS, Navbar หรือ category finder
+- Old-filter behavioral probe บน synthetic fixtures ยืนยัน3failure modes: descriptionมาก่อน exact, hyphen identifierไม่พบ และหลายคำต่างตำแหน่งไม่พบ แยกจากข้อมูลสินค้าจริงใน `red-old-filter.json`
+- Unit ใหม่17/17ผ่าน; affected tests รวม client-payload/catalog-decision-facts29/29ผ่าน; full catalog202กรณีผ่าน195/ล้มเหลว7 เฉพาะ `primary-navigation.test.ts` ที่ยังคาด99เมนู/ลิงก์และชื่อก่อน owner Navbar edits ไฟล์ทดสอบและ Navbar sources เหล่านั้นตรง baseline ก่อนงานนี้ ไม่แก้ภายใต้ search scope
+- Browser run34กรณี: Searchใหม่14/14และ RSP-01เดิม16/16ผ่าน รวม30search cases;4กรณีใน `compare-mode.spec.ts` ล้มเหลวเพราะยังอ้าง article/sidebar/header-compare บน `/products` และชื่อ Dialog เดิม ไม่อ้างเป็น clean34run
+- ตรวจ Comparison flow ปัจจุบันแยกด้วย2กรณีเดิมใน `hicks-law-catalog.spec.ts` ที่390/1440 ผ่าน2/2 ไม่แก้ fixtures หรือ application เพื่อให้ผ่าน
+- สินค้าจริง395รายการ; ใช้ WPS10KS/SKU G106698 ที่มี model codeจาก runtime ทดสอบ9 query variantsต่อ10page/viewport contexts: Home+detail×320/390/834/1024/1440 และอีก4touch contextsที่390/834 รวม clear/whitespace/no-result/page-only/canonical navigation/Escape/focus ไม่มี pageerrors/search API requestsในชุดตรวจใหม่
+- ตรวจ geometry10contextsไม่พบ document/Dialog overflow รูปคง65×65px และดู screenshot320Home/1440detailแล้ว ไม่มีการเปลี่ยนดีไซน์
+- Node24.22.1: standalone typecheck, scoped ESLint/Prettier และ whitespace checksผ่าน หลักฐานแยกใน `static-checks.json`; ไม่รัน production build/deployจากงานนี้
+- หลักฐานหลัก: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/search-phase1-implementation/` มี source baseline, JSONผล Browser, geometry, screenshots, unit logs และ verification receipt
+- ข้อจำกัด: local Chrome/emulated touch ไม่ใช่ Safari/อุปกรณ์จริง/production certification; initial new-test selectorจับชื่อWPS10KSซ้ำกับชุดPOS จึงแก้ locatorให้ระบุ canonical slugและเก็บ initial interrupted tracesแยกไว้ ไม่มี app workaround
+- เก็บ `tests/e2e/mobile-first-responsive.spec.ts` ที่ปรากฏใหม่ระหว่างงานเป็น concurrent file แยกจาก manifest ของ Search ไม่มีการแก้หรือลบไฟล์นั้น; ไม่มี framework feedback candidate ใหม่จากงานนี้
+- ระหว่างส่งมอบงาน Mobile-first จากแชทอื่นเริ่ม Phase1 เปลี่ยน Header/shared styles เป็น1024px จึงเก็บ baselineใหม่และตรวจ Search14+RSP-01เดิม16+Comparisonปัจจุบัน2ซ้ำบน sourceล่าสุด: **32/32ผ่านใน single run1.8นาที** ไม่มี source/test/config446ไฟล์เปลี่ยนระหว่างรัน และ typecheck Node24ซ้ำผ่าน หลักฐาน `browser-header1024.json`, `responsive-rerun-baseline.json`, `header1024-source-check.json`
+- Source scope แยก owned existing2ไฟล์/new3ไฟล์จาก concurrent Mobile-first existing19ไฟล์/new1ไฟล์ ไม่ย้อนหรือนับการแก้ Responsive เหล่านั้นเป็นผลงาน Search; ผลชุดนี้ไม่รับรอง phaseอื่นของ migration ที่ยังดำเนินแยกกัน
+- หลังรอบ32มี concurrent amendmentเฉพาะลูกศรผลค้นหาเป็น ChevronRight/aria-hidden และ scrollbar CSS เก็บไว้โดยไม่เขียนทับ ตรวจเทียบ sourceโดยถอดเฉพาะglyph hunksยืนยัน ranking integrationเดิมไม่เปลี่ยน แล้วรัน4Search contextsของสองHeaderที่320/1440ซ้ำผ่าน4/4ใน26.6วินาที หลักฐาน `browser-chevron-smoke.json`; ไม่อ้างว่า hashทั้งไฟล์Overlayเหมือนก่อนglyph amendment
+
+## Task: Search result chevrons and hidden scrollbar (2026-11-17)
+
+Status: "Complete — focused appearance and scroll checks passed"
+Approval: "Approved — owner explicitly requests > result arrows and removal of the visible Search scrollbar"
+
+### Goal / Scope / Approval Record
+
+- Change product and page-only Search result arrows from ArrowRight to ChevronRight (18px) to match the owner's > reference.
+- Hide the Search dialog scrollbar; preserve native vertical scrolling and access to all results. This is a visual change, not removal of scroll functionality.
+- Owner supplied current Search dialog screenshot and explicitly requested both changes. Reuse existing icons/dependencies and current dialog structure.
+- Scope: CatalogOverlays result icons, Search-only CSS, focused assertions in current responsive-search test, Spec/Plan.
+- Out: comparison arrows/dialog scrollbar, Navbar, search ranking/filter/data, existing image/text geometry, dependencies, commit/push/deploy.
+
+### UI/UX Reference / Contract / Risk
+
+- Current source: CatalogOverlays, Modal and overlays.css; retain border radius, fonts, color, spacing, max-height and native dialog/Escape/focus behavior.
+- Standing reference: https://tailwindcss.com/docs/scrollbar-width, read2026-11-17, displayedv4.3. Use scrollbar-width:none and WebKit scrollbar display:none in existing CSS; no tokens or Tailwind installation.
+- Restrict rules to .modal:has(.search-results); other dialogs keep their existing scrollbars. Do not add overflow:hidden.
+- Risk: hiding a scrollbar must not make lower results inaccessible; verify actual wheel/last-item scrolling and Escape/focus on both Header entrypoints.
+- Rollback: undo only the two Search icon replacements and Search scrollbar rules/test additions. Preserve concurrent ranking/responsive changes.
+
+### Acceptance Criteria
+
+- [x] Product and page-only Search result arrows use ChevronRight18px; comparison still uses original ArrowRight.
+- [x] Search scrollbar is hidden and actual vertical scrolling still works at390/1440/667×375.
+- [x] Both Home and product-detail Search entrypoints preserve dialog containment, result navigation, Escape and trigger focus.
+- [x] Scoped browser/static checks pass; record results and limits.
+
+### Missing Information
+
+- None; visual scrollbar removal is implemented while retaining scrolling.
+
+### Verification Results — 2026-11-17
+
+- Targeted Chromium6/6passed in one20.2srun with no retries/skips:Home and product-detail entrypoints at390×900/1440×900/667×375.
+- Both product and page-only result chevrons are18px. Search computed scrollbar-width:none and WebKit scrollbar display:none, with real vertical overflow retained.
+- Native wheel changes dialog.scrollTop; last result is reachable and visible. No dialog/document horizontal overflow. Escape closes and returns focus; reopening and clicking a product still reaches its canonical detail.
+- Desktop screenshot visually inspected: > chevrons present and right scrollbar absent. Screenshots saved outside source.
+- TypeScript and scopedESLint passed; code-file formatting passed. Final documentation formatting/diff results are recorded after task notes.
+- Current scope:2applicationfiles plus existing responsive-search test and Spec/Plan. Comparison ArrowRight15 and Modal implementation unchanged; search ranking/results/images and concurrent responsive/navigation work preserved.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-search-chevrons-20261117/.
+- LocalChrome/emulatedviewports only; no fullrepoE2E/build/production/Safari/physical-device claim. No commit/push/deploy or database writes. No new qualifying Next feedback/task-observer issue.
+
+## Task: Navbar product columns as overview chapter source (2026-11-17)
+
+Status: "Complete — Navbar-driven chapters verified"
+Approval: "Approved — owner explicitly requests using Navbar buttons as the basis for overview menus"
+
+### Goal / Approval Record
+
+- Owner: “เอาปุ่มเมนู nav เป็นหลักและมาปรับใส่ตรงเมนูหน้ารวมครับ”, with screenshots of7accessory primaryNavbar items versus5legacy overview image chapters.
+- In the5existing category overview rails, show exactly the corresponding Navbar product-column items, with the same names, order, canonical href and disabled status. Do not include secondary usage/consumable/help columns.
+
+### Scope / Current Contract
+
+- Project top chapter items from existing getPrimaryNavigationItems(navigation), while retaining original category inputs for catalogue/finder filters.
+- Reuse matched existing subcategory productIds and verified representative photos. Unmatched items (e.g.printers,electronics,weights) use the already-approved ProductImage placeholder; no inferred photo/membership or new route.
+- Disabled Navbar entries remain disabled chapter buttons, with existing muted color; enabled chapter activation uses that Navbar href.
+- Keep current image sizes, single-line/intrinsic-width rail, horizontal scroll, headings, product data and underlying filter groups.
+- Out: Navbar data/menu structure changes, enabling pending destinations, new assets/data/routes, search/quotation/global style/dependency changes, commit/push/deploy.
+
+### UI/UX Alignment / Risk / Rollback
+
+- Reference: owner's two screenshots, current Navbar data, existing overview rail/ProductImage and var(--muted).
+- Existing disabled-state styling is reused from the Navbar visual treatment; current technical reference https://tailwindcss.com/docs/hover-focus-and-other-states (disabled state), checked2026-11-17, displayedv4.3. No new token/font/breakpoint.
+- Risk: missing legacy subcategory metadata must not drop pending Navbar items, assign unrelated photos or accidentally change finder filters. Keep separate original filter list; explicitly map primary columns and honor disabled flags.
+- Rollback: undo only this follow-up's projection/click-target/disabled-style/test hunks and own task notes; preserve preceding edits and concurrent work. No DB rollback.
+
+### Acceptance Criteria
+
+- [x] Each of5category rails exactly matches its Navbar primary column's labels/order/count and href behavior; accessories shows7items and excludes secondary consumables.
+- [x] Disabled states match Navbar and cannot navigate; real enabled button activation reaches its canonical destination.
+- [x] Existing matched photos/memberships reused; absent metadata uses existing placeholder with no invented data.
+- [x] Underlying finder filters retain original category groups; rail remains single-line/scrollable at320/390/834/1440 without overflow or image size change.
+- [x] Scoped browser and static checks pass; update final state/results.
+
+### Missing Information
+
+- None required: Navbar is the user-authorized display source; missing image/data uses the established placeholder/disabled policy.
+
+### Verification Results — 2026-11-17
+
+- Final targeted Chromium4/4passed in59.4s with no retries/skips, covering all5category overviews at320/390/834/1440 (20page/viewport combinations).
+- Current primary columns:scales8/indicators3/platforms4/POS3/accessories7,25positions total with11disabled. Tests compare exact displayed names/order/count to Navbar and verify disabled native activation cannot navigate; real enabled chapter actions reach their existing canonical hrefs.
+- Unknown subcategory metadata uses the existing ProductImage placeholder asset, verified in the browser; matched existing productIds/photos remain the only source for representative photos.
+- One-line labels, intrinsic item widths, image box dimensions, native horizontal rail scrolling, page headings and document containment pass at all4widths.
+- Desktop/mobile screenshots inspected. Disabled chapters use the Navbar's muted text without inheriting the additional global40%opacity, so photos stay clear while buttons remain disabled.
+- SHA-256 comparison confirms Navbar data, accessory membership definitions and canonical subcategory page registry stayed unchanged throughout this task.
+- Existing original categoryItems still drive the secondary index/finder controls; ProductCategoryMock receives the original categories prop. Only the top chapter rail uses projected Navbar links; catalogue membership/filter definitions are not modified.
+- TypeScript, scopedESLint, scopedPrettier and diff checks passed. Initial test incorrectly expected placeholder cards to contain no img, but the approved placeholder contains its ownSVGimg; corrected only the assertion to check the actual placeholder source. Initial evidence retained separately; no application workaround.
+- Final evidence: C:/Users/cityc/AppData/Local/Temp/sunford-navbar-chapter-source-20261117-accepted/. Earlier runs retained in corresponding base/-final directories.
+- Current contract: Navbar primary column is authoritative for category overview top-rail names/order/hrefs/disabled states. Secondary/help groups are excluded; no new route, product assignment, photo, data-readiness enablement or Navbar change.
+- LocalChrome/emulatedviewports only; no fullrepoE2E/build/production/Safari/physical-device claim, commit/push/deploy or database mutation. No qualifying Next feedback candidate or new task-observer issue.
+
+## Task: Reconcile legacy Navbar and Comparison tests (2026-11-17)
+
+Status: "Complete — approved legacy tests and scoped regressions verified"
+Approval: "Approved — owner authorized legacy Navbar/Comparison test updates, preserve assertions, verify; no commit/push"
+
+### Goal
+
+ปรับ Navbar7กรณีที่ไม่ผ่านและ Comparison4กรณีเดิมให้ตรวจโครงสร้างที่เจ้าของอนุมัติและใช้งานจริง โดยคงความสามารถจับregression เจ้าของอนุมัติimplementationแล้ว แก้เฉพาะtests2ไฟล์กับSpec/Planตามmanifest ไม่เปลี่ยนapplication/config/dependencyและไม่commit/push
+
+### Current State / Input / Evidence
+
+- รัน `tests/catalog/primary-navigation.test.ts` บนNode24.22.1จริง:9กรณีผ่าน2/ไม่ผ่าน7 รากของfailuresคืออ่านตาราง99รายการจากหัวข้อประวัติ `Fix product tooltip and Contact hydration before UAT delivery` และคาดชื่อ/ลำดับ/parent-self linksก่อนงานDirect Navbar overviewและShort single-line namesที่อนุมัติแล้ว
+- Navbarปัจจุบัน:8เมนูหลัก,3คอลัมน์ต่อเมนู,92submenu positions,68ready/24disabled;24disabled positionsอ้าง18canonical destinations ไม่ใช่24หน้าต่างกัน
+- Review snapshotครบlabels/headings/order/hrefs/disabled: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/legacy-navbar-comparison-plan/current-navbar.json` SHA256 `161d8357aee1a2695beeda31f083145f82816507861ff713132df7efb68d52d6` เป็นproposed fixtureรออนุมัติ ไม่ใช่การอนุมัติreadinessใหม่
+- `tests/e2e/compare-mode.spec.ts` มี4กรณีเดิมที่ยังอ้างarticle/sidebar/header-compareบน `/products`,ชื่อDialogเก่าและชื่อACS-30-JC21 ผล4failจากBrowser runก่อนหน้าเก็บในรายงานSearch phase1 ไม่อ้างว่าauditนี้รัน4กรณีเดิมซ้ำ
+- Browser auditปัจจุบันที่390/834/1440: `/products?category=scales` → region `แคตตาล็อกสินค้า Sunford` → `เลือกสินค้าเพื่อเปรียบเทียบ` → Dialog `เปรียบเทียบสินค้า`;จำกัด3รุ่น,รายการที่4disabled,Escapeคืนfocusและคงcatalog,เริ่มใหม่0/3,ลบรุ่นสุดท้ายจบsession ไม่มีpageerrorsทั้ง3ขนาด
+- แหล่งข้อมูลอ่านจริง:primary-navigation.ts/navigation.ts,owner-approved Direct/Short-label tasks,products-overview.tsx,catalog-overlays.tsx,catalog-store.tsและWarehouse public projection ผ่าน `/api/products` GET
+
+### Scope In / Output
+
+- หลังอนุมัติแก้เฉพาะ2test filesและSpec/Plan:Navbarคง9กรณีรวม2ที่ผ่านอยู่ และComparisonคง4กรณีตามmatrixด้านล่าง
+- คัดลอกreview snapshotที่อนุมัติเป็นliteral expected fixtureในprimary-navigation.test.ts ไม่เพิ่มfixture/helper fileและไม่อ่านhistorical Specระหว่างruntime
+- ตรวจfullcatalogและfocused Navbar/Search/Hicks Comparisonโดยอ่าน/รันไฟล์อื่นได้ แต่ไม่แก้ไฟล์นอกmanifest
+- Outputหลังอนุมัติ:testsตรวจcurrent behaviorอย่างเข้มงวด พร้อมผลจริง/source hashes ไม่เปลี่ยนproduct/API/store contracts
+
+### Scope Out
+
+- เปลี่ยนapp/store/routes/styles/Responsive/Navbar source/Warehouse/ราคา/ภาพ/ข้อมูล/disabled readiness หรือคืนUIเก่าที่ถูกถอด
+- เพิ่มdependency/config/framework,commit/push/deploy,skip/fixme/ลดassertions/เพิ่มtimeoutหรือretryเพื่อกลบdefect
+- สร้างexpectedจากSUTอัตโนมัติหรือยอมรับsource driftโดยไม่ทบทวนapproval
+
+### Proposed Navbar Fixture Contract
+
+| เมนู                 | คอลัมน์1 / จำนวน | คอลัมน์2 / จำนวน       | คอลัมน์3 / จำนวน |
+| -------------------- | ---------------- | ---------------------- | ---------------- |
+| ผลิตภัณฑ์ทั้งหมด     | สินค้า / 5       | การใช้งาน / 4          | ช่วยเหลือ / 4    |
+| เครื่องชั่ง          | สินค้า / 8       | คุณสมบัติ / 5          | ช่วยเหลือ / 4    |
+| อินดิเคเตอร์แท่นชั่ง | สินค้า / 3       | การใช้งาน / 3          | ช่วยเหลือ / 4    |
+| โครงสร้างแท่นชั่ง    | สินค้า / 4       | เลือกอุปกรณ์ร่วม / 3   | ช่วยเหลือ / 4    |
+| ระบบ POS             | สินค้า / 3       | ระบบและอุปกรณ์ / 4     | ช่วยเหลือ / 4    |
+| อุปกรณ์เสริม         | สินค้า / 7       | วัสดุสิ้นเปลือง / 3    | ช่วยเหลือ / 4    |
+| จัดสเปค              | เลือกอุปกรณ์ / 3 | ตรวจสอบก่อนเลือก / 1   | ช่วยเหลือ / 3    |
+| บริการ               | บริการ / 2       | ซอฟต์แวร์และเอกสาร / 3 | ช่วยเหลือ / 4    |
+
+- Expectedต้องตรึงtop-level href/order,headingsและlabel/href/Boolean(disabled)ครบ92ตำแหน่ง ไม่เพียงเปลี่ยนตัวเลขรวม ใช้literalที่อนุมัติอิสระจากgetPrimaryNavigationItemsในtest runtime
+- ไม่มีsubmenu hrefเท่ากับparentตัวเอง แต่เก็บcross-category/child linksและguideในเมนูอื่น ไม่ห้ามhrefซ้ำข้ามบริบททั้งหมด
+- กติกาลำดับ:คำลงท้ายทั้งหมดก่อนถ้ามี ตามด้วยความยาวชื่อและstable ties;ปัจจุบันไม่มีsubmenu labelลงท้ายทั้งหมดหลังการย่อชื่อ ไม่แต่งรายการทดสอบเข้าapp
+- Readinessเทียบcanonical href/aliasและบริบทซ้ำ รวมsaved-disabled/input nonmutation;assertว่ามีเป้าหมายจริงก่อนใช้everyเพื่อป้องกันempty-array false pass
+
+### Seven Navbar Cases — Changes for Review
+
+| ID / กรณีเดิม                    | สิ่งที่จะปรับโดยรักษาเจตนา                                                                                                                                               |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| N1 ทุกlabel/columnตรงSpec        | แทนparserของhistorical99ด้วยfrozen literal92 ตรวจorder/headings/ทุกlabel/href/status                                                                                     |
+| N2 จำนวน99/71/28และplatformเดิม  | ตรวจ8/92/68/24,3columns,countsตามตาราง,platform4รายการยังdisabledและshort-label order ไม่คาดparent all-itemsที่ถอดแล้ว                                                   |
+| N3 readinessตามตาราง99           | เทียบ92ตำแหน่ง/18disabled hrefsกับfixtureปัจจุบัน;pending analytical/counting/checkweighingยังdisabled,canonical aliasสอดคล้องและตรวจpresenceก่อนevery                   |
+| N4 functionsแยกจากfamilies       | คง5functional links/disabled countingและcheckweighing;industrial primaryใช้ชื่ออุตสาหกรรมที่อนุมัติ ไม่คืนชื่อยาว                                                        |
+| N5 full names/all-itemsซ้ำparent | ตรวจชื่อสั้นที่อนุมัติ,5canonical category hrefs,all-products links,ไม่มีparent-self hrefและคงcrosslinks/ข้อมูลcategoryต้นฉบับ                                           |
+| N6 company/ServicesและCMS labels | Services primaryเหลือquotation/register2ลิงก์;company/helpยังอยู่ถูกคอลัมน์และinput-label overrideยังมีผล เรียกprovided navigation labelsให้ตรงระบบปัจจุบันที่ไม่อ่านCMS |
+| N7 guideและsaved Services copies | top-levelจัดสเปคครั้งเดียว,primary3ลิงก์เลือกอุปกรณ์ไม่มีguide self-link;injected Services copiesไม่กลับมา,inputไม่mutateและคงguide crosslinksในเมนูอื่น                 |
+
+สองกรณีที่ผ่านอยู่แล้วคือcategory order/input nonmutationและsaved-disabled alias normalization ต้องยังผ่าน ไม่ลดcoverageหรือแก้appเพื่อให้fixtureผ่าน
+
+### Four Comparison Cases — Changes for Review
+
+| ID / viewport                | พฤติกรรมที่ต้องตรวจ                                                                                                                                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1 explicit session / 1440px | เข้าscales catalogก่อน:ไม่มีselection controls/bar;กดentryในregionแล้ว0/3และปุ่มดูdisabled เลือก3สินค้าจริง,tableตรงcanonical IDsและunique,รายการที่4disabled;Closeจบsession,เริ่มใหม่ว่างแล้วCancelจบsession |
+| C2 explicit session / 390px  | เจตนาเดียวกับC1บนมือถือ ตรวจเลือก/เปิด/ปิด/ล้างจริง ไม่ใช้aria-pressedของglobal headerเก่าเป็นตัวแทนsessionstate                                                                                              |
+| C3 Escape / 834px            | เลือกสินค้าเปิดComparison,EscapeปิดเฉพาะComparisonและล้างselection;parent catalogยังอยู่,focusคืนfinder input,เริ่มใหม่ผ่านentryปัจจุบันได้0/3                                                                |
+| C4 last removal / 834px      | เลือก1สินค้าเปิดComparison,ลบสินค้านั้นแล้วDialog/bar/selection controlsหาย คงparent catalogและเริ่มsessionใหม่เป็น0/3                                                                                        |
+
+- Scope selectorsกับregion/catalogและDialogชื่อ `เปรียบเทียบสินค้า` เพราะปุ่มเริ่มชื่อเดียวกันอาจอยู่ในหน้าพื้นหลังด้วย ใช้compare-barเฉพาะส่วนที่ไม่มีaccessible regionทดแทน
+- เลือกอย่างน้อย4eligible Warehouse productsจากGET `/api/products` ที่มีการ์ดจริงในscales;ผูกการ์ดด้วยcanonical hrefและcurrent public display-name projection ไม่ตรึงlegacy ACS-30-JC21หรือเลือกด้วยชื่อที่อาจซ้ำกับชุดPOS
+- ถ้าสินค้าไม่ครบให้failพร้อมเหตุผล ไม่skip/เติมmockเป็นข้อมูลธุรกิจจริง;table headersเทียบselected IDs/slugs/namesจริง ไม่ผ่านจากจำนวน3/3เพียงอย่างเดียว
+- Condition-based waitsและreduced-motionตามharnessเดิม ไม่มีsleep/timeoutเพิ่มเพื่อซ่อนregression
+
+### UI/UX Brand Alignment
+
+- Reference:current owner-approved Navbar/direct links/short captionsและComparison/store ไม่มีการเลือกค่ากลางหรือปรับดีไซน์ จึงไม่มีTailwind token/breakpointใหม่
+- คงapp DOM/store/สี/ตัวอักษร/รูป/ข้อความและnavigation semantics เปลี่ยนเฉพาะtests
+- 390/834/1440เป็นviewportตัวแทน ไม่เปลี่ยนHeader64rem1024pxหรือโครงการMobile-firstจากงานนี้
+
+### Acceptance Criteria
+
+- [x] Navbar9/9ผ่านsingle run รวม7ที่ปรับและ2ที่รักษา;fixtureอิสระจากSUTครบ8/92/68/24/headings/order/labels/hrefs/status
+- [x] ไม่มีhistorical99 parser/runtime expected regenerationหรือmissing-target false pass
+- [x] Comparison4/4ผ่านsingle runตามC1–C4 รวมcap3/Close/Escape/clear/restart/last removal/focus/source identities
+- [x] ไม่มีskip/fixme/เพิ่มretry/แก้app/ลดassertionsเพื่อให้ผ่าน Warehouseยังอ่านอย่างเดียว ไม่ส่งฟอร์มหรือข้อความ
+- [x] Fullcatalogไม่มีfailureจาก11กรณีนี้หรือnew regression;existing Navbar overview/Search/Hicks Comparisonผ่าน
+- [x] Typecheck/scopedlint/format/diff/scope auditผ่าน Spec/Planบันทึกผลจริงและข้อจำกัด ไม่อ้างfullrepoE2E/Productionจากfocused checks
+
+### Missing Information
+
+- ไม่มีข้อมูลจำเป็นขาด ได้รับowner approvalรวมfixtureและmatrixแล้ว ตรวจSHAและcurrent Navbarตรงsnapshotก่อนแก้tests หากNavbar/readinessเปลี่ยนภายหลัง ให้ทบทวนเฉพาะส่วนที่เปลี่ยน ไม่รับexpectedอัตโนมัติ
+
+### Approval Record / Planning Verification
+
+- คำสั่งผู้ใช้: “ช่วยตรวจและจัดทำ Spec/Plan ปรับชุดทดสอบเก่า Navbar 7 กรณีและ Comparison 4 กรณีให้ตรงกับโครงสร้างปัจจุบันก่อนครับ ยังไม่ต้องลงมือแก้หรือ commit/push” อนุญาตaudit/เอกสารเท่านั้น
+- ต่อมาผู้ใช้อนุมัติ: “อนุมัติ Spec/Plan ปรับชุดทดสอบ Navbar 7 กรณีและ Comparison 4 กรณีครับ ลงมือแก้ตามขอบเขตที่เสนอ รักษา assertions เดิมและทดสอบให้ผ่านก่อนสรุปผล ยังไม่ต้อง commit/push ครับ” ครอบคลุม4ไฟล์ตามPlan ไม่อนุมัติapp/config/dependency changes
+- Artifact root: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/legacy-navbar-comparison-plan/` มี450-file baseline,current-navbar.json,navbar-baseline.logและcomparison-runtime-audit.json
+- ในรอบเสนอแผน Ready to Codeหมายถึงข้อมูลครบแต่ยังไม่อนุมัติimplementation;ต่อมาลงมือหลังบันทึกคำอนุมัติจริงข้างต้น ไม่มีapp changesหรือcommit/pushจากงานนี้
+
+### Implementation Verification — 2026-11-17
+
+- Scopeครบ4ไฟล์:แก้Navbar/Comparison tests2ไฟล์และหัวข้องานนี้ในSpec/Plan ไม่เปลี่ยนapp/config/dependencyหรือสร้างfixture/helper fileในsource tree
+- Navbar9/9ผ่านในsingle run; fullcatalog202/202ผ่านในsingle run12.5วินาที ไม่มีskipped/cancelled/failure ปิด7Navbar legacy failuresเดิมโดยยังเก็บ2passing cases
+- AST auditยืนยันliteral fixtureในtestตรงapproved snapshotSHAทุก92ตำแหน่งและcallbacksของ2passing testsเดิมไม่เปลี่ยน ไม่อ่านSpec runtime ไม่มีskip/fixme/retry/timeout workaround
+- Comparison4/4ผ่านในsingle run56.0วินาที ไม่มีretry/skip/flaky:1440/390 explicit sessions,834Escape,834last removal ใช้4eligible Warehouse productsจริงและตรวจselected canonical hrefs/source names/unique SKUs จำกัด3,disabled4th,selectedยังลบได้,Close/Cancel/Escapeจบsession,restart0/3 และparent catalog/focusถูกต้อง
+- Existing Navbar overview14และSearch14ผ่านรวม28/28ในsingle run5.1นาที รวมmain-link navigationสองHeader/chapters/Control-clickและSearch320–1440/touch ตามtestsที่มีอยู่;Hicks Comparison390/1440ผ่าน2/2ในsingle run17.5วินาที ไม่แก้regression filesเหล่านั้น
+- Node24.22.1 standaloneTypeScript/scopedESLint/Prettierผ่าน;task-section formattingและwhitespace checksผ่าน ผลและsource hashesอยู่ในartifact directoryด้านล่าง
+- Evidence root: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/legacy-navbar-comparison-implementation/` รวมcatalog.log,comparison.json,navbar-search.json,hicks-comparison.json,static-checks.json,scope-fixture-check.jsonและverification-report.md
+- งานMobile-first/overviewที่ทำคู่ขนานถูกเก็บแยกจากowned changes ไม่มีการย้อนapp/ปรับfixtureรับdriftโดยอัตโนมัติ;owned test filesตรงhashที่ตรวจและส่งมอบ
+- ข้อจำกัด:localChrome/emulatedviewports ไม่ใช่fullrepositoryE2E/Safari/physical-device/production certification ไม่รันbuild/deploy ไม่มีcommit/push/DB mutationจากงานนี้ ไม่มีqualifying Next.js feedback candidateใหม่
+
+## Task: Compact overview hero-to-lineup spacing (2026-11-17)
+
+Status: "Complete — compact spacing and control geometry verified"
+Approval: "Approved — owner explicitly requested reducing the highlighted blank area on each overview"
+
+### Goal / Scope / Approval Record
+
+- Owner: “ช่องว่างส่วนนี้ของแต่ละหน้ารวมเยอะไปครับช่วยปรับหน่อย”, with screenshot showing the gap below the featured product card before the product lineup section.
+- Reduce only the5existing category overview hero-to-lineup gap. Current heroTrack contributes30px and priority contributes196px/216px, producing226px/246px.
+- Set priority bottom padding32px at the existing mobile/tablet/desktop rules, yielding62px. Update linked playback bottom offsets to86px so controls stay24px inside the card (32+30+24).
+- Preserve all card/image sizes, type, photos, content, chapter menus, lineup section's own padding and breakpoints. /products uses its separate index renderer and is outside this existing category-hero rule.
+- Out: hero redesign/resizing, other section spacing, data/routes, global styles, dependencies, commit/push/deploy.
+
+### UI Brand / Reference / Risk
+
+- Use existing32pxspacing already present in this overview module; no global token change.
+- Standing technical reference: https://tailwindcss.com/docs/padding, checked2026-11-17, displayedv4.3; apply padding-bottom in existing CSS Modules.
+- Risk: playback controls use offsets coupled to trailing section padding. Reducing padding alone would move controls into the image, so adjust both and assert their unchanged24pxbottom inset.
+- Rollback: restore only6owned CSS values and own new regression/notes. Preserve all pending mobile-first/Nav/Search changes and existing hero dimensions.
+
+### Acceptance Criteria
+
+- [x] Card-to-lineup gap is62px wherever a verified hero exists across5category overviews at320/390/834/1440 instead of226/246px; source-empty hero sections remain≤100px with0cards.
+- [x] Playback controls retain24pxinside-card bottom clearance and remain clickable; tabs and play/pause work.
+- [x] Existing hero dimensions, image/content/CTA layout and document containment remain.
+- [x] Retain before/after evidence; scoped browser and static checks pass.
+
+### Missing Information
+
+- None; screenshot and current structure identify the requested boundary.
+
+### Verification Results — 2026-11-17
+
+- Before proof: scales desktop1440 measured246px card-to-lineup gap and failed the new compact-spacing assertion; screenshot and geometry attachment retained under sunford-overview-spacing-20261117-before.
+- Final single Chromium4/4passed in40.6s, no retries/skips, covering5category pages at320/390/834/1440 (20page/viewport combinations).
+- Where verified hero photos exist, measured card-to-lineup gap62px, card heights unchanged480/628/680px and playback bottom inset24px. Actual tab selection and play/pause activation pass; no document overflow.
+- Source image counts are independently checked from the existing read-only /api/products response using the same category membership contract. Categories with no verified hero photo must render0cards and no playback, and their empty hero remains≤100px; no placeholder product/card/photo was invented for this test.
+- Entire CSS file compared with task-start snapshot: exactly6planned value replacements and no other task-owned CSS changes. Card/image/type/layout dimensions and lineup padding remain unchanged.
+- Final screenshots include390/1440scales and accessories. Desktop screenshot visually inspected; before/after comparison shows the blank band reduced from246to62px without moving controls within the card.
+- TypeScript, scopedESLint and code-filePrettier passed; final notes/format/diff checks completed separately below.
+- Initial post-change harness assumed all categories had hero images; corrected to independently assert actual source counts and empty-state compactness. Another font-promise wait lost its execution context during navigation; changed the test to wait for the expected page heading and loaded font state. No application workaround.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-overview-spacing-20261117-final/; prior red/attempted runs remain separately versioned.
+- LocalChrome/emulatedwidths only; no fullrepoE2E/build/production/Safari/device/commit/push/deploy or database write. No qualifying Next feedback issue; reusable fixture/source-readiness guidance already exists in observer memory.
+
+## Task: Remove duplicate POS submenu entries (2026-11-17)
+
+Status: "Complete — duplicate POS rows removed and verified"
+Approval: "Approved — owner identified Android/Windows duplicated in POS primary and secondary columns"
+
+### Goal / Scope / Contract
+
+- Remove only Android and Windows from POS's ระบบและอุปกรณ์ column; retain them in สินค้า. Keep all other labels, destinations, readiness and columns unchanged.
+- Reference: owner's POS dropdown screenshot and current primary-navigation.ts. No styling/responsive/route/data contract change.
+- Missing information: none. R2 rollback restores just these2secondary entries.
+
+### Acceptance Criteria
+
+- [x] POS primary retains iOS/Android/Windows; secondary has only existing printers/POS-accessories links and no overlapping hrefs with primary.
+- [x] Verify exact2-line source change and scoped formatting/lint.
+
+### Verification Results
+
+- Direct data check passed: POS primary iOS/Android/Windows retained; secondary has2equipment links with no primary overlap. Entire-file before/after comparison confirms only2duplicate rows removed.
+- ScopedESLint passed. Final source/doc Prettier and whitespace verification run after these notes. No renderer/style/readiness change or new browser run; no commit/push/deploy and no Next feedback candidate.

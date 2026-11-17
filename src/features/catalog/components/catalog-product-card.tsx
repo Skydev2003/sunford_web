@@ -54,7 +54,7 @@ export function CatalogProductCard({
           fallbackSrc={product.fallbackImage}
           alt={`SUNFORD ${product.name}`}
           fill
-          sizes="(max-width: 600px) 45vw, (max-width: 1100px) 30vw, 22vw"
+          sizes="(width < 40rem) 45vw, (width < 80rem) 30vw, 22vw"
         />
       </Link>
       {compareMode && (

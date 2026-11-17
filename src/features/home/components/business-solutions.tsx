@@ -34,7 +34,7 @@ export function BusinessSolutionsTemplate() {
             src={solutionImages.feature}
             alt="เครื่องชั่ง SUNFORD POS บนเคาน์เตอร์ร้านค้า"
             fill
-            sizes="(max-width: 720px) 94vw, (max-width: 1280px) 54vw, 658px"
+            sizes="(width < 48rem) 94vw, (width < 80rem) 54vw, 658px"
           />
           <div className={styles.featureCopy}>
             <p className={styles.featureEyebrow}>SUNFORD BUSINESS SOLUTIONS</p>
@@ -79,7 +79,7 @@ export function BusinessSolutionsTemplate() {
                 src={solutionImages.accessories}
                 alt="เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS ซันฟอร์ด"
                 fill
-                sizes="(max-width: 720px) 44vw, 245px"
+                sizes="(width < 48rem) 44vw, 245px"
               />
             </div>
           </Link>
@@ -101,7 +101,7 @@ export function BusinessSolutionsTemplate() {
                 src={solutionImages.software}
                 alt="ภาพประกอบการจัดการข้อมูลผ่านแท็บเล็ตและโทรศัพท์"
                 fill
-                sizes="(max-width: 720px) 44vw, 245px"
+                sizes="(width < 48rem) 44vw, 245px"
               />
             </div>
           </Link>

@@ -92,7 +92,7 @@ for (const width of [390, 1440]) {
     for (const [id, label] of categories) {
       await page.goto("/");
       const header = page.locator(".site-header:visible");
-      if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+      if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       const link = header
         .getByRole("link", { name: label, exact: true })
         .filter({ visible: true })

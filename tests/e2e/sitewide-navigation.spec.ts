@@ -6,7 +6,7 @@ import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data
 const navigation = getPrimaryNavigationItems(defaultNavigation);
 const categories = navigation.slice(1, 6);
 async function openCategoryMenu(header: Locator, label: string, width: number) {
-  if (width < 834)
+  if (width < 1024)
     await header.getByRole("button", { name: `เปิดเมนูย่อย${label}`, exact: true }).click();
   else await header.getByRole("link", { name: label, exact: true }).hover();
 }
@@ -24,7 +24,7 @@ for (const width of [390, 1440]) {
       await expect(
         header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
       ).toBeEnabled();
-      if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+      if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       const link = header.getByRole("link", { name: category.label, exact: true });
       await expect(link).toHaveAttribute("href", category.href);
       await link.click();
@@ -32,7 +32,7 @@ for (const width of [390, 1440]) {
       await expect(page.locator("main:visible").getByRole("heading", { level: 1 })).toHaveText(
         category.label,
       );
-      if (width >= 834) await page.mouse.move(width - 20, page.viewportSize()!.height - 10);
+      if (width >= 1024) await page.mouse.move(width - 20, page.viewportSize()!.height - 10);
       await expect(page.locator("#products-navigation-panel:visible")).toHaveCount(0);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
       expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
@@ -63,7 +63,7 @@ for (const width of [390, 1440]) {
     await expect(
       header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
     ).toBeEnabled();
-    if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+    if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     for (const category of categories) {
       await openCategoryMenu(header, category.label, width);
       const panel = header.locator("#products-navigation-panel");
@@ -94,7 +94,7 @@ for (const width of [390, 1440]) {
           return { x, y, width };
         }),
       );
-      if (width >= 834) {
+      if (width >= 1024) {
         expect(boxes[1].x).toBeGreaterThan(boxes[0].x + boxes[0].width);
         expect(boxes[2].x).toBeGreaterThan(boxes[1].x + boxes[1].width);
       } else {
@@ -105,7 +105,7 @@ for (const width of [390, 1440]) {
       await page.screenshot({
         path: test.info().outputPath(`menu-${category.href.split("/").at(-1)}-${width}.png`),
       });
-      if (width < 834) {
+      if (width < 1024) {
         const last = sections.last().getByRole("link").last();
         await last.scrollIntoViewIfNeeded();
         await expect(last).toBeInViewport();
@@ -139,7 +139,7 @@ for (const width of [390, 1440]) {
       await expect(
         header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
       ).toBeEnabled();
-      if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+      if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       await openCategoryMenu(header, category.label, width);
       const choices = [...category.links, ...category.groups![0].links];
       const target =
@@ -163,7 +163,7 @@ for (const width of [390, 1440]) {
       ).not.toBeVisible();
     }
     const header = page.locator("[data-products-header]:visible");
-    if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+    if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     await openCategoryMenu(header, "ระบบ POS", width);
     await header
       .locator("#products-navigation-panel")
@@ -171,7 +171,7 @@ for (const width of [390, 1440]) {
       .click();
     await expect(page).toHaveURL(/\/applications-and-softwares$/);
     await expect(header.locator("#products-navigation-panel")).toHaveCount(0);
-    if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+    if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     await openCategoryMenu(header, "เครื่องชั่ง", width);
     await header
       .locator("#products-navigation-panel")
@@ -190,15 +190,15 @@ for (const width of [320, 768, 834, 844, 1024, 1920]) {
     await expect(
       header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
     ).toBeEnabled();
-    if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-    const trigger = header.getByRole(width < 834 ? "button" : "link", {
-      name: width < 834 ? "เปิดเมนูย่อยเครื่องชั่ง" : "เครื่องชั่ง",
+    if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+    const trigger = header.getByRole(width < 1024 ? "button" : "link", {
+      name: width < 1024 ? "เปิดเมนูย่อยเครื่องชั่ง" : "เครื่องชั่ง",
       exact: true,
     });
     await trigger.focus();
-    await page.keyboard.press(width < 834 ? "Enter" : "ArrowDown");
+    await page.keyboard.press(width < 1024 ? "Enter" : "ArrowDown");
     const panel = header.locator("#products-navigation-panel");
-    if (width >= 834) await expect(panel.locator("a").first()).toBeFocused();
+    if (width >= 1024) await expect(panel.locator("a").first()).toBeFocused();
     await expect(panel.locator("[data-nav-column] > p")).toHaveText([
       "สินค้า",
       "คุณสมบัติ",

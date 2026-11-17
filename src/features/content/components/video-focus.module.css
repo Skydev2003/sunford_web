@@ -1,18 +1,14 @@
 .section {
-  --video-window-width: min(960px, calc(100vw - 96px));
-  --video-card-width: calc((var(--video-window-width) - 32px) / 3);
   width: 100%;
   overflow: hidden;
 }
 .section .heading {
-  width: calc(100% - 96px);
   max-width: 1180px;
   margin-inline: auto;
   text-align: left;
 }
 .section .track {
   position: relative;
-  gap: 16px;
   padding: 4px calc((100% - var(--video-card-width)) / 2) 18px;
 }
 .section .card {
@@ -29,22 +25,34 @@
   opacity: 1;
   transform: none;
 }
-@media (max-width: 1100px) {
+.section {
+  --video-window-width: calc(100vw - 64px);
+}
+.section {
+  --video-card-width: min(74vw, 320px);
+}
+.section .heading {
+  width: calc(100% - 40px);
+}
+.section .track {
+  gap: 12px;
+}
+@media (min-width: 48rem) {
   .section {
-    --video-window-width: calc(100vw - 64px);
+    --video-card-width: calc((var(--video-window-width) - 32px) / 3);
   }
   .section .heading {
     width: calc(100% - 64px);
   }
+  .section .track {
+    gap: 16px;
+  }
 }
-@media (max-width: 720px) {
+@media (min-width: 80rem) {
   .section {
-    --video-card-width: min(74vw, 320px);
+    --video-window-width: min(960px, calc(100vw - 96px));
   }
   .section .heading {
-    width: calc(100% - 40px);
-  }
-  .section .track {
-    gap: 12px;
+    width: calc(100% - 96px);
   }
 }

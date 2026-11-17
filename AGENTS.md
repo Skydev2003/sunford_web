@@ -14,6 +14,10 @@
 
 - ยึด Brand Guideline และ Reference ที่ผู้ใช้อนุมัติ รักษาโลโก้ โทนสี Typography ระยะห่าง โครงสร้าง และรูปแบบ Interaction ให้สอดคล้องกับเว็บไซต์เดิม
 - ตรวจ Design Tokens ใน `src/styles/base.css` และ Style ของ Component ที่ใช้งานจริงก่อนปรับ UI ใช้รูปแบบเดิมเมื่อไม่ได้รับคำสั่งให้เปลี่ยน
+- ใช้ [Tailwind CSS Docs](https://tailwindcss.com/docs) เป็นแหล่งอ้างอิงหลักด้านเทคนิคทุกครั้งที่ต้องใช้ข้อมูลในการออกแบบหรือกำหนด/ปรับค่ากลาง เช่น Spacing, Sizing, Typography, Colors, Breakpoints, Border Radius, Shadows และ Interaction States เปิดอ่านหัวข้อที่เกี่ยวข้องฉบับปัจจุบันก่อนตัดสินใจ ไม่จำกัดเฉพาะ Responsive
+- อ้างอิง Core Concepts ตามความเกี่ยวข้อง: Styling with utility classes, Hover/focus/other states, Responsive design, Dark mode, Theme variables, Colors, Adding custom styles, Detecting classes in source files และ Functions/directives ประยุกต์หลักการกับ CSS Modules/CSS เดิมของโปรเจกต์
+- บันทึก URL หัวข้อที่ใช้ วันที่ตรวจ เวอร์ชันเอกสารที่แสดง ค่ากลาง/หน่วยที่เลือก และเหตุผลการประยุกต์ใน Spec ของงาน แยกค่าเริ่มต้นของ Tailwind ออกจาก Design Tokens ของ SUNFORD ให้ชัดเจน หากเอกสารไม่แสดงเวอร์ชันให้ระบุตามจริง
+- รักษา Brand Guideline และค่าที่เจ้าของอนุมัติไว้ หากค่าอ้างอิงต่างจากค่าปัจจุบัน ให้บันทึกเหตุผลและเสนอการเปลี่ยนใน Spec/Plan ก่อนแก้ การอ้างอิงเอกสารนี้ไม่ใช่การอนุมัติติดตั้ง Tailwind เปลี่ยน Stack หรือแทนค่ากลางทั้งเว็บโดยอัตโนมัติ
 - ออกแบบและตรวจสอบแบบ Mobile-first / Responsive เสมอ ครอบคลุมมือถือ แท็บเล็ต และเดสก์ท็อปตามขอบเขตงาน
 - ระบุแหล่งอ้างอิงด้านแบรนด์ใน Spec หากการตัดสินใจด้านดีไซน์ที่จำเป็นยังไม่มีข้อมูลรองรับ ให้ใช้สถานะ `Need Information` และถามผู้ใช้
 

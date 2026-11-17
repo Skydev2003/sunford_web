@@ -19,7 +19,7 @@ async function centered(track: Locator, index: number, width: number) {
         };
       }),
     )
-    .toEqual({ index, copy: 1, sharp: width > 720 ? 3 : 1 });
+    .toEqual({ index, copy: 1, sharp: width >= 768 ? 3 : 1 });
 }
 
 async function clickPreview(
@@ -29,7 +29,7 @@ async function clickPreview(
   width: number,
   touch: boolean,
 ) {
-  const delta = direction * (width > 720 ? 2 : 1);
+  const delta = direction * (width >= 768 ? 2 : 1);
   const point = await track.evaluate((element, delta) => {
     const cards = Array.from(element.children) as HTMLElement[];
     const middle = element.scrollLeft + element.clientWidth / 2;

@@ -301,7 +301,7 @@ for (const width of [390, 834, 1440]) {
     const scene = page.locator("[data-products-index-carousel]");
     const current = scene.locator("[data-product-photo][aria-current=true]");
     await expect(scene.locator("[data-product-photo]")).toHaveCount(shown.length);
-    if (width >= 760) {
+    if (width >= 768) {
       await expect(scene.locator("[data-product-photo] img[data-ready=true]")).toHaveCount(
         shown.length,
         { timeout: 20000 },

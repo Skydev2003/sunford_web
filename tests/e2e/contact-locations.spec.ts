@@ -49,7 +49,7 @@ test("contact locations retain real company details, map links and responsive ca
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    if (width > 900) {
+    if (width >= 1024) {
       expect(Math.max(...boxes.map((b) => b.y)) - Math.min(...boxes.map((b) => b.y))).toBeLessThan(
         1,
       );

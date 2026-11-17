@@ -176,11 +176,9 @@
   min-height: 44px;
   align-content: center;
 }
-@media (max-width: 833px) {
-  .menuContent[data-all-products] :is(a, .menuUnavailable) {
-    min-height: 44px;
-    align-content: center;
-  }
+.menuContent[data-all-products] :is(a, .menuUnavailable) {
+  min-height: 44px;
+  align-content: center;
 }
 .menuContent .menuUnavailable {
   color: var(--muted);
@@ -263,7 +261,8 @@
   display: none;
 }
 .chapterTrack li {
-  flex: 0 0 94px;
+  flex: 0 0 auto;
+  min-width: 94px;
 }
 .chapterTrack button {
   display: flex;
@@ -281,6 +280,16 @@
   display: block;
   width: 90px;
   height: 58px;
+}
+.chapterTrack button > span:last-child {
+  white-space: nowrap;
+}
+.chapterTrack button:disabled {
+  cursor: default;
+  opacity: 1;
+}
+.chapterTrack button:disabled > span:last-child {
+  color: var(--muted);
 }
 .chapterArt img {
   object-fit: contain;
@@ -306,15 +315,13 @@
   right: auto;
   box-shadow: 12px 0 14px #ffffffed;
 }
-@media (max-width: 833px) {
-  .headerOpen .logo,
-  .headerOpen .navTools > :is(button, a):not(.menuTrigger) {
-    visibility: hidden;
-  }
+.headerOpen .logo,
+.headerOpen .navTools > :is(button, a):not(.menuTrigger) {
+  visibility: hidden;
 }
 .priority {
   position: relative;
-  padding: 16px 0 196px;
+  padding: 16px 0 32px;
 }
 .heroTrack {
   display: flex;
@@ -420,7 +427,7 @@
 }
 .heroPlayback {
   position: absolute;
-  bottom: 250px;
+  bottom: 86px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -1036,7 +1043,34 @@
   padding-inline: 6px;
   margin-bottom: 20px;
 }
-@media (min-width: 735px) {
+@keyframes categoryRibbonHighlight {
+  0%,
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes categoryRibbonText {
+  0%,
+  40% {
+    color: #fff;
+  }
+  100% {
+    color: var(--ink);
+  }
+}
+@keyframes categoryRibbonLink {
+  0%,
+  40% {
+    color: #fff;
+  }
+  100% {
+    color: var(--red);
+  }
+}
+@media (min-width: 48rem) {
   .ribbon {
     min-height: 51px;
     padding-block: 12px;
@@ -1055,7 +1089,7 @@
     min-height: 140px;
   }
   .chapterTrack li {
-    flex-basis: 108px;
+    min-width: 108px;
   }
   .chapterTrack button {
     font-size: 14px;
@@ -1065,7 +1099,7 @@
     height: 72px;
   }
   .priority {
-    padding: 24px 0 196px;
+    padding: 24px 0 32px;
   }
   .heroTrack {
     padding-inline: 6.25% !important;
@@ -1101,7 +1135,7 @@
     padding: 20px 56px 60px;
   }
   .heroPlayback {
-    bottom: 250px;
+    bottom: 86px;
   }
   .section {
     padding-block: 96px;
@@ -1165,7 +1199,9 @@
   .storyArt {
     inset: 185px 20px 70px;
   }
-  .features,
+  .features {
+    padding-bottom: 0;
+  }
   .essentials {
     padding-bottom: 0;
   }
@@ -1179,7 +1215,9 @@
   .essentialCopy h3 {
     font-size: 28px;
   }
-  .essentialCopy p,
+  .essentialCopy p {
+    font-size: 17px;
+  }
   .essentialCopy .textLink {
     font-size: 17px;
   }
@@ -1293,7 +1331,17 @@
     padding-inline: 32px;
   }
 }
-@media (min-width: 834px) {
+@media (min-width: 64rem) {
+  .menuContent[data-all-products] :is(a, .menuUnavailable) {
+    min-height: revert;
+    align-content: revert;
+  }
+  .headerOpen .logo {
+    visibility: revert;
+  }
+  .headerOpen .navTools > :is(button, a):not(.menuTrigger) {
+    visibility: revert;
+  }
   .header {
     height: 44px;
   }
@@ -1368,21 +1416,7 @@
     font-size: 14px;
   }
 }
-
-@media (min-width: 834px) and (max-width: 1023px) {
-  .nav {
-    gap: 10px;
-  }
-
-  .navLinks {
-    gap: 5px;
-  }
-
-  .navLinks > :is(button, a) {
-    font-size: 11px;
-  }
-}
-@media (min-width: 1069px) {
+@media (min-width: 80rem) {
   .chapters {
     padding: 60px 0 38px;
   }
@@ -1395,7 +1429,7 @@
     min-height: 142px;
   }
   .priority {
-    padding-bottom: 216px;
+    padding-bottom: 32px;
   }
   .heroSlide {
     height: 680px;
@@ -1420,7 +1454,7 @@
     font-size: 17px;
   }
   .heroPlayback {
-    bottom: 270px;
+    bottom: 86px;
   }
   .heroTabs {
     height: 56px;
@@ -1454,7 +1488,9 @@
   .storyCard {
     height: 680px;
   }
-  .features,
+  .features {
+    padding-bottom: 0;
+  }
   .essentials {
     padding-bottom: 0;
   }
@@ -1519,33 +1555,6 @@
   .categoryEntrance .ribbon a {
     animation: categoryRibbonLink var(--category-ribbon-duration) var(--category-entrance-easing)
       backwards;
-  }
-}
-@keyframes categoryRibbonHighlight {
-  0%,
-  40% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes categoryRibbonText {
-  0%,
-  40% {
-    color: #fff;
-  }
-  100% {
-    color: var(--ink);
-  }
-}
-@keyframes categoryRibbonLink {
-  0%,
-  40% {
-    color: #fff;
-  }
-  100% {
-    color: var(--red);
   }
 }
 @media (prefers-reduced-motion: reduce) {

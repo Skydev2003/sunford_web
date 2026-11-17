@@ -91,7 +91,7 @@ export async function SolutionsOverview({ page }: { page: SourcePage }) {
             src={products.find((product) => product.image)?.image ?? ""}
             alt="ภาพประกอบโซลูชันการชั่งน้ำหนักสำหรับธุรกิจ"
             fill
-            sizes="(min-width: 1069px) 45vw, 88vw"
+            sizes="(min-width: 80rem) 45vw, 88vw"
           />
         </div>
       </section>

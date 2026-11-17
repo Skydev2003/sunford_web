@@ -110,7 +110,7 @@ test("product content groups complete specifications into expandable two-column 
     const label = (await table.getByRole("rowheader").first().boundingBox())!;
     const value = (await table.getByRole("cell").first().boundingBox())!;
     expect(label.x + label.width).toBeLessThanOrEqual(value.x + 1);
-    expect(label.width / (label.width + value.width)).toBeCloseTo(width <= 720 ? 0.38 : 0.34, 2);
+    expect(label.width / (label.width + value.width)).toBeCloseTo(width < 768 ? 0.38 : 0.34, 2);
     const first = (await groups.first().boundingBox())!;
     const second = (await groups.nth(1).boundingBox())!;
     if (width >= 1024) expect(second.x).toBeGreaterThan(first.x + first.width);
@@ -263,7 +263,7 @@ test("the reference product and long product names fit desktop, tablet and mobil
       await page.evaluate(() => document.fonts.ready);
       const image = (await page.locator(".detail-image").boundingBox())!;
       const copy = (await page.locator(".detail-copy").boundingBox())!;
-      if (width <= 720) expect(copy.y + copy.height).toBeLessThan(image.y);
+      if (width < 768) expect(copy.y + copy.height).toBeLessThan(image.y);
       else expect(copy.x).toBeGreaterThan(image.x + image.width);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
         width,

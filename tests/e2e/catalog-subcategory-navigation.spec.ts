@@ -32,7 +32,7 @@ async function productMenu(page: Page, width: number, label: string) {
   const header = page.locator("[data-products-header]:visible");
   await expect(header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล" })).toBeEnabled();
   await page.evaluate(() => document.fonts.ready);
-  if (width >= 834) await header.getByRole("link", { name: label, exact: true }).hover();
+  if (width >= 1024) await header.getByRole("link", { name: label, exact: true }).hover();
   else {
     await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     await header.getByRole("button", { name: `เปิดเมนูย่อย${label}`, exact: true }).click();
@@ -82,7 +82,7 @@ for (const width of [1440, 390]) {
           first = false;
         }
         await menu.getByRole("link", { name: child.label, exact: true }).click();
-        if (width >= 834) await page.mouse.move(width - 20, 600);
+        if (width >= 1024) await page.mouse.move(width - 20, 600);
         await expect(page).toHaveURL(new URL(child.href, page.url()).href);
         const main = page.locator(`[data-product-subcategory-page="${child.id}"]`);
         await expect(main).toBeVisible();

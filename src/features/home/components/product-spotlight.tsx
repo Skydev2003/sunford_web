@@ -38,7 +38,7 @@ export async function ProductSpotlight({
       src={image ?? defaultSpotlightImage}
       alt={product ? `SUNFORD ${product.name}` : "เครื่องชั่ง Sunford JC21"}
       fill
-      sizes="(max-width: 760px) 100vw, 1000px"
+      sizes="(width < 48rem) 100vw, 1000px"
     />
   );
   return (

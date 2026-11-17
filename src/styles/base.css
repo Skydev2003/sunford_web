@@ -41,7 +41,6 @@
 }
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 100px;
 }
 body {
   margin: 0;
@@ -97,7 +96,6 @@ p {
   margin: 0;
 }
 .container {
-  width: calc(100% - 96px);
   max-width: 1180px;
   margin-inline: auto;
 }
@@ -177,4 +175,23 @@ p {
 }
 .skip-link:focus {
   top: 10px;
+}
+html {
+  scroll-padding-top: 80px;
+}
+.container {
+  width: calc(100% - 40px);
+}
+@media (min-width: 48rem) {
+  html {
+    scroll-padding-top: 100px;
+  }
+  .container {
+    width: calc(100% - 64px);
+  }
+}
+@media (min-width: 80rem) {
+  .container {
+    width: calc(100% - 96px);
+  }
 }

@@ -157,12 +157,12 @@
   flex-shrink: 0;
   color: var(--red);
 }
-@media (min-width: 834px) {
+@media (min-width: 64rem) {
   .businessGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-@media (min-width: 1069px) {
+@media (min-width: 80rem) {
   .hero {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }

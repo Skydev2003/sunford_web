@@ -80,7 +80,7 @@ export function PrimaryNavigation({
     hoveredTrigger.current = trigger;
     if (
       blockedTrigger.current === trigger ||
-      !matchMedia("(min-width: 834px) and (hover: hover) and (pointer: fine)").matches
+      !matchMedia("(min-width: 64rem) and (hover: hover) and (pointer: fine)").matches
     )
       return;
     hoverTimer.current = setTimeout(() => {
@@ -165,7 +165,7 @@ export function PrimaryNavigation({
     };
   }, [mobileMenu, closeMenu]);
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 834px)");
+    const query = window.matchMedia("(min-width: 64rem)");
     const resize = () => closeMenu();
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && query.matches) closeMenu();
@@ -215,7 +215,7 @@ export function PrimaryNavigation({
         className={`${styles.header} ${mobileMenu || activeMenu ? styles.headerOpen : ""}`}
         data-products-header
         onMouseLeave={() => {
-          if (window.matchMedia("(min-width: 834px)").matches) closeMenu();
+          if (window.matchMedia("(min-width: 64rem)").matches) closeMenu();
         }}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
@@ -231,61 +231,32 @@ export function PrimaryNavigation({
             <Image src={site.logo} alt={site.name} width={106} height={26} />
           </Link>
           <div ref={linksRef} className={styles.navLinks}>
-            {headerNavigation.map((item, index) =>
-              item.href !== "/service" ? (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onMouseMove={(event) => scheduleOpen(index, event.currentTarget)}
-                  onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
-                  onFocus={(event) => {
-                    if (event.currentTarget.matches(":focus-visible")) {
-                      clearHover();
-                      setMenuIndex(index);
-                    }
-                  }}
-                  aria-haspopup="true"
-                  aria-expanded={menuIndex === index}
-                  aria-controls="products-navigation-panel"
-                  onKeyDown={(event) => {
-                    if (event.key === "ArrowDown") {
-                      event.preventDefault();
-                      openWithKeyboard(index);
-                    }
-                  }}
-                  onClick={(event) => activateLink(event, item.href)}
-                >
-                  {item.label}
-                </Link>
-              ) : item.links.length ? (
-                <button
-                  disabled={!hydrated}
-                  type="button"
-                  key={item.href}
-                  aria-expanded={menuIndex === index}
-                  aria-controls="products-navigation-panel"
-                  onMouseMove={(event) => scheduleOpen(index, event.currentTarget)}
-                  onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
-                  onClick={(event) => {
+            {headerNavigation.map((item, index) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onMouseMove={(event) => scheduleOpen(index, event.currentTarget)}
+                onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
+                onFocus={(event) => {
+                  if (event.currentTarget.matches(":focus-visible")) {
                     clearHover();
-                    blockedTrigger.current = event.currentTarget;
-                    setMenuIndex((current) => (current === index ? null : index));
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "ArrowDown") {
-                      event.preventDefault();
-                      openWithKeyboard(index);
-                    }
-                  }}
-                >
-                  {item.label}
-                </button>
-              ) : (
-                <Link key={item.href} href={item.href} onMouseEnter={closeMenu} onClick={closeMenu}>
-                  {item.label}
-                </Link>
-              ),
-            )}
+                    setMenuIndex(index);
+                  }
+                }}
+                aria-haspopup="true"
+                aria-expanded={menuIndex === index}
+                aria-controls="products-navigation-panel"
+                onKeyDown={(event) => {
+                  if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    openWithKeyboard(index);
+                  }
+                }}
+                onClick={(event) => activateLink(event, item.href)}
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
           <div className={styles.navTools}>
             <button
@@ -338,35 +309,21 @@ export function PrimaryNavigation({
           <div id="products-navigation-panel" className={styles.navMenu}>
             {mobileMenu && !activeMenu ? (
               <div className={styles.mobileMenuItems}>
-                {headerNavigation.map((item, index) =>
-                  item.href !== "/service" ? (
-                    <div key={item.href} className={styles.mobileCategoryRow}>
-                      {link(item.href, item.label)}
-                      <button
-                        disabled={!hydrated}
-                        type="button"
-                        aria-label={`เปิดเมนูย่อย${item.label}`}
-                        aria-expanded={menuIndex === index}
-                        aria-controls="products-navigation-panel"
-                        onClick={() => setMenuIndex(index)}
-                      >
-                        <ChevronRight aria-hidden="true" />
-                      </button>
-                    </div>
-                  ) : item.links.length ? (
+                {headerNavigation.map((item, index) => (
+                  <div key={item.href} className={styles.mobileCategoryRow}>
+                    {link(item.href, item.label)}
                     <button
                       disabled={!hydrated}
                       type="button"
-                      key={item.href}
+                      aria-label={`เปิดเมนูย่อย${item.label}`}
+                      aria-expanded={menuIndex === index}
+                      aria-controls="products-navigation-panel"
                       onClick={() => setMenuIndex(index)}
                     >
-                      {item.label}
                       <ChevronRight aria-hidden="true" />
                     </button>
-                  ) : (
-                    link(item.href, item.label)
-                  ),
-                )}
+                  </div>
+                ))}
               </div>
             ) : (
               activeMenu && (

@@ -102,5 +102,6 @@ export type OverlayProduct = Pick<
   | "connection"
   | "warehouseSku"
   | "warehouseName"
+  | "warehouseModelCodes"
 >;
 export type ClientProduct = StorefrontProduct & OverlayProduct;

@@ -61,7 +61,6 @@ export function Header({
           ...item,
           groups,
           hasSubmenu: item.links.length > 0 || groups.length > 0,
-          isProductMenu: item.href !== "/service",
         };
       }),
     [items, extras],
@@ -124,7 +123,7 @@ export function Header({
     if (
       activeMenu === index ||
       blockedTrigger.current === trigger ||
-      !matchMedia("(min-width: 834px) and (hover: hover) and (pointer: fine)").matches
+      !matchMedia("(min-width: 64rem) and (hover: hover) and (pointer: fine)").matches
     )
       return;
     openTimer.current = setTimeout(() => {
@@ -173,7 +172,7 @@ export function Header({
     "--nav-flyout-duration": `${Math.round(menuHeight * 0.5)}ms`,
   } as CSSProperties;
   useEffect(() => {
-    const desktop = matchMedia("(min-width: 834px)");
+    const desktop = matchMedia("(min-width: 64rem)");
     const closeOnLayoutChange = () => {
       closeDesktopMenu();
       setMenuOpen(false);
@@ -384,24 +383,16 @@ export function Header({
           <nav id="mobile-navigation" className="mobile-nav" aria-label="เมนูมือถือ">
             {navigation.map((item, index) =>
               item.hasSubmenu ? (
-                <div
-                  key={`${index}:${item.href}`}
-                  className={item.isProductMenu ? "mobile-nav-category" : undefined}
-                >
-                  {item.isProductMenu && (
-                    <Link
-                      className="mobile-nav-category-link"
-                      href={item.href}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
+                <div key={`${index}:${item.href}`} className="mobile-nav-category">
+                  <Link
+                    className="mobile-nav-category-link"
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
                   <details className="mobile-nav-group">
-                    <summary
-                      aria-label={item.isProductMenu ? `เปิดเมนูย่อย${item.label}` : undefined}
-                    >
-                      {!item.isProductMenu && item.label}
+                    <summary aria-label={`เปิดเมนูย่อย${item.label}`}>
                       <ChevronDown size={17} aria-hidden="true" />
                     </summary>
                     <div

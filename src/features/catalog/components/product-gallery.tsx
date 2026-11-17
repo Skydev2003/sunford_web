@@ -37,7 +37,7 @@ export function ProductGallery({
             fallbackSrc={(images[active] || images[0]) === primaryImage ? fallbackImage : undefined}
             alt={name}
             fill
-            sizes="(max-width: 900px) 90vw, 50vw"
+            sizes="(width < 64rem) 90vw, 50vw"
             preload
           />
         )}

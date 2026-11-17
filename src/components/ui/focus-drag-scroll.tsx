@@ -65,7 +65,7 @@ export function FocusDragScroll({
     const left = card.offsetLeft + card.offsetWidth / 2 - track.clientWidth / 2;
     const cards = Array.from(track.children) as HTMLElement[];
     const step = cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : 0;
-    const clearRadius = matchMedia("(min-width: 721px)").matches ? step : 0;
+    const clearRadius = matchMedia("(min-width: 48rem)").matches ? step : 0;
     if (Math.abs(left - track.scrollLeft) <= clearRadius + 2) return;
     event.preventDefault();
     event.stopPropagation();
@@ -85,7 +85,7 @@ export function FocusDragScroll({
     function measure() {
       const middle = track!.scrollLeft + track!.clientWidth / 2;
       const step = count > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : cards[0].offsetWidth;
-      const clearRadius = matchMedia("(min-width: 721px)").matches ? step : 0;
+      const clearRadius = matchMedia("(min-width: 48rem)").matches ? step : 0;
       const centers = cards.map((card) => card.offsetLeft + card.offsetWidth / 2);
       let distance = Infinity;
       cards.forEach((card, index) => {

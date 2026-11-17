@@ -1,5 +1,4 @@
 .index {
-  --overview-gutter: max(48px, calc((100vw - 1180px) / 2));
   color: #1d1d1f;
   background: #f5f5f7;
 }
@@ -13,10 +12,6 @@
   white-space: nowrap;
 }
 
-.section {
-  padding: 30px 0 46px;
-}
-
 .sectionHeading {
   display: flex;
   align-items: center;
@@ -25,7 +20,6 @@
 }
 
 .sectionHeading h2 {
-  font-size: 30px;
   font-weight: 600;
   line-height: 1.3;
 }
@@ -64,7 +58,6 @@
   display: flex;
   flex: 0 0 314px;
   flex-direction: column;
-  height: 500px;
   overflow: hidden;
   border-radius: 28px;
   background: #fff;
@@ -72,12 +65,7 @@
   scroll-snap-align: start;
 }
 
-.leadCard {
-  flex-basis: 400px;
-}
-
 .leadCopy {
-  padding: 28px 28px 32px;
   color: #fff;
   background: var(--red);
 }
@@ -88,7 +76,6 @@
 
 .leadCopy h3 {
   margin-top: 8px;
-  font-size: 27px;
   font-weight: 600;
   line-height: 1.3;
 }
@@ -125,11 +112,9 @@
 
 .cardCopy {
   min-height: 116px;
-  padding: 24px 28px 30px;
 }
 
 .cardCopy h3 {
-  font-size: 20px;
   font-weight: 600;
   line-height: 1.35;
 }
@@ -139,46 +124,86 @@
   color: #6e6e73;
   font-size: 14px;
 }
+.index {
+  --overview-gutter: 32px;
+}
 
-@media (max-width: 600px) {
+.section {
+  padding: 24px 0 30px;
+}
+
+.sectionHeading h2 {
+  font-size: 25px;
+}
+
+.rail {
+  gap: 18px;
+}
+
+.card {
+  flex-basis: calc(100vw - 84px);
+  height: 420px;
+}
+
+.leadCard {
+  flex-basis: calc(100vw - 64px);
+}
+
+.leadCopy {
+  padding: 24px;
+}
+
+.leadCopy h3 {
+  font-size: 24px;
+}
+
+.cardCopy {
+  padding: 22px;
+}
+
+.cardCopy h3 {
+  font-size: 18px;
+}
+
+@media (min-width: 40rem) {
   .index {
-    --overview-gutter: 32px;
+    --overview-gutter: max(48px, calc((100vw - 1180px) / 2));
   }
 
   .section {
-    padding: 24px 0 30px;
+    padding: 30px 0px 46px;
   }
 
   .sectionHeading h2 {
-    font-size: 25px;
+    font-size: 30px;
   }
 
   .rail {
-    gap: 18px;
+    gap: revert;
   }
 
   .card {
-    flex-basis: calc(100vw - 84px);
-    height: 420px;
+    flex-basis: 314px;
+    height: 500px;
   }
 
   .leadCard {
-    flex-basis: calc(100vw - 64px);
+    flex-basis: 400px;
   }
 
   .leadCopy {
-    padding: 24px;
+    padding: 28px 28px 32px;
   }
 
   .leadCopy h3 {
-    font-size: 24px;
+    font-size: 27px;
   }
 
   .cardCopy {
-    padding: 22px;
+    padding: 24px 28px 30px;
   }
 
   .cardCopy h3 {
-    font-size: 18px;
+    font-size: 20px;
   }
 }

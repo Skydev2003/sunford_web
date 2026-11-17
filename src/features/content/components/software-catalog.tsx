@@ -52,7 +52,7 @@ export function SoftwareCatalog({
                 src={item.image}
                 alt={item.title}
                 fill
-                sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 30vw"
+                sizes="(width < 40rem) 90vw, (width < 64rem) 45vw, 30vw"
               />
             </div>
             <div className="software-card-copy">

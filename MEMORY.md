@@ -1,5 +1,12 @@
 # Project Memory
 
+## Standing design reference — Tailwind official documentation (2026-11-17)
+
+- Owner instruction: “บันทึกการออกแบบของค่ากลางโดยอิงจากเว็บนี้เสมอเมื่อมีการต้องใช้ข้อมูลในการออกแบบ” พร้อมลิงก์ https://tailwindcss.com/docs และภาพ Core Concepts
+- ทุกครั้งที่ต้องใช้ข้อมูลออกแบบหรือเลือก/ปรับค่ากลาง ให้เปิดอ่านหัวข้อที่เกี่ยวข้องจาก Tailwind official docs ฉบับปัจจุบันก่อนตัดสินใจ ครอบคลุม Theme variables/design tokens, spacing/sizing, typography/colors, responsive และ interaction states รวม Core Concepts อื่นตามความเกี่ยวข้อง
+- บันทึก URL, วันที่ตรวจ, เวอร์ชันเอกสารที่แสดง, ค่าที่เลือกพร้อมหน่วย และเหตุผลการนำมาใช้ใน Spec ของงาน แยก Tailwind defaults กับ SUNFORD tokens; ไม่อ้างค่าจากความจำหรือภาพเอกสารเก่าว่าเป็นค่าปัจจุบัน
+- ใช้หลักการร่วมกับ CSS Modules/CSS เดิมและแบรนด์ที่อนุมัติไว้ ไม่ติดตั้ง Tailwind หรือเปลี่ยนค่าทั้งเว็บจากคำสั่งบันทึกนี้ การแก้แอปยังต้องมี Spec/Plan ที่อนุมัติ; RSP-01 จาก responsive audit ยังรออนุมัติ
+
 ## Match the active search button before diagnosing a hang (2026-11-14)
 
 - Observed: search tests timed out waiting for `ค้นหาสินค้า` on products/detail routes and the failure was initially reported as a frozen search page.
@@ -802,3 +809,9 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Observed: historical Navbar104-entry/first-link assumptions and legacy product-fact expectations failed against the owner's99-entry shortest-first tree and Warehouse-only cards.
 - Root cause: fixtures treated historical menu order and category metadata as current rendered facts; the shortest item can also be disabled.
 - Correct behavior: capture and preserve task-start owner data hashes, verify the latest explicit owner edits, and compare each current link's own href or disabled/no-href state. Check product facts against actual Warehouse values and omit missing facts/empty filters. Update only proven stale fixtures, retain failing reports, and preserve commits created concurrently during validation.
+
+## Reclaim archived QA builds while preserving evidence (2026-11-17)
+
+- Observed: task-isolated QA outputs accumulated about 46.8 GiB; 53 inactive generated build roots accounted for about 42.0 GiB.
+- Root cause: complete build output and development caches were retained alongside small verification records across repeated runs.
+- Correct behavior: When the owner authorizes artifact cleanup, select only verified inactive build roots under output; check process cwd/arguments and native build locks, retain reports/screenshots/source backups, preserve build provenance separately, and verify retained evidence with hashes before and after deletion. Record the exact deletion manifest and keep the active project build intact.

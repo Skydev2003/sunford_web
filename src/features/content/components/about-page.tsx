@@ -57,7 +57,7 @@ export function AboutPage() {
               alt="อาคารซันฟอร์ดและรถขนส่งสินค้าที่ติดตรา SUNFORD"
               fill
               preload
-              sizes="(max-width: 720px) 94vw, (max-width: 1200px) 92vw, 1100px"
+              sizes="(width < 48rem) 94vw, (width < 80rem) 92vw, 1100px"
             />
           </div>
           <figcaption>

@@ -1,5 +1,4 @@
 .section {
-  margin-top: 40px;
   min-width: 0;
 }
 .heading {
@@ -13,7 +12,6 @@
 .heading h3 {
   margin: 0;
   color: var(--ink);
-  font-size: 20px;
   font-weight: 600;
   line-height: 1.5;
 }
@@ -30,7 +28,6 @@
 .track {
   display: flex;
   align-items: flex-start;
-  gap: 20px;
   overflow-x: auto;
   padding: 4px 2px 16px;
   scroll-snap-type: x proximity;
@@ -138,20 +135,35 @@
   font-size: 14px;
   font-weight: 600;
 }
-@media (max-width: 720px) {
+.section {
+  margin-top: 32px;
+}
+.heading h3 {
+  font-size: 18px;
+}
+.track {
+  gap: 14px;
+}
+.card {
+  flex-basis: 88%;
+}
+.card:only-child {
+  flex-basis: 100%;
+}
+@media (min-width: 48rem) {
   .section {
-    margin-top: 32px;
+    margin-top: 40px;
   }
   .heading h3 {
-    font-size: 18px;
+    font-size: 20px;
   }
   .track {
-    gap: 14px;
+    gap: 20px;
   }
   .card {
-    flex-basis: 88%;
+    flex-basis: calc(50% - 10px);
   }
   .card:only-child {
-    flex-basis: 100%;
+    flex-basis: calc(50% - 10px);
   }
 }

@@ -38,3 +38,29 @@
 .not-found h1 {
   font-size: 29px;
 }
+.full-catalog .catalog-toolbar {
+  flex-wrap: wrap;
+}
+.full-catalog {
+  padding-top: 42px;
+}
+.catalog-search,
+.catalog-search input {
+  width: 100%;
+}
+@media (min-width: 48rem) {
+  .full-catalog {
+    padding-top: revert;
+  }
+  .catalog-search {
+    width: revert;
+  }
+  .catalog-search input {
+    width: 140px;
+  }
+}
+@media (min-width: 80rem) {
+  .full-catalog .catalog-toolbar {
+    flex-wrap: revert;
+  }
+}

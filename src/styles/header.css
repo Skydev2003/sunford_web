@@ -142,9 +142,6 @@
   justify-content: center;
   border-radius: 50%;
 }
-.menu-toggle {
-  display: flex;
-}
 /* Reference: apple.com/th global navigation. The surface expands; it does not fade. */
 .desktop-submenu {
   position: absolute;
@@ -321,11 +318,6 @@
   transform-origin: left center;
   transition: transform 180ms ease;
 }
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .submenu-group a:hover > span {
-    transform: scale(1.06);
-  }
-}
 .submenu-item {
   --nav-item-index: 0;
   opacity: 0;
@@ -473,7 +465,42 @@
 .site-header:has(.mobile-nav) {
   z-index: var(--z-nav-open);
 }
-@media (min-width: 834px) {
+.desktop-submenu,
+.nav-backdrop {
+  display: none;
+}
+.desktop-nav {
+  gap: 20px;
+}
+.desktop-nav a {
+  font-size: 11px;
+}
+.header-inner {
+  gap: 20px;
+}
+.desktop-nav,
+.header-divider {
+  display: none;
+}
+.menu-toggle {
+  display: flex;
+}
+.header-inner {
+  min-height: 58px;
+}
+.brand img {
+  width: 118px;
+}
+.header-actions {
+  gap: 9px;
+}
+.header-contact {
+  font-size: 11px;
+}
+.header-contact {
+  display: none;
+}
+@media (min-width: 64rem) {
   .site-header {
     --header-height: 44px;
   }
@@ -492,22 +519,49 @@
   .header-actions .menu-toggle {
     display: none;
   }
-}
-@media (min-width: 834px) and (max-width: 1023px) {
-  .site-header[data-category-navigation] .header-inner {
-    gap: 10px;
+  .desktop-submenu {
+    display: revert;
   }
-  .site-header .desktop-nav {
-    gap: 5px;
-  }
-  .site-header .desktop-nav a {
-    font-size: 11px;
-  }
-}
-@media (max-width: 833.98px) {
-  .desktop-submenu,
   .nav-backdrop {
-    display: none;
+    display: revert;
+  }
+  .desktop-nav {
+    gap: revert;
+  }
+  .desktop-nav a {
+    font-size: revert;
+  }
+  .header-inner {
+    gap: revert;
+  }
+  .desktop-nav {
+    display: revert;
+  }
+  .header-divider {
+    display: revert;
+  }
+  .menu-toggle {
+    display: flex;
+  }
+  .header-inner {
+    min-height: revert;
+  }
+  .brand img {
+    width: revert;
+  }
+  .header-actions {
+    gap: revert;
+  }
+  .header-contact {
+    font-size: revert;
+  }
+  .header-contact {
+    display: revert;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .submenu-group a:hover > span {
+    transform: scale(1.06);
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -42,7 +42,7 @@ export async function ContactPage() {
                 src="/images/contact/support-representative.webp"
                 alt=""
                 fill
-                sizes="(max-width: 600px) 210px, 300px"
+                sizes="(width < 40rem) 210px, 300px"
                 preload
               />
             </div>

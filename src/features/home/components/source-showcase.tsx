@@ -80,7 +80,7 @@ export async function SunfordStories() {
                     src={article.images[0]}
                     alt={article.title}
                     fill
-                    sizes="(max-width: 720px) 82vw, 300px"
+                    sizes="(width < 48rem) 82vw, 300px"
                   />
                 )}
                 <span className={storyStyles.badge}>{content.category}</span>

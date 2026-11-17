@@ -23,7 +23,6 @@
   content: "";
 }
 .heroContainer {
-  width: calc(100% - 96px);
   max-width: var(--contact-content-width);
   margin-inline: auto;
 }
@@ -31,7 +30,6 @@
   display: flex;
   align-items: center;
   gap: 13px;
-  padding-top: 28px;
   color: var(--muted);
   font-size: 12px;
 }
@@ -43,11 +41,7 @@
 }
 .hero {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  gap: clamp(24px, 4vw, 64px);
-  min-height: 320px;
-  padding-block: 24px;
 }
 .introduction {
   position: relative;
@@ -57,9 +51,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 14px;
   color: #ff254e;
-  font-size: 12px;
   letter-spacing: 2.4px;
 }
 .introduction .eyebrow::before {
@@ -71,30 +63,22 @@
 }
 .introduction h1 {
   color: #080e1e;
-  font-size: clamp(38px, 3.8vw, 56px);
   font-weight: 700;
   line-height: 1.25;
-  letter-spacing: -1.8px;
 }
 .introduction h1 span {
   display: block;
-  margin-top: 12px;
   color: #26324f;
-  font-size: clamp(20px, 2vw, 27px);
   font-weight: 600;
   letter-spacing: -0.7px;
   line-height: 1.5;
 }
 .description {
-  margin-top: 16px;
   color: #5d6d81;
-  font-size: 16px;
   line-height: 1.7;
 }
 .heroVisual {
   position: relative;
-  width: 300px;
-  height: 280px;
   justify-self: center;
 }
 .heroVisual .representative {
@@ -137,8 +121,6 @@
 }
 .channels {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
 }
 .channel {
   position: relative;
@@ -148,8 +130,6 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
-  min-height: 154px;
-  padding: 22px 18px;
   border: 1px solid #ffffff;
   border-radius: 20px;
   background: #fff;
@@ -159,21 +139,6 @@
     box-shadow 0.25s ease,
     border-color 0.2s,
     background 0.2s;
-}
-@media (hover: hover) and (pointer: fine) {
-  .channel:hover {
-    z-index: var(--z-local-raised);
-    transform: scale(1.025);
-    box-shadow: 0 16px 36px #233e5f14;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .channel {
-    transition: none;
-  }
-  .channel:hover {
-    transform: none;
-  }
 }
 .channel::before {
   position: absolute;
@@ -198,33 +163,25 @@ a.channel:not(.lineChannel):hover {
   padding-top: 2px;
 }
 .channelLabel {
-  margin-bottom: 6px;
   color: #65758a;
   font-size: 12px;
 }
 .channelCopy strong {
   color: #080e1e;
-  font-size: 21px;
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.5px;
   overflow-wrap: anywhere;
 }
 .channelCopy .email {
-  font-size: 17px;
   letter-spacing: -0.5px;
 }
 .channelNote {
-  margin-top: 8px;
-  padding-right: 18px;
   color: #65758a;
-  font-size: 11px;
   line-height: 1.6;
 }
 .channelArrow {
   position: absolute;
-  right: 14px;
-  bottom: 16px;
   display: grid;
   place-items: center;
   width: 28px;
@@ -288,9 +245,7 @@ a.channel:not(.lineChannel):hover {
 .fax {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 8px;
-  padding-block: 18px 36px;
   color: var(--muted);
   font-size: 12px;
 }
@@ -298,7 +253,6 @@ a.channel:not(.lineChannel):hover {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding-block: 48px 52px;
   background:
     radial-gradient(ellipse at 95% 0%, #ffe9ee 0, transparent 35%),
     linear-gradient(180deg, #fafbfd, #f2f5f9);
@@ -320,10 +274,7 @@ a.channel:not(.lineChannel):hover {
 }
 .sectionHeading {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 32px;
-  margin-bottom: 28px;
 }
 .sectionHeading .eyebrow {
   display: flex;
@@ -349,11 +300,9 @@ a.channel:not(.lineChannel):hover {
 .locationsIntro {
   margin-top: 10px;
   color: #687385;
-  font-size: 14px;
   line-height: 1.8;
 }
 .locationHint {
-  display: flex;
   align-items: center;
   flex-shrink: 0;
   gap: 13px;
@@ -372,8 +321,6 @@ a.channel:not(.lineChannel):hover {
 }
 .locationGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
 }
 .location {
   overflow: hidden;
@@ -393,19 +340,6 @@ a.channel:not(.lineChannel):hover {
   border-color: #edbbc5;
   box-shadow: 0 16px 38px -10px #9e385329;
 }
-@media (hover: hover) and (pointer: fine) {
-  .location:hover {
-    transform: scale(1.025);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .location {
-    transition: none;
-  }
-  .location:hover {
-    transform: none;
-  }
-}
 .locationLink {
   display: flex;
   flex: 1;
@@ -421,7 +355,6 @@ a.channel:not(.lineChannel):hover {
 }
 .locationVisual {
   position: relative;
-  height: 120px;
   flex-shrink: 0;
   background: linear-gradient(120deg, #fff 35%, #fff6f8);
 }
@@ -438,15 +371,10 @@ a.channel:not(.lineChannel):hover {
 }
 .locationIcon {
   position: absolute;
-  top: 22px;
-  left: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
   border: 1px solid #fff;
-  border-radius: 14px;
   background: linear-gradient(145deg, #ffe9ef, #fff4f6);
   color: var(--red);
   box-shadow: 0 5px 12px #ffffffa6;
@@ -464,12 +392,8 @@ a.channel:not(.lineChannel):hover {
 }
 .illustrationTile {
   position: absolute;
-  top: 12px;
-  right: 22px;
   display: grid;
   place-items: center;
-  width: 84px;
-  height: 84px;
   border: 1px solid #ffffffed;
   border-radius: 22px;
   background: linear-gradient(135deg, #fff, #fff4f7);
@@ -520,12 +444,10 @@ a.channel:not(.lineChannel):hover {
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 0 22px 22px;
 }
 .locationLabel {
   position: absolute;
   bottom: 6px;
-  left: 22px;
   color: #66758b;
   font-size: 8px;
   font-weight: 600;
@@ -535,14 +457,11 @@ a.channel:not(.lineChannel):hover {
 .location h3 {
   margin-bottom: 8px;
   color: #132336;
-  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.6px;
   line-height: 1.55;
 }
 .company {
-  min-height: 42px;
-  margin-bottom: 14px;
   color: #617084;
   font-size: 12px;
   line-height: 1.75;
@@ -570,177 +489,224 @@ a.channel:not(.lineChannel):hover {
   background: #f3f5f8;
   color: #283c54;
 }
-@media (max-width: 1100px) {
-  .heroContainer {
-    width: calc(100% - 64px);
-  }
-  .introduction h1 span {
-    font-size: 23px;
-  }
-  .channels {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .channel {
-    min-height: 132px;
-  }
-  .locationGrid {
-    gap: 16px;
-  }
-  .locationBody {
-    padding-inline: 22px;
-  }
-  .locationIcon,
-  .locationLabel {
-    left: 22px;
-  }
-  .location h3 {
-    font-size: 20px;
-  }
+.locationBody {
+  padding-inline: 22px;
 }
-@media (max-width: 900px) {
+.locationIcon,
+.locationLabel {
+  left: 22px;
+}
+.hero {
+  min-height: 280px;
+}
+.locationGrid {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+.locationArtwork {
+  left: 35%;
+}
+.company {
+  min-height: auto;
+  margin-bottom: 12px;
+}
+.sectionHeading {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.locationHint {
+  display: none;
+}
+.heroContainer {
+  width: calc(100% - 40px);
+}
+.breadcrumb {
+  padding-top: 22px;
+}
+.hero {
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding-block: 24px 16px;
+}
+.introduction .eyebrow {
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+.introduction h1 {
+  font-size: 38px;
+  letter-spacing: -1px;
+}
+.introduction h1 span {
+  margin-top: 12px;
+  font-size: 21px;
+  text-wrap: balance;
+}
+.description {
+  margin-top: 12px;
+  font-size: 14px;
+}
+.desktopBreak {
+  display: none;
+}
+.heroVisual {
+  width: 210px;
+  height: 190px;
+}
+.channels {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.channel {
+  padding: 20px 18px;
+  min-height: 118px;
+}
+.channelCopy {
+  padding: 0;
+}
+.channelLabel {
+  margin-bottom: 5px;
+}
+.channelCopy strong {
+  padding-right: 0;
+  font-size: 21px;
+  white-space: nowrap;
+}
+.channelCopy .email {
+  font-size: 17px;
+}
+.channelNote {
+  margin-top: 5px;
+  font-size: 11px;
+  padding-right: 12px;
+}
+.channelArrow {
+  right: 14px;
+  bottom: 16px;
+}
+.fax {
+  justify-content: flex-start;
+  padding-block: 18px 32px;
+}
+.locations {
+  padding-block: 32px 36px;
+}
+.sectionHeading {
+  margin-bottom: 24px;
+}
+.locationsIntro {
+  font-size: 13px;
+}
+.locationVisual {
+  height: 112px;
+}
+.locationBody {
+  padding: 0 22px 22px;
+}
+.locationIcon {
+  top: 20px;
+  left: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+}
+.locationLabel {
+  left: 22px;
+}
+.illustrationTile {
+  top: 12px;
+  right: 20px;
+  width: 82px;
+  height: 82px;
+}
+.location h3 {
+  font-size: 20px;
+}
+@media (min-width: 40rem) {
+  .breadcrumb {
+    padding-top: 28px;
+  }
   .hero {
+    grid-template-columns: repeat(2, minmax(0px, 1fr));
     gap: 16px;
-    min-height: 280px;
     padding-block: 24px;
   }
+  .introduction .eyebrow {
+    margin-bottom: 14px;
+    font-size: 12px;
+  }
+  .introduction h1 {
+    font-size: clamp(38px, 3.8vw, 56px);
+    letter-spacing: -1.8px;
+  }
+  .introduction h1 span {
+    margin-top: 12px;
+    font-size: 23px;
+    text-wrap: revert;
+  }
   .description {
+    margin-top: 16px;
     font-size: 14px;
+  }
+  .desktopBreak {
+    display: revert;
   }
   .heroVisual {
     width: 230px;
     height: 240px;
   }
-  .locationGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .locationVisual {
-    height: 128px;
-  }
-  .locationArtwork {
-    left: 35%;
-  }
-  .illustrationTile {
-    right: 18%;
-    width: 90px;
-    height: 90px;
-  }
-  .locationIcon {
-    top: 22px;
-    left: 22px;
-  }
-  .locationLabel {
-    left: 22px;
-  }
-  .locationBody {
-    padding: 0 22px 22px;
-  }
-  .location h3 {
-    font-size: 20px;
-  }
-  .company {
-    min-height: auto;
-    margin-bottom: 12px;
-  }
-  .sectionHeading {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .locationHint {
-    display: none;
-  }
-}
-@media (max-width: 720px) {
-  .heroContainer {
-    width: calc(100% - 40px);
-  }
-}
-@media (max-width: 600px) {
-  .breadcrumb {
-    padding-top: 22px;
-  }
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding-block: 24px 16px;
-  }
-  .introduction .eyebrow {
-    margin-bottom: 16px;
-    font-size: 12px;
-  }
-  .introduction h1 {
-    font-size: 38px;
-    letter-spacing: -1px;
-  }
-  .introduction h1 span {
-    margin-top: 12px;
-    font-size: 21px;
-    text-wrap: balance;
-  }
-  .description {
-    margin-top: 12px;
-    font-size: 14px;
-  }
-  .desktopBreak {
-    display: none;
-  }
-  .heroVisual {
-    width: 210px;
-    height: 190px;
-  }
   .channels {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0px, 1fr));
+    gap: 14px;
   }
   .channel {
-    padding: 20px 18px;
-    min-height: 118px;
+    padding: 22px 18px;
+    min-height: 132px;
   }
   .channelCopy {
-    padding: 0;
+    padding: 2px 0 0 0;
   }
   .channelLabel {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
   }
   .channelCopy strong {
-    padding-right: 0;
+    padding-right: revert;
     font-size: 21px;
-    white-space: nowrap;
+    white-space: revert;
   }
   .channelCopy .email {
     font-size: 17px;
   }
   .channelNote {
-    margin-top: 5px;
+    margin-top: 8px;
     font-size: 11px;
-    padding-right: 12px;
+    padding-right: 18px;
   }
   .channelArrow {
     right: 14px;
     bottom: 16px;
   }
   .fax {
-    justify-content: flex-start;
-    padding-block: 18px 32px;
+    justify-content: flex-end;
+    padding-block: 18px 36px;
   }
   .locations {
-    padding-block: 32px 36px;
+    padding-block: 48px 52px;
   }
   .sectionHeading {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
   .locationsIntro {
-    font-size: 13px;
+    font-size: 14px;
   }
   .locationVisual {
-    height: 112px;
+    height: 128px;
   }
   .locationBody {
-    padding: 0 22px 22px;
+    padding: 0px 22px 22px;
   }
   .locationIcon {
-    top: 20px;
+    top: 22px;
     left: 22px;
     width: 44px;
     height: 44px;
@@ -751,11 +717,106 @@ a.channel:not(.lineChannel):hover {
   }
   .illustrationTile {
     top: 12px;
-    right: 20px;
-    width: 82px;
-    height: 82px;
+    right: 18%;
+    width: 90px;
+    height: 90px;
   }
   .location h3 {
     font-size: 20px;
+  }
+}
+@media (min-width: 48rem) {
+  .heroContainer {
+    width: calc(100% - 64px);
+  }
+}
+@media (min-width: 64rem) {
+  .hero {
+    min-height: 320px;
+  }
+  .locationGrid {
+    grid-template-columns: repeat(3, minmax(0px, 1fr));
+    gap: 16px;
+  }
+  .locationArtwork {
+    left: 30%;
+  }
+  .company {
+    min-height: 42px;
+    margin-bottom: 14px;
+  }
+  .sectionHeading {
+    flex-direction: revert;
+    align-items: center;
+    gap: 32px;
+  }
+  .locationHint {
+    display: flex;
+  }
+  .hero {
+    gap: clamp(24px, 4vw, 64px);
+  }
+  .description {
+    font-size: 16px;
+  }
+  .heroVisual {
+    width: 300px;
+    height: 280px;
+  }
+  .locationVisual {
+    height: 120px;
+  }
+  .illustrationTile {
+    right: 22px;
+    width: 84px;
+    height: 84px;
+  }
+}
+@media (min-width: 80rem) {
+  .locationBody {
+    padding-inline: 22px 22px;
+  }
+  .locationGrid {
+    gap: 20px;
+  }
+  .heroContainer {
+    width: calc(100% - 96px);
+  }
+  .introduction h1 span {
+    font-size: clamp(20px, 2vw, 27px);
+  }
+  .channels {
+    grid-template-columns: repeat(4, minmax(0px, 1fr));
+  }
+  .channel {
+    min-height: 154px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .channel:hover {
+    z-index: var(--z-local-raised);
+    transform: scale(1.025);
+    box-shadow: 0 16px 36px #233e5f14;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .channel {
+    transition: none;
+  }
+  .channel:hover {
+    transform: none;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .location:hover {
+    transform: scale(1.025);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .location {
+    transition: none;
+  }
+  .location:hover {
+    transform: none;
   }
 }

@@ -70,7 +70,6 @@
   position: relative;
   flex: 1 1 0;
   min-height: 0;
-  width: 60%;
   max-width: 620px;
   pointer-events: none;
 }
@@ -85,10 +84,8 @@
 }
 
 .description {
-  max-width: 620px;
   margin: 0;
   color: #fff;
-  font-size: clamp(14px, 1.1vw, 16px);
   line-height: 1.65;
   overflow-wrap: anywhere;
   text-shadow: 0 2px 6px #000;
@@ -117,18 +114,30 @@
   outline: 3px solid #fff;
   outline-offset: 5px;
 }
+.scene :global(.hero-main).main {
+  padding-block: clamp(16px, 3dvh, 24px);
+}
 
-@media (max-width: 576px) {
+.logoSpace {
+  width: 90%;
+}
+
+.description {
+  max-width: 480px;
+  font-size: 15px;
+}
+
+@media (min-width: 40rem) {
   .scene :global(.hero-main).main {
-    padding-block: clamp(16px, 3dvh, 24px);
+    padding-block: clamp(16px, 3.5dvh, 32px) clamp(16px, 3.5dvh, 32px);
   }
 
   .logoSpace {
-    width: 90%;
+    width: 60%;
   }
 
   .description {
-    max-width: 480px;
-    font-size: 15px;
+    max-width: 620px;
+    font-size: clamp(14px, 1.1vw, 16px);
   }
 }

@@ -1,15 +1,21 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/site/components/categories-provider";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
-import { ArrowRight, GitCompareArrows, Search, X } from "lucide-react";
+import { ArrowRight, ChevronRight, GitCompareArrows, Search, X } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { type OverlayProduct } from "../types";
 import type { SearchPage } from "@/features/content/types";
 import { getCatalogComparisonRows } from "../data/catalog-decision-facts";
+import {
+  normalizeSearchText,
+  prepareCatalogSearch,
+  searchCatalogProducts,
+  searchContentPages,
+} from "../data/catalog-search";
 import styles from "./catalog-overlays.module.css";
 
 export function CatalogOverlays({
@@ -43,20 +49,15 @@ export function CatalogOverlays({
       finderSearch.current = null;
     }
   }, [compareOpen]);
-  const found = products.filter((p) =>
-    `${p.warehouseSku ?? ""} ${p.name} ${p.warehouseName ?? ""} ${p.subtitle} ${p.description} ${categories.find((c) => c.id === p.category)?.label}`
-      .toLowerCase()
-      .includes(search.trim().toLowerCase()),
+  const searchIndex = useMemo(
+    () => prepareCatalogSearch(products, categories),
+    [products, categories],
   );
+  const hasQuery = Boolean(normalizeSearchText(search));
+  const found = searchCatalogProducts(searchIndex, search);
   const selected = products.filter((p) => ids.includes(p.id));
   const comparisonRows = getCatalogComparisonRows(selected);
-  const pageResults = search.trim()
-    ? pages
-        .filter((page) =>
-          `${page.title} ${page.path}`.toLowerCase().includes(search.toLowerCase().trim()),
-        )
-        .slice(0, 20)
-    : [];
+  const pageResults = searchContentPages(pages, search).slice(0, 20);
   return (
     <>
       <Modal
@@ -86,7 +87,7 @@ export function CatalogOverlays({
           )}
         </label>
         <p className="search-caption">
-          {search ? `พบ ${found.length} ผลิตภัณฑ์` : "ผลิตภัณฑ์ของ Sunford"}
+          {hasQuery ? `พบ ${found.length} ผลิตภัณฑ์` : "ผลิตภัณฑ์ของ Sunford"}
         </p>
         <div className="search-results">
           {found.slice(0, 40).map((p) => (
@@ -103,7 +104,7 @@ export function CatalogOverlays({
                 <strong>{p.name}</strong>
                 {p.warehouseSku && p.price === null && <span>สอบถามราคา</span>}
               </div>
-              <ArrowRight size={18} />
+              <ChevronRight size={18} aria-hidden="true" />
             </Link>
           ))}
           {pageResults.map((page) => (
@@ -112,7 +113,7 @@ export function CatalogOverlays({
                 <strong>{page.title}</strong>
                 <span>ข้อมูลและบริการ Sunford</span>
               </div>
-              <ArrowRight size={18} />
+              <ChevronRight size={18} aria-hidden="true" />
             </Link>
           ))}
           {!found.length && !pageResults.length && (

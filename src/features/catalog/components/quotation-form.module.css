@@ -281,22 +281,6 @@
 .actions {
   text-align: right;
 }
-@media (min-width: 640px) {
-  .fields {
-    grid-template-columns: 1fr 1fr;
-  }
-  .full {
-    grid-column: 1/-1;
-  }
-}
-@media (min-width: 768px) {
-  .line {
-    grid-template-columns: minmax(0, 1fr) 7.25rem minmax(95px, auto) minmax(85px, auto) auto;
-  }
-  .line > label:first-child {
-    grid-column: auto;
-  }
-}
 .pending {
   margin-bottom: 20px;
   padding: 16px;
@@ -322,4 +306,20 @@
   min-width: 44px;
   min-height: 44px;
   cursor: pointer;
+}
+@media (min-width: 40rem) {
+  .fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  .full {
+    grid-column: 1/-1;
+  }
+}
+@media (min-width: 48rem) {
+  .line {
+    grid-template-columns: minmax(0, 1fr) 7.25rem minmax(95px, auto) minmax(85px, auto) auto;
+  }
+  .line > label:first-child {
+    grid-column: auto;
+  }
 }

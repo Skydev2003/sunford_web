@@ -91,7 +91,7 @@ export function ProductModelViewer({
             src={poster}
             alt={name}
             fill
-            sizes="(max-width: 900px) 90vw, 50vw"
+            sizes="(width < 64rem) 90vw, 50vw"
           />
           <p>ไม่สามารถแสดงโมเดลได้ กรุณาเลือกดูรูปสินค้าด้านล่าง</p>
         </div>

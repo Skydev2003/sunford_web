@@ -23,7 +23,7 @@ export function BrandStoryTemplate() {
                   src={photo.src}
                   alt=""
                   fill
-                  sizes="(max-width: 480px) 80vw, (max-width: 800px) 440px, 40vw"
+                  sizes="(width < 40rem) 80vw, (width < 48rem) 440px, 40vw"
                   className={storyStyles.sceneBackdrop}
                   draggable={false}
                 />
@@ -32,7 +32,7 @@ export function BrandStoryTemplate() {
                 src={photo.src}
                 alt={photo.alt}
                 fill
-                sizes="(max-width: 480px) 80vw, (max-width: 800px) 440px, 40vw"
+                sizes="(width < 40rem) 80vw, (width < 48rem) 440px, 40vw"
                 className={photo.id === "market" ? undefined : storyStyles.scenePhoto}
                 draggable={false}
               />
@@ -135,7 +135,7 @@ export function SupportSectionTemplate() {
                 alt=""
                 width={2172}
                 height={724}
-                sizes="(max-width: 600px) 1000px, 1700px"
+                sizes="(width < 40rem) 1000px, 1700px"
                 draggable={false}
                 style={{ left: `${(-artworkX / 400) * 100}%` }}
               />

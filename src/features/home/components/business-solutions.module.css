@@ -1,23 +1,12 @@
-.section {
-  padding-block: 32px 55px;
-}
 .heading {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 30px;
-  margin-bottom: 23px;
-  padding-inline: 30px;
 }
 .eyebrow {
-  margin-bottom: 10px;
-  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1.9px;
   color: var(--red);
 }
 .heading h2 {
-  font-size: clamp(25px, 2.7vw, 33px);
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: -0.6px;
@@ -47,14 +36,10 @@
 }
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
 }
 .feature {
   position: relative;
   min-width: 0;
-  height: 100%;
-  min-height: 440px;
   overflow: hidden;
   border: 1px solid #f0e6e2;
   border-radius: 18px;
@@ -63,14 +48,11 @@
 }
 .featureImage {
   object-fit: cover;
-  object-position: center 75%;
 }
 .featureCopy {
   position: relative;
   z-index: var(--z-local-raised);
-  width: 86%;
   margin-inline: auto;
-  padding-top: 30px;
 }
 .featureEyebrow {
   color: #d41432;
@@ -81,7 +63,6 @@
 .featureCopy h3 {
   margin-top: 10px;
   color: #172033;
-  font-size: clamp(25px, 2.7vw, 32px);
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: -0.6px;
@@ -91,15 +72,12 @@
 }
 .featureTagline {
   margin-top: 7px;
-  font-size: 20px;
   color: #5b6173;
   line-height: 1.4;
   font-weight: 500;
 }
 .featureDescription {
-  margin-top: 12px;
   color: #5b6173;
-  font-size: 12px;
   line-height: 1.7;
 }
 .featureButton {
@@ -108,13 +86,9 @@
   justify-content: center;
   gap: 20px;
   max-width: 100%;
-  min-height: 42px;
-  margin-top: 13px;
-  padding: 10px 25px;
   border-radius: 30px;
   background: #ed1746;
   color: #fff;
-  font-size: 13px;
   font-weight: 500;
   line-height: 1.5;
 }
@@ -123,16 +97,11 @@
 }
 .connections {
   position: absolute;
-  top: 100px;
-  right: 13px;
-  width: 112px;
   height: auto;
   pointer-events: none;
 }
 .cards {
   display: grid;
-  grid-template-rows: 1fr 1fr;
-  gap: 14px;
   min-width: 0;
 }
 .card {
@@ -151,49 +120,36 @@
 .cardCopy {
   position: relative;
   z-index: var(--z-local-raised);
-  width: 61%;
-  padding: 17px 22px;
 }
 .cardIcon {
   display: inline-grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
   border-radius: 11px;
   background: #fff;
   color: #ec1d44;
   box-shadow: 0 4px 12px #d9224110;
 }
 .cardEyebrow {
-  margin-top: 12px;
   color: #70788f;
-  font-size: 8px;
   line-height: 1.5;
   font-weight: 500;
   letter-spacing: 1.2px;
 }
 .card h3 {
   margin-top: 6px;
-  font-size: 21px;
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.4px;
 }
-.software h3 {
-  font-size: 19px;
-}
 .cardDescription {
   margin-top: 8px;
   color: #646b7f;
-  font-size: 11px;
   line-height: 1.7;
 }
 .cardArtwork {
   position: absolute;
   z-index: var(--z-base);
-  right: -4px;
   bottom: 0;
-  width: 43%;
   height: 100%;
 }
 .cardArtwork::before {
@@ -212,39 +168,181 @@
 .cardArtwork img {
   object-fit: contain;
   object-position: center bottom;
-  padding: 8px 3px;
   transition: transform 0.25s;
 }
 .card:hover .cardArtwork img {
   transform: translateY(-3px);
 }
-@media (max-width: 1100px) {
+.cardDescription br {
+  display: none;
+}
+.cardIcon {
+  width: 33px;
+  height: 33px;
+}
+.cardEyebrow {
+  margin-top: 10px;
+}
+.section {
+  padding-block: 22px 35px;
+}
+.heading {
+  align-items: flex-start;
+  gap: 12px;
+  padding-inline: 3px;
+  margin-bottom: 20px;
+}
+.heading h2 {
+  font-size: clamp(22px, 5.3vw, 29px);
+}
+.eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.4px;
+  margin-bottom: 9px;
+}
+.introduction {
+  display: none;
+}
+.grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.feature {
+  height: clamp(365px, 85vw, 440px);
+  min-height: 0;
+}
+.featureImage {
+  object-position: center 70%;
+}
+.featureCopy {
+  padding-top: 26px;
+  width: 94%;
+}
+.featureCopy h3 {
+  font-size: clamp(24px, 5vw, 30px);
+}
+.featureTagline {
+  font-size: 18px;
+}
+.featureDescription {
+  font-size: 11px;
+  margin-top: 9px;
+}
+.featureButton {
+  margin-top: 12px;
+  font-size: 12px;
+  min-height: 40px;
+  padding: 9px 22px;
+}
+.connections {
+  top: 135px;
+  right: 4px;
+  width: 78px;
+}
+.cards {
+  grid-template-rows: none;
+  gap: 12px;
+}
+.card {
+  min-height: 205px;
+}
+.cardCopy {
+  width: 61%;
+  padding: 18px;
+}
+.card h3 {
+  font-size: 20px;
+}
+.software h3 {
+  font-size: 18px;
+}
+.cardDescription {
+  font-size: 11px;
+  max-width: 235px;
+}
+.cardArtwork {
+  width: 40%;
+  right: 0;
+}
+.cardArtwork img {
+  padding: 10px 0;
+}
+.cardEyebrow {
+  font-size: 8px;
+}
+@media (min-width: 48rem) {
+  .featureEyebrow {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .connections {
+    display: none;
+  }
+  .section {
+    padding-block: 32px 55px;
+  }
   .heading {
+    align-items: center;
+    gap: 30px;
     padding-inline: 12px;
+    margin-bottom: 23px;
+  }
+  .heading h2 {
+    font-size: clamp(25px, 2.7vw, 33px);
+  }
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.9px;
+    margin-bottom: 10px;
+  }
+  .introduction {
+    display: revert;
+  }
+  .grid {
+    grid-template-columns: minmax(0px, 1fr);
+    gap: 16px;
   }
   .feature {
+    height: 100%;
     min-height: 420px;
   }
+  .featureImage {
+    object-position: center 75%;
+  }
   .featureCopy {
-    width: 94%;
     padding-top: 27px;
+    width: 94%;
   }
   .featureCopy h3 {
-    font-size: 27px;
+    font-size: 23px;
   }
   .featureTagline {
     font-size: 18px;
   }
   .featureDescription {
     font-size: 11px;
+    margin-top: 12px;
+  }
+  .featureButton {
+    margin-top: 13px;
+    font-size: 13px;
+    min-height: 42px;
+    padding: 10px 25px;
   }
   .connections {
-    right: 6px;
     top: 115px;
+    right: 6px;
     width: 88px;
   }
+  .cards {
+    grid-template-rows: 1fr 1fr;
+    gap: 14px;
+  }
+  .card {
+    min-height: revert;
+  }
   .cardCopy {
-    width: 61%;
+    width: 64%;
     padding: 16px;
   }
   .card h3 {
@@ -255,129 +353,90 @@
   }
   .cardDescription {
     font-size: 10px;
-  }
-  .cardDescription br {
-    display: none;
-  }
-  .cardArtwork {
-    width: 41%;
-    right: 0;
-  }
-  .cardIcon {
-    width: 33px;
-    height: 33px;
-  }
-  .cardEyebrow {
-    margin-top: 10px;
-    font-size: 7px;
-  }
-}
-@media (max-width: 991.98px) and (min-width: 721px) {
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .featureCopy h3 {
-    font-size: 23px;
-  }
-  .featureEyebrow {
-    font-size: 8px;
-    letter-spacing: 1px;
-  }
-  .connections {
-    display: none;
-  }
-  .cardCopy {
-    width: 64%;
+    max-width: revert;
   }
   .cardArtwork {
     width: 38%;
-    right: 0;
+    right: 0px;
+  }
+  .cardArtwork img {
+    padding: 8px 3px;
+  }
+  .cardEyebrow {
+    font-size: 7px;
   }
 }
-@media (max-width: 720px) {
-  .section {
-    padding-block: 22px 35px;
-  }
-  .heading {
-    align-items: flex-start;
-    gap: 12px;
-    padding-inline: 3px;
-    margin-bottom: 20px;
-  }
-  .heading h2 {
-    font-size: clamp(22px, 5.3vw, 29px);
-  }
-  .eyebrow {
-    font-size: 8px;
-    letter-spacing: 1.4px;
-    margin-bottom: 9px;
-  }
-  .introduction {
-    display: none;
-  }
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-  }
-  .feature {
-    height: clamp(365px, 85vw, 440px);
-    min-height: 0;
-  }
-  .featureImage {
-    object-position: center 70%;
-  }
-  .featureCopy {
-    padding-top: 26px;
-    width: 94%;
-  }
-  .featureCopy h3 {
-    font-size: clamp(24px, 5vw, 30px);
-  }
-  .featureTagline {
-    font-size: 18px;
-  }
-  .featureDescription {
-    font-size: 11px;
-    margin-top: 9px;
-  }
-  .featureButton {
-    margin-top: 12px;
-    font-size: 12px;
-    min-height: 40px;
-    padding: 9px 22px;
+@media (min-width: 64rem) {
+  .featureEyebrow {
+    font-size: 9px;
+    letter-spacing: 2px;
   }
   .connections {
-    top: 135px;
-    right: 4px;
-    width: 78px;
+    display: revert;
   }
-  .cards {
-    grid-template-rows: none;
-    gap: 12px;
+  .grid {
+    grid-template-columns: minmax(0px, 1fr) minmax(0px, 1fr);
   }
-  .card {
-    min-height: 205px;
+  .featureCopy h3 {
+    font-size: 27px;
   }
   .cardCopy {
     width: 61%;
-    padding: 18px;
   }
-  .card h3 {
+  .cardArtwork {
+    width: 41%;
+  }
+}
+@media (min-width: 80rem) {
+  .cardDescription br {
+    display: revert;
+  }
+  .cardIcon {
+    width: 38px;
+    height: 38px;
+  }
+  .cardEyebrow {
+    margin-top: 12px;
+  }
+  .heading {
+    padding-inline: 30px;
+  }
+  .feature {
+    min-height: 440px;
+  }
+  .featureCopy {
+    padding-top: 30px;
+    width: 86%;
+  }
+  .featureCopy h3 {
+    font-size: clamp(25px, 2.7vw, 32px);
+  }
+  .featureTagline {
     font-size: 20px;
   }
+  .featureDescription {
+    font-size: 12px;
+  }
+  .connections {
+    top: 100px;
+    right: 13px;
+    width: 112px;
+  }
+  .cardCopy {
+    padding: 17px 22px;
+  }
+  .card h3 {
+    font-size: 21px;
+  }
   .software h3 {
-    font-size: 18px;
+    font-size: 19px;
   }
   .cardDescription {
     font-size: 11px;
-    max-width: 235px;
   }
   .cardArtwork {
-    width: 40%;
-    right: 0;
-  }
-  .cardArtwork img {
-    padding: 10px 0;
+    width: 43%;
+    right: -4px;
   }
   .cardEyebrow {
     font-size: 8px;

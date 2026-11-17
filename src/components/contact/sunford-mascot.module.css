@@ -5,7 +5,6 @@
   left: 0;
   top: 0;
   z-index: var(--z-critical);
-  width: 136px;
   pointer-events: none;
   transform: translate3d(
     var(--pet-x, calc(100dvw - 100% - 24px)),
@@ -20,7 +19,6 @@
 .character {
   position: relative;
   display: block;
-  width: 136px;
   aspect-ratio: 1199 / 1312;
   border-radius: 14px;
   -webkit-tap-highlight-color: transparent;
@@ -110,7 +108,6 @@
   width: var(--contact-pill-width);
   height: var(--contact-pill-height);
   min-height: var(--contact-pill-height);
-  padding: 8px 12px;
   border: 1px solid #ffccdf;
   border-radius: 999px;
   overflow: hidden;
@@ -145,7 +142,6 @@
   outline-offset: 3px;
 }
 .bubble strong {
-  font-size: 13px;
   color: #272329;
   font-weight: 600;
 }
@@ -393,16 +389,29 @@
     visibility: hidden;
   }
 }
-@media (max-width: 640px) {
+.mascot {
+  width: 104px;
+}
+.character {
+  width: 104px;
+}
+.bubble {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.bubble strong {
+  font-size: 13px;
+}
+@media (min-width: 40rem) {
   .mascot {
-    width: 104px;
+    width: 136px;
   }
   .character {
-    width: 104px;
+    width: 136px;
   }
   .bubble {
     padding: 8px 12px;
-    font-size: 12px;
+    font-size: revert;
   }
   .bubble strong {
     font-size: 13px;

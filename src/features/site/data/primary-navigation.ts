@@ -24,6 +24,7 @@ const unavailableDestinations = new Set([
   "/products/category/pos/terminals",
   "/products/category/pos/workstations",
   "/products/category/pos/sets",
+  "/products/category/pos/ios",
   "/products/category/accessories/printers",
   "/products/category/accessories/pos",
   "/products/category/accessories/weights",
@@ -44,7 +45,11 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
   );
   const links = (entries: [label: string, href: string][]): NavigationItem["links"] =>
     entries
-      .toSorted(([first], [second]) => first.length - second.length)
+      .toSorted(
+        ([first], [second]) =>
+          Number(second.endsWith("ทั้งหมด")) - Number(first.endsWith("ทั้งหมด")) ||
+          first.length - second.length,
+      )
       .map(([label, source]) => {
         const href = resolveCategoryHref(source);
         const disabled = unavailableDestinations.has(href) || savedDisabled.has(href);
@@ -104,13 +109,14 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       categoryLabel("scales", "เครื่องชั่ง"),
       "/products/category/scales",
       [
-        ["เครื่องชั่งทั้งหมด", "/products/category/scales"],
         ["คำนวณราคา", "/products/category/scales/price"],
-        ["งานผลิตและอุตสาหกรรม", "/products/category/scales/industrial"],
-        ["ครัวและกาแฟ", "/products/category/scales/kitchen"],
-        ["Checkweigher", "/products/category/scales/checkweigher"],
-        ["ชุดเครื่องชั่ง", "/products/category/scales/sets"],
+        ["อุตสาหกรรม", "/products/category/scales/industrial"],
         ["งานวิเคราะห์", "/products/category/scales/analytical"],
+        ["ครัวและกาแฟ", "/products/category/scales/kitchen"],
+        ["กันน้ำ–กันฝุ่น", "/products/category/scales/water-dust"],
+        ["ตั้งโต๊ะ", "/products/category/scales/benchtop"],
+        ["ตั้งพื้น", "/products/category/scales/floor"],
+        ["มีเสา", "/products/category/scales/pole"],
       ],
       [
         ["กันน้ำ", "/products/category/scales/water-dust"],
@@ -132,15 +138,14 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       categoryLabel("indicators", "อินดิเคเตอร์แท่นชั่ง"),
       "/products/category/indicators",
       [
-        ["อินดิเคเตอร์ทั้งหมด", "/products/category/indicators"],
-        ["หน้าจอ LCD", "/products/category/indicators/lcd"],
-        ["หน้าจอ LED", "/products/category/indicators/led"],
+        ["LCD", "/products/category/indicators/lcd"],
+        ["LED", "/products/category/indicators/led"],
         ["กันน้ำ", "/products/category/indicators/waterproof"],
       ],
       [
         ["เชื่อมต่อ RS232", "/products/category/indicators/rs232"],
         ["ดูโครงสร้างแท่นชั่ง", "/products/category/platforms"],
-        ["ดูจอแสดงผลและไฟเตือน", "/products/category/accessories/displays"],
+        ["ดูจอและไฟเตือน", "/products/category/accessories/displays"],
       ],
       links([
         ["คู่มือเลือกหัวอ่านและแท่นชั่ง", guideHref],
@@ -155,15 +160,14 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       categoryLabel("platforms", "โครงสร้างแท่นชั่ง"),
       "/products/category/platforms",
       [
-        ["แท่นชั่งทั้งหมด", "/products/category/platforms"],
-        ["เหล็กคาร์บอน", "/products/category/platforms/carbon-steel"],
+        ["เหล็กคาร์บอนพ่นอบสีกันสนิม", "/products/category/platforms/carbon-steel"],
         ["สแตนเลส SUS304", "/products/category/platforms/sus304"],
         ["สแตนเลส SUS201", "/products/category/platforms/sus201"],
-        ["พลาสติก ABS", "/products/category/platforms/abs"],
+        ["พลาสติก ABS เหนียวพิเศษ", "/products/category/platforms/abs"],
       ],
       [
         ["อินดิเคเตอร์แท่นชั่ง", "/products/category/indicators"],
-        ["ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย", "/products/category/accessories/mechanical"],
+        ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical"],
         ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics"],
       ],
       links([
@@ -179,15 +183,11 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       categoryLabel("pos", "ระบบ POS"),
       "/products/category/pos",
       [
-        ["ระบบ POS ทั้งหมด", "/products/category/pos"],
-        ["เครื่อง POS", "/products/category/pos/terminals"],
-        ["เวิร์กสเตชัน", "/products/category/pos/workstations"],
-        ["ชุด POS", "/products/category/pos/sets"],
-        ["ซอฟต์แวร์และสิทธิ์ใช้งาน", "/applications-and-softwares"],
-      ],
-      [
+        ["iOS", "/products/category/pos/ios"],
         ["Android", "/products/category/pos/android"],
         ["Windows", "/products/category/pos/windows"],
+      ],
+      [
         ["เครื่องพิมพ์", "/products/category/accessories/printers"],
         ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/pos"],
       ],
@@ -204,17 +204,16 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       categoryLabel("accessories", "อุปกรณ์เสริม"),
       "/products/category/accessories",
       [
-        ["อุปกรณ์เสริมทั้งหมด", "/products/category/accessories"],
-        ["จอแสดงผลและไฟเตือน", "/products/category/accessories/displays"],
+        ["จอและไฟเตือน", "/products/category/accessories/displays"],
         ["สายและหัวต่อ", "/products/category/accessories/cables"],
         ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-        ["สแกนเนอร์ ลิ้นชัก และอุปกรณ์ POS", "/products/category/accessories/pos"],
-        ["ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย", "/products/category/accessories/mechanical"],
+        ["อุปกรณ์ POS", "/products/category/accessories/pos"],
+        ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical"],
         ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics"],
         ["ลูกตุ้มน้ำหนัก", "/products/category/accessories/weights"],
       ],
       [
-        ["กระดาษและฉลากทั้งหมด", "/products/category/accessories/consumables"],
+        ["กระดาษและฉลาก", "/products/category/accessories/consumables"],
         ["กระดาษความร้อน", "/products/category/accessories/thermal-paper"],
         ["ฉลากและสติ๊กเกอร์", "/products/category/accessories/labels"],
       ],
@@ -234,12 +233,8 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
         ["เลือกอินดิเคเตอร์", "/products/category/indicators"],
         ["เลือกแท่นชั่ง", "/products/category/platforms"],
         ["ดูอุปกรณ์เสริม", "/products/category/accessories"],
-        ["เปิดหน้าจัดสเปค", guideHref],
       ],
-      [
-        ["คู่มือเลือกหัวอ่านและแท่นชั่ง", guideHref],
-        ["สอบถามความเข้ากันได้", "/contact-us"],
-      ],
+      [["สอบถามความเข้ากันได้", "/contact-us"]],
       links([
         ["ขอใบเสนอราคา", "/service/quotation"],
         ["เงื่อนไขรับประกัน", "/warranty/policy"],
@@ -252,7 +247,6 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       "บริการ",
       "/service",
       [
-        ["บริการหลังการขาย", "/service"],
         ["ลงทะเบียนรับประกัน", "/warranty/register"],
         ["ขอใบเสนอราคา", "/service/quotation"],
       ],

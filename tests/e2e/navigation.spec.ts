@@ -26,8 +26,8 @@ for (const width of [1440, 390]) {
     page.on("pageerror", (error) => errors.push(error.message));
     for (const { id, label } of productCategoryDefinitions) {
       await page.goto("/");
-      if (width < 834) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-      const nav = page.locator(width < 834 ? "#mobile-navigation" : ".desktop-nav");
+      if (width < 1024) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+      const nav = page.locator(width < 1024 ? "#mobile-navigation" : ".desktop-nav");
       const parent = nav.getByRole("link", { name: label, exact: true });
       await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
       await parent.click();

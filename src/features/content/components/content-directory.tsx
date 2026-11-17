@@ -75,7 +75,7 @@ export function ContentDirectory({
                   src={page.image}
                   alt={page.title}
                   fill
-                  sizes="(max-width: 720px) 90vw, 30vw"
+                  sizes="(width < 48rem) 90vw, 30vw"
                 />
               </div>
             )}

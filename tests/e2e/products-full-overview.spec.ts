@@ -62,7 +62,7 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
     await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
-    const expectedLeft = width <= 600 ? 32 : Math.max(48, (width - 1180) / 2);
+    const expectedLeft = width < 640 ? 32 : Math.max(48, (width - 1180) / 2);
     const leftEdges = await directory.evaluate((element) => {
       const selectors = ["[data-products-category-section] h2", "[data-warehouse-sku]"];
       return selectors.map((selector) =>

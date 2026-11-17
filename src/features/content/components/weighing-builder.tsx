@@ -259,7 +259,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                     fallbackSrc={o.fallbackImage}
                     alt={o.kind === "platform" ? `ภาพชุดอ้างอิง ${o.code}` : o.code}
                     fill
-                    sizes="(max-width:600px) 90vw, (max-width:1000px) 40vw, 240px"
+                    sizes="(width < 40rem) 90vw, (width < 64rem) 40vw, 240px"
                   />
                 </div>
                 <div className={styles.copy}>

@@ -72,7 +72,7 @@ function StoreProductCard({
             fallbackSrc={product.fallbackImage}
             alt={`SUNFORD ${product.name}`}
             fill
-            sizes={compact ? "(max-width: 720px) 75vw, 280px" : "(max-width: 720px) 85vw, 400px"}
+            sizes={compact ? "(width < 48rem) 75vw, 280px" : "(width < 48rem) 85vw, 400px"}
           />
         </div>
       </Link>
@@ -272,7 +272,7 @@ export function ProductStorefront({
                   src={contactImage}
                   alt="บริการและคำปรึกษาจาก Sunford"
                   fill
-                  sizes="(max-width: 720px) 85vw, 480px"
+                  sizes="(width < 48rem) 85vw, 480px"
                 />
                 <div>
                   <p className="store-card-eyebrow">SUNFORD SPECIALIST</p>

@@ -38,7 +38,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
             src="/images/home-categories/digital.webp"
             alt=""
             fill
-            sizes="(max-width: 800px) 100vw, 25vw"
+            sizes="(width < 48rem) 100vw, 25vw"
           />
         </div>
         <div className="container footer-main">

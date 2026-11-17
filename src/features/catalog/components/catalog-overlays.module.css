@@ -5,13 +5,8 @@
   line-height: 1.6;
 }
 .scrollHint {
-  display: none;
-}
-@media (max-width: 767px) {
-  .scrollHint {
-    display: block;
-    color: var(--muted);
-  }
+  display: block;
+  color: var(--muted);
 }
 .different > th,
 .different > td {
@@ -23,4 +18,10 @@
   color: var(--red);
   font-size: 12px;
   line-height: 1.5;
+}
+@media (min-width: 48rem) {
+  .scrollHint {
+    display: none;
+    color: revert;
+  }
 }

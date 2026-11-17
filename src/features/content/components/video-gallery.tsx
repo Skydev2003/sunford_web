@@ -69,7 +69,7 @@ export function VideoGallery({
               src={video.image}
               alt={openInYoutube && video.title ? video.title : `${title} ${index + 1}`}
               fill
-              sizes="(max-width: 720px) 85vw, 400px"
+              sizes="(width < 48rem) 85vw, 400px"
             />
             <span className="video-play">
               <Play size={20} fill="currentColor" />

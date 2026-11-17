@@ -28,7 +28,7 @@ export function ContactLocationImage({
           src={image}
           alt={title}
           fill
-          sizes="(max-width: 600px) 65vw, (max-width: 900px) 55vw, 280px"
+          sizes="(width < 40rem) 65vw, (width < 64rem) 55vw, 280px"
           className={styles.locationPhoto}
           onError={() => setFailedImage(image)}
         />

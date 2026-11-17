@@ -56,7 +56,7 @@ export function SectionTwoVideo() {
                 alt=""
                 fill
                 unoptimized
-                sizes="(max-width: 1056px) 100vw, 1000px"
+                sizes="(width < 80rem) 100vw, 1000px"
               />
               <span className={styles.play} aria-hidden="true">
                 <Play size={26} fill="currentColor" />

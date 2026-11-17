@@ -342,7 +342,7 @@ export function ProductCategoryMock({
                       alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                       fill
                       preload={index === 0}
-                      sizes="(max-width: 699px) 80vw, (max-width: 1099px) 65vw, 700px"
+                      sizes="(width < 48rem) 80vw, (width < 80rem) 65vw, 700px"
                     />
                   </div>
                 </Link>

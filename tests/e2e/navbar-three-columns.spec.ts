@@ -40,7 +40,7 @@ async function openMenu(page: Page, route: string, width: number, index: number)
   const nav = header(page, route);
   const menu = menus[index];
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
-  if (width >= 834) {
+  if (width >= 1024) {
     await page.mouse.move(width - 4, page.viewportSize()!.height - 4);
     const trigger = nav
       .locator(route === "/" ? ".desktop-nav" : "[data-products-nav]")
@@ -214,7 +214,7 @@ for (const route of routes) {
             return { x, y, width, height };
           }),
         );
-        if (width >= 834) {
+        if (width >= 1024) {
           for (let column = 1; column < 3; column++) {
             expect(boxes[column].x).toBeGreaterThanOrEqual(
               boxes[column - 1].x + boxes[column - 1].width,
@@ -260,7 +260,7 @@ for (const route of routes) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
-      if (width >= 834) {
+      if (width >= 1024) {
         const controls = await header(page, route)
           .locator(route === "/" ? ".header-inner a, .header-inner button" : "nav a, nav button")
           .evaluateAll((nodes) =>

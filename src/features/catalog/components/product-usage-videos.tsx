@@ -50,12 +50,7 @@ export function ProductUsageVideos({
                 aria-label={`เล่นวิดีโอ ${video.title}`}
                 data-short={video.kind === "short"}
               >
-                <ProductImage
-                  src={video.image}
-                  alt=""
-                  fill
-                  sizes="(max-width: 720px) 85vw, 440px"
-                />
+                <ProductImage src={video.image} alt="" fill sizes="(width < 48rem) 85vw, 440px" />
                 <span className={styles.play}>
                   <Play size={21} fill="currentColor" aria-hidden="true" />
                 </span>

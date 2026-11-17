@@ -7,26 +7,8 @@
   background: white;
   color: #1d1d1f;
 }
-@media (min-width: 735px) {
-  .scene {
-    height: calc(100dvh - 99px);
-  }
-}
-@media (min-width: 834px) {
-  .scene {
-    height: calc(100dvh - 95px);
-  }
-}
 .touchHint {
   display: none;
-}
-@media (pointer: coarse) {
-  .mouseHint {
-    display: none;
-  }
-  .touchHint {
-    display: inline;
-  }
 }
 .scene button {
   font: inherit;
@@ -42,12 +24,9 @@
   outline-offset: 3px;
 }
 .copy {
-  --category-control-width: min(100%, 300px);
   position: absolute;
   z-index: 12;
-  top: 11%;
   left: var(--overview-gutter);
-  width: min(32%, 425px);
   pointer-events: none;
 }
 .categoryDropdown {
@@ -236,12 +215,10 @@
 .scene[data-interactive] .photo img:not([data-ready="true"]) {
   opacity: 0;
 }
-@media (max-width: 759px) {
-  .scene:not([data-interactive]) .photo[aria-current="true"] {
-    left: 52%;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(0.7) !important;
-  }
+.scene:not([data-interactive]) .photo[aria-current="true"] {
+  left: 52%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.7) !important;
 }
 .photo::after,
 .hero::after {
@@ -264,9 +241,6 @@
   display: flex;
   justify-content: flex-start;
   gap: 12px;
-  left: var(--overview-gutter);
-  right: var(--overview-gutter);
-  bottom: 16%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
@@ -290,7 +264,6 @@
 }
 .progress {
   left: 50%;
-  bottom: 4%;
   transform: translateX(-50%);
   width: min(310px, 70%);
   text-align: center;
@@ -345,11 +318,8 @@
   min-height: 100%;
   max-width: 1536px;
   margin: auto;
-  padding: 90px 6% 48px 12%;
-  display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 336px);
   gap: 24px 8%;
-  align-items: center;
 }
 .scene .back {
   position: absolute;
@@ -367,7 +337,6 @@
   text-underline-offset: 4px;
 }
 .hero {
-  height: min(510px, 56svh);
   position: relative;
   min-width: 0;
 }
@@ -449,40 +418,38 @@
   position: absolute;
   inset: 0;
 }
-@media (max-width: 759px) {
-  .copy {
-    --category-control-width: min(100%, 280px);
-    top: 22px;
-    width: calc(100% - 64px);
-  }
-  .scene[data-mobile-rail] .copy {
-    display: grid;
-    justify-items: center;
-    left: 32px;
-  }
-  .models {
-    right: 20px;
-    left: 20px;
-    bottom: 21%;
-  }
-  .models button:last-child {
-    margin-inline-end: auto;
-  }
-  .progress {
-    bottom: 8%;
-  }
-  .detail {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 85px 24px 32px;
-  }
-  .hero {
-    height: clamp(210px, 35svh, 320px);
-  }
-  .thumbs {
-    justify-content: center;
-  }
+.copy {
+  --category-control-width: min(100%, 280px);
+  top: 22px;
+  width: calc(100% - 64px);
+}
+.scene[data-mobile-rail] .copy {
+  display: grid;
+  justify-items: center;
+  left: 32px;
+}
+.models {
+  right: 20px;
+  left: 20px;
+  bottom: 21%;
+}
+.models button:last-child {
+  margin-inline-end: auto;
+}
+.progress {
+  bottom: 8%;
+}
+.detail {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 85px 24px 32px;
+}
+.hero {
+  height: clamp(210px, 35svh, 320px);
+}
+.thumbs {
+  justify-content: center;
 }
 .scene[data-mobile-rail] {
   touch-action: auto;
@@ -498,6 +465,62 @@
 }
 .scene[data-mobile-rail] .touchHint {
   display: inline;
+}
+@media (min-width: 48rem) {
+  .scene {
+    height: calc(100dvh - 99px);
+  }
+  .scene:not([data-interactive]) .photo[aria-current="true"] {
+    left: 0px;
+    top: 0px;
+    transform: revert !important;
+  }
+  .copy {
+    --category-control-width: min(100%, 300px);
+    top: 11%;
+    width: min(32%, 425px);
+  }
+  .scene[data-mobile-rail] .copy {
+    display: revert;
+    justify-items: revert;
+    left: var(--overview-gutter);
+  }
+  .models {
+    right: var(--overview-gutter);
+    left: var(--overview-gutter);
+    bottom: 16%;
+  }
+  .models button:last-child {
+    margin-inline-end: revert;
+  }
+  .progress {
+    bottom: 4%;
+  }
+  .detail {
+    display: grid;
+    flex-direction: revert;
+    align-items: center;
+    padding: 90px 6% 48px 12%;
+  }
+  .hero {
+    height: min(510px, 56svh);
+  }
+  .thumbs {
+    justify-content: revert;
+  }
+}
+@media (min-width: 64rem) {
+  .scene {
+    height: calc(100dvh - 95px);
+  }
+}
+@media (pointer: coarse) {
+  .mouseHint {
+    display: none;
+  }
+  .touchHint {
+    display: inline;
+  }
 }
 @media (orientation: landscape) and (max-height: 500px) {
   .scene[data-mobile-rail] .copy {

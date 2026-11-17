@@ -44,8 +44,7 @@ export type CarouselControls = {
   move: (steps: number) => void;
   select: (index: number, immediate?: boolean) => void;
 };
-const phoneQuery =
-  "(max-width: 759px), (hover: none) and (pointer: coarse) and (max-height: 500px)";
+const phoneQuery = "(width < 48rem), (hover: none) and (pointer: coarse) and (max-height: 500px)";
 const subscribePhone = (notify: () => void) => {
   const media = matchMedia(phoneQuery);
   media.addEventListener("change", notify);

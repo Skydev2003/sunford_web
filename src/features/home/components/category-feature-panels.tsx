@@ -53,7 +53,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                     src={selected.companionImage}
                     alt="ไฟสัญญาณสามสี SUNFORD RYG-POLE"
                     fill
-                    sizes="(min-width: 992px) 18vw, 32vw"
+                    sizes="(min-width: 64rem) 18vw, 32vw"
                   />
                 </div>
                 <div className="category-feature-printer">
@@ -62,7 +62,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                     src={selected.image}
                     alt={selected.title}
                     fill
-                    sizes="(min-width: 992px) 32vw, 56vw"
+                    sizes="(min-width: 64rem) 32vw, 56vw"
                   />
                 </div>
               </div>
@@ -73,7 +73,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                 src={selected.image}
                 alt={selected.title}
                 fill
-                sizes="(min-width: 1600px) 900px, (min-width: 992px) 55vw, 100vw"
+                sizes="(min-width: 96rem) 900px, (min-width: 64rem) 55vw, 100vw"
               />
             )}
           </div>

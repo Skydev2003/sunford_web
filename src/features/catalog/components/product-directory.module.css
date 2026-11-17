@@ -97,7 +97,7 @@
   display: inline-flex;
   align-items: center;
 }
-@media (min-width: 600px) {
+@media (min-width: 40rem) {
   .categoryRow {
     grid-template-columns: 180px minmax(0, 1fr);
     align-items: center;

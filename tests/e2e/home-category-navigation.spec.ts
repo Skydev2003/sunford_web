@@ -154,9 +154,9 @@ for (const width of [390, 1440]) {
     for (const { id, label } of productCategoryDefinitions) {
       await page.goto("/");
       const header = page.locator(".site-header:visible");
-      if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+      if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       const parent =
-        width < 834
+        width < 1024
           ? header.locator("#mobile-navigation").getByRole("link", { name: label, exact: true })
           : header.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
       await parent.click();

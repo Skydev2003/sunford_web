@@ -19,18 +19,12 @@
 }
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   align-items: center;
-  gap: clamp(28px, 3vw, 48px);
   max-width: 1120px;
-  padding-block: 48px 36px;
 }
 .gallery {
   min-width: 0;
-  width: 100%;
-  max-width: 440px;
   justify-self: center;
-  padding-inline: 36px 42px;
 }
 .deck {
   position: relative;
@@ -118,12 +112,8 @@
 .photoLabel {
   position: absolute;
   z-index: var(--z-local-raised);
-  bottom: 24px;
-  left: 24px;
   color: #fff;
-  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 1.5px;
 }
 .quoteCard,
 .noteCard {
@@ -138,23 +128,15 @@
 .quoteCard {
   position: absolute;
   z-index: var(--z-local-overlay);
-  top: 7%;
-  left: -34px;
-  width: 136px;
-  padding: 13px 12px;
-  border-radius: 22px;
   transform: rotate(-8deg);
   transition: transform 0.6s ease;
 }
 .quoteCard > svg {
-  width: 26px;
-  height: 26px;
   color: #cc2445;
 }
 .quoteCard p {
   margin-top: -3px;
   color: #f5f5f7;
-  font-size: 16px;
   font-weight: 600;
   line-height: 1.5;
   text-align: center;
@@ -166,7 +148,6 @@
 }
 .quoteCard > span {
   display: block;
-  width: 75px;
   height: 3px;
   margin: 7px auto 0;
   border-radius: 50%;
@@ -176,30 +157,20 @@
 .sideCards {
   position: absolute;
   z-index: var(--z-local-overlay);
-  top: 23%;
-  right: -36px;
   display: grid;
-  gap: 12px;
   transform: rotate(3deg);
   transition: transform 0.6s ease;
 }
 .noteCard {
   display: grid;
   justify-items: center;
-  gap: 7px;
-  width: 96px;
-  padding: 14px 8px 12px;
-  border-radius: 21px;
   text-align: center;
 }
 .noteCard > svg {
-  width: 28px;
-  height: 28px;
   color: #ff3d66;
   filter: drop-shadow(0 3px 3px #ff46661a);
 }
 .noteCard p {
-  font-size: 12px;
   font-weight: 500;
   line-height: 1.6;
 }
@@ -236,12 +207,9 @@
 }
 .copy > :global(.eyebrow) {
   color: #ff1745;
-  font-size: 10px;
-  letter-spacing: 2.6px;
 }
 .copy h2 {
   margin-block: 12px 14px;
-  font-size: clamp(28px, 2.7vw, 40px);
   font-weight: 600;
   line-height: 1.32;
   letter-spacing: -1px;
@@ -252,7 +220,6 @@
 .copy > p:not(:global(.eyebrow)) {
   margin-top: 12px;
   color: #a1a1a6;
-  font-size: 14px;
   line-height: 1.75;
 }
 .values {
@@ -264,7 +231,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-inline: 9px;
   text-align: center;
 }
 .value + .value {
@@ -273,8 +239,6 @@
 .value > span {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
   margin-bottom: 6px;
   border-radius: 50%;
   background: #1c1c1e;
@@ -282,21 +246,17 @@
 }
 .value strong {
   color: #f5f5f7;
-  font-size: 13px;
   font-weight: 600;
   line-height: 1.6;
 }
 .value p {
   color: #a1a1a6;
-  font-size: 12px;
   line-height: 1.8;
 }
 .actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 22px;
 }
 .storyLink {
   display: inline-flex;
@@ -330,30 +290,129 @@
   color: #a1a1a6;
   font-size: 9px;
 }
-@media (max-width: 1100px) {
-  .layout {
-    gap: 38px;
-    padding-block: 64px 48px;
-  }
+.noteCard {
+  gap: 5px;
+}
+.value {
+  padding-inline: 6px;
+}
+.value strong {
+  font-size: 11px;
+}
+.value p {
+  font-size: 11px;
+}
+.layout {
+  grid-template-columns: 1fr;
+  gap: 28px;
+  padding-block: 52px 44px;
+}
+.gallery {
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+}
+.copy {
+  max-width: 600px;
+  margin-inline: auto;
+}
+.copy > p:not(:global(.eyebrow)) {
+  font-size: 14px;
+}
+.gallery {
+  padding-inline: 20px 25px;
+}
+.quoteCard {
+  left: -16px;
+  top: 5%;
+  width: 99px;
+  padding: 10px;
+  border-radius: 20px;
+}
+.quoteCard > svg {
+  width: 24px;
+  height: 24px;
+}
+.quoteCard p {
+  font-size: 12px;
+}
+.quoteCard > span {
+  width: 66px;
+}
+.sideCards {
+  top: 26%;
+  right: -23px;
+  gap: 10px;
+}
+.noteCard {
+  width: 78px;
+  padding: 10px 6px;
+  border-radius: 18px;
+}
+.noteCard p {
+  font-size: 10px;
+}
+.noteCard > svg {
+  width: 25px;
+  height: 25px;
+}
+.photoLabel {
+  left: 15px;
+  bottom: 18px;
+  font-size: 7px;
+  letter-spacing: 0.7px;
+}
+.copy > :global(.eyebrow) {
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+.copy h2 {
+  font-size: 28px;
+}
+.value > span {
+  width: 44px;
+  height: 44px;
+}
+.value strong,
+.value p {
+  font-size: 10px;
+}
+.actions {
+  justify-content: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+.storyLink {
+  width: 100%;
+}
+@media (min-width: 40rem) {
   .gallery {
-    max-width: 440px;
-    padding-inline: 24px 32px;
+    padding-inline: 38px 44px;
   }
   .quoteCard {
     left: -24px;
+    top: 7%;
     width: 122px;
     padding: 12px;
+    border-radius: 22px;
+  }
+  .quoteCard > svg {
+    width: 26px;
+    height: 26px;
   }
   .quoteCard p {
     font-size: 15px;
   }
+  .quoteCard > span {
+    width: 75px;
+  }
   .sideCards {
+    top: 23%;
     right: -32px;
     gap: 12px;
   }
   .noteCard {
     width: 94px;
-    gap: 5px;
     padding: 12px 8px;
     border-radius: 20px;
   }
@@ -364,14 +423,61 @@
     width: 28px;
     height: 28px;
   }
+  .photoLabel {
+    left: 24px;
+    bottom: 24px;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+  .copy > :global(.eyebrow) {
+    font-size: 10px;
+    letter-spacing: 2.6px;
+  }
   .copy h2 {
-    font-size: 31px;
+    font-size: clamp(28px, 5.6vw, 38px);
+  }
+  .value > span {
+    width: 44px;
+    height: 44px;
+  }
+  .value strong {
+    font-size: 12px;
+  }
+  .value p {
+    font-size: 12px;
+  }
+  .actions {
+    justify-content: revert;
+    gap: 16px;
+    margin-top: 22px;
+  }
+  .storyLink {
+    width: revert;
+  }
+}
+@media (min-width: 48rem) {
+  .layout {
+    grid-template-columns: minmax(0px, 1fr) minmax(0px, 1.05fr);
+    gap: 38px;
+    padding-block: 64px 48px;
+  }
+  .gallery {
+    width: 100%;
+    max-width: 440px;
+    margin-inline: revert;
+  }
+  .copy {
+    max-width: revert;
+    margin-inline: revert;
   }
   .copy > p:not(:global(.eyebrow)) {
     font-size: 13px;
   }
-  .value {
-    padding-inline: 6px;
+  .gallery {
+    padding-inline: 24px 32px;
+  }
+  .copy h2 {
+    font-size: 31px;
   }
   .value strong {
     font-size: 11px;
@@ -380,99 +486,50 @@
     font-size: 11px;
   }
 }
-@media (max-width: 800px) {
+@media (min-width: 80rem) {
+  .noteCard {
+    gap: 7px;
+  }
+  .value {
+    padding-inline: 9px;
+  }
   .layout {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    padding-block: 52px 44px;
-  }
-  .gallery {
-    width: 100%;
-    max-width: 440px;
-    margin-inline: auto;
-    padding-inline: 38px 44px;
-  }
-  .copy {
-    max-width: 600px;
-    margin-inline: auto;
-  }
-  .copy h2 {
-    font-size: clamp(28px, 5.6vw, 38px);
+    gap: clamp(28px, 3vw, 48px);
+    padding-block: 48px 36px;
   }
   .copy > p:not(:global(.eyebrow)) {
     font-size: 14px;
   }
-  .value strong,
-  .value p {
-    font-size: 12px;
-  }
-}
-@media (max-width: 480px) {
   .gallery {
-    padding-inline: 20px 25px;
+    padding-inline: 36px 42px;
   }
   .quoteCard {
-    left: -16px;
-    top: 5%;
-    width: 99px;
-    padding: 10px;
-    border-radius: 20px;
-  }
-  .quoteCard > svg {
-    width: 24px;
-    height: 24px;
+    left: -34px;
+    width: 136px;
+    padding: 13px 12px;
   }
   .quoteCard p {
-    font-size: 12px;
-  }
-  .quoteCard > span {
-    width: 66px;
+    font-size: 16px;
   }
   .sideCards {
-    top: 26%;
-    right: -23px;
-    gap: 10px;
+    right: -36px;
   }
   .noteCard {
-    width: 78px;
-    padding: 10px 6px;
-    border-radius: 18px;
+    width: 96px;
+    padding: 14px 8px 12px;
+    border-radius: 21px;
   }
   .noteCard p {
-    font-size: 10px;
-  }
-  .noteCard > svg {
-    width: 25px;
-    height: 25px;
-  }
-  .photoLabel {
-    left: 15px;
-    bottom: 18px;
-    font-size: 7px;
-    letter-spacing: 0.7px;
-  }
-  .copy > :global(.eyebrow) {
-    font-size: 9px;
-    letter-spacing: 2px;
+    font-size: 12px;
   }
   .copy h2 {
-    font-size: 28px;
+    font-size: clamp(28px, 2.7vw, 40px);
   }
-  .value > span {
-    width: 44px;
-    height: 44px;
+  .value strong {
+    font-size: 13px;
   }
-  .value strong,
   .value p {
-    font-size: 10px;
-  }
-  .actions {
-    justify-content: center;
-    gap: 18px;
-    margin-top: 22px;
-  }
-  .storyLink {
-    width: 100%;
+    font-size: 12px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

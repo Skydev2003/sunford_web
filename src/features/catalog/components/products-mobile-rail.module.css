@@ -30,13 +30,22 @@
   object-fit: contain;
   pointer-events: none;
 }
-@media (max-width: 759px) and (max-height: 700px) {
+@media (max-height: 700px) {
   .rail {
     padding-inline: 18vw;
     scroll-padding-inline: 18vw;
   }
   .card {
     flex-basis: 64vw;
+  }
+}
+@media (min-width: 48rem) and (max-height: 700px) {
+  .rail {
+    padding-inline: 11vw;
+    scroll-padding-inline: 11vw;
+  }
+  .card {
+    flex-basis: 78vw;
   }
 }
 @media (orientation: landscape) and (max-height: 500px) {

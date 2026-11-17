@@ -107,21 +107,14 @@
   margin-top: 16px;
   color: #a51728;
 }
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.page {
+  padding-inline: 32px;
 }
-@media (max-width: 600px) {
-  .page {
-    padding-inline: 32px;
-  }
-  .page summary {
-    padding-left: 20px;
-  }
-  .body {
-    margin-inline: 20px;
-  }
+.page summary {
+  padding-left: 20px;
+}
+.body {
+  margin-inline: 20px;
 }
 .guideTitle {
   margin: 56px 0 18px;
@@ -158,4 +151,20 @@
 .modelTarget:target {
   outline: 2px solid var(--red);
   border-radius: 3px;
+}
+@media (min-width: 40rem) {
+  .page {
+    padding-inline: max(48px, 50% - 590px) max(48px, 50% - 590px);
+  }
+  .page summary {
+    padding-left: 26px;
+  }
+  .body {
+    margin-inline: 26px;
+  }
+}
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

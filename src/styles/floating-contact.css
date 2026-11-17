@@ -1,9 +1,6 @@
 .floating-contact {
-  --contact-size: 62px;
   position: fixed;
   z-index: var(--z-critical);
-  right: 24px;
-  bottom: max(24px, env(safe-area-inset-bottom));
   width: var(--contact-size);
   height: var(--contact-size);
   transform: translate3d(var(--contact-drift-x, 0px), var(--contact-drift-y, 0px), 0);
@@ -98,7 +95,6 @@
   right: calc(100% + 12px);
   display: grid;
   place-items: center;
-  width: 175px;
   min-height: 44px;
   padding: 10px 12px;
   border-radius: 12px;
@@ -166,14 +162,22 @@
   outline: 3px solid #0758b5;
   outline-offset: 4px;
 }
-@media (max-width: 640px) {
+.floating-contact {
+  --contact-size: 60px;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+}
+.contact-action-label {
+  width: min(175px, calc(100vw - 112px));
+}
+@media (min-width: 40rem) {
   .floating-contact {
-    --contact-size: 60px;
-    right: 16px;
-    bottom: max(16px, env(safe-area-inset-bottom));
+    --contact-size: 62px;
+    right: 24px;
+    bottom: max(24px, env(safe-area-inset-bottom));
   }
   .contact-action-label {
-    width: min(175px, calc(100vw - 112px));
+    width: 175px;
   }
 }
 @media (max-height: 380px) {

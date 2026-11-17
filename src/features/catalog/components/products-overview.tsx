@@ -4,6 +4,7 @@ import { Globe, Mail, MapPin, Phone, ArrowUp } from "lucide-react";
 import { useReturnState } from "@/features/site/history/return-state";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { PrimaryNavigation } from "@/components/layout/primary-navigation";
+import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
 
 import {
   Suspense,
@@ -316,7 +317,21 @@ export function ProductsOverview({
     categoryId === "platforms" ||
     categoryId === "pos" ||
     categoryId === "accessories";
-  const chapterItems = activeCategory?.subcategories ?? categories;
+  const categoryItems = activeCategory?.subcategories ?? categories;
+  const headerItems = getPrimaryNavigationItems(navigation);
+  const categoryMenu = headerItems.find((item) => item.href === `/products/category/${categoryId}`);
+  const chapterItems = categoryMenu
+    ? categoryMenu.links.map((link) => {
+        const category = activeCategory?.subcategories.find(
+          (item) => getProductSubcategoryPage(item.id)?.href === link.href,
+        );
+        return { ...link, id: category?.id ?? link.href, productIds: category?.productIds ?? [] };
+      })
+    : categoryItems.map((category) => ({
+        ...category,
+        href: getProductSubcategoryPage(category.id)?.href ?? `/products/category/${category.id}`,
+        disabled: false,
+      }));
   const [finderOpen, setFinderOpen] = useReturnState("products-overview.finderOpen", false);
   const hydrated = useHydratedControls();
   const [story, setStory] = useReturnState<Story | null>("products-overview.story", null);
@@ -375,13 +390,14 @@ export function ProductsOverview({
     if (chapterTrack.current) observer.observe(chapterTrack.current);
     return () => observer.disconnect();
   }, [syncChapters]);
-  const openCategory = (id: string) => {
+  const openCategory = (id: string, href?: string) => {
     const page = activeCategory ? getProductSubcategoryPage(id, activeCategory.id) : undefined;
-    if (page) {
+    const destination = href ?? page?.href;
+    if (destination) {
       const current = new URL(window.location.href);
       ["category", "subcategory", "catalog"].forEach((key) => current.searchParams.delete(key));
       window.history.replaceState(null, "", `${current.pathname}${current.search}${current.hash}`);
-      router.push(page.href);
+      router.push(destination);
       return;
     }
     const url = new URL(window.location.href);
@@ -534,9 +550,9 @@ export function ProductsOverview({
                       }
                     >
                       <button
-                        disabled={!hydrated}
+                        disabled={!hydrated || category.disabled}
                         type="button"
-                        onClick={() => openCategory(category.id)}
+                        onClick={() => openCategory(category.id, category.href)}
                       >
                         <span className={styles.chapterArt}>
                           <ProductImage
@@ -667,7 +683,7 @@ export function ProductsOverview({
                             alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                             fill
                             preload={index === 0}
-                            sizes="(max-width: 734px) 82vw, 87.5vw"
+                            sizes="(width < 48rem) 82vw, 87.5vw"
                           />
                         )}
                       </div>
@@ -766,7 +782,7 @@ export function ProductsOverview({
                         fallbackSrc={product.fallbackImage}
                         alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                         fill
-                        sizes="(max-width: 734px) 260px, 372px"
+                        sizes="(width < 48rem) 260px, 372px"
                       />
                     </Link>
                     <div className={styles.lineupCopy}>
@@ -854,7 +870,7 @@ export function ProductsOverview({
                         src={item.image}
                         alt={item.title}
                         fill
-                        sizes="(max-width: 734px) 260px, 372px"
+                        sizes="(width < 48rem) 260px, 372px"
                       />
                     </div>
                     <button
@@ -912,7 +928,7 @@ export function ProductsOverview({
                           src={item.image}
                           alt={item.title}
                           fill
-                          sizes="(max-width: 734px) 260px, 44vw"
+                          sizes="(width < 48rem) 260px, 44vw"
                         />
                       </div>
                     </li>
@@ -1006,7 +1022,7 @@ export function ProductsOverview({
                     >
                       {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
                     </button>
-                    {chapterItems.map((category) => (
+                    {categoryItems.map((category) => (
                       <button
                         disabled={!hydrated}
                         type="button"

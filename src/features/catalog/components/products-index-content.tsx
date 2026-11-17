@@ -80,7 +80,7 @@ export function ProductsIndexContent({
                       fallbackSrc={product.fallbackImage}
                       alt={catalogCardName(product)}
                       fill
-                      sizes="(max-width: 600px) 80vw, 400px"
+                      sizes="(width < 40rem) 80vw, 400px"
                     />
                   </Link>
                   <div className={styles.cardCopy}>

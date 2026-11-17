@@ -13,7 +13,7 @@
   background: #f6f8fb;
 }
 
-@media (min-width: 834px) {
+@media (min-width: 64rem) {
   .surface {
     --site-header-height: 44px;
   }

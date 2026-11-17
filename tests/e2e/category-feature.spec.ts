@@ -339,13 +339,13 @@ test("category media precedes readable two-column choices on mobile and sits alo
     const media = (await section.locator(".category-feature-media").boundingBox())!;
     const grid = (await section.locator(".category-feature-grid").boundingBox())!;
     expect(media.width / media.height).toBeCloseTo(16 / 9, 2);
-    if (width < 992) {
+    if (width < 1024) {
       expect(grid.y).toBeGreaterThanOrEqual(media.y + media.height + 20);
     } else {
       expect(media.x).toBeGreaterThan(grid.x + grid.width);
     }
     for (const description of await section.locator(".category-feature-description").all()) {
-      if (width < 576) await expect(description).toBeHidden();
+      if (width < 640) await expect(description).toBeHidden();
       else {
         await expect(description).toBeVisible();
         expect(await description.evaluate((n) => n.scrollWidth <= n.clientWidth + 1)).toBe(true);

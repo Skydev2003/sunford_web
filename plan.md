@@ -1,3 +1,238 @@
+## Plan: Sitewide Mobile-first responsive migration with Tailwind breakpoints (2026-11-17)
+
+Approval: "Approved — owner authorized all phases including Header1024; preserve design/existing CSS, test each phase, no commit/push"
+
+### Files — current planning delivery
+
+- `spec.md` — เพิ่มข้อกำหนด/contract/mapping/approval record โดยรักษางานเดิม
+- `plan.md` — เพิ่ม manifest/phase gates/verification/rollback นี้
+- Source inventory, proposal และ planning receipt นอกsource: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/mobile-first-plan/`
+
+### Files — proposed implementation candidates, not yet authorized
+
+รายการต่อไปเป็นเพดานขอบเขตที่เสนอ ไม่ใช่คำสั่งให้แก้ทุกไฟล์ ต้องยืนยัน active caller/cascade ก่อนแก้ ไฟล์ไม่มีcallerไม่คืนใช้/ลบ/refactorและบันทึกเป็นread-only; global CSSที่ถูกbundleยังตรวจทุกwidth queryของมัน ไม่แก้source/testนอกmanifestโดยไม่อัปเดตขอบเขตที่อนุมัติ
+
+#### CSS/CSS Modules (46 existing candidates)
+
+ไฟล์ที่มีwidth queries: กลับ mobile defaults ไปไว้base, คงselector specificity, เพิ่มเฉพาะstandard min-width overridesตามSpec ส่วนbase/catalog/home-sections/overlaysเป็นเจ้าของdeclarationsที่ปัจจุบันถูกoverrideในresponsive.cssจึงต้องย้ายค่ากลับให้ถูกที่ ไม่เปลี่ยนbrand tokenหรือclass/DOM
+
+- `src/app/(site)/products/[slug]/product-detail.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/components/contact/sunford-mascot.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/components/layout/site-background.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/catalog/components/catalog-overlays.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/catalog/components/product-browser.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (3 width queries ที่พบ)
+- `src/features/catalog/components/product-category-mock.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (3 width queries ที่พบ)
+- `src/features/catalog/components/product-directory.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/catalog/components/product-usage-videos.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/catalog/components/products-index-carousel.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (4 width queries ที่พบ)
+- `src/features/catalog/components/products-index-content.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/catalog/components/products-mobile-rail.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/catalog/components/products-overview.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (6 width queries ที่พบ)
+- `src/features/catalog/components/quotation-form.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/content/components/about-page.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/content/components/after-sales-page.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (6 width queries ที่พบ)
+- `src/features/content/components/contact-page.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (4 width queries ที่พบ)
+- `src/features/content/components/indicator-platform-compatibility-page.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/content/components/solutions-overview.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/content/components/solutions-page.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/content/components/video-focus.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/content/components/weighing-builder.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/home/components/brand-story.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (3 width queries ที่พบ)
+- `src/features/home/components/business-solutions.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (3 width queries ที่พบ)
+- `src/features/home/components/hero-product-ribbon.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/home/components/hero-scene.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/home/components/hero-studio.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/features/home/components/home-benefits.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/home/components/section-two-video.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/home/components/stories-section.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/features/home/components/support-section.module.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/styles/base.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้; รับค่าจาก responsive.css ตามเจ้าของ selector
+- `src/styles/catalog-page.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้; รับค่าจาก responsive.css ตามเจ้าของ selector
+- `src/styles/catalog.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้; รับค่าจาก responsive.css ตามเจ้าของ selector
+- `src/styles/category-feature.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (5 width queries ที่พบ)
+- `src/styles/content.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (6 width queries ที่พบ)
+- `src/styles/customer-map.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+- `src/styles/floating-contact.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (1 width queries ที่พบ)
+- `src/styles/footer.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (6 width queries ที่พบ)
+- `src/styles/header.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (3 width queries ที่พบ)
+- `src/styles/hero-cinematic.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (8 width queries ที่พบ)
+- `src/styles/hero.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (3 width queries ที่พบ)
+- `src/styles/home-sections.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้; รับค่าจาก responsive.css ตามเจ้าของ selector
+- `src/styles/overlays.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้; รับค่าจาก responsive.css ตามเจ้าของ selector
+- `src/styles/product-detail.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (3 width queries ที่พบ)
+- `src/styles/responsive.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (5 width queries ที่พบ)
+- `src/styles/storefront.css` — แก้เฉพาะ mobile base/cascade และ width thresholds ของส่วนนี้ (2 width queries ที่พบ)
+
+#### JavaScript/TSX viewport behavior and image hints (31 existing candidates)
+
+เปลี่ยนเฉพาะmedia condition/sizesที่สัมพันธ์กับlayout ไม่เพิ่มstate/hook/provider/markupหรือเปลี่ยนProps/API โดยค่า64remของHeaderและ48remของphone-modeต้องตรงCSS; hero-bubblesไม่มีcallerอื่นในsrcจากการค้นครั้งนี้ จึงไม่แก้จนยืนยันว่ามีการใช้งานจริง
+
+- `src/components/layout/footer.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/components/layout/header.tsx` — ตรวจ/ปรับ runtime width query ตาม paired CSS; คง lifecycle/interaction เดิม
+- `src/components/layout/primary-navigation.tsx` — ตรวจ/ปรับ runtime width query ตาม paired CSS; คง lifecycle/interaction เดิม
+- `src/components/ui/focus-drag-scroll.tsx` — ตรวจ/ปรับ runtime width query ตาม paired CSS; คง lifecycle/interaction เดิม
+- `src/features/catalog/components/catalog-product-card.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/product-card.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/product-category-mock.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/product-gallery.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/product-model-viewer.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/product-storefront.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/product-usage-videos.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/products-index-carousel.tsx` — ตรวจ/ปรับ runtime width query ตาม paired CSS; คง lifecycle/interaction เดิม
+- `src/features/catalog/components/products-index-content.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/catalog/components/products-overview.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/about-page.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/contact-location-image.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/contact-page.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/content-directory.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/software-catalog.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/solutions-overview.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/video-gallery.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/content/components/weighing-builder.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/business-solutions.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/category-feature-panels.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/hero-bubbles.tsx` — ตรวจ/ปรับ runtime width query ตาม paired CSS; คง lifecycle/interaction เดิม
+- `src/features/home/components/hero-product-model.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/hero-product-ribbon.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/product-spotlight.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/section-two-video.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/sections.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+- `src/features/home/components/source-showcase.tsx` — ปรับ image sizes ให้ใช้ standard thresholds และขนาดslotจริง; ไม่เปลี่ยน src/alt/media
+
+#### Regression files (43 existing candidates +1 new)
+
+ไฟล์เดิมแก้ได้เฉพาะexpectation/viewport branchที่ผูกbreakpointเก่าและหลักฐานยืนยันว่าข้อกำหนดเปลี่ยนตามSpec คง old sample widths เช่น834ไว้ทดสอบvariantใหม่ ไม่เปลี่ยน834เป็น1024ทุกแห่งเพื่อเลี่ยงmobile assertion; ไม่แก้data/count/order/ธุรกิจหรือเอาassertionออกเพื่อให้ผ่าน ไฟล์ไม่รับผลกระทบให้run read-only
+
+- `tests/e2e/shared-ui-review.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/site-background.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/adaptive-nav.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/all-products-navbar.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/navbar-three-columns.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/navbar-overview-links.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/navigation-accessibility.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/navigation-hover-intent.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/navigation-reload.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/navigation.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/sitewide-navigation.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/site-navigation-surfaces.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/catalog-subcategory-navigation.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/category-destinations.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/home-category-navigation.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/focus-loop.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/hero-bubble-emission.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/hero-highlights.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/hero-scene.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/brand-opening.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/home-motion.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/business-solutions.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/category-feature.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/section-two-video.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/stories-section.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/products-full-overview.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/products-index-carousel.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/products-mobile-rail.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/product-detail.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/product-overview.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/product-category-mock.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/hicks-law-catalog.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/responsive-search-results.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/contact-locations.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/after-sales.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/solutions-overview.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/indicator-platform-compatibility.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/quotation.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/software-catalog.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/history-restoration.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/tooltip-contact-hydration.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/video-focus.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/floating-contact.spec.ts` — ตรวจ/แก้เฉพาะ breakpoint-dependent expectations ของflowเดิม
+- `tests/e2e/mobile-first-responsive.spec.ts` — สร้าง coverage ของboundary ±1px, header hitboxes/resize cleanup, publictemplate reflow และ CSS/JS behaviorตรงกันจากrendered UI
+
+#### Explicit read-only / preserved scope
+
+- `src/app/globals.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/components/ui/focus-drag-scroll.module.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/components/ui/product-image.module.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/features/content/components/solutions-source.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/features/home/components/brand-opening.module.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/features/home/components/home-motion.module.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/features/home/components/home-page.module.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/styles/tooltip.css` — อ่าน/ตรวจparity; ไม่มีviewport-width migrationที่จำเป็นจากinventoryนี้
+- `src/app/layout.tsx`, `src/app/(site)/layout.tsx` — อ่านentry points/theme/viewport; ไม่เสนอแก้layout markup
+- `src/features/site/data/primary-navigation.ts` — preserve owner data/labels/hrefs/ready-disabled/native-link contract; ไม่แก้menu treeในงานResponsive
+- `src/features/site/history/return-state.ts`, `src/stores/catalog-store.ts` — preserve state/history/inert contracts; ทดสอบผลจากresize ไม่refactor
+- `package.json`, lockfiles, `next.config.ts`, `playwright.config.ts`, `AGENTS.md`, `MEMORY.md` — ไม่เสนอแก้config/dependency/policy; ใช้runtime/scriptsเดิม
+
+### Steps / Phase gates
+
+- [x] อ่านคำสั่ง/กติกา/current stateและofficialTailwind Responsive v4.3; สำรวจ54CSS/108width rules/31TSX width clausesและเก็บprotected baseline446filesสำหรับตรวจว่ารอบวางแผนไม่แก้code
+- [x] เสนอstandard40/48/64/80/96rem,HeaderlgและCSS/JS/sizes coupling พร้อมmanifest/ผลกระทบ ข้อมูลครบสำหรับการให้เจ้าของตรวจ
+- [x] Gate0: เจ้าของอนุมัติSpec/PlanรวมHeader1024และทุกphaseโดยตรง17พฤศจิกายน2026 คงดีไซน์/CSSเดิม ทดสอบแต่ละphaseก่อนทำต่อ ไม่commit/push
+- [x] Phase0 — Frozen435source/test/config/docfilesนอกsourceพร้อมpendingdiff; livebaseline34routes/204viewportobservationsไม่มีoverflow; existingNavbar/Search30/30ผ่าน; Header1024 RED2/2ล้มเหลวตามold834contractก่อนimplementation
+- [x] Phase1 — Shared shell: base.css/header.css/footer.css/responsive.css/overlays.css/floating-contact.css/site-background/mascot และHeader/PrimaryNavigation/Footer queries ย้ายdesktopเริ่ม64remทั้งCSS/JS/background offsetในphaseเดียว; คงRSP-01/ownerNavbarsemantics ทดสอบทุกpublictemplateก่อนผ่านgate
+- [x] Phase2 — Home: globalhero/hero-cinematic/home-sections/category-feature/customer-map และHome modules/hints/focus-drag-scrollที่มีactivecaller ย้ายtabletเป็น48rem/large80rem; preserveopening/logo docking/dvh budget/media/reduced-motion/gesture ก่อนผ่านgate
+- [x] Phase3 — Catalog: catalog/storefront/product-detail globals +catalog/detailmodules/carousel phone mode/image sizes ทุกpubliccatalogtemplate; min735sceneเป็น48remและmin834header offsetเป็น64rem; preserve selection/focus/history/3D/Tooltip/Search/Comparison
+- [x] Phase4 — Content/forms: content.css และcontent/service/contact/about/software/solutions/guide/builder/quotation CSS/hints ใช้variantเดิมที่thresholdใหม่; คงform fields/businessrules ไม่submit/issue quotationจริง
+- [x] Phase5 — Integrated acceptance: ตรวจlayout-onlywidthqueriesในactivebundlesและruntimequeries/sizesตรงcontract,ต่อด้วยvisual/functionalmatrixและlocalproduction; สรุปsource/file manifests/known limitsและอัปเดตSpec/Plan
+
+ทุกphaseใช้gateเดียวกัน: source review → targetedtests → before/after/geometry → shared-shell smokeทุกpublictemplate → ผ่านจึงไปphaseถัดไป ถ้าfailให้แก้เฉพาะขอบเขตphaseหรือrollbackownedhunks ไม่มีpartial-success claimแทนทั้งเว็บ
+
+### Cascade / Implementation Rules
+
+- Mobile baseมาก่อนstandard min-width overridesที่เรียงขึ้น ย้ายค่าของselectorกลับไฟล์เจ้าของทีละกลุ่มและเอาเฉพาะold overridesที่แทนแล้วออกจากresponsive.css
+- คง globals.css import orderและresponsive.cssไฟล์เดิมที่โหลดท้าย ไม่ลบstylesheet/เปลี่ยนrouting/เพิ่ม!importantเพื่อแก้cascadeแบบกว้าง
+- ใช้computed stylesและactivecallerเป็นหลัก ไม่ถอดค่าจากunused rendererหรือถ่ายmax-widthblockขึ้นbaseทั้งชุดโดยไม่ตรวจreset
+- standardviewportwidthsใช้rem; height/orientation/pointer/reduced-motion/print/container queryคงdomainเดิม อย่าเปลี่ยน140pxplaceholdercontainerเป็นviewportbreakpoint
+- ถ้ารูปแบบเดิมไม่fitthresholdใหม่ ให้เก็บหลักฐานและเสนอSpec/Plan amendmentก่อนdesign change/new breakpoint; ไม่เปลี่ยนcontent/font/tokenเพื่อปิดปัญหา
+- ปรับnative sizesตามrenderedslotและfirst-match semantics ตรวจfallback/errorและไม่เพิ่มภาพ/ราคา/สเปกให้ข้อมูลว่าง
+
+### Verification Matrix / Commands
+
+- TierA: ทุกreadycanonicalpublicrouteที่deriveตอนPhase0 +Explore/not-found/errorที่มีจริง ที่320/390/768/1024/1440/1920px; รายละเอียดสินค้าครอบคลุมชื่อยาว/ไม่มีรูป/ไม่มีfacts/zero-price inquiryจากข้อมูลจริง
+- TierB: Home,Products,category,product-detail,Contact,Service,Guide/Builder,Quotation +Headerสองแบบ ตรวจ639/640/641,767/768/769,1023/1024/1025,1279/1280/1281,1535/1536/1537px; ตรวจoldcritical720/735/759/800/833/834/900/1069/1100/1400เพิ่มในownerComponent
+- TierC: phoneportrait/landscape667×375/844×390,tabletportrait/landscape,shortdesktop1440×600,normal/reduced motion และmouse/coarse-pointertouch; ไม่ใช้reduced motionอย่างเดียวรับรองanimation
+- Golden capturesต้องมาจากfreshsourceเดียวกับbaseline ก่อน/หลัง320/390/768/1024/1440/1920และopen-headerช่วง834/1024 ตรวจcolors/fonts/gutters/centers/aspect/order hitboxesไม่พึ่งscrollWidthอย่างเดียว
+- Dynamicvideo/canvas/animationใช้frame/geometryที่ทำซ้ำได้หรือmaskเฉพาะdynamicpixelsที่บันทึกชัด ห้ามซ่อนUI/error/focusเพื่อให้ภาพเทียบผ่าน
+- Functional gates: native menu links/disabled groups/hover intent/Tab/Escape/focus/inert/resize-cleanup,Homeopening/logo,carousel/mobile rail/swipe/shared-element,filters/search3imagestates/comparecap,detailDialog/Tooltip,Footerdisclosure,service tabs,guide/builder,form reflow/historyBack-Forward; ไม่เขียนข้อมูลธุรกิจ
+- Developmentและlocalproductionต้องผ่านresponsive/interactionของfinalsource; buildรันแบบไม่หยุดownerdevและตรวจCSSchunk/cascadeparity บันทึกsourcehash/URL/runtimeทุกชุด
+- หลังแต่ละphaseรันtargetedPlaywrightด้วยexistingconfig/Chromeและoutputแยกนอกsource; Phase5รัน `bun run typecheck`, `bun run lint`, `bun run test:catalog`, `bun run test:uat`, `bun run build`, `bun run format:check` และ `git diff --check` ด้วยNode24
+- Existing failuresที่มีมาก่อนต้องคงหลักฐาน/แยกscope ไม่เปลี่ยนproduct/navigationdataหรือweakeningassertion; newfailuresจากmigrationต้องปิดก่อนรับphase
+- PrimarybrowserคือlocalChromium/emulatedtouchตามenvironmentเดิม Safari/Firefox/physicaldevicesและrealzoomให้บันทึกผลเฉพาะที่ทำจริง; effectiveviewport/reflowไม่ใช้แทนคำรับรองrealbrowserzoom
+
+### Impact / Rollback
+
+- R1ในการimplementation: blast radiusครอบคลุมpublicwebsiteทั้งหมด โดยเฉพาะglobalcascade,Header44/48pxoffset,SSRmedia state,imagesและhistory ไม่deployหรือcommitจากapprovalวางแผนนี้
+- การย้ายHeader834→1024ทำให้834–1023ใช้mobilemenu; large layoutsที่เดิม1069/1101/1201ย้ายไป1280 ใช้variantเดิมช่วงต่างกัน ไม่มีpixel-identical guaranteeทุกoldwidth; นี่คือส่วนที่ต้องอนุมัติพร้อมSpec
+- Rollbackเฉพาะownedhunksของphaseจากtask-startsnapshotพร้อมCSS/pairedJS/testcontractในชุดเดียว ไม่gitreset/checkoutทั้งtree ไม่ย้อนownerNavbar/RSP-01 ไม่rollbackDB
+- ถ้าต้องแตะfileนอกmanifestหรือเปลี่ยนdesign/thresholdcontractให้amendSpec/Planก่อน; skipunusedcandidateได้โดยบันทึกเหตุผล ไม่ถือว่าได้รับอนุมัติเพิ่มfeature
+
+### Implementation gates — current run
+
+- Phase1: `phase1-gate.json`45passed/0failed/1optional skipped;34routes at320/390/1440 font/color/family/weight parity; owner navigation data unchanged. Existing keyboard-order fixture recorded separately, current visible-order keyboard tests pass.
+- Phase4: broad76-case diagnostic62passed/13failed/1optional skipped; current Contact/Guide/Quotation/Tooltip/solutions layout cases positive. Fixed actual Service short-height override and logical-box restoration omissions; replayed frozen Service CSS in browser gives identical computed layout for all5tabs at1280x720, zero style differences. New Service gate1/1passes all5tabs at12widths; old no-font/no-motion-wait Service fixture still samples active stagger animation (6–9px transient). Other failures reference previous Navbar/software data, not width migration. Final font/color parity102contexts0diff.
+- Phase3: `phase3.json`79passed/8legacy product data-or-removed-route failures/1optional skipped; `phase3-boundary.json`1/1pass26widths phone md/Header lg budgets; fresh102context font/color0diff. Search65px, current Comparison, native phone gestures/landscape/selection and carousel cases passed. Existing product tests expecting removed legacy detail markup/data were preserved.
+- Phase2: broad86-case diagnostic70passed/15failed/1optional skipped; focused corrected category responsive case passes and new16-width category/story clarity/ArrowRight gate1/1passes. Hero normal/reduced/short-height/cold-font/opening/scroll and Stories drag checks passed in diagnostic. Font/color comparison102route-width contexts has0differences; six Home screenshots captured. Failed legacy assertions reference prior data/actions/selectors; six no-JS Dev cases see existing Next hidden streamed container and require production rerun. No app/data redesign made to satisfy stale fixtures.
+- Evidence root: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/mobile-first-run/`.
+
+### Planning verification — historical baseline
+
+- ตรวจsourceจริงและofficialdocsแล้ว เก็บbreakpoint-inventory.json/protected-before.jsonนอกsource; ตัวเลขinventoryเป็นsourceoccurrences ไม่ใช่จำนวนruntimepasses
+- ยังไม่ได้รันBrowser/build/testsใหม่และยังไม่ได้แก้applicationในงานนี้ หลักฐานRSP-01/previousauditใช้ประกอบความเสี่ยง ไม่ใช้แทนการรับรองmigration
+- Final planning checks: ตรวจexisting manifest pathsครบ, newmigrationtestยังไม่สร้าง, scopedPrettier/whitespaceผ่าน; protected446filesตรวจพบ5sourcefilesในกลุ่มNavbarเปลี่ยนระหว่างวางแผน จึงบันทึกเป็นconcurrent changesในplanning-receipt.jsonโดยไม่แก้/ย้อนกลับ รอบนี้เครื่องมือของงานนี้เขียนเฉพาะspec.md/plan.mdและexternalplanningartifacts
+- Next.js feedback review: ไม่มีqualifying framework issueใหม่จากงานวางแผน
+
+### Final verification / Limits
+
+- Node24: Typecheck/Lintผ่าน, UAT28/28, build706pages. Catalog198/202มี4independentfixtures failuresจากconcurrentPOSrelatedlinks2removals (92→90); preservefiles/data ไม่ทำassertionให้อ่อนลง
+- FinalDev108/109ผ่าน; Comparison1timeoutในrunรวม แต่rerunทั้ง4/4ผ่านโดยไม่แก้ไฟล์. ProductionResponsive/Search49ผ่าน;6No-JavaScript failuresแยกจากscope. Newresponsive29/29ทั้งDev/Production;ไม่มีskipในfinalruns
+- 31readyHeaderdestinations×6widths=186 observations และ17templates×29widths=493ต่อenvironment; shortscreen8templates×5shapes×2motion. ActiveCSS10uniquewidthconditionsเป็นstandardremทั้งหมด; Footer/not-found40contextsผ่าน
+- FrozenCSS replay1522elements/10familiesที่320/390/1440ไม่มีfont/color/boxdifferences;925historicaltextmatchesไม่มีfont/color/family/weightdiff. Historicalcapture35/204contextsมีcopyว่างก่อนstreamพร้อม จึงไม่ใช้รับรองทุกข้อความ; finalreadinessassertionsและCSSreplayปิดช่องcoverageนี้อย่างมีขอบเขต
+- Source hash stableหลังbuild snapshot;43CSS/28TSX/14existingE2E/newmatrix1ในmanifest. คง9concurrent pathsที่ไม่ใช่งานนี้; dependency/config/ownerNavbarchangesไม่ถูกย้อน
+  -42productionfullpagecaptures+4openHeadercaptures; report/receiptที่ mobile-first-run/verification-report.md และ verification-receipt.json. NoSafari/physicaldevice/realzoom/fullWarehousefaultcoverage;ไม่มีเลขquotationจริง/commit/push/deploy
+- Nextfeedbackreview: noqualifyingnewframeworkissue. StreamedHTMLใช้inlineScriptDOMswapตามinstalledstreamingdocs;NoJSlimitationคงไว้ชัดเจน
+
+- Final format/diff: scoped88filesผ่าน, fullformatcheckเตือนMEMORY.mdเดิมที่byte-identicaltask-start จึงไม่แก้read-onlyfile; gitdiffcheckผ่าน. Cleanupownpreview3112/PID38128+sunford-mfเรียบร้อย;3000/PID16732ยังlisten
+
 ## Plan: Fix product tooltip and Contact hydration before UAT delivery (2026-11-17)
 
 Approval: owner explicitly requested both fixes/retest/commit/push, then selected inclusion of completed parallel work in separate commits. Application edits follow this concrete manifest; no additional approval needed within it.
@@ -7386,3 +7621,469 @@ Files: only the new Desktop XLSX, exact timestamped source backup, temporary sna
 - `verify-owner-decisions.cjs` on Node24.22.1: 424 protected files unchanged; all 24 images and the original technical manifest retain their SHA-256; 18 technical passes + 2 owner-resolved decisions = 20 closed; 71 ready/33 disabled/29 unique ready destinations.
 - `verify-plan.cjs` in local Chrome: 20 controls, 18 technical-pass and 2 resolved markers, private progress changes, legacy note preservation and old limited-state migration passed. No horizontal overflow at 320/390/736/1024px; no page errors.
 - Prettier checks for `spec.md`, `plan.md` and the daily report, plus `git diff --check -- spec.md plan.md`, pass after final documentation updates. No source/test/dependency changes or deployment.
+
+## Plan: Responsive audit and scoped search-thumbnail correction (2026-11-17)
+
+### Files
+
+Audit/planning ที่ผู้ใช้อนุญาตในรอบนี้:
+
+- `spec.md` — เพิ่ม Spec, หลักฐาน audit และสถานะ implementation pending โดยรักษางานเดิม
+- `plan.md` — เพิ่มขอบเขตแผนนี้และผลตรวจจริง โดยไม่แก้ checklist ของงานอื่น
+- รายงานและ script/JSON/screenshots นอก source ใน `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/responsive-audit/` — ผลงาน audit ที่เปิดตรวจได้
+
+Implementation manifest ที่เจ้าของอนุมัติ17พฤศจิกายน2026 พร้อม Responsive/Search retest; ไม่ commit/push:
+
+- `src/styles/overlays.css` — แก้เฉพาะ direct Search-result Thumbnail/image placeholder และ text flex sizing; เป็น global stylesheet แต่ selector ต้องจำกัดใน `.search-results` เท่านั้น
+- `tests/e2e/responsive-search-results.spec.ts` — สร้าง regression ของ image/no-image/load-error และชื่อยาว, page-only results, Header สองแบบและ interaction ที่ได้รับผลกระทบ
+- `spec.md`, `plan.md` — บันทึกการอนุมัติจริงก่อน implementation และผลตรวจจริงหลังแก้
+
+### Steps
+
+- [x] อ่าน applicable instructions, observer memory, current project state, brand tokens และ active renderers; เก็บ baseline hashes ก่อนตรวจ
+- [x] ตรวจ viewport meta, breakpoint usage, fluid layout/typography และ container queries จาก source
+- [x] ตรวจ 33 routes /411 viewport observations,49 short-height observations,เมนูยาวและ simulated-touch subset พร้อมคัด false positives
+- [x] ยืนยัน RSP-01 ผ่าน source/computed flex/geometry/ภาพ ทั้ง Header Home และ interior โดยไม่แก้ application
+- [x] จัดทำรายงาน Spec และ Plan เพื่อให้ผู้ใช้ตรวจ; implementation ถูกเว้นไว้ตามคำขอ
+- [x] ยืนยัน Spec เป็น Ready to Code และมีการอนุมัติ manifest นี้จริงแล้วก่อนแก้ application/test code
+- [x] อ่าน installed Next CSS/Playwright guides และ official Tailwind flex/min-width v4.3; เก็บ438src/tests hashes, CSS snapshot และ existing4docs diff แยกนอกsource ตรวจ Node24.22.3 แล้ว คงdev3000
+- [x] เพิ่ม regression ให้จับขนาด Thumbnail ที่ขยายผิดก่อนแก้ คง failing evidence แยกจากผลหลังแก้
+- [x] แก้เฉพาะ overlays.css: Thumbnail คง65×65px ทั้ง image/placeholder; text flexใช้พื้นที่ที่เหลือและ wrap ได้; page-only result ไม่ถูกบังคับเว้นช่อง Thumbnail
+- [x] ตรวจ targeted browser regression ที่320/390/600/768/834/1440 และ667×375 พร้อม before/after320/390/834/1440; ไม่มี force click/suppress errors/เปลี่ยนข้อมูลสินค้าเพื่อผ่านเทสต์
+- [x] ตรวจ Search จากสอง Header รวมค้นหา/ล้าง/เปิด canonical result/close/Escape/focus และ comparison overlay ที่ใช้ stylesheet ร่วมกัน
+- [x] รัน `bun run typecheck`, `bun run lint`, scoped Prettier และ `bun run build` โดยไม่หยุดหรือรบกวน dev server ของผู้ใช้ หากต้องแยก build output ให้ตรวจ installed configuration และบันทึก runtime/source parity ก่อน
+- [x] อัปเดตผลตรวจ/สถานะใน spec.md/plan.md ตรวจ formatting รอบสุดท้ายและ `git diff --check`; ไม่ commit/push/deploy เว้นแต่ได้รับคำสั่งเพิ่ม
+
+### Impact / Rollback
+
+- Audit ปัจจุบันเป็น R2: เพิ่มเอกสารและหลักฐานเท่านั้น ไม่เปลี่ยน application behavior; ย้อนกลับเฉพาะ appended audit sections/artifacts ของงานนี้ได้
+- RSP-01 หลังอนุมัติมีผลต่อ Search overlay ที่เปิดได้หลายหน้า ความเสี่ยงคือ selector กว้างไปโดน text column, page-only results หรือ placeholder อื่น จึงจำกัด direct-child selectors ใต้ `.search-results` และตรวจทั้งสอง Header
+- ไม่เปลี่ยน ProductImage/Modal/shared base styles, font/color/gap, navigation/data/history/quotation/API contracts และไม่เพิ่ม wrapper/state/dependency
+- Rollback implementation: คืนเฉพาะ CSS hunks ของ RSP-01 และไฟล์ regression ใหม่ ไม่ reset/revert งานอื่นหรือ commit ที่เกิดพร้อมกัน ไม่ต้อง rollback database
+- การย้ายระบบ breakpoint/Mobile-first ทั้งเว็บเป็น scope expansion ที่ไม่อยู่ในแผนนี้
+
+### Verification Results
+
+- Local Chromium: baseline routes21×15=315 + enabled Header destinationsเพิ่มเติม12×8=96 รวม411 geometry observations/33 routes; ทั้ง30 internal Header hrefs รวมHomeถูกตรวจ ทุกหน้าHTTP200/document overflow0/header-outside0
+- Short-height:7routes×7widths สูง375px =49observations; document overflow0 และไม่พบ Home Hero heading/description/CTA ถูก clip จาก geometry ที่ตรวจ
+- Interior menu: last-link scroll/hit-test ผ่าน320/390/667/833×375 และ Escape คืน focus; simulated touch normal motion ทั้ง Home/Product ที่320/390 ผ่านSearch/menu/Escape; spec Dialog เปิด/ปิดและอยู่ในviewportที่320×568/667×375
+- RSP-01 RED evidence: no-image thumbnail81.89pxที่320/146.83pxที่390; รูปจริง65px; computed flex1 1 0% ตรงกับ global div rule รูปแบบนี้ยังไม่แก้ในรอบ audit
+- First touch harness timeout เพราะ Home ใช้ native summary แต่ locator เลือก button; ตรวจ DOM และแก้เฉพาะ external audit script แล้ว rerunผ่าน เก็บ failed transcriptไว้ ไม่ถือเป็น application failure
+- Source/test SHA-256:438files ตรงtask-start baseline หลังBrowser audit; มี concurrent Git history/document updates ซึ่งรักษาไว้
+- Audit JSON/report links อยู่ในโฟลเดอร์หลักฐาน ไม่อ้างว่า observations เป็น full E2E certification; ไม่ตรวจทุกสินค้า/flow/Safari/deviceจริง/keyboard/browser zoom ไม่ส่งฟอร์มหรือเขียนข้อมูล
+- Application lint/typecheck/build/full existing E2E ยังไม่ได้รันในรอบเอกสารนี้ ไม่มี implementation ผล formatting/diff/hash final audit จะบันทึกใน external verification receipt ก่อนส่งมอบ
+
+### RSP-01 Implementation Results — 2026-11-17
+
+- Approved manifest เดิม:1CSSfile +1newregression +spec/plan; ไม่แก้ Header/ProductImage/Modal/sharedbase/dependencies หรือเขียนข้อมูลธุรกิจ ไม่มี commit/push
+- RED ก่อนแก้:1targetedcase failed ด้วย placeholder146.83pxที่390; no-image text109.17px คง red.json/trace/screenshot แยกจากgreen
+- CSS: direct Thumbnail flex0 0 65px; แยก text selector ออกจาก placeholder และใช้ min-width0/overflow-wrap:anywhere; จำกัด Thumbnail padding4px≈6%ของ65px เพื่อไม่ให้ percentage padding อ้างอิงแถวใหญ่
+- Development tests16/16newcases +2/2existingcomparison ผ่าน; Local Production tests18/18ผ่าน ไม่มี skipped/flaky; บังคับ image load failure เฉพาะ network ใน Browser ตรวจ fallback geometry จริง ไม่เขียน Warehouse
+- Browser matrix2Headers×320/390/600/768/834/1440×900 และ667×375 ตรวจ3image states, page-only content, full names, document/Dialog containment และ Escape/focus;2normal-motion simulated-touch flowsตรวจ clear/empty/result navigation/close
+- Node24.22.3: `bun run lint`, `bun run build`706pages และ `bun run typecheck`หลังbuild ผ่าน Installed Next config ยืนยัน devใช้ `.next/dev` แยกจากproduction `.next`; dev3000 PID16732คงไว้ ใช้preview3112เฉพาะงานนี้
+- หลักฐาน4widths before/afterยืนยัน65pxทุกขนาดและพื้นที่ข้อความเพิ่ม; sourcebaseline438filesพบ overlays.cssเปลี่ยนโดยงานนี้และprimary-navigation.tsแก้ต่างหากซึ่งรักษาไว้ สถานะไฟล์อื่นก่อนเริ่มไม่ถูกย้อนกลับ
+- Next.js feedback review: ไม่มี qualifying framework issue ใหม่จากงานนี้; image error ในเทสต์เป็นการจำลองที่ตั้งใจเพื่อทดสอบ fallback
+- รายงาน/JSON/logs/images นอกsourceใน `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/rsp-01/`; ไม่รับรองSafari/อุปกรณ์จริง/software keyboard/browser zoomหรือallwebsiteflows
+
+## Plan: Record Tailwind documentation as the standing design reference (2026-11-17)
+
+### Files
+
+- `AGENTS.md` — เพิ่มกติกาอ้างอิง official Tailwind docs ใน Design & Brand Consistency พร้อมการบันทึกค่าที่เลือกและการรักษาแบรนด์/Stack
+- `MEMORY.md` — บันทึกคำสั่งเจ้าของเป็น standing design-reference policy สำหรับงานถัดไป
+- `spec.md` — บันทึก Scope และการอนุมัติเอกสารนี้ แยกจากการแก้แอปที่ยังไม่อนุมัติ
+- `plan.md` — บันทึกขั้นตอนและผลตรวจเอกสาร
+
+### Steps
+
+- [x] ตรวจคำสั่ง/ภาพแนบ กติกาปัจจุบัน และ official Docs/Theme variables; ยืนยันว่าเป็นการบันทึกแนวทาง ไม่ใช่คำสั่งติดตั้ง framework
+- [x] บันทึกการอนุมัติเอกสารและเพิ่มกติกาใน AGENTS.md/MEMORY.md โดยรักษาแบรนด์ ค่าปัจจุบัน และขอบเขตที่อนุมัติ
+- [x] ตรวจ Prettier และ whitespace diff ของทั้ง4ไฟล์ ยืนยันไม่มี application/test/dependency change
+
+### Impact / Rollback
+
+- R2 เอกสารเท่านั้น มีผลต่อการอ้างอิงข้อมูลในการออกแบบงานถัดไป ย้อนกลับเฉพาะหัวข้อ/บรรทัดของนโยบายนี้ ไม่เปลี่ยนค่ากลางหรือไฟล์แอปในปัจจุบัน
+- งานออกแบบถัดไปต้องเปิดหัวข้อที่เกี่ยวข้องฉบับปัจจุบันและบันทึกที่มาใน Spec; การแก้แอปยังใช้กระบวนการอนุมัติเดิม
+
+### Verification Results
+
+- Official docs ที่เปิดวันที่17พฤศจิกายน2026 แสดง v4.3 และมี Core Concepts ตรงกับภาพแนบ ไม่ตั้ง v4.3 เป็นเวอร์ชันถาวร
+- `bunx --no-install prettier --check AGENTS.md MEMORY.md spec.md plan.md` และ `git diff --check -- AGENTS.md MEMORY.md spec.md plan.md` ผ่าน; Git status มีเฉพาะ4เอกสาร ไม่มี application/test/dependency change ไม่รัน Browser/build เพราะไม่มี runtime change
+- Next.js feedback review: ไม่มี qualifying framework issue ใหม่จากงานเอกสารนี้ จึงไม่ส่งรายงาน
+
+## Plan: Direct Navbar overview links and matching chapter labels (2026-11-17)
+
+### Files
+
+- `src/features/site/data/primary-navigation.ts` — remove each parent's duplicate overview destinations, preserving non-parent destinations and readiness.
+- `src/components/layout/header.tsx` — reuse mobile link plus disclosure row for Services as for other main entries.
+- `src/components/layout/primary-navigation.tsx` — make Services a normal main anchor on desktop/mobile; preserve separate mobile disclosure and desktop hover/keyboard.
+- `src/features/catalog/components/products-overview.tsx` — resolve image captions from the matching existing Navbar labels; leave category data, headings and routes unchanged.
+- `tests/e2e/navbar-overview-links.spec.ts` — add focused regression for direct parent links, submenu exclusion, mobile disclosures and chapter-label parity.
+- `spec.md` / `plan.md` — append current scope/owner confirmation and real results without overwriting prior work.
+
+### Steps
+
+- [x] Read current source, Spec/Memory and installed Next Link guide; clarify caption target with owner.
+- [x] Record concrete7-file scope, actual owner request/confirmation and rollback before application edits.
+- [x] Remove parent duplicates in Navbar data.
+- [x] Normalize main anchors and separate mobile disclosures in existing renderers without stylesheet edits.
+- [x] Derive chapter captions from existing Navbar names.
+- [x] Run focused browser cases for all8mainitems, bothrenderers and390/834/1440; verify chapter captions on existing category routes.
+- [x] Run TypeScript/scopedESLint/Prettier/diff and source invariants, then record actual results and limits.
+
+### Impact / Rollback
+
+- Shared renderers affect every page. Retain native modifier/Enter navigation, submenu hover/focus/ArrowDown/Escape and mobile scroll/focus/inert behavior.
+- No style/token/API/schema/dependency change. Revert only owned hunks/new regression file. Preserve pre-existing primary-navigation and responsive-search changes.
+
+### Verification Results
+
+- Implemented all approved steps; final targeted11/11browsercases, TypeScript,scopedESLint,Prettier,diff and source-invariant checks passed.
+
+### Verification Results — 2026-11-17
+
+- Focused Chromium regression `navbar-overview-links.spec.ts`:11/11passed in one final run (3.0m), no retries/skips. Home and Contact at390/834/1440 cover all8native main links, actual click/Enter navigation, separate mobile disclosure, desktop hover/ArrowDown/Escape and parent-link exclusion. Services Control-click opens its overview in another tab without navigating the origin page.
+- Five category overview pages at all3widths show chapter captions matching current Navbar labels; headings remain canonical. The existing benchtop chapter still opens its original canonical listing. Screenshots saved outside source;390chapter and834submenu images visually inspected.
+- Source invariants:8main menus,92submenu positions (68ready/24disabled), no parent-self href in any submenu column. Retained different-child all-items link for consumables, three columns and existing unavailable states.
+- TypeScript `--noEmit --incremental false`, scopedESLint, scopedPrettier and `git diff --check` passed. Installed available CLI Node22 was used for checks; the existing development server was reused without changing runtime/dependencies.
+- Initial new-harness failures are retained separately: caption assertion included ProductImage's accessibility placeholder text, and closed Home panels retain a DOM bounding box while inert/aria-hidden. Corrected only test selectors/state assertion; no application workaround.
+- Evidence: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-direct-overview-20261117-final/`. Initial failed run remains in the same parent directory without the `-final` suffix.
+- Current State / Contract: main name navigates to its current href; disclosure is a separate mobile action; dropdowns omit links to their own parent. Chapter display names follow Navbar while category data/routes/headings stay unchanged.
+- Limits: localChrome/emulated widths only; no fullrepositoryE2E/build/production/Safari/physical-device certification, commit/push/deploy or database writes. Older historical Navbar count/tree/Services-button expectations were not rewritten under this focused7-file scope.
+- No qualifying verified Next.js framework issue remained for the feedback reporting pass. Task-observer review found no new reusable lesson beyond existing fixture/Unicode guidance.
+
+## Plan: Short single-line Navbar and overview category names (2026-11-17)
+
+### Files
+
+- `src/features/site/data/primary-navigation.ts` — replace only approved nine phrases, including repeated occurrences.
+- `src/features/catalog/components/products-overview.module.css` — scoped intrinsic chapter item width with existing94/108pxminimum and nowrap final caption span.
+- `tests/e2e/navbar-overview-links.spec.ts` — extend chapter parity to320px; assert one-line geometry, no label overlap/clipping, unchanged image sizes and last-item scroll.
+- `spec.md` / `plan.md` — record approval/scope/reference and actual verification results.
+
+### Steps
+
+- [x] Confirm owner-approved nine-label table and single-line/scroll proposal; inspect existing tokens/styles and current Tailwind reference before edits.
+- [x] Extend meaningful chapter layout regression and retain pre-change failure.
+- [x] Apply approved label changes and scoped CSS.
+- [x] Run focused six cases:4chapter-matrix cases at320/390/834/1440 plus2Home/ContactNavbar cases at390; capture relevant screenshots.
+- [x] Verify unchanged href/readiness membership and labels, TypeScript, scopedESLint, Prettier and diff.
+- [x] Update results/checkboxes and status; no commit/push/deploy.
+
+### Impact / Rollback
+
+- Existing shared overview CSS Module affects chapter rails only. Do not change global CSS, Header logic, tokens, breakpoints or product data.
+- Undo only this task's short-label/intrinsic-width/nowrap hunks and regression additions, preserving all preceding work.
+
+### Verification Results
+
+- Completed; current6case acceptance across2runs is documented below.
+
+### Verification Results — 2026-11-17
+
+- Approved9phrases updated in11Navbar positions; before/after source assertions confirm unchanged hrefs, disabled states, column membership and main labels. Existing caption resolver uses the same shortened labels.
+- Real pre-change layout failure retained:390px “คำนวณราคาหน้าร้าน” caption measured36px against18px single-line height. The initial separate /products probe used a chapter selector on its different custom index renderer; corrected the test scope to the5actual category overview rails before accepting the real layout failure.
+- Final chapter matrix4/4passed in48.4s: all5category overviews at320/390/834/1440 (20page/viewport combinations). Each caption fits one line and its item without clipping; images retain90×58px or100×72px; horizontal rails can reach the final category; no document overflow; canonical chapter navigation and page headings remain unchanged.
+- Home and Contact direct-navigation/disclosure checks at390 both passed on current application source. Current acceptance is6latest passing cases across2runs (2main-navigation +4chapter cases), not a single clean6-case run.
+- The earlier6-case run passed5and failed one new scroll assertion: some narrow rails overflow only because of trailing padding while the last item is already visible. Updated the test to explicitly exercise scrollTo-end before asserting scrolling; reran all4chapter cases successfully. No application workaround.
+- TypeScript, scopedESLint, scopedPrettier and diff checks passed. Final screenshots of320scales and1440accessories visually inspected.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-short-captions-20261117-chapters-final/; main-navigation passes are in sunford-short-captions-20261117-final. Red proof is separately retained in sunford-short-captions-20261117-red-layout.
+- CSS changes are limited to intrinsic chapter item width with existing94/108pxminimum and white-space:nowrap on the final caption span. Existing fonts, gaps, image sizes and breakpoints remain.
+- Existing /products custom index carousel is outside this chapter-rail task. No fullrepositoryE2E/build/production/Safari/device/commit/push/deploy claim or database changes.
+- Next feedback / task-observer pass: no new qualifying framework issue; test-scope and scroll-assumption corrections stayed in verification code.
+
+## Task: Clean unused output build artifacts (2026-11-17)
+
+- [x] Use the owner's explicit cleanup approval; restrict candidates to generated build roots inside output.
+- [x] Verify 72-hour age and current process cwd/arguments; refresh process checks and probe Next lock files before each removal.
+- [x] Preserve root manifests, traces and diagnostics separately; hash retained reports, images and source snapshots before deletion.
+- [x] Remove exactly 53 approved inactive build roots using literal paths without following reparse targets or stopping user processes.
+- [x] Verify all retained-file/archive hashes, removed paths and preserved core project directories; record measured before/after sizes.
+- Receipt: `output/_build-evidence-20261117-134217-03ed7a/cleanup-receipt.md`.
+
+## Plan: Search phase 1 — ranking, normalization and multi-word matching (2026-11-17)
+
+Status: "Complete — approved search implemented and verified locally; no commit/push"
+
+### Files
+
+รอบเสนอแผนแก้เฉพาะ `spec.md` และ `plan.md` ต่อมาเจ้าของอนุมัติ implementation7ไฟล์ด้านล่างแล้วตาม Approval Record ใน Spec:
+
+| Path                                                   | การเปลี่ยนแปลงหลังอนุมัติ                                                                                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/catalog/data/catalog-search.ts`          | สร้าง pure normalization/index preparation/product ranking/page matching helpers ตาม Spec                                                   |
+| `src/features/catalog/types.ts`                        | เพิ่ม warehouseModelCodes ที่เป็น optional ใน OverlayProduct เท่านั้น ใช้ข้อมูลที่ client ส่งอยู่แล้ว                                       |
+| `src/features/catalog/components/catalog-overlays.tsx` | แทน filter เดิมด้วย helper, memoize preparation ตาม products/categories, คง limits/count/UI/Comparison และจัด whitespace query เหมือน empty |
+| `tests/catalog/catalog-search.test.ts`                 | สร้าง unit regression ของ ranking, normalization, AND, identifiers, missing fields, stable ties/nonmutation และ rank-before-limit           |
+| `tests/e2e/catalog-search-ranking.spec.ts`             | สร้าง Browser acceptance ของผลจริงทั้งสอง Header รวม interactions/viewport; ไม่ mock ข้อมูลธุรกิจเป็นของจริง                                |
+| `spec.md`                                              | บันทึกการอนุมัติจริงและ final matching/data contract/หลักฐาน                                                                                |
+| `plan.md`                                              | บันทึก checklist ผลตรวจและข้อจำกัดจริง                                                                                                      |
+
+- ไม่มีการลบไฟล์ ไม่มี server/layout/Navbar/global CSS/API/DB/dependency changes ใน manifest นี้
+- ไฟล์ทดสอบเดิมอ่าน/รันได้ แต่ไม่แก้ fixture ที่ไม่เกี่ยวกับงานนี้ ถ้าพบ expectation เก่าที่ขัด contract ใหม่ ให้แยกผลพร้อมเสนอ amendment ที่มี path ก่อนขยาย manifest
+
+### Steps
+
+- [x] ตรวจ instructions, current Spec/Memory, active Search ทั้งสอง Header, client projection/model provenance และ package/test commands
+- [x] บันทึก proposed tiers/normalization/AND/identifier exceptions/empty/count/limit และแยก global Search จาก category finder
+- [x] เตรียม exact file manifest, acceptance, impact และ rollback โดยไม่แก้ application/test/config/dependency
+- [x] ได้รับ owner approval ของ Spec/Plan นี้ และบันทึกข้อความอนุมัติจริงก่อน implementation
+- [x] เก็บ source hashes/Git state รอบใหม่ รวมงาน Mobile-first/Navbar/Search CSS ที่มีอยู่; อ่าน installed Next docs ที่เกี่ยวกับ Client boundary อีกครั้งเมื่อบริบทเปลี่ยน
+- [x] เก็บ red behavioral probe ของ filter เดิมก่อนแก้: descriptionมาก่อน exact, hyphen identifierไม่พบ และคำข้าม fieldไม่พบ; จากนั้นเพิ่ม unit casesของcontractใหม่ ไม่อ้างว่า synthetic probeเป็นข้อมูลธุรกิจจริง
+- [x] สร้าง helper และ optional type ตาม manifest แล้วเชื่อม Overlay โดยไม่เพิ่ม state/effect/request/payload; ใช้ tier tuple กับ original index แทนการสะสมคะแนนจากคำซ้ำ
+- [x] ตรวจ unit matrix: SKU exact/model exact/name exact/prefix/name AND/mixed fields, reversed tokens, duplicates, Thai marks, safe separator rules, numeric/decimal/slash distinctions, empty/missing metadata/nonmutation/ties และ exact result หลัง40ตำแหน่ง
+- [x] Browser ใช้รายการจริงเพื่อเลือก SKU/model/name ที่มีหลักฐานใน runtime แล้วเทียบ expected first result กับ canonical slug; ใช้ fixtures เฉพาะ unit เพื่อทดสอบตัวลวง/ความขัดแย้งที่ไม่มีใน catalog จริง
+- [x] ตรวจ Home และ `/products/wps10ks` ที่320/390/834/1024/1440 รวมเปิด/พิมพ์/ล้าง/empty/no-result/page-only/click/Escape/focus; เก็บภาพตัวแทนผลลัพธ์/geometryและ page errors ตรวจ request ว่าไม่มี per-keystroke search fetch
+- [x] รันคำสั่ง verification ด้านล่างตาม Node24, ตรวจ scope hashes และบันทึกข้อจำกัด/ผลจริงในเอกสาร รวม legacy failuresที่ไม่แก้นอกscope
+
+### Verification Commands / Evidence
+
+- Unit/catalog: `bun run test:catalog` รวม `catalog-search.test.ts` และ client-payload/catalog contract regressions
+- Focused Browser: `bun run test:e2e -- tests/e2e/catalog-search-ranking.spec.ts tests/e2e/responsive-search-results.spec.ts tests/e2e/compare-mode.spec.ts --project=chromium` ใช้ output directory เฉพาะงานที่ไม่ทับผลทดสอบอื่น
+- Config ปัจจุบันมี project ชื่อ chromium และรองรับ PLAYWRIGHT_CHANNEL; ใช้ installed Chrome ผ่าน PLAYWRIGHT_CHANNEL=chrome เมื่อจำเป็น ตั้ง PLAYWRIGHT_BASE_URL ให้ตรง runtime ที่ตรวจแล้วก่อนรัน เพราะ local default ของ config เป็น port3001 ไม่อนุมานว่าเป็น dev3000
+- Comparison regression อยู่ที่ `tests/e2e/compare-mode.spec.ts`; ไม่เพิ่มหรือเปลี่ยน comparison behavior
+- Static: `bun run typecheck`; `bunx eslint src/features/catalog/data/catalog-search.ts src/features/catalog/types.ts src/features/catalog/components/catalog-overlays.tsx tests/catalog/catalog-search.test.ts tests/e2e/catalog-search-ranking.spec.ts`
+- Format: scoped `bunx prettier --check` กับ7ไฟล์ใน manifest; `git diff --check`; ตรวจ source hashes/diff ว่ามีเฉพาะ owned hunksและรักษา concurrent changes
+- ถ้าพบ failure ก่อนเริ่มหรือจากงานคู่ขนาน ให้บันทึกแยกจาก search defect และตรวจ focused tests บน source ล่าสุดอีกครั้งก่อนส่งมอบ ไม่อ้าง full-suite/build/deploy จากผล focused run
+- ไม่กำหนด benchmark latency ที่ไม่มี baseline: เก็บพฤติกรรมพิมพ์ต่อเนื่องและ runtime errors บน catalog จริงก่อน หากมีปัญหาประสิทธิภาพต้องวัดก่อนเสนอ backend/index เพิ่ม
+
+### Impact / Rollback
+
+- Shared impact: global Search ในทั้ง Home/interior จะเปลี่ยนสมาชิกผลเมื่อค้นหลายคำและเปลี่ยนลำดับตาม relevance; count/limit และชื่อ/ราคา/รูป/ลิงก์ยังใช้ข้อมูลเดิม
+- ความเสี่ยงหลัก: รุ่นเลขใกล้กันจับผิด, description ดันรุ่นไม่ตรงขึ้นก่อน, AND กรองผลเกิน, input mutation กระทบ Comparison และผลหลัง40หายก่อน ranking; ครอบคลุมด้วย contrastive unit assertionsและ Browser สอง Header
+- งาน category finder/Responsive/Navbar ไม่ถูกแก้โดยงานนี้ หาก source รุ่นล่าสุดเปลี่ยนระหว่างตรวจ ให้บันทึกและรัน acceptance ที่ได้รับผลกระทบซ้ำ
+- R2: ย้อนเฉพาะ helper/type/Overlay/test hunks ของงานนี้กลับไป filter เดิม เก็บ owner changes/RSP-01/งานย้าย Responsive ไว้ ไม่มี DB migration หรือ business-data rollback
+
+### Planning Evidence — Historical
+
+- ตรวจ current source แล้วว่า model codes อยู่ใน client projection จริง แต่ยังไม่มี implementation หรือผลทดสอบของ algorithm ใหม่
+- บันทึก protected-file hashes ก่อนแก้เอกสารใน `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/search-phase1-plan/planning-baseline.json` เพื่อพิสูจน์ planning scope
+- ตรวจหลังจัดทำเอกสาร: protected446ไฟล์ hashเดิมทั้งหมด ไม่มี source/test file ใหม่ และเนื้อหา spec.md/plan.md ก่อนหัวข้องานนี้ตรง baseline เดิม; หลักฐาน `search-phase1-plan/planning-verification.json` ใน directory เดียวกัน accepted=true
+- Prettier เฉพาะหัวข้อ Search ใหม่ในทั้งสองเอกสาร และ `git diff --check -- spec.md plan.md` ผ่าน; full-document Prettier check พบรูปแบบส่วนเดิมที่ค้างอยู่ จึงไม่ format/เขียนทับหัวข้องานอื่น ไม่มีการรัน algorithm tests/build เพราะยังไม่สร้าง implementation
+- Next feedback / task-observer review: ไม่พบ framework issue หรือบทเรียนซ้ำใหม่ที่ต้องส่งรายงานจากการอ่าน source และจัดทำแผนนี้
+- สถานะพร้อมเสนอเจ้าของ ไม่ใช่การอนุมัติอัตโนมัติ ไม่ commit/push/deploy
+
+### Verification Results — Implementation Complete
+
+- Application manifest3ไฟล์และ testsใหม่2ไฟล์ครบ; owned existing sourceเปลี่ยนเฉพาะ Overlay/typesตาม baseline ที่เก็บก่อนimplementation ไฟล์ใหม่ `tests/e2e/mobile-first-responsive.spec.ts` และการแก้ Header/shared styles จากงาน Mobile-first ปรากฏระหว่างตรวจ ถูกเก็บแยกจากขอบเขต Search ไม่แก้/ลบหรือย้อนงานเหล่านั้น
+- Behavioral RED3casesของoldfilterอยู่ใน `red-old-filter.json`; unitใหม่17/17และ affected unit/client-payload/decision-factsรวม29/29ผ่าน รายละเอียด `affected-unit.log`
+- Full catalog:202กรณี195ผ่าน/7ไม่ผ่าน เฉพาะ Navbar legacy expectationsจาก `primary-navigation.test.ts`; test/Navsourcesตรง baselineเดิม ไม่มี search-helper import หรือ search-behavior assertionใน7กรณีนี้ ผลเดิมคงไว้ใน `catalog.log` ไม่แก้ fixtureนอกmanifest
+- Browser combined run34กรณี:30ผ่านจากSearchใหม่14และRSP-01เดิม16;4ไม่ผ่านจาก `compare-mode.spec.ts` ซึ่งอ้างโครงสร้าง `/products` ก่อนเปลี่ยนOverview ไม่ใช่ clean34run หลักฐาน `browser-final.json` เก็บทั้งผ่านและไม่ผ่าน
+- Comparisonปัจจุบันใช้ existing `hicks-law-catalog.spec.ts --grep="comparison keeps"` ผ่าน2/2ที่390/1440; `comparison-current.json` ไม่แก้ไฟล์นั้นหรือเพิ่มความสามารถใหม่
+- Searchใหม่ตรวจ10contextsของทั้งสองHeaderที่320/390/834/1024/1440 และ4touch contextsที่390/834;ใช้395สินค้าจริง, exactSKU/model/normalized identifier/multi-word/reversed/duplicate/prefix/empty/missing-word/page-only/clear/navigation/Escape/focus ผ่าน ไม่มี pageerrorsหรือ search API callsระหว่างพิมพ์
+- Geometry10contexts:รูป65×65px ไม่พบ document/Dialog overflow ดูภาพ320Homeและ1440detailแล้ว; ชุดRSP-01ยังตรวจ missing/image/load-error และจอแนวนอน667×375ผ่าน
+- Node24.22.1 typecheck/scopedESLint/5-code-filePrettierผ่าน; spec/plan formatเฉพาะหัวข้องานนี้ และ whitespace checkผ่าน ไม่รัน buildหรือ deployจากงานนี้
+- Initial interrupted Browser runมี selectorชื่อWPS10KSที่จับชุดPOSด้วย แก้เฉพาะ new-test locatorให้เป็น canonical href แล้วผลค้นหา14/14ผ่าน เก็บ traceเดิม ไม่ทำ app workaround
+- หลักฐาน/รายงาน: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/search-phase1-implementation/` รวม source-baseline.json, static-checks.json, verification-receipt.json และภาพ4ภาพ
+- ไม่รับรอง full-repository E2E/production/Safari/อุปกรณ์จริงจาก focused resultsนี้; ไม่มี commit/push/DB mutation ไม่มี framework feedback candidate ใหม่
+- Final rerun หลัง concurrent Header1024: `catalog-search-ranking.spec.ts`14 + `responsive-search-results.spec.ts`16 + `hicks-law-catalog.spec.ts --grep="comparison keeps"`2 รวม **32/32ผ่านในsingle run1.8นาที** ใช้ sourceล่าสุดและไม่มีไฟล์ใน protected446เปลี่ยนตลอด run; standalone Node24 typecheckซ้ำผ่าน ไม่รัน old Comparison4ซ้ำเพื่อซ่อนผลเดิม
+- หลักฐาน finalrerun: `browser-header1024.json`, `responsive-rerun-baseline.json`, `header1024-source-check.json` และภาพ Header1024 ใหม่; source receiptแยก concurrent19existing/1newจาก owned2existing/3newอย่างชัดเจน ผลนี้ไม่ใช่การปิดโครงการ Responsive ทั้งเว็บ
+- เก็บ concurrent ChevronRight/aria-hidden glyph hunksใน Overlayและ scrollbar CSS ที่เข้ามาหลังrun32 ตรวจเทียบเฉพาะ glyph hunksยืนยัน search logic unchanged; smokeสองHeader×320/1440ผ่าน4/4ใน26.6วินาที (`browser-chevron-smoke.json`) จึงแยก ownedSearchLogicStable จาก whole-file hash ไม่ย้อนงานคู่ขนาน
+
+## Plan: Search result chevrons and hidden scrollbar (2026-11-17)
+
+### Files
+
+- `src/features/catalog/components/catalog-overlays.tsx` — replace only Search product/page result icons; keep comparison icon and existing search logic.
+- `src/styles/overlays.css` — hide scrollbar only on Search-containing dialogs using scoped :has selector.
+- `tests/e2e/responsive-search-results.spec.ts` — add6focused appearance/scroll/focus cases using current helpers.
+- `spec.md` / `plan.md` — record explicit request, scope, references, risk and actual verification.
+
+### Steps
+
+- [x] Inspect current modified source, Modal, responsive tests and current official scrollbar reference.
+- [x] Record approved request and5-file scope before implementation.
+- [x] Replace2Search arrows with ChevronRight18px; add Search-only hidden scrollbar rules.
+- [x] Add/run6focused cases:Home+productdetail at390/1440/667×375; check wheel/end scrolling, product/page chevrons, containment and Escape/focus.
+- [x] Run TypeScript/scopedESLint/Prettier/diff; verify comparison arrow/CSS remain outside selectors.
+- [x] Record real results and final status. Do not commit/push/deploy.
+
+### Impact / Rollback
+
+- Shared stylesheet change is constrained to dialogs containing Search results. No change to shared Modal component or general overflow.
+- Preserve pending search-ranking/responsive work and undo only this task's icon/CSS/test hunks if rollback needed.
+
+### Verification Results
+
+- Completed:6/6targetedbrowsercases and scoped static checks passed; see details below.
+
+### Verification Results — 2026-11-17
+
+- Targeted Chromium6/6passed in one20.2srun with no retries/skips:Home and product-detail entrypoints at390×900/1440×900/667×375.
+- Both product and page-only result chevrons are18px. Search computed scrollbar-width:none and WebKit scrollbar display:none, with real vertical overflow retained.
+- Native wheel changes dialog.scrollTop; last result is reachable and visible. No dialog/document horizontal overflow. Escape closes and returns focus; reopening and clicking a product still reaches its canonical detail.
+- Desktop screenshot visually inspected: > chevrons present and right scrollbar absent. Screenshots saved outside source.
+- TypeScript and scopedESLint passed; code-file formatting passed. Final documentation formatting/diff results are recorded after task notes.
+- Current scope:2applicationfiles plus existing responsive-search test and Spec/Plan. Comparison ArrowRight15 and Modal implementation unchanged; search ranking/results/images and concurrent responsive/navigation work preserved.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-search-chevrons-20261117/.
+- LocalChrome/emulatedviewports only; no fullrepoE2E/build/production/Safari/physical-device claim. No commit/push/deploy or database writes. No new qualifying Next feedback/task-observer issue.
+
+## Plan: Navbar product columns as overview chapter source (2026-11-17)
+
+### Files
+
+- `src/features/catalog/components/products-overview.tsx` — derive top chapters from corresponding Navbar primary links; preserve separate original filter items, map verified metadata, respect disabled and pass explicit href to existing navigation handler.
+- `src/features/catalog/components/products-overview.module.css` — scoped disabled chapter caption/cursor using existing muted token.
+- `tests/e2e/navbar-overview-links.spec.ts` — assert exact primary-column parity, unavailable blocking, canonical ready navigation and existing layout checks for5categories×4widths.
+- `spec.md` / `plan.md` — append scope/approval/contract and real verification.
+
+### Steps
+
+- [x] Inspect active rail, original filter reuse, metadata registries and Navbar primary/secondary distinction.
+- [x] Record owner instruction,5-file scope, disabled/missing-image policy and rollback before edits.
+- [x] Separate original finder list from Navbar-driven image chapters; preserve existing photos where matched.
+- [x] Honor Navbar hrefs/disabled states and current visual disabled treatment.
+- [x] Update focused chapter regression; run320/390/834/1440 across5categories with actual ready and blocked actions.
+- [x] Run TypeScript/scopedESLint/Prettier/diff and source-scope invariants, inspect screenshots, update real results.
+
+### Impact / Rollback
+
+- Only category overview chapter display/navigation changes. Original data/filter groups and Navbar remain unchanged.
+- Revert own projection/click/style/test hunks; preserve previously approved direct navigation, short labels, Search and responsive changes.
+
+### Verification Results
+
+- Completed: final4/4focusedcases and scopedstaticchecks passed; details below.
+
+### Verification Results — 2026-11-17
+
+- Final targeted Chromium4/4passed in59.4s with no retries/skips, covering all5category overviews at320/390/834/1440 (20page/viewport combinations).
+- Current primary columns:scales8/indicators3/platforms4/POS3/accessories7,25positions total with11disabled. Tests compare exact displayed names/order/count to Navbar and verify disabled native activation cannot navigate; real enabled chapter actions reach their existing canonical hrefs.
+- Unknown subcategory metadata uses the existing ProductImage placeholder asset, verified in the browser; matched existing productIds/photos remain the only source for representative photos.
+- One-line labels, intrinsic item widths, image box dimensions, native horizontal rail scrolling, page headings and document containment pass at all4widths.
+- Desktop/mobile screenshots inspected. Disabled chapters use the Navbar's muted text without inheriting the additional global40%opacity, so photos stay clear while buttons remain disabled.
+- SHA-256 comparison confirms Navbar data, accessory membership definitions and canonical subcategory page registry stayed unchanged throughout this task.
+- Existing original categoryItems still drive the secondary index/finder controls; ProductCategoryMock receives the original categories prop. Only the top chapter rail uses projected Navbar links; catalogue membership/filter definitions are not modified.
+- TypeScript, scopedESLint, scopedPrettier and diff checks passed. Initial test incorrectly expected placeholder cards to contain no img, but the approved placeholder contains its ownSVGimg; corrected only the assertion to check the actual placeholder source. Initial evidence retained separately; no application workaround.
+- Final evidence: C:/Users/cityc/AppData/Local/Temp/sunford-navbar-chapter-source-20261117-accepted/. Earlier runs retained in corresponding base/-final directories.
+- Current contract: Navbar primary column is authoritative for category overview top-rail names/order/hrefs/disabled states. Secondary/help groups are excluded; no new route, product assignment, photo, data-readiness enablement or Navbar change.
+- LocalChrome/emulatedviewports only; no fullrepoE2E/build/production/Safari/physical-device claim, commit/push/deploy or database mutation. No qualifying Next feedback candidate or new task-observer issue.
+
+## Plan: Reconcile legacy Navbar and Comparison tests (2026-11-17)
+
+Status: "Complete — legacy tests and scoped regressions passed; no commit/push"
+
+### Files
+
+เจ้าของอนุมัติimplementation4ไฟล์ด้านล่างแล้ว ตามApproval RecordในSpec:
+
+| Path                                       | หลังอนุมัติ                                                                                                          |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `tests/catalog/primary-navigation.test.ts` | ปรับ7legacy cases เก็บ2passing cases รวม9 ใช้frozen literalfixtureในไฟล์แทนhistorical spec parser                    |
+| `tests/e2e/compare-mode.spec.ts`           | ปรับ4casesให้ใช้catalog/source identities/Dialogปัจจุบัน รักษาcap/Close/Escape/clear/restart/last-removal assertions |
+| `spec.md`                                  | บันทึกapprovalจริง/fixture/contract/ผลตรวจ                                                                           |
+| `plan.md`                                  | อัปเดตsteps/evidence/ข้อจำกัดจริง                                                                                    |
+
+- ไม่เพิ่ม/ลบapp/test/fixture/helper files ไม่แก้store/styles/Navbars/DB/config/dependencyหรือregression filesอื่น
+- อ่าน/รันไฟล์อ้างอิงได้ แต่ไม่แก้ไฟล์นอกmanifest หากพบapp defectจริงให้เสนอamendmentก่อนขยายscope
+
+### Steps
+
+- [x] อ่านinstructions/Spec/Memoryและเก็บbaseline450ไฟล์ก่อนแก้เอกสาร รักษางานคู่ขนาน
+- [x] รันNavbar9testsจริง:2ผ่าน/7ไม่ผ่าน เทียบDirect Navbar/Short-label approvalsปัจจุบัน
+- [x] เก็บsnapshot8main/92submenu/68ready/24disabledและ8column-count rows ตรวจ7failure mappingsโดยไม่แก้test
+- [x] Browser auditComparison390/834/1440 ยืนยันentry/cap3/disabled fourth/canonical columns/Escape/focus/restart0/last removal โดยไม่สร้างreplacement test files
+- [x] จัดทำN1–N7/C1–C4และexact4-file manifestเพื่อเสนออนุมัติ
+- [x] ได้รับowner approvalและบันทึกข้อความจริง ตรวจsnapshot SHA/readiness/sourceล่าสุดว่ายังตรงapproved contractก่อนลงมือ
+- [x] คัดลอกapproved fixtureเป็นliteralในprimary-navigation.test.ts ปรับ7casesเจาะจง เก็บ2passing cases ไม่มีruntime expected regeneration/spec-history parsing
+- [x] ปรับcompare-mode.spec.tsเพียง4cases:1440/390 explicit sessions,834Escape,834last-removal ใช้current API/card canonical identitiesและscoped selectors
+- [x] รันNavbar9และComparison4ให้ผ่านsingle runของแต่ละชุดก่อน รักษาnegative assertions ไม่skip/เพิ่มtimeouts/retries/แก้appเพื่อให้ผ่าน
+- [x] รันfullcatalogและexisting focused Navbar/Search/Hicks Comparison ตรวจstatic/scopeและเก็บผลพร้อมsource hashes
+- [x] อัปเดตSpec/Planด้วยผลจริง/ข้อจำกัด ไม่มีcommit/push/deployเว้นแต่ผู้ใช้อนุญาตภายหลัง
+
+### Verification Commands / Evidence
+
+- ใช้Node24ตามproject ตรวจruntimeก่อนรัน ตั้งPLAYWRIGHT_BASE_URLให้ตรงserverที่ตรวจแล้วและPLAYWRIGHT_CHANNEL=chromeเมื่อต้องใช้installed Chrome ไม่อนุมานconfig default port3001
+- Unit targeted: `bunx tsx --test tests/catalog/primary-navigation.test.ts`;fullcatalog: `bun run test:catalog` แยกconcurrent failuresหากเกิด ไม่แก้fixturesนอกmanifestเอง
+- Browser primary: `bun run test:e2e -- tests/e2e/compare-mode.spec.ts --project=chromium` เป้าหมาย4/4ไม่มีskip/retry
+- Navbar integration: `bun run test:e2e -- tests/e2e/navbar-overview-links.spec.ts --project=chromium` โดยไม่แก้ไฟล์นั้น
+- Current Comparison reference: `bun run test:e2e -- tests/e2e/hicks-law-catalog.spec.ts --grep="comparison keeps" --project=chromium`
+- Search regression: `bun run test:e2e -- tests/e2e/catalog-search-ranking.spec.ts --project=chromium` ไม่เปลี่ยนranking behavior
+- แยกoutput/report directoryของแต่ละrunนอกsource เก็บinitial failures/finalผลจริง ไม่เขียนทับtraceงานอื่นและไม่เก็บsecrets
+- Static: `bun run typecheck`; `bunx eslint tests/catalog/primary-navigation.test.ts tests/e2e/compare-mode.spec.ts`;scopedPrettier2tests/หัวข้องานนี้ในSpec/Plan; `git diff --check`
+- ไม่รันbuild/deploy/fullrepositoryE2Eจากการเปลี่ยนเฉพาะtests เว้นแต่มีfailure/ความเสี่ยงจริงที่ต้องตรวจเพิ่ม
+
+### Impact / Rollback
+
+- ไม่มีการเปลี่ยนapp ผลกระทบคือquality gateอาจปล่อยregressionถ้าfixtureสร้างจากSUTหรือลดassertions จึงใช้frozen review fixtureกับidentity/lifecycle assertions
+- Snapshotเป็นexpected contractรออนุมัติ ไม่ใช่คำสั่งเปิดหน้าใหม่หรือยืนยันข้อมูลธุรกิจทั้งหมด หากsourceเปลี่ยนให้แยกowner driftจากdefect ไม่รับค่าปัจจุบันเป็นexpectedอัตโนมัติ
+- พบregressionแอปจริงให้เก็บred evidence/เสนอamendmentพร้อมpathก่อนขยายmanifest ไม่แก้appภายใต้งานปรับtests
+- R2:ย้อนเฉพาะhunksของtests2ไฟล์และtask notes เก็บSearch/Responsive/Navbars/งานprojectionคู่ขนานไว้ ไม่มีDB rollback
+
+### Verification Results — Audit/Planning Only
+
+- Navbar baseline9กรณี:2ผ่าน/7ไม่ผ่าน,exit1ตามคาด ไม่ได้แก้ให้ผ่าน Snapshot92ตำแหน่ง/24disabled positions/18disabled hrefsเก็บพร้อมSHAในSpec
+- Diagnostic Browser audit3viewportยืนยันcap3/disabled4th,selectedWPS10KS/RLS1100/FEH5KSตรงcanonical links,Escapeคืนfocus/restart0/3/lastremovalปิดsession ไม่มีpageerrors ไม่อ้างเป็น4replacement testsที่ยังไม่เขียน
+- Evidence root: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/legacy-navbar-comparison-plan/` รวมplanning-baseline.json,current-navbar.json,navbar-baseline.log,comparison-runtime-audit.json
+- รอบนี้ไม่มีapp/test implementationหรือcommit/push ยังรอowner approvalของ4-file plan
+
+### Verification Results — Implementation Complete
+
+- เจ้าของอนุมัติข้อความจริงแล้วตามSpec ลงมือ4ไฟล์ในmanifestเท่านั้น:tests2ไฟล์และSpec/Plan ไม่แก้app/store/CSS/DB/config/dependency ไม่เพิ่มfixture/helper fileในrepo
+- Navbar targeted9/9ผ่าน;fullcatalog202/202ผ่านในsingle run12.5s ไม่มีfailure/skip/cancelled ผลครบในcatalog.log
+- scope-fixture-check.json:approved literalตรงreview snapshot92ตำแหน่ง,callbacks2passing casesเดิมเหมือนเดิมด้วยAST printer,ไม่มีhistoricalSpec parser/skip/fixme/timeout/retry workaround
+- comparison.json:4/4passed56.0s,no retry/skip/flaky รักษาexplicit session/cap3/disabled4th/Close/Cancel/Escape/focus/last-removal/restartและเพิ่มidentity verificationจากWarehouse canonical href/source name/uniqueSKU
+- navbar-search.json:28/28passed5.1m,no skip/flaky รวมNavbar overview14/Search14;hicks-comparison.json:2/2passed17.5s,no skip/flaky ทั้งหมดเป็นread-only regressionตามPlan ไม่แก้ไฟล์เหล่านั้น ไม่อ้างว่า34Browser casesอยู่ในsingle runเดียวกัน
+- static-checks.json:Node24.22.1 typecheck/scopedESLint/2-test-filePrettier exit0ทั้งหมด;formatหัวข้องานนี้ในSpec/Planและwhitespace checksผ่าน
+- Scope auditแยกowned test changes2ไฟล์จากsource/test changesของงานคู่ขนานและตรวจhashก่อนส่งมอบ ไม่อ้างว่าworking treeทั้งหมดสะอาดหรือไม่มีงานอื่นเปลี่ยน
+- หลักฐาน: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/legacy-navbar-comparison-implementation/` มีbaseline snapshots,raw logs/reports,fixture/AST checkและverification-report.md
+- ไม่รันbuild/deploy/fullrepositoryE2E ไม่รับรองSafari/อุปกรณ์จริง ไม่มีcommit/pushหรือเขียนข้อมูลธุรกิจจากงานนี้;Next feedback/task-observer reviewไม่พบissueใหม่ที่ต้องรายงาน
+
+## Plan: Compact overview hero-to-lineup spacing (2026-11-17)
+
+### Files
+
+- `src/features/catalog/components/products-overview.module.css` — change priority bottom padding196/216→32px and coupled playback250/270→86px at3existing breakpoint rules; no other styles.
+- `tests/e2e/overview-section-spacing.spec.ts` — focused5-category spacing/card/control geometry and interaction regression at320/390/834/1440, with screenshots.
+- `spec.md` / `plan.md` — record request, concrete values, scope, rollback and real results.
+
+### Steps
+
+- [x] Inspect shared overview hero/lineup CSS and coupled controls; read current padding reference and preserve existing changes.
+- [x] Record approved request and4-file scope before app edits.
+- [x] Add focused regression and capture pre-change oversized gap.
+- [x] Apply6scoped CSS value changes.
+- [x] Verify20page/viewport combinations, actual tabs/playback, card/control geometry, containment and before/after screenshots.
+- [x] Run appropriate static/format/diff checks; finalize notes and status. No commit/push/deploy.
+
+### Impact / Rollback
+
+- Existing category overview hero sections only; six values in one CSS Module. Card sizes and other section styling unchanged.
+- Restore task-owned values only; do not revert concurrent CSS changes or edit global layout/tokens.
+
+### Verification Results
+
+- Completed: final4/4targetedcases and scopedstaticchecks passed.
+
+### Verification Results — 2026-11-17
+
+- Before proof: scales desktop1440 measured246px card-to-lineup gap and failed the new compact-spacing assertion; screenshot and geometry attachment retained under sunford-overview-spacing-20261117-before.
+- Final single Chromium4/4passed in40.6s, no retries/skips, covering5category pages at320/390/834/1440 (20page/viewport combinations).
+- Where verified hero photos exist, measured card-to-lineup gap62px, card heights unchanged480/628/680px and playback bottom inset24px. Actual tab selection and play/pause activation pass; no document overflow.
+- Source image counts are independently checked from the existing read-only /api/products response using the same category membership contract. Categories with no verified hero photo must render0cards and no playback, and their empty hero remains≤100px; no placeholder product/card/photo was invented for this test.
+- Entire CSS file compared with task-start snapshot: exactly6planned value replacements and no other task-owned CSS changes. Card/image/type/layout dimensions and lineup padding remain unchanged.
+- Final screenshots include390/1440scales and accessories. Desktop screenshot visually inspected; before/after comparison shows the blank band reduced from246to62px without moving controls within the card.
+- TypeScript, scopedESLint and code-filePrettier passed; final notes/format/diff checks completed separately below.
+- Initial post-change harness assumed all categories had hero images; corrected to independently assert actual source counts and empty-state compactness. Another font-promise wait lost its execution context during navigation; changed the test to wait for the expected page heading and loaded font state. No application workaround.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-overview-spacing-20261117-final/; prior red/attempted runs remain separately versioned.
+- LocalChrome/emulatedwidths only; no fullrepoE2E/build/production/Safari/device/commit/push/deploy or database write. No qualifying Next feedback issue; reusable fixture/source-readiness guidance already exists in observer memory.
+
+## Plan: Remove duplicate POS submenu entries (2026-11-17)
+
+### Files / Steps
+
+- `src/features/site/data/primary-navigation.ts` — remove2duplicate POS secondary entries.
+- `spec.md` / `plan.md` — record this narrow screenshot-driven correction and verification.
+- [x] Confirm duplicate entries and owner-requested scope.
+- [x] Remove duplicates; verify primary/remaining secondary and unchanged source scope.
+- [x] Run scoped formatting/lint and record results. No commit/push/deploy.
+
+### Impact / Rollback
+
+- Only POS secondary contents change; restore these2entries to roll back. No shared renderer/style/data/readiness change.
+
+### Verification Results
+
+- Direct data check passed: POS primary iOS/Android/Windows retained; secondary has2equipment links with no primary overlap. Entire-file before/after comparison confirms only2duplicate rows removed.
+- ScopedESLint passed. Final source/doc Prettier and whitespace verification run after these notes. No renderer/style/readiness change or new browser run; no commit/push/deploy and no Next feedback candidate.
