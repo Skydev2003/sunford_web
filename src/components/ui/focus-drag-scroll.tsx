@@ -13,6 +13,7 @@ import {
 } from "react";
 import { DragScroll } from "./drag-scroll";
 import styles from "./focus-drag-scroll.module.css";
+import { useReturnState } from "@/features/site/history/return-state";
 
 export function FocusDragScroll({
   children,
@@ -24,7 +25,11 @@ export function FocusDragScroll({
   className: string;
 }) {
   const host = useRef<HTMLDivElement>(null);
-  const selected = useRef(1);
+  const [remembered, setRemembered] = useReturnState(`focus-drag-scroll.${label}`, 1);
+  const selected = useRef(remembered);
+  useEffect(() => {
+    selected.current = remembered;
+  }, [remembered]);
   const pointerDown = useRef(false);
   const settle = useRef(() => {});
   const items = Children.toArray(children).filter(isValidElement) as ReactElement<
@@ -96,6 +101,7 @@ export function FocusDragScroll({
         }
       });
       selected.current = closest % count;
+      setRemembered(selected.current);
       track!.dataset.activeIndex = String(selected.current);
     }
 
@@ -137,7 +143,7 @@ export function FocusDragScroll({
       observer.disconnect();
       track.removeEventListener("scroll", onScroll);
     };
-  }, [children, count, loop]);
+  }, [children, count, loop, setRemembered]);
 
   return (
     <div

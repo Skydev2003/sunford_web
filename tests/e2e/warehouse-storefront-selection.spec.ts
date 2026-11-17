@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { loadEnvConfig } from "@next/env";
 import selection from "../../src/features/catalog/data/warehouse-storefront-selection.json";
 import type { Product } from "../../src/features/catalog/types";
-import { isPublicWarehouseSku } from "../../src/features/catalog/data/warehouse-products";
+import { isPublicWarehouseItem } from "../../src/features/catalog/data/warehouse-products";
 import { warehouseDisplayName } from "../../src/features/catalog/data/catalog-card-names";
 import {
   readWarehouseProducts,
@@ -23,16 +23,28 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-test("public product API covers the full active/saleable RPC with unchanged facts and Warehouse names", async ({
+test("public product API applies publication filters and preserves eligible Warehouse facts and names", async ({
   request,
 }) => {
-  const eligible = await getWarehousePool().query<{ sku: string; standard_sale_price: string }>(
-    `SELECT item.item_code::text AS sku, item.standard_sale_price::text AS standard_sale_price
+  const eligible = await getWarehousePool().query<{
+    sku: string;
+    product_name: string;
+    product_short_name: string | null;
+    group_name: string | null;
+    standard_sale_price: string;
+  }>(
+    `SELECT item.item_code::text AS sku, item.standard_sale_price::text AS standard_sale_price,
+            item.item_name::text AS product_name,
+            item.item_short_name::text AS product_short_name,
+            item_group.item_group_name::text AS group_name
      FROM master_data.master_item AS item
      JOIN master_data.master_unit AS unit
        ON unit.master_unit_id = item.base_master_unit_id
       AND unit.master_company_id = item.master_company_id
       AND NOT unit.is_deleted
+     LEFT JOIN master_data.master_item_group AS item_group
+       ON item_group.master_item_group_id = item.master_item_group_id
+      AND item_group.master_company_id = item.master_company_id
      WHERE item.master_company_id = $1::bigint
        AND item.is_active AND item.is_saleable
        AND NOT item.is_deleted AND item.standard_sale_price >= 0`,
@@ -40,14 +52,14 @@ test("public product API covers the full active/saleable RPC with unchanged fact
   );
   expect(source.items.map((item) => item.sku).sort()).toEqual(
     eligible.rows
+      .filter(isPublicWarehouseItem)
       .map((item) => item.sku)
-      .filter((sku) => !/^x/i.test(sku))
       .sort(),
   );
   const response = await request.get("/api/products");
   expect(response.status()).toBe(200);
   const { products }: { products: Product[] } = await response.json();
-  const expected = source.items.filter((item) => isPublicWarehouseSku(item.sku));
+  const expected = source.items.filter(isPublicWarehouseItem);
   expect(products.map((item) => item.warehouseSku).sort()).toEqual(
     expected.map((item) => item.sku).sort(),
   );
@@ -144,7 +156,7 @@ for (const width of [390, 1440]) {
           )
           .toBeGreaterThan(0);
       } else {
-        await expect(page.locator(".detail-image .media-placeholder")).toBeVisible();
+        await expect(page.locator(".detail-image [data-product-image-placeholder]")).toBeVisible();
       }
       await page.getByRole("button", { name: /^ค้นหาสินค้า(?:และข้อมูล)?$/ }).click();
       const search = page.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" });

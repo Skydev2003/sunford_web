@@ -74,8 +74,12 @@ test.describe("mobile centered previews", () => {
         await popup.close();
       } else {
         const href = await cards.nth(2).getAttribute("href");
+        const opened = page.waitForEvent("popup");
         await cards.nth(2).tap();
-        await expect(page).toHaveURL(new URL(href!, page.url()).href);
+        const popup = await opened;
+        await expect(popup).toHaveURL(new URL(href!, page.url()).href);
+        await expect(page).toHaveURL(/\/$/);
+        await popup.close();
       }
     });
   }

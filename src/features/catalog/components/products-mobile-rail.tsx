@@ -171,6 +171,7 @@ export function MobileProductsRail({
         >
           {nearby.has(index) && (
             <ProductImage
+              placeholder="product"
               src={product.image}
               fallbackSrc={product.fallbackImage}
               alt={product.model}

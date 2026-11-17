@@ -1,6 +1,6 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 import Link from "next/link";
-import { useState } from "react";
 import { Search } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import type { SourcePage } from "../types";
@@ -22,9 +22,9 @@ export function ContentDirectory({
   pages: DirectoryEntry[];
   initialGroup?: string;
 }) {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState(initialGroup);
-  const [expanded, setExpanded] = useState(false);
+  const [query, setQuery] = useReturnState("content-directory.query", "");
+  const [category, setCategory] = useReturnState("content-directory.category", initialGroup);
+  const [expanded, setExpanded] = useReturnState("content-directory.expanded", false);
   const groups = ["ทั้งหมด", ...new Set(pages.map(group))];
   const matching = pages.filter(
     (page) =>

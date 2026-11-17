@@ -37,12 +37,12 @@ export type SiteSettings = {
 };
 export type NavigationGroup = {
   label: string;
-  links: { label: string; href: string }[];
+  links: { label: string; href: string; disabled?: boolean }[];
 };
 export type NavigationItem = {
   label: string;
   submenuLabel?: string;
   href: string;
-  links: { label: string; href: string }[];
+  links: { label: string; href: string; disabled?: boolean }[];
   groups?: NavigationGroup[];
 };

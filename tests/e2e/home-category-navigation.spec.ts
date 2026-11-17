@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
+import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 
 const labels = [
@@ -36,7 +37,7 @@ for (const width of [390, 768, 833, 834, 1024, 1400, 1440, 1920]) {
             rect(nav),
             rect(logo),
             ...Array.from(links, rect),
-            ...Array.from(nav.lastElementChild!.querySelectorAll("button, .header-shop"), rect),
+            ...Array.from(nav.lastElementChild!.querySelectorAll("button, a"), rect),
           ];
         }, home),
       );
@@ -97,16 +98,22 @@ for (const width of [1400, 1440, 1920]) {
       await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
       await parent.hover();
       const panel = header.locator(".submenu-panel.is-active");
-      const expected = defaultNavigation[0]
-        .groups!.flatMap(({ links }) => links)
-        .filter((link) => new URLSearchParams(link.href.split("?")[1]).get("category") === id);
+      const expected = getPrimaryNavigationItems(defaultNavigation).find(
+        (item) => item.href === `/products/category/${id}`,
+      )!.links;
+      await expect(
+        panel.locator(".submenu-group-primary .submenu-links").getByRole("link"),
+      ).toHaveText(expected.map(({ label }) => label));
       await expect(panel.locator(".submenu-group-primary .submenu-links a")).toHaveText(
-        expected.map(({ label }) => label),
+        expected.filter((link) => !link.disabled).map((link) => link.label),
       );
-      await expect(panel.locator(".submenu-group-primary > p")).toHaveText(`สำรวจ${label}`);
+      await expect(panel.locator('.submenu-group-primary [aria-disabled="true"]')).toHaveCount(
+        expected.filter((link) => link.disabled).length,
+      );
+      await expect(panel.locator(".submenu-group-primary > p")).toHaveText("สินค้า");
       await expect(panel.locator(".submenu-group-secondary > p")).toHaveText([
-        "การใช้งานและโซลูชัน",
-        "ข้อมูลและความช่วยเหลือ",
+        "การใช้งาน",
+        "ช่วยเหลือ",
       ]);
       await expect(panel.getByRole("link", { name: `ดู${label}ทั้งหมด`, exact: true })).toHaveCount(
         0,
@@ -114,7 +121,7 @@ for (const width of [1400, 1440, 1920]) {
     }
     await header.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
     const panel = header.locator(".submenu-panel.is-active");
-    await expect(panel.getByRole("link", { name: "รู้จักซันฟอร์ด", exact: true })).toHaveAttribute(
+    await expect(panel.getByRole("link", { name: "เกี่ยวกับเรา", exact: true })).toHaveAttribute(
       "href",
       "/about-us",
     );
@@ -143,9 +150,11 @@ for (const width of [390, 1440]) {
           : header.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
       await parent.click();
       await expect(page).toHaveURL(new URL(`/products/category/${id}`, page.url()).href);
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
       await expect(page.locator(".site-header:visible")).toHaveCount(0);
       await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+      await expect(
+        page.locator(`[data-overview-category="${id}"]:visible`).getByRole("heading", { level: 1 }),
+      ).toHaveText(label);
     }
   });
 }
@@ -165,10 +174,14 @@ test("mobile native arrows expand children while names remain separate touch lin
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
   const mobile = page.locator("#mobile-navigation");
-  await expect(mobile.locator(".mobile-nav-category-link")).toHaveText(
-    productCategoryDefinitions.map(({ label }) => label),
-  );
-  const group = mobile.locator(".mobile-nav-category").first();
+  await expect(mobile.locator(".mobile-nav-category-link")).toHaveText([
+    "ผลิตภัณฑ์ทั้งหมด",
+    ...productCategoryDefinitions.map(({ label }) => label),
+    "จัดสเปค",
+  ]);
+  const group = mobile
+    .locator(".mobile-nav-category")
+    .filter({ has: page.getByLabel("เปิดเมนูย่อยเครื่องชั่ง", { exact: true }) });
   const arrow = group.locator("summary");
   const linkBox = await group.locator(".mobile-nav-category-link").boundingBox();
   const arrowBox = await arrow.boundingBox();
@@ -176,13 +189,12 @@ test("mobile native arrows expand children while names remain separate touch lin
   expect(linkBox!.x + linkBox!.width).toBeLessThanOrEqual(arrowBox!.x + 1);
   await arrow.tap();
   await expect(group.locator("details")).toHaveAttribute("open", "");
-  const child = group.getByRole("link", { name: "งานครัวและกาแฟ", exact: true });
+  const child = group.getByRole("link", { name: "ครัวและกาแฟ", exact: true });
   await child.scrollIntoViewIfNeeded();
   await child.tap();
-  await expect(page).toHaveURL(/\/products\/category\/scales\?subcategory=scale-kitchen$/);
-  await expect(
-    page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen$/);
+  await expect(page.locator('[data-product-subcategory-page="scale-kitchen"]')).toBeVisible();
+  await expect(page.locator('#mock-product-results a[href^="/products/"]').first()).toBeVisible();
   await context.close();
 });
 
@@ -195,7 +207,7 @@ test("Home keyboard preserves parent navigation and first-child focus", async ({
   await parent.focus();
   await page.keyboard.press("ArrowDown");
   const panel = page.locator(".submenu-panel.is-active");
-  await expect(panel.getByRole("link", { name: "คำนวณราคาหน้าร้าน", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "คำนวณราคา", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(parent).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");

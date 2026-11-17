@@ -93,7 +93,7 @@
   align-items: center;
   gap: 5px;
 }
-.navTools button {
+.navTools :is(button, a) {
   position: relative;
   min-width: 42px;
   height: 44px;
@@ -159,28 +159,33 @@
   font-size: 12px;
   margin-bottom: 12px;
 }
-.menuContent a {
+.menuContent :is(a, .menuUnavailable) {
   display: inline-block;
   padding-block: 5px;
   font-size: 14px;
   font-weight: 600;
 }
-.menuPrimary a {
+.menuPrimary :is(a, .menuUnavailable) {
   font-size: 24px;
   line-height: 1.4;
 }
 .productMenuContent > div {
   min-width: 0;
 }
-.productMenuContent .menuGroup a {
+.productMenuContent .menuGroup :is(a, .menuUnavailable) {
   min-height: 44px;
   align-content: center;
 }
 @media (max-width: 833px) {
-  .menuContent[data-all-products] a {
+  .menuContent[data-all-products] :is(a, .menuUnavailable) {
     min-height: 44px;
     align-content: center;
   }
+}
+.menuContent .menuUnavailable {
+  color: var(--muted);
+  cursor: default;
+  text-decoration: none;
 }
 .menuBack {
   display: inline-flex;
@@ -303,7 +308,7 @@
 }
 @media (max-width: 833px) {
   .headerOpen .logo,
-  .headerOpen .navTools > button:not(.menuTrigger) {
+  .headerOpen .navTools > :is(button, a):not(.menuTrigger) {
     visibility: hidden;
   }
 }
@@ -1313,7 +1318,7 @@
   .navTools {
     gap: 0;
   }
-  .navTools button {
+  .navTools :is(button, a) {
     min-width: 38px;
   }
   .navTools .menuTrigger {
@@ -1329,36 +1334,36 @@
     max-width: 1024px;
     margin: auto;
     padding: 40px 16px 56px;
-    grid-template-columns: 1.35fr repeat(3, 1fr);
+    grid-template-columns: fit-content(360px) max-content max-content;
     gap: 32px;
   }
-  .menuPrimary a {
+  .menuPrimary :is(a, .menuUnavailable) {
     font-size: 22px;
   }
-  .menuGroup a {
+  .menuGroup :is(a, .menuUnavailable) {
     font-size: 12px;
     line-height: 1.6;
   }
   .menuContent[data-all-products] {
-    grid-template-columns: repeat(3, max-content);
+    grid-template-columns: fit-content(360px) max-content max-content;
     align-items: start;
-    gap: clamp(38px, 5vw, 80px);
+    gap: 32px;
     padding-bottom: 74px;
   }
-  .menuContent[data-all-products] .menuPrimary a {
+  .menuContent[data-all-products] .menuPrimary :is(a, .menuUnavailable) {
     font-size: clamp(24px, 2vw, 30px);
   }
-  .menuContent[data-all-products] .menuGroup a {
+  .menuContent[data-all-products] .menuGroup :is(a, .menuUnavailable) {
     font-size: 14px;
   }
   .productMenuContent {
-    grid-template-columns: minmax(0, 1.55fr) repeat(2, minmax(0, 1fr));
+    grid-template-columns: fit-content(360px) max-content max-content;
     align-items: start;
   }
-  .productMenuContent .menuPrimary a {
+  .productMenuContent .menuPrimary :is(a, .menuUnavailable) {
     font-size: 24px;
   }
-  .productMenuContent .menuGroup a {
+  .productMenuContent .menuGroup :is(a, .menuUnavailable) {
     min-height: 0;
     font-size: 14px;
   }

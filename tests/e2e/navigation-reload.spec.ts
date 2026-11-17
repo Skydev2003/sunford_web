@@ -65,7 +65,11 @@ for (const width of [1440, 390]) {
     expect(await page.evaluate(() => scrollY)).toBe(0);
     await page.goForward();
     await expect(page).toHaveURL(/\/contact-us$/);
-    await page.locator(".site-header .brand").click();
+    await page
+      .locator(
+        '.site-header .brand:visible, [data-products-header]:visible a[aria-label="SUNFORD หน้าแรก"]',
+      )
+      .click();
     await homeReady(page);
     expect((await probe(page)).starts).toBe(1);
     expect((await probe(page)).covered).toBe(false);
@@ -81,8 +85,10 @@ test("Back from a product preserves the homepage scroll position without replayi
   await product.scrollIntoViewIfNeeded();
   const previousScroll = await page.evaluate(() => scrollY);
   expect(previousScroll).toBeGreaterThan(100);
+  const destination = await page.request.get((await product.getAttribute("href"))!);
+  expect(destination.ok()).toBe(true);
   await product.click();
-  await expect(page).toHaveURL(/\/products\/acs30-jc21$/);
+  await expect(page).toHaveURL(destination.url());
   await page.goBack();
   await homeReady(page);
   expect((await probe(page)).starts).toBe(1);
@@ -112,6 +118,7 @@ test("reloads an anchored homepage at the Hero while preserving query parameters
   await page.goto("/?source=reload-test#stories");
   await homeReady(page);
   expect((await probe(page)).starts).toBe(0);
+  await page.locator("#stories").scrollIntoViewIfNeeded();
   await expect(page.locator("#stories")).toBeInViewport();
   await page.reload({ waitUntil: "domcontentloaded" });
   await homeReady(page);
@@ -120,16 +127,22 @@ test("reloads an anchored homepage at the Hero while preserving query parameters
   expect(await page.evaluate(() => scrollY)).toBe(0);
 });
 
-for (const route of ["/products", "/products/acs30-jc21", "/contact-us", "/service"]) {
+for (const route of ["/products", "/products/warehouse-G106094", "/contact-us", "/service"]) {
   test(`refresh starts ${route} at its own top`, async ({ page }) => {
     await page.goto(`${route}?source=reload-test#contact`);
-    await page.locator("footer").scrollIntoViewIfNeeded();
+    const current = new URL(page.url());
+    current.hash = "";
+    await page.locator("footer:visible").scrollIntoViewIfNeeded();
     expect(await page.evaluate(() => scrollY)).toBeGreaterThan(100);
     await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(new RegExp(`${route}\\?source=reload-test$`));
+    await expect(page).toHaveURL(current.href);
     await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
     await expect(page.locator("[data-brand-opening]")).toHaveCount(0);
-    await expect(page.locator(".site-header .brand")).toBeVisible();
+    await expect(
+      page.locator(
+        '.site-header .brand:visible, [data-products-header]:visible a[aria-label="SUNFORD หน้าแรก"]',
+      ),
+    ).toBeVisible();
     expect((await probe(page)).starts).toBe(0);
     await expect.poll(() => page.evaluate(() => history.scrollRestoration)).toBe("auto");
     await page.locator("footer").scrollIntoViewIfNeeded();

@@ -53,8 +53,7 @@
   ~ :global(.site-footer)
   :global(.footer-address)
   > span
-  > span,
-:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-coverage) p {
+  > span {
   color: #a1a1a6;
 }
 
@@ -67,8 +66,7 @@
   color: #f5f5f7;
 }
 
-:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-links),
-:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-coverage) {
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-links) {
   border-color: #2a2a2a;
 }
 
@@ -97,4 +95,8 @@
   a:is(:hover, :focus-visible, :active) {
   background: var(--social-background);
   color: var(--social-color);
+}
+
+:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-company) a {
+  color: #a1a1a6;
 }

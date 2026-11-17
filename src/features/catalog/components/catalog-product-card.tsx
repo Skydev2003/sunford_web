@@ -49,6 +49,7 @@ export function CatalogProductCard({
     >
       <Link href={href} className={styles.image}>
         <ProductImage
+          placeholder="product"
           src={catalogProductPhoto(product)}
           fallbackSrc={product.fallbackImage}
           alt={`SUNFORD ${product.name}`}

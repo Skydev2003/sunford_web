@@ -513,6 +513,7 @@ export function HeroProductRibbon({
             >
               <span className={styles.photo}>
                 <ProductImage
+                  placeholder="product"
                   src={product.image}
                   alt=""
                   fill
@@ -521,6 +522,7 @@ export function HeroProductRibbon({
               </span>
               <span className={styles.reflection} aria-hidden="true">
                 <ProductImage
+                  placeholder="product"
                   src={product.image}
                   alt=""
                   fill

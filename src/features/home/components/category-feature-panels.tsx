@@ -1,6 +1,6 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 
-import { useState } from "react";
 import Link from "next/link";
 import { ProductImage } from "@/components/ui/product-image";
 import type { CategoryFeatureEntry } from "../data/category-feature-items";
@@ -16,7 +16,7 @@ export type CategoryFeatureItem = {
 };
 
 export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] }) {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useReturnState("category-feature-panels.active", 0);
   const selected = items[active] ?? items[0];
   if (!selected) return null;
   // Fill a wide belt even for a small category, using its own real entries.
@@ -49,6 +49,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
               <div className="category-feature-accessories" key={selected.id}>
                 <div className="category-feature-pole">
                   <ProductImage
+                    placeholder="product"
                     src={selected.companionImage}
                     alt="ไฟสัญญาณสามสี SUNFORD RYG-POLE"
                     fill
@@ -57,6 +58,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                 </div>
                 <div className="category-feature-printer">
                   <ProductImage
+                    placeholder="product"
                     src={selected.image}
                     alt={selected.title}
                     fill
@@ -67,6 +69,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
             ) : (
               <ProductImage
                 key={selected.id}
+                placeholder="product"
                 src={selected.image}
                 alt={selected.title}
                 fill
@@ -131,6 +134,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                         data-product-id={entry.id}
                       >
                         <ProductImage
+                          placeholder="product"
                           src={entry.image}
                           fallbackSrc={entry.fallbackImage}
                           alt=""

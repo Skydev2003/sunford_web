@@ -175,6 +175,7 @@ export function HeroProductModel({
         {status !== "ready" && (
           <div className="hero-model-fallback">
             <ProductImage
+              placeholder="product"
               src={poster}
               alt={`เครื่องชั่ง SUNFORD ${name}`}
               fill

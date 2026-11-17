@@ -67,6 +67,7 @@ function StoreProductCard({
         </div>
         <div className="store-product-image">
           <ProductImage
+            placeholder="product"
             src={product.image}
             fallbackSrc={product.fallbackImage}
             alt={`SUNFORD ${product.name}`}
@@ -185,6 +186,7 @@ export function ProductStorefront({
             >
               <div className="store-category-image">
                 <ProductImage
+                  placeholder="product"
                   src={product?.image}
                   fallbackSrc={product?.fallbackImage}
                   alt={item.label}
@@ -243,6 +245,7 @@ export function ProductStorefront({
               </h3>
               <div className="store-editorial-image">
                 <ProductImage
+                  placeholder="product"
                   src={accessories[0]?.image}
                   fallbackSrc={accessories[0]?.fallbackImage}
                   alt="อุปกรณ์ประกอบเครื่องชั่ง Sunford"
@@ -344,6 +347,7 @@ export function ProductStorefront({
               </h3>
               <div className="store-editorial-image">
                 <ProductImage
+                  placeholder="product"
                   src={cleanImages.pos1100}
                   alt="เครื่องชั่งระบบ POS Sunford"
                   fill

@@ -11,17 +11,17 @@ test("desktop keyboard reaches submenu destinations and Escape returns focus", a
   await products.focus();
   await page.keyboard.press("ArrowDown");
   const panel = page.locator(".submenu-panel.is-active");
-  await expect(panel.getByRole("link", { name: "คำนวณราคาหน้าร้าน", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "คำนวณราคา", exact: true })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(panel.getByRole("link", { name: "อุตสาหกรรมงานผลิต", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "อุตสาหกรรม", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(products).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
   await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).focus();
   await page.keyboard.press("ArrowDown");
-  await expect(panel.getByRole("link", { name: "โซลูชันตามธุรกิจ", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "หลังการขาย", exact: true })).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/solutions$/);
+  await expect(page).toHaveURL(/\/service$/);
 });
 
 test("touch navigation expands products and follows the company coffee destination", async ({
@@ -42,14 +42,11 @@ test("touch navigation expands products and follows the company coffee destinati
     await page.locator("#mobile-navigation summary").first().tap();
     await page
       .locator("#mobile-navigation")
-      .getByRole("link", { name: "งานครัวและกาแฟ", exact: true })
+      .getByRole("link", { name: "ครัวและกาแฟ", exact: true })
       .tap();
-    await expect(page).toHaveURL(/\/products\/category\/scales\?subcategory=scale-kitchen$/);
-    await expect(
-      page
-        .getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })
-        .getByRole("button", { name: "งานครัวและกาแฟ", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen$/);
+    await expect(page.locator('[data-product-subcategory-page="scale-kitchen"]')).toBeVisible();
+    await expect(page.locator('#mock-product-results a[href^="/products/"]').first()).toBeVisible();
     await expect(page.locator("#mobile-navigation")).toHaveCount(0);
   } finally {
     await context.close();
@@ -61,19 +58,20 @@ test("software menu category links select the real filter on first entry and sam
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
+  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
   await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
   await page
     .locator(".submenu-panel.is-active")
-    .getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true })
+    .getByRole("link", { name: "ซอฟต์แวร์", exact: true })
     .click();
   for (const hash of ["retail-software", "industrial-software", "household-software"]) {
     await page.locator(`.software-filters a[href="#${hash}"]`).click();
-    await expect(page).toHaveURL(new RegExp(`/software/download#${hash}$`));
+    await expect(page).toHaveURL(new RegExp(`/applications-and-softwares#${hash}$`));
     await expect(page.locator(`.software-filters a[href="#${hash}"]`)).toHaveAttribute(
       "aria-current",
       "true",
     );
-    await expect(page.locator(".software-card").first()).toBeVisible();
+    await expect(page.locator(".software-catalog .empty-state")).toBeVisible();
   }
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);

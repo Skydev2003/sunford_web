@@ -1,4 +1,5 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { PdfBuyer } from "../data/quotation-pdf";
@@ -34,8 +35,9 @@ type Selection = {
 function ModelThumbnail({ product }: { product?: QuoteProduct }) {
   return (
     <span className={styles.thumbnail} aria-hidden="true">
-      {product?.image || product?.fallbackImage ? (
+      {product ? (
         <ProductImage
+          placeholder="product"
           src={product.image}
           fallbackSrc={product.fallbackImage}
           alt=""
@@ -116,7 +118,7 @@ export function QuotationForm({
   function modelKey(id: string) {
     return (byId.get(id)?.name ?? id).trim().toLowerCase();
   }
-  const [rows, setRows] = useState<Selection[]>(() => {
+  const [rows, setRows] = useReturnState<Selection[]>("quotation-form.rows", () => {
     if (!initial.items.length) return [{ key: 0, id: "", quantity: "1" }];
     const seen = new Set<string>();
     const items = initial.items.filter((item) => {
@@ -138,11 +140,11 @@ export function QuotationForm({
           : undefined,
     }));
   });
-  const [pending, setPending] = useState(initial.pending);
-  const [pickerKey, setPickerKey] = useState<number | null>(null);
-  const [modelQuery, setModelQuery] = useState("");
-  const [category, setCategory] = useState(pickerCategories[0]);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [pending, setPending] = useReturnState("quotation-form.pending", initial.pending);
+  const [pickerKey, setPickerKey] = useReturnState<number | null>("quotation-form.pickerKey", null);
+  const [modelQuery, setModelQuery] = useReturnState("quotation-form.modelQuery", "");
+  const [category, setCategory] = useReturnState("quotation-form.category", pickerCategories[0]);
+  const [filtersOpen, setFiltersOpen] = useReturnState("quotation-form.filtersOpen", false);
   const firstResult = useRef<HTMLButtonElement>(null);
   const modelSearch = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -166,7 +168,7 @@ export function QuotationForm({
     setModelQuery("");
     setPickerKey(key);
   }
-  const nextKey = useRef(rows.length);
+  const nextKey = useRef(Math.max(-1, ...rows.map((row) => row.key)) + 1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const pendingIssue = useRef<{ draft: string | File; key: string } | null>(null);

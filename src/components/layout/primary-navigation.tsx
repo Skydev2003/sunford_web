@@ -11,7 +11,8 @@ import {
   type MouseEvent,
 } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, GitCompareArrows, Search, Menu, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Menu, X } from "lucide-react";
+import { Tooltip } from "@/components/ui/tooltip";
 import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
 import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
@@ -55,8 +56,6 @@ export function PrimaryNavigation({
     hoverTimer.current = null;
   }, []);
   const setSearchOpen = useCatalogStore((s) => s.setSearchOpen);
-  const startCompare = useCatalogStore((s) => s.startCompare);
-  const compareIds = useCatalogStore((s) => s.compareIds);
   const closeMenu = useCallback(() => {
     clearHover();
     blockedTrigger.current =
@@ -68,7 +67,11 @@ export function PrimaryNavigation({
     clearHover();
     blockedTrigger.current =
       linksRef.current?.querySelector<HTMLElement>(":scope > :hover") ?? null;
-    return clearHover;
+    return () => {
+      clearHover();
+      setMenuIndex(null);
+      setMobileMenu(false);
+    };
   }, [pathname, clearHover]);
   const scheduleOpen = (index: number, trigger: HTMLElement) => {
     clearHover();
@@ -175,17 +178,17 @@ export function PrimaryNavigation({
     }
     closeMenu();
   };
-  const link = (href: string, label: string) => (
-    <Link key={href} href={href} onClick={(e) => activateLink(e, href)}>
-      {label}
-    </Link>
-  );
+  const link = (href: string, label: string, disabled = false) =>
+    disabled ? (
+      <span key={href} className={styles.menuUnavailable} role="link" aria-disabled="true">
+        {label}
+      </span>
+    ) : (
+      <Link key={href} href={href} onClick={(e) => activateLink(e, href)}>
+        {label}
+      </Link>
+    );
   const activeMenu = menuIndex === null ? null : headerNavigation[menuIndex];
-  const compare = () => {
-    startCompare();
-    onOpenFinder?.();
-    closeMenu();
-  };
   return (
     <div className={styles.overview} style={{ display: "contents" }}>
       <header
@@ -212,7 +215,7 @@ export function PrimaryNavigation({
           </Link>
           <div ref={linksRef} className={styles.navLinks}>
             {headerNavigation.map((item, index) =>
-              item.href === "/products" || item.href.startsWith("/products/category/") ? (
+              item.href !== "/service" ? (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -279,17 +282,24 @@ export function PrimaryNavigation({
             >
               <Search aria-hidden="true" />
             </button>
-            <button
-              disabled={!hydrated}
-              type="button"
-              aria-label="เลือกสินค้าเพื่อเปรียบเทียบ"
-              onClick={compare}
-            >
-              <GitCompareArrows aria-hidden="true" />
-              {compareIds.length > 0 && (
-                <span className={styles.compareCount}>{compareIds.length}</span>
-              )}
-            </button>
+            <Tooltip>
+              <a href="https://sunfordshop.com/" aria-label="ร้านค้า SUNFORD" onClick={closeMenu}>
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M8 6a4 4 0 0 1 8 0" />
+                  <rect x="4" y="6" width="16" height="16" rx="2" />
+                </svg>
+              </a>
+            </Tooltip>
             <button
               disabled={!hydrated}
               ref={menuTrigger}
@@ -312,7 +322,7 @@ export function PrimaryNavigation({
             {mobileMenu && !activeMenu ? (
               <div className={styles.mobileMenuItems}>
                 {headerNavigation.map((item, index) =>
-                  item.href === "/products" || item.href.startsWith("/products/category/") ? (
+                  item.href !== "/service" ? (
                     <div key={item.href} className={styles.mobileCategoryRow}>
                       {link(item.href, item.label)}
                       <button
@@ -345,7 +355,8 @@ export function PrimaryNavigation({
               activeMenu && (
                 <div
                   data-all-products={activeMenu.href === "/products" || undefined}
-                  className={`${styles.menuContent} ${activeMenu.href.startsWith("/products/category/") ? styles.productMenuContent : ""}`}
+                  data-nav-menu={activeMenu.href}
+                  className={`${styles.menuContent} ${styles.productMenuContent}`}
                 >
                   {mobileMenu && (
                     <button
@@ -358,17 +369,21 @@ export function PrimaryNavigation({
                       เมนูหลัก
                     </button>
                   )}
-                  <div className={styles.menuPrimary}>
+                  <div className={styles.menuPrimary} data-nav-column="primary">
                     <p>{activeMenu.submenuLabel ?? activeMenu.label}</p>
                     {activeMenu.links.map((item) => (
-                      <div key={item.href}>{link(item.href, item.label)}</div>
+                      <div key={item.href}>{link(item.href, item.label, item.disabled)}</div>
                     ))}
                   </div>
-                  {activeMenu.groups?.map((group) => (
-                    <div key={group.label} className={styles.menuGroup}>
+                  {activeMenu.groups?.map((group, groupIndex) => (
+                    <div
+                      key={group.label}
+                      className={styles.menuGroup}
+                      data-nav-column={groupIndex === 0 ? "uses" : "help"}
+                    >
                       <p>{group.label}</p>
                       {group.links.map((item) => (
-                        <div key={item.href}>{link(item.href, item.label)}</div>
+                        <div key={item.href}>{link(item.href, item.label, item.disabled)}</div>
                       ))}
                     </div>
                   ))}

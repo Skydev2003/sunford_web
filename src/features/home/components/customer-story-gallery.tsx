@@ -1,4 +1,5 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 
 import {
   Children,
@@ -14,7 +15,10 @@ import styles from "./brand-story.module.css";
 
 export function CustomerStoryGallery({ children }: { children: ReactNode }) {
   const photos = Children.toArray(children);
-  const [selection, setSelection] = useState({ index: 0, turn: 0 });
+  const [selection, setSelection] = useReturnState("customer-story-gallery.selection", {
+    index: 0,
+    turn: 0,
+  });
   const [dragX, setDragX] = useState(0);
   const pointer = useRef<{ id: number; x: number; y: number } | null>(null);
   const suppressClick = useRef(false);

@@ -44,6 +44,7 @@ export function ProductCard({
       </div>
       <Link href={`/products/${product.slug}`} className="product-card-image">
         <ProductImage
+          placeholder="product"
           src={product.image}
           fallbackSrc={product.fallbackImage}
           alt={`SUNFORD ${product.name}`}

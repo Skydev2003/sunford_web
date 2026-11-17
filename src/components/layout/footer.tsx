@@ -4,14 +4,14 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getSettings } from "@/features/site/server/documents";
 import { patchSection } from "@/features/site/server/section-tree";
 import { ContactBannerVisibility } from "@/components/contact/contact-banner-visibility";
-import { CustomerCoverage } from "@/features/customer-map/components/customer-coverage";
+import { footerNavigation, footerLegalLinks } from "@/features/site/data/footer-navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUp, Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { sunford } from "@/features/home/data/brand";
 
-export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnabled = true) {
+export function FooterTemplate(site: SiteSettings = defaultSite) {
   return (
     <footer id="contact" className="site-footer">
       <ContactBannerVisibility>
@@ -76,31 +76,10 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
                 </span>
               </Link>
             </div>
-          </div>
-          <nav className="footer-links" aria-label="ผลิตภัณฑ์ Sunford">
-            <h3>ผลิตภัณฑ์</h3>
-            <Link href="/products/category/scales">เครื่องชั่งดิจิทัล</Link>
-            <Link href="/products/category/accessories">อุปกรณ์เสริม</Link>
-            <Link href="/products/category/pos">ระบบ POS และอุปกรณ์</Link>
-            <Link href={sunford.software}>แอปพลิเคชันและซอฟต์แวร์</Link>
-          </nav>
-          <nav className="footer-links" aria-label="เกี่ยวกับ Sunford">
-            <h3>รู้จักซันฟอร์ด</h3>
-            <Link href="/#story">เรื่องราวของเรา</Link>
-            <Link href={sunford.erp}>ERP</Link>
-            <Link href={sunford.mes}>MES</Link>
-            <a href="https://www.sunford.co" target="_blank" rel="noreferrer">
-              เว็บไซต์ Sunford
-            </a>
-          </nav>
-          <div className="footer-links footer-care">
-            <h3>พร้อมดูแลคุณ</h3>
-            <Link href={sunford.service}>บริการหลังการขาย</Link>
-            <Link href={sunford.warranty}>ลงทะเบียนรับประกัน</Link>
-            <Link href={sunford.downloads}>ดาวน์โหลดซอฟต์แวร์</Link>
-            <a href={site.line} target="_blank" rel="noreferrer">
-              LINE @sunford
-            </a>
+            <nav className="footer-company" aria-label="SUNFORD">
+              <Link href={sunford.about}>รู้จัก SUNFORD</Link>
+              <Link href={sunford.contact}>ติดต่อเรา</Link>
+            </nav>
             <div className="footer-socials" aria-label="ติดตาม Sunford">
               {site.messenger && (
                 <a
@@ -153,35 +132,41 @@ export function FooterTemplate(site: SiteSettings = defaultSite, customerMapEnab
               </a>
             </div>
           </div>
-          <CustomerCoverage enabled={customerMapEnabled}>
-            <Image
-              src="/images/footer/thailand.svg"
-              alt="แผนที่ประเทศไทย"
-              width={160}
-              height={300}
-            />
-            <div>
-              <h3>
-                ครอบคลุม
-                <br />
-                ทั่วประเทศ
-              </h3>
-              <p>
-                จัดส่งทั่วประเทศไทย
-                <br />
-                พร้อมทีมดูแล
-                <br />
-                และให้คำปรึกษา
-              </p>
+          {footerNavigation.map((group) => (
+            <div className="footer-column" key={group.label}>
+              <nav className="footer-links footer-desktop" aria-label={group.label}>
+                <h3>{group.label}</h3>
+                {group.links.map((entry) => (
+                  <Link key={entry.href} href={entry.href}>
+                    {entry.label}
+                  </Link>
+                ))}
+              </nav>
+              <details className="footer-mobile" data-return-scope={`footer-${group.label}`}>
+                <summary>{group.label}</summary>
+                <nav className="footer-links" aria-label={group.label}>
+                  {group.links.map((entry) => (
+                    <Link key={entry.href} href={entry.href}>
+                      {entry.label}
+                    </Link>
+                  ))}
+                </nav>
+              </details>
             </div>
-          </CustomerCoverage>
+          ))}
         </div>
       </div>
       <div className="footer-bottom-bar">
         <div className="container footer-bottom">
           <span>© {new Date().getFullYear()} SUNFORD. All rights reserved.</span>
-          <span>Designed for precision. Built for possibility.</span>
-          <a href="#main-content">
+          <nav className="footer-legal" aria-label="นโยบาย">
+            {footerLegalLinks.map((entry) => (
+              <Link key={entry.href} href={entry.href}>
+                {entry.label}
+              </Link>
+            ))}
+          </nav>
+          <a href="#main-content" data-back-to-top>
             กลับด้านบน <ArrowUp size={15} />
           </a>
         </div>
@@ -196,5 +181,5 @@ export async function Footer() {
   cacheTag("cms");
   const site = await getSettings("site", defaultSite);
   const edits = await getSettings("section:footer", { customerMapEnabled: true });
-  return patchSection(FooterTemplate(site, edits.customerMapEnabled), edits);
+  return patchSection(FooterTemplate(site), edits);
 }

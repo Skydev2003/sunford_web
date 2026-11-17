@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useReturnState } from "@/features/site/history/return-state";
 import { Play } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./section-two-video.module.css";
@@ -9,7 +10,14 @@ const title = "แข็งแรงทนทาน ใช้งานง่า�
 const videoTitle = `${title} | SUNFORD SHOWROOM TOUR 2022`;
 
 export function SectionTwoVideo() {
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useReturnState("section-two-video.selected", false);
+  const [playRequested, setPlayRequested] = useState(false);
+  useEffect(
+    () => () => {
+      setPlayRequested(false);
+    },
+    [],
+  );
 
   return (
     <section
@@ -27,7 +35,7 @@ export function SectionTwoVideo() {
         <div className={styles.media}>
           {playing ? (
             <iframe
-              src="https://www.youtube-nocookie.com/embed/UF7QJSq4Qw4?autoplay=1&rel=0"
+              src={`https://www.youtube-nocookie.com/embed/UF7QJSq4Qw4?autoplay=${playRequested ? 1 : 0}&rel=0`}
               title={videoTitle}
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
@@ -38,7 +46,10 @@ export function SectionTwoVideo() {
               type="button"
               className={styles.poster}
               aria-label={`เล่นวิดีโอ ${videoTitle}`}
-              onClick={() => setPlaying(true)}
+              onClick={() => {
+                setPlayRequested(true);
+                setPlaying(true);
+              }}
             >
               <ProductImage
                 src="https://i.ytimg.com/vi/UF7QJSq4Qw4/maxresdefault.jpg"

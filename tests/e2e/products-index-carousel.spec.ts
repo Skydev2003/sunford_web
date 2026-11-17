@@ -2,13 +2,11 @@ import { test, expect } from "@playwright/test";
 import catalog from "../../src/features/catalog/data/products-index-carousel.json";
 import type { ClientProduct } from "../../src/features/catalog/types";
 
-function photographedSelection(products: ClientProduct[]) {
+function currentSelection(products: ClientProduct[]) {
   return catalog.products.filter((item) =>
     products.some(
       (product) =>
-        (product.id === item.id ||
-          (item.warehouseSku && product.warehouseSku === item.warehouseSku)) &&
-        product.image.trim(),
+        product.id === item.id || (item.warehouseSku && product.warehouseSku === item.warehouseSku),
     ),
   );
 }
@@ -186,7 +184,7 @@ for (const width of [390, 834, 1440]) {
     const trigger = dropdown.getByRole("button", { name: /^หมวดสินค้า:/ });
     const listbox = dropdown.getByRole("listbox", { name: "หมวดสินค้า" });
     const { products } = await (await request.get("/api/products")).json();
-    const selection = photographedSelection(products);
+    const selection = currentSelection(products);
     const selectedCategories = catalog.categories.filter((category) =>
       selection.some((product) => product.categoryId === category.id),
     );
@@ -280,12 +278,24 @@ for (const width of [390, 834, 1440]) {
 }
 
 for (const width of [390, 834, 1440]) {
-  test(`photographed carousel and detail return at ${width}px`, async ({ page, request }) => {
+  test(`current product carousel and detail return at ${width}px`, async ({ page, request }) => {
     test.setTimeout(120000);
+    const failedImageSources = new Set<string>();
+    const imageSource = (url: string) => {
+      const parsed = new URL(url);
+      return parsed.searchParams.get("url") ?? `${parsed.pathname}${parsed.search}`;
+    };
+    page.on("response", (response) => {
+      if (response.request().resourceType() === "image" && response.status() >= 400)
+        failedImageSources.add(imageSource(response.url()));
+    });
+    page.on("requestfailed", (request) => {
+      if (request.resourceType() === "image") failedImageSources.add(imageSource(request.url()));
+    });
     await page.setViewportSize({ width, height: 960 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     const { products } = await (await request.get("/api/products")).json();
-    const shown = photographedSelection(products);
+    const shown = currentSelection(products);
     expect(shown.length).toBeGreaterThan(0);
     await page.goto("/products");
     const scene = page.locator("[data-products-index-carousel]");
@@ -332,7 +342,10 @@ for (const width of [390, 834, 1440]) {
         .toBe(true);
       const src = (await current.locator("img").getAttribute("src"))!;
       const source = new URL(src, "http://localhost").searchParams.get("url") ?? src;
-      expect(source).toBe(live?.image || null);
+      if (source === "/images/product-image-placeholder.svg") {
+        if (live?.image) expect(failedImageSources.has(live.image)).toBe(true);
+        await expect(current.locator("[data-product-image-placeholder]")).toBeVisible();
+      } else expect(source).toBe(live?.image);
       await expect(scene.locator("h2").first()).toHaveText(live?.name ?? "");
       await expect(scene.locator("[data-equalizer] small").first()).toHaveText(
         `${String(shown.indexOf(product) + 1).padStart(2, "0")} / ${shown.length}`,

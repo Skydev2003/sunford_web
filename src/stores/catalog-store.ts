@@ -5,6 +5,7 @@ import type { CategoryId } from "@/features/catalog/types";
 type CatalogState = {
   category: CategoryId;
   query: string;
+  overlayQuery: string;
   searchOpen: boolean;
   compareOpen: boolean;
   compareMode: boolean;
@@ -20,6 +21,7 @@ type CatalogState = {
 export const useCatalogStore = create<CatalogState>((set) => ({
   category: "all",
   query: "",
+  overlayQuery: "",
   searchOpen: false,
   compareOpen: false,
   compareMode: false,

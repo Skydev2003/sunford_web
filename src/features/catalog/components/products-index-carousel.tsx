@@ -1,4 +1,5 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 
 /* eslint-disable @next/next/no-img-element -- These fixed source images are decoded and measured directly for shared-element transitions. */
 
@@ -13,7 +14,17 @@ import {
 } from "react";
 import Link from "next/link";
 import { MobileProductsRail } from "./products-mobile-rail";
+import {
+  PRODUCT_IMAGE_PLACEHOLDER,
+  PRODUCT_IMAGE_PLACEHOLDER_LABEL,
+} from "@/components/ui/product-image";
 import styles from "./products-index-carousel.module.css";
+
+const rememberFrame = (frame: { position: number; energy: number; time: number }) => ({
+  position: Math.round(frame.position),
+  energy: 0,
+  time: 0,
+});
 
 export type CarouselProduct = {
   id: string;
@@ -106,9 +117,11 @@ type Transition =
   | { source: ReturnType<typeof paintedBox> }
   | { previous: number; direction: number; speed: number };
 const ease = "cubic-bezier(.2,.8,.2,1)";
-function fallbackPhoto(image: HTMLImageElement, product: CarouselProduct) {
-  if (product.fallbackImage && image.getAttribute("src") !== product.fallbackImage)
-    image.src = product.fallbackImage;
+function productPhoto(product: CarouselProduct, failedSources: string[]) {
+  return (
+    [product.image, product.fallbackImage].find((src) => src && !failedSources.includes(src)) ??
+    PRODUCT_IMAGE_PLACEHOLDER
+  );
 }
 export function ProductsIndexCarousel(props: CarouselProps) {
   if (!props.products.length) return <p role="status">ยังไม่มีสินค้าที่พร้อมแสดงในขณะนี้</p>;
@@ -116,6 +129,12 @@ export function ProductsIndexCarousel(props: CarouselProps) {
 }
 
 function CarouselScene({ products, categories }: CarouselProps) {
+  const [failedSources, setFailedSources] = useState<string[]>([]);
+  const failedPhoto = (image: HTMLImageElement) => {
+    const src = image.getAttribute("src");
+    if (!src || src === PRODUCT_IMAGE_PLACEHOLDER) return;
+    setFailedSources((previous) => (previous.includes(src) ? previous : [...previous, src]));
+  };
   const count = products.length;
   const wrap = useCallback((n: number) => ((n % count) + count) % count, [count]);
   const counter = (index: number) => String(index + 1).padStart(2, "0") + " / " + count;
@@ -134,14 +153,21 @@ function CarouselScene({ products, categories }: CarouselProps) {
   const transition = useRef<Transition | null>(null),
     lastSwitch = useRef(0);
   const [size, setSize] = useState({ w: 1440, h: 740 });
-  const [frame, setFrame] = useState({ position: 0, energy: 0, time: 0 });
-  const [detail, setDetail] = useState<number | null>(null);
+  const [frame, setFrame] = useReturnState(
+    "products-carousel.frame",
+    { position: 0, energy: 0, time: 0 },
+    rememberFrame,
+  );
+  const [detail, setDetail] = useReturnState<number | null>("products-carousel.detail", null);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [categoryCursor, setCategoryCursor] = useState(0);
   const controls = phone ? mobileControls : engine;
-  const selectMobile = useCallback((next: number) => {
-    setFrame({ position: next, energy: 0, time: 0 });
-  }, []);
+  const selectMobile = useCallback(
+    (next: number) => {
+      setFrame({ position: next, energy: 0, time: 0 });
+    },
+    [setFrame],
+  );
   const active = wrap(Math.round(frame.position)),
     index = detail ?? active,
     product = products[index];
@@ -340,7 +366,12 @@ function CarouselScene({ products, categories }: CarouselProps) {
       element.removeEventListener("touchend", finishSwipe);
       element.removeEventListener("touchcancel", cancelSwipe);
     };
-  }, [count, wrap, phone]);
+  }, [count, wrap, phone, setFrame]);
+
+  useLayoutEffect(() => {
+    const modal = dialog.current;
+    return () => modal?.close();
+  }, []);
 
   useLayoutEffect(() => {
     if (detail === null) return;
@@ -399,7 +430,7 @@ function CarouselScene({ products, categories }: CarouselProps) {
         );
       } else {
         const { previous, direction, speed } = effect;
-        ghost.src = products[previous].image;
+        ghost.src = images.current[previous]?.currentSrc || PRODUCT_IMAGE_PLACEHOLDER;
         ghost.className = styles.trail;
         image.parentElement!.append(ghost);
         const blur = "blur(" + Math.min(24, 14 * speed) + "px)";
@@ -647,9 +678,16 @@ function CarouselScene({ products, categories }: CarouselProps) {
                 ref={(node) => {
                   images.current[i] = node;
                 }}
-                src={p.image || undefined}
-                onError={(event) => fallbackPhoto(event.currentTarget, p)}
-                alt={p.image ? p.model : ""}
+                src={productPhoto(p, failedSources)}
+                data-product-image-placeholder={
+                  productPhoto(p, failedSources) === PRODUCT_IMAGE_PLACEHOLDER || undefined
+                }
+                onError={(event) => failedPhoto(event.currentTarget)}
+                alt={
+                  productPhoto(p, failedSources) === PRODUCT_IMAGE_PLACEHOLDER
+                    ? `${PRODUCT_IMAGE_PLACEHOLDER_LABEL}: ${p.model}`
+                    : p.model
+                }
                 decoding="async"
                 onLoad={(e) => {
                   const img = e.currentTarget;
@@ -663,6 +701,11 @@ function CarouselScene({ products, categories }: CarouselProps) {
                     });
                 }}
               />
+              {productPhoto(p, failedSources) === PRODUCT_IMAGE_PLACEHOLDER && (
+                <span className={styles.placeholderCaption} aria-hidden="true">
+                  {PRODUCT_IMAGE_PLACEHOLDER_LABEL}
+                </span>
+              )}
             </button>
           );
         })}
@@ -735,10 +778,22 @@ function CarouselScene({ products, categories }: CarouselProps) {
               <img
                 key={product.id}
                 ref={hero}
-                src={product.image || undefined}
-                onError={(event) => fallbackPhoto(event.currentTarget, product)}
-                alt={product.image ? product.model : ""}
+                src={productPhoto(product, failedSources)}
+                data-product-image-placeholder={
+                  productPhoto(product, failedSources) === PRODUCT_IMAGE_PLACEHOLDER || undefined
+                }
+                onError={(event) => failedPhoto(event.currentTarget)}
+                alt={
+                  productPhoto(product, failedSources) === PRODUCT_IMAGE_PLACEHOLDER
+                    ? `${PRODUCT_IMAGE_PLACEHOLDER_LABEL}: ${product.model}`
+                    : product.model
+                }
               />
+              {productPhoto(product, failedSources) === PRODUCT_IMAGE_PLACEHOLDER && (
+                <span className={styles.placeholderCaption} aria-hidden="true">
+                  {PRODUCT_IMAGE_PLACEHOLDER_LABEL}
+                </span>
+              )}
             </div>
             <article>
               <h2 id="carousel-detail-title">{product.model}</h2>
@@ -781,8 +836,11 @@ function CarouselScene({ products, categories }: CarouselProps) {
                   }
                 >
                   <img
-                    src={p.image || undefined}
-                    onError={(event) => fallbackPhoto(event.currentTarget, p)}
+                    src={productPhoto(p, failedSources)}
+                    data-product-image-placeholder={
+                      productPhoto(p, failedSources) === PRODUCT_IMAGE_PLACEHOLDER || undefined
+                    }
+                    onError={(event) => failedPhoto(event.currentTarget)}
                     alt=""
                   />
                 </button>

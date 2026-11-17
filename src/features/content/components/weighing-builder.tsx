@@ -1,6 +1,7 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 
-import { useRef, useState } from "react";
+import { useRef, type SetStateAction } from "react";
 import { Monitor, Layers, Cable, Search, Check, Plus, ChevronRight, Trash2 } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./weighing-builder.module.css";
@@ -22,11 +23,24 @@ function optionName(option: WeighingOption) {
 }
 
 export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
-  const [kind, setKind] = useState<WeighingOption["kind"]>("head");
+  const [kind, setKind] = useReturnState<WeighingOption["kind"]>("weighing-builder.kind", "head");
   const heading = useRef<HTMLHeadingElement>(null);
-  const [query, setQuery] = useState("");
-  const [group, setGroup] = useState("");
-  const [selected, setSelected] = useState<WeighingOption[]>([]);
+  const [query, setQuery] = useReturnState("weighing-builder.query", "");
+  const [group, setGroup] = useReturnState("weighing-builder.group", "");
+  const [selectedCodes, setSelectedCodes] = useReturnState<string[]>(
+    "weighing-builder.selected",
+    [],
+  );
+  const selected = selectedCodes.flatMap(
+    (code) => options.find((option) => option.code === code) ?? [],
+  );
+  const setSelected = (next: SetStateAction<WeighingOption[]>) =>
+    setSelectedCodes((previous) => {
+      const current = previous.flatMap(
+        (code) => options.find((option) => option.code === code) ?? [],
+      );
+      return (typeof next === "function" ? next(current) : next).map((option) => option.code);
+    });
   const head = selected.find((o) => o.kind === "head");
   const platform = selected.find((o) => o.kind === "platform");
   const first = selected[0];
@@ -132,17 +146,14 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                 .map((item) => (
                   <div key={item.code} className={styles.item}>
                     <div className={styles.thumb} aria-hidden="true">
-                      {item.image || item.fallbackImage ? (
-                        <ProductImage
-                          src={item.image}
-                          fallbackSrc={item.fallbackImage}
-                          alt=""
-                          fill
-                          sizes="48px"
-                        />
-                      ) : (
-                        <Icon size={20} />
-                      )}
+                      <ProductImage
+                        placeholder="product"
+                        src={item.image}
+                        fallbackSrc={item.fallbackImage}
+                        alt=""
+                        fill
+                        sizes="48px"
+                      />
                     </div>
                     <div className={styles.itemInfo}>
                       <strong>{item.displayName ?? item.code}</strong>
@@ -241,17 +252,16 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
             const newTab = o.detailHref.startsWith("/products/");
             return (
               <article key={o.code}>
-                {o.image && (
-                  <div className={styles.photo}>
-                    <ProductImage
-                      src={o.image}
-                      fallbackSrc={o.fallbackImage}
-                      alt={o.kind === "platform" ? `ภาพชุดอ้างอิง ${o.code}` : o.code}
-                      fill
-                      sizes="(max-width:600px) 90vw, (max-width:1000px) 40vw, 240px"
-                    />
-                  </div>
-                )}
+                <div className={styles.photo}>
+                  <ProductImage
+                    placeholder="product"
+                    src={o.image}
+                    fallbackSrc={o.fallbackImage}
+                    alt={o.kind === "platform" ? `ภาพชุดอ้างอิง ${o.code}` : o.code}
+                    fill
+                    sizes="(max-width:600px) 90vw, (max-width:1000px) 40vw, 240px"
+                  />
+                </div>
                 <div className={styles.copy}>
                   <h3>
                     <a

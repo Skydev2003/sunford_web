@@ -8,6 +8,17 @@ import { getPlatformSubcategories } from "../../src/features/catalog/data/platfo
 import { getPosSubcategories } from "../../src/features/catalog/data/pos-subcategories";
 import { getAccessorySubcategories } from "../../src/features/catalog/data/accessory-subcategories";
 
+test("current saved navigation retains additive disabled flags without changing legacy consumers", () => {
+  const saved = structuredClone(defaultNavigation);
+  saved[0].links[1].disabled = true;
+  saved[0].groups![0].links[0].disabled = true;
+  const before = JSON.stringify(saved);
+  const result = resolveNavigationItems(saved);
+  assert.equal(result[0].links[1].disabled, true);
+  assert.equal(result[0].groups![0].links[0].disabled, true);
+  assert.equal(JSON.stringify(saved), before);
+});
+
 test("legacy saved navigation adopts the new company menu without mutating saved data", () => {
   const legacy = [{ label: "เครื่องชั่ง", href: "/products", links: [] }];
   assert.equal(resolveNavigationItems(legacy), defaultNavigation);

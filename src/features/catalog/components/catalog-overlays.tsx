@@ -1,7 +1,7 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/site/components/categories-provider";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { ArrowRight, GitCompareArrows, Search, X } from "lucide-react";
@@ -28,7 +28,8 @@ export function CatalogOverlays({
   const setCompareOpen = useCatalogStore((s) => s.setCompareOpen);
   const clearCompare = useCatalogStore((s) => s.clearCompare);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
-  const [search, setSearch] = useState("");
+  const search = useCatalogStore((s) => s.overlayQuery);
+  const setSearch = (overlayQuery: string) => useCatalogStore.setState({ overlayQuery });
   const comparisonTable = useRef<HTMLDivElement>(null);
   const finderSearch = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
@@ -91,6 +92,7 @@ export function CatalogOverlays({
           {found.slice(0, 40).map((p) => (
             <Link key={p.id} href={`/products/${p.slug}`} onClick={() => setSearchOpen(false)}>
               <ProductImage
+                placeholder="product"
                 src={p.image}
                 fallbackSrc={p.fallbackImage}
                 alt={p.name}
@@ -181,6 +183,7 @@ export function CatalogOverlays({
                           </button>
                         </Tooltip>
                         <ProductImage
+                          placeholder="product"
                           src={p.image}
                           fallbackSrc={p.fallbackImage}
                           alt={p.name}

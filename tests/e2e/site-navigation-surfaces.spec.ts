@@ -92,9 +92,17 @@ for (const width of [390, 834, 1440]) {
 
       let historySteps = 1;
       if (!(await page.locator('a[href="/service"]:visible').count())) {
-        await page.locator('a[href="/contact-us"]:visible').first().click();
-        await ready(page, "/contact-us");
-        historySteps += 1;
+        const disclosure = page
+          .locator("footer:visible details")
+          .filter({ has: page.locator('a[href="/service"]') })
+          .first();
+        if (await disclosure.count()) {
+          await disclosure.locator("summary").click();
+        } else {
+          await page.locator('a[href="/contact-us"]:visible').first().click();
+          await ready(page, "/contact-us");
+          historySteps += 1;
+        }
       }
       await page.locator('a[href="/service"]:visible').first().click();
       await ready(page, "/service");

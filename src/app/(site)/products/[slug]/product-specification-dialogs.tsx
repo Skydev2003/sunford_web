@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useReturnState } from "@/features/site/history/return-state";
 import { ChevronDown, X } from "lucide-react";
 import styles from "./product-detail.module.css";
 
@@ -12,6 +13,13 @@ type SpecificationGroup = {
 
 function SpecificationCard({ group }: { group: SpecificationGroup }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const [open, setOpen] = useReturnState(`product-specification.${group.id}`, false);
+  useEffect(() => {
+    const element = dialog.current;
+    if (open) element?.showModal();
+    else element?.close();
+    return () => element?.close();
+  }, [open]);
   const titleId = `product-specification-${group.id}`;
 
   return (
@@ -21,19 +29,21 @@ function SpecificationCard({ group }: { group: SpecificationGroup }) {
         type="button"
         aria-haspopup="dialog"
         aria-labelledby={`${titleId}-card`}
-        onClick={() => dialog.current?.showModal()}
+        onClick={() => setOpen(true)}
       >
         <span id={`${titleId}-card`}>{group.title}</span>
         <ChevronDown size={18} aria-hidden="true" />
       </button>
-      <dialog ref={dialog} className={styles.specDialog} aria-labelledby={titleId}>
+      <dialog
+        ref={dialog}
+        className={styles.specDialog}
+        aria-labelledby={titleId}
+        data-return-scope={`specification-${group.id}`}
+        onCancel={() => setOpen(false)}
+      >
         <div className={styles.dialogHeader}>
           <h3 id={titleId}>{group.title}</h3>
-          <button
-            className={styles.dialogClose}
-            type="button"
-            onClick={() => dialog.current?.close()}
-          >
+          <button className={styles.dialogClose} type="button" onClick={() => setOpen(false)}>
             <X size={16} aria-hidden="true" /> ปิด
           </button>
         </div>

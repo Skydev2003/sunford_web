@@ -114,8 +114,11 @@ test("keyboard tooltip dismisses with Escape and remains visible above a modal",
 test("tooltip descriptions follow comparison state while the original action still works", async ({
   page,
 }) => {
-  await page.goto("/products");
-  await page.locator(".header-compare").click();
+  await page.goto("/products?catalog=all");
+  await page
+    .getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" })
+    .getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true })
+    .click();
   const cancel = page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true });
   await cancel.hover();
   await expect(page.getByRole("tooltip")).toHaveText("ยกเลิกการเปรียบเทียบ");
@@ -134,8 +137,11 @@ test("tooltip descriptions follow comparison state while the original action sti
 });
 
 test("tooltip at the bottom edge stays within narrow and wide viewports", async ({ page }) => {
-  await page.goto("/products");
-  await page.locator(".header-compare").click();
+  await page.goto("/products?catalog=all");
+  await page
+    .getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" })
+    .getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true })
+    .click();
   for (const width of [320, 390, 1440]) {
     await page.mouse.move(0, 0);
     await page.setViewportSize({ width, height: 844 });

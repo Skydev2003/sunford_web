@@ -1,4 +1,5 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -17,7 +18,7 @@ import {
   ShieldCheck,
   Wrench,
 } from "lucide-react";
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useRef, type KeyboardEvent } from "react";
 import { sunford } from "@/features/home/data/brand";
 import { afterSalesContact, afterSalesServices } from "../data/after-sales";
 import styles from "./after-sales-page.module.css";
@@ -68,7 +69,7 @@ const stepHeadings: Record<string, string[]> = {
 };
 
 export function AfterSalesPage() {
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useReturnState("after-sales-page.selected", 0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const service = afterSalesServices[selected];
   const isPickup = service.id === "pickup";

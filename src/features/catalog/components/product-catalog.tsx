@@ -1,11 +1,11 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 import { useCategories } from "@/features/site/components/categories-provider";
 import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
 import { type CatalogProduct } from "../types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { ProductCard } from "./product-card";
-import { useState } from "react";
 import { catalogDefaults } from "@/features/site/data/settings";
 
 export function ProductCatalog({
@@ -30,7 +30,7 @@ export function ProductCatalog({
   const catalogueQuery = useCatalogStore((s) => s.query);
   const setCategory = useCatalogStore((s) => s.setCategory);
   const setCatalogueQuery = useCatalogStore((s) => s.setQuery);
-  const [scopedQuery, setScopedQuery] = useState("");
+  const [scopedQuery, setScopedQuery] = useReturnState("product-catalog.scopedQuery", "");
   const query = scoped ? scopedQuery : catalogueQuery;
   const setQuery = scoped ? setScopedQuery : setCatalogueQuery;
   const filtered = products.filter(
@@ -45,7 +45,10 @@ export function ProductCatalog({
       ? filtered.filter((p) => p.featured).slice(0, 3)
       : filtered;
   const filterKey = `${category}:${query}`;
-  const [pagination, setPagination] = useState({ key: filterKey, limit: 24 });
+  const [pagination, setPagination] = useReturnState("product-catalog.pagination", {
+    key: filterKey,
+    limit: 24,
+  });
   const limit = pagination.key === filterKey ? pagination.limit : 24;
   const visible = matching.slice(0, limit);
   const Heading = headingLevel ?? (full && !scoped ? "h1" : "h2");

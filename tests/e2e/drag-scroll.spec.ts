@@ -39,13 +39,21 @@ test("video strip drags without playing, hides its scrollbar and still opens on 
   await expect.poll(() => track.getAttribute("data-active-index")).toMatch(/^\d+$/);
   await expect(page.getByRole("dialog")).toBeHidden();
 
-  await page.route("https://www.youtube-nocookie.com/**", (route) => route.abort());
+  await page
+    .context()
+    .route("https://www.youtube.com/watch?*", (route) =>
+      route.fulfill({ contentType: "text/html", body: "YouTube destination" }),
+    );
   const current = await track.getAttribute("data-active-index");
-  await track.locator(`[data-focus-copy="1"][data-focus-index="${current}"]`).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.locator(".video-player")).toHaveAttribute("src", /youtube-nocookie.com\/embed/);
-  await page.keyboard.press("Escape");
+  const card = track.locator(`[data-focus-copy="1"][data-focus-index="${current}"]`);
+  const href = (await card.getAttribute("href"))!;
+  const opened = page.waitForEvent("popup");
+  await card.click();
+  const popup = await opened;
+  await expect(popup).toHaveURL(href);
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("dialog")).toBeHidden();
+  await popup.close();
 });
 
 test("story strip drags without navigating and links remain keyboard accessible", async ({
@@ -63,9 +71,12 @@ test("story strip drags without navigating and links remain keyboard accessible"
   const href = await link.getAttribute("href");
   await link.focus();
   await expect(link).toBeFocused();
+  const opened = page.waitForEvent("popup");
   await page.keyboard.press("Enter");
-  // The development server may compile this article on the first navigation.
-  await expect(page).toHaveURL(new URL(href!, page.url()).href, { timeout: 15000 });
+  const popup = await opened;
+  await expect(popup).toHaveURL(new URL(href!, page.url()).href, { timeout: 15000 });
+  await expect(page).toHaveURL(/\/$/);
+  await popup.close();
 });
 
 test("touch swipes still scroll both strips without opening cards or overflowing the page", async ({

@@ -59,10 +59,9 @@ export function Header({
             : (item.groups ?? defaultNavigationGroups[item.href] ?? []);
         return {
           ...item,
-          links: item.links.map((link) => [link.label, link.href]),
           groups,
           hasSubmenu: item.links.length > 0 || groups.length > 0,
-          isProductMenu: item.href === "/products" || item.href.startsWith("/products/category/"),
+          isProductMenu: item.href !== "/service",
         };
       }),
     [items, extras],
@@ -104,7 +103,11 @@ export function Header({
     clearTimers();
     blockedTrigger.current =
       headerRef.current?.querySelector<HTMLElement>(".desktop-nav > a:hover") ?? null;
-    return clearTimers;
+    return () => {
+      clearTimers();
+      setActiveMenu(null);
+      setMenuOpen(false);
+    };
   }, [pathname, clearTimers]);
   const openDesktopMenu = useCallback(
     (index: number) => {
@@ -189,6 +192,31 @@ export function Header({
       clearTimers();
     };
   }, [clearTimers, closeDesktopMenu]);
+  const submenuLink = (link: NavigationItem["links"][number], mobile = false, index?: number) =>
+    link.disabled ? (
+      <span
+        key={link.href}
+        className={mobile ? "nav-unavailable" : "submenu-item nav-unavailable"}
+        role="link"
+        aria-disabled="true"
+      >
+        <span>{link.label}</span>
+      </span>
+    ) : (
+      <Link
+        key={link.href}
+        className={mobile ? undefined : "submenu-item"}
+        style={
+          index === undefined ? undefined : ({ "--nav-item-index": index + 1 } as CSSProperties)
+        }
+        href={link.href}
+        prefetch={false}
+        onClick={mobile ? () => setMenuOpen(false) : closeDesktopMenu}
+        onNavigate={(event) => navigateSamePageHash(event, link.href)}
+      >
+        <span>{link.label}</span>
+      </Link>
+    );
   return (
     <>
       <header
@@ -325,52 +353,27 @@ export function Header({
               <div
                 key={`${index}:${item.href}`}
                 ref={displayMenu === index ? panelRef : undefined}
-                className={`submenu-panel ${item.href === "/solutions" ? "submenu-panel--solutions" : ""} ${item.href === "/products" || item.href.startsWith("/products/category/") || item.href === "/applications-and-softwares" ? "submenu-panel--wide" : ""} ${displayMenu === index ? "is-active" : ""}`}
+                className={`submenu-panel submenu-panel--wide ${displayMenu === index ? "is-active" : ""}`}
                 data-all-products={item.href === "/products" || undefined}
+                data-nav-menu={item.href}
                 aria-hidden={activeMenu === null || displayMenu !== index}
                 inert={activeMenu === null || displayMenu !== index}
               >
-                <div className="submenu-group submenu-group-primary">
-                  <p className="submenu-item">
-                    {item.isProductMenu
-                      ? item.submenuLabel
-                      : `สำรวจ ${item.submenuLabel || item.label}`}
-                  </p>
+                <div className="submenu-group submenu-group-primary" data-nav-column="primary">
+                  <p className="submenu-item">{item.submenuLabel ?? item.label}</p>
                   <div className="submenu-links">
-                    {item.links.map(([label, href], linkIndex) => (
-                      <Link
-                        key={`${linkIndex}:${href}`}
-                        className="submenu-item"
-                        style={{ "--nav-item-index": linkIndex + 1 } as CSSProperties}
-                        href={href}
-                        prefetch={false}
-                        onClick={closeDesktopMenu}
-                        onNavigate={(event) => navigateSamePageHash(event, href)}
-                      >
-                        <span>{label}</span>
-                      </Link>
-                    ))}
+                    {item.links.map((link, linkIndex) => submenuLink(link, false, linkIndex))}
                   </div>
                 </div>
                 {item.groups.map((group, groupIndex) => (
                   <div
                     key={group.label}
+                    data-nav-column={groupIndex === 0 ? "uses" : "help"}
                     className={`submenu-group ${item.href === "/#support" ? "" : "submenu-group-secondary"}`}
                     style={{ "--nav-group-index": groupIndex + 1 } as CSSProperties}
                   >
                     <p className="submenu-item">{group.label}</p>
-                    {group.links.map((link) => (
-                      <Link
-                        key={link.href}
-                        className="submenu-item"
-                        href={link.href}
-                        prefetch={false}
-                        onClick={closeDesktopMenu}
-                        onNavigate={(event) => navigateSamePageHash(event, link.href)}
-                      >
-                        <span>{link.label}</span>
-                      </Link>
-                    ))}
+                    {group.links.map((link) => submenuLink(link))}
                   </div>
                 ))}
               </div>
@@ -404,31 +407,20 @@ export function Header({
                     <div
                       className="mobile-nav-panel"
                       data-all-products={item.href === "/products" || undefined}
+                      data-nav-menu={item.href}
                     >
-                      {item.href === "/products" && <p>{item.submenuLabel}</p>}
-                      {item.links.map(([label, href]) => (
-                        <Link
-                          key={href}
-                          href={href}
-                          onClick={() => setMenuOpen(false)}
-                          onNavigate={(event) => navigateSamePageHash(event, href)}
+                      <div className="mobile-nav-section" data-nav-column="primary">
+                        <p>{item.submenuLabel ?? item.label}</p>
+                        {item.links.map((link) => submenuLink(link, true))}
+                      </div>
+                      {item.groups.map((group, groupIndex) => (
+                        <div
+                          key={group.label}
+                          className="mobile-nav-section"
+                          data-nav-column={groupIndex === 0 ? "uses" : "help"}
                         >
-                          {label}
-                        </Link>
-                      ))}
-                      {item.groups.map((group) => (
-                        <div key={group.label} className="mobile-nav-section">
                           <p>{group.label}</p>
-                          {group.links.map((link) => (
-                            <Link
-                              key={link.href}
-                              href={link.href}
-                              onClick={() => setMenuOpen(false)}
-                              onNavigate={(event) => navigateSamePageHash(event, link.href)}
-                            >
-                              {link.label}
-                            </Link>
-                          ))}
+                          {group.links.map((link) => submenuLink(link, true))}
                         </div>
                       ))}
                     </div>

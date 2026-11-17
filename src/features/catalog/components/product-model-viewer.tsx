@@ -86,7 +86,13 @@ export function ProductModelViewer({
       )}
       {status === "error" && (
         <div className="model-fallback" role="status">
-          <ProductImage src={poster} alt={name} fill sizes="(max-width: 900px) 90vw, 50vw" />
+          <ProductImage
+            placeholder="product"
+            src={poster}
+            alt={name}
+            fill
+            sizes="(max-width: 900px) 90vw, 50vw"
+          />
           <p>ไม่สามารถแสดงโมเดลได้ กรุณาเลือกดูรูปสินค้าด้านล่าง</p>
         </div>
       )}

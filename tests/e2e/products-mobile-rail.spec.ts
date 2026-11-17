@@ -188,7 +188,7 @@ test("a missing mobile product image preserves card geometry and navigation", as
   });
   const { scene, rail } = await visit(page);
   const card = rail.locator("[data-product-photo]").first();
-  await expect(card.getByRole("img", { name: /^พื้นที่สำหรับรูปภาพ/ })).toBeVisible();
+  await expect(card.getByRole("img", { name: /^ยังไม่มีข้อมูลสินค้าเครื่องชั่ง/ })).toBeVisible();
   const bounds = (await card.boundingBox())!;
   expect(bounds.width).toBeCloseTo(393 * 0.78, 0);
   await scene.getByRole("button", { name: "สินค้ารุ่นถัดไป", exact: true }).tap();

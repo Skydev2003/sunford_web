@@ -25,6 +25,7 @@ export function Modal({
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
+      dialog?.close();
       document.body.style.overflow = previous;
     };
   }, [open]);
@@ -32,7 +33,17 @@ export function Modal({
     <dialog
       ref={ref}
       className={`modal ${wide ? "modal-wide" : ""}`}
-      onCancel={onClose}
+      onCancel={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClose();
+      }}
+      onKeyDown={(event) => {
+        if (event.key !== "Escape") return;
+        event.preventDefault();
+        event.stopPropagation();
+        onClose();
+      }}
       aria-label={title}
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();

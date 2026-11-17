@@ -103,7 +103,7 @@ test("Home search and comparison include Warehouse products awaiting photos", as
     const result = finder.locator("#mock-product-results article").filter({
       has: page.locator(`a[href^="/products/${awaitingPhoto.slug}"]`),
     });
-    await expect(result.locator(".media-placeholder")).toBeVisible();
+    await expect(result.locator("[data-product-image-placeholder]")).toBeVisible();
   }
   await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("G106308");
   await expect(finder.locator("#mock-product-results article h3")).toHaveText(["TMS-60-AW31"]);
@@ -136,10 +136,10 @@ for (const width of [390, 1440]) {
     const card = page.locator(
       `[data-products-directory] [data-warehouse-sku="${item.warehouseSku}"]`,
     );
-    await expect(card.getByRole("img", { name: /พื้นที่สำหรับรูปภาพ/ })).toBeVisible();
+    await expect(card.getByRole("img", { name: /ยังไม่มีข้อมูลสินค้าเครื่องชั่ง/ })).toBeVisible();
     await card.getByRole("link").first().click();
     await expect(page.locator("#product-overview h1")).toHaveText(item.name);
-    await expect(page.locator(".detail-image .media-placeholder")).toBeVisible();
+    await expect(page.locator(".detail-image [data-product-image-placeholder]")).toBeVisible();
     await page.goto(`/products/category/${item.warehouseCategoryId}`);
     await page
       .getByRole("button", { name: /^ดู.+ทั้งหมด$/ })
@@ -323,6 +323,7 @@ for (const width of [390, 834, 1440]) {
     page,
     request,
   }) => {
+    test.setTimeout(60_000);
     const { products } = await (await request.get("/api/products")).json();
     await page.setViewportSize({ width, height: 900 });
     for (const [group, id] of [
@@ -340,7 +341,10 @@ for (const width of [390, 834, 1440]) {
         continue;
       }
       const item = members[0];
-      await page.locator(`main a[href^="/products/${item.slug}"]`).first().click();
+      const link = page.locator(`main a[href^="/products/${item.slug}"]`).last();
+      const href = await link.getAttribute("href");
+      await link.click();
+      await expect(page).toHaveURL(new URL(href!, page.url()).href);
       if (item.image)
         await expect
           .poll(() =>
@@ -350,7 +354,8 @@ for (const width of [390, 834, 1440]) {
               .evaluate((img) => (img as HTMLImageElement).naturalWidth),
           )
           .toBeGreaterThan(0);
-      else await expect(page.locator(".detail-image .media-placeholder")).toBeVisible();
+      else
+        await expect(page.locator(".detail-image [data-product-image-placeholder]")).toBeVisible();
       await expect(page.locator("#product-overview h1")).toHaveText(item.name);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,

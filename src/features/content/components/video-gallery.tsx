@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useReturnState } from "@/features/site/history/return-state";
+import { useEffect, useState } from "react";
 import { Play } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { ProductImage } from "@/components/ui/product-image";
@@ -18,7 +19,14 @@ export function VideoGallery({
   focusCarousel?: boolean;
   openInYoutube?: boolean;
 }) {
-  const [active, setActive] = useState<string | null>(null);
+  const [active, setActive] = useReturnState<string | null>(`video-gallery.${title}`, null);
+  const [playRequested, setPlayRequested] = useState(false);
+  useEffect(
+    () => () => {
+      setPlayRequested(false);
+    },
+    [],
+  );
   if (!videos.length) return null;
   const Track = focusCarousel ? FocusDragScroll : DragScroll;
   const Card = openInYoutube ? "a" : "button";
@@ -44,7 +52,13 @@ export function VideoGallery({
                   target: "_blank",
                   rel: "noopener noreferrer",
                 }
-              : { type: "button" as const, onClick: () => setActive(video.id) })}
+              : {
+                  type: "button" as const,
+                  onClick: () => {
+                    setPlayRequested(true);
+                    setActive(video.id);
+                  },
+                })}
             aria-label={
               openInYoutube
                 ? `เปิด ${video.title ?? `${title} ${index + 1}`} บน YouTube (แท็บใหม่)`
@@ -68,7 +82,7 @@ export function VideoGallery({
           {active && (
             <iframe
               className="video-player"
-              src={`https://www.youtube-nocookie.com/embed/${active}?autoplay=1`}
+              src={`https://www.youtube-nocookie.com/embed/${active}?autoplay=${playRequested ? 1 : 0}`}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
               allowFullScreen

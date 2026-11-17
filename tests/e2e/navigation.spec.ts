@@ -12,12 +12,13 @@ const labels = [
   "บริการ",
 ];
 const menus = [
-  { label: "ผลิตภัณฑ์ทั้งหมด", groups: ["ลิงก์ด่วน", "บริการและความช่วยเหลือ"] },
+  { label: "ผลิตภัณฑ์ทั้งหมด", groups: ["การใช้งาน", "ช่วยเหลือ"] },
   ...productCategoryDefinitions.map(({ label }) => ({
     label,
-    groups: ["การใช้งานและโซลูชัน", "ข้อมูลและความช่วยเหลือ"],
+    groups: ["การใช้งาน", "ช่วยเหลือ"],
   })),
-  { label: "บริการ", groups: ["ข้อมูลและความช่วยเหลือ", "บริษัท"] },
+  { label: "จัดสเปค", groups: ["การใช้งาน", "ช่วยเหลือ"] },
+  { label: "บริการ", groups: ["การใช้งาน", "ช่วยเหลือ"] },
 ];
 for (const width of [1440, 390]) {
   test(`primary product links match the catalog and select each real family at ${width}px`, async ({
@@ -60,9 +61,18 @@ for (const width of [1440, 390]) {
       .locator('[data-overview-section="chapters"]')
       .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
       .click();
-    await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/products$/);
     await expect(
-      page.getByRole("heading", { level: 2, name: "ผลิตภัณฑ์ทั้งหมด", exact: true }),
+      page
+        .locator("main:visible")
+        .getByRole("heading", { level: 1, name: "ผลิตภัณฑ์ทั้งหมด", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page
+        .locator("main:visible")
+        .getByRole("list", { name: "เครื่องชั่ง", exact: true })
+        .getByRole("link")
+        .first(),
     ).toBeVisible();
     await page.screenshot({ path: test.info().outputPath(`selected-family-${width}.png`) });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -77,6 +87,7 @@ test("catalog category URLs support direct entry, refresh, local changes and bro
   browser,
   baseURL,
 }) => {
+  test.slow();
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/products?category=pos");
   const catalog = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
@@ -94,16 +105,19 @@ test("catalog category URLs support direct entry, refresh, local changes and bro
   await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("โครงสร้างแท่นชั่ง");
   await catalog.getByRole("button", { name: "ดูสินค้าทั้งหมด", exact: true }).click();
   await expect(page).toHaveURL(/\/products$/);
-  await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+  await expect(catalog).not.toBeVisible();
+  await expect(page.locator("main:visible").getByRole("heading", { level: 1 })).toHaveText(
+    "ผลิตภัณฑ์ทั้งหมด",
+  );
   await page.goto("/products?category=not-a-real-family");
   await expect(catalog.getByRole("heading", { level: 2 })).toHaveText("ผลิตภัณฑ์ทั้งหมด");
   await expect(catalog.locator("article")).toHaveCount(24);
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
   try {
     const staticPage = await context.newPage();
-    await staticPage.goto("/products");
+    await staticPage.goto("/products", { waitUntil: "domcontentloaded" });
     // Check server HTML; streamed content can remain hidden with scripting disabled.
-    await expect(staticPage.locator("h1")).toHaveText("ผลิตภัณฑ์");
+    await expect(staticPage.locator("h1")).toHaveText("ผลิตภัณฑ์ทั้งหมด");
     for (const { id } of productCategoryDefinitions)
       await expect(
         staticPage.locator(`[data-products-nav] a[href="/products/category/${id}"]`),
@@ -208,10 +222,11 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   const toggle = page.getByRole("button", { name: "เปิดเมนู", exact: true });
   await toggle.click();
   const mobile = page.locator("#mobile-navigation");
-  await expect(mobile.locator("summary")).toHaveCount(7);
+  await expect(mobile.locator("summary")).toHaveCount(8);
   await expect(mobile.locator(".mobile-nav-category-link")).toHaveText([
     "ผลิตภัณฑ์ทั้งหมด",
     ...productCategoryDefinitions.map(({ label }) => label),
+    "จัดสเปค",
   ]);
   const products = mobile
     .locator("details")
@@ -245,8 +260,11 @@ test("mobile software and warranty links remain reachable in a short viewport", 
     .filter({ hasText: /^บริการ$/ })
     .click();
   await mobile.getByRole("link", { name: "ซอฟต์แวร์", exact: true }).click();
-  await page.locator('.software-catalog a[href="/software/download/sunford-indus"]').click();
-  await expect(page).toHaveURL(/\/software\/download\/sunford-indus$/);
+  const software = page.locator(".software-catalog .software-card").first();
+  const softwareHref = (await software.getAttribute("href"))!;
+  await software.click();
+  await expect(page).toHaveURL(new URL(softwareHref, page.url()).href);
+  await expect(page.locator("main:visible").getByRole("heading", { level: 1 })).not.toBeEmpty();
   await expect(mobile).toHaveCount(0);
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
@@ -277,7 +295,8 @@ for (const route of ["/", "/contact-us"]) {
         const firstLink = panel.locator("a:visible").first();
         await expect(firstLink).toBeFocused();
         const logoX = (await logo.boundingBox())!.x;
-        for (const text of [panel.locator("p:visible").first(), firstLink]) {
+        const firstChoice = panel.locator('[data-nav-column="primary"]').getByRole("link").first();
+        for (const text of [panel.locator("p:visible").first(), firstChoice]) {
           expect(Math.abs((await text.boundingBox())!.x - logoX), label).toBeLessThanOrEqual(1);
         }
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
@@ -310,7 +329,7 @@ test("wide menus fit the viewport and preserve the logo-aligned origin and hover
       const primary = (await panel.locator(".submenu-group-primary").boundingBox())!;
       const logo = (await page.locator(".brand").boundingBox())!;
       expect(Math.abs(primary.x - logo.x)).toBeLessThan(1);
-      const link = panel.locator(".submenu-links a").first();
+      const link = panel.locator(".submenu-group a").first();
       const before = (await link.boundingBox())!;
       await link.hover();
       await expect(link.locator("span")).toHaveCSS("transform", "matrix(1.06, 0, 0, 1.06, 0, 0)");

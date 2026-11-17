@@ -38,11 +38,7 @@ for (const route of routes) {
       await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
     }
     await expect(panel.locator("a")).toHaveCount(11);
-    await expect(panel.locator("p")).toHaveText([
-      "สำรวจผลิตภัณฑ์",
-      "ลิงก์ด่วน",
-      "บริการและความช่วยเหลือ",
-    ]);
+    await expect(panel.locator("p")).toHaveText(["สินค้า", "การใช้งาน", "ช่วยเหลือ"]);
     const first = await panel.locator("a").first().boundingBox();
     const logo = await nav.locator('a[href="/"]:visible').first().boundingBox();
     expect(Math.abs(first!.x - logo!.x)).toBeLessThanOrEqual(1);
@@ -99,7 +95,10 @@ for (const route of routes) {
       const panel = nav.locator("[data-all-products]:visible");
       await expect(panel.locator("a")).toHaveCount(11);
       await page.screenshot({ path: test.info().outputPath("mobile-menu.png") });
-      await panel.getByRole("link", { name: "ดูผลิตภัณฑ์ทั้งหมด", exact: true }).tap();
+      if (route === "/")
+        await nav.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).tap();
+      else await nav.getByRole("button", { name: "เมนูหลัก", exact: true }).tap();
+      await link.tap();
       await expect(page).toHaveURL(/\/products$/);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
       expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");

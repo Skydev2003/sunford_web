@@ -214,6 +214,25 @@
 .photo img {
   pointer-events: none;
 }
+.photo img[data-product-image-placeholder],
+.hero img[data-product-image-placeholder],
+.thumbs img[data-product-image-placeholder] {
+  mix-blend-mode: normal;
+}
+.placeholderCaption {
+  position: absolute;
+  right: 4%;
+  bottom: 5%;
+  left: 4%;
+  color: var(--ink, #1d1d1f);
+  font-size: clamp(12px, 1.2vw, 18px);
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+}
+.photo:not([aria-current="true"]) .placeholderCaption {
+  display: none;
+}
 .scene[data-interactive] .photo img:not([data-ready="true"]) {
   opacity: 0;
 }

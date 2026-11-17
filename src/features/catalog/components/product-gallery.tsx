@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useReturnState } from "@/features/site/history/return-state";
 import { ProductImage } from "@/components/ui/product-image";
 import { Box } from "lucide-react";
 import { ProductModelViewer } from "./product-model-viewer";
@@ -20,10 +20,11 @@ export function ProductGallery({
   model?: { src: string; poster: string };
 }) {
   const initial = primaryImage ? images.indexOf(primaryImage) : -1;
-  const [active, setActive] = useState(
+  const [active, setActive] = useReturnState(
+    "product-gallery.active",
     initial >= 0 ? initial : !preferFirst && images.length > 1 ? 1 : 0,
   );
-  const [showModel, setShowModel] = useState(Boolean(model));
+  const [showModel, setShowModel] = useReturnState("product-gallery.showModel", Boolean(model));
   return (
     <div className="product-gallery">
       <div className="detail-image">
@@ -31,6 +32,7 @@ export function ProductGallery({
           <ProductModelViewer src={model.src} name={name} poster={model.poster} />
         ) : (
           <ProductImage
+            placeholder="product"
             src={images[active] || images[0]}
             fallbackSrc={(images[active] || images[0]) === primaryImage ? fallbackImage : undefined}
             alt={name}
@@ -66,6 +68,7 @@ export function ProductGallery({
               aria-pressed={!showModel && index === active}
             >
               <ProductImage
+                placeholder="product"
                 src={src}
                 fallbackSrc={src === primaryImage ? fallbackImage : undefined}
                 alt={`${name} มุมที่ ${index + 1}`}

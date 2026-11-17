@@ -87,6 +87,7 @@ export async function SolutionsOverview({ page }: { page: SourcePage }) {
         </div>
         <div className={styles.heroArt}>
           <ProductImage
+            placeholder="product"
             src={products.find((product) => product.image)?.image ?? ""}
             alt="ภาพประกอบโซลูชันการชั่งน้ำหนักสำหรับธุรกิจ"
             fill

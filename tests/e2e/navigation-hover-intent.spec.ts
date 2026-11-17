@@ -25,6 +25,37 @@ async function pauseTimers(page: Page) {
   await page.clock.pauseAt(new Date("2026-11-09T00:00:10Z"));
 }
 
+async function enterHistoryRoute(page: Page, route: string, mobile = false) {
+  const previous = route === "/contact-us" ? "/products/category/scales" : "/contact-us";
+  await visit(page, previous, mobile ? 390 : 1440);
+  if (mobile) await page.setViewportSize({ width: 390, height: 844 });
+  const nav = header(page, previous);
+  if (route === "/") {
+    await nav.getByRole("link", { name: "SUNFORD หน้าแรก", exact: true }).click();
+  } else if (route === "/contact-us") {
+    if (mobile) {
+      await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+      await nav.getByRole("button", { name: "เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", exact: true }).tap();
+    } else {
+      await nav.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).hover();
+    }
+    await panel(page, previous).locator('a[href="/contact-us"]').click();
+  } else {
+    if (mobile) await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+    await nav
+      .getByRole("link", {
+        name: route === "/products" ? "ผลิตภัณฑ์ทั้งหมด" : "เครื่องชั่ง",
+        exact: true,
+      })
+      .click();
+  }
+  await expect(page).toHaveURL(new URL(route, page.url()).href);
+  if (route === "/")
+    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  else await expect(header(page, route).getByRole("button").first()).toBeEnabled();
+  return previous;
+}
+
 async function leave(page: Page) {
   await page.mouse.move(1435, 950);
   await page.clock.runFor(500);
@@ -226,6 +257,53 @@ test("browser history closes an open menu before restoring a cached category pag
   await expect(panel(page, "/products/category/scales")).not.toBeVisible();
 });
 
+const historyRoutes = ["/", "/products", "/products/category/scales", "/contact-us"] as const;
+
+for (const route of historyRoutes) {
+  test(`${route} cached keyboard menu stays closed after Back and Forward with pointer away`, async ({
+    page,
+  }) => {
+    const previous = await enterHistoryRoute(page, route);
+    await page.mouse.move(1435, 950);
+    await page.keyboard.press("Tab");
+    await trigger(page, route).focus();
+    await trigger(page, route).press("ArrowDown");
+    await expect(panel(page, route).getByRole("link").first()).toBeFocused();
+    await page.goBack();
+    await expect(page).toHaveURL(new URL(previous, page.url()).href);
+    await page.goForward();
+    await expect(page).toHaveURL(new URL(route, page.url()).href);
+    await page.screenshot({ path: test.info().outputPath("cached-keyboard-menu-return.png") });
+    await expect(panel(page, route)).not.toBeVisible();
+    await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
+  });
+}
+
+test.describe("cached mobile menus", () => {
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  for (const route of historyRoutes) {
+    test(`${route} cached mobile menu stays closed after Back and Forward`, async ({ page }) => {
+      const previous = await enterHistoryRoute(page, route, true);
+      await header(page, route).getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+      const menu = page.locator(
+        route === "/" ? "#mobile-navigation" : "#products-navigation-panel",
+      );
+      await expect(menu).toBeVisible();
+      await page.goBack();
+      await expect(page).toHaveURL(new URL(previous, page.url()).href);
+      await page.goForward();
+      await expect(page).toHaveURL(new URL(route, page.url()).href);
+      await page.screenshot({ path: test.info().outputPath("cached-mobile-menu-return.png") });
+      await expect(menu).not.toBeVisible();
+      await expect(
+        header(page, route).getByRole("button", { name: "เปิดเมนู", exact: true }),
+      ).toBeVisible();
+      await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
+      expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
+    });
+  }
+});
+
 for (const route of ["/", "/contact-us"]) {
   test(`${route} modified child clicks retain native new-tab navigation`, async ({ page }) => {
     await visit(page, route);
@@ -264,7 +342,7 @@ for (const route of ["/", "/contact-us"]) {
           ? nav.locator('summary[aria-label="เปิดเมนูย่อยเครื่องชั่ง"]')
           : nav.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true });
       await disclosure.tap();
-      const links = route === "/" ? nav.locator(".mobile-nav-panel") : panel(page, route);
+      const links = route === "/" ? nav.locator(".mobile-nav-panel:visible") : panel(page, route);
       const child = links.locator('a[href="/products/category/scales/price"]').first();
       await expect(child).toBeVisible();
       await child.tap();

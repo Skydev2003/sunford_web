@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useStaggerBounce } from "@/components/ui/use-stagger-bounce";
 import styles from "./products-overview.module.css";
+import { useHistoryRestoration } from "@/features/site/history/return-state";
 
 const OverlayHostContext = createContext<(host: HTMLDivElement | null) => void>(() => {});
 export const useCatalogOverlayHost = () => useContext(OverlayHostContext);
@@ -24,6 +25,7 @@ export function CatalogRouteFrame({
 }) {
   const pathname = usePathname();
   const root = useRef<HTMLDivElement>(null);
+  useHistoryRestoration(root);
   useStaggerBounce(root, pathname);
   const productsPage =
     pathname === "/products" ||

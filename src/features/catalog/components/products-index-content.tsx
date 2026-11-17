@@ -25,7 +25,7 @@ export function ProductsIndexContent({
       (product) =>
         product.id === item.id || (item.warehouseSku && product.warehouseSku === item.warehouseSku),
     );
-    if (!current?.image.trim()) return [];
+    if (!current) return [];
     return [
       {
         id: item.id,
@@ -75,6 +75,7 @@ export function ProductsIndexContent({
                 >
                   <Link href={`/products/${product.slug}`} className={styles.media}>
                     <ProductImage
+                      placeholder="product"
                       src={product.image}
                       fallbackSrc={product.fallbackImage}
                       alt={catalogCardName(product)}

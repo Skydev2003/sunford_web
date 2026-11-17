@@ -1,10 +1,10 @@
 "use client";
+import { useReturnState } from "@/features/site/history/return-state";
 
-import { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { Suspense, useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, GitCompareArrows, Package, Search } from "lucide-react";
-import { CategoryFeatureIcon } from "@/features/home/components/category-feature-icons";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { ClientProduct } from "../types";
@@ -15,32 +15,6 @@ import { catalogModelLabel } from "../data/catalog-card-names";
 import { CatalogProductCard, catalogProductPhoto } from "./catalog-product-card";
 import cardStyles from "./product-browser.module.css";
 import styles from "./product-category-mock.module.css";
-
-const categoryIcons: Record<string, ReactNode> = {
-  scales: <CategoryFeatureIcon category="scales" />,
-  indicators: <CategoryFeatureIcon category="indicators" />,
-  platforms: <CategoryFeatureIcon category="platforms" />,
-  accessories: <CategoryFeatureIcon category="accessories" />,
-  pos: (
-    <svg
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <rect x="3" y="4" width="20" height="15" rx="2" />
-      <path d="M7 8h12v7H7zM12 19v5l-4 4h13M17 19l3 9" />
-      <rect x="24" y="17" width="5" height="11" rx="1" />
-      <path d="M26 20h1m-1 4h1" />
-    </svg>
-  ),
-};
 
 function CatalogCategoryUrlSync({
   categories,
@@ -81,9 +55,18 @@ export function ProductCategoryMock({
   categoryId?: string;
   subcategoryId?: string;
 }) {
-  const [category, setCategory] = useState(categoryId ?? "all");
-  const [subcategory, setSubcategory] = useState(subcategoryId ?? "all");
-  const [pagination, setPagination] = useState({ key: "", limit: 24 });
+  const [category, setCategory] = useReturnState(
+    "product-category-mock.category",
+    categoryId ?? "all",
+  );
+  const [subcategory, setSubcategory] = useReturnState(
+    "product-category-mock.subcategory",
+    subcategoryId ?? "all",
+  );
+  const [pagination, setPagination] = useReturnState("product-category-mock.pagination", {
+    key: "",
+    limit: 24,
+  });
   const subcategoryTrack = useRef<HTMLDivElement>(null);
   const categoryTrack = useRef<HTMLElement>(null);
   const showcaseTrack = useRef<HTMLUListElement>(null);
@@ -91,7 +74,7 @@ export function ProductCategoryMock({
   const subcategoryScrollTarget = useRef<{ track: HTMLDivElement; left: number } | null>(null);
   const catalogQuery = useCatalogStore((state) => state.query);
   const setCatalogQuery = useCatalogStore((state) => state.setQuery);
-  const [listingQuery, setListingQuery] = useState("");
+  const [listingQuery, setListingQuery] = useReturnState("product-category-mock.listingQuery", "");
   const query = presentation === "listing" ? listingQuery : catalogQuery;
   const setQuery = presentation === "listing" ? setListingQuery : setCatalogQuery;
   const compareMode = useCatalogStore((state) => state.compareMode);
@@ -150,11 +133,15 @@ export function ProductCategoryMock({
   const applyCategory = useCallback(
     (id: string, childId = "all") => {
       subcategoryScrollTarget.current = null;
-      setCategory(categoryId ?? id);
-      setSubcategory(subcategoryId ?? childId);
-      setPagination({ key: "", limit: 24 });
+      const parent = categoryId ?? id;
+      const child = subcategoryId ?? childId;
+      setCategory(parent);
+      setSubcategory(child);
+      setPagination((previous) =>
+        previous.key.startsWith(`${parent}:${child}:`) ? previous : { key: "", limit: 24 },
+      );
     },
-    [categoryId, subcategoryId],
+    [categoryId, subcategoryId, setCategory, setSubcategory, setPagination],
   );
   const selectCategory = (id: string) => {
     applyCategory(id);
@@ -298,19 +285,14 @@ export function ProductCategoryMock({
                   onClick={() => selectCategory(item.id)}
                 >
                   <span className={styles.categoryArt}>
-                    {photo ? (
-                      <ProductImage
-                        src={catalogProductPhoto(photo)}
-                        fallbackSrc={photo.fallbackImage}
-                        alt=""
-                        fill
-                        sizes="160px"
-                      />
-                    ) : (
-                      (categoryIcons[item.id] ?? (
-                        <Package size={32} strokeWidth={1.4} aria-hidden="true" />
-                      ))
-                    )}
+                    <ProductImage
+                      placeholder="product"
+                      src={photo ? catalogProductPhoto(photo) : undefined}
+                      fallbackSrc={photo?.fallbackImage}
+                      alt=""
+                      fill
+                      sizes="160px"
+                    />
                   </span>
                   <strong>{item.label}</strong>
                 </button>
@@ -354,6 +336,7 @@ export function ProductCategoryMock({
                   </div>
                   <div className={styles.showcaseArt}>
                     <ProductImage
+                      placeholder="product"
                       src={catalogProductPhoto(product)}
                       fallbackSrc={product.fallbackImage}
                       alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
