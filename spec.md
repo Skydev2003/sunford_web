@@ -10425,3 +10425,40 @@ Approval: "Approved — owner identified Android/Windows duplicated in POS prima
 
 - Direct data check passed: POS primary iOS/Android/Windows retained; secondary has2equipment links with no primary overlap. Entire-file before/after comparison confirms only2duplicate rows removed.
 - ScopedESLint passed. Final source/doc Prettier and whitespace verification run after these notes. No renderer/style/readiness change or new browser run; no commit/push/deploy and no Next feedback candidate.
+
+## Task: POS fixture reconciliation after duplicate removal (2026-11-17)
+
+Status: "Complete — all202catalogue tests passed"
+Approval: "Approved — follow-up repair of user's failed catalogue gate after the explicitly requested POS duplicate removal"
+
+### Goal / Scope / Approval Record
+
+- User supplied the202-case catalogue failure log (198pass/4fail) after commit44778e8 and a stopped deploy. The four failures all retain the older POS secondary Android/Windows entries.
+- Prior owner request “จุดนี้ซ้ำ” authorized removing only those2ready secondary entries. Application output is correctly90positions/66ready/24disabled; primary iOS/Android/Windows and all18unique unavailable hrefs remain.
+- Update only the independent explicit test fixture and linked total/readiness/per-column/alias-projection expectations. Retain all other label/href/readiness assertions and add a POS primary/secondary non-overlap guard within the existing test.
+- Do not regenerate expected data from SUT, restore duplicate application entries, change application/data/route/UI or deploy. Owner's self-commit preference persists.
+- Missing information: none. Reference is the actual prior owner request, current committed source and exact provided failures; no new design decision.
+
+### Acceptance Criteria
+
+- [x] Frozen fixture removes only2POSsecondary rows; primary OS entries remain.
+- [x] Explicit total90/ready66/disabled24 and POSsecondary2 expectations agree with the approved change, with an explicit non-duplication guard.
+- [x] Full test:catalog202/202passes with no skips/retries/assertion weakening.
+- [x] Typecheck/scopedlint/fullformat/diff pass; all source files remain unchanged.
+- [x] Record the missed linked-fixture update as a concrete instruction in MEMORY.md; no commit/stage/push/deploy.
+
+### Impact / Rollback
+
+- Test/documentation-only R2 change: update2testfiles and Spec/Plan/Memory. Roll back only these new hunks; do not alter the committed Navbar.
+
+### Verification Results — 2026-11-17
+
+- Full `bun run test:catalog` on cached Node24.22.3:202/202passed,0failed/0skipped/0cancelled, duration9.94s. User-provided198/202red evidence corresponded exactly to the two obsolete POSsecondary fixture rows and their linked counts.
+- Frozen expected labels/hrefs/readiness remain independently authored; removed only Android/Windows from POSsecondary. Explicit total90/ready66/disabled24, per-column POS[3,2,4], alias projection[5,3,3,2,3] and unique disabled href count18 are checked.
+- Existing primary OS entries remain; new guard rejects any primary/secondary overlap in POS equipment. No expected generation from the implementation and no assertion removal/skip/retry.
+- `bun run typecheck --incremental false` and scopedESLint passed on Node24.22.3.
+- SHA-256 baseline comparison: all273application source files unchanged. Git diff contains only the approved2testfiles and3documentation files; no staged changes, commit/push/deploy or DB actions.
+- MEMORY records the omission and concrete instruction to amend reviewed fixtures/alllinkedcounts in the same approved Navbar change and run the complete catalogue gate.
+- Full project formatting and final scoped diff checks run after these documentation updates; the full format result is retained in the verification receipt.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-pos-nav-fixture-20261117/ (catalog.log/source-baseline.json/verification-report.md/verification.json).
+- No application/browser/build/deployment changes were required or claimed. No qualifying Next.js feedback candidate. User must commit this repair before retrying the normal release flow.

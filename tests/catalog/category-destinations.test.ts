@@ -89,7 +89,7 @@ test("CMS legacy and corrected links project identically with all related column
   assert.deepEqual(defaultNavigation, before);
   assert.deepEqual(
     legacy.slice(1, 6).map((item) => item.groups![0].links.length),
-    [5, 3, 3, 4, 3],
+    [5, 3, 3, 2, 3],
   );
   const services = legacy.find((item) => item.href === "/service")!;
   assert.ok(services.groups![0].links.some((link) => link.href === "/applications-and-softwares"));

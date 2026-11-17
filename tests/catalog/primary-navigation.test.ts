@@ -11,7 +11,7 @@ type MenuContract = {
   columns: { label: string; links: [string, string, boolean][] }[];
 };
 
-// Owner-approved 92-position fixture, frozen 2026-11-17.
+// Owner-approved 90-position fixture after removing duplicate POS entries, frozen 2026-11-17.
 const approvedMenus: MenuContract[] = [
   {
     label: "ผลิตภัณฑ์ทั้งหมด",
@@ -163,8 +163,6 @@ const approvedMenus: MenuContract[] = [
       {
         label: "ระบบและอุปกรณ์",
         links: [
-          ["Android", "/products/category/pos/android", false],
-          ["Windows", "/products/category/pos/windows", false],
           ["เครื่องพิมพ์", "/products/category/accessories/printers", true],
           ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/pos", true],
         ],
@@ -291,7 +289,7 @@ test("every displayed label and column matches the owner-selected specification"
   assert.deepEqual(menuContract(items), approvedMenus);
 });
 
-test("owner-approved Navbar keeps 92 entries in three columns with 68 ready and 24 unavailable", () => {
+test("owner-approved Navbar keeps 90 entries in three columns with 66 ready and 24 unavailable", () => {
   const items = getPrimaryNavigationItems(defaultNavigation);
   assert.equal(items.length, 8);
   assert.ok(items.every((item) => item.groups?.length === 2));
@@ -312,13 +310,13 @@ test("owner-approved Navbar keeps 92 entries in three columns with 68 ready and 
   assert.equal(
     items.flatMap((item) => [...item.links, ...item.groups!.flatMap((group) => group.links)])
       .length,
-    92,
+    90,
   );
   const links = items.flatMap((item) => [
     ...item.links,
     ...item.groups!.flatMap((group) => group.links),
   ]);
-  assert.equal(links.filter((link) => !link.disabled).length, 68);
+  assert.equal(links.filter((link) => !link.disabled).length, 66);
   assert.equal(links.filter((link) => link.disabled).length, 24);
   assert.deepEqual(
     items.map((item) => columns(item).map((column) => column.links.length)),
@@ -327,11 +325,16 @@ test("owner-approved Navbar keeps 92 entries in three columns with 68 ready and 
       [8, 5, 4],
       [3, 3, 4],
       [4, 3, 4],
-      [3, 4, 4],
+      [3, 2, 4],
       [7, 3, 4],
       [3, 1, 3],
       [2, 3, 4],
     ],
+  );
+  const pos = items.find((item) => item.href === "/products/category/pos")!;
+  assert.ok(
+    pos.groups![0].links.every((link) => !pos.links.some((primary) => primary.href === link.href)),
+    "POS operating systems must not repeat in the equipment column",
   );
   assert.deepEqual(
     items[3].links.map((link) => link.label),
@@ -364,7 +367,7 @@ test("readiness follows the canonical destination across contexts without disabl
   const expectedLinks = approvedMenus.flatMap((item) =>
     item.columns.flatMap((column) => column.links),
   );
-  assert.equal(expectedLinks.length, 92);
+  assert.equal(expectedLinks.length, 90);
   const readiness = new Map<string, boolean>();
   for (const [, href, disabled] of expectedLinks) {
     if (readiness.has(href)) assert.equal(readiness.get(href), disabled, href);

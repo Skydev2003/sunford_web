@@ -8087,3 +8087,41 @@ Status: "Complete — legacy tests and scoped regressions passed; no commit/push
 
 - Direct data check passed: POS primary iOS/Android/Windows retained; secondary has2equipment links with no primary overlap. Entire-file before/after comparison confirms only2duplicate rows removed.
 - ScopedESLint passed. Final source/doc Prettier and whitespace verification run after these notes. No renderer/style/readiness change or new browser run; no commit/push/deploy and no Next feedback candidate.
+
+## Plan: POS fixture reconciliation after duplicate removal (2026-11-17)
+
+### Files
+
+- `tests/catalog/primary-navigation.test.ts` — remove Android/Windows only from frozen POSsecondary;92→90,68→66 and POSsecondary4→2; keep24disabled/18unique unavailable and add explicit non-overlap guard.
+- `tests/catalog/category-destinations.test.ts` — related-column projection count POS4→2, keeping legacy/canonical parity and non-mutation checks.
+- `MEMORY.md` — concrete rule for updating all linked Navbar fixture/count contracts in the same change.
+- `spec.md` / `plan.md` — record prior approval, exact cause, scope and actual checks.
+
+### Steps
+
+- [x] Read user failure log, current committed Navbar and independent fixture; confirm clean baseline44778e8 and exact2-row drift.
+- [x] Record approved narrow repair scope; preserve self-commit/no-deploy preference.
+- [x] Capture source hashes; update only2fixtures/counts plus non-duplication guard and Memory lesson.
+- [x] Run full bun run test:catalog using installed cached Node24 if available; run typecheck/scopedlint.
+- [x] Update verification and run final full format:check/diff/scope verification. No stage/commit/push/deploy.
+
+### Impact / Rollback
+
+- Frozen fixture remains independently authored and explicit; no expected generation from current app. Application, dependencies and Warehouse remain unchanged.
+- Restore owned5-file hunks to roll back. Do not bypass release gates or use this task as deployment approval.
+
+### Verification Results
+
+- Completed; full202-casecatalogue gate and scopedstaticchecks passed; details below.
+
+### Verification Results — 2026-11-17
+
+- Full `bun run test:catalog` on cached Node24.22.3:202/202passed,0failed/0skipped/0cancelled, duration9.94s. User-provided198/202red evidence corresponded exactly to the two obsolete POSsecondary fixture rows and their linked counts.
+- Frozen expected labels/hrefs/readiness remain independently authored; removed only Android/Windows from POSsecondary. Explicit total90/ready66/disabled24, per-column POS[3,2,4], alias projection[5,3,3,2,3] and unique disabled href count18 are checked.
+- Existing primary OS entries remain; new guard rejects any primary/secondary overlap in POS equipment. No expected generation from the implementation and no assertion removal/skip/retry.
+- `bun run typecheck --incremental false` and scopedESLint passed on Node24.22.3.
+- SHA-256 baseline comparison: all273application source files unchanged. Git diff contains only the approved2testfiles and3documentation files; no staged changes, commit/push/deploy or DB actions.
+- MEMORY records the omission and concrete instruction to amend reviewed fixtures/alllinkedcounts in the same approved Navbar change and run the complete catalogue gate.
+- Full project formatting and final scoped diff checks run after these documentation updates; the full format result is retained in the verification receipt.
+- Evidence: C:/Users/cityc/AppData/Local/Temp/sunford-pos-nav-fixture-20261117/ (catalog.log/source-baseline.json/verification-report.md/verification.json).
+- No application/browser/build/deployment changes were required or claimed. No qualifying Next.js feedback candidate. User must commit this repair before retrying the normal release flow.

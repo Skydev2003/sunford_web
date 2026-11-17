@@ -1,5 +1,11 @@
 # Project Memory
 
+## Update every linked Navbar fixture after an approved menu change (2026-11-17)
+
+- Observed: removing duplicate POS Android/Windows entries left four catalogue assertions expecting the older 92-position tree and stopped deployment at 198/202 passes.
+- Root cause: the narrow application fix did not update the independent frozen fixture, total/ready counts, per-column counts and related alias projection in the same change.
+- Correct behavior: whenever an approved Navbar entry changes, amend the reviewed explicit fixture and every linked total, readiness and column-count assertion together; run the full `test:catalog` gate before handoff. Keep expected data independent of the implementation and never restore a rejected duplicate to satisfy an obsolete test. This POS correction leaves 90 positions, 66 ready and 24 disabled, with Android/Windows only in the primary column.
+
 ## Standing design reference — Tailwind official documentation (2026-11-17)
 
 - Owner instruction: “บันทึกการออกแบบของค่ากลางโดยอิงจากเว็บนี้เสมอเมื่อมีการต้องใช้ข้อมูลในการออกแบบ” พร้อมลิงก์ https://tailwindcss.com/docs และภาพ Core Concepts
