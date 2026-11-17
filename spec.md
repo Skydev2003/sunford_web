@@ -10938,3 +10938,78 @@ Approval: "Owner requested explanation and walkthrough; documentation only, no a
 - Sourceguardbaseline1967:1964เดิมไม่เปลี่ยน แก้3docs+สร้าง1docเท่านั้น OriginalSpecPlansectionsเหมือนเดิมทุกbyteและprojectguideเพิ่มเพียงลิงก์tour ไม่มีapp/CSS/tests/data/config/HEADเปลี่ยน
 - เปิดhomepage-tour.mdในnativeVSCodeและยืนยันMarkdownPreviewแสดงหัวข้อ/แผนผังแล้ว ปิดเฉพาะisolatedhomepagebrowsertabที่สร้าง ไม่ปิดserver3000หรือtabเดิมของเจ้าของ
 - Evidence: verification.json/rendered-home.json/homepage-full.pngในtasktemp ตรวจเฉพาะrender/sourceownership ไม่อ้างresponsive/fullfunctionalsuite ไม่รันtypecheck/buildเพราะไม่มีcodechange ไม่มีNextframeworkfeedbackcandidateในงานนี้
+
+## Task: Bound Warehouse build workers (2026-11-18)
+
+Status: "Implemented and verified — configured one-worker build passed"
+Approval: "Approved — owner: อนุมัติครับ แก้ตาม Spec/Plan ได้เลย เดี๋ยวผมคอมมิตเอง"
+
+### Goal
+
+ลดจำนวน worker ที่อ่าน Warehouse ระหว่าง prerender ให้มีขอบเขตคงที่ ไม่เพิ่มตาม CPU ของเครื่องที่ build เพื่อบรรเทาปัจจัย concurrency ที่พบร่วมกับ connection timeout
+
+### Verified Current State — diagnosis baseline before implementation
+
+- Baseline: clean uat commit2a51a07 ผู้ใช้ commit งานก่อนหน้าแล้ว; log ที่ส่งมาล้มตอน RPC ecommerce.get_website_products ขณะ prerender /solutions/rs232 และ release หยุดก่อน push production
+- Next16.4.6 บนเครื่อง12logicalCPU เลือก11staticworkers ตาม defaultConfig; Next config ปัจจุบันไม่กำหนดจำนวน worker
+- Pool แต่ละprocess max3, connecttimeout5วินาที, statementtimeout10วินาที, read-only และมี connection retry1ครั้ง จำนวน33เป็นเพียงเพดานเชิงทฤษฎีจาก11×3 ไม่ใช่จำนวน connection ที่วัดได้
+- Read-only probe ปัจจุบัน connect190ms, transaction_read_only=on, RPCมีจริง และ application read1074ms ได้395products/1366facts/4components จึงยืนยันว่าอ่านได้ขณะตรวจ ไม่ยืนยันว่าฐานข้อมูล/เครือข่ายเสถียรตลอดเวลา
+- ทดสอบ Node24.22.3 ด้วย process-only CIRCLE_NODE_TOTAL=2 และ validation env ที่ปิด quotation writes: build706/706ผ่าน1worker โดยไม่แก้source/config ไม่รัน deploy
+- Shell default เป็น Node22.14.0 ขณะที่ package.json กำหนด24.x; ไม่ได้เปลี่ยนหรือติดตั้ง Node ให้เครื่องเจ้าของ และไม่สรุปว่า Node22เป็นต้นเหตุของtimeout
+- Owner dev server3000PID3248ยังอยู่ ไม่เปิด browser sweep ระหว่าง build
+
+### Scope In
+
+- เพิ่ม experimental.cpus:1 เพียงหนึ่งค่าใน next.config.ts ให้ทุกคำสั่ง build ที่ใช้ config นี้จำกัด worker โดยไม่ต้องตั้ง process workaround เอง
+- อัปเดต Spec/Plan พร้อมหลักฐานและผลตรวจหลังอนุมัติ
+
+### Scope Out
+
+- ไม่แก้ pool/SQL/RPC/timeouts/retry/cacheLife/data sources หรือเพิ่ม fallback ให้ข้อมูลสินค้า/ราคา
+- ไม่เปลี่ยน UI/Routes/PDF/quotation issuance/DB schema หรือเพิ่มdependency
+- ไม่ติดตั้ง/เปลี่ยน Node ถาวร ไม่ stage/commit/push/deploy แทนเจ้าของ
+
+### UI/UX Brand Alignment
+
+- ไม่เกี่ยวข้อง: เป็น build configuration ไม่มีการแก้ UI หรือ design tokens
+- Reference: installed Next16.4.6 config-shared.js/config-schema.js/build/index.js และ config-shared.d.ts ยืนยัน experimental.cpus รองรับและใช้เลือก build workers
+- Official docs checked18พ.ย.2026: [Prerender error](https://nextjs.org/docs/messages/prerender-error), [Static generation options](https://nextjs.org/docs/app/api-reference/config/next-config-js/staticGeneration), [pg Pool](https://node-postgres.com/apis/pool)
+- Context7 checked Next16.4.5 docs ประกอบ; installed16.4.6เป็นหลักสำหรับ cpus ค่า experimental นี้ไม่มีหน้า public docs เฉพาะในเอกสารที่อ่าน จึงไม่เรียกว่าstable API เอกสาร staticGeneration ระบุแยกว่าความขนานต่อworkerไม่เท่ากับจำนวนworker
+
+### Input / Output
+
+- Input: owner failed-deploy log, committed release script, installed Next implementation, bounded read-only probe และ one-worker build
+- Output: หลังอนุมัติ build config มี worker cap1 คง release gate และ read-only product contracts เดิม ขอบเขตนี้เป็นการจำกัด concurrency ไม่ใช่ข้อพิสูจน์หรือการแก้ทุกสาเหตุ network/DB outage
+
+### Acceptance Criteria
+
+- [x] ใช้ Node24 รัน build โดยไม่ตั้ง CIRCLE_NODE_TOTAL override แล้ว log แสดง1worker สร้าง706หน้าและexit0
+- [x] pool/SQL/cache/product validation/quotation/release fail-fast คงเดิม มีsource diffและrelatedtestsยืนยัน
+- [x] typecheck/scopedlint/format/catalog/UATผ่าน และไม่มี app/config changes นอก next.config.ts
+- [x] รายงานเวลา build/ข้อจำกัดจริง ไม่มี fallback สินค้าหรือการออกเลขจริงระหว่างตรวจ
+- [x] ไม่มี stage/commit/push/deploy; owner commit เองก่อนใช้ release flow
+
+### Missing Information
+
+ไม่มีสำหรับการเสนอ worker cap; สาเหตุระดับDB/networkของเหตุการณ์เดิมยังไม่ยืนยัน ไม่ใช้ผล probe เดี่ยวอ้างว่า concurrency เป็นสาเหตุเดียว
+
+### Approval Record
+
+- เจ้าของอนุมัติ Spec/Plan ของงานนี้โดยตรงวันที่18พฤศจิกายน2026: “อนุมัติครับ แก้ตาม Spec/Plan ได้เลย เดี๋ยวผมคอมมิตเอง” ครอบคลุมเพิ่ม cpus:1 ใน next.config.ts และตรวจตามแผน โดยเจ้าของ commit เอง
+
+### Impact / Rollback
+
+- R1: build ทั้ง local/Vercel ที่ใช้ config นี้สร้างหน้าขนานน้อยลง อาจใช้เวลานานขึ้น ใช้ค่า experimental ที่ตรวจจากเวอร์ชันติดตั้งแล้ว
+- ย้อนเฉพาะบรรทัด cpus:1 คืน default โดยคง agentFeedback และ config เดิมทุกค่า; ไม่มี DB/data migration
+- หลังอนุมัติและเพิ่มconfig ตรวจ build โดยไม่มี worker env override แล้วผ่าน706/706หน้า/1worker ใช้เวลา static generation2.5นาที; เป็นผลขณะตรวจ ไม่รับรอง DB/network availability ทุกเวลา
+
+### Implementation results
+
+- เพิ่ม experimental.cpus:1 เพียงบรรทัดเดียวใน next.config.ts ตามการอนุมัติ เก็บค่า config อื่นทุกค่าเดิม
+- Node24.22.3/Next16.4.6: รัน bun run build โดยไม่มี CIRCLE_NODE_TOTAL override และปิด quotation writes ตาม release-validationenv; log ใช้1worker สร้าง706/706หน้า exit0
+- Catalog204/204 และ UAT28/28ผ่าน ไม่มีskip/fail; scopedESLint next.config.tsผ่าน การตรวจtypecheck/format/diffสุดท้ายอยู่ในreceiptที่แนบ
+- Guardยืนยันconfigต่างจากbaselineเพียง1บรรทัด และ7protectedfiles (Warehouse reader/repository/release/Vercel/package/locks) hashไม่เปลี่ยน Application/data/testsนอกmanifestไม่แก้
+- Scopeนี้จำกัดbuildworkers ไม่เปลี่ยน runtimepool/SQL/retry/cache หรือยืนยันว่าแก้ทุกสาเหตุDB/networktimeout
+- ยังไม่ติดตั้ง/เปลี่ยนNodeของเครื่อง: shelldefault22.14.0 ไม่ตรงpackage24.x ให้ใช้Node24ตามข้อกำหนดก่อนrelease
+- ไม่มีDB/registrywrites, stage/commit/push/deploy; ownerdev3000คงอยู่ เจ้าของcommitเอง
+- [Implementation report](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-report.md), [Verification receipt](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-verification.json)

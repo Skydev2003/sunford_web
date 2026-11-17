@@ -8522,3 +8522,53 @@ Status: "Complete — approved manifest implemented and verified; limitations re
 - Final: 116locallinksครบ/Prettier4docs/gitdiffcheckผ่าน;1967baselinefiles1964unchanged/3modifieddocs+1newdoc/0unexpectedapplicationchange OriginalSpecPlanprefixเหมือนเดิมและprojectguideเพียงเพิ่มtourlink GitHEADคงเดิม
 - NativeVSCodehomepage-tourMarkdownPreviewเปิดและเห็นแผนผังแล้ว Isolatedbrowsertabปิดแล้ว ไม่มีserver/tabของเจ้าของถูกปิด ไม่มีapp/test/config/datachange/DBwrite/staging/commit/push/deployหรือNextfeedbackcandidate
 - Receipt C:/Users/cityc/AppData/Local/Temp/sunford-homepage-tour-20261117/verification.json; read-onlyrender/sourceinspectionเท่านั้น ไม่รันหรืออ้างbuild/fullregressionในงานเอกสารนี้
+
+## Plan: Bound Warehouse build workers (2026-11-18)
+
+### Files
+
+- next.config.ts — แก้ไข: เพิ่ม experimental.cpus:1 หนึ่งบรรทัด คงค่าที่มีอยู่
+- spec.md — เพิ่มผลตรวจ/ข้อกำหนด/approval และบันทึกหลัง implementation
+- plan.md — เพิ่มขั้นตอน/ผลตรวจ/rollback ของงานนี้
+
+Application/config scope อนุมัติแล้ววันที่18พฤศจิกายน2026 โดยเจ้าของระบุ “อนุมัติครับ แก้ตาม Spec/Plan ได้เลย เดี๋ยวผมคอมมิตเอง” คง manifest3ไฟล์และเจ้าของ commit เอง
+
+### Steps
+
+- [x] อ่าน Spec/Memory/AGENTS และตรวจ clean baseline/release gate/installed Next/pg
+- [x] ตรวจ Warehouse แบบอ่านอย่างเดียวหนึ่งรอบโดยไม่แสดงcredentialsหรือข้อมูลสินค้า
+- [x] ยืนยัน Node24 + one-worker process workaround build706/706ผ่าน ปิด quotation writes และคง owner dev3000
+- [x] จัดทำ exact proposed patch สำหรับ review โดยยังไม่แก้ next.config.ts
+- [x] รับ owner approval ของ Spec/Plan นี้ก่อนแก้ build config
+- [x] เพิ่ม cpus:1 ใน next.config.ts เพียงจุดเดียว
+- [x] ใช้ Node24 ล้างเฉพาะ CIRCLE_NODE_TOTAL จากprocessenv แล้วรัน bun run build ด้วย release-validation env ที่ปิด quotation writes ไม่รัน deploy หรือ registry migration
+- [x] ตรวจ log จำนวนworker=1/pages706/exit0; รัน typecheck, scopedlint next.config.ts, fullformat, catalog, UAT และ gitdiffcheck
+- [x] ยืนยัน source scope/อ่านWarehouseสัญญาเดิม/ไม่มีstagepush แล้วอัปเดตผลและส่งให้เจ้าของcommitเอง
+
+### Impact / Rollback
+
+- จำกัด build workers ทุกสภาพแวดล้อมที่ใช้ Next config นี้ อาจ build ช้าลง; ไม่แก้ runtime pool หรือ data contract
+- cpus เป็น experimental config ของ Next16.4.6 ที่ตรวจ implementation/schema/typesแล้ว เก็บการทดสอบเพื่อประเมินใหม่เมื่ออัปเกรด Next
+- ย้อนเฉพาะบรรทัดที่เพิ่ม ไม่resetเอกสารหรือchangesของเจ้าของ
+
+### Verification Results — diagnosis only
+
+- Existing app readผ่าน: connect190ms/read1074ms/read-onlyon/395products ไม่มีDBwrites
+- One-worker workaround: Node24.22.3, Next16.4.6, pg8.23.1, CIRCLE_NODE_TOTAL=2, release-validationenv; build706/706 exit0
+- ยังไม่ทดสอบ standard config ที่เสนอ เพราะยังไม่อนุมัติ ไม่มีการแก้ config, pool, query, cache หรือ timeout
+- Shell Node22.14.0 ไม่ตรง package24.x; ยังไม่เปลี่ยน Node ของเจ้าของ ระบุNode24เป็นเงื่อนไขตรวจ/ใช้งาน
+- ไม่รัน bun run deploy เพราะมี Git/production mutations; release source ยืนยันว่าล้มก่อนpushเมื่อbuildไม่ผ่าน
+- [Exact proposed config patch](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/proposed-next-config.patch)
+- [Diagnostic receipt](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/diagnostic.json)
+- [One-worker build log](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/build-one-worker.log)
+
+### Implementation results
+
+- เพิ่ม experimental.cpus:1 เพียงบรรทัดเดียวใน next.config.ts ตามการอนุมัติ เก็บค่า config อื่นทุกค่าเดิม
+- Node24.22.3/Next16.4.6: รัน bun run build โดยไม่มี CIRCLE_NODE_TOTAL override และปิด quotation writes ตาม release-validationenv; log ใช้1worker สร้าง706/706หน้า exit0
+- Catalog204/204 และ UAT28/28ผ่าน ไม่มีskip/fail; scopedESLint next.config.tsผ่าน การตรวจtypecheck/format/diffสุดท้ายอยู่ในreceiptที่แนบ
+- Guardยืนยันconfigต่างจากbaselineเพียง1บรรทัด และ7protectedfiles (Warehouse reader/repository/release/Vercel/package/locks) hashไม่เปลี่ยน Application/data/testsนอกmanifestไม่แก้
+- Scopeนี้จำกัดbuildworkers ไม่เปลี่ยน runtimepool/SQL/retry/cache หรือยืนยันว่าแก้ทุกสาเหตุDB/networktimeout
+- ยังไม่ติดตั้ง/เปลี่ยนNodeของเครื่อง: shelldefault22.14.0 ไม่ตรงpackage24.x ให้ใช้Node24ตามข้อกำหนดก่อนrelease
+- ไม่มีDB/registrywrites, stage/commit/push/deploy; ownerdev3000คงอยู่ เจ้าของcommitเอง
+- [Implementation report](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-report.md), [Verification receipt](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-verification.json)
