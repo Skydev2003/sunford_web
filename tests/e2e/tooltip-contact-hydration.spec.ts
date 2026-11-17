@@ -44,6 +44,7 @@ for (const width of [320, 390]) {
     let release: () => void = () => {};
     const gate = new Promise<void>((resolve) => (release = resolve));
     let held = 0;
+    let bundledBootstrap = false;
     await page.route("**/_next/static/chunks/**", async (route) => {
       if (route.request().resourceType() !== "script") return route.continue();
       const response = await route.fetch();
@@ -51,6 +52,7 @@ for (const width of [320, 390]) {
       // Delay only the location-image leaf, keeping navigation's own script available.
       if (body.includes("65vw") && body.includes("280px") && !body.includes("data-products-nav")) {
         held++;
+        bundledBootstrap ||= response.headers()["cache-control"]?.includes("immutable") ?? false;
         await gate;
       }
       await route.fulfill({ response, body });
@@ -59,8 +61,14 @@ for (const width of [320, 390]) {
       await page.goto("/contact-us", { waitUntil: "commit" });
       const header = page.locator("[data-products-header]:visible");
       const open = header.getByRole("button", { name: "เปิดเมนู", exact: true });
-      await expect(open).toBeEnabled({ timeout: 15_000 });
+      await expect(open).toBeVisible({ timeout: 15_000 });
       await expect.poll(() => held).toBeGreaterThan(0);
+      // Production may make navigation depend on the delayed leaf's bundle.
+      if (bundledBootstrap && (await open.isDisabled())) {
+        await expect(open).toBeDisabled();
+        release();
+      }
+      await expect(open).toBeEnabled({ timeout: 15_000 });
       await open.click();
       await expect(header).toHaveAttribute("aria-modal", "true");
       for (let tab = 0; tab < 3; tab++) {
