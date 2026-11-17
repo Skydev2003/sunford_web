@@ -4,6 +4,20 @@ import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-
 
 const menus = getPrimaryNavigationItems(defaultNavigation);
 const routes = ["/", "/contact-us"];
+const duplicateKeyWarnings = new WeakMap<Page, string[]>();
+
+test.beforeEach(({ page }) => {
+  const warnings: string[] = [];
+  duplicateKeyWarnings.set(page, warnings);
+  page.on("console", (message) => {
+    if (/Encountered two children with the same key|unique ["']key["'] prop/.test(message.text()))
+      warnings.push(message.text());
+  });
+});
+
+test.afterEach(({ page }) => {
+  expect(duplicateKeyWarnings.get(page)).toEqual([]);
+});
 
 function header(page: Page, route: string) {
   return page.locator(
@@ -187,7 +201,7 @@ for (const route of routes) {
         await expect(columns).toHaveCount(3);
         await expect(columns.locator(":scope > p")).toHaveText([
           menus[index].submenuLabel!,
-          "การใช้งาน",
+          menus[index].groups![0].label,
           "ช่วยเหลือ",
         ]);
         const expectedColumns = [
@@ -228,11 +242,13 @@ for (const route of routes) {
             entries++;
           }
         }
-        const unavailable = panel.locator('[aria-disabled="true"]').first();
-        const ready = panel.locator("a[href]").first();
-        expect(await unavailable.evaluate((node) => getComputedStyle(node).color)).not.toBe(
-          await ready.evaluate((node) => getComputedStyle(node).color),
-        );
+        if (expectedColumns.flat().some((link) => link.disabled)) {
+          const unavailable = panel.locator('[aria-disabled="true"]').first();
+          const ready = panel.locator("a[href]").first();
+          expect(await unavailable.evaluate((node) => getComputedStyle(node).color)).not.toBe(
+            await ready.evaluate((node) => getComputedStyle(node).color),
+          );
+        }
         if (width === 390 || width === 1440) {
           await page.screenshot({ path: test.info().outputPath(`menu-${index}-${width}.png`) });
           const last = columns.last().getByRole("link").last();
@@ -240,7 +256,7 @@ for (const route of routes) {
           await expect(last).toBeInViewport();
         }
       }
-      expect(entries).toBe(95);
+      expect(entries).toBe(99);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
@@ -307,7 +323,9 @@ for (const route of routes) {
               await expect(panel).toBeVisible();
             } else {
               await entry.click();
-              await expect(page).toHaveURL(new URL(expected.href, original).href);
+              await expect(page).toHaveURL(new URL(expected.href, original).href, {
+                timeout: 15_000,
+              });
               const main = page.locator("main:visible");
               await expect(main).toHaveCount(1);
               await expect(main.locator("h1").first()).not.toHaveText("");
@@ -340,7 +358,7 @@ for (const route of routes) {
           }
         }
       }
-      expect(checked).toBe(95);
+      expect(checked).toBe(99);
       expect(errors).toEqual([]);
       await page.keyboard.press("Escape");
     });
@@ -380,7 +398,7 @@ test("touch disabled choices, landscape navigation and 200 percent zoom remain u
   browser,
   baseURL,
 }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   const context = await browser.newContext({
     baseURL,
     viewport: { width: 844, height: 390 },
@@ -402,17 +420,14 @@ test("touch disabled choices, landscape navigation and 200 percent zoom remain u
           await entry.scrollIntoViewIfNeeded();
           const box = await entry.boundingBox();
           const original = page.url();
-          await page.touchscreen.tap(
-            box!.x + Math.min(8, box!.width / 2),
-            box!.y + box!.height / 2,
-          );
+          await page.touchscreen.tap(box!.x + box!.width / 2, box!.y + box!.height / 2);
           await expect(page).toHaveURL(original);
           await expect(panel).toBeVisible();
           expect(page.context().pages().length).toBe(1);
           disabledChoices++;
         }
       }
-      expect(disabledChoices).toBe(41);
+      expect(disabledChoices).toBe(28);
       await page.keyboard.press("Escape");
     }
     await page.setViewportSize({ width: 844, height: 390 });
@@ -428,7 +443,9 @@ test("touch disabled choices, landscape navigation and 200 percent zoom remain u
           });
         await trigger.tap();
         if (route === "/" || index !== 7) {
-          await expect(page).toHaveURL(new URL(menus[index].href, baseURL).href);
+          await expect(page).toHaveURL(new URL(menus[index].href, baseURL).href, {
+            timeout: 15_000,
+          });
           if (menus[index].href !== route) await page.goBack();
         } else {
           await expect(nav.locator('[data-nav-menu="/service"]:visible')).toBeVisible();

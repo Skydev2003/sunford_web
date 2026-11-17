@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useReturnState } from "@/features/site/history/return-state";
 import { ChevronDown, X } from "lucide-react";
 import styles from "./product-detail.module.css";
@@ -11,7 +11,14 @@ type SpecificationGroup = {
   rows: { label: string; html: string }[];
 };
 
+const subscribe = () => () => {};
+
 function SpecificationCard({ group }: { group: SpecificationGroup }) {
+  const hydrated = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useReturnState(`product-specification.${group.id}`, false);
   useEffect(() => {
@@ -29,6 +36,7 @@ function SpecificationCard({ group }: { group: SpecificationGroup }) {
         type="button"
         aria-haspopup="dialog"
         aria-labelledby={`${titleId}-card`}
+        disabled={!hydrated}
         onClick={() => setOpen(true)}
       >
         <span id={`${titleId}-card`}>{group.title}</span>

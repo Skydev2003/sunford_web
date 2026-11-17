@@ -1,5 +1,155 @@
 # Project state
 
+## Task: Fix product tooltip and Contact hydration before UAT delivery (2026-11-17)
+
+Status: "Ready to Code — authorized fixes; verification pending"
+Approval: "Approved — owner requests both fixes, retesting and commit/push; includes completed parallel work in separate commits"
+
+### Goal / Scope
+
+- Owner: “ช่วยแก้ tooltip หน้าสินค้าและ hydration warning หน้า Contact ที่เหลือให้เรียบร้อย แล้วทดสอบซ้ำก่อน commit/push ครับ”. Later selected “รวมงานที่เสร็จแล้ว แยก commit”. This authorizes these necessary shared-UI fixes and delivery to origin/uat; no production deployment.
+- Tooltip: keep first-hover readability help usable during page opening. The existing stagger animation translates its ancestor summary table16px and moves the hitbox out from under the pointer. Confirm with runtime animation evidence and failing browser tests before implementation; stop translating only this interactive summary table, retaining other entrance animations.
+- Contact: PrimaryNavigation currently mutates main/footer.inert before streamed descendants finish hydrating. Give Contact main and shared Footer native elements React-owned inert through the existing Zustand UI store. Its installed useSyncExternalStore server snapshot uses initial state, so hydration starts with the same false value, then applies current mobile-menu state. Preserve genuine inert, modal semantics, Tab trap, scroll lock and cleanup.
+- Preserve the current owner-edited Navbar8/3/99,71ready/28disabled and length-sorted submenu order, approved keys/hover300ms, Warehouse-only data, brand tokens/content, routes and quotation behavior. The previous104matrix is historical. No dependency additions or unrelated refactors.
+
+### Files / Brand / Contract
+
+- `src/components/ui/use-stagger-bounce.ts` — scoped exclusion for `.detail-weighing`; other motion/reduced-motion behavior unchanged.
+- `src/stores/catalog-store.ts` — transient navigationOpen/setNavigationOpen UI fields; not persisted or added to history snapshots.
+- `src/components/layout/navigation-background.tsx` — new small client native main/footer renderer selecting navigationOpen through existing store; no extra DOM wrapper.
+- `src/components/layout/primary-navigation.tsx` — synchronize transient mobile state and skip imperative inert for elements owned by the new renderer; retain other pages' existing handling.
+- `src/features/content/components/contact-page.tsx`, `src/components/layout/footer.tsx` — replace only native root tags with the React-owned equivalent; same tags/attributes/classes/children in browser DOM.
+- `tests/e2e/tooltip-contact-hydration.spec.ts` — targeted startup/animation/hydration regressions, including delayed client delivery and early mobile menu open; existing tooltip/Navbar/history suites are regression references.
+- Reconcile only stale count/order/label fixtures in `tests/catalog/primary-navigation.test.ts`, `tests/e2e/navbar-three-columns.spec.ts`, `tests/e2e/home-category-navigation.spec.ts`, `tests/e2e/navigation-accessibility.spec.ts` against the frozen99-entry matrix below. Do not change `src/features/site/data/primary-navigation.ts`: c9b9a278… was already its baseline hash when this task began.
+- `spec.md`, `plan.md`, `MEMORY.md` — actual approval, evidence, result/rollback and reusable root-cause lessons. Existing parallel notes retained.
+- Brand reference: current base.css, product summary, Contact, Footer and Navbar renderers. Verify320/390/834/1440px; no text/font/color/layout redesign.
+
+### Current owner-edited Navbar contract (99 entries)
+
+The owner edited submenu content and then requested shortest-first ordering in the separate chat "Locate navbar submenu file". This snapshot predates this fix task and is preserved byte-for-byte in primary-navigation.ts. It supersedes the historical104-entry contract for current tests:8 main menus,24 columns,99 entries,71 ready and28 disabled. A=ready; B=awaiting routes/classification; C=awaiting verified data. UI has no letter badges.
+
+| Main menu            | Primary column                                                                                                                                                                                                                     | Secondary column                                                                                                        | Help                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ผลิตภัณฑ์ทั้งหมด     | สินค้า: ระบบ POS [A]; เครื่องชั่ง [A]; อุปกรณ์เสริม [A]; โครงสร้างแท่นชั่ง [A]; อินดิเคเตอร์แท่นชั่ง [A]                                                                                                                           | การใช้งาน: ครัวและกาแฟ [A]; ซอฟต์แวร์ POS [A]; คำนวณราคาและงานขาย [A]; งานผลิตและอุตสาหกรรม [A]                         | ช่วยเหลือ: คู่มือและสเปก [C]; ติดต่อฝ่ายบริการ [A]; เงื่อนไขรับประกัน [A]; ลงทะเบียนรับประกัน [A]           |
+| เครื่องชั่ง          | สินค้า: คำนวณราคา [A]; ครัวและกาแฟ [A]; Checkweigher [B]; งานวิเคราะห์ [C]; ชุดเครื่องชั่ง [B]; เครื่องชั่งทั้งหมด [A]; งานผลิตและอุตสาหกรรม [A]                                                                                   | คุณสมบัติ: กันน้ำ [A]; ตั้งโต๊ะ [A]; ตั้งพื้น [A]; นับจำนวนชิ้น [B]; เตือนน้ำหนักขาด–เกิน [B]                           | ช่วยเหลือ: ขอใบเสนอราคา [A]; คู่มือและสเปก [C]; ติดต่อฝ่ายบริการ [A]; ลงทะเบียนรับประกัน [A]                |
+| อินดิเคเตอร์แท่นชั่ง | สินค้า: กันน้ำ [C]; หน้าจอ LCD [A]; หน้าจอ LED [A]; อินดิเคเตอร์ทั้งหมด [A]                                                                                                                                                        | การใช้งาน: เชื่อมต่อ RS232 [B]; ดูโครงสร้างแท่นชั่ง [A]; ดูจอแสดงผลและไฟเตือน [A]                                       | ช่วยเหลือ: ขอใบเสนอราคา [A]; ติดต่อฝ่ายบริการ [A]; เงื่อนไขรับประกัน [A]; คู่มือเลือกหัวอ่านและแท่นชั่ง [A] |
+| โครงสร้างแท่นชั่ง    | สินค้า: พลาสติก ABS [C]; เหล็กคาร์บอน [C]; สแตนเลส SUS304 [C]; สแตนเลส SUS201 [C]; แท่นชั่งทั้งหมด [A]                                                                                                                             | เลือกอุปกรณ์ร่วม: อินดิเคเตอร์แท่นชั่ง [A]; โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์ [B]; ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย [A] | ช่วยเหลือ: ขอใบเสนอราคา [A]; ติดต่อฝ่ายบริการ [A]; สอบถามรุ่นและสเปก [A]; คู่มือเลือกหัวอ่านและแท่นชั่ง [A] |
+| ระบบ POS             | สินค้า: ชุด POS [B]; เครื่อง POS [B]; เวิร์กสเตชัน [B]; ระบบ POS ทั้งหมด [A]; ซอฟต์แวร์และสิทธิ์ใช้งาน [A]                                                                                                                         | ระบบและอุปกรณ์: Android [A]; Windows [A]; เครื่องพิมพ์ [B]; สแกนเนอร์และลิ้นชัก [B]                                     | ช่วยเหลือ: ขอใบเสนอราคา [A]; คู่มือและสเปก [C]; ติดต่อฝ่ายบริการ [A]; ลงทะเบียนรับประกัน [A]                |
+| อุปกรณ์เสริม         | สินค้า: สายและหัวต่อ [A]; เครื่องพิมพ์ [B]; ลูกตุ้มน้ำหนัก [B]; จอแสดงผลและไฟเตือน [A]; อุปกรณ์เสริมทั้งหมด [A]; สแกนเนอร์ ลิ้นชัก และอุปกรณ์ POS [B]; โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์ [B]; ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย [A] | วัสดุสิ้นเปลือง: กระดาษความร้อน [B]; ฉลากและสติ๊กเกอร์ [B]; กระดาษและฉลากทั้งหมด [A]                                    | ช่วยเหลือ: ขอใบเสนอราคา [A]; ติดต่อฝ่ายบริการ [A]; เงื่อนไขรับประกัน [A]; สอบถามอุปกรณ์ที่ใช้ร่วมกัน [A]    |
+| จัดสเปค              | เลือกอุปกรณ์: เลือกแท่นชั่ง [A]; ดูอุปกรณ์เสริม [A]; เปิดหน้าจัดสเปค [A]; เลือกอินดิเคเตอร์ [A]                                                                                                                                    | ตรวจสอบก่อนเลือก: สอบถามความเข้ากันได้ [A]; คู่มือเลือกหัวอ่านและแท่นชั่ง [A]                                           | ช่วยเหลือ: ขอใบเสนอราคา [A]; ติดต่อฝ่ายบริการ [A]; เงื่อนไขรับประกัน [A]                                    |
+| บริการ               | บริการ: ขอใบเสนอราคา [A]; บริการหลังการขาย [A]; ลงทะเบียนรับประกัน [A]                                                                                                                                                             | ซอฟต์แวร์และเอกสาร: คู่มือและสเปก [C]; ดาวน์โหลดซอฟต์แวร์ [C]; ซอฟต์แวร์และสิทธิ์ใช้งาน [A]                             | ช่วยเหลือ: ติดต่อเรา [A]; เงื่อนไขรับประกัน [A]; เกี่ยวกับ SUNFORD [A]; นโยบายยกเลิกและคืนสินค้า [A]        |
+
+| Position | Label                             | State | Destination                                    |
+| -------- | --------------------------------- | ----- | ---------------------------------------------- |
+| 1.1.1    | ระบบ POS                          | A     | `/products/category/pos`                       |
+| 1.1.2    | เครื่องชั่ง                       | A     | `/products/category/scales`                    |
+| 1.1.3    | อุปกรณ์เสริม                      | A     | `/products/category/accessories`               |
+| 1.1.4    | โครงสร้างแท่นชั่ง                 | A     | `/products/category/platforms`                 |
+| 1.1.5    | อินดิเคเตอร์แท่นชั่ง              | A     | `/products/category/indicators`                |
+| 1.2.1    | ครัวและกาแฟ                       | A     | `/products/category/scales/kitchen`            |
+| 1.2.2    | ซอฟต์แวร์ POS                     | A     | `/applications-and-softwares`                  |
+| 1.2.3    | คำนวณราคาและงานขาย                | A     | `/products/category/scales/price`              |
+| 1.2.4    | งานผลิตและอุตสาหกรรม              | A     | `/products/category/scales/industrial`         |
+| 1.3.1    | คู่มือและสเปก                     | C     | `/technical-specification`                     |
+| 1.3.2    | ติดต่อฝ่ายบริการ                  | A     | `/contact-us`                                  |
+| 1.3.3    | เงื่อนไขรับประกัน                 | A     | `/warranty/policy`                             |
+| 1.3.4    | ลงทะเบียนรับประกัน                | A     | `/warranty/register`                           |
+| 2.1.1    | คำนวณราคา                         | A     | `/products/category/scales/price`              |
+| 2.1.2    | ครัวและกาแฟ                       | A     | `/products/category/scales/kitchen`            |
+| 2.1.3    | Checkweigher                      | B     | `/products/category/scales/checkweigher`       |
+| 2.1.4    | งานวิเคราะห์                      | C     | `/products/category/scales/analytical`         |
+| 2.1.5    | ชุดเครื่องชั่ง                    | B     | `/products/category/scales/sets`               |
+| 2.1.6    | เครื่องชั่งทั้งหมด                | A     | `/products/category/scales`                    |
+| 2.1.7    | งานผลิตและอุตสาหกรรม              | A     | `/products/category/scales/industrial`         |
+| 2.2.1    | กันน้ำ                            | A     | `/products/category/scales/water-dust`         |
+| 2.2.2    | ตั้งโต๊ะ                          | A     | `/products/category/scales/benchtop`           |
+| 2.2.3    | ตั้งพื้น                          | A     | `/products/category/scales/floor`              |
+| 2.2.4    | นับจำนวนชิ้น                      | B     | `/products/category/scales/counting`           |
+| 2.2.5    | เตือนน้ำหนักขาด–เกิน              | B     | `/products/category/scales/checkweighing`      |
+| 2.3.1    | ขอใบเสนอราคา                      | A     | `/service/quotation`                           |
+| 2.3.2    | คู่มือและสเปก                     | C     | `/technical-specification`                     |
+| 2.3.3    | ติดต่อฝ่ายบริการ                  | A     | `/contact-us`                                  |
+| 2.3.4    | ลงทะเบียนรับประกัน                | A     | `/warranty/register`                           |
+| 3.1.1    | กันน้ำ                            | C     | `/products/category/indicators/waterproof`     |
+| 3.1.2    | หน้าจอ LCD                        | A     | `/products/category/indicators/lcd`            |
+| 3.1.3    | หน้าจอ LED                        | A     | `/products/category/indicators/led`            |
+| 3.1.4    | อินดิเคเตอร์ทั้งหมด               | A     | `/products/category/indicators`                |
+| 3.2.1    | เชื่อมต่อ RS232                   | B     | `/products/category/indicators/rs232`          |
+| 3.2.2    | ดูโครงสร้างแท่นชั่ง               | A     | `/products/category/platforms`                 |
+| 3.2.3    | ดูจอแสดงผลและไฟเตือน              | A     | `/products/category/accessories/displays`      |
+| 3.3.1    | ขอใบเสนอราคา                      | A     | `/service/quotation`                           |
+| 3.3.2    | ติดต่อฝ่ายบริการ                  | A     | `/contact-us`                                  |
+| 3.3.3    | เงื่อนไขรับประกัน                 | A     | `/warranty/policy`                             |
+| 3.3.4    | คู่มือเลือกหัวอ่านและแท่นชั่ง     | A     | `/guides/indicator-platform-compatibility`     |
+| 4.1.1    | พลาสติก ABS                       | C     | `/products/category/platforms/abs`             |
+| 4.1.2    | เหล็กคาร์บอน                      | C     | `/products/category/platforms/carbon-steel`    |
+| 4.1.3    | สแตนเลส SUS304                    | C     | `/products/category/platforms/sus304`          |
+| 4.1.4    | สแตนเลส SUS201                    | C     | `/products/category/platforms/sus201`          |
+| 4.1.5    | แท่นชั่งทั้งหมด                   | A     | `/products/category/platforms`                 |
+| 4.2.1    | อินดิเคเตอร์แท่นชั่ง              | A     | `/products/category/indicators`                |
+| 4.2.2    | โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์  | B     | `/products/category/accessories/electronics`   |
+| 4.2.3    | ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย | A     | `/products/category/accessories/mechanical`    |
+| 4.3.1    | ขอใบเสนอราคา                      | A     | `/service/quotation`                           |
+| 4.3.2    | ติดต่อฝ่ายบริการ                  | A     | `/contact-us`                                  |
+| 4.3.3    | สอบถามรุ่นและสเปก                 | A     | `/contact-us`                                  |
+| 4.3.4    | คู่มือเลือกหัวอ่านและแท่นชั่ง     | A     | `/guides/indicator-platform-compatibility`     |
+| 5.1.1    | ชุด POS                           | B     | `/products/category/pos/sets`                  |
+| 5.1.2    | เครื่อง POS                       | B     | `/products/category/pos/terminals`             |
+| 5.1.3    | เวิร์กสเตชัน                      | B     | `/products/category/pos/workstations`          |
+| 5.1.4    | ระบบ POS ทั้งหมด                  | A     | `/products/category/pos`                       |
+| 5.1.5    | ซอฟต์แวร์และสิทธิ์ใช้งาน          | A     | `/applications-and-softwares`                  |
+| 5.2.1    | Android                           | A     | `/products/category/pos/android`               |
+| 5.2.2    | Windows                           | A     | `/products/category/pos/windows`               |
+| 5.2.3    | เครื่องพิมพ์                      | B     | `/products/category/accessories/printers`      |
+| 5.2.4    | สแกนเนอร์และลิ้นชัก               | B     | `/products/category/accessories/pos`           |
+| 5.3.1    | ขอใบเสนอราคา                      | A     | `/service/quotation`                           |
+| 5.3.2    | คู่มือและสเปก                     | C     | `/technical-specification`                     |
+| 5.3.3    | ติดต่อฝ่ายบริการ                  | A     | `/contact-us`                                  |
+| 5.3.4    | ลงทะเบียนรับประกัน                | A     | `/warranty/register`                           |
+| 6.1.1    | สายและหัวต่อ                      | A     | `/products/category/accessories/cables`        |
+| 6.1.2    | เครื่องพิมพ์                      | B     | `/products/category/accessories/printers`      |
+| 6.1.3    | ลูกตุ้มน้ำหนัก                    | B     | `/products/category/accessories/weights`       |
+| 6.1.4    | จอแสดงผลและไฟเตือน                | A     | `/products/category/accessories/displays`      |
+| 6.1.5    | อุปกรณ์เสริมทั้งหมด               | A     | `/products/category/accessories`               |
+| 6.1.6    | สแกนเนอร์ ลิ้นชัก และอุปกรณ์ POS  | B     | `/products/category/accessories/pos`           |
+| 6.1.7    | โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์  | B     | `/products/category/accessories/electronics`   |
+| 6.1.8    | ชิ้นส่วนแท่นและอุปกรณ์เคลื่อนย้าย | A     | `/products/category/accessories/mechanical`    |
+| 6.2.1    | กระดาษความร้อน                    | B     | `/products/category/accessories/thermal-paper` |
+| 6.2.2    | ฉลากและสติ๊กเกอร์                 | B     | `/products/category/accessories/labels`        |
+| 6.2.3    | กระดาษและฉลากทั้งหมด              | A     | `/products/category/accessories/consumables`   |
+| 6.3.1    | ขอใบเสนอราคา                      | A     | `/service/quotation`                           |
+| 6.3.2    | ติดต่อฝ่ายบริการ                  | A     | `/contact-us`                                  |
+| 6.3.3    | เงื่อนไขรับประกัน                 | A     | `/warranty/policy`                             |
+| 6.3.4    | สอบถามอุปกรณ์ที่ใช้ร่วมกัน        | A     | `/contact-us`                                  |
+| 7.1.1    | เลือกแท่นชั่ง                     | A     | `/products/category/platforms`                 |
+| 7.1.2    | ดูอุปกรณ์เสริม                    | A     | `/products/category/accessories`               |
+| 7.1.3    | เปิดหน้าจัดสเปค                   | A     | `/guides/indicator-platform-compatibility`     |
+| 7.1.4    | เลือกอินดิเคเตอร์                 | A     | `/products/category/indicators`                |
+| 7.2.1    | สอบถามความเข้ากันได้              | A     | `/contact-us`                                  |
+| 7.2.2    | คู่มือเลือกหัวอ่านและแท่นชั่ง     | A     | `/guides/indicator-platform-compatibility`     |
+| 7.3.1    | ขอใบเสนอราคา                      | A     | `/service/quotation`                           |
+| 7.3.2    | ติดต่อฝ่ายบริการ                  | A     | `/contact-us`                                  |
+| 7.3.3    | เงื่อนไขรับประกัน                 | A     | `/warranty/policy`                             |
+| 8.1.1    | ขอใบเสนอราคา                      | A     | `/service/quotation`                           |
+| 8.1.2    | บริการหลังการขาย                  | A     | `/service`                                     |
+| 8.1.3    | ลงทะเบียนรับประกัน                | A     | `/warranty/register`                           |
+| 8.2.1    | คู่มือและสเปก                     | C     | `/technical-specification`                     |
+| 8.2.2    | ดาวน์โหลดซอฟต์แวร์                | C     | `/software/download`                           |
+| 8.2.3    | ซอฟต์แวร์และสิทธิ์ใช้งาน          | A     | `/applications-and-softwares`                  |
+| 8.3.1    | ติดต่อเรา                         | A     | `/contact-us`                                  |
+| 8.3.2    | เงื่อนไขรับประกัน                 | A     | `/warranty/policy`                             |
+| 8.3.3    | เกี่ยวกับ SUNFORD                 | A     | `/about-us`                                    |
+| 8.3.4    | นโยบายยกเลิกและคืนสินค้า          | A     | `/cancel-and-return/policy`                    |
+
+### Acceptance / Approval / Delivery
+
+- [ ] First-hover product tooltip opens with normal motion; summary help hitbox remains stable; hover/focus/Escape/touch and reduced motion remain correct.
+- [ ] Early mobile menu on Contact produces no hydration warnings, keeps background actually inert and keyboard confined, and restores both after close/navigation/history.
+- [ ] Existing7tooltip cases and relevant Navbar/animation/history/parallel product-readiness regressions pass; fresh Node24 typecheck/lint/catalog/UAT/format/build checks recorded as appropriate.
+- [ ] Review and validate completed parallel dependency/product-review changes and owner-edited99-entry Navbar; stage exact groups, pass pre-commit hooks and push uat without force. Keep source hashes and remote/local receipt; no main/deploy.
+- Missing Information: none for fixing or delivery scope. No automatic approval inferred; actual user approvals quoted above.
+- Impact: shared animation, UI store, Navbar and Footer; React state ownership changes only background inert and summary animation. Rollback only this task's hunks/new renderer; preserve prior Navbar and parallel source. Baseline patches/hashes captured in `C:/Users/cityc/AppData/Local/Temp/sunford-tooltip-contact-fixes-20261117/`.
+
 ## Task: Verify, commit and push authorized backlog before Navbar implementation (2026-11-16)
 
 Status: "Verified and delivered — source backlog pushed; documentation receipt prepared for the closing commit"
@@ -27,17 +177,17 @@ Approval: "Owner explicitly requested commit and push of pending work"
 
 ## Task: Selected data-supported Navbar tree and readiness (2026-11-16)
 
-Status: "Ready to Code — phase A Navbar only; phases B/C deferred"
-Approval: "Structure selected and documentation authorized; implementation pending owner review"
+Status: "Implemented and Navbar verified — phase A; phases B/C deferred; separate product-tooltip regression recorded"
+Approval: "Approved — owner explicitly authorized phase A implementation on 2026-11-17"
 
 ### Goal
 
-ใช้แผนผังล่าสุดที่ผู้ใช้เลือกเป็นข้อกำหนดสำหรับ Navbar ทั้ง 8 เมนู/3 คอลัมน์ แยกปลายทางที่เปิดได้จากเมนูที่ต้องเพิ่มหน้า/จัดกลุ่มและเมนูที่รอข้อมูล. รอบนี้อัปเดตเอกสารและสรุปเท่านั้น ยังไม่แก้ application
+ใช้แผนผังล่าสุดที่ผู้ใช้เลือกเป็นข้อกำหนดสำหรับ Navbar ทั้ง 8 เมนู/3 คอลัมน์ แยกปลายทางที่เปิดได้จากเมนูที่ต้องเพิ่มหน้า/จัดกลุ่มและเมนูที่รอข้อมูล. เจ้าของอนุมัติให้เริ่ม implementation phase A แล้ววันที่17พฤศจิกายน2026
 
 ### Scope In / Scope Out
 
-- รอบปัจจุบัน: แก้เฉพาะ `spec.md`, `plan.md` และหลักฐาน review นอก source; ตรวจ source/data ที่มีอยู่แบบอ่านอย่างเดียว
-- Phase A ที่เสนอให้อนุมัติภายหลัง: ปรับ labels/order/column headings/destinations ใน primary-navigation data ให้ตรง matrix; เปิดเฉพาะ A และแสดง B/C จาง/กดไม่ได้ใน Header ทั้งสองแบบ
+- รอบปัจจุบัน: implementation phase A ตามmanifestในplan.md รวม3appfiles (navigation dataและ2rendererkeys),8existingtestfilesและspec/plan; หลักฐานแยกนอกsource
+- Phase A ที่อนุมัติแล้ว: ปรับ labels/order/column headings/destinations ใน primary-navigation data ให้ตรง matrix; เปิดเฉพาะ A และแสดง B/C จาง/กดไม่ได้ใน Header ทั้งสองแบบ
 - คง 8 main links, native navigation, logo alignment, content-sized columns/gap32px, shop icon, search/comparison, hover/touch/keyboard/Escape/cached Back/Forward และ responsive contracts เดิม
 - ไม่สร้างหน้าหรือ classifier ของ B ใน phase A; ไม่เติมข้อมูลของ C; ไม่เพิ่ม services/solution copy, ไม่แก้ราคา/RPC/storage/eligibility/quotation/Footers/layout/styles/dependencies และไม่ commit/push/deploy
 - การเลือกหัวอ่าน/แท่นเป็นทางเข้ารายการสินค้า ไม่เป็นคำรับรองความเข้ากันได้. หน้า guide ยังเปิดได้แต่ข้อมูลปัจจุบันมี confirmed pair 0 คู่
@@ -53,7 +203,7 @@ Approval: "Structure selected and documentation authorized; implementation pendi
 
 - Input ข้อมูล: company1 live read-only snapshot วันที่16พฤศจิกายน2026เวลา21:12น. ประเทศไทย จากงาน proposal ก่อนหน้า; RPC516/public395 SKU และ current transforms/selection. ไม่อ้างว่าได้อ่าน DB ใหม่ในงานเอกสารนี้
 - Source audit ปัจจุบัน: category/subcategory registry, source content paths, current disabled declarations และ renderer contracts. HTTP probe ที่127.0.0.1:3001เชื่อมต่อไม่ได้ จึงยังไม่ยืนยัน runtime/production readiness รอบใหม่
-- Output phase A ที่วางแผน: 104 submenu positions = 100 จากแผนผังที่เลือก + 4 เมนูวัสดุแท่นชั่งเดิมที่ข้อความท้ายข้อเสนอระบุให้คงจางไว้. วาง4รายการต่อท้ายคอลัมน์สินค้าในเมนูแท่นชั่ง ไม่เพิ่มคอลัมน์ที่4. ไม่เพิ่ม iOS/solution links ที่ไม่ได้อยู่ในแผนผังนี้
+- Output phase A: 104 submenu positions = 100 จากแผนผังที่เลือก + 4 เมนูวัสดุแท่นชั่งเดิมที่ข้อความท้ายข้อเสนอระบุให้คงจางไว้. วาง4รายการต่อท้ายคอลัมน์สินค้าในเมนูแท่นชั่ง ไม่เพิ่มคอลัมน์ที่4. ไม่เพิ่ม iOS/solution links ที่ไม่ได้อยู่ในแผนผังนี้
 - Counts ตามสถานะ: A71/B22/C11 submenu positions; ปลายทางไม่ซ้ำ A28/B19/C8 รวม55. รวม main links8เป็น112positions: อนุญาตเปิด79/disabled33ในค่าเริ่มต้นของ phase A
 - Counts ข้างต้นเป็นแผนใหม่; แอปยังใช้ treeเดิม95submenupositionsในขณะที่เขียนเอกสารนี้
 - **A — เปิดใช้ได้:** มีปลายทางเดิมและข้อมูล/หน้าที่ตรงกับ label. ใช้ canonical href ที่ระบุ; aliases ยังคง resolve เดิม. saved explicit disabled flags ยังคงมีผล; ไม่ force-enable รายการที่เจ้าของเคยปิดเฉพาะไว้
@@ -200,18 +350,39 @@ Approval: "Structure selected and documentation authorized; implementation pendi
 
 - [x] บันทึก exact tree8menus/3columnsพร้อม104ตำแหน่งและcanonical/proposed hrefครบ; แยก A/B/Cและนับปลายทางไม่ซ้ำได้
 - [x] บันทึกข้ออนุมัติโครงสร้างแยกจาก implementation approval และจัดทำ file manifest/verification/rollback ในplan
-- [ ] หลังอนุมัติ phase A: both renderersใช้ selected matrix ทุกlabel/order/column heading ตรงกัน; main8ยัง native links และ B/C disabled33positionsโดยค่าเริ่มต้น
-- [ ] A71positionsใช้ปลายทางจริงที่ตรง label; ก่อนเปิดต้องตรวจ runtime/browser ของ A28unique destinationsและmain links ไม่ใช้ HTTP200อย่างเดียวเป็นหลักฐานหน้ามีเนื้อหา
-- [ ] ไม่มี B/C ถูกเปิดจาก aliases/การซ้ำข้ามคอลัมน์; saved-disabled flagsไม่สูญหาย; disabledไม่มีhref/Tab stop/handler/prefetch
-- [ ] Responsive/hitbox/hover/touch/keyboard/Escape/native modified links/cache history/search/catalog comparison/shop iconผ่าน regression matrix
-- [ ] Node24typecheck/scopedlint/format/catalog tests/affectedbrowser tests/diffผ่านพร้อมหลักฐานจริงและขอบเขตที่ยังตรวจไม่ได้
+- [x] หลังอนุมัติ phase A: both renderersใช้ selected matrix ทุกlabel/order/column heading ตรงกัน; คง8mainmenusและrolesเดิม (Servicesในinteriorใช้buttonเปิดเมนูเดิม); ready submenu linksยังเป็นnativeanchors และ B/C disabled33positionsโดยค่าเริ่มต้น
+- [x] A71positionsใช้ปลายทางจริงที่ตรง label; ก่อนเปิดต้องตรวจ runtime/browser ของ A28unique destinationsและmain links ไม่ใช้ HTTP200อย่างเดียวเป็นหลักฐานหน้ามีเนื้อหา
+- [x] ไม่มี B/C ถูกเปิดจาก aliases/การซ้ำข้ามคอลัมน์; saved-disabled flagsไม่สูญหาย; disabledไม่มีhref/Tab stop/handler/prefetch
+- [x] Responsive/hitbox/hover/touch/keyboard/Escape/native modified links/cache history/search/catalog comparison/shop iconผ่าน Navbar regression matrix; startuphydrationwarningที่พบระหว่างตรวจบันทึกแยกด้านล่าง
+- [x] Node24typecheck/scopedlint/format/catalog185และaffectedbrowserchecksผ่านพร้อมหลักฐานจริง; broadread-onlysuiteมีproducttooltip1caseที่ยังไม่ผ่าน ไม่อ้างว่า186casesผ่านทั้งหมด
 
 ### Approval Record / Current State
 
 - User: “ใช้โครงสร้างนี้ครับ ช่วยอัปเดต Spec/Plan ให้ตรงกัน แยกเมนูที่เปิดใช้ได้กับเมนูที่ต้องเพิ่มหน้าหรือรอข้อมูล แล้วสรุปให้ดูก่อนเริ่มแก้โค้ดครับ”
-- อนุมัติการเลือกโครงสร้างและการแก้เอกสารเท่านั้น; ยังไม่อนุมัติเริ่ม implementation phase A/B/C. ไม่ตีความความเงียบเป็นการอนุมัติ
-- หัวข้อนี้แทน proposal tree และ exact labels/counts ของงาน Navbarเดิมสำหรับงานถัดไป; รักษาประวัติและ implementation verification เดิมไว้ ไม่แก้ผลตรวจ95รายการเก่าให้ดูเหมือนเป็นผล104รายการใหม่
-- เอกสาร/หลักฐาน review: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-selected-tree-20261116/`; app/data contracts ยังไม่เปลี่ยน
+- Owner approval17พฤศจิกายน2026: “อนุมัติครับ เริ่มแก้ Navbar เฟส A ตาม Spec/Plan ได้เลย คง 8 เมนู 3 คอลัมน์ เปิดเฉพาะเมนูที่พร้อม ส่วนที่ต้องเพิ่มหน้าหรือรอข้อมูลให้แสดงจางและกดไม่ได้ครับ” — อนุมัติphase Aตามmanifestเดิม; B/C implementationยังไม่อนุมัติ
+- Scope amendment17พฤศจิกายน2026: ผู้ใช้ตอบ “อนุมัติแก้ key ใน renderer ทั้ง 2 ไฟล์” หลังตรวจพบduplicatekey `/contact-us` ในช่วยเหลือของplatform/accessories. อนุมัติแก้เฉพาะsubmenuReactkeysเป็นhref+labelในheader.tsx/primary-navigation.tsx; ไม่เปลี่ยน104labels/URLs/behavior/styles. เพิ่ม2rendererfilesในmanifestและตรวจconsolewarningทั้ง2Header
+- เริ่มงานพบexternaldiffที่package.json/bun.lockและinstalledNext16.4.6/React19.3.1; เก็บhashแยกและไม่แก้dependencyในงานNavbarนี้. ผลตรวจจะระบุเวอร์ชันที่ใช้จริง
+- หัวข้อนี้แทน proposal tree และ exact labels/counts ของงาน Navbarเดิมในimplementationปัจจุบัน; รักษาประวัติและ implementation verification เดิมไว้ ไม่แก้ผลตรวจ95รายการเก่าให้ดูเหมือนเป็นผล104รายการใหม่
+- เอกสาร/หลักฐาน reviewเดิม: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-selected-tree-20261116/`; หลักฐานimplementationใหม่แยกที่ `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-phase-a-20261117/`. NavigationItemprops/schemaเดิม; เปลี่ยนเฉพาะselecteddataและsubmenukeysตามอนุมัติ
+
+### Approved Amendment — Hover after client navigation (2026-11-17)
+
+Status: "Complete — approved hover amendment verified"
+Approval: "Approved — owner explicitly replied อนุมัติแก้ hover ตามขอบเขตนี้ on 2026-11-17"
+
+- พบregressionระหว่างตรวจ104tree: คลิกเมนูเครื่องชั่งจากHome/contactแล้วHeaderหน้าภายในใหม่สามารถเปิดdropdownซ้ำเมื่อเมาส์ยังค้างตำแหน่งเดิม. พบทั้งfakeclockregressionและrealpointerprobeโดยไม่จำลองเวลา; ไม่สรุปว่าสาเหตุเกิดจากselecteddataหรือdependencyupgradeหากยังไม่มีbaselinecomparisonแยก
+- Approved scope: `src/components/layout/primary-navigation.tsx` เฉพาะinitial/path-change hover suppressionในexistinglayout effect/scheduler. RealpointereventprobeยืนยันDOMmountสร้างmouseoverใต้เมาส์เดิมโดยไม่มีmousemove; ใช้mousemoveแรกของtriggerเริ่มtimer และไม่restartเมื่อเลื่อนภายในtriggerเดิม. คงinitialblock/leave-resetเดิมและไม่ตอบสนองmouseoverที่เกิดจากDOMmount. RAF-onlyattemptยังเปิดซ้ำ3/6จึงไม่ใช้วิธีนั้นเป็นผลสำเร็จ. ไม่เปลี่ยน300msdelay, keyboard/ArrowDown/Escape, labels/104entries/URLs/stylesหรือHeaderอีกตัว
+- Verification: existingnavigation-hover-intent32casesและtargetedclicknavigationrepeatรวมHome/contact→scales, realpointerไม่จำลองเวลา, keyboard/touch/cache/history และ104entrydata/geometry. Existing testsยังเป็นread-onlyเว้นแต่ต้องแก้fixtureและบันทึกplanก่อน; ไม่ลดmenuclosedassertionเพื่อให้ผ่าน
+- Impact: sharedinteriorHeaderทุกหน้า; เสี่ยงinitialkeyboardfocusหรือhoverใหม่ถูกblockนานเกินไป. Rollbackเฉพาะbehaviorhunkใหม่นี้ คงselected104dataและapprovedkeysเดิม. เจ้าของอนุมัติแล้วก่อนเริ่มแก้behavior; ไม่ปิดเมนูที่เปิดด้วยkeyboardหรือเริ่มtimerซ้ำขณะเมาส์เลื่อนภายในtriggerเดิม
+
+### Delivery / Verification / Limits (2026-11-17)
+
+- Delivered8menus/24columns/104positions:71ready/33disabled (B22/C11); ไม่มีnewpages/classification/DB/dependency/stylechangesในงานนี้. MenuItemprops/schemaเดิม; ทั้งสองHeaderใช้sourceเดียวกัน. Keyamendmentและhoveramendmentมีคำอนุมัติจริงข้างต้น
+- Finalapphashes: dataและHeaderตรงก่อนhoveramendment; PrimaryNavigationเปลี่ยนเฉพาะapprovedkeys+firstmousemoveguard. หลักฐาน `stable-app-hashes.json`; own3app/8test/spec+plan. รักษาexternalpackage/bun.lock, productdialog/errorboundary/hicksfixture/MEMORYและnewproductreadinesstestของอีกงานไว้
+- Catalog185/185, Node24typecheck/scopedESLint/Prettier/diffผ่าน. FinalcurrentappNavbar57casesผ่าน =hover32 +matrix24 +touch/landscape/zoom1ที่รันซ้ำหลังfixturebudget/pointcorrection. Realpointer6/6ไม่เปิดเมนูซ้ำ เทียบก่อนแก้เปิดซ้ำ5/6. สี่full104-entryclickflowsผ่านก่อนhoveramendment; currentmatrixตรวจ104positionsทุก8widthsและทั้ง2Header ไม่อ้างว่ารันสี่fullclickflowsใหม่หลังแก้hover
+- Broadinventory186casesเลือกlatestresultต่อcaseได้185ผ่าน/1read-onlyproducttooltipcaseยังfail (repeat3/3). Tooltipปุ่มขยับY247→231ระหว่างinitialentryและpointerออกก่อนเปิด; ไม่แก้Tooltip/productlayoutในNavbarงานนี้. ไม่อ้างsingleclean186runหรือfullrepositoryE2E/productionbuildverification
+- Knownstartupobservation: เปิดmobilemenuเร็วบนContactพบSSR/clientinertattribute mismatch; devissueoverlayบังtestbackbuttonหนึ่งรอบ. รันtouchซ้ำผ่านหลังแตะกลางentryและใช้URLwait15sec/aggregate240sec โดยไม่hideportal/forceclick/skipassertions. Warningนี้ยังไม่ได้แก้ และไม่สรุปว่าเกิดจากNavbardataหรือdependencyupgrade
+- Evidence/report/screenshots: `C:/Users/cityc/AppData/Local/Temp/sunford-navbar-phase-a-20261117/verification-report.md`. Dev3000ของเจ้าของยังทำงาน; งานเฟสนี้ไม่commit/push/deploy. FinalNextfeedbackreviewไม่มีverifiedframeworkcandidate; observedissuesอยู่ที่appinteraction/layout/hydration และยังไม่มีframeworkbaselineproof
 
 ## Task: Propose data-supported submenus for eight Navbar groups (2026-11-16)
 
@@ -9410,3 +9581,104 @@ Approval: "Approved requested follow-up scope — owner directly requests tighte
 - Node24 TypeScript, ESLint เฉพาะไฟล์, Prettier และ diff check ผ่าน ไม่มี Next.js feedback candidate ใหม่ที่ยืนยันว่าเป็นปัญหาของ framework งานนี้ไม่ได้ build/deploy หรือแก้ฐานข้อมูล
 - หลักฐานและภาพก่อน/หลัง: C:/Users/cityc/AppData/Local/Temp/sunford-navbar-compact-shop-20261116/verification-report.md และ final-receipt.json; ทดสอบร้านค้าด้วย response จำลอง ไม่ได้ตรวจ checkout จริง อุปกรณ์สัมผัส/ซูมเป็นการจำลองใน Chrome
 - Regression fixture amendment: ชุดวัด Home/interior ใน `tests/e2e/home-category-navigation.spec.ts` ต้องรวม anchor ร้านค้าใหม่ด้วย การเพิ่มไฟล์ test นี้ใน Plan ใช้ตรวจผลคำขอเดิม ไม่เปลี่ยนขอบเขตแอปหรือเกณฑ์เปรียบเทียบระยะ 1px
+
+## Task: Daily shared UI evidence and product review (2026-11-17)
+
+Status: "Verified — daily technical scope complete; historical baseline and business-priority limitations documented"
+Approval: "Approved — owner authorized execution and necessary fixes through the tracking chat on 2026-11-17"
+
+### Goal / Scope / Approval Record
+
+- Owner first instructed: “โอเคครับ เริ่มเก็บงานที่ค้างจากเมื่อวานก่อน แล้วค่อยไล่ตรวจหน้าสินค้าตามแผนวันนี้ครับ”. The owner subsequently authorized senior-directed execution, necessary defect fixes and verification: “ผมให้คุณรับหน้าที่เป็นซีเนียสั่งงานและทำตามเป้าให้เสร็จ และตรวจสอบความถูกต้อง ... ผมอนุมัติทั้งหมด”. This applies to the delegated 20-subtask audit, not new features or a release.
+- First reconcile yesterday's evidence, then review existing catalogue/category/ready-subcategory/detail routes, real image/blank/long-text/specification branches, search/filter/empty/error states, and product-to-sales journeys with Back/Forward.
+- Source readiness comes from the current navigation and category registries. No company-approved opening inventory or customer popularity ranking was found; this is a missing business priority, not a blocker for technical review of published routes. Representative products are selected transparently from the live API, never described as customer favourites.
+- Preserve concurrent Navbar104/key-amendment and dependency work. No changes to those owned files, new B/C pages, brand redesign, fabricated data, commit/push/deploy, business submission, quotation issuance or DB writes.
+
+### UI/UX Brand Alignment / Input / Output
+
+- Reference: current approved Header/PrimaryNavigation/Footer, existing product layouts and transparent placeholder. No design change is planned by the audit.
+- Responsive evidence: 320/390/834/1440px with keyboard Tab/Enter/Escape/focus-return and phone/desktop journeys. Local Chromium and simulated touch only; no physical-device/Safari/production certification.
+- Input: existing Spec/Plan, 16-Nov Navbar reports and 17-Nov08:25 backlog receipt, current registries and public Warehouse-backed API at local port3000. Output: evidence inventory, route/workflow matrix, browser results, screenshots and explicitly bounded defect records.
+- Historical95-menu results do not certify the new104-menu tree. Final shared-UI acceptance must use stable Navbar hashes. Missing historical before captures remain missing; never reconstruct a before image and label it historical evidence.
+
+### Acceptance Criteria / Missing Information
+
+- [x] Reconcile Home/product/content before/after evidence with actual URLs, viewport, provenance and missing baselines.
+- [x] Inspect every ready catalogue/category/subcategory route and all395 public-product identifiers for integrity; browser-test representative data branches.
+- [x] Verify responsive layout, search/item_code/filter/empty/error recovery and phone/desktop product-to-sales Back/Forward journeys.
+- [x] Record final shared-UI responsive/keyboard checks against stable Navbar hashes, plus all limitations and defects.
+- Missing business fact: confirmed opening inventory/customer priority. Continue the registry-based technical audit; do not infer business readiness from technical results.
+- Any application fix will first record its repro, expected contract, exact files, baseline hashes, impact and rollback in this section and Plan. Final manifest below contains two narrow application fixes, two browser-test files and project documentation.
+
+### Daily-review defect A — specification launcher before hydration
+
+- Confirmed in12freshChromecontexts:11firstclicksfailed; visible launcher had noReacteventprops at click time. Independent controlledchunkdelay confirmed nativeenabledSSRbutton did nothing. Baseline sourceSHA ea7301bd2d178d41089f3c4d5e75a25a5e308f2160de23a2b08804a1e40b4c29; exactcopy in external product-specification-dialogs.tsx.before.
+- Expected: client-only launcher remains nativelydisabled until its own component hydrates, then first trusted click/Enter opens realspecdialog. Preserve sourcevalues/keyboardEscape/focus/currentBackForward. Use existing PrimaryNavigation useSyncExternalStore hydrationpattern, no timer/newdependency/style/datachange.
+- Approvedmanifest: src/app/(site)/products/[slug]/product-specification-dialogs.tsx and new tests/e2e/product-specification-readiness.spec.ts plus taskdocs. Owner blanketfixapproval applies to this reproduced productinteractiondefect.
+- Impact: all productdetail specificationlaunchers; only prehydrationenabledstate changes. Rollback: revertonly this small hydrationgate and its regressiontest, retain concurrentNavbar/dependencies.
+
+### Daily-review controlled load-error integration
+
+- Task-owned physical source/generatedcopy in TEMP/sunford-daily-error-runtime-20261117 onport3102;src/data/scripts/config copied,node_modules/public shared read-only,no generatorcommand. Noenvfilecopied; originalcredentialsloadedinprocessmemoryonly,neverreported.
+- QApreload intercepts only pg.Pool.query for existing ecommerce.get_website_products read in QAprocess. fault-on toggles failurebeforeDBread;read-events logs timestamps/PID/faultboolean only. Disablefaultthenuse realerrorUIretryandassert realRPCread/productsrecovery. Existingserver3000 remains untouched.
+- Keep isolatedruntime/sourceartifacts outside deliverablebucket; report contains sanitizedfaultprovenance/results only. NoDBwrites/deploy.
+
+### Daily-review defect B — actual server-load retry does not re-fetch
+
+- Reproduced in task-owned Node24.22.1/Next16.4.6 webpack runtime3102, physical source copy with fault at existing Warehouse RPC read boundary. Actual/products error UI rendered with0stale product cards. After fault was removed, clicking existing retry made0newproductrequests/0newRPCreads and remained onerror UI20seconds. Evidence: external error-integration-before.json and actual-error/actual-retry-before screenshots.
+- Installed error.md and error-boundary.js confirm reset only resets errorstate, while retry refreshes router data then resets. Bothprops are supplied; this is not an undefined-prop defect.
+- Add src/app/error.tsx to approvedmanifest: switch existing callbackprop/reset wiring to documented retry. Shared errorboundary affects all routes with temporary server failures; preserve all visible wording/layout/styles and known4xx/503contracts. No API/cache/frameworkchanges. Revert only this callbackchange ifneeded. Ownerblanketapproval covers this necessary states-error fix; parent explicitly directed actualretryverification.
+- Add tests/e2e/hicks-law-catalog.spec.ts to approvedmanifest for currentflowverification: four failures came from grid/list controls explicitly removed by priorapprovedTask Remove pictured catalogue toolbarcontrols (Spec around1073). Remove obsolete controlinteractions, retainsearch/facts/overflow/compare/empty/filterchecks; use a real Warehouse blank-facts item instead of legacy mockproduct. This does not restore removedfeatures or weaken currentWarehouse expectations.
+- QAisolationmethod: initial Turbopack could notresolve dependencyjunctionoutsideitsroot. Task-ownedwebpackruntime uses own .next-error-integration24 cache; onlyphysicalcopied warehouse-postgres readboundary isfault-instrumented. This replaced an ineffectiveNodepreloadhook and changes noworkspaceRPCsource. Environmentvaluesremain process-only; inheritedstartup.env.local label ismetadata, noenvfileswerecopied. Initialdriver/serverattemptsuseddefaultNode22; decisiveintegration/static/finaltestsuseexplicitbundledNode24.22.1. Do not labelinitialrunsNode24.
+
+- Documentation manifest amendment: `MEMORY.md` — record verified Next retry and full-text search fixture lessons required by project memory rules; no extra application scope.
+
+### Final daily-review results — 2026-11-17
+
+- Delivered report and20-subtask manifest: C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e742-aee8-7710-8bd5-9361879d2817/review-report.md and20-subtask-status.json.18pass,2limited (missing historical product/whole-page before images and unconfirmed business opening priority). Technical ready-route scope completed; do not infer business/production acceptance.
+- Actual source changes limited to product-specification-dialogs.tsx hydration gate and app/error.tsx retry callback. New specification-readiness browser test and current Hicks fixture amendment; no Navbar/dependency/data/RPC application changes. Final-scope receipt proves no unowned application changes since audit baseline and stable Navbar3file hashes.
+- Current product membership42/42, deep browser46/46 including56real specification groups and268source-value/unit checks. Native narrow touch inquiry2/2. Latest owned browser9/9 includescurrentHicks4/hydration3/service-history1/spec-popup-history1.
+- Shared UI12page/viewport combinations verified by11passing cases plus Home390 versioned rerun1; not a single clean12run. Footer12/12 separately verifies native mobile disclosure Space/Enter,44px,allregistry links,legalcontrast>=4.5 and back-to-top/main focus. Source Navbar hashes match owner stable receipt; owner's full186suite remains separately tracked.
+- History/theme25cases have latest passing evidence from24initialpasses plus the finalservice-case rerun; initialfailure retained. Initial390category-to-detail failure did not reproduce in3isolated existing-test repeats or senior3fresh-context probes. No speculative navigation appfix.
+- True isolated server-load integration on Node24.22.1: hydrated oldreset produced0newRSC/read and stayedfailed after fault was removed. Newretry producednewRSC andhealthyRPCread,restored395unique product cards and removedactualerrorUI. Phone/desktop and seniorindependentcoldrestart pass. Healthy395-card DOM baseline verified separately; component-only503/reset-spy evidence is ancillary, not the recovery acceptance proof.
+- Runtime3102 handed to senior for independent acceptance, then stopped after PID/lineage verification;faultfileoff,3000untouched. QA instrumentation changed only physicalcopied readboundary/cache config. No environmentfilecopied,DBwrites,quotationissuance,commit/push/deploy.
+- Node24 TypeScript, scopedESLint, final supported-file Prettier and diff checks passed with exit0; actual command results and current hashes are recorded in external verification-results.json. No full productionbuild or fullrepositoryE2E claimed.
+- Limits: localChrome,simulatedtouch/zoom only; no physicaldevice/Safari/production/LINEavailability. Missing historicalbefore baselines not reconstructed. Business priorities not invented. Initialnative#storieslanding remains a known prior limitation outside these20subtasks; no fake compatiblebuilderpairs/softwarecards/multi-gallery data. WarehouseG106698description mentionsWPS6KS underWPS10KS; preserve source and request businesscontent review rather than edit data.
+- End-of-task task-observer/Next feedback reporting review: no qualifying verified framework defect candidate. Application hydration readiness, callback compatibility and invalid QA fixtures were resolved or documented; the outside-root QA dependency junction limitation follows the installed root constraints. No feedback command needed when no candidate remains.
+
+## Task: Confirm current-image baseline and ready-page opening scope (2026-11-17)
+
+Status: "Complete — owner decisions recorded and documentation/checklist verified"
+Approval: "Approved — owner explicitly resolved both pending decisions on 2026-11-17"
+
+### Goal / Approval Record
+
+- Owner: “ใช้ภาพปัจจุบันเป็น baseline และเปิดทุกหน้าที่พร้อมตามผลตรวจครับ คงเมนูที่ยังไม่พร้อมปิดไว้ แล้วอัปเดตเอกสารกับเช็กลิสต์ให้ตรงตามนี้เลยครับ”.
+- Use the existing current Home, product and content captures as the comparison baseline for subsequent work. The missing historical product/whole-page before images remain missing; this decision does not create historical evidence.
+- The owner confirms the first-wave scope as all existing tested-ready pages. Keep unready entries disabled. Current source inventory: 8 main menus, 104 submenu positions, 71 ready and 33 disabled, with 29 unique ready destinations including main links. Preserve the original ready/disabled classification and data contracts.
+- Future opening of a currently disabled destination still follows the existing data/route/readiness and approval gates; this decision does not enable B/C automatically when data changes.
+
+### Scope / Current State / Contracts
+
+- Update only this task's documentation sections, the daily review addendum, a versioned current status manifest, baseline image index, ready-page scope index and the interactive checklist.
+- Preserve the original 18-pass/2-limited audit and its receipts as historical evidence. Current administrative completion is 20 closed items: 18 technically passed and 2 resolved by the owner's decisions; do not relabel the latter as new technical test passes.
+- Baseline provenance and ready destinations are recorded in `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/current-baseline-20261117.json` and `ready-page-scope-20261117.json` in the same directory. Current status is `20-subtask-status-owner-approved.json`; the checklist remains `today-work-plan.html`.
+- No application, route, styling, product, dependency or database change. Existing ready links are already enabled; this request requires no deployment. The prior data-content observations and device/production verification limits remain recorded in the daily report.
+
+### Acceptance Criteria
+
+- [x] Record the exact owner decision and a hash-indexed baseline of existing current images without recreating historical before images.
+- [x] Confirm the source ready destinations match the tested registry; retain 71 ready and 33 disabled submenu positions.
+- [x] Show 18 technical passes and 2 owner-resolved decisions, with 20 closed items, in the current status manifest and interactive checklist; preserve personal notes.
+- [x] Verify documentation formatting, checklist interaction/reflow and unchanged source/test/dependency hashes for this documentation-only update.
+
+### Missing Information
+
+- None required for this documentation update. The historical image absence remains a provenance fact; the owner has supplied the opening-scope decision.
+
+### Verification Results
+
+- Indexed 24 unchanged existing PNG captures: Home `/`, product `/products/wps10ks`, content `/about-us` at 320/390/834/1440px, full-page and Footer views. File hashes, dimensions and provenance are recorded in the baseline index.
+- Current navigation resolves to the same 29 tested-ready destinations, with 71 ready and 33 disabled submenu positions. No runtime enablement changes were necessary.
+- Chromium verifies 20 controls, 18 fixed technical-pass results and 2 fixed owner-resolved results; private status changes, legacy-note migration and note restoration work without horizontal overflow at 320/390/736/1024px and without page errors.
+- Prettier and scoped whitespace checks pass. `owner-decision-verification.json` records 424 unchanged source/test/dependency files, unchanged original technical manifest and all 24 baseline image hashes. No additional website tests, application change or deployment is claimed by this documentation follow-up.

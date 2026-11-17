@@ -48,15 +48,29 @@ for (const width of [320, 390, 834, 1440]) {
     await expect(
       tools.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }),
     ).toBeVisible();
-    await catalog.getByRole("button", { name: "แสดงแบบรายการ", exact: true }).click();
     await expect(facts).toBeVisible();
     expect(await facts.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(
       true,
     );
-    await catalog.getByRole("button", { name: "แสดงแบบตาราง", exact: true }).click();
-    await search.fill("VL15000S");
-    await expect(catalog.locator("article[data-mock-product]")).toBeVisible();
-    await expect(catalog.locator("article[data-mock-product] [data-product-facts]")).toHaveCount(0);
+    const withoutFacts = products.find(
+      (product: {
+        warehouseCategoryId: string;
+        warehouseSpecifications: unknown[];
+        warehouseCard?: Record<string, string>;
+      }) =>
+        product.warehouseCategoryId === "scales" &&
+        product.warehouseSpecifications.length === 0 &&
+        ["capacity", "readability", "connection", "subtitle"].every(
+          (field) => !product.warehouseCard?.[field]?.trim(),
+        ),
+    );
+    expect(withoutFacts).toBeTruthy();
+    await search.fill(withoutFacts.warehouseSku);
+    const withoutFactsCard = card.filter({
+      has: page.locator(`a[href^="/products/${withoutFacts.slug}"]`),
+    });
+    await expect(withoutFactsCard.getByRole("heading", { level: 3 })).toHaveText(withoutFacts.name);
+    await expect(withoutFactsCard.locator("[data-product-facts]")).toHaveCount(0);
     await search.fill("no-such-model-hicks");
     await expect(
       catalog.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),

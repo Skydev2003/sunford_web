@@ -7,6 +7,7 @@ import { sunford } from "@/features/home/data/brand";
 import { defaultContactLocationImages } from "../data/contact-locations";
 import { ContactLocations } from "./contact-locations";
 import styles from "./contact-page.module.css";
+import { NavigationBackground } from "@/components/layout/navigation-background";
 
 export async function ContactPage() {
   const [site, locationImages] = await Promise.all([
@@ -15,7 +16,7 @@ export async function ContactPage() {
   ]);
 
   return (
-    <main id="main-content" className={styles.page}>
+    <NavigationBackground as="main" id="main-content" className={styles.page}>
       <div className={styles.contactIntro}>
         <div className={styles.heroContainer}>
           <nav className={styles.breadcrumb} aria-label="เส้นทางนำทาง">
@@ -110,6 +111,6 @@ export async function ContactPage() {
       </div>
 
       <ContactLocations images={locationImages} />
-    </main>
+    </NavigationBackground>
   );
 }

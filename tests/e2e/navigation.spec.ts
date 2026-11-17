@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
+import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -11,15 +13,10 @@ const labels = [
   "จัดสเปค",
   "บริการ",
 ];
-const menus = [
-  { label: "ผลิตภัณฑ์ทั้งหมด", groups: ["การใช้งาน", "ช่วยเหลือ"] },
-  ...productCategoryDefinitions.map(({ label }) => ({
-    label,
-    groups: ["การใช้งาน", "ช่วยเหลือ"],
-  })),
-  { label: "จัดสเปค", groups: ["การใช้งาน", "ช่วยเหลือ"] },
-  { label: "บริการ", groups: ["การใช้งาน", "ช่วยเหลือ"] },
-];
+const menus = getPrimaryNavigationItems(defaultNavigation).map((item) => ({
+  label: item.label,
+  groups: item.groups!.map((group) => group.label),
+}));
 for (const width of [1440, 390]) {
   test(`primary product links match the catalog and select each real family at ${width}px`, async ({
     page,
@@ -235,7 +232,7 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   await products.locator("summary").focus();
   await page.keyboard.press("Enter");
   await expect(products).toHaveAttribute("open", "");
-  await expect(products.getByRole("link", { name: "LCD", exact: true })).toBeVisible();
+  await expect(products.getByRole("link", { name: "หน้าจอ LCD", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(mobile).toHaveCount(0);
   await expect(toggle).toBeFocused();
@@ -243,7 +240,10 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   await page
     .locator('#mobile-navigation summary[aria-label="เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง"]')
     .click();
-  await page.locator("#mobile-navigation").getByRole("link", { name: "LCD", exact: true }).click();
+  await page
+    .locator("#mobile-navigation")
+    .getByRole("link", { name: "หน้าจอ LCD", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/products\/category\/indicators\/lcd$/);
   await expect(page.locator("#mobile-navigation")).toHaveCount(0);
 });
@@ -259,7 +259,7 @@ test("mobile software and warranty links remain reachable in a short viewport", 
     .locator("summary")
     .filter({ hasText: /^บริการ$/ })
     .click();
-  await mobile.getByRole("link", { name: "ซอฟต์แวร์", exact: true }).click();
+  await mobile.getByRole("link", { name: "ซอฟต์แวร์และสิทธิ์ใช้งาน", exact: true }).click();
   const software = page.locator(".software-catalog .software-card").first();
   const softwareHref = (await software.getAttribute("href"))!;
   await software.click();

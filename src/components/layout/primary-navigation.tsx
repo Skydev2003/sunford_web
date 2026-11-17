@@ -56,6 +56,7 @@ export function PrimaryNavigation({
     hoverTimer.current = null;
   }, []);
   const setSearchOpen = useCatalogStore((s) => s.setSearchOpen);
+  const setNavigationOpen = useCatalogStore((s) => s.setNavigationOpen);
   const closeMenu = useCallback(() => {
     clearHover();
     blockedTrigger.current =
@@ -74,6 +75,7 @@ export function PrimaryNavigation({
     };
   }, [pathname, clearHover]);
   const scheduleOpen = (index: number, trigger: HTMLElement) => {
+    if (hoveredTrigger.current === trigger) return;
     clearHover();
     hoveredTrigger.current = trigger;
     if (
@@ -108,17 +110,26 @@ export function PrimaryNavigation({
     onMenuChange?.(mobileMenu || menuIndex !== null);
   }, [mobileMenu, menuIndex, onMenuChange]);
   useEffect(() => {
+    setNavigationOpen(mobileMenu);
     if (!mobileMenu) return;
-    const elements = [...document.querySelectorAll<HTMLElement>("main,footer")];
+    const elements = onMenuChange
+      ? []
+      : [
+          ...document.querySelectorAll<HTMLElement>(
+            "main:not([data-navigation-background]),footer:not([data-navigation-background])",
+          ),
+        ];
     const previous = elements.map((e) => e.inert);
     elements.forEach((e) => {
       e.inert = true;
     });
-    return () =>
+    return () => {
+      setNavigationOpen(false);
       elements.forEach((e, i) => {
         e.inert = previous[i];
       });
-  }, [mobileMenu]);
+    };
+  }, [mobileMenu, onMenuChange, setNavigationOpen]);
   useEffect(() => {
     if (!mobileMenu) return;
     const previous = document.body.style.overflow;
@@ -180,11 +191,16 @@ export function PrimaryNavigation({
   };
   const link = (href: string, label: string, disabled = false) =>
     disabled ? (
-      <span key={href} className={styles.menuUnavailable} role="link" aria-disabled="true">
+      <span
+        key={`${href}:${label}`}
+        className={styles.menuUnavailable}
+        role="link"
+        aria-disabled="true"
+      >
         {label}
       </span>
     ) : (
-      <Link key={href} href={href} onClick={(e) => activateLink(e, href)}>
+      <Link key={`${href}:${label}`} href={href} onClick={(e) => activateLink(e, href)}>
         {label}
       </Link>
     );
@@ -203,7 +219,8 @@ export function PrimaryNavigation({
         }}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
-            if (!mobileMenu && menuIndex !== null)
+            if (mobileMenu) menuTrigger.current?.focus();
+            else if (menuIndex !== null)
               (linksRef.current?.children[menuIndex] as HTMLElement | undefined)?.focus();
             closeMenu();
           }
@@ -219,7 +236,7 @@ export function PrimaryNavigation({
                 <Link
                   key={item.href}
                   href={item.href}
-                  onMouseEnter={(event) => scheduleOpen(index, event.currentTarget)}
+                  onMouseMove={(event) => scheduleOpen(index, event.currentTarget)}
                   onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
                   onFocus={(event) => {
                     if (event.currentTarget.matches(":focus-visible")) {
@@ -247,7 +264,7 @@ export function PrimaryNavigation({
                   key={item.href}
                   aria-expanded={menuIndex === index}
                   aria-controls="products-navigation-panel"
-                  onMouseEnter={(event) => scheduleOpen(index, event.currentTarget)}
+                  onMouseMove={(event) => scheduleOpen(index, event.currentTarget)}
                   onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
                   onClick={(event) => {
                     clearHover();
@@ -372,7 +389,9 @@ export function PrimaryNavigation({
                   <div className={styles.menuPrimary} data-nav-column="primary">
                     <p>{activeMenu.submenuLabel ?? activeMenu.label}</p>
                     {activeMenu.links.map((item) => (
-                      <div key={item.href}>{link(item.href, item.label, item.disabled)}</div>
+                      <div key={`${item.href}:${item.label}`}>
+                        {link(item.href, item.label, item.disabled)}
+                      </div>
                     ))}
                   </div>
                   {activeMenu.groups?.map((group, groupIndex) => (
@@ -383,7 +402,9 @@ export function PrimaryNavigation({
                     >
                       <p>{group.label}</p>
                       {group.links.map((item) => (
-                        <div key={item.href}>{link(item.href, item.label, item.disabled)}</div>
+                        <div key={`${item.href}:${item.label}`}>
+                          {link(item.href, item.label, item.disabled)}
+                        </div>
                       ))}
                     </div>
                   ))}

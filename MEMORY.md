@@ -778,3 +778,21 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Observed: adding the approved three-column menus repeated a category destination inside the closed all-products panel; an existing touch test selected that hidden first match. Other fixtures expected old labels, a removed modal entry point, or a Footer link inside a closed native disclosure.
 - Root cause: tests treated a destination as unique across all retained/closed DOM and tied readiness to obsolete navigation markup.
 - Correct behavior: scope submenu selectors to the visible active panel, open native disclosures before following their links, and verify current canonical page/content after navigation. Keep disabled entries in label/structure assertions, but assert that they have no href or Tab stop and never treat them as active links. Preserve hover timing, geometry, focus and destination checks when updating fixtures.
+
+## Re-fetch server failures through the installed retry API (2026-11-17)
+
+- Observed: after a controlled catalogue read failure was removed, the hydrated error-page button kept showing the same error and made no new server request or RPC read.
+- Root cause: the error component used Next's reset callback, which only reset the boundary state. Installed Next16.4.6 also supplies retry, which refreshes router data before resetting.
+- Correct behavior: wire server-load recovery to the retry callback documented by the installed Next version. Verify a real isolated failed read, a hydrated button, a new RSC request and healthy read, restored product cards and disappearance of error UI. A component reset spy alone does not prove server recovery. Keep failure injection in a task-owned source/runtime copy, never in the shared Warehouse or production application.
+
+## Scope a searched product by its canonical card (2026-11-17)
+
+- Observed: searching a real SKU returned19cards because that identifier also occurred in other products' indexed descriptions; a test incorrectly expected a single result.
+- Root cause: the fixture treated full-text substring search as exact-identifier lookup.
+- Correct behavior: assert the matching product through its canonical href/SKU within the result region. Assert exact total results only when that is part of the actual search contract, using the same current data scope. Preserve the original failed report when correcting a fixture.
+
+## Stable tooltip hitboxes and streamed background ownership (2026-11-17)
+
+- A summary tooltip lost hover because the global entrance animation translated its ancestor table16px; fonts and Header readiness were insufficient. Keep `.detail-weighing` outside stagger translation and test first-hover hitbox stability with normal motion as well as reduced motion.
+- Early mobile navigation wrote inert onto Contact's streamed main before hydration and produced an attribute mismatch. Let React-owned native Contact/Footer elements select transient navigation state through the existing store's server snapshot; skip imperative mutations for those elements and for ProductsOverview's existing callback-owned background. Keep actual inert, focus trapping and cleanup rather than suppressing warnings.
+- Escape could remove the document keydown handler before it restored focus. Restore the mobile trigger in the Header's own Escape handler before closing, and test after Tab has moved focus into a submenu.

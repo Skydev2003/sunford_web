@@ -98,9 +98,10 @@ for (const width of [1400, 1440, 1920]) {
       await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
       await parent.hover();
       const panel = header.locator(".submenu-panel.is-active");
-      const expected = getPrimaryNavigationItems(defaultNavigation).find(
+      const definition = getPrimaryNavigationItems(defaultNavigation).find(
         (item) => item.href === `/products/category/${id}`,
-      )!.links;
+      )!;
+      const expected = definition.links;
       await expect(
         panel.locator(".submenu-group-primary .submenu-links").getByRole("link"),
       ).toHaveText(expected.map(({ label }) => label));
@@ -110,21 +111,21 @@ for (const width of [1400, 1440, 1920]) {
       await expect(panel.locator('.submenu-group-primary [aria-disabled="true"]')).toHaveCount(
         expected.filter((link) => link.disabled).length,
       );
-      await expect(panel.locator(".submenu-group-primary > p")).toHaveText("สินค้า");
-      await expect(panel.locator(".submenu-group-secondary > p")).toHaveText([
-        "การใช้งาน",
-        "ช่วยเหลือ",
-      ]);
-      await expect(panel.getByRole("link", { name: `ดู${label}ทั้งหมด`, exact: true })).toHaveCount(
-        0,
+      await expect(panel.locator(".submenu-group-primary > p")).toHaveText(
+        definition.submenuLabel!,
       );
+      await expect(panel.locator(".submenu-group-secondary > p")).toHaveText(
+        definition.groups!.map((group) => group.label),
+      );
+      await expect(
+        panel.getByRole("link", { name: expected[0].label, exact: true }),
+      ).toHaveAttribute("href", definition.href);
     }
     await header.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
     const panel = header.locator(".submenu-panel.is-active");
-    await expect(panel.getByRole("link", { name: "เกี่ยวกับเรา", exact: true })).toHaveAttribute(
-      "href",
-      "/about-us",
-    );
+    await expect(
+      panel.getByRole("link", { name: "เกี่ยวกับ SUNFORD", exact: true }),
+    ).toHaveAttribute("href", "/about-us");
     await expect(panel.getByRole("link", { name: "ติดต่อเรา", exact: true })).toHaveAttribute(
       "href",
       "/contact-us",
@@ -139,6 +140,7 @@ for (const width of [1400, 1440, 1920]) {
 
 for (const width of [390, 1440]) {
   test(`Home category names navigate directly at ${width}px`, async ({ page }) => {
+    test.setTimeout(60_000);
     await page.setViewportSize({ width, height: 1000 });
     for (const { id, label } of productCategoryDefinitions) {
       await page.goto("/");

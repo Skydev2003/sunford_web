@@ -195,7 +195,7 @@ export function Header({
   const submenuLink = (link: NavigationItem["links"][number], mobile = false, index?: number) =>
     link.disabled ? (
       <span
-        key={link.href}
+        key={`${link.href}:${link.label}`}
         className={mobile ? "nav-unavailable" : "submenu-item nav-unavailable"}
         role="link"
         aria-disabled="true"
@@ -204,7 +204,7 @@ export function Header({
       </span>
     ) : (
       <Link
-        key={link.href}
+        key={`${link.href}:${link.label}`}
         className={mobile ? undefined : "submenu-item"}
         style={
           index === undefined ? undefined : ({ "--nav-item-index": index + 1 } as CSSProperties)

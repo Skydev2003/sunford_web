@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getSettings } from "@/features/site/server/documents";
 import { patchSection } from "@/features/site/server/section-tree";
 import { ContactBannerVisibility } from "@/components/contact/contact-banner-visibility";
+import { NavigationBackground } from "./navigation-background";
 import { footerNavigation, footerLegalLinks } from "@/features/site/data/footer-navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import { sunford } from "@/features/home/data/brand";
 
 export function FooterTemplate(site: SiteSettings = defaultSite) {
   return (
-    <footer id="contact" className="site-footer">
+    <NavigationBackground as="footer" id="contact" className="site-footer">
       <ContactBannerVisibility>
         <div className="contact-banner">
           <div className="container contact-inner">
@@ -171,7 +172,7 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
           </a>
         </div>
       </div>
-    </footer>
+    </NavigationBackground>
   );
 }
 

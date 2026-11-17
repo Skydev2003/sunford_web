@@ -7,12 +7,14 @@ type CatalogState = {
   query: string;
   overlayQuery: string;
   searchOpen: boolean;
+  navigationOpen: boolean;
   compareOpen: boolean;
   compareMode: boolean;
   compareIds: string[];
   setCategory: (category: CategoryId) => void;
   setQuery: (query: string) => void;
   setSearchOpen: (open: boolean) => void;
+  setNavigationOpen: (open: boolean) => void;
   setCompareOpen: (open: boolean) => void;
   startCompare: () => void;
   toggleCompare: (id: string) => void;
@@ -23,12 +25,14 @@ export const useCatalogStore = create<CatalogState>((set) => ({
   query: "",
   overlayQuery: "",
   searchOpen: false,
+  navigationOpen: false,
   compareOpen: false,
   compareMode: false,
   compareIds: [],
   setCategory: (category) => set({ category, query: "" }),
   setQuery: (query) => set({ query }),
   setSearchOpen: (searchOpen) => set({ searchOpen }),
+  setNavigationOpen: (navigationOpen) => set({ navigationOpen }),
   startCompare: () => set({ compareMode: true, compareOpen: false }),
   setCompareOpen: (compareOpen) =>
     set((state) =>

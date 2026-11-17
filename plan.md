@@ -1,3 +1,48 @@
+## Plan: Fix product tooltip and Contact hydration before UAT delivery (2026-11-17)
+
+Approval: owner explicitly requested both fixes/retest/commit/push, then selected inclusion of completed parallel work in separate commits. Application edits follow this concrete manifest; no additional approval needed within it.
+
+### Files
+
+- `src/components/ui/use-stagger-bounce.ts` — exclude interactive summary table from translation.
+- `src/stores/catalog-store.ts` — transient mobile navigation background state using existing store.
+- `src/components/layout/navigation-background.tsx` — new React-owned native main/footer inert renderer.
+- `src/components/layout/primary-navigation.tsx` — publish mobile state and avoid mutating owned inert attributes; when existing onMenuChange callback is supplied, its ProductsOverview already owns main/footer inert. Preserve approved104 data/key/hover behavior and avoid duplicate attribute writers.
+- `src/features/content/components/contact-page.tsx`, `src/components/layout/footer.tsx` — equivalent root tags through the new renderer, preserving HTML shape/brand.
+- `tests/e2e/tooltip-contact-hydration.spec.ts` — meaningful first-hover/stable-hitbox and delayed-hydration/modal regressions. Existing tooltip/Navbar/animation/history tests remain unchanged unless a proven fixture issue requires manifest amendment first.
+- Conditional fixture amendment: `tests/catalog/primary-navigation.test.ts`, `tests/e2e/navbar-three-columns.spec.ts`, `tests/e2e/home-category-navigation.spec.ts`, `tests/e2e/navigation-accessibility.spec.ts` — reconcile stale104/33/order/keyboard assertions with owner-edited99/28 and shortest-first order. Keep all semantic/geometry/disabled/navigation checks; do not edit live navigation data.
+- `spec.md`, `plan.md`, `MEMORY.md` — approval/contracts/checklist/evidence and reusable failure lessons; preserve other authors' notes.
+- Evidence/scripts/browser artifacts outside source in `C:/Users/cityc/AppData/Local/Temp/sunford-tooltip-contact-fixes-20261117/`.
+
+### Steps
+
+- [x] Read instructions/global observer memory/project state/installed Next and Zustand implementations; capture baseline hashes/patch/untracked list and fetch origin.
+- [x] Record actual fix and grouped-delivery approval; review existing pending20paths (including7parallel paths) before any staging.
+- [ ] Reproduce both failures with minimal runtime instrumentation and browser tests; confirm actual animated ancestor and early-inert writer. Keep failing evidence.
+- [ ] Implement tooltip fix only; run its failing test and tooltip/motion regression.
+- [ ] Implement React-owned Contact/Footer inert via existing UI store; verify delayed hydration, real modal inert/focus, close/navigation/history and no console warnings.
+- [ ] Verify stable Navbar104/renderers and320/390/834/1440px; run relevant existing browser suites and strengthened hydration/error checks from the approved parallel work.
+- [ ] Run fresh Node24catalog/UAT/typecheck/lint/fullformat and production build in an isolated task-owned output/runtime if needed to protect the owner's dev3000. No DB writes or failure injection into shared runtime.
+- [ ] Review exact final hunks/hashes, finalize Spec/Plan/MEMORY and Next-feedback review, run final format/diff checks.
+- [ ] Group commits: dependency patch; completed product-review changes; Navbar plus tooltip/hydration fixes and related tests; documentation as appropriate. Exact staged manifest, hooks enabled, no force/main push.
+- [ ] Push uat, verify remote/local SHA and working-tree status; attach final receipt instead of editing committed docs after push.
+
+### Impact / Rollback / Limits
+
+- Shared animation, store, Footer and Navbar affected; preserve native tags/classes/no added DOM wrapper and native inert/focus/scroll cleanup. UI-store navigation state is transient and excluded from existing explicit history snapshot fields.
+- Revert only owned hunks/new file or later grouped commits. Preserve approved prior work; no whole-tree reset/stash, map deletion, source data edits, new pages/B-C menus or production deployment.
+- Baseline and every failing/successful run retained separately. Test assertions must catch console hydration errors; never hide dev overlay, suppress hydration warnings, force clicks, remove inert or add arbitrary sleeps to make tests pass.
+
+### Verification Results
+
+- RED: first-hover hitbox moved14.74/15.07px at390/1440; delayed Contact child hydration reproduced console mismatch with extra inert at320/390. Runtime table animation identified sunford-stagger-bounce with16pxtranslate. Raw red/contact-red/runtime-before artifacts retained.
+- Tooltip-only GREEN:9/9passed (new2+existing7) after excluding `.detail-weighing`; no change to Tooltip implementation, durations, CSS tokens or other entrance targets.
+- React-owned Contact/Footer inert passes the delayed-hydration console/inert assertions at320/390, then reveals existing Escape focus restoration race: Header closes before document keydown listener can restore focus. Within the approved PrimaryNavigation/modal-focus contract, restore trigger focus in the same Header Escape handler before closing; no additional files/state/layout or weakened assertion.
+- Build isolation confirmed from installed Next16.4.6 config.js: development uses `.next/dev`, production build uses `.next`; locks/output trees differ. Use normal `bun run build` without stopping owner dev3000 or running production migration/deploy scripts. Run final standalone typecheck after build finishes generating types.
+- Focusedrepeatfirstpass11/12; one controlled Contact startup exceeded the default5sec while the harness proxied all script bodies (including large JSON chunks). Raise only Header-ready expectation to15sec; the leaf hydration gate stays held until the menu is open, so no hydration assertion is delayed away. Keep the failed run and rerun the same12cases.
+- CurrentbaselineNavdatahashc9b9a278… differs from historical104delivery before this task started. Read-only review of owner chat “Locate navbar submenu file” confirms explicit request to sort shortest-first and preserve their manual edits:99entries71ready28disabled. Keep data byte-for-byte; freeze exact currentmatrix in this Spec and amend the4fixturefiles above. Original catalog failures178pass7fail retained; do not restore old104data or pretend it is current.
+- Build completed successfully with installed Next16.4.6 defaultTurbopack. Focused repeat during build had10pass/2startup failures (gotoERR_ABORTED/headernotfound), no hitbox/inert assertion failure; rerun after build settles rather than changing app behavior to address harness/load conditions.
+
 ## Plan: Verify, commit and push authorized backlog before Navbar implementation (2026-11-16)
 
 ### Files / Scope
@@ -38,8 +83,8 @@
 
 ## Plan: Selected data-supported Navbar tree and readiness (2026-11-16)
 
-Status: "Documentation complete; phase A implementation pending approval"
-Approval: "Structure selected; owner requested summary before code"
+Status: "Phase A implemented and Navbar verified; B/C deferred; read-only product-tooltip regression recorded"
+Approval: "Owner explicitly authorized phase A implementation on 2026-11-17"
 
 ### Files — รอบปัจจุบัน
 
@@ -49,9 +94,11 @@ Approval: "Structure selected; owner requested summary before code"
 
 ### Files — Phase A หลังได้รับอนุมัติเท่านั้น
 
-- `src/features/site/data/primary-navigation.ts` — ไฟล์แอปเพียงไฟล์เดียวที่วางแผนแก้: labels/order/3column headings, canonical destinations/readinessตามSpec. ขยาย parameterหัวข้อคอลัมน์ของ helperเดิมเฉพาะที่จำเป็น ไม่สร้าง abstraction/dependencyใหม่
+- `src/features/site/data/primary-navigation.ts` — ไฟล์ข้อมูลเมนูหลักที่วางแผนแก้: labels/order/3column headings, canonical destinations/readinessตามSpec. ขยาย parameterหัวข้อคอลัมน์ของ helperเดิมเฉพาะที่จำเป็น ไม่สร้าง abstraction/dependencyใหม่
+- `src/components/layout/header.tsx`, `src/components/layout/primary-navigation.tsx` — เพิ่มscopeที่เจ้าของอนุมัติ17พฤศจิกายน: submenuReactkeysจากhrefเป็นhref+label เพื่อรองรับต่างlabelที่ลิงก์/contact-usเดียวกันในคอลัมน์เดียว. ต่อมาอนุมัติเพิ่มเฉพาะPrimaryNavigationinitial/path-changehoversuppressionตามamendmentด้านล่าง; ไม่แก้props/styles/layoutหรือHeaderbehavior. Manifestปัจจุบันรวม3appfiles
 - `tests/catalog/primary-navigation.test.ts` — เปลี่ยนexact-tree/readiness checksจากสเปก95รายการเก่าเป็นหัวข้อselectedใหม่; ตรวจ104positions/71A/22B/11C, 33disabled,8mainlinks, column headingsรายเมนู และsaved-disabled/nonmutation/aliases
-- `tests/e2e/navbar-three-columns.spec.ts` — ปรับ95/41เป็น104/33และคอลัมน์รายเมนูตามmatrix; คงการคลิกทุกentry/disabled touch/focus/geometry/shop/search/comparison/historyเดิม
+- `tests/catalog/category-destinations.test.ts` — conditionalfixtureupdateตามข้อตกลงread-onlyregression: หลังcatalogrunพบexpectedsecondarycountsและservices/solutionsassertionของtreeเดิมไม่ตรงselectedtree ให้ปรับเฉพาะcounts/Servicesdestinationexpectations; คงaliasnormalization/nonmutation/legacydefaultsolution18linksเดิม. รวม8testfilesในwrite-manifest (2catalog/6browser)
+- `tests/e2e/navbar-three-columns.spec.ts` — ปรับ95/41เป็น104/33และคอลัมน์รายเมนูตามmatrix; ตรวจสีจางเฉพาะเมนูที่selectedcontractมีdisabled (จัดสเปคพร้อมใช้ทั้งหมด); คงการคลิกทุกentry/disabled touch/focus/geometry/shop/search/comparison/historyเดิม
 - `tests/e2e/all-products-navbar.spec.ts` — ปรับready anchors11→12ในall-productsและlabelsตามtreeใหม่; คงalignment/nativeCtrl/mobile/hover assertions
 - `tests/e2e/home-category-navigation.spec.ts` — ปรับlabel/headings/all-link expectationsที่เดิมห้ามมีดูทั้งหมด ให้ตรงselected tree; คงmain category routes/font/gap/hitbox regressions
 - `tests/e2e/navigation-accessibility.spec.ts` — ปรับfirst-focus label/orderเมื่อมี“เครื่องชั่งทั้งหมด” และชื่อหลังการขาย/ซอฟต์แวร์ใหม่; คงtrusted keyboard/touch/disabled assertions
@@ -61,7 +108,7 @@ Approval: "Structure selected; owner requested summary before code"
 
 ### Explicit Read-only / Out of Phase A
 
-- `src/components/layout/header.tsx`, `src/components/layout/primary-navigation.tsx`, `src/components/layout/navigation-start.ts`, `src/features/site/types.ts`, `src/features/site/data/navigation.ts`, `src/styles/header.css`, `src/styles/base.css`, layouts/Footers/sharedUI — อ่านเพื่อยืนยันrenderer/brandเท่านั้น; ไม่แก้ในmanifestนี้
+- `src/components/layout/navigation-start.ts`, `src/features/site/types.ts`, `src/features/site/data/navigation.ts`, `src/styles/header.css`, `src/styles/base.css`, layouts/Footers/sharedUI — อ่านเพื่อยืนยันrenderer/brandเท่านั้น; ไม่แก้ในmanifestนี้. Headerยกเว้นkey amendment; PrimaryNavigationยกเว้นkeyและhoversuppressionamendmentsที่เจ้าของอนุมัติแล้ว
 - Product classifier/category registries/subcategory pages/routes/server readers/storefront selection/price/quotation/RPC/storage — ไม่แก้. B19destinationsเป็น backlog ไม่ใช่อนุมัติสร้าง19ไฟล์ page.tsx
 - หาก10rowplatformcolumnหรือlonglabelsทำให้ต้องแก้sharedCSS/renderer ให้อัปเดตSpec/Planระบุไฟล์/ผลกระทบและขออนุมัติขอบเขตเพิ่มก่อนแก้; ไม่ลด/ซ่อนรายการหรือย่อชื่อที่เลือกเอง
 - Read-only regressions: `tests/catalog/navigation.test.ts`, `tests/catalog/category-destinations.test.ts`, `tests/e2e/navigation-hover-intent.spec.ts`, `tests/e2e/site-navigation-surfaces.spec.ts`, `tests/e2e/tooltips.spec.ts` และhistory regressionsเดิม. หากต้องเปลี่ยนfixtureนอกmanifest ต้องปรับplanก่อน ไม่ขยายไฟล์เงียบๆ
@@ -74,20 +121,21 @@ Approval: "Structure selected; owner requested summary before code"
 - [x] แยกstructureapprovalกับimplementationapproval พร้อมphaseAmanifestและB/Cbacklog
 - [x] ตรวจMarkdown/diff/matrix invariantsและprotected code hashes; จัดเตรียมสรุปให้เจ้าของก่อนเริ่มcode
 
-### Steps — Phase A ยังไม่เริ่ม
+### Steps — Phase A
 
-- [ ] ได้รับอนุมัติSpec/PlanphaseAจริงและบันทึกในSpec; จับbaselinehunks/hashesของownedfilesโดยรักษางานอื่น
-- [ ] ตรวจpackage/lockfiles, Node24และinstalledNextLink/navigationguideใน `node_modules/next/dist/docs/` ก่อนแก้code
-- [ ] ตรวจA28unique destinations+mainlinksในbrowser/runtimeที่พร้อม; หากcontent/behaviorไม่ตรง ให้แก้readinessเอกสารก่อน ไม่เปิดลิงก์เพียงเพราะHTTP200
-- [ ] แก้primary-navigation.tsตาม104positionmatrix: main8,3columns,exactlabels,headers,order; readinessตามcanonicaldestination และretain saveddisabledflags
-- [ ] B/C33positionsใช้disabledspanเดิม ไม่มีhref/action/Tabstop/prefetch; Aปลายทางพร้อมใช้nativeanchorsตามเดิม. ไม่สร้างBpages/classifierหรือเติมCdata
-- [ ] ปรับ7testfilesตามmanifestโดยคงbehaviorassertions; currentdefaultnavigation/23legacychildrenและcategoryaliasesนอกงานยังคงเดิม
-- [ ] รัน `bun run test:catalog`, Node24 `bun run typecheck`, scopedESLint/Prettier และdiffcheckเฉพาะงาน; ไม่แก้failuresนอกscopeโดยพลการ
-- [ ] รันaffectedbrowser7filesตามmanifestและread-onlyhover/site-navigation/tooltips/historyregressions; แยกoutputdirเฉพาะงาน
-- [ ] Browserทั้งHomeHeaderและinteriorPrimaryNavigationที่320/390/834/1024/1440px: 8panels/104entries,3columnsdesktop,stackedmobile, no viewport-clipped hitboxes/bodyoverflow; 10rowplatformcolumn/labelsยาวยังใช้งานได้
-- [ ] Keyboard/touch/hover/Escape/outsideclick/landscape/simulated200%zoom, normalclick/Enter/nativeCtrlด้วยcontextpageevent, disabled33ไม่มีnavigation, activeheaderเดียวหลังcachedBackForwardและmenuปิดเมื่อเปลี่ยนroute
-- [ ] ตรวจshopicon/nativeURL, search/catalogcomparisonและguideexistingpageยังใช้ได้ตามข้อจำกัด0confirmedpair; ไม่มีการรับรองpairใหม่
-- [ ] อัปเดตSpec/Plan/evidence/limitationsและNextfeedbackreportingreviewก่อนส่งมอบ; no commit/push/deploy
+- [x] ได้รับอนุมัติSpec/PlanphaseAจริง17พฤศจิกายนและบันทึกในSpec; จับbaselinehunks/hashesของownedfilesโดยรักษางานอื่นก่อนแก้app
+- [x] ตรวจpackage/lockfiles, Node24และinstalledNextLink/navigationguideใน `node_modules/next/dist/docs/` ก่อนแก้code; installedNext16.4.6/React19.3.1มาจากexternalpackage/bun.lockdiffที่ต้องรักษา
+- [x] ตรวจduplicatekeyจริงในruntimeและได้รับอนุมัติขยาย2rendererfilesก่อนแก้; เพิ่มregressionconsoleguardสำหรับsubmenukeysทั้งHome/interiorโดยไม่ignorewarning
+- [x] ตรวจA28unique destinations+mainlinksในbrowser/runtimeที่พร้อม:29uniqueURLsรวม/productsผ่าน200/visibleH1/nonemptycontent/not-found exclusionก่อนแก้ข้อมูลเมนู; หลักฐานready-destination-baseline.json
+- [x] แก้primary-navigation.tsตาม104positionmatrix: main8,3columns,exactlabels,headers,order; readinessตามcanonicaldestination และretain saveddisabledflags
+- [x] B/C33positionsใช้disabledspanเดิม ไม่มีhref/action/Tabstop/prefetch; Aปลายทางพร้อมใช้nativeanchorsตามเดิม. ไม่สร้างBpages/classifierหรือเติมCdata
+- [x] ปรับ8testfilesตามmanifest/amendmentโดยคงbehaviorassertions; currentdefaultnavigation/23legacychildrenและcategoryaliasesนอกงานยังคงเดิม
+- [x] รัน `bun run test:catalog`, Node24 `bun run typecheck`, scopedESLint/Prettier และdiffcheckเฉพาะงาน; ไม่แก้failuresนอกscopeโดยพลการ
+- [x] รันaffectedbrowser6filesตามmanifestและread-onlyhover/site-navigation/tooltips/historyregressions; แยกoutputdirเฉพาะงานและบันทึกread-onlytooltipfailureด้านล่าง ไม่อ้างall186green
+- [x] Browserทั้งHomeHeaderและinteriorPrimaryNavigationที่320/390/834/1024/1440px: 8panels/104entries,3columnsdesktop,stackedmobile, no viewport-clipped hitboxes/bodyoverflow; 10rowplatformcolumn/labelsยาวยังใช้งานได้
+- [x] Keyboard/touch/hover/Escape/outsideclick/landscape/simulated200%zoom, normalclick/Enter/nativeCtrlด้วยcontextpageevent, disabled33ไม่มีnavigation, activeheaderเดียวหลังcachedBackForwardและmenuปิดเมื่อเปลี่ยนroute
+- [x] ตรวจshopicon/nativeURL, search/catalogcomparisonและguideexistingpageยังใช้ได้ตามข้อจำกัด0confirmedpair; ไม่มีการรับรองpairใหม่
+- [x] อัปเดตSpec/Plan/evidence/limitationsและNextfeedbackreportingreviewก่อนส่งมอบ; no commit/push/deploy
 
 ### Deferred B/C Delivery Gates
 
@@ -98,10 +146,10 @@ Approval: "Structure selected; owner requested summary before code"
 
 ### Impact / Rollback
 
-- dataไฟล์เดียวถูกใช้โดยHeaderทุกหน้า จึงมีblast radiusทั้งsite; เปลี่ยนเฉพาะเนื้อหาเมนูโดยคงrenderer/styles/lifecycle. ความเสี่ยงคือlabelsยาว, platformcolumn10rows, focusorderและtestsที่ยังอิง95/41หรือheadingเหมือนกันทุกเมนู
+- dataไฟล์หลักถูกใช้โดยHeaderทุกหน้า จึงมีblast radiusทั้งsite; เพิ่มrendererkeysและPrimaryNavigationhoversuppressionเฉพาะที่เจ้าของอนุมัติ คงstyles/layout/props. ความเสี่ยงคือlabelsยาว, platformcolumn10rows, focusorderและtestsที่ยังอิง95/41หรือheadingเหมือนกันทุกเมนู
 - RollbackเฉพาะphaseAdata/testhunksจากbaseline; ไม่revertทั้งไฟล์ที่มีdiffของงานอื่น ไม่restoreทั้งworkingtree และไม่แตะWarehouse
 - ข้อสมมติที่ยืนยันแล้ว: rendererใช้dynamicgroup.label/submenuLabelและdisabledflagอยู่แล้ว จึงไม่ต้องเปลี่ยนprops/types/sharedCSSในแผนนี้
-- ข้อจำกัดวันนี้: localserver3001เชื่อมต่อไม่ได้; Aเป็นsource/content-readinessauditพร้อมหลักฐานก่อนหน้า ไม่ใช่runtime/productionverificationใหม่
+- ข้อจำกัดรอบเอกสาร16พฤศจิกายน: localserver3001เชื่อมต่อไม่ได้ จึงเป็นsource/content-readinessauditเท่านั้น; รอบimplementation17พฤศจิกายนตรวจruntimeใหม่บนexistingdev3000ตามผลด้านล่าง
 
 ### Verification Results — รอบเอกสาร
 
@@ -110,6 +158,37 @@ Approval: "Structure selected; owner requested summary before code"
 - Node24.22.1 assertions ผ่าน: 8menus/24columns/104positionsตรง selected-tree.json ทุกlabel/order/header/href/status; A71/B22/C11และunique28/19/8; proposedphaseAmanifestมี1app/7test/2docfilesและทุกpathมีจริง
 - Protected421src/testfilesมีSHA256ตรงbaselineหลังแก้เอกสารทั้งหมด; ไม่แก้application/tests/database. เก็บผลใน verification.json
 - Prettierตรวจspec.md/plan.mdและgitdiffwhitespaceผ่าน; code/browserimplementationยังไม่เริ่ม. Reportingreviewไม่พบNext.jsframeworkfeedbackcandidate; local3001ไม่พร้อมจึงไม่มีruntime/productionverificationใหม่
+
+### Phase A Implementation / Verification (2026-11-17)
+
+- Userอนุมัติphase Aและภายหลังอนุมัติkey-onlyamendmentใน2renderersพร้อมPrimaryNavigationhoveramendmentแยก. Appแก้3filesเท่านั้น; tests8filesรวมconditionalcategory-destinationsfixture. คงstyles/props/routes รวมinteriorServicesbutton ไม่เปลี่ยนให้เป็นanchorเพื่อให้ตรงคำอธิบายเก่าที่กว้างเกินไป
+- Data assertions:8menus/24columns/104positionsตรงapprovedmatrix; ready71/disabled33. Sourcepaths/labels/headings/statusตรงทุกตำแหน่ง; package.json/bun.lockexternaldiffhashเดิม
+- Node24.22.1:TypeScriptผ่าน, scopedESLintผ่าน, catalog185/185ผ่านหลังอัปเดตfixturecounts/Servicesdestinationของtreeเก่า. ใช้installedNext16.4.6/React19.3.1
+- ใช้existingdevelopmentserverhttp://localhost:3000(PID29188) หลังเครื่องมือแจ้งworkspaceมีdevserverอยู่แล้ว; ไม่หยุดserverของเจ้าของและไม่อ้างproductionbuildverificationในphaseนี้
+- Runtimeพร้อมก่อนแก้:29uniqueURLs (A28+/products) มีHTTP200/visibleH1/nonemptycontent. Screenshotตรวจplatform/accessoriesที่834/1440ทั้ง2Header:3columns/nooverflow และduplicatekeywarningsว่างหลังแก้ตามอนุมัติ
+- Browser186casesจาก6affected+4read-onlyregressionfilesตรวจครบและเก็บoriginalrunsทั้งหมด; latestpercase185ผ่าน/1read-onlyproducttooltipยังfail ไม่ใช่singlecleanrun. FinalcurrentappNavbar57ผ่าน=hover32+matrix24+focusedtouch1; realpointer6/6closed. Evidence/reportอยู่C:/Users/cityc/AppData/Local/Temp/sunford-navbar-phase-a-20261117/
+- Initialbrowser186runหยุดที่63passed/3failed/120notrun: fixtureยังคาดfirstchildเป็นคำนวณราคาและทุกmenuมีdisabled; selectedcontractเพิ่มเครื่องชั่งทั้งหมดเป็นfirstchildและจัดสเปคมีreadyทั้งหมด. ปรับเฉพาะ2testfixturesในmanifestตามหลักฐาน; คงทุกentry/สีจางของเมนูที่มีdisabled/keyboard/gestureassertionsและ3apphashesเดิม. รัน8affected/remainingfiles144casesใหม่; เก็บoriginalfailures/traceครบ ไม่อ้างsingleclean186run
+- Follow-upพบ5categoryjourneyชน30secondaggregatebudgetและAndroidRSCresponse200ใช้4.866secใกล้5secondURLexpectationบนshareddev. ปรับเฉพาะtestbudgetของjourneyเป็น60secและURLexpectationใน104entryflowเป็น15sec; ไม่เปลี่ยนroute/content/navigation assertionsหรือapp. ตรวจซ้ำกรณีที่ล้มก่อนส่งมอบ. ระหว่างตรวจพบproduct-specification-dialogs.tsxถูกอีกงานแก้คู่ขนาน จึงบันทึกแยกและรักษาไว้ ไม่รวมเป็นNavbarownedfile
+- Remainingrunพบmobilekeyboardfixtureในnavigation.spec.tsยังใช้label“LCD”เดิมสองจุด; ปรับเป็น“หน้าจอ LCD”ตามselectedmatrixในmanifestเดิม. พบpointerhoverหลังroutechangeหนึ่งกรณีในread-onlynavigation-hover-intent; ยังไม่แก้test/rendererbehavior ให้ตรวจtraceและรันแยกเพื่อแยกflakinessจากregressionจริง
+- Remaining130runจบ126passed/4failed. อีกสองกรณีคือsitewidepointerใช้y600ซึ่งอยู่ภายในplatformpanelใหม่ที่ภาพแสดงbottom606 (10rows) และtooltipบนdirectproductentry. ปรับเฉพาะsitewidefixtureในmanifestเดิมให้ย้ายเมาส์ไปขอบล่างviewportจริง คงassertmenuclosedหลังpointerleave; tooltips/hoverเป็นread-onlyและรันซ้ำพร้อม2correctedfixturesก่อนตัดสินผล ไม่แก้appbehaviorเพิ่ม
+- Finalpost-hovermatrix24/25ผ่าน; compoundtouchcaseครั้งแรกถูกdevConsoleErroroverlayบังbackbutton (Contactmaininert SSR/clientattribute mismatch) และครั้งถัดไปผ่านtouchแต่รอPOSlandscapeURLเกิน5sec. ปรับfixtureเดิมในnavbar-three-columnsเฉพาะแตะกึ่งกลางentry (ลดการโดนdevbadgeที่มุมล่างซ้าย), URLwait15secตาม104flow และaggregatebudget240secสำหรับ66disabledtaps+16routeactivations+zoom; ไม่force/hideportalหรือข้ามassertion. เก็บhydrationwarningเป็นknownlimitation ไม่อ้างว่าแก้แล้ว; directproducttooltipยังread-onlyและมี16pxlayoutshiftที่ทำให้pointerleaveก่อนtooltipเปิด
+
+### Approved Amendment — Interior hover suppression after navigation
+
+- Ownerตอบ “อนุมัติแก้ hover ตามขอบเขตนี้” หลังอ่านข้อเสนอ; บันทึกก่อนแก้behavior. Existing32hovercasesและrealpointerprobeพบdropdownเปิดซ้ำเมื่อHeaderใหม่mountใต้เมาส์หลังclientnavigation (realpointer5/6). ไม่มีsourcebaselinecomparisonจึงไม่อ้างว่าselecteddata/dependencyupgradeเป็นต้นเหตุ
+- Approved additional write scope: `src/components/layout/primary-navigation.tsx` เฉพาะexistingpath/mountlayout effectและhover scheduler/triggerhandlers เพื่อblockpointerที่ค้างอยู่หลังDOMcommit. RAF-onlyattemptผ่านfakeclock32แต่realpointerยังเปิดซ้ำ3/6; eventprobeพบmouseoverจากDOMmountโดยไม่มีmousemove จึงใช้mousemoveแรกเริ่ม300mstimerและguardไม่restartภายในtriggerเดิม คงleave-reset/initialblockเดิม. ไม่เพิ่มsharedstate/dependencyหรือเปลี่ยน300ms/keyboard/touch behavior. `spec.md`, `plan.md` บันทึกapproval/results; testsเดิมread-onlyตามmanifest
+- [x] รับอนุมัติbehavioramendmentและบันทึกคำตอบจริงก่อนแก้app
+- [x] แก้เฉพาะhover suppression hunk; source104/keychangesเดิมต้องคงอยู่
+- [x] ตรวจ32hovercases, targetednavigationrepeat/realpointer, keyboard/touch/cache/historyและ104tree/geometry; หากต้องเปลี่ยนfixtureให้อัปเดตmanifestก่อน ไม่ลดassertions
+- [x] อัปเดตphaseAผลตรวจตามจริงและrecordrollback; ไม่commit/push/deploy
+
+### Final Results / Known Limits
+
+- Finalsourcehashfa520d77…ของPrimaryNavigation; data/Headerhashตรงpre-hover. Catalog185, Node24typecheck, scopedlint/format/diffผ่าน. Final32hovercasesผ่าน; realpointer6/6closed; finalmatrix24cases+focusedtouch1ผ่าน ครอบคลุม104positionsทั้ง2Header/8widths. สี่full104-entrypointerflowsผ่านก่อนhoverfix ไม่อ้างว่ารันซ้ำทั้งสี่หลังfix
+- Broadlatestcasecoverage185/186ผ่าน; read-onlytooltips.spec.tsแรกยังfail3/3จากปุ่มเลื่อน16pxระหว่างinitialentryจนpointerleave. ไม่แก้productlayout/Tooltipและไม่suppressReacterrors. StartupContactinertmismatchที่devtoolแสดงยังเป็นknownobservation ไม่อ้างว่าแก้ในhoveramendment
+- Scopeaudit425baselinepaths: own11source/testchangesอยู่ในmanifest; parallelproductdialog/errorboundary/hicksfixtureคงhashที่สังเกตล่าสุด. package/bun.lockคงbaselineexternalhash. MEMORY/newproductreadinesstestของอีกงานคงไว้ ไม่รวมเป็นownedfiles
+- Browserใช้Chromeบนexistingdev3000/Next16.4.6/React19.3.1; ไม่fullE2Eทุกไฟล์/physicaldevice/Safari/productionbuild. ไม่มีcommit/push/deploy และไม่หยุดserverของเจ้าของ. Rollbackเฉพาะ3app/8testhunksจากevidenceก่อนงานและแยกapprovedhoverhunk ไม่revertงานอื่น
+- FinalNextfeedbackreportingreview: ไม่มีverifiedframeworkcandidate; warnings/interaction/layoutobservationsยังไม่มีframeworkbaselineproof. หลักฐานหลักverification-report.md/browser-coverage.json/preservation.json/stable-app-hashes.jsonและscreenshots32ภาพในfinalmatrix
 
 ## Plan: Propose data-supported submenus for eight Navbar groups (2026-11-16)
 
@@ -7212,3 +7291,91 @@ Files: only the new Desktop XLSX, exact timestamped source backup, temporary sna
 - Node24.22.3 `tsc --noEmit`, ESLint 4 ไฟล์ TS/TSX, Prettier 8 ไฟล์ และ scoped `git diff --check` ผ่าน Initial TypeScript พบ 4 errors ในไฟล์ placeholder test ที่ทำพร้อมกัน; เจ้าของงานนั้นแก้แล้ว final rerun ผ่าน โดยงาน Navbar ไม่แก้ไฟล์นั้น
 - ตรวจ hash ของ 424 ไฟล์ที่มี baseline: แยกการเปลี่ยนจากงาน placeholder ไว้ใน scope-audit.json; Header, navigation data/types, Tooltip และ SiteNavigation ไม่เปลี่ยนจากต้นงานนี้ ตรวจ diff 3 app files เทียบ baseline แล้วมีเฉพาะ spacing/shop ตามขอ
 - End-of-task observer/Next feedback review: ไม่มี candidate ใหม่ที่ยืนยันว่าเป็นปัญหา framework; ไม่รัน feedback command เมื่อไม่มี candidate ข้อจำกัด: local headless Chrome, touch/zoom จำลอง, shop response จำลอง; ไม่ได้ build, deploy หรือทดสอบ checkout จริง
+
+## Plan: Daily shared UI evidence and product review (2026-11-17)
+
+### Files / Approved Scope
+
+- `spec.md`, `plan.md` — append/update only this task's section; reread current content before writes to preserve concurrent task sections.
+- External deliverables: `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e742-aee8-7710-8bd5-9361879d2817/` — audit scripts, source hashes, public API snapshot, route matrix, screenshots and results. No app/test edits in the initial audit manifest.
+- Existing tests/registries are read/run without mutation. Use port3000 and a unique external output directory; do not stop or rebuild another task's server.
+- Owner blanket approval covers necessary defects in these20subtasks. Add concrete repro/file manifest/impact before any application change. Navbar/dependency owned files remain coordinated separately.
+
+### Steps
+
+- [x] Read applicable instructions/current contracts and work_state including closed items; verify Git and concurrent task status.
+- [x] Record actual execution/fix authorization and technical-scope fallback when opening priorities are unavailable.
+- [x] Inventory historical evidence and distinguish existing verified implementation from remaining acceptance checks.
+- [x] Export ready route matrix and live-product integrity/sample selection with revision/hashes.
+- [x] Inspect three page families and ready product routes, then image/long-text/specs/narrow controls and search/filter/empty/error states.
+- [x] Exercise phone/desktop catalogue → detail → sales and current history contracts.
+- [x] Repeat shared responsive/keyboard tests after Navbar hashes stabilize; assess any reproduced defects within the approved scope.
+- [x] Update actual outcomes/limitations and attach report to canonical work_state.
+
+### Impact / Rollback / Verification Results
+
+- Initial work changes only documentation and external evidence. Revert only this task's documentation section if required; preserve all concurrent edits.
+- HEAD at audit start: ff2717163937668654a44a306e9f99e114507be0 on uat plus concurrent changes; full source/test/dependency hashes captured in external baseline-hashes.json.
+- Live API snapshot395uniqueSKU/395uniqueslug, no missing SKU/name; API absence of a legacy fallback field is not proof of source provenance; category counts193/13/38/36/96 plus19without one of these five assignments. These are observed public data, not a new opening policy.
+- Final results and limitations are recorded below and in the external verification receipt. Historical112Navbar and266backlog receipts are split-run historical evidence, not this audit's fresh test counts.
+
+### Daily-review defect A / controlled error integration amendment
+
+- [x] Record12coldprobes/independentchunkdelayrepro, exactbaselinehash, expectedcontractandownerexistingblanketapproval beforeappedit.
+- [x] Add tests/e2e/product-specification-readiness.spec.ts: holdclientchunks,assertSSRdisabled,release,firstclick/keyboardEscape/focus and realtable; testmobile/tablet/desktop.
+- [x] Edit src/app/(site)/products/[slug]/product-specification-dialogs.tsx only: existing useSyncExternalStore hydrationpattern on launcherdisabled.
+- [x] Runnewregression,deepbrowser/sourcevaluechecks,currenthistory andscopedstaticchecks.
+- [x] Task-ownedport3102isolatedruntime: controlledRPCreadfault→actualerrorUI→unblock→retry→realproductrecovery;collectrequest/read-events/processownership andstoponlyownedserveratend.
+- The subsequent defect B amendment adds only the shared error callback to the application manifest; API source is unchanged. NoNavbar/sharedstyles/DBchanges.
+
+### Daily-review defect B and current catalogue regression manifest
+
+- [x] Actual3102servererror→clearfault→existingbutton reproduces no-refetch; record evidence and installedretrycontract beforeappedit.
+- [x] Edit src/app/error.tsx only: use framework retryprop to refreshserverdata before resettingerrorboundary. Sharedfallbackimpact/rollback inSpec; ownerblanketapproval applies.
+- [x] Update tests/e2e/hicks-law-catalog.spec.ts for explicitlyremovedgrid/listcontrols and realWarehouseblankfacts; preserve all relevantcurrentflowassertions.
+- [x] CopyonlyapprovedappfixestoQA; runactualfailure→retrynewrequest→realRPCread→395productrecovery atphone/desktop,plusAPI503sanitization.
+- [x] FinalNode24scopedTypeScript/ESLint/Prettier/diff; nootherappfilechange. Preserveinitialfailedreports andruntimeownershipreceipt.
+
+- `MEMORY.md` — append concrete verified instructions for server-error retry and exact-card scoping after full-text search; required by project memory rules.
+
+### Final daily-review results — 2026-11-17
+
+- Delivered report and20-subtask manifest: C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e742-aee8-7710-8bd5-9361879d2817/review-report.md and20-subtask-status.json.18pass,2limited (missing historical product/whole-page before images and unconfirmed business opening priority). Technical ready-route scope completed; do not infer business/production acceptance.
+- Actual source changes limited to product-specification-dialogs.tsx hydration gate and app/error.tsx retry callback. New specification-readiness browser test and current Hicks fixture amendment; no Navbar/dependency/data/RPC application changes. Final-scope receipt proves no unowned application changes since audit baseline and stable Navbar3file hashes.
+- Current product membership42/42, deep browser46/46 including56real specification groups and268source-value/unit checks. Native narrow touch inquiry2/2. Latest owned browser9/9 includescurrentHicks4/hydration3/service-history1/spec-popup-history1.
+- Shared UI12page/viewport combinations verified by11passing cases plus Home390 versioned rerun1; not a single clean12run. Footer12/12 separately verifies native mobile disclosure Space/Enter,44px,allregistry links,legalcontrast>=4.5 and back-to-top/main focus. Source Navbar hashes match owner stable receipt; owner's full186suite remains separately tracked.
+- History/theme25cases have latest passing evidence from24initialpasses plus the finalservice-case rerun; initialfailure retained. Initial390category-to-detail failure did not reproduce in3isolated existing-test repeats or senior3fresh-context probes. No speculative navigation appfix.
+- True isolated server-load integration on Node24.22.1: hydrated oldreset produced0newRSC/read and stayedfailed after fault was removed. Newretry producednewRSC andhealthyRPCread,restored395unique product cards and removedactualerrorUI. Phone/desktop and seniorindependentcoldrestart pass. Healthy395-card DOM baseline verified separately; component-only503/reset-spy evidence is ancillary, not the recovery acceptance proof.
+- Runtime3102 handed to senior for independent acceptance, then stopped after PID/lineage verification;faultfileoff,3000untouched. QA instrumentation changed only physicalcopied readboundary/cache config. No environmentfilecopied,DBwrites,quotationissuance,commit/push/deploy.
+- Node24 TypeScript, scopedESLint, final supported-file Prettier and diff checks passed with exit0; actual command results and current hashes are recorded in external verification-results.json. No full productionbuild or fullrepositoryE2E claimed.
+- Limits: localChrome,simulatedtouch/zoom only; no physicaldevice/Safari/production/LINEavailability. Missing historicalbefore baselines not reconstructed. Business priorities not invented. Initialnative#storieslanding remains a known prior limitation outside these20subtasks; no fake compatiblebuilderpairs/softwarecards/multi-gallery data. WarehouseG106698description mentionsWPS6KS underWPS10KS; preserve source and request businesscontent review rather than edit data.
+- End-of-task task-observer/Next feedback reporting review: no qualifying verified framework defect candidate. Application hydration readiness, callback compatibility and invalid QA fixtures were resolved or documented; the outside-root QA dependency junction limitation follows the installed root constraints. No feedback command needed when no candidate remains.
+
+## Plan: Confirm current-image baseline and ready-page opening scope (2026-11-17)
+
+### Files / Approved Scope
+
+- `spec.md`, `plan.md` — record the owner's actual decisions, current scope, provenance and verification; preserve prior task history.
+- `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e742-aee8-7710-8bd5-9361879d2817/review-report.md` — add a current owner-decision notice and addendum while retaining historical audit results.
+- `C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e73a-e846-7f03-b10e-3d955236fc1e/` — create `current-baseline-20261117.json`, `ready-page-scope-20261117.json`, `20-subtask-status-owner-approved.json`, task-only preparation/verification receipts and scripts; update `today-work-plan.html`, its preview and `verify-plan.cjs`.
+- Original images and `20-subtask-status.json` remain unchanged. No application/test/dependency, database, commit, push or deployment action.
+
+### Steps
+
+- [x] Read current instructions/state and the exact owner decision; verify source inventory is still 8 main / 104 submenu / 71 ready / 33 disabled / 29 unique ready destinations.
+- [x] Hash-index the existing current baseline images and confirm ready destinations against the tested registry.
+- [x] Create the versioned owner-approved status manifest and update the report/checklist: 18 technically passed, 2 owner-resolved, 20 closed.
+- [x] Verify checklist state migration retains notes; check interaction and containment at 320/390/736/1024px.
+- [x] Verify final documentation formatting and unchanged application/test/dependency/image/historical-manifest hashes; record results and close the task.
+
+### Impact / Rollback
+
+- R2 documentation and checklist changes only. Preserve the absence of historical before images and the original technical audit. Undo only this task's appended sections/addendum or restore its task-owned checklist snapshot if needed.
+- The approved first-wave scope uses existing tested-ready pages; B/C entries stay disabled. There is no runtime enablement or production publication change to roll back.
+
+### Verification Results
+
+- `record-owner-decisions.cjs`: exact owner approval recorded; current ready destination set matches the prior tested registry, 24 existing baseline PNGs indexed and a versioned current status manifest created. Historical manifest retained unchanged.
+- `verify-owner-decisions.cjs` on Node24.22.1: 424 protected files unchanged; all 24 images and the original technical manifest retain their SHA-256; 18 technical passes + 2 owner-resolved decisions = 20 closed; 71 ready/33 disabled/29 unique ready destinations.
+- `verify-plan.cjs` in local Chrome: 20 controls, 18 technical-pass and 2 resolved markers, private progress changes, legacy note preservation and old limited-state migration passed. No horizontal overflow at 320/390/736/1024px; no page errors.
+- Prettier checks for `spec.md`, `plan.md` and the daily report, plus `git diff --check -- spec.md plan.md`, pass after final documentation updates. No source/test/dependency changes or deployment.

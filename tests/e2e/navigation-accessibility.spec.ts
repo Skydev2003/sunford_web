@@ -13,15 +13,17 @@ test("desktop keyboard reaches submenu destinations and Escape returns focus", a
   const panel = page.locator(".submenu-panel.is-active");
   await expect(panel.getByRole("link", { name: "คำนวณราคา", exact: true })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(panel.getByRole("link", { name: "อุตสาหกรรม", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "ครัวและกาแฟ", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel.getByRole("link", { name: "เครื่องชั่งทั้งหมด", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(products).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
   await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).focus();
   await page.keyboard.press("ArrowDown");
-  await expect(panel.getByRole("link", { name: "หลังการขาย", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "ขอใบเสนอราคา", exact: true })).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/service$/);
+  await expect(page).toHaveURL(/\/service\/quotation$/);
 });
 
 test("touch navigation expands products and follows the company coffee destination", async ({
@@ -62,7 +64,7 @@ test("software menu category links select the real filter on first entry and sam
   await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
   await page
     .locator(".submenu-panel.is-active")
-    .getByRole("link", { name: "ซอฟต์แวร์", exact: true })
+    .getByRole("link", { name: "ซอฟต์แวร์และสิทธิ์ใช้งาน", exact: true })
     .click();
   for (const hash of ["retail-software", "industrial-software", "household-software"]) {
     await page.locator(`.software-filters a[href="#${hash}"]`).click();

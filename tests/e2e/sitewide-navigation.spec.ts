@@ -32,7 +32,7 @@ for (const width of [390, 1440]) {
       await expect(page.locator("main:visible").getByRole("heading", { level: 1 })).toHaveText(
         category.label,
       );
-      if (width >= 834) await page.mouse.move(width - 20, 600);
+      if (width >= 834) await page.mouse.move(width - 20, page.viewportSize()!.height - 10);
       await expect(page.locator("#products-navigation-panel:visible")).toHaveCount(0);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
       expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
@@ -69,7 +69,10 @@ for (const width of [390, 1440]) {
       const panel = header.locator("#products-navigation-panel");
       const sections = panel.locator("[data-nav-column]");
       await expect(sections).toHaveCount(3);
-      await expect(sections.locator(":scope > p")).toHaveText(["สินค้า", "การใช้งาน", "ช่วยเหลือ"]);
+      await expect(sections.locator(":scope > p")).toHaveText([
+        category.submenuLabel!,
+        ...category.groups!.map((group) => group.label),
+      ]);
       const expected = [category.links, ...category.groups!.map((group) => group.links)];
       for (let column = 0; column < 3; column++) {
         await expect(sections.nth(column).getByRole("link")).toHaveText(
@@ -111,10 +114,9 @@ for (const width of [390, 1440]) {
     }
     await header.getByRole("button", { name: "บริการ", exact: true }).click();
     const panel = header.locator("#products-navigation-panel");
-    await expect(panel.getByRole("link", { name: "เกี่ยวกับเรา", exact: true })).toHaveAttribute(
-      "href",
-      "/about-us",
-    );
+    await expect(
+      panel.getByRole("link", { name: "เกี่ยวกับ SUNFORD", exact: true }),
+    ).toHaveAttribute("href", "/about-us");
     await expect(panel.getByRole("link", { name: "ติดต่อเรา", exact: true })).toHaveAttribute(
       "href",
       "/contact-us",
@@ -139,18 +141,23 @@ for (const width of [390, 1440]) {
       ).toBeEnabled();
       if (width < 834) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       await openCategoryMenu(header, category.label, width);
+      const choices = [...category.links, ...category.groups![0].links];
       const target =
-        category.links.find((link) => !link.disabled) ??
-        category.groups![0].links.find((link) => !link.disabled)!;
+        choices.find((link) => !link.disabled && getProductSubcategoryPageByHref(link.href)) ??
+        category.links.find((link) => !link.disabled)!;
       await header
         .locator("#products-navigation-panel")
         .getByRole("link", { name: target.label, exact: true })
         .click();
       await expect(page).toHaveURL(new URL(target.href, page.url()).href);
-      const subcategory = getProductSubcategoryPageByHref(target.href)!;
-      await expect(
-        page.locator(`[data-product-subcategory-page="${subcategory.id}"]`),
-      ).toBeVisible();
+      const subcategory = getProductSubcategoryPageByHref(target.href);
+      if (subcategory) {
+        await expect(
+          page.locator(`[data-product-subcategory-page="${subcategory.id}"]`),
+        ).toBeVisible();
+      } else {
+        await expect(page.locator("main:visible h1")).toHaveText(category.label);
+      }
       await expect(
         page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true }),
       ).not.toBeVisible();
@@ -160,7 +167,7 @@ for (const width of [390, 1440]) {
     await openCategoryMenu(header, "ระบบ POS", width);
     await header
       .locator("#products-navigation-panel")
-      .getByRole("link", { name: "ซอฟต์แวร์", exact: true })
+      .getByRole("link", { name: "ซอฟต์แวร์และสิทธิ์ใช้งาน", exact: true })
       .click();
     await expect(page).toHaveURL(/\/applications-and-softwares$/);
     await expect(header.locator("#products-navigation-panel")).toHaveCount(0);
@@ -194,7 +201,7 @@ for (const width of [320, 768, 834, 844, 1024, 1920]) {
     if (width >= 834) await expect(panel.locator("a").first()).toBeFocused();
     await expect(panel.locator("[data-nav-column] > p")).toHaveText([
       "สินค้า",
-      "การใช้งาน",
+      "คุณสมบัติ",
       "ช่วยเหลือ",
     ]);
     const last = panel.getByRole("link", { name: "ติดต่อฝ่ายบริการ", exact: true });

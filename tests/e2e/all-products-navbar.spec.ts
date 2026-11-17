@@ -37,7 +37,7 @@ for (const route of routes) {
       await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
     }
-    await expect(panel.locator("a")).toHaveCount(11);
+    await expect(panel.locator("a")).toHaveCount(12);
     await expect(panel.locator("p")).toHaveText(["สินค้า", "การใช้งาน", "ช่วยเหลือ"]);
     const first = await panel.locator("a").first().boundingBox();
     const logo = await nav.locator('a[href="/"]:visible').first().boundingBox();
@@ -93,7 +93,7 @@ for (const route of routes) {
       await expect(link).toBeVisible();
       await nav.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).tap();
       const panel = nav.locator("[data-all-products]:visible");
-      await expect(panel.locator("a")).toHaveCount(11);
+      await expect(panel.locator("a")).toHaveCount(12);
       await page.screenshot({ path: test.info().outputPath("mobile-menu.png") });
       if (route === "/")
         await nav.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).tap();
