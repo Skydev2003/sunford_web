@@ -1,6 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 import { build } from "esbuild";
-import catalog from "../../src/features/catalog/data/products-index-carousel.json";
 import type { ClientProduct } from "../../src/features/catalog/types";
 
 const label = "ยังไม่มีข้อมูลสินค้าเครื่องชั่ง";
@@ -174,34 +173,31 @@ test("mounted product image recovers on the next version and generic media stays
 });
 
 for (const width of [390, 834, 1440]) {
-  test(`real curated product without a photo remains in directory and carousel at ${width}px`, async ({
+  test(`real product without a photo remains in its shelf and category strip at ${width}px`, async ({
     page,
     request,
   }) => {
     const { products } = await (await request.get("/api/products")).json();
-    const item = catalog.products[0];
-    const product = (products as ClientProduct[]).find(
-      (product) => product.id === item.id || product.warehouseSku === item.warehouseSku,
-    )!;
+    const product = (products as ClientProduct[]).find((item) => item.warehouseCategoryId)!;
     expect(product).toBeTruthy();
-    const missing = { ...product, image: "", fallbackImage: undefined };
+    const missing = { ...product, image: "", fallbackImage: undefined, price: null };
     const categories = [
-      { id: item.categoryId, label: item.categoryLabel, productIds: [product.id] },
+      { id: product.warehouseCategoryId, label: "หมวดทดสอบ", productIds: [product.id] },
     ];
     await page.setViewportSize({ width, height: 900 });
     await harness(page);
     await sampleImages(page);
     await render(page, { products: [missing], categories });
-    const scene = page.locator("[data-products-index-carousel]");
-    await expect(scene).toHaveAttribute("data-interactive", "true");
-    const selected = scene.locator('[data-product-photo][aria-current="true"]');
+    const selected = page.locator("#products-categories li");
+    await expect(selected.locator("a")).toHaveAttribute(
+      "href",
+      `/products/category/${product.warehouseCategoryId}`,
+    );
     await expect(selected.locator(placeholder)).toBeVisible();
     const card = page.locator("[data-products-category-section] li");
     await expect(card.locator(placeholder)).toBeVisible();
     await expect(card.locator("a").first()).toHaveAttribute("href", `/products/${product.slug}`);
-    await selected.click();
-    await expect(page.getByRole("dialog").locator(placeholder).first()).toBeVisible();
-    await page.getByRole("button", { name: "กลับไปเลือกสินค้า" }).click();
+    await expect(card).toContainText("สอบถามราคา");
     await render(page, {
       products: [{ ...missing, image: "/fixture-photo.svg?v=bad" }],
       categories,

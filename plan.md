@@ -8645,3 +8645,40 @@ GitHub no longer exercises deployed pages or browser interactions. Vercel report
 ### Verification Results
 
 In an isolated Windows worktree at bf411fc with the revised workflow and documents, Node 24.22.3 completed all workflow commands with exit code 0. Only the tracked environment example was present and the process had no Warehouse connection settings. UAT passed 28/28 and catalogue passed 204/204. Next.js generated route definitions before standalone typecheck. A YAML check verified the expected ordered commands. The hosted GitHub workflow will run after publication.
+
+## Plan: หน้าผลิตภัณฑ์ทั้งหมดตามภาพ Apple Store (2026-11-18)
+
+### Files
+
+- `spec.md`, `plan.md` — แบบ ขอบเขต การอนุมัติ และผลตรวจ
+- `src/features/catalog/components/products-index-content.tsx` — แทนฉากเดิมด้วยหัวหน้า แถวลิงก์หมวด และการ์ดสินค้า
+- `src/features/catalog/components/products-index-content.module.css` — จัดวางเฉพาะหน้า index ตั้งแต่มือถือ
+- `src/features/catalog/components/products-index-rail.tsx` — สร้างส่วนควบคุมแถวที่มีปุ่มก่อนหน้า/ถัดไปตามพื้นที่จริง รองรับการปัด แป้นพิมพ์ และ Reduce Motion โดยเรนเดอร์เนื้อหากับลิงก์จากฝั่งเซิร์ฟเวอร์
+- `src/features/catalog/components/products-overview.tsx` — แสดงแถบปรึกษาเดิมเฉพาะ branch ที่ไม่มี indexContent เพื่อย้ายลิงก์ของหน้า index และจำกัดการเล่น Hero เดิมไว้ให้ branch ที่ใช้จริง
+- `src/features/catalog/components/products-index-carousel.tsx`, `src/features/catalog/components/products-index-carousel.module.css`, `src/features/catalog/components/products-mobile-rail.tsx`, `src/features/catalog/components/products-mobile-rail.module.css` — ถอนชุดแสดงฉากและควบคุมรุ่นเมื่อยืนยันว่าไม่มีผู้ใช้งานอื่น
+- `tests/e2e/products-index-carousel.spec.ts`, `tests/e2e/products-mobile-rail.spec.ts` — เปลี่ยนข้อทดสอบที่ผูกกับฉากเก่าให้ตรวจเส้นทางเลือกหมวด/สินค้า การเลื่อน และการใช้แป้นพิมพ์ของแบบใหม่
+- `tests/e2e/products-full-overview.spec.ts`, `tests/e2e/mobile-first-responsive.spec.ts`, `tests/e2e/product-image-placeholder.spec.ts`, `tests/e2e/history-restoration.spec.ts` — ปรับเฉพาะกรณีหน้า index โดยรักษาการตรวจรูปขาด SSR และการย้อนกลับ
+
+### Steps
+
+- [x] ตรวจ route จริง ที่มาของสินค้าและหมวด CSS ที่ใช้งาน และจุดที่ชุดทดสอบอ้างฉากเดิม
+- [x] ตรวจ Apple Design, HIG และ CSS ของปุ่มต้นแบบ ระบุสถานะกด/ปล่อย การเลื่อน และ Reduce Motion ไว้ใน Spec
+- [x] จำกัดการยกเว้น stagger ให้เนื้อหา index เท่านั้น ใช้ selector ยกเว้นที่มีอยู่ใน useStaggerBounce และตรวจหน้าหมวดตัวอย่าง
+- [x] บันทึกการอนุมัติของเจ้าของ อ่านคู่มือ Next.js ที่ติดตั้งสำหรับ Link และ Server Components
+- [x] เปลี่ยนหน้าและถอนฉากตามรายการไฟล์ ปรับข้อทดสอบให้ตรวจพฤติกรรมใหม่
+- [x] ใช้ข้อทดสอบในไฟล์ index/mobile/history ที่ระบุข้างต้นตรวจปุ่มเมื่อแถวล้นและพอดี การกดค้าง/ยกเลิก โฟกัส การปัดโดยไม่เปิดลิงก์ การย้อนกลับที่รุ่นเดิม และเมื่อเปิด Reduce Motion เก็บภาพหรือ Playwright trace สำหรับพฤติกรรมที่ภาพนิ่งบอกไม่ได้
+- [x] ตรวจ formatting, lint, typecheck, test:catalog และรัน Playwright ชุดที่ได้รับผลกระทบกับข้อมูล Warehouse ตรวจการเลื่อน การนำทาง และเก็บภาพตามขนาดใน Spec
+- [x] ลงผลตรวจจริงและแนบหลักฐานใน Spec/Plan
+
+### Impact / Rollback
+
+จุดเสี่ยงคือ ribbon และ lifecycle ของ Hero ใน ProductsOverview ที่ใช้ร่วมกับหน้าหมวด ตรวจหน้าหมวดและการเปิด Finder ทั้งจากเมนูและ URL ย้อนกลับได้โดยคืนเฉพาะการเปลี่ยนแปลงของงานนี้ทั้ง renderer, CSS และ tests
+
+### Verification Results
+
+ตรวจจาก source แล้วว่า /products ส่ง indexContent เข้า ProductsOverview, หัวข้อเดิมถูกซ่อน และรายการสินค้าตามหมวดอยู่ใต้ carousel การตรวจหน้าในเบราว์เซอร์อยู่หลังการอนุมัติและแก้โค้ด
+
+- ตรวจบน Node 24.22.3 ผ่าน typecheck, lint, Prettier และ test:catalog 204/204 ครั้งสุดท้ายที่ build ได้ static pages 705/705
+- Playwright บน local production server และ Chrome ผ่าน 30/30 ในรอบสุดท้าย ครอบคลุมกรณีที่เปลี่ยนใน 6 ไฟล์ ตรวจ 320–1920px, ลิงก์กับ SKU, รูปขาด/กู้คืน, หน้าแบบ server-rendered, แถวพอดีและล้น, กดค้าง/ยกเลิก/Tab/Enter, ปัดสองแกน, เมนูและ Finder, รวมถึงการย้อนกลับหลังหน้าออกจาก cache
+- พบกรณีย้อนจากรายละเอียดหลังใช้ Forward แล้วตำแหน่งแนวนอนหาย แก้ด้วยการเก็บตำแหน่งแถวตาม history entry และตรวจย้อนถึงรุ่นเดิม ก่อนรอบสุดท้ายมี 2 กรณีนำทางเกินเวลา assertion 5 วินาทีช่วงเริ่ม production server ทั้งคู่ผ่านเมื่อตรวจซ้ำ รวมถึงรอบสุดท้ายทั้งชุดโดยใช้เวลา assertion เดิม ระหว่างรันพบ Node เตือนจำนวน close listeners บน ServerResponse สาเหตุยังไม่ได้ระบุ
+- ภาพหลักฐาน [มือถือ 390px](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/products-store-390.png) · [แท็บเล็ต 768px](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/products-store-768.png) · [เดสก์ท็อป 1440px](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/products-store-1440.png) · [สถานะกด](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/pressed.png) · [โฟกัสคีย์บอร์ด](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/focus.png)

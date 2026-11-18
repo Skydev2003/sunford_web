@@ -354,6 +354,7 @@ export function ProductsOverview({
   ].slice(0, 6);
   const heroes = lineup.slice(0, 2);
   const playing =
+    !indexContent &&
     !paused &&
     (!reducedMotion || motionEnabled) &&
     heroVisible &&
@@ -517,9 +518,11 @@ export function ProductsOverview({
             : undefined
         }
       >
-        <div className={styles.ribbon}>
-          ปรึกษาผู้เชี่ยวชาญ เลือกให้ตรงกับงานของคุณ {link(sunford.contact, "ให้เราช่วยเลือก ›")}
-        </div>
+        {!indexContent && (
+          <div className={styles.ribbon}>
+            ปรึกษาผู้เชี่ยวชาญ เลือกให้ตรงกับงานของคุณ {link(sunford.contact, "ให้เราช่วยเลือก ›")}
+          </div>
+        )}
         {indexContent ?? (
           <>
             <section

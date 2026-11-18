@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
+import { recordStaggerMotion, type StaggerWindow } from "./helpers/stagger-motion";
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -17,7 +17,7 @@ async function openScalesMenu(page: Page) {
 }
 
 for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
-  test(`carousel and five actual product categories and existing chrome remain contained at ${width}px`, async ({
+  test(`storefront and five actual product categories and existing chrome remain contained at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -39,21 +39,20 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
     const response = await page.request.get("/api/products");
     expect(response.ok()).toBe(true);
     const { products } = await response.json();
-    for (const section of await sections.all()) {
-      const cards = section.locator("[data-warehouse-sku]");
-      expect(await cards.count()).toBeGreaterThan(0);
-      for (const card of await cards.all()) {
-        const sku = await card.getAttribute("data-warehouse-sku");
-        const product = products.find(
-          (product: { warehouseSku: string }) => product.warehouseSku === sku,
-        );
-        expect(product).toBeTruthy();
-        await expect(card.getByRole("link").first()).toHaveAttribute(
-          "href",
-          `/products/${product.slug}`,
-        );
-      }
-    }
+    const actual = await sections.evaluateAll((nodes) =>
+      nodes.map((section) =>
+        [...section.querySelectorAll("[data-warehouse-sku]")].map((card) => ({
+          sku: card.getAttribute("data-warehouse-sku"),
+          href: card.querySelector("a")?.getAttribute("href"),
+        })),
+      ),
+    );
+    for (const shelf of actual) expect(shelf.length).toBeGreaterThan(0);
+    const expected = products.map((p: { warehouseSku: string; slug: string }) => ({
+      sku: p.warehouseSku,
+      href: `/products/${p.slug}`,
+    }));
+    expect(actual.flat()).toEqual(expect.arrayContaining(expected));
     await expect(directory.locator("[data-warehouse-sku]")).toHaveCount(products.length);
     await expect(directory).not.toContainText("Mock");
     await expect(
@@ -62,7 +61,7 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
     await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
-    const expectedLeft = width < 640 ? 32 : Math.max(48, (width - 1180) / 2);
+    const expectedLeft = Math.round((await directory.locator("h1").boundingBox())!.x);
     const leftEdges = await directory.evaluate((element) => {
       const selectors = ["[data-products-category-section] h2", "[data-warehouse-sku]"];
       return selectors.map((selector) =>
@@ -80,7 +79,7 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
       true,
     );
     await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({ path: test.info().outputPath(`mock-sections-${width}.png`) });
+    await page.screenshot({ path: test.info().outputPath(`products-store-${width}.png`) });
     expect(errors).toEqual([]);
   });
 }
@@ -110,7 +109,7 @@ test("Navbar category/industrial navigation retains one active header/footer thr
   await page.goto("/products");
   for (const [name, href] of [
     ["เครื่องชั่ง", "/products/category/scales"],
-    ["อุตสาหกรรมงานผลิต", "/products/category/scales/industrial"],
+    ["อุตสาหกรรม", "/products/category/scales/industrial"],
   ]) {
     const panel = await openScalesMenu(page);
     if (name === "เครื่องชั่ง")
@@ -127,37 +126,23 @@ test("Navbar category/industrial navigation retains one active header/footer thr
   }
 });
 
-test("actual product cards use the existing viewport entrance and reduced-motion opt-out", async ({
-  page,
-}) => {
+test("storefront products are readable immediately in both motion modes", async ({ page }) => {
   await recordStaggerMotion(page);
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/products");
-  const firstCard = page.locator("[data-warehouse-sku]").first();
-  await firstCard.scrollIntoViewIfNeeded();
-  await expectStaggerMotion(firstCard);
-  const laterCard = page.locator("[data-products-category-section]").last().locator("li").first();
-  expect(
-    await laterCard.evaluate(
-      (element) =>
-        element.getAnimations().filter((animation) => animation.id === "sunford-stagger-bounce")
-          .length,
-    ),
-  ).toBe(0);
-  await laterCard.scrollIntoViewIfNeeded();
-  await expectStaggerMotion(laterCard);
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.reload();
-  expect(
-    await page
-      .locator("[data-warehouse-sku]")
-      .first()
-      .evaluate(
-        (element) =>
-          element.getAnimations().filter((animation) => animation.id === "sunford-stagger-bounce")
-            .length,
+  for (const reducedMotion of ["no-preference", "reduce"] as const) {
+    await page.emulateMedia({ reducedMotion });
+    await page.goto("/products");
+    const directory = page.locator("[data-products-directory]");
+    await expect(directory.getByRole("heading", { level: 1 })).toBeInViewport();
+    await directory.locator("[data-warehouse-sku]").last().scrollIntoViewIfNeeded();
+    expect(
+      await directory.evaluate(
+        (root) =>
+          (window as unknown as StaggerWindow).staggerAnimations.filter((animation) =>
+            root.contains((animation.effect as KeyframeEffect).target),
+          ).length,
       ),
-  ).toBe(0);
+    ).toBe(0);
+  }
 });
 
 test("mobile product rail supports native horizontal keyboard scrolling", async ({ page }) => {
@@ -180,7 +165,8 @@ test("server response contains actual category products without motion hiding", 
   expect(response.ok()).toBe(true);
   const html = await response.text();
   expect(html).toContain("ผลิตภัณฑ์ทั้งหมด");
-  expect(html).toContain("data-products-index-carousel");
+  expect(html).not.toContain("data-products-index-carousel");
+  expect(html).toContain('id="products-categories"');
   for (const category of [
     "เครื่องชั่ง",
     "อินดิเคเตอร์แท่นชั่ง",

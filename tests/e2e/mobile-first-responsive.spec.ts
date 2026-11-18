@@ -206,28 +206,23 @@ test("Home category and story variants follow the shared breakpoints", async ({ 
   }
 });
 
-test("Products carousel switches phone mode at md and fits the Header budget", async ({ page }) => {
+test("Products intro aligns across md and the storefront stays within the viewport", async ({
+  page,
+}) => {
   test.setTimeout(120_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await settled(page, "/products");
-  const scene = page.locator("[data-products-index-carousel]");
+  const intro = page.locator("[data-products-directory] header");
   for (const width of [
     320, 390, 639, 640, 641, 720, 734, 735, 759, 767, 768, 769, 800, 833, 834, 900, 1023, 1024,
     1025, 1069, 1279, 1280, 1281, 1535, 1536, 1537,
   ]) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => scrollTo(0, 0));
-    if (width < 768) await expect(scene).toHaveAttribute("data-mobile-rail", "true");
-    else await expect(scene).not.toHaveAttribute("data-mobile-rail", "true");
-    await expect
-      .poll(
-        async () => {
-          const rect = (await scene.boundingBox())!;
-          return Math.abs(rect.y + rect.height - 900);
-        },
-        { message: `scene budget at ${width}px` },
-      )
-      .toBeLessThan(1);
+    const title = (await intro.locator("h1").boundingBox())!;
+    const help = (await intro.locator("p").boundingBox())!;
+    if (width < 768) expect(help.y).toBeGreaterThanOrEqual(title.y + title.height);
+    else expect(help.x).toBeGreaterThanOrEqual(title.x + title.width - 1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width + 1,
     );

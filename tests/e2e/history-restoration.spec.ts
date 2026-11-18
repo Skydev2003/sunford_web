@@ -115,21 +115,15 @@ test("related detail pages unwind to each real source before returning to the fi
   await expect(page).toHaveURL("/products?catalog=all");
 });
 
-test("phone native product rail restores its selected model after eviction", async ({ page }) => {
+test("phone product shelf restores its horizontal position after eviction", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/products");
-  const carousel = page.locator("[data-products-index-carousel]");
-  await expect(carousel).toHaveAttribute("data-mobile-rail", "true");
-  await expect(carousel.locator("[data-products-mobile-rail]")).toBeVisible();
-  await expect(carousel).toHaveAttribute("data-interactive", "true");
-  await carousel.getByRole("button", { name: "สินค้ารุ่นถัดไป", exact: true }).click();
-  await expect(carousel).toHaveAttribute("data-active-index", "1");
+  const rail = page.locator("#products-rail-scales");
+  await page.getByRole("button", { name: "เลื่อนเครื่องชั่งถัดไป", exact: true }).click();
+  const offset = await rail.evaluate((el) => el.scrollLeft);
+  expect(offset).toBeGreaterThan(0);
   await leaveAndReturn(page);
-  await expect(carousel).toHaveAttribute("data-active-index", "1");
-  await carousel.scrollIntoViewIfNeeded();
-  await expect(
-    carousel.locator('[data-products-mobile-rail] [aria-current="true"]'),
-  ).toBeInViewport();
+  await expect.poll(() => rail.evaluate((el) => el.scrollLeft)).toBe(offset);
 });
 
 test("home video selection survives eviction without starting playback again", async ({ page }) => {
@@ -287,30 +281,25 @@ test("quotation picker draft reopens on Forward without issuing a quotation", as
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
 });
 
-test("carousel selection and product-specification popup restore through Back and Forward", async ({
+test("storefront position and product-specification popup restore through Back and Forward", async ({
   page,
 }) => {
   await page.goto("/products");
-  const carousel = page.locator("[data-products-index-carousel]");
-  await carousel.getByRole("button", { name: "สินค้ารุ่นถัดไป", exact: true }).click();
-  const index = await carousel.getAttribute("data-active-index");
-  await leaveAndReturn(page);
-  await expect(carousel).toHaveAttribute("data-active-index", index!);
-  await carousel.locator("[data-products-models] button").last().click();
-  const photo = carousel
-    .getByRole("button", { name: /^ดูรายละเอียด / })
-    .filter({ visible: true })
-    .first();
-  await photo.click();
-  const complete = page.getByRole("link", { name: "ดูรายละเอียดทั้งหมด", exact: true });
-  await complete.click();
+  const rail = page.locator("#products-rail-scales");
+  const card = rail.locator("a").nth(5);
+  await card.scrollIntoViewIfNeeded();
+  await card.focus();
+  const offset = await rail.evaluate((el) => el.scrollLeft);
+  expect(offset).toBeGreaterThan(0);
+  await card.press("Enter");
   await expect(page).toHaveURL(/\/products\//);
   const spec = page.locator("main:visible .product-spec-groups article > button").first();
   await expect(spec).toBeVisible();
   await spec.click();
   await expect(page.locator("main:visible dialog[open]")).toHaveCount(1);
   await page.goBack();
-  await expect(page.getByRole("link", { name: "ดูรายละเอียดทั้งหมด", exact: true })).toBeVisible();
+  await expect(card).toBeInViewport();
+  await expect.poll(() => rail.evaluate((el) => el.scrollLeft)).toBe(offset);
   await page.goForward();
   await expect(page.locator("main:visible dialog[open]")).toHaveCount(1);
   await page.keyboard.press("Escape");
@@ -320,7 +309,8 @@ test("carousel selection and product-specification popup restore through Back an
   await expect(page).toHaveURL(/#main-content$/);
   await page.locator(".back-link:visible").click();
   await expect(page).toHaveURL("/products");
-  await expect(page.getByRole("link", { name: "ดูรายละเอียดทั้งหมด", exact: true })).toBeVisible();
+  await expect(card).toBeInViewport();
+  await expect.poll(() => rail.evaluate((el) => el.scrollLeft)).toBe(offset);
 });
 
 test("expanded finder results survive cache eviction", async ({ page }) => {
