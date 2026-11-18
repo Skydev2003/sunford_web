@@ -11084,3 +11084,43 @@ Approval: "Owner requested a permanent fix for the pre-commit formatting failure
 Save `plan.md` and `spec.md` with LF and enforce LF on Git checkout for these two paths. Check both complete documents through the existing repository-wide Prettier command after all edits. The failure was reproduced with mixed CRLF/LF, and the original content of both files exactly matched Prettier output after LF normalization.
 
 The full repository formatting command passed after the two documents were normalized. Git reports `eol=lf` for both paths.
+
+## Task: Run database-independent GitHub checks and build on Vercel (2026-11-18)
+
+Status: "Implemented and verified locally on Node 24.22.3"
+Approval: "Owner selected Vercel for builds and GitHub for typecheck, lint and unit tests."
+
+### Goal
+
+Keep GitHub checks fast and runnable on a clean runner. The Warehouse-backed production build runs on Vercel.
+
+### Scope In
+
+- Keep dependency installation, ESLint, Prettier, Prisma schema validation and both UAT/catalogue unit test suites on GitHub. Generate Next.js route types before standalone TypeScript checking.
+- Remove the production build, Chromium installation and automatic Playwright run from this workflow.
+
+### Scope Out
+
+Changes to the storefront, test assertions, release script, Vercel configuration and credentials are outside this task.
+
+### UI/UX Brand Alignment
+
+Not applicable. The change is limited to CI.
+
+### Input / Output
+
+Runs 44219570166 and 44221846738 on bf411fc failed while collecting product page data. The route enumerates Warehouse products during the build, but GitHub supplied no Warehouse settings. GitHub recorded a successful Vercel deployment status for that revision. GitHub checks will now complete without a Warehouse database.
+
+### Acceptance Criteria
+
+- [x] Executed the revised workflow commands in an isolated checkout without Warehouse settings or a local environment file. All 28 UAT and 204 catalogue tests passed.
+- [x] Parsed the workflow YAML and checked its command list. Route type generation and standalone TypeScript checking both passed.
+- [x] Confirmed the diff contains the workflow and its planning documents only. A hosted run of the revised workflow awaits publication.
+
+### Missing Information
+
+None.
+
+### Approval Record
+
+The owner initially approved a disposable PostgreSQL service, then selected “ใช้ Vercel ตรวจ build และให้ GitHub ตรวจ typecheck/lint/unit tests เท่านั้น (เร็วสุด แต่ Playwright จะไม่รันอัตโนมัติ)”. This supersedes the fixture plan.

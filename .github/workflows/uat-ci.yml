@@ -23,7 +23,6 @@ jobs:
       CI: "true"
       NEXT_TELEMETRY_DISABLED: "1"
       APP_ENV: ci
-      PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@v7
         with:
@@ -38,11 +37,6 @@ jobs:
         run: npm run lint && npm run format:check
       - name: Validate database schema and UAT configuration
         run: npm run db:validate && npm run test:uat && npm run test:catalog
-      # No Supabase credentials or database migrations run in CI.
-      # With DATABASE_URL absent, public catalogue tests use the curated local fixture.
-      - name: Production build and TypeScript
-        run: npm run build && npm run typecheck
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Public catalogue browser checks
-        run: npm run test:e2e -- tests/e2e/catalog.spec.ts
+      # Vercel runs the Warehouse-backed build. Type generation only needs the source.
+      - name: Generate Next.js route types and check TypeScript
+        run: npx --no-install next typegen && npm run typecheck

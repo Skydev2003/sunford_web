@@ -8622,3 +8622,26 @@ Application/config scope อนุมัติแล้ววันที่18�
 - [x] Run the full `bun run format:check` and the existing pre-commit hook, then compare the index against its baseline to protect the changes already staged by the owner.
 
 Scope: `.gitattributes`, `plan.md`, `spec.md`, and `MEMORY.md`. The targeted rules make both Markdown files use LF across checkouts. To roll back the rules, remove their two entries from `.gitattributes`.
+
+## Plan: Run database-independent GitHub checks and build on Vercel (2026-11-18)
+
+### Files
+
+- `.github/workflows/uat-ci.yml` — keep database-independent checks and generate route types before TypeScript checking.
+- `spec.md`, `plan.md` — record the owner's revised choice and verification.
+
+### Steps
+
+- [x] Confirm the failed GitHub runs and successful Vercel status on bf411fc.
+- [x] Record the owner's choice to remove the duplicate build and automatic browser checks.
+- [x] Remove the temporary database implementation and update the workflow.
+- [x] Check install, lint, formatting, schema validation, both unit suites, route type generation and typecheck on Node 24 without a Warehouse connection.
+- [x] Verify the final diff and record the results.
+
+### Impact / Rollback
+
+GitHub no longer exercises deployed pages or browser interactions. Vercel reports its build status separately. Browser tests remain available through the existing Playwright script. Reverting the workflow restores the previous job.
+
+### Verification Results
+
+In an isolated Windows worktree at bf411fc with the revised workflow and documents, Node 24.22.3 completed all workflow commands with exit code 0. Only the tracked environment example was present and the process had no Warehouse connection settings. UAT passed 28/28 and catalogue passed 204/204. Next.js generated route definitions before standalone typecheck. A YAML check verified the expected ordered commands. The hosted GitHub workflow will run after publication.
