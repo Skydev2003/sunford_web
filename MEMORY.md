@@ -827,3 +827,15 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Observed: an 11-worker production build lost a Warehouse connection; a one-worker build completed. Later browser validation overlapping static generation recorded Warehouse statement timeouts and error pages.
 - Root cause: verified database connection/query failures during validation; the underlying database capacity or timeout cause was not established. An error page can make otherwise unrelated UI selectors disappear.
 - Correct behavior: finish Warehouse-backed production builds before starting browser sweeps. Use the documented process-only worker control when needed, keep one browser worker, inspect server logs and the actual error page before classifying a missing selector, and retain failed attempts separately. Do not change database limits, application queries or test assertions to hide infrastructure failures.
+
+## Verify npm lockfile before release (2026-11-18)
+
+- Observed: local checks with Bun passed, but GitHub Actions rejected the release commit at `npm ci` with `EUSAGE`.
+- Root cause: `package.json` and the Bun lockfile reflected the intended Next.js and React versions, while `package-lock.json` still pinned older versions.
+- Correct behavior: when dependency declarations change, sync both tracked lockfiles and verify `npm ci --include=dev` with the project's Node version in an isolated clean directory before release. Verify the Vercel deployment status and live revision separately after a push.
+
+## Verify complete Spec and Plan files after appending notes (2026-11-18)
+
+- Observed: A commit failed its Prettier hook after a separately formatted LF section was appended to CRLF Markdown files.
+- Root cause: The final files mixed line endings. Prettier had checked the standalone additions, so the mixed endings in the complete documents went undetected.
+- Correct behavior: Keep `plan.md` and `spec.md` in LF as defined in `.gitattributes`. After the last edit, format both complete files and run `bun run format:check` before handing off the commit. If a file was already staged, refresh only its intended changes in the index.

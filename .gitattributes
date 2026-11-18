@@ -1,3 +1,7 @@
 # Preserve the bytes checked by the scale reference manifest.
 docs/sunford-scale-categories.md text eol=lf
 .githooks/* text eol=lf
+
+# Keep the shared planning documents consistent across Windows and other checkouts.
+/plan.md text eol=lf
+/spec.md text eol=lf

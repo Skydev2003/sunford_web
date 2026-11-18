@@ -21,7 +21,7 @@ async function getCopyrightYear() {
 }
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<p role="status">กำลังโหลดสินค้า…</p>}>
+    <Suspense fallback={null}>
       <ProductsContent />
     </Suspense>
   );

@@ -8572,3 +8572,53 @@ Application/config scope อนุมัติแล้ววันที่18�
 - ยังไม่ติดตั้ง/เปลี่ยนNodeของเครื่อง: shelldefault22.14.0 ไม่ตรงpackage24.x ให้ใช้Node24ตามข้อกำหนดก่อนrelease
 - ไม่มีDB/registrywrites, stage/commit/push/deploy; ownerdev3000คงอยู่ เจ้าของcommitเอง
 - [Implementation report](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-report.md), [Verification receipt](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-verification.json)
+
+## Plan: Hide product and category loading labels (2026-11-18)
+
+### Files
+
+- `spec.md` — เพิ่มSpec/approvalและผลตรวจของงานนี้ รักษาประวัติเดิม
+- `plan.md` — เพิ่มmanifest/checklist/verification/rollbackของงานนี้
+- `src/app/(site)/products/category/[category]/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+- `src/app/(site)/products/category/accessories/[group]/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+- `src/app/(site)/products/category/indicators/[group]/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+- `src/app/(site)/products/category/platforms/[group]/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+- `src/app/(site)/products/category/pos/[group]/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+- `src/app/(site)/products/category/scales/[group]/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+- `src/app/(site)/products/category/scales/industrial/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+- `src/app/(site)/products/page.tsx` — เปลี่ยนเฉพาะข้อความ Suspense fallback เป็น `null`
+
+### Steps
+
+- [x] อ่านAGENTS/Spec/Memory,ตรวจภาพ/source/installedNextdocsและทั้งสองlockfiles; ระบุ8ownersและคงSuspense streaming contract
+- [x] จัดทำconcreteSpec/Planและตรวจprotectedfilesว่าไม่มีapplication/test/config/dependencyเปลี่ยนระหว่างวางแผน
+- [x] เจ้าของอนุมัติSpec/Plan8ไฟล์นี้ และบันทึกapprovalจริงก่อนแก้application
+- [x] เปลี่ยนexact8fallback propsเป็น`null`ตามmanifest; ไม่ถอดboundaryหรือย้ายasyncงาน
+- [x] ตรวจdiffเทียบก่อน/หลังว่ามีเฉพาะfallback expressionและไม่มีสองข้อความนี้หลงในownersเดิม
+- [x] Browser: ทดสอบdirect/cold loadและclient navigation/back;390/1440px, `/products`,5parent categories,1validcanonicalURLต่อdynamic subgroup family5กลุ่ม และindustrialโดยใช้currentregistry ไม่สร้างURLสินค้าหรือข้อมูลสมมติ
+- [x] เก็บDOM/HTML stream evidenceว่าระหว่างpendingไม่มีloadinglabelแล้วเนื้อหาจริงแสดง; ใช้cold navigation/network throttlingตามเครื่องมือที่มี ไม่เพิ่มdelay/cache logicในแอปเพื่อทำเทสต์
+- [x] ใช้Node24รันtypecheck/scopedESLint/Prettier/gitdiffcheck; ไม่เขียนtestsที่mirrorการเปลี่ยนpropนี้ ไม่รันDBwrites/deploy
+- [x] อัปเดตSpec/Planพร้อมactual browser evidence/ผลคำสั่ง/ข้อจำกัดและส่งมอบ ไม่commit/push
+
+### Impact / Rollback
+
+- R2: กระทบเฉพาะloadinglabelของ8route entries; ระหว่างรออาจเห็นพื้นหลังว่างจนstreamedcontentพร้อม ไม่แก้ความเร็ว/timeoutหรือsharedchrome
+- ไม่มีglobalcomponent/style/API/data changes; คงSuspenseเพื่อหลีกเลี่ยงregressionจากasync URL/dataอยู่นอกboundary
+- ย้อนเฉพาะfallback expressionของ8ไฟล์จากtask-startsnapshot ไม่resetworkingtreeหรือย้อนงานอื่น
+- หากพบownerอื่นที่จำเป็นต้องแก้เพิ่มให้อัปเดตSpec/Planและรับอนุมัติส่วนเพิ่มก่อน ไม่ขยายไปโหลดข้อความอื่นทั้งเว็บ
+
+### Verification Results
+
+- เปลี่ยน fallback เป็น null ตามที่อนุมัติครบ 8 ไฟล์ ตรวจเทียบต้นฉบับแล้วต่างเพียง fallback หนึ่งบรรทัดต่อไฟล์
+- Chrome บน Dev port 3000 เปิดโดยปิดแคช 12 เส้นทาง × 2 ขนาด (390px และ 1440px) ผ่านครบ 24 กรณี ทุกหน้าตอบ HTTP 200 และแสดงเนื้อหาจริง ตรวจ HTML และ DOM ตั้งแต่เริ่มโหลดจนหัวข้อปรากฏแล้วไม่พบข้อความที่เอาออก ไม่เกิด horizontal overflow, page error หรือ hydration error
+- กดจาก Products → หมวดเครื่องชั่ง → Back ผ่านทั้งสองขนาด มีภาพหน้าหมวดเครื่องชั่งหลังโหลดเสร็จ
+- Node 24.22.3 Typecheck, ESLint และ Prettier เฉพาะไฟล์ที่แก้ผ่าน พร้อมตรวจ git diff --check และยืนยันขอบเขตการเปลี่ยนแปลง งานนี้ตรวจบน Dev
+- หลักฐานอยู่ใน [Verification report](C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/product-loading-label-run-20261118/verification-report.md)
+
+## Plan: Keep Spec and Plan line endings consistent (2026-11-18)
+
+- [x] Reproduce the pre-commit failure and compare both files against Prettier after normalizing line endings.
+- [x] Set explicit LF checkout rules for `plan.md` and `spec.md` in `.gitattributes`, normalize both files, and record the prevention rule in `MEMORY.md`.
+- [x] Run the full `bun run format:check` and the existing pre-commit hook, then compare the index against its baseline to protect the changes already staged by the owner.
+
+Scope: `.gitattributes`, `plan.md`, `spec.md`, and `MEMORY.md`. The targeted rules make both Markdown files use LF across checkouts. To roll back the rules, remove their two entries from `.gitattributes`.

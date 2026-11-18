@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function ProductCategoryPage({ params }: Props) {
   return (
-    <Suspense fallback={<p role="status">กำลังโหลดหมวดสินค้า…</p>}>
+    <Suspense fallback={null}>
       <ProductCategoryContent params={params} />
     </Suspense>
   );

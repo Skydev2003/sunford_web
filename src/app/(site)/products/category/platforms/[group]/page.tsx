@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function PlatformGroupPage({ params }: Props) {
   return (
-    <Suspense fallback={<p role="status">กำลังโหลดหมวดสินค้า…</p>}>
+    <Suspense fallback={null}>
       <PlatformGroupContent params={params} />
     </Suspense>
   );

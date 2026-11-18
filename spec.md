@@ -11013,3 +11013,74 @@ Approval: "Approved — owner: อนุมัติครับ แก้ตา
 - ยังไม่ติดตั้ง/เปลี่ยนNodeของเครื่อง: shelldefault22.14.0 ไม่ตรงpackage24.x ให้ใช้Node24ตามข้อกำหนดก่อนrelease
 - ไม่มีDB/registrywrites, stage/commit/push/deploy; ownerdev3000คงอยู่ เจ้าของcommitเอง
 - [Implementation report](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-report.md), [Verification receipt](C:/Users/cityc/AppData/Local/Temp/sunford-warehouse-build-timeout-20261118/implementation-verification.json)
+
+## Task: Hide product and category loading labels (2026-11-18)
+
+Status: "Implemented and verified"
+Approval: "Approved — owner explicitly approved the proposed8-file Spec/Plan on2026-11-18"
+
+### Goal
+
+เอาข้อความ “กำลังโหลดหมวดสินค้า…” และ “กำลังโหลดสินค้า…” ออกจากหน้าหมวดสินค้าและหน้า Products รวม 8 จุดตามที่เจ้าของอนุมัติ
+
+### Scope In
+
+- เปลี่ยนเฉพาะ `<Suspense fallback={<p role="status">…</p>}>` เป็น `<Suspense fallback={null}>` ใน8ไฟล์ตามPlan
+- ครอบคลุม `/products`,5parent categoriesผ่าน`[category]`, dynamic subgroup routes5families และ dedicated industrial scales page ที่มีข้อความเดียวกัน
+- คง Suspense boundaries, async children/params, metadata, navigation, cache/streaming และWarehouse readers เดิม
+- เจ้าของอนุมัติรวมหน้าProductsและหมวดย่อยครบ8ไฟล์เมื่อ18พฤศจิกายน2026
+
+### Scope Out
+
+- ไม่เพิ่มSkeleton/Spinner/ข้อความโหลดอื่น ไม่แก้Header/Footer/Layout/CSS/spacing/design tokens
+- ไม่เปลี่ยนData API,Warehouse,query/cache/timeout/retry/build-worker/dependency/lockfiles หรือข้อความError/empty/Search states
+- ไม่แก้การรองรับNo-JavaScriptเดิม ไม่อ้างว่าลบข้อความแล้วทำให้Warehouseโหลดเร็วขึ้น
+- ไม่commit/push/deployหรือเขียนข้อมูลธุรกิจ
+
+### UI/UX Brand Alignment
+
+- Reference: ภาพเจ้าของ `C:/Users/cityc/Pictures/Screenshots/สกรีนช็อต 2026-11-17 230109.png` แสดงข้อความโหลดบนหน้า `/products/category/scales`; existing route fallback implementations
+- Design: ระหว่างรอแสดงพื้นหลังเดิมโดยไม่มีข้อความโหลดหรือพื้นที่ใหม่ หน้าเมื่อข้อมูลพร้อมคงดีไซน์เดิมทั้งหมด
+- Responsive: พฤติกรรมเดียวกันทุกขนาด ตรวจ390pxและ1440px ครอบคลุมมือถือ/เดสก์ท็อป และสลับroute/backตามความเหมาะสม
+- ค่ากลาง/หน่วย/Tailwind reference: ไม่เกี่ยวข้อง เพราะไม่กำหนดหรือปรับค่าออกแบบ/Styles; ไม่เพิ่มTailwind
+- Technical reference: installedNext16.4.6 docs `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/loading.md` และ `01-app/02-guides/streaming.md`, อ่าน18พฤศจิกายน2026; คง boundary เพื่อให้async content streamได้ตามเดิม
+
+### Input / Output
+
+- Input: ผู้ใช้ระบุ “ส่วนนี้ไม่จำเป็นต้องแสดงเวลาโหลดสินค้า” พร้อมภาพหน้าscales; sourceพบข้อความหมวด7ไฟล์และสินค้า1ไฟล์
+- Output: ไม่มีrendered loading labelใน8route entries ที่เสนอ เมื่อข้อมูลพร้อมหน้าจะแสดงสินค้า/หมวดตามเดิม; Error handlingยังทำงานเดิม
+- ไม่เปลี่ยนProps/Routes/API/Data Contracts; fallback UIเท่านั้น
+
+### Acceptance Criteria
+
+- [x] หลังอนุมัติ8fallbacksเป็นnullและไม่มีข้อความโหลดสองแบบในroute entriesเหล่านี้
+- [x] Diffของแต่ละapplication fileมีเพียงfallback prop; Suspense/async children/paramsและimportsอื่นคงเดิม
+- [x] Browser cold/direct loadและclient navigationที่390/1440pxไม่แสดงข้อความนี้ และเนื้อหาจริงปรากฏเมื่อข้อมูลพร้อม
+- [x] ตรวจทุกroute familyที่เปลี่ยนด้วยcanonicalURLจากcurrentregistry; parent categoriesและindustrial pageยังแสดงหัวข้อ/สินค้า ไม่มีpage/hydration errorsหรือhorizontal overflow
+- [x] Node24 Typecheck,scopedESLint/Prettierและgitdiffcheckผ่าน; updateผลจริง/ข้อจำกัดในSpec/Plan
+
+### Missing Information
+
+ไม่มีข้อมูลจำเป็นขาด; ได้รับการอนุมัติSpec/Plan8ไฟล์แล้ว
+
+### Approval Record
+
+- 18พฤศจิกายน2026 เจ้าของส่งภาพและระบุว่าไม่จำเป็นต้องแสดงส่วนนี้เวลาโหลดสินค้า
+- 18พฤศจิกายน2026 เจ้าของตอบ “อนุมัติ” ต่อSpec/Plan8ไฟล์ที่เสนอ อนุญาตให้เปลี่ยนfallbackทั้งหมดเป็นnullตามmanifest โดยไม่commit/push/deploy
+
+### Implementation verification
+
+- เปลี่ยน fallback เป็น null ตามที่อนุมัติครบ 8 ไฟล์ ตรวจเทียบต้นฉบับแล้วต่างเพียง fallback หนึ่งบรรทัดต่อไฟล์
+- Chrome บน Dev port 3000 เปิดโดยปิดแคช 12 เส้นทาง × 2 ขนาด (390px และ 1440px) ผ่านครบ 24 กรณี ทุกหน้าตอบ HTTP 200 และแสดงเนื้อหาจริง ตรวจ HTML และ DOM ตั้งแต่เริ่มโหลดจนหัวข้อปรากฏแล้วไม่พบข้อความที่เอาออก ไม่เกิด horizontal overflow, page error หรือ hydration error
+- กดจาก Products → หมวดเครื่องชั่ง → Back ผ่านทั้งสองขนาด มีภาพหน้าหมวดเครื่องชั่งหลังโหลดเสร็จ
+- Node 24.22.3 Typecheck, ESLint และ Prettier เฉพาะไฟล์ที่แก้ผ่าน พร้อมตรวจ git diff --check และยืนยันขอบเขตการเปลี่ยนแปลง งานนี้ตรวจบน Dev
+- หลักฐานอยู่ใน [Verification report](C:/Users/cityc/.codex/visualizations/2026/11/17/01a1e7dc-518b-79a2-b169-e25bc5c0b97c/product-loading-label-run-20261118/verification-report.md)
+
+## Task: Keep Spec and Plan line endings consistent (2026-11-18)
+
+Status: "Implemented and verified"
+Approval: "Owner requested a permanent fix for the pre-commit formatting failure."
+
+Save `plan.md` and `spec.md` with LF and enforce LF on Git checkout for these two paths. Check both complete documents through the existing repository-wide Prettier command after all edits. The failure was reproduced with mixed CRLF/LF, and the original content of both files exactly matched Prettier output after LF normalization.
+
+The full repository formatting command passed after the two documents were normalized. Git reports `eol=lf` for both paths.
