@@ -1,0 +1,153 @@
+import type { Product } from "../types";
+
+const categoryRoot = "/products/category";
+const accessories = `${categoryRoot}/accessories`;
+const scales = `${categoryRoot}/scales`;
+const printers = { href: `${accessories}/printers`, label: "เครื่องพิมพ์" };
+const thermalPaper = { href: `${accessories}/thermal-paper`, label: "กระดาษความร้อน" };
+const labels = { href: `${accessories}/labels`, label: "ฉลากและสติ๊กเกอร์" };
+const cables = { href: `${accessories}/cables`, label: "สายและหัวต่อ" };
+const consumables = { href: `${accessories}/consumables`, label: "วัสดุสิ้นเปลือง" };
+const scaleGuide = { href: "/guides/scales", label: "คู่มือเลือกเครื่องชั่ง" };
+const labelPrinting = { href: "/solutions/label-printing", label: "โซลูชันงานพิมพ์ฉลาก" };
+const pos = { href: `${categoryRoot}/pos`, label: "ระบบ POS" };
+
+export const consumableSubtypeLinks = [thermalPaper, labels];
+
+const counting = /นับจำนวน(?:ชิ้น)?|นับชิ้น|\bcounting scales?\b/i;
+const checkweighing = /เตือน(?:ช่วงน้ำหนัก|น้ำหนักขาด\s*[-–—/]?\s*เกิน)/i;
+const labelMaterial = /สติ[๊้]?กเกอร์|ฉลาก|เลเบล|\blabels?\b/i;
+const option =
+  /ออปชั[่น]+|ตัวเลือก|เพิ่มเติม|เสริม|ไม่รองรับ|ไม่มี|\boptional\b|\boption\b|\bnot supported\b/i;
+
+function supportsFeature(product: Product, feature: RegExp) {
+  const fact = product.warehouseSpecifications?.find(({ label }) => feature.test(label));
+  return fact
+    ? /^(รองรับ|ใช่|yes|true)$/i.test(fact.value.trim())
+    : feature.test(product.warehouseName ?? "") && !option.test(product.warehouseName ?? "");
+}
+
+function hasRs232(product: Product) {
+  return (
+    product.warehouseSpecifications?.some(
+      ({ label, value }) =>
+        /เชื่อมต่อ|พอร์[ตท]|port|interface/i.test(label) &&
+        /\bRS[-\s]?232\b/i.test(value) &&
+        !option.test(`${label} ${value}`),
+    ) ?? false
+  );
+}
+
+function definePage<Category extends "scales" | "indicators" | "accessories", Id extends string>(
+  categoryId: Category,
+  id: Id,
+  slug: string,
+  label: string,
+  relatedLinks: readonly { href: string; label: string }[],
+  matches: (product: Product) => boolean,
+) {
+  return {
+    id,
+    categoryId,
+    slug,
+    label,
+    title: label,
+    href: `${categoryRoot}/${categoryId}/${slug}`,
+    returnContext: id,
+    relatedLinks,
+    matches: (product: Product) =>
+      Boolean(product.warehouseSku) &&
+      product.warehouseCategoryId === categoryId &&
+      matches(product),
+  };
+}
+
+export const additionalScaleSubcategoryPages = [
+  definePage("scales", "scale-counting", "counting", "นับจำนวนชิ้น", [scaleGuide], (product) =>
+    supportsFeature(product, counting),
+  ),
+  definePage(
+    "scales",
+    "scale-checkweighing",
+    "checkweighing",
+    "เตือนน้ำหนักขาด–เกิน",
+    [
+      { href: `${scales}/industrial`, label: "เครื่องชั่งอุตสาหกรรม" },
+      { href: "/solutions/checkweighing", label: "โซลูชันตรวจสอบน้ำหนัก" },
+    ],
+    (product) => supportsFeature(product, checkweighing),
+  ),
+];
+
+export const additionalIndicatorSubcategoryPages = [
+  definePage(
+    "indicators",
+    "indicator-rs232",
+    "rs232",
+    "เชื่อมต่อ RS232",
+    [{ href: "/solutions/rs232", label: "โซลูชัน RS232" }, cables],
+    hasRs232,
+  ),
+];
+
+export const additionalAccessorySubcategoryPages = [
+  definePage(
+    "accessories",
+    "accessory-electronics",
+    "electronics",
+    "โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์",
+    [
+      { href: `${categoryRoot}/platforms`, label: "โครงสร้างแท่นชั่ง" },
+      { href: "/guides/indicator-platform-compatibility", label: "คู่มือเลือกหัวอ่านและแท่นชั่ง" },
+      cables,
+    ],
+    ({ warehouseGroup, warehouseName = "" }) => {
+      if (warehouseGroup !== "ชิ้นส่วน" || /cable|สาย/i.test(warehouseName)) return false;
+      const electronicPart =
+        /ชิ้นส่วน\s*[-–:]\s*(?:load\s*cell|โหลดเซลล์?|อะไหล่อิเล็กทรอนิกส์|แผงวงจร)(?:\s|$)/i.test(
+          warehouseName,
+        );
+      const circuitOrTransmitter =
+        /ชิ้นส่วน\s*[-–:]\s*(?:PCB|ส่วนขยายวงจร\s*บลูทูธ|วงจรแท่นชั่ง(?:เทอร์มินอล)?|อุปกรณ์ส่งสัญญาณ\s*บลูทูธ)(?:\s+[a-z0-9,.-]+ม?)*\s*$/i.test(
+          warehouseName,
+        );
+      return (electronicPart && !/แท่น/.test(warehouseName)) || circuitOrTransmitter;
+    },
+  ),
+  definePage(
+    "accessories",
+    "accessory-printers",
+    "printers",
+    printers.label,
+    [pos, labelPrinting, thermalPaper, labels],
+    ({ warehouseGroup }) => warehouseGroup === "เครื่องพิมพ์",
+  ),
+  definePage(
+    "accessories",
+    "accessory-weights",
+    "weights",
+    "ลูกตุ้มน้ำหนัก",
+    [{ href: scales, label: "เครื่องชั่ง" }, scaleGuide],
+    ({ warehouseGroup }) => warehouseGroup === "ลูกตุ้มและตุ้มน้ำหนัก",
+  ),
+  definePage(
+    "accessories",
+    "accessory-thermal-paper",
+    "thermal-paper",
+    thermalPaper.label,
+    [consumables, printers],
+    ({ warehouseGroup, warehouseName }) =>
+      warehouseGroup === "วัสดุสิ้นเปลือง" &&
+      /กระดาษความร้อน|\bthermal\s*paper\b/i.test(warehouseName ?? "") &&
+      !labelMaterial.test(warehouseName ?? ""),
+  ),
+  definePage(
+    "accessories",
+    "accessory-labels",
+    "labels",
+    labels.label,
+    [consumables, printers, labelPrinting],
+    ({ warehouseGroup, warehouseName }) =>
+      warehouseGroup === "วัสดุสิ้นเปลือง" && labelMaterial.test(warehouseName ?? ""),
+  ),
+];

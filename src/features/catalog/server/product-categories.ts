@@ -11,6 +11,7 @@ import { deduplicateConsumableSizes } from "../data/consumable-sizes";
 import { getAccessorySubcategories } from "../data/accessory-subcategories";
 import { catalogCardName } from "../data/catalog-card-names";
 import { productCategoryDefinitions } from "../data/mock-categories";
+import { getReadySubcategoryHrefs } from "../data/product-subcategory-pages";
 
 export const getProductCategories = cache(async () => {
   const catalogProducts = await getStorefrontProducts();
@@ -54,5 +55,10 @@ export const getProductCategories = cache(async () => {
   const cardNames = Object.fromEntries(
     clientProducts.map((product) => [product.id, catalogCardName(product)]),
   );
-  return { products: clientProducts, categories, cardNames };
+  return {
+    products: clientProducts,
+    categories,
+    cardNames,
+    readySubcategoryHrefs: getReadySubcategoryHrefs(categories, clientProducts),
+  };
 });

@@ -224,10 +224,8 @@ test("live directory and product detail use the new icon with Warehouse-only dat
   const card = page.locator(`[data-warehouse-sku="${missing.warehouseSku}"]`).first();
   await expect(card.locator(placeholder)).toBeVisible();
   await card.locator("a").first().click();
-  await expect(page.locator(".detail-image").locator(placeholder)).toBeVisible();
-  await expect(page.locator(".detail-image").locator(placeholder)).toHaveAccessibleName(
-    new RegExp(label),
-  );
+  await expect(page.locator("#product-overview h1")).toBeVisible();
+  await expect(page.locator(".product-gallery")).toHaveCount(0);
   await page.screenshot({ path: test.info().outputPath("live-product-without-photo.png") });
 });
 

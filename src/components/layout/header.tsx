@@ -40,16 +40,18 @@ function navigateSamePageHash(event: { preventDefault: () => void }, href: strin
 
 export function Header({
   items = defaultNavigation,
+  readySubcategoryHrefs,
   site = defaultSite,
   extras = defaultNavigationExtras,
 }: {
   items?: NavigationItem[];
+  readySubcategoryHrefs?: readonly string[];
   site?: SiteSettings;
   extras?: typeof defaultNavigationExtras;
 }) {
   const navigation = useMemo(
     () =>
-      getPrimaryNavigationItems(items).map((item) => {
+      getPrimaryNavigationItems(items, readySubcategoryHrefs).map((item) => {
         const groups =
           item.href === "/#support"
             ? [
@@ -63,10 +65,11 @@ export function Header({
           hasSubmenu: item.links.length > 0 || groups.length > 0,
         };
       }),
-    [items, extras],
+    [items, extras, readySubcategoryHrefs],
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const [openedByHover, setOpenedByHover] = useState(false);
   const [displayMenu, setDisplayMenu] = useState(0);
   const [menuHeight, setMenuHeight] = useState(374);
   const [menuStart, setMenuStart] = useState(0);
@@ -77,6 +80,7 @@ export function Header({
     setMenuPathname(pathname);
     setMenuOpen(false);
     setActiveMenu(null);
+    setOpenedByHover(false);
   }
   const headerRef = useRef<HTMLElement>(null);
   useHeaderSurface(headerRef);
@@ -97,6 +101,7 @@ export function Header({
     blockedTrigger.current =
       headerRef.current?.querySelector<HTMLElement>(".desktop-nav > a:hover") ?? null;
     setActiveMenu(null);
+    setOpenedByHover(false);
   }, [clearTimers]);
   useLayoutEffect(() => {
     clearTimers();
@@ -109,10 +114,11 @@ export function Header({
     };
   }, [pathname, clearTimers]);
   const openDesktopMenu = useCallback(
-    (index: number) => {
+    (index: number, byHover = false) => {
       clearTimers();
       setSwitchingMenu(activeMenu !== null);
       setDisplayMenu(index);
+      setOpenedByHover(byHover);
       setActiveMenu(index);
     },
     [activeMenu, clearTimers],
@@ -134,7 +140,7 @@ export function Header({
         trigger.matches(":hover") &&
         trigger.getClientRects().length > 0
       )
-        openDesktopMenu(index);
+        openDesktopMenu(index, true);
     }, 300);
   };
   const leaveTrigger = (trigger: HTMLElement) => {
@@ -191,11 +197,16 @@ export function Header({
       clearTimers();
     };
   }, [clearTimers, closeDesktopMenu]);
-  const submenuLink = (link: NavigationItem["links"][number], mobile = false, index?: number) =>
-    link.disabled ? (
+  const submenuLink = (link: NavigationItem["links"][number], mobile = false, order?: number) => {
+    const motion =
+      order === undefined
+        ? {}
+        : { "data-nav-hover-item": "", style: { "--nav-item-order": order } as CSSProperties };
+    return link.disabled ? (
       <span
+        {...motion}
         key={`${link.href}:${link.label}`}
-        className={mobile ? "nav-unavailable" : "submenu-item nav-unavailable"}
+        className="nav-unavailable"
         role="link"
         aria-disabled="true"
       >
@@ -203,11 +214,8 @@ export function Header({
       </span>
     ) : (
       <Link
+        {...motion}
         key={`${link.href}:${link.label}`}
-        className={mobile ? undefined : "submenu-item"}
-        style={
-          index === undefined ? undefined : ({ "--nav-item-index": index + 1 } as CSSProperties)
-        }
         href={link.href}
         prefetch={false}
         onClick={mobile ? () => setMenuOpen(false) : closeDesktopMenu}
@@ -216,6 +224,7 @@ export function Header({
         <span>{link.label}</span>
       </Link>
     );
+  };
   return (
     <>
       <header
@@ -355,13 +364,15 @@ export function Header({
                 className={`submenu-panel submenu-panel--wide ${displayMenu === index ? "is-active" : ""}`}
                 data-all-products={item.href === "/products" || undefined}
                 data-nav-menu={item.href}
+                data-nav-hover-reveal={openedByHover && activeMenu === index ? "" : undefined}
+                onFocusCapture={openedByHover ? () => setOpenedByHover(false) : undefined}
                 aria-hidden={activeMenu === null || displayMenu !== index}
                 inert={activeMenu === null || displayMenu !== index}
               >
                 <div className="submenu-group submenu-group-primary" data-nav-column="primary">
-                  <p className="submenu-item">{item.submenuLabel ?? item.label}</p>
+                  <p>{item.submenuLabel ?? item.label}</p>
                   <div className="submenu-links">
-                    {item.links.map((link, linkIndex) => submenuLink(link, false, linkIndex))}
+                    {item.links.map((link, order) => submenuLink(link, false, order))}
                   </div>
                 </div>
                 {item.groups.map((group, groupIndex) => (
@@ -369,10 +380,9 @@ export function Header({
                     key={group.label}
                     data-nav-column={groupIndex === 0 ? "uses" : "help"}
                     className={`submenu-group ${item.href === "/#support" ? "" : "submenu-group-secondary"}`}
-                    style={{ "--nav-group-index": groupIndex + 1 } as CSSProperties}
                   >
-                    <p className="submenu-item">{group.label}</p>
-                    {group.links.map((link) => submenuLink(link))}
+                    <p>{group.label}</p>
+                    {group.links.map((link, order) => submenuLink(link, false, order))}
                   </div>
                 ))}
               </div>

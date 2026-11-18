@@ -24,6 +24,7 @@ export function CatalogProductCard({
   categoryLabel,
   headingLevel = 3,
   modelOnly = false,
+  categoryLift = false,
   decisionFacts,
   returnContext,
 }: {
@@ -31,6 +32,7 @@ export function CatalogProductCard({
   categoryLabel?: string;
   headingLevel?: 2 | 3;
   modelOnly?: boolean;
+  categoryLift?: boolean;
   decisionFacts?: readonly CatalogDecisionFact[];
   returnContext?: import("../data/product-subcategory-pages").ProductReturnContext;
 }) {
@@ -45,6 +47,7 @@ export function CatalogProductCard({
     <article
       className={styles.card}
       data-model-only={modelOnly || undefined}
+      data-category-lift={categoryLift || undefined}
       data-decision-facts={decisionFacts ? true : undefined}
     >
       <Link href={href} className={styles.image}>

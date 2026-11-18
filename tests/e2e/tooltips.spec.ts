@@ -7,7 +7,7 @@ test("product readability help explains display increments without changing the 
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/products/10639");
   const help = page.getByRole("button", { name: "ค่าละเอียดคืออะไร", exact: true });
-  const value = page.locator(".detail-weighing tbody td").nth(1);
+  const value = page.locator('dl[aria-label="ข้อมูลผลิตภัณฑ์"] dd').nth(1);
   const original = await value.textContent();
   await help.hover();
   const tooltip = page.getByRole("tooltip");

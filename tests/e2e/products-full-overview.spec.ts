@@ -16,7 +16,7 @@ async function openScalesMenu(page: Page) {
   return page.locator("#products-navigation-panel");
 }
 
-for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
+for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1521, 1920]) {
   test(`storefront and five actual product categories and existing chrome remain contained at ${width}px`, async ({
     page,
   }) => {
@@ -28,6 +28,8 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
     const directory = page.locator("[data-products-directory]");
     const sections = directory.locator("[data-products-category-section]");
     await expect(sections).toHaveCount(6);
+    await expect(sections.first().locator("h2 + span")).toHaveCount(0);
+    await expect(sections.first().locator("ul")).toHaveCSS("scrollbar-width", "none");
     await expect(sections.locator("h2")).toHaveText([
       "เครื่องชั่ง",
       "อินดิเคเตอร์แท่นชั่ง",
@@ -44,16 +46,37 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
         [...section.querySelectorAll("[data-warehouse-sku]")].map((card) => ({
           sku: card.getAttribute("data-warehouse-sku"),
           href: card.querySelector("a")?.getAttribute("href"),
+          specs: [...card.querySelectorAll("[data-product-spec]")].map((item) => item.textContent),
         })),
       ),
     );
     for (const shelf of actual) expect(shelf.length).toBeGreaterThan(0);
-    const expected = products.map((p: { warehouseSku: string; slug: string }) => ({
-      sku: p.warehouseSku,
-      href: `/products/${p.slug}`,
-    }));
+    const expected = products.map(
+      (p: {
+        warehouseSku: string;
+        slug: string;
+        warehouseCard?: { capacity: string; readability: string; connection: string };
+      }) => ({
+        sku: p.warehouseSku,
+        href: `/products/${p.slug}`,
+        specs: [
+          p.warehouseCard?.capacity,
+          p.warehouseCard?.readability,
+          p.warehouseCard?.connection,
+        ]
+          .flatMap((value, index) =>
+            value?.trim() && value.trim() !== "—"
+              ? [`${["พิกัดชั่ง", "ความละเอียด", "การเชื่อมต่อ"][index]} ${value.trim()}`]
+              : [],
+          )
+          .slice(0, 2),
+      }),
+    );
     expect(actual.flat()).toEqual(expect.arrayContaining(expected));
     await expect(directory.locator("[data-warehouse-sku]")).toHaveCount(products.length);
+    await expect(
+      directory.locator('[data-warehouse-sku] > a > svg[aria-hidden="true"]'),
+    ).toHaveCount(products.length);
     await expect(directory).not.toContainText("Mock");
     await expect(
       directory.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }),
@@ -69,6 +92,34 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
       );
     });
     expect(leftEdges).toEqual(Array.from({ length: 2 }, () => expectedLeft));
+    const geometry = await sections.first().evaluate((section) => {
+      const heading = section.firstElementChild!.getBoundingClientRect();
+      const rail = section.querySelector("ul")!;
+      const card = rail.querySelector("li > a")!;
+      const box = card.getBoundingClientRect();
+      const chevron = card.querySelector("svg")!.getBoundingClientRect();
+      return {
+        chevron: [
+          chevron.width,
+          Math.round(box.right - chevron.right),
+          Math.round(box.bottom - chevron.bottom),
+        ],
+        gap: getComputedStyle(rail).columnGap,
+        padding: getComputedStyle(card).padding,
+        width: box.width,
+        height: box.height,
+        headingGap:
+          box.top -
+          heading.bottom +
+          parseFloat(getComputedStyle(section.firstElementChild!).paddingBottom),
+      };
+    });
+    expect(geometry.gap).toBe(width >= 1024 ? "20px" : "16px");
+    expect(geometry.chevron).toEqual(width >= 1024 ? [36, 20, 20] : [24, 16, 16]);
+    expect(geometry.padding).toBe(width >= 1024 ? "28px" : "20px");
+    expect(Math.abs(geometry.width - Math.min(width * 0.78, 384))).toBeLessThan(1);
+    expect(geometry.height).toBeGreaterThanOrEqual(width >= 1024 ? 460 : 304);
+    expect(geometry.headingGap).toBe(width >= 1024 ? 24 : 16);
     expect(
       await sections
         .first()
@@ -83,6 +134,37 @@ for (const width of [320, 390, 734, 768, 834, 1024, 1068, 1440, 1920]) {
     expect(errors).toEqual([]);
   });
 }
+
+test("whole product card and corner chevron open the same SKU", async ({ page }) => {
+  await page.goto("/products");
+  const card = page.locator("[data-warehouse-sku] > a").first();
+  const href = await card.getAttribute("href");
+  await card.scrollIntoViewIfNeeded();
+  const hits = await card.evaluate((link) => {
+    const box = link.getBoundingClientRect();
+    const samples = ["h3", "img", "svg"].map((selector) => {
+      const rect = link.querySelector(selector)!.getBoundingClientRect();
+      return [rect.left + rect.width / 2, rect.top + rect.height / 2];
+    });
+    samples.push([box.left + 24, box.top + 10]);
+    return samples.map(([x, y]) => {
+      const hit = document.elementFromPoint(x, y);
+      return hit?.closest("a") === link && getComputedStyle(hit).cursor === "pointer";
+    });
+  });
+  expect(hits).toEqual([true, true, true, true]);
+  await card.hover();
+  await expect(card).toHaveCSS("transform", "none");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(card).toHaveCSS("transform", "matrix(1.01, 0, 0, 1.01, 0, 0)");
+  const arrow = (await card.locator("svg").boundingBox())!;
+  await page.mouse.click(arrow.x + arrow.width / 2, arrow.y + arrow.height / 2);
+  await expect(page).toHaveURL((url) => url.pathname === href);
+  await page.goBack();
+  await card.focus();
+  await card.press("Enter");
+  await expect(page).toHaveURL((url) => url.pathname === href);
+});
 
 test("direct all-model finder keeps search and legacy query entry", async ({ page }) => {
   await page.goto("/products?catalog=all");
@@ -126,6 +208,81 @@ test("Navbar category/industrial navigation retains one active header/footer thr
   }
 });
 
+test("Navbar hover reveals each submenu and honors reduced motion and keyboard input", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/products");
+  await expect(page.locator('[data-products-overview][data-controls-ready="true"]')).toBeVisible();
+  const nav = page.locator("[data-products-nav]");
+  const scales = nav.getByRole("link", { name: "เครื่องชั่ง", exact: true });
+  const indicators = nav.getByRole("link", { name: "อินดิเคเตอร์แท่นชั่ง", exact: true });
+  const panel = page.locator("#products-navigation-panel");
+  await scales.hover();
+  await page.mouse.move(10, 400);
+  await page.waitForTimeout(350);
+  await expect(panel).toHaveCount(0);
+
+  for (const [trigger, category] of [
+    [scales, "scales"],
+    [indicators, "indicators"],
+  ] as const) {
+    await trigger.hover();
+    const menu = panel.locator(`[data-nav-menu="/products/category/${category}"]`);
+    await expect(menu).toHaveAttribute("data-nav-hover-reveal");
+    const entries = menu.locator('[data-nav-column="primary"] [data-nav-hover-item]');
+    await expect(entries.first()).toHaveCSS("animation-duration", "0.32s");
+    await expect(entries.first()).toHaveCSS(
+      "animation-timing-function",
+      "cubic-bezier(0.4, 0, 0.6, 1)",
+    );
+    await expect(entries.nth(1)).toHaveCSS("animation-delay", "0.02s");
+    await expect(panel.locator("[data-nav-menu]")).toHaveCount(1);
+  }
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  await scales.press("ArrowDown");
+  await expect(panel.locator("[data-nav-hover-item]").first()).toHaveCSS("animation-name", "none");
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.mouse.move(10, 400);
+  await indicators.hover();
+  await expect(panel.locator("[data-nav-hover-item]").first()).toHaveCSS("animation-name", "none");
+
+  await page.goto("/products/category/scales");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(page.locator("[data-products-header] button:visible").first()).toBeEnabled();
+  await page.mouse.move(10, 400);
+  await scales.hover();
+  await expect(panel.locator("[data-nav-hover-item]").first()).toHaveCSS(
+    "animation-name",
+    "navHoverReveal",
+  );
+});
+
+test("Navbar flyout on touch widths opens by tapping without hover animation", async ({
+  browser,
+  baseURL,
+}) => {
+  for (const width of [768, 390]) {
+    const page = await browser.newPage({
+      baseURL,
+      viewport: { width, height: 900 },
+      hasTouch: true,
+    });
+    try {
+      await page.goto("/products");
+      await page.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+      await page.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true }).tap();
+      await expect(page.locator("[data-nav-menu]")).toHaveCSS("animation-name", "none");
+    } finally {
+      await page.close();
+    }
+  }
+});
+
 test("storefront products are readable immediately in both motion modes", async ({ page }) => {
   await recordStaggerMotion(page);
   for (const reducedMotion of ["no-preference", "reduce"] as const) {
@@ -151,9 +308,9 @@ test("mobile product rail supports native horizontal keyboard scrolling", async 
   const rail = page.locator("[data-products-category-section]").first().locator("ul");
   await rail.focus();
   await expect(rail).toBeFocused();
-  for (let press = 0; press < 12; press++) await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
   await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
-  for (let press = 0; press < 12; press++) await page.keyboard.press("ArrowLeft");
+  await page.keyboard.press("ArrowLeft");
   await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBe(0);
   await expect(rail).toHaveCSS("scroll-snap-type", /x mandatory|inline mandatory/);
 });

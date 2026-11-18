@@ -2,21 +2,36 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cubicBezier } from "motion";
 import { useReturnState } from "@/features/site/history/return-state";
 import styles from "./products-index-content.module.css";
+
+const shelfEase = cubicBezier(0.25, 0.1, 0.25, 0.9);
 
 export function ProductsIndexRail({
   id,
   label,
+  categoryRail = false,
   children,
 }: {
   id: string;
   label: string;
+  categoryRail?: boolean;
   children: ReactNode;
 }) {
   const track = useRef<HTMLUListElement>(null);
+  const motion = useRef<{ frame: number; target: number } | null>(null);
   const [savedLeft, saveLeft] = useReturnState<number | null>(`storefront.${id}.left`, null);
   const [edges, setEdges] = useState({ previous: false, next: false });
+
+  function stopMotion() {
+    if (!motion.current) return;
+    cancelAnimationFrame(motion.current.frame);
+    motion.current = null;
+    if (track.current) delete track.current.dataset.stepping;
+  }
+
+  useEffect(() => stopMotion, []);
 
   useLayoutEffect(() => {
     const list = track.current;
@@ -52,11 +67,48 @@ export function ProductsIndexRail({
     const css = getComputedStyle(list);
     const step = first.getBoundingClientRect().width + parseFloat(css.columnGap);
     const space = list.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight);
-    const count = Math.max(1, Math.floor((space + parseFloat(css.columnGap)) / step));
-    list.scrollBy({
-      left: direction * count * step,
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-    });
+    const desktop = matchMedia("(min-width: 64rem)").matches;
+    const count =
+      !categoryRail && desktop
+        ? 1
+        : Math.max(1, Math.floor((space + parseFloat(css.columnGap)) / step));
+    const distance = direction * count * step;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    if (categoryRail) {
+      list.scrollBy({ left: distance, behavior: reduced.matches ? "instant" : "smooth" });
+      return;
+    }
+
+    const start = list.scrollLeft;
+    const target = Math.max(
+      0,
+      Math.min(list.scrollWidth - list.clientWidth, (motion.current?.target ?? start) + distance),
+    );
+    if (reduced.matches || target === start) {
+      stopMotion();
+      list.scrollTo({ left: target, behavior: "instant" });
+      return;
+    }
+
+    if (motion.current) cancelAnimationFrame(motion.current.frame);
+    list.dataset.stepping = "";
+    const duration = desktop ? 465 : 478;
+    const started = performance.now();
+    const animation = { frame: 0, target };
+    motion.current = animation;
+    const tick = (now: number) => {
+      const progress = Math.min(1, Math.max(0, (now - started) / duration));
+      if (progress === 1 || reduced.matches) {
+        stopMotion();
+        list.scrollTo({ left: target, behavior: "instant" });
+        saveLeft(list.scrollLeft);
+        return;
+      }
+      const eased = shelfEase(progress);
+      list.scrollTo({ left: start + (target - start) * eased, behavior: "instant" });
+      animation.frame = requestAnimationFrame(tick);
+    };
+    animation.frame = requestAnimationFrame(tick);
   }
 
   return (
@@ -67,8 +119,12 @@ export function ProductsIndexRail({
         className={styles.track}
         tabIndex={0}
         aria-label={label}
+        onPointerDown={stopMotion}
+        onWheel={stopMotion}
+        onKeyDown={stopMotion}
         onScrollEnd={(event) => {
-          if (event.currentTarget.clientWidth) saveLeft(event.currentTarget.scrollLeft);
+          if (!motion.current && event.currentTarget.clientWidth)
+            saveLeft(event.currentTarget.scrollLeft);
         }}
         onClickCapture={(event) => saveLeft(event.currentTarget.scrollLeft)}
       >

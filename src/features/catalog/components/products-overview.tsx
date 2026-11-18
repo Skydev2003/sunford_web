@@ -22,6 +22,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resolveCategoryHref } from "../data/category-destinations";
+import directoryStyles from "./product-directory.module.css";
 import {
   getProductSubcategoryPage,
   getProductSubcategoryPageByHref,
@@ -290,6 +291,7 @@ export function ProductsOverview({
   site,
   copyrightYear,
   navigation,
+  readySubcategoryHrefs,
   stories,
   services,
   accordion,
@@ -302,6 +304,7 @@ export function ProductsOverview({
   site: SiteSettings;
   copyrightYear: number;
   navigation: NavigationItem[];
+  readySubcategoryHrefs: readonly string[];
   stories: Story[];
   services: Service[];
   accordion: AccordionItem[];
@@ -318,8 +321,12 @@ export function ProductsOverview({
     categoryId === "pos" ||
     categoryId === "accessories";
   const categoryItems = activeCategory?.subcategories ?? categories;
-  const headerItems = getPrimaryNavigationItems(navigation);
+  const headerItems = getPrimaryNavigationItems(navigation, readySubcategoryHrefs);
   const categoryMenu = headerItems.find((item) => item.href === `/products/category/${categoryId}`);
+  const additionalCategoryLinks = (categoryMenu?.groups?.[0]?.links ?? []).filter((item) => {
+    const page = getProductSubcategoryPageByHref(item.href);
+    return !item.disabled && page && "matches" in page;
+  });
   const chapterItems = categoryMenu
     ? categoryMenu.links.map((link) => {
         const category = activeCategory?.subcategories.find(
@@ -501,6 +508,7 @@ export function ProductsOverview({
       </Suspense>
       <PrimaryNavigation
         navigation={navigation}
+        readySubcategoryHrefs={readySubcategoryHrefs}
         site={site}
         onOpenFinder={openFinder}
         onMenuChange={setMobileMenu}
@@ -1064,6 +1072,14 @@ export function ProductsOverview({
               </div>
             </section>
           </>
+        )}
+        {additionalCategoryLinks.length > 0 && (
+          <nav
+            className={`${styles.sectionInner} ${directoryStyles.related}`}
+            aria-label="หมวดสินค้าที่เกี่ยวข้อง"
+          >
+            {additionalCategoryLinks.map(({ href, label }) => link(href, label))}
+          </nav>
         )}
       </main>
 

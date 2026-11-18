@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
+import { getStorefrontProducts } from "@/features/catalog/server/product-repository";
 import { ProductCategoryMock } from "./product-category-mock";
 import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
+import { consumableSubtypeLinks } from "../data/additional-subcategory-pages";
 import { sunford } from "@/features/home/data/brand";
 import overview from "./products-overview.module.css";
 import styles from "./product-directory.module.css";
@@ -16,10 +18,26 @@ export async function ProductSubcategoryPage({
 }) {
   const definition = getProductSubcategoryPage(subcategoryId, categoryId);
   if (!definition) notFound();
-  const { products, categories, cardNames } = await getProductCategories();
-  const category = categories.find((item) => item.id === categoryId)!;
-  const child = category.subcategories.find((item) => item.id === subcategoryId)!;
+  const additional = "matches" in definition ? definition : undefined;
+  const [{ products, categories, cardNames }, warehouseProducts] = await Promise.all([
+    getProductCategories(),
+    additional ? getStorefrontProducts() : [],
+  ]);
+  const category = categories.find((item) => item.id === categoryId);
+  if (!category) notFound();
+  const child = additional
+    ? {
+        id: additional.id,
+        label: additional.label,
+        productIds: warehouseProducts.filter(additional.matches).map(({ id }) => id),
+      }
+    : category.subcategories.find((item) => item.id === subcategoryId);
+  if (!child) notFound();
   const ids = new Set(child.productIds);
+  const listingCategory = additional ? { ...category, subcategories: [child] } : category;
+  const relatedLinks =
+    additional?.relatedLinks ??
+    (subcategoryId === "accessory-consumables" ? consumableSubtypeLinks : []);
   const titleId = `${categoryId === "scales" ? "" : `${categoryId}-`}${definition.slug}-title`;
   return (
     <main
@@ -48,7 +66,7 @@ export async function ProductSubcategoryPage({
         <ProductCategoryMock
           key={subcategoryId}
           products={products.filter((product) => ids.has(product.id))}
-          categories={[category]}
+          categories={[listingCategory]}
           cardNames={cardNames}
           categoryId={categoryId}
           subcategoryId={subcategoryId}
@@ -61,6 +79,13 @@ export async function ProductSubcategoryPage({
       >
         <Link href={`/products/category/${categoryId}`}>ดู{category.label}ทุกกลุ่ม ›</Link>
         <Link href={`/guides/${categoryId}`}>คู่มือเลือก{category.label} ›</Link>
+        {relatedLinks
+          .filter(({ href }) => href !== `/guides/${categoryId}`)
+          .map(({ href, label }) => (
+            <Link key={href} href={href}>
+              {label} ›
+            </Link>
+          ))}
         <Link href={sunford.contact}>ปรึกษาผู้เชี่ยวชาญ ›</Link>
       </nav>
     </main>

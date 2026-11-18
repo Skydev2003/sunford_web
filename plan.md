@@ -8682,3 +8682,419 @@ In an isolated Windows worktree at bf411fc with the revised workflow and documen
 - Playwright บน local production server และ Chrome ผ่าน 30/30 ในรอบสุดท้าย ครอบคลุมกรณีที่เปลี่ยนใน 6 ไฟล์ ตรวจ 320–1920px, ลิงก์กับ SKU, รูปขาด/กู้คืน, หน้าแบบ server-rendered, แถวพอดีและล้น, กดค้าง/ยกเลิก/Tab/Enter, ปัดสองแกน, เมนูและ Finder, รวมถึงการย้อนกลับหลังหน้าออกจาก cache
 - พบกรณีย้อนจากรายละเอียดหลังใช้ Forward แล้วตำแหน่งแนวนอนหาย แก้ด้วยการเก็บตำแหน่งแถวตาม history entry และตรวจย้อนถึงรุ่นเดิม ก่อนรอบสุดท้ายมี 2 กรณีนำทางเกินเวลา assertion 5 วินาทีช่วงเริ่ม production server ทั้งคู่ผ่านเมื่อตรวจซ้ำ รวมถึงรอบสุดท้ายทั้งชุดโดยใช้เวลา assertion เดิม ระหว่างรันพบ Node เตือนจำนวน close listeners บน ServerResponse สาเหตุยังไม่ได้ระบุ
 - ภาพหลักฐาน [มือถือ 390px](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/products-store-390.png) · [แท็บเล็ต 768px](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/products-store-768.png) · [เดสก์ท็อป 1440px](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/products-store-1440.png) · [สถานะกด](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/pressed.png) · [โฟกัสคีย์บอร์ด](C:/Users/cityc/AppData/Local/Temp/sunford-products-apple-1794971349671/focus.png)
+
+## Plan: Motion เมนู Navbar เมื่อ hover บน /products
+
+### Files
+
+- `spec.md`, `plan.md` — ขอบเขต แบบ และผลตรวจ
+- `src/components/layout/primary-navigation.tsx` — ระบุจุดเปิดเมนูด้วย hover เฉพาะ /products และเริ่ม animation ใหม่เมื่อสลับหมวด โดยรักษา DOM ของลิงก์สำหรับคีย์บอร์ด
+- `src/features/catalog/components/products-overview.module.css` — เพิ่ม reveal animation ให้เฉพาะส่วนที่ถูกระบุและเฉพาะอุปกรณ์ที่ตรงเงื่อนไข
+- `tests/e2e/products-full-overview.spec.ts` — ตรวจ hover, สลับหมวด, ยกเลิก, Reduce Motion และ regression หน้าหมวด
+
+### Steps
+
+- [x] ตรวจจุดเปิดเมนูและค่า motion จาก Apple Developer
+- [x] บันทึกการอนุมัติขอบเขตและตรวจ doc ของ Next.js ที่ติดตั้งก่อนแก้แอป
+- [x] เพิ่ม motion หลัง hover และตรวจ Chrome ที่ 1440px, tablet 768px และมือถือ 390px
+- [x] รัน formatting, lint, typecheck, test:catalog และ Playwright ที่เกี่ยวข้อง แล้วบันทึกผล
+
+### Impact / Rollback
+
+PrimaryNavigation ใช้ร่วมบนหน้าหมวดและหน้าอื่น ความเสี่ยงอยู่ที่การสลับเมนูและโฟกัสเมื่อปิด ล็อกเงื่อนไขไว้ที่ pathname /products และชนิดอินพุต ตรวจหน้าหมวดตัวอย่างและคีย์บอร์ด ย้อนกลับได้โดยคืนเงื่อนไขและกฎ CSS ของงานนี้
+
+### Verification Results
+
+ตรวจ source แล้วว่า desktop hover เดิมใช้เวลา 300ms, ความกว้างขั้นต่ำ 64rem และเปิดเฉพาะ hover/fine pointer
+
+Playwright ผ่าน 12/12 บน Chrome กับ local dev server ครอบคลุมการสลับหมวด การยกเลิก hover, Escape, การใช้ ArrowDown, Reduce Motion, การแตะบน 768px และ 390px รวมถึง Navbar บนหน้าหมวดและหน้าอื่น ESLint, TypeScript, Prettier ของไฟล์งาน และ test:catalog 204/204 ผ่าน
+
+## Plan: ระยะและข้อมูลการ์ดสินค้า /products
+
+- `spec.md`, `plan.md` — บันทึกขนาดที่วัด การผูกข้อมูล และผลตรวจ
+- `src/features/catalog/components/products-index-content.tsx` — แสดงสเปกสั้นจาก Warehouse ของ SKU เดียวกับราคาและรูปเดิม
+- `src/features/catalog/components/products-index-content.module.css` — ปรับขนาดการ์ด ระยะขอบใน และช่องไฟเฉพาะแถวการ์ดบน /products
+- `tests/e2e/products-full-overview.spec.ts` — ตรวจการแสดงค่าจาก Warehouse และระยะตามขนาดจอ
+
+- [x] วัดการ์ดใน Chrome และตรวจตัวอย่าง SKU จริง
+- [x] บันทึกการอนุมัติแล้วแก้ renderer และ CSS Module
+- [x] ตรวจ Chrome ตาม Spec แล้วรัน typecheck, lint, formatting และ Playwright สำหรับหน้ารวมและการย้อนกลับ
+
+ขอบเขตอยู่ที่การ์ดในหน้ารวม ย้อนกลับได้ด้วยการคืน renderer, CSS และ tests ของงานนี้
+
+### Verification Results
+
+Chrome ผ่านครบ 19 กรณีเมื่อรวมรอบรันซ้ำ วัดการ์ด 10 ขนาดจอตั้งแต่ 320 ถึง 1920 CSS px เปรียบเทียบสเปกจาก API ตาม SKU และตรวจรูปแทน การปัด ปุ่มลูกศร และ history กรณีย้อนกลับผ่านเมื่อรันเดี่ยว หลังรอบขนานเปิดหน้ารายละเอียดไม่ทันเวลา assertion 5 วินาที Typecheck, ESLint และ Prettier ผ่าน
+
+- [x] เอาตัวเลขจำนวนสินค้าออกจากหัวหมวด และซ่อน scrollbar ด้วย CSS ของหน้า /products ตรวจบน Chrome ที่ 390, 768 และ 1521px ปุ่มลูกศรและการปัดผ่าน 3 กรณี ทดสอบคีย์บอร์ดผ่าน 3/3 หลังปรับข้อทดสอบให้รอการเลื่อนแต่ละทิศทางตามพฤติกรรม native scroll snap
+
+## Plan: เพิ่มหน้าปลายทางที่ขาดในเมนูย่อย Navbar
+
+### Files
+
+- `spec.md`, `plan.md` — บันทึกขอบเขต การอนุมัติ และผลตรวจ
+- `src/features/catalog/data/additional-subcategory-pages.ts` — เพิ่มนิยามหน้า ลิงก์ที่เกี่ยวข้อง และเงื่อนไขคัด SKU จากข้อมูล Warehouse สำหรับ 8 หน้า
+- `src/features/catalog/data/product-subcategory-pages.ts` — ลงทะเบียน slug และ return context โดยคงรายการหมวดย่อยเดิม รวมถึงชุดเครื่องชั่งใน `scale-subcategory-pages.ts`
+- `src/app/(site)/products/category/scales/[group]/page.tsx`, `src/app/(site)/products/category/indicators/[group]/page.tsx`, `src/app/(site)/products/category/accessories/[group]/page.tsx` — ใช้ route เดิมและรวมหน้าใหม่ใน static params และ metadata
+- `src/features/catalog/components/product-subcategory-page.tsx` — ใช้ renderer ของหมวดย่อยเดิม ส่งรายการ SKU ที่ผ่านเกณฑ์ให้การ์ดและเติมลิงก์ที่เกี่ยวข้องเฉพาะหน้าในตาราง รวมถึงทางเข้าจากหน้าวัสดุสิ้นเปลือง
+- `src/features/catalog/components/products-overview.tsx` — เพิ่มลิงก์เข้า 8 หน้าเฉพาะในหน้าหมวดที่สัมพันธ์กัน ใช้รูปแบบลิงก์เดิม
+- `src/features/site/data/primary-navigation.ts` — เปิด 8 URL ที่เพิ่มหน้าแล้ว ครอบคลุม 10 ตำแหน่งเมนู
+- `tests/catalog/primary-navigation.test.ts`, `tests/catalog/product-subcategory-pages.test.ts`, `tests/catalog/category-destinations.test.ts` — ปรับการคาดหวังที่ได้รับผล และตรวจ URL ลิงก์ข้ามหน้าและเกณฑ์การแสดงสินค้า
+- `tests/e2e/navbar-missing-pages.spec.ts` — ตรวจการเปิด URL โดยตรง ทางเข้า Navbar ลิงก์ข้ามหน้า การย้อนกลับ และ responsive
+
+### Steps
+
+- [x] ตรวจ Navbar เทียบทะเบียน routes และข้อมูลหน้าเนื้อหา ตรวจว่ามีหน้าโซลูชันและคู่มือที่ระบุใน Spec และอ่านเอกสาร Dynamic Routes ของ Next.js 16.4.6 ที่ติดตั้ง
+- [x] บันทึกการอนุมัติจากเจ้าของสำหรับขอบเขตและการเปิดใช้เมนู
+- [x] ตรวจว่าข้อมูล Warehouse ที่เว็บไซต์แสดงจริงรองรับแต่ละเกณฑ์ เพิ่มหน้าด้วย route เดิมและใช้รายการว่างเมื่อยืนยัน SKU ไม่ได้
+- [x] ผูกลิงก์ตาม Spec ตรวจการเข้าถึงชื่อเมนูทั้ง 10 ตำแหน่งจาก Navbar และการเข้าออกจากหน้าที่เกี่ยวข้อง
+- [x] รัน Prettier, lint, typecheck, `test:catalog` และ production build จากนั้นตรวจ Chrome ที่ 390, 768 และ 1440px
+- [x] บันทึกผลตรวจและข้อจำกัดใน Spec/Plan
+
+### Impact / Rollback
+
+ข้อมูล Navbar ใช้ร่วมทั้งหน้าแรกและหน้าภายใน ส่วน renderer หมวดย่อยและ ProductsOverview ใช้ร่วมกับแคตตาล็อกเดิม ความเสี่ยงคือการเปิดลิงก์ก่อน route พร้อม การแสดง SKU ผิดกลุ่ม และการจัดวางลิงก์บนมือถือ จำกัดการเปลี่ยนไว้ที่ URL และหน้าหมวดที่ระบุ และทดสอบหน้าหมวดเดิมร่วมด้วย ย้อนกลับด้วยการคืนเฉพาะนิยามหน้า เงื่อนไข renderer ลิงก์ และสถานะเมนูของงานนี้
+
+### Verification Results
+
+ตรวจ source และ runtime ของตัวสร้างเมนูด้วยข้อมูล Navbar ที่บันทึกไว้ พบ 90 ตำแหน่ง เปิด 66 ปิด 24 โดย 10 ตำแหน่งชี้ไปยัง 8 URL ที่ยังไม่มีหน้า การทดสอบ Navbar เดิมผ่าน 9/9 ก่อนแก้โค้ด
+
+- Node 24.22.3 ผ่าน ESLint, TypeScript และ catalogue tests 207/207 รวมถึง Prettier ของไฟล์งาน Production build สำเร็จ 717/717 หน้าและพบ URL ใหม่ทั้ง 8 ใน prerender manifest ทุก URL ตอบ HTTP 200
+- ตัวสร้างเมนูที่ใช้ข้อมูลตั้งค่าเว็บไซต์แสดง 90 ตำแหน่ง เปิด 76 และปิด 14 ชุด Playwright บน Chrome ผ่าน 5/5 ในรอบสุดท้าย ตรวจการแตะที่ 390px, เมาส์ที่ 1440px และคีย์บอร์ดบน Navbar หน้าแรก ตรวจรายการที่ 768px พร้อมลิงก์ทุกปลายทาง breadcrumb ทางเข้าจากหน้าหมวดและวัสดุสิ้นเปลือง การย้อนจากหน้ารุ่น และหน้าหมวดย่อยเดิม
+- Warehouse ณ เวลาตรวจพบ 39 รุ่นสำหรับนับจำนวนชิ้น, 16 รุ่นสำหรับเตือนน้ำหนักขาด–เกิน, 3 รุ่น RS232, 1 รายการโหลดเซลล์, 9 เครื่องพิมพ์, 1 ลูกตุ้มน้ำหนัก, 6 รายการกระดาษความร้อน และ 11 รายการฉลาก เทียบเส้นทางหน้ารุ่นกับ API ทั้งหมด ตรวจตัวอย่างราคา รูป และสเปกจาก SKU เดียวกัน และตรวจหน้ารายการว่างด้วยคำค้นที่ไม่มีผลลัพธ์
+- URL หมวดย่อยที่ไม่รู้จักแสดงหน้าข้อผิดพลาดใน Chrome การตรวจ HTTP แยกได้ 404 จากคำขอโดยตรง และพบ 200 ในการโหลดแบบสตรีมของเบราว์เซอร์ พฤติกรรมนี้สอดคล้องกับข้อกำหนดสถานะ HTTP ในเอกสาร Streaming ของ Next.js ที่ติดตั้ง
+
+## Plan: ขยาย motion เมนูย่อย Navbar ทั้งเว็บ
+
+### Files
+
+- `spec.md`, `plan.md` — ขอบเขตและผลตรวจ
+- `src/components/layout/primary-navigation.tsx`, `src/features/catalog/components/products-overview.module.css` — ใช้ reveal ที่มีอยู่กับทุกหน้าที่ใช้ PrimaryNavigation และคงตัวกรองตามอุปกรณ์
+- `src/components/layout/header.tsx`, `src/styles/header.css` — เปิด reveal ที่กลุ่มลิงก์ของหน้าแรกเมื่อมาจาก hover รวมจังหวะสลับกลุ่ม และปิด animation เมื่อโฟกัสหรือลด motion
+- `tests/e2e/navigation-hover-intent.spec.ts`, `tests/e2e/products-full-overview.spec.ts` — ตรวจทั้งสอง Navbar และปรับ assertion หน้าหมวดให้ตรงขอบเขตใหม่
+
+### Steps
+
+- [x] ตรวจ Header ทั้งสองแบบ จังหวะหน้าแรก และ breakpoint ที่ CSS และ JavaScript ใช้จริง
+- [x] บันทึกการอนุมัติและอ่าน Next.js docs ที่ติดตั้งก่อนแก้เฉพาะไฟล์ที่ระบุ
+- [x] ตรวจ Chrome ตาม matrix ใน Spec รัน typecheck, lint, format และ test:catalog
+
+### Impact / Rollback
+
+ไฟล์ Header และ stylesheet ร่วมกระทบทุกหน้าที่มี Navbar ความเสี่ยงหลักคือกลุ่มลิงก์ยังจางเมื่อโฟกัส การสลับเมนูเล่น motion ผิดจังหวะ และ timer ค้างเมื่อย่อจอหรือเปลี่ยนหน้า ย้อนกลับด้วยการคืนเฉพาะตัวระบุ hover กฎ reveal และข้อทดสอบของงานนี้
+
+### Verification Results
+
+Chrome บน local dev server ผ่านชุดหลัก 22/22 และชุดตรวจขอบ breakpoint กับการคลิกอีก 10 กรณีเมื่อรวมการรันซ้ำ กรณีคลิกลิงก์ย่อยจากหน้าติดต่อหมดเวลา assertion 5 วินาทีในรอบพร้อมกันและผ่านเมื่อรันเดี่ยว Typecheck, lint, Prettier ของไฟล์งาน และ test:catalog 207/207 ผ่าน
+
+## Plan: ทยอยแสดงรายการเมนูย่อย Navbar
+
+- `spec.md`, `plan.md` — บันทึกจังหวะ ขอบเขต และผลตรวจ
+- `src/components/layout/header.tsx`, `src/components/layout/primary-navigation.tsx` — ระบุลำดับรายการย่อยตามคอลัมน์และใช้สถานะ hover เดิม
+- `src/styles/header.css` — ย้าย reveal จากทั้งแผงมาใช้กับรายการที่มีลำดับ
+- `tests/e2e/navigation-hover-intent.spec.ts`, `tests/e2e/products-full-overview.spec.ts` — ตรวจจังหวะรายรายการและปรับกรณีทดสอบเวลา hover ให้ตรงกับค่าที่ตรวจใน working tree
+
+- [x] ตรวจ renderer, animation, breakpoint และเวลารอจริงของ Navbar ทั้งสองแบบ
+- [x] บันทึกการอนุมัติแล้วจึงแก้โค้ดตามรายการ
+- [x] ตรวจการแสดงและการเข้าถึงผ่าน Chrome ตาม Spec และรัน typecheck, lint และ formatting
+
+Navbar ใช้ร่วมทั้งเว็บ ความเสี่ยงคือโฟกัสตกบนลิงก์ที่ยังจางหรือ animation เก่าค้างตอนสลับหมวด ตรวจการเข้าเมนูและเปลี่ยน input ระหว่าง animation ย้อนกลับด้วยการคืน CSS reveal แบบกลุ่มและตัวระบุลำดับที่เพิ่ม
+
+### Verification Results
+
+Playwright บน Chrome กับ dev server ผ่าน 18/18 สำหรับ Navbar ทั้งสองแบบ รวม breakpoint 1023/1024/1025px, การรอ 500/600ms, ลำดับ 0/20/40ms, Reduce Motion, คีย์บอร์ดและแตะ วัด computed style เพิ่มด้วยกลุ่มทดสอบในเบราว์เซอร์เดียวกัน ยืนยันว่าลำดับตั้งแต่ index 12 ขึ้นไปมี delay 240ms Typecheck, ESLint และ Prettier ผ่าน
+
+### ปรับจังหวะข้ามคอลัมน์
+
+- [x] ปรับเฉพาะกฎ reveal ใน `src/styles/header.css` ให้หัวคอลัมน์และรายการเริ่มเหลื่อมกัน 60ms ตามลำดับ
+- [x] ตรวจเวลาเริ่มของหัวคอลัมน์และลิงก์ใน `tests/e2e/navigation-hover-intent.spec.ts` บนทั้งสอง Navbar รวม breakpoint และ Reduce Motion
+
+Playwright บน Chrome ผ่าน 8/8 วัดการเริ่มคอลัมน์ 0/60/120ms ที่ 1024, 1025 และ 1440px พร้อมตรวจการสลับเมนู คีย์บอร์ด จอสัมผัส และ Reduce Motion
+
+## Plan: จัดสินค้าเข้าหมวดย่อย Navbar ทั้ง 7 หมวดด้วย Warehouse RPC เดิม
+
+### Files
+
+- `spec.md` และ `plan.md` — ตาราง 35 SKU ช่องของ Warehouse เกณฑ์เปิดแต่ละเมนู การอนุมัติ และผลตรวจ
+- `src/features/catalog/data/warehouse-classification.ts` — ใช้ fact ที่ยืนยันแล้วสำหรับงานวิเคราะห์ กันน้ำ เหล็กคาร์บอนพ่นอบสี ABS และ POS iOS ตามเกณฑ์ Spec เก็บกติกา SUS304/SUS201 และ Android/Windows เดิม
+- `src/features/catalog/data/product-subcategory-pages.ts` — ระบุ 7 ปลายทางที่เปิดตามผลจัดหมวด และคำนวณ URL ที่พร้อมใช้จากรายการสมาชิกและการ์ด SKU ในผลเดียวกัน
+- `src/features/catalog/server/product-categories.ts` — ส่ง `readySubcategoryHrefs` พร้อมข้อมูลที่หน้ารายการใช้จาก `getProductCategories()` โดยใช้ cache และตัวอ่านผลิตภัณฑ์เดิม
+- `src/features/site/data/primary-navigation.ts` — เปิดเฉพาะ URL ในขอบเขตที่พร้อมใช้และได้รับอนุญาตตามข้อมูลเมนู ใช้ค่าเริ่มต้นเป็นรายการว่างเมื่อไม่มีข้อมูลความพร้อม
+- `src/features/site/components/site-header.tsx`, `src/features/site/components/site-navigation.tsx`, `src/components/layout/header.tsx` และ `src/components/layout/primary-navigation.tsx` — ส่งผลความพร้อมให้ Navbar ทั้งสองแบบ `SiteHeader` ใช้รายการว่างเมื่ออ่านความพร้อมจาก Warehouse ไม่สำเร็จ
+- `src/app/(site)/products/page.tsx`, `src/features/catalog/components/scales-overview.tsx`, `src/features/catalog/components/indicators-overview.tsx`, `src/features/catalog/components/platforms-overview.tsx`, `src/features/catalog/components/pos-overview.tsx` และ `src/features/catalog/components/accessories-overview.tsx` — ส่งชุด URL ที่พร้อมจากผล `getProductCategories()` ที่แต่ละหน้าดึงอยู่แล้วให้ `ProductsOverview`
+- `src/features/catalog/components/products-overview.tsx` — ส่งชุด URL ดังกล่าวให้ Navbar ภายในแคตตาล็อกและใช้ชุดเดียวกันกับทางเข้าหน้าหมวดย่อย
+- `tests/catalog/warehouse-site-data.test.ts` — ตรวจการตีความ facts การอยู่หลายหมวดตามที่อนุมัติ กรณีหาย/ขัดแย้ง และการจัดหมวดเดิม
+- `tests/catalog/product-subcategory-pages.test.ts` — ตรวจว่าความพร้อมมาจากสมาชิก SKU ของหน้าเดียวกัน และครอบคลุมกรณีสมาชิกไม่มีการ์ดหรือข้อมูล SKU ขาด
+- `tests/catalog/primary-navigation.test.ts` — ตรวจผล 0 → 1 → 0, กรณีเจ้าของสั่งปิด และจำนวนเปิด/ปิดตามชุดข้อมูลทดสอบ
+- `tests/e2e/navbar-seven-subcategories.spec.ts` — ตรวจ Navbar สองรูปแบบ ลิงก์จากหน้าหมวด สินค้าและการย้อนกลับตามระดับความพร้อมของแต่ละหน้า
+
+### Warehouse handoff
+
+- ทีมที่มีสิทธิ์แก้ Warehouse ยืนยันหลักฐานตาม SKU จากตารางใน Spec เก็บค่าก่อนแก้ของ fact ที่เกี่ยวข้อง และกำหนดค่าที่ใช้จริงสำหรับแต่ละรุ่น โดยให้ทีมสินค้าตรวจรุ่นที่จำหน่ายจริงและแยกรุ่นย่อยหรือสินค้าชุดที่ชื่อคล้ายกัน
+- ใช้รายการ SKU ชุดย่อยที่ยืนยันแล้วอัปเดต attributes เดิมของสินค้าให้เป็น `verified` ผ่านขั้นตอนของ Warehouse ตรวจผลจาก RPC ราย SKU โดยใช้สิทธิ์อ่านของเว็บ ทวนว่าแต่ละช่องมีค่าที่อ่านได้หนึ่งชุด หลังตรวจหลักฐานแล้วจึงขยายไปชุดถัดไป
+- สำหรับ ABS และ POS iOS ให้ค้นหา/ยืนยัน SKU หรือแพ็กเกจที่เข้าเงื่อนไขเผยแพร่เดิมก่อนเพิ่มค่าในตารางส่งมอบ รายการที่ยังรอหลักฐานยังคงแสดงสถานะปิดใน Navbar
+
+### Steps
+
+- [x] ตรวจ RPC สดและต้นทางกติกา เทียบผล 0 SKU ทั้งเจ็ดหมวด และระบุ 35 SKU ที่มีใน RPC สำหรับยืนยันสเปก
+- [x] ตรวจการตั้งค่า Navbar ปัจจุบันพร้อมจำนวนตำแหน่งและยืนยันว่า URL เป้าหมายแต่ละอันอยู่ในเมนูหนึ่งตำแหน่ง
+- [x] ตรวจเส้นทางข้อมูลของ Navbar ทั้งสองแบบ ทางเข้าจากหน้าหมวดทั้งห้า และตัวอ่านที่หน้ารายการทั้งเจ็ดใช้ร่วมกัน
+- [x] รับอนุมัติ Spec/Plan ฉบับอัปเดตสำหรับไฟล์ส่วนกลางและใช้เกณฑ์ IP/iOS ตั้งต้นในแผน
+- [x] ปรับ classifier และคำนวณสถานะจากสมาชิกที่ใช้แสดงจริงในแคตตาล็อก ส่งผลเดียวกันให้ Navbar ทั้งสองแบบและทางเข้าจากหน้าหมวด ตรวจโค้ดกับ Next.js docs ของเวอร์ชันที่ติดตั้ง
+- [x] ใช้ fixture ภายในเพื่อทดสอบผล 0 → 1 → 0, ไม่มีข้อมูลความพร้อมให้ใช้, ข้อมูลหาย/ขัดแย้ง, สมาชิกไม่มีการ์ด, การปิดโดยเจ้าของและผลเดิมของหมวดใกล้เคียง
+- [x] รัน Prettier, lint, typecheck, `test:catalog`, build และตรวจ Chrome ที่ 390, 768, 1440px ได้แก่สถานะปิดตามข้อมูลจริง Navbar ทั้งสองแบบ ทางเข้าจากหน้าหมวด URL ตรง เมาส์ คีย์บอร์ด แตะ การเปลี่ยนหน้าฝั่ง client และ refresh
+- [ ] เมื่อทีม Warehouse ยืนยันและลงข้อมูลราย SKU แล้ว อ่าน RPC เดิมซ้ำ เปรียบเทียบชุด SKU ในหน้ารายการกับสถานะเมนูที่ได้จากข้อมูลชุดเดียวกัน ตรวจราคา/รูป รายละเอียดและย้อนกลับสำหรับหน้าที่พร้อมจริง
+- [x] บันทึกผลทดสอบ สถานะเมนู และข้อมูลที่ยังขาดใน Spec/Plan
+
+### Impact / Rollback
+
+ตัวจัดหมวดและ Navbar ใช้ทั่วเว็บ ความเสี่ยงคือ SKU เข้าหมวดผิด, Navbar หน้าแรกหรือหน้าภายในช้าลงเมื่ออ่าน Warehouse, และ header ที่ cache ไว้แสดงข้อมูลคนละรุ่นกับหน้ารายการ ใช้ผลที่ cache อยู่แล้ว ส่งเฉพาะ URL และตรวจ fallback/การ refresh ตรวจผลต่างสมาชิกของทั้ง 7 หมวดและหมวดใกล้เคียง หากต้องปิดกลับเฉพาะหมวดให้ใช้สถานะปิดโดยเจ้าของ หากย้อนทั้งงานให้คืนเฉพาะการคำนวณและส่งต่อสถานะของงานนี้พร้อมกติกาปิดเดิม ส่วนค่าของ Warehouse ให้ผู้มีสิทธิ์คืนเฉพาะ fact ที่แก้จากค่าก่อนเปลี่ยน
+
+### Verification Results
+
+งานร่างใช้ผลตรวจ RPC แบบอ่านอย่างเดียว 399 SKU และผลทดลอง classifier 11 กรณีจากงานตรวจวันที่ 18 พฤศจิกายน 2026 ตรวจด้วยข้อมูลตั้งค่า Navbar ว่ายังมี 90 ตำแหน่ง เปิด 76 ปิด 14 และทั้ง 7 เป้าหมายปิดอยู่ การตรวจหลังแก้โค้ดและหลังอัปเดตข้อมูลอยู่ใน checklist ด้านบน
+
+ตรวจซ้ำหลังได้รับอนุมัติให้เปิดหมวดที่มีข้อมูลครบ พบ 0 จาก 7 หมวดผ่านเกณฑ์ 35 คู่ SKU–ช่องสเปกยังขาดรายการเชื่อม `ai_products` และ 15 คู่ยังขาด fact รายละเอียดและขอบเขตการอนุมัติบันทึกใน Spec
+
+ตรวจตอนอัปเดตแผนแล้วว่า `ProductSubcategoryPage` สำหรับ 7 URL อ่านสมาชิกจาก `getProductCategories()` และหน้ารวมกับหน้าหมวดทั้งห้าอ่านฟังก์ชันนี้อยู่แล้ว ตรวจ RPC แบบอ่านอย่างเดียวได้ 399 SKU โดยผลทั้ง 7 หมวดยังเป็นศูนย์ รอบนี้อัปเดตเอกสารและยังไม่ได้รันเกณฑ์ทดสอบหลังแก้แอป
+
+หลังดำเนินการบน Node 24.22.3 ผ่าน TypeScript, ESLint, Prettier, `test:catalog` 211/211 และ production build 719/719 Chrome บน production build ผ่าน 8/8 รวมชุดตรวจทั้ง 7 หมวดและ regression ของ 8 หน้าที่ส่งมอบก่อนหน้า ทดสอบที่ 390, 768 และ 1440px อ่าน RPC จริงได้ 400 SKU และทั้ง 7 หมวดยังมีสมาชิก 0 รายการ จึงคง Navbar ที่เปิด 76 จาก 90 ตำแหน่ง การเติม facts ทดลองเฉพาะในหน่วยความจำให้ครบทั้งเจ็ดตรวจผ่านชุดสมาชิกและการเปิดเมนูจาก 76 → 83 → 76 การทดสอบเมื่อมี SKU จริงอยู่ในขั้นตอน Warehouse ข้างต้น
+
+### ใช้ข้อมูลที่มีในตาราง Warehouse สำหรับเมนูงานวิเคราะห์
+
+- [x] ตรวจข้อมูลจากสเปกราย SKU แม่แบบ และความสัมพันธ์กับกลุ่มการใช้งานด้วยการอ่าน Warehouse ตรวจว่าทั้ง 9 SKU อยู่ใน RPC และพบข้อมูลประกอบ 4 รุ่นตาม Spec
+- [x] รับ SKU และคำยืนยันการใช้งานจากเจ้าของสำหรับ C5 แล้วบันทึกใน attribute เดิม “โหมดการใช้งานเฉพาะทาง”
+- [x] ตรวจค่า `verified` ผ่าน RPC เดิมและตรวจ C5 บนหน้ารายการกับการเปิดเมนูงานวิเคราะห์ทั้งสอง Navbar หลังเว็บโหลดข้อมูลชุดใหม่
+
+### C5 และการตรวจแคตตาล็อกครบทุก SKU
+
+- [x] บันทึกการยืนยันและสิทธิ์ตรวจเขียนสำหรับ `G106650` เท่านั้น ตรวจสินค้า แถวเชื่อม และ attribute ที่มีอยู่
+- [x] เพิ่ม fact ที่เจ้าของยืนยันหนึ่งแถวใน transaction ที่ตรวจผล RPC ก่อน commit และตรวจสเปกอื่นของ C5 ก่อน/หลังว่าตรงกัน
+- [x] ตรวจ RPC เดิม, API ฝั่งเว็บ, Navbar ทั้งสองแบบและหน้า C5 จากข้อมูลจริงบน Chrome ที่ 1440 และ 390px
+- [x] ตรวจ Warehouse ครบ 732 แถว เทียบ SKU, หมวด ราคา URL รูปในข้อมูล และการ์ดพร้อมลิงก์ของสินค้า 400 รายการบนหน้ารวมกับ API จัดทำ CSV และอ่านกลับเพื่อตรวจจำนวนแถวและรายการ C5
+
+## Plan: ตรวจและจัดหมวดย่อย 221 SKU จาก Warehouse เดิม
+
+### Files
+
+- `spec.md`, `plan.md` — บันทึกหลักฐานและผลตรวจ 221 SKU และ 6 เมนู
+- `src/features/catalog/data/warehouse-classification.ts` — เพิ่มการยอมรับคำและ verified facts เฉพาะ 4 หมวดเครื่องชั่งที่ระบุใน Spec
+- `src/features/catalog/data/additional-subcategory-pages.ts` — รับประเภทชิ้นส่วนวงจรและบลูทูธที่ตรงเกณฑ์หน้าอะไหล่อิเล็กทรอนิกส์
+- `tests/catalog/warehouse-site-data.test.ts`, `tests/catalog/product-subcategory-pages.test.ts` — ตรวจผลบวก/ลบใหม่ด้วยข้อมูลจำลองตามหลักฐาน และตรวจสมาชิกลิงก์เดิม
+
+### Steps
+
+- [x] อ่าน RPC เดิม ตรวจหลักฐาน Warehouse ทั้ง 221 SKU และตรวจ 26 รุ่นที่เป็นผู้สมัครของ 4 จาก 6 เมนู รวมการค้นหา SKU ของ ABS และ POS iOS
+- [x] จำลองเงื่อนไขกับผล Warehouse ทั้ง 400 SKU ตรวจยืนยันขอบเขตของ 16 SKU และทำรายงาน CSV เพื่อใช้อนุมัติและยืนยันข้อมูล
+- [x] รับอนุมัติกติกาและไฟล์ที่ระบุใน Spec/Plan ก่อนแก้เว็บ
+- [x] แก้เงื่อนไขในสองไฟล์ที่อนุมัติ รัน formatter, lint, typecheck และ `test:catalog` ตรวจชุดสมาชิกใหม่และกติกาเจ้าของกับ C5 และอีก 6 เมนู
+- [x] ตรวจ Chrome ที่ 390, 768 และ 1440px บนหน้าหมวดย่อยเดิมทั้งห้า และบันทึกจำนวน SKU ก่อนและหลังปรับกติกา
+
+### Impact / Rollback
+
+เงื่อนไขมีผลต่อสมาชิกหน้าหมวดย่อยและการ์ดในแคตตาล็อก ตรวจชุดผลต่างทั้ง 400 SKU และรักษาหมวดหลัก ราคา รูป และสถานะเผยแพร่เดิม ย้อนกลับด้วยการคืนกติกาสองไฟล์ของงานนี้และผลทดสอบที่แก้คู่กัน
+
+### Verification Results
+
+- เทียบผลจัดหมวดจาก RPC เดิมแบบอ่านอย่างเดียวก่อนและหลังครบ 400 SKU พบสมาชิกเพิ่มตรงชุด 16 SKU และสมาชิกเดิมอยู่ครบ ตรวจรหัสหน้า หมวดหลัก ราคา และรูปของทั้ง 400 SKU แล้วได้ค่าเดิม จำนวน SKU ที่ยังไม่มีหมวดย่อยลดจาก 221 เหลือ 205
+- `/api/products` ส่งหมวดย่อยตรงเกณฑ์สำหรับเครื่องชั่งทั้ง 11 SKU ตรวจ Chrome บนเว็บที่รันในเครื่องครบ 15 กรณีจาก 5 หน้าและ 3 ความกว้าง (390, 768, 1440px) ตรวจจำนวนและลิงก์สินค้าทุกใบ รวมการกดดูเพิ่มเติม ได้ผลก่อนและหลังเป็นคำนวณราคา 25 → 31, มีเสา 1 → 3, ครัวและกาแฟ 4 → 5, อุตสาหกรรม 38 → 40 และโหลดเซลล์กับอะไหล่อิเล็กทรอนิกส์ 1 → 6 SKU
+- Playwright `navbar-seven-subcategories.spec.ts` ผ่าน 3 กรณี ตรวจ Navbar หน้าแรกและหน้าแคตตาล็อก งานวิเคราะห์เปิดและแสดง C5 (`G106650`) อีก 6 เมนูมีสมาชิก 0 SKU และแสดงสถานะปิด
+- `npm run test:catalog` ผ่าน 212 กรณี พร้อม `npm run lint` และ `npm run typecheck`
+
+## Product card pointer and corner chevron on /products
+
+- [x] Confirm the owner's correction against the live Apple Store latest-products shelf.
+- [x] Update the existing card link in `src/features/catalog/components/products-index-content.tsx` and its local `products-index-content.module.css` with the pointer, corner chevron and hover treatment.
+- [x] Extend `tests/e2e/products-full-overview.spec.ts` and verify hit testing, navigation, touch, focus, reduced motion and responsive geometry. Record results in `spec.md` and `plan.md`.
+
+Rollback by reverting the card-specific edits. The shelf controls and product data projection have separate responsibilities.
+
+Chrome passed all five targeted cases, including all-card chevron counts and geometry at 390, 768, 1024 and 1521 CSS px. Hit testing covered text, photo, whitespace and chevron. Mouse, keyboard Enter and a separate emulated touch tap opened the expected SKU. Reduced motion retained a stationary card. Typecheck and targeted ESLint passed.
+
+## Product shelf stepping, hover shadow and mobile category paddles
+
+- [x] Confirm the owner approved the three changes for the products directory.
+- [x] Update `src/features/catalog/components/products-index-rail.tsx`, `products-index-content.tsx` and `products-index-content.module.css` for desktop stepping, hover elevation and mobile category edge buttons.
+- [x] Extend `tests/e2e/products-index-carousel.spec.ts` to protect desktop stepping and check mobile category button placement and interaction. Verify Chrome against the reference at both requested sizes, including reduced motion and keyboard/touch interaction.
+- [x] Record evidence in `spec.md` and `plan.md`. Rollback is limited to these directory rail, CSS and test edits.
+
+Live Chrome comparison at 1521 CSS px: next advanced one product on both sites (SUNFORD 404px, Apple 420px). Both cards interpolated the same rest/hover shadows and scale over 300ms. At 390px touch emulation, both category paddles measured 36px wide, started at x=0 and x=354, and hid the previous direction until the first advance. Tapping previous restored the initial state. The edges span each site’s category row height. SUNFORD preserved native swiping and instant reduced-motion navigation. Product shelf scroll durations observed on desktop/mobile were about 305/263ms locally and 465/478ms on Apple in this run. Playwright passed all eight targeted cases across runs. Two initial detail-navigation assertions exceeded 5s and passed when rerun separately. Typecheck and targeted ESLint passed.
+
+## Product shelf button duration and image-category menu pointer
+
+- [x] Trace the existing native smooth scroll and identify the directory, chapter menu and catalog finder renderers.
+- [x] Confirm approval of the product shelf timing and image-category pointer scope.
+- [x] Implement interruptible timed scrolling in `src/features/catalog/components/products-index-rail.tsx` with scoped snap styling in `src/features/catalog/components/products-index-content.module.css`. Preserve native category scrolling and restore snap after input, unmount or completion.
+- [x] Verify and, where needed, enforce pointer on enabled image-menu controls in `src/features/catalog/components/products-index-content.module.css`, `src/features/catalog/components/products-overview.module.css` and `src/features/catalog/components/product-category-mock.module.css`.
+- [x] Cover frame timing, immediate reduced motion, retargeting and cursor hit areas in `tests/e2e/products-index-carousel.spec.ts`. Run the existing history and touch checks and compare Chrome desktop and emulated mobile with Apple.
+- [x] Record the final measurements in `spec.md` and `plan.md`.
+
+Impact is limited to product-directory buttons and shared catalog image menus. A conflict between snap and animated scrolling could cause jumps, so test interruptions and endpoints. Roll back the timing path and scoped CSS rules to restore native behavior.
+
+Verified 14 targeted Chrome cases across runs, including timing, rapid presses, wheel interruption, swipe, pointer hit areas and history restoration. The multi-route pointer check was split by route to avoid the combined test timeout. The touch navigation case passed an isolated rerun. Live hit tests also covered enabled chapters on the scales, indicators, POS and accessories pages. The platforms page had four disabled chapters. Typecheck, targeted ESLint and formatting checks passed.
+
+## Hover lift for product cards on category and subcategory pages
+
+- [x] Trace category overviews and category/subcategory listing renderers and identify the existing /products desktop and reduced-motion rules.
+- [x] Confirm approval of this Spec and Plan.
+- [x] Update `src/features/catalog/components/products-overview.module.css` for category overview product tiles. Scope any space for the shadow to the lineup track so the carousel can display it.
+- [x] Update `src/features/catalog/components/catalog-product-card.tsx` and `src/features/catalog/components/product-category-mock.tsx` to opt category/listing product cards into the effect. Update `src/features/catalog/components/product-browser.module.css` to use one lift instead of stacking with its current card and image scaling. Checked the product showcase entry point. It is absent from category and subcategory routes.
+- [x] Verify hover, shadow, reduced motion, touch, key focus and product navigation with Chrome at desktop and mobile widths. Run formatting, typecheck and targeted checks. Record results in `spec.md` and `plan.md`.
+
+Rollback the scoped CSS additions and category-card opt-in. Pay particular attention to shadow clipping inside the category overview track and duplicate scaling inside shared product cards.
+
+Chrome at 1521×940 verified the matching scale, shadow and duration in six populated category and subcategory routes, and verified no scale or shadow increase with Reduce Motion. At 390×844 with a coarse pointer, real taps opened the intended products on both a category and a subcategory without lift. Keyboard focus kept its outline. The overview row left 13px above and 21px below the expanded card in the measured case. The local Indicators and Platforms overviews and the Waterproof and SUS304 listings showed zero product cards during this check. The optional showcase is used only by the overview presentation of ProductCategoryMock, and no category or subcategory route invokes it. Prettier, TypeScript and targeted ESLint passed.
+
+## Hover lift on catalog category menu tiles
+
+- [x] Map the pictured menu to the products index rail, shared category overview chapters and catalog finder.
+- [x] Confirm approval of the image-only lift.
+- [x] Apply the lift to the artwork wrappers in `src/features/catalog/components/products-index-content.module.css`, `src/features/catalog/components/products-overview.module.css` and `src/features/catalog/components/product-category-mock.module.css`.
+- [x] Verify Chrome hover, touch, Reduce Motion, edge visibility, focus and category navigation. Run formatting and diff checks and record results in `spec.md` and `plan.md`.
+
+Rollback by reverting the category-menu CSS rules. Carousel clipping and unavailable category controls are the main regression checks.
+
+Chrome at 1521×940 verified image-only motion, unchanged label and control bounds, visible artwork, and Reduce Motion for /products and category chapters on Scales, Indicators, POS and Accessories. Platforms chapters were disabled in the local dataset and remained stationary. The catalog finder rendered label-only controls and remained stationary. At 390×844 with touch emulation the two image-menu variants stayed stationary and a tap opened the category. Keyboard focus retained its outline.
+
+Owner requested removal of the hover underline on the /products category labels. Chrome verified no underline and the existing artwork lift on hover.
+
+Removed the image shadow from all three category menu styles at the owner’s request. Chrome verified the lift without a shadow on /products and the Scales category, with motion suppressed in Reduce Motion.
+
+## Plan: ต้นแบบ Figma หน้ารายละเอียดสินค้าทั้งหน้า (2026-11-18)
+
+- [x] บันทึกขอบเขตงานออกแบบที่เจ้าของขอใน spec.md และผลตรวจใน plan.md
+- [x] ตรวจหน้าสินค้าตาม public sitemap ของ .co และ routes จาก Warehouse product API ในโปรเจกต์ ดูการทำงานจริงของรุ่นตัวอย่าง เทียบหน้าซื้อและหน้าสเปกของ Apple Thailand
+- [x] สร้างไฟล์ Figma แยกสำหรับ main content ใช้รูปและข้อเท็จจริงตรง SKU จัดเฟรม 1440 / 768 / 390 px และรูปแบบข้อมูลไม่ครบ ทำสถานะสเปก รูปขยาย การติดต่อผ่าน LINE และเทียบรุ่น ตรวจ Figma ทั้งไฟล์หลังตัดส่วนเอกสารตามคำขอ ไม่พบปุ่มดาวน์โหลดหรือชื่อ PDF และส่วนสินค้าหมวดเดียวกันเรียงต่อจากรายละเอียดในทั้งสามขนาดจอ
+- [x] สร้าง outputs/product-detail-review-20261118/product-pages.csv เก็บแหล่ง URL, HTTP, ชื่อ, รหัส, ราคา และสถานะที่ตรวจพบ ยืนยัน 569 แถวข้อมูล จำนวนคอลัมน์ตรงกับหัวตารางทุกแถว
+- [x] ตรวจ Figma node 4:2, 4:112, 6:18 และเฟรมกรณีพิเศษทั้งสี่เฟรม ไม่มีเลเยอร์ล้นแนวนอน หลังเจ้าของยืนยันว่าเป็นเว็บไซต์ทางการ ตรวจหน้าสินค้า 6 เฟรมว่ามีปุ่ม LINE ตรงบัญชี SUNFORD และค้นทั้งไฟล์ไม่พบปุ่มตะกร้าหรือช่องเลือกจำนวน ตรวจ screenshot เดสก์ท็อป แท็บเล็ต มือถือ และกรณีไม่มีภาพ
+- ผลกระทบและการย้อนกลับ: งานส่งมอบอยู่ใน Figma และเอกสาร ตรวจหน้าร้านด้วยการอ่านเท่านั้น การแก้รอบต่อไปทำในไฟล์ Figma เดียวกัน ไม่ต้อง deploy
+
+## Plan: นำแบบ Figma ล่าสุดมาใช้กับ main content ของหน้ารายละเอียดสินค้าทุกรุ่น (2026-11-18)
+
+**สถานะ** ได้รับอนุมัติและนำไปใช้แล้ว ตรวจบน production build ในเครื่อง
+
+### Files
+
+| ไฟล์                                                                                                                                     | งานที่เสนอหลังอนุมัติ                                                                                                                                                                   |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec.md`, `plan.md`                                                                                                                     | บันทึกข้อกำหนด ขอบเขตการอนุมัติ และผลทดสอบจริง                                                                                                                                          |
+| `src/app/(site)/products/[slug]/page.tsx`                                                                                                | จัด RSC ของ main ใหม่ ตรวจสิทธิ์ปุ่ม กรองแถวเอกสาร และจัดข้อมูลต่อ SKU ส่งเฉพาะข้อมูลจำเป็นไปส่วน client คง metadata, 404, cache และการคืนหน้ารายการ                                    |
+| `src/app/(site)/products/[slug]/product-detail.module.css`                                                                               | จัด layout, spacing, ตัวอักษร, แถบสรุป, ปุ่ม, รูป และการ์ด เฉพาะขอบเขตหน้ารายละเอียด ตรวจ cascade เดิมของ `src/styles/product-detail.css` โดยใช้ class ของ route                        |
+| `src/app/(site)/products/[slug]/product-specification-dialogs.tsx`                                                                       | ปรับหน้าตากลุ่มสเปกและแถวสรุปให้ตรงแบบ คง dialog, ข้อมูลเต็ม, focus และการคืนสถานะ                                                                                                      |
+| `src/app/(site)/products/[slug]/product-detail-compare.tsx`                                                                              | สร้าง client component ขนาดเล็กเฉพาะ route สำหรับเลือกรุ่นที่สองและปุ่มเปรียบเทียบ ใช้ `useCatalogStore` และ `CatalogOverlays` ที่ layout ติดตั้งไว้แล้ว ไม่สร้างตารางเปรียบเทียบอีกชุด |
+| `src/features/catalog/components/product-gallery.tsx`                                                                                    | เพิ่มการขยายภาพจริงที่เลือก และจัดกรณีรูปโหลดเสีย คง props เดิมและพฤติกรรมเปลี่ยนรูป/คืนสถานะ จำกัดผลกับผู้เรียกบนหน้ารายละเอียด                                                        |
+| `tests/e2e/product-detail.spec.ts`, `tests/e2e/product-overview.spec.ts`, `tests/e2e/tooltips.spec.ts`                                   | ปรับ assertion เฉพาะหน้ารายละเอียดที่เปลี่ยนลำดับบนมือถือ สเปก รูปขยาย และ tooltip ทดสอบ CTA, เลือกคู่เปรียบเทียบ และการซ่อนส่วนว่าง                                                    |
+| `tests/e2e/product-image-placeholder.spec.ts`, `tests/e2e/warehouse-catalog.spec.ts`, `tests/e2e/warehouse-storefront-selection.spec.ts` | แก้เฉพาะ expectation ที่บังคับให้ detail มี placeholder ใหญ่เมื่อ SKU ไม่มีภาพ เก็บ assertion ของการ์ด ค้นหา และหน้าอื่น                                                                |
+| `tests/e2e/product-figma-detail.spec.ts`                                                                                                 | สร้างการตรวจสัญญาที่ใช้กับทุก slug แบบอ่านอย่างเดียวและกรณีตัวแทนที่ต้องตรวจผ่าน browser แยกความแตกต่างของข้อมูลแต่ละรุ่นจากข้อบกพร่องของ layout                                        |
+
+### Steps
+
+- [x] รับการอนุมัติของเจ้าของและบันทึกใน Spec ก่อนแก้ไฟล์แอปหรือเทสต์
+- [x] อ่าน Next.js App Router guide ใน `node_modules/next/dist/docs/` ที่ตรงกับ route, Server/Client Components และ Image ก่อนเขียนโค้ด บันทึก git diff ตั้งต้นเพื่อแยกงาน Navbar/หมวดสินค้าที่มีอยู่แล้ว ตรวจ baseline ของชุดทดสอบที่เกี่ยวข้องก่อนแก้
+- [x] เก็บภาพก่อนแก้ 390/768/1440 px ของ main, Navbar และ Footer บันทึก slug และค่าจริง ณ เวลานั้นจากแค็ตตาล็อก ใช้ ACS-30-JC21EL (G106438), PCS-60-FC11 (G106834 และ G106005), P1W (G108012) ถ้ายังเผยแพร่ เพิ่มตัวอย่างที่ราคาเป็นบวกแต่ไม่มีภาพ และตัวอย่างจำนวน related น้อยกว่า 3 ถ้ามี
+- [x] ปรับ renderer และ CSS ตามลำดับใน Spec ตรวจภาพหาย/ราคาเป็นศูนย์ตั้งแต่ต้น ตรวจทุกแถวของสเปก ใส่ทางอ่านข้อมูลเต็ม และคงแหล่งข้อความ รูป ราคา และสินค้าเกี่ยวข้องเดิม
+- [x] เชื่อม LINE และลิงก์ใบเสนอราคาตาม `pricedProducts` ทำปุ่มเลือกรุ่นเทียบผ่าน store เดิม ตรวจการกดซ้ำ กรณีเลือกรุ่นเต็ม 3 รุ่น และการเปลี่ยน SKU ระหว่างนำทาง ใช้ `relatedProducts` และตรวจ membership จากรายการเผยแพร่ชุดเดียวกับ overlay
+- [x] ปรับรูปและการโต้ตอบ ทดสอบ focus ตอนเปิด/ปิด dialog, tooltip และการกลับไปหน้ารายการ ตรวจลิงก์ LINE จาก href และทดสอบไปถึงฟอร์มใบเสนอราคาโดยไม่ออกเลขหรือส่งข้อความจริง
+- [x] รัน `bun run typecheck`, `bun run lint`, `bun run test:catalog`, `bun run build` และ Playwright ผ่าน `bun run test:e2e` ด้วยไฟล์ใน manifest เพิ่ม regression แบบอ่านอย่างเดียวสำหรับ compare-mode, history-restoration, warehouse-images, product-navigation-surface และ quotation แยกผลที่ล้มอยู่ก่อนจาก regression ที่เกิดจากงานนี้
+- [x] ทดสอบทุก slug โดยจำกัดคำขอพร้อมกัน ตรวจ 404 จริง เทียบภาพและ DOM กับ Figma/เกณฑ์ใน Spec ที่ 320/390/768/1440 px ตรวจ focus และการเปิด Navbar ก่อน/หลัง รวมถึง Footer ทั้งหมด บันทึกจำนวน SKU และผลผ่าน/ไม่ผ่านจริง
+- [x] ตรวจ diff สุดท้าย อัปเดตเฉพาะหัวข้องานนี้ใน Spec/Plan และแนบหลักฐานให้เจ้าของตรวจบนเครื่องก่อนพิจารณา release แยกต่างหาก
+
+### Impact / Rollback
+
+หน้ารายละเอียดทุกรุ่นใช้ renderer เดียว ความเสี่ยงหลักคือรุ่นข้อมูลน้อยเกิดช่องว่าง แสดงข้อมูลผิด SKU เมื่อชื่อซ้ำ และกฎ global เดิมแทรก CSS ของ route เก็บ baseline ของ layout และทดสอบทั้งรุ่นเต็ม/รุ่นข้อมูลน้อยตั้งแต่ชุดแรก สลับกลับเฉพาะ diff งานนี้ในไฟล์ตาม manifest โดยรักษาการแก้ไขของเจ้าของและงานอื่นใน working tree การเปลี่ยน shared layout, Navbar/Footer, store, API หรือ global stylesheet ต้องเสนอเป็นขอบเขตเพิ่มก่อน
+
+### Verification Results
+
+- ตรวจ baseline ก่อนแก้ผ่าน Chrome และเก็บภาพ main, Navbar, Footer ทั้งสี่ขนาด ชุด product-detail เดิมล้มตั้งแต่ assertion แรกเพราะทดสอบเซลล์ใน dialog ที่ยังปิดอยู่ เทียบกับข้อมูล Warehouse และปรับการทดสอบตามการใช้งานที่อนุมัติ
+- `bun run typecheck`, `bun run lint`, `bun run test:catalog` (212/212) และ `bun run build` ผ่าน ตัว production build สร้าง static pages 719 หน้า ทดสอบด้วย Chrome บน local next start
+- 400/400 slug ผ่าน HTTP 200, ชื่อและ SKU, ราคา, LINE, สิทธิ์ใบเสนอราคา, สถานะภาพ, metadata และการตัดตะกร้า/เอกสารออก ทดสอบ slug ที่ไม่มีสินค้าได้ HTTP 404 บน production server ส่วน dev server ส่ง UI not-found ด้วย HTTP 200
+- Playwright ชุด product-detail, product-overview และ product-figma-detail ผ่าน 9/9 และเพิ่มกรณีบังคับผิดพลาดที่ URL รูป Warehouse ผ่าน 1/1 ทดสอบจอ 320/390/768/1440 px ตรวจ keyboard, focus, Escape, touch, เปิดภาพ, ดูสเปก, เลือกรุ่นที่สอง, เปิดตารางและไปถึงฟอร์มใบเสนอราคา
+- Playwright ชุดภาพว่างและ storefront ที่เลือกตรวจเพิ่มผ่าน 6/6 และ 2/2 การตรวจเจาะจง tooltip, compare, ประวัติหน้าและใบเสนอราคาผ่าน 11/11 ซึ่งมีบางรายการซ้ำกับชุด regression
+- ชุด regression ขยายบน production build ผ่าน 41/48 ข้อ กลุ่ม history, compare mode และ product navigation ผ่านครบ ข้อที่ไม่ผ่านคือการกรอง SKU ใน quotation picker หนึ่งข้อ การหาลิงก์ใบเสนอราคาจากเมนูบริการบนหน้าแรกและติดต่อสองข้อ และสี่ข้อที่ต้องมี CMS fallback ในข้อมูล Warehouse ก่อนเริ่มทดสอบรูป แยกจากการเข้าฟอร์มผ่านปุ่ม PDP และการแสดงสถานะรูปเสีย ซึ่งทดสอบผ่าน กรณีเหล่านี้ยังเป็นข้อจำกัดของผลตรวจโดยรวม
+- ภาพจริงของ main จาก production build อยู่ใน [มือถือ 390](outputs/product-detail-review-20261118/after/390-main.png), [แท็บเล็ต 768](outputs/product-detail-review-20261118/after/768-main.png), [เดสก์ท็อป 1440](outputs/product-detail-review-20261118/after/1440-main.png) และ [จอ 320](outputs/product-detail-review-20261118/after/320-main.png) ไม่พบ horizontal overflow หรือ pageerror ตอนตรวจภาพ เทียบ Navbar/Footer กับภาพก่อนแก้ด้านเนื้อหา โครงสร้างและการจัดวาง มีความต่างพิกเซลระหว่างภาพจาก dev/production จึงไม่ใช้ pixel equality เป็นข้อสรุป งานนี้ไม่มีการ commit/push/deploy
+
+## Plan: ตรวจสเปก WP31 และวัสดุโครงแท่นชั่ง 26 SKU
+
+### Files
+
+- `spec.md`, `plan.md` — บันทึกหลักฐานราย SKU ขอบเขต และผลตรวจจริง
+- ใช้การเชื่อมต่อ Warehouse สำหรับธุรกรรมเฉพาะกิจและตัวอ่านเดิม ผลงานนี้ไม่ต้องแก้ไฟล์แอป
+
+### Steps
+
+- [x] เทียบสเปกต้นฉบับและ Warehouse ทั้ง 26 SKU พร้อมคัดค่าที่ชัดเจนตามกติกาเดิม
+- [x] เพิ่มเฉพาะ verified facts และแถวเชื่อมที่จำเป็นภายใต้ธุรกรรมเดียว เทียบ RPC และผลจัดหมวดก่อน commit
+- [x] ตรวจผลผ่านการเชื่อมต่อใหม่ API และ Chrome บน Navbar ทั้งสองแบบและหน้าสินค้า
+- [x] บันทึกผลการเขียนและผลตรวจ
+
+### Impact / Rollback
+
+ข้อมูลที่ยืนยันเพิ่มจะแสดงในสเปกสินค้าตามสัญญา RPC เดิม และเมนูที่มีสมาชิกจะเปิดตามกติกาเดิม การตรวจผิดชุดจะ rollback ทั้งธุรกรรมก่อน commit เก็บรายการคีย์ของแถวที่เพิ่มเพื่อใช้ตรวจย้อนหลัง การแก้กลับภายหลังจำกัดเฉพาะ facts ที่สร้างในรอบนี้หลังตรวจว่าค่ายังเท่าเดิมและไม่มีข้อมูลอื่นอ้างถึงแถวเชื่อม
+
+### Verification Results
+
+- เขียน `ai_products` 18 แถว และ `ai_product_facts` 22 แถวจาก 20 SKU ตรวจทั้ง 521 แถวจาก RPC เดิมในธุรกรรมก่อน commit และซ้ำจากการเชื่อมต่ออ่านใหม่หลัง commit โดยตรวจสเปกเดิม ราคา และส่วนประกอบพร้อมค่าที่เพิ่ม
+- `/api/products` ของเว็บที่รันในเครื่องตอบ 200 ตรวจครบ 22 ค่าและเทียบสมาชิกตาม SKU และ slug ทั้งเจ็ดหมวดตามเกณฑ์เดิม SKU แสดง 400 รายการ ผลสมาชิกคือกันน้ำ 2, SUS304 7, SUS201 2, งานวิเคราะห์ 1 และเหล็กคาร์บอนพ่นอบสี, ABS, POS iOS อย่างละ 0
+- Chrome `tests/e2e/navbar-seven-subcategories.spec.ts` ผ่าน 3 กรณีที่ 390, 768 และ 1440px ตรวจ Navbar หน้าแรกและแคตตาล็อก ลิงก์สินค้าทุกใบที่เกี่ยวข้อง การเข้าหน้ารุ่นแรกของแต่ละกลุ่มและย้อนกลับ รวมสถานะของเมนูที่ยังไม่มีสินค้า
+- `www.sunford.co` ตอบ 404 ที่ `/api/products` และ URL หมวดกันน้ำ, SUS304 และ SUS201 ในรอบตรวจนี้ ผล Navbar และรายการสินค้าข้างต้นยืนยันบนเว็บที่รันในเครื่อง
+
+## Plan: เปิดสเปกสินค้าในหน้าเดียวทีละกลุ่ม
+
+- [x] ยืนยันขอบเขตตามคำขอใน Spec
+- [x] เปลี่ยนชื่อ `src/app/(site)/products/[slug]/product-specification-dialogs.tsx` เป็น `product-specifications.tsx` และปรับ import ใน `page.tsx` ใช้ state เปิดได้ครั้งละหนึ่งกลุ่มและใช้ HTML เดิม
+- [x] ปรับเฉพาะ CSS กลุ่มสเปกใน `src/app/(site)/products/[slug]/product-detail.module.css`
+- [x] ปรับ `tests/e2e/product-detail.spec.ts` และ `tests/e2e/history-restoration.spec.ts` ให้ตรวจการกางในหน้าเดิมและคืนสถานะ ทดสอบ layout และ typography ทั้งสามขนาด
+- [x] บันทึกผลใน `spec.md` และ `plan.md`
+
+ผลกระทบจำกัดที่ส่วนสเปกใน main content ย้อนกลับได้ด้วย diff เฉพาะรายการไฟล์ข้างต้น
+
+ผลตรวจ Chrome ผ่าน 2 กรณีสำหรับสลับกลุ่ม ยุบ คีย์บอร์ด ข้อมูล Warehouse และ Back/Forward ตรวจ tap ที่ 390/768 px และ mouse ที่ 1440 px พร้อมภาพใน outputs/product-detail-review-20261118/specifications ตรวจ typecheck และ lint ผ่าน
+
+# Plan: ภาพสินค้าประจำ 5 หมวดบน /products (2026-11-18)
+
+## Files
+
+- `spec.md` และ `plan.md` — รอบนี้บันทึกผลสำรวจ ตัวเลือกภาพ ข้อมูลที่ต้องยืนยัน และแผนรออนุมัติ
+- `src/features/catalog/components/products-index-content.tsx` — หลังอนุมัติ ให้เลือก SKU ประจำหมวดจากสมาชิกที่มีภาพ เฉพาะภาพในแถวเลือกหมวด เก็บกติกา featured/สมาชิกที่มีภาพเดิมไว้เมื่อรุ่นที่เลือกใช้ไม่ได้ ใช้ URL จาก product ปัจจุบัน
+- `tests/e2e/products-index-carousel.spec.ts` — หลังอนุมัติ เพิ่มการตรวจว่ารูป SKU ที่ตกลงแสดงในลิงก์ที่ถูกต้องและโหลดสำเร็จ รวมกรณี SKU/ภาพขาดที่ใช้กติกาสำรอง ใช้การทดสอบ hover/reduced motion และแถวหมวดที่มีอยู่ร่วมด้วย
+
+## Steps
+
+- [x] อ่านข้อมูลจากแค็ตตาล็อกในเครื่อง เทียบ HTML แถวหมวดกับตัวเลือกภาพใน component และเปิดภาพย่อของรุ่นที่เสนอ
+- [x] ตรวจชื่อรุ่นและแหล่งที่มาของ AW31 / TMS 3040 และตัวเลือกรอง WP31C / FCS60100 ในดัชนีรูปเดิม บันทึกไฟล์ต้นทางและ SKU ใน Spec
+- [ ] เจ้าของยืนยันชุดภาพ ผู้ดูแลข้อมูลจัดให้รูปกลางทั้งสองผูกกับ SKU ใน Warehouse ตามกระบวนการของคลัง แล้วตรวจจาก API หน้าร้านว่าตรงไฟล์จริงและโหลดได้
+- [ ] เมื่อข้อมูลครบ อัปเดต Spec เป็น Ready to Code และบันทึกการอนุมัติขอบเขตจริงของเจ้าของ
+- [ ] ปรับเฉพาะการเลือกภาพตัวแทนทั้งห้าในแถวหมวดและการทดสอบที่ระบุ ไม่ hardcode path รูปเดิมหรือ version ของรูป Warehouse
+- [ ] รัน typecheck, ESLint สำหรับไฟล์ที่เปลี่ยน และ Playwright เฉพาะชุดแถวหมวด ตรวจ 390/768/1440 px เทียบภาพก่อน/หลังโดยเฉพาะหัวอ่าน–โครงสร้าง ตรวจ touch, keyboard, reduced motion, href และการแสดงเมื่อภาพหาย
+- [ ] บันทึกผลและหลักฐาน browser ใน Spec/Plan
+
+## Impact / Rollback
+
+การเลือก SKU ใน component กระทบเฉพาะรูปในแถวหมวด ย้อนกลับเฉพาะ diff การเลือกภาพและข้อทดสอบของงานนี้ ระวังการแก้ของงานอื่นในไฟล์เดียวกัน การเปลี่ยนภาพหลักใน Warehouse มีผลกับทุกหน้าที่อ่าน SKU นั้น ผู้ดูแลคลังต้องยืนยันผลกระทบนี้แยกจากการอนุมัติแผนหน้าเว็บ
+
+## Verification Results
+
+สำรวจวันที่ 18 พฤศจิกายน 2026 จาก 400 รายการ HTML ปัจจุบันอ้างภาพ WPS10KS, placeholder, placeholder, P1W และ LED-R5 ตามลำดับ ต้นทางภาพของสามรุ่นที่แสดงตอบ HTTP 200 และถอดรหัสได้ ตรวจภาพต้นทางเดิมของอีกสองหมวดที่ขนาดย่อแล้ว การตรวจหน้าร้านหลังเปลี่ยนรูปและ regression อยู่หลังการอนุมัติ
+
+# Plan: ตรวจรูปจาก Warehouse RPC บนหน้าร้านทุก SKU (2026-11-18)
+
+- [x] อ่าน RPC แบบ read-only แล้วเทียบ SKU, image metadata และ version กับ API ของหน้าร้าน
+- [x] ตรวจ HTML แค็ตตาล็อกและหน้ารายละเอียดครบ 400 SKU ในเครื่อง ตรวจ HTTP ของต้นทางและ route รูปเจาะ SKU ทั้ง 98 รายการ และใช้ Chrome ถอดรหัสภาพจาก URL ที่ปรากฏใน HTML
+- [x] ตรวจ API, แค็ตตาล็อกและภาพหน้ารายละเอียดของทุก SKU ที่มีรูปบนเว็บสาธารณะ ตรวจซ้ำเพื่อแยกความต่างของ URL ชั่วคราวจากภาพที่ไม่อยู่ใน RPC
+- [x] ส่ง CSV ราย SKU และบันทึกผลใน Spec
+
+ผลตรวจในเครื่องพบรูป 98/400 ตรง RPC ทั้ง 98 รูปและโหลดผ่านทั้งแค็ตตาล็อกกับรายละเอียด เว็บสาธารณะรอบยืนยันตรงทั้ง 98 รูปเช่นกัน ขอบเขตการตรวจหน้ารายละเอียดสาธารณะคือ 98 SKU ที่มีรูปและตัวอย่าง 2 SKU ที่ไม่มีรูป
+
+- [x] เทียบค่าสีตามภาพยืนยันล่าสุดและเลเยอร์ Figma ปรับ line-height หัวข้อใน CSS Module จาก 30 เป็น 31 px เพิ่ม assertion สี น้ำหนัก และระยะในเทสต์เดิม ใช้ Chrome ตรวจกลุ่มคุณสมบัติและการใช้งานของ ACS-30-JC21EL ที่ 390/768/1440 px
+      ตรวจ Chrome ผ่านที่ 390/768/1440 px พร้อมตรวจสีของข้อความยาวที่ render จริงและบันทึกภาพ spec-typography-*.png ในโฟลเดอร์หลักฐานของงาน
+
+## Plan: Motion ตอนกางและยุบสเปกสินค้า
+
+- [x] ปรับ panel ใน `src/app/(site)/products/[slug]/product-specifications.tsx` ให้ CSS ยุบความสูงได้และใช้ inert ตอนปิด
+- [x] เพิ่ม CSS transition 220 ms และกฎ Reduced Motion ใน `src/app/(site)/products/[slug]/product-detail.module.css`
+- [x] ตรวจ Chrome ทั้งสองโหมด สลับกลุ่มและยุบซ้ำ แล้วรัน regression เดิม
+- [x] บันทึกผลใน spec.md และ plan.md
+
+ผลกระทบเฉพาะการแสดงกลุ่มสเปก ย้อนกลับโดยคืน diff ของสองไฟล์แอป
+
+ตรวจ Chrome ผ่านที่ 390/768/1440 px สองโหมด การสลับเริ่ม transition ความสูง 220 ms ทั้งสองกลุ่มในเฟรมเดียวกัน โหมด Reduce เปลี่ยนความสูงทันที ผล Playwright เดิมผ่าน 2 ข้อ รวม Back/Forward และ typecheck ผ่าน

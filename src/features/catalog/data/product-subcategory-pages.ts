@@ -1,9 +1,16 @@
 import { productCategoryDefinitions } from "./mock-categories";
+import type { ProductCategory } from "./mock-categories";
+import type { ProductCardData } from "../types";
 import { getIndicatorSubcategories } from "./indicator-subcategories";
 import { platformSubcategoryDefinitions } from "./platform-subcategories";
 import { getPosSubcategories } from "./pos-subcategories";
 import { accessorySubcategoryDefinitions } from "./accessory-subcategories";
 import { scaleSubcategoryPages, type ScaleReturnContext } from "./scale-subcategory-pages";
+import {
+  additionalAccessorySubcategoryPages,
+  additionalIndicatorSubcategoryPages,
+  additionalScaleSubcategoryPages,
+} from "./additional-subcategory-pages";
 
 const indicatorSlugs = {
   "indicator-lcd": "lcd",
@@ -37,7 +44,10 @@ export type ProductReturnContext =
   | keyof typeof indicatorSlugs
   | keyof typeof platformSlugs
   | keyof typeof posSlugs
-  | keyof typeof accessorySlugs;
+  | keyof typeof accessorySlugs
+  | (typeof additionalScaleSubcategoryPages)[number]["id"]
+  | (typeof additionalIndicatorSubcategoryPages)[number]["id"]
+  | (typeof additionalAccessorySubcategoryPages)[number]["id"];
 
 const indicatorLabel = productCategoryDefinitions.find(
   (category) => category.id === "indicators",
@@ -111,7 +121,45 @@ export const productSubcategoryPages = [
   ...platformSubcategoryPages,
   ...posSubcategoryPages,
   ...accessorySubcategoryPages,
+  ...additionalScaleSubcategoryPages,
+  ...additionalIndicatorSubcategoryPages,
+  ...additionalAccessorySubcategoryPages,
 ];
+
+const warehouseGatedSubcategoryIds = new Set([
+  "scale-analytical",
+  "indicator-waterproof",
+  "platform-carbon-steel",
+  "platform-sus304",
+  "platform-sus201",
+  "platform-abs",
+  "pos-ios",
+]);
+
+const warehouseGatedPages = productSubcategoryPages.filter(({ id }) =>
+  warehouseGatedSubcategoryIds.has(id),
+);
+
+export const warehouseGatedSubcategoryHrefs: ReadonlySet<string> = new Set(
+  warehouseGatedPages.map(({ href }) => href),
+);
+
+export function getReadySubcategoryHrefs(
+  categories: readonly Pick<ProductCategory, "id" | "subcategories">[],
+  products: readonly Pick<ProductCardData, "id" | "warehouseSku">[],
+): string[] {
+  const warehouseCardIds = new Set(
+    products.filter(({ warehouseSku }) => warehouseSku?.trim()).map(({ id }) => id),
+  );
+  return warehouseGatedPages
+    .filter(({ categoryId, id }) =>
+      categories
+        .find((category) => category.id === categoryId)
+        ?.subcategories.find((subcategory) => subcategory.id === id)
+        ?.productIds.some((productId) => warehouseCardIds.has(productId)),
+    )
+    .map(({ href }) => href);
+}
 
 export const getProductSubcategoryPage = (id: string | null | undefined, categoryId?: string) =>
   productSubcategoryPages.find(

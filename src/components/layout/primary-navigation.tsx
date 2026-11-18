@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type CSSProperties,
   type MouseEvent,
 } from "react";
 import { usePathname } from "next/navigation";
@@ -20,16 +21,18 @@ import styles from "@/features/catalog/components/products-overview.module.css";
 const subscribe = () => () => {};
 export function PrimaryNavigation({
   navigation,
+  readySubcategoryHrefs,
   site,
   onOpenFinder,
   onMenuChange,
 }: {
   navigation: NavigationItem[];
+  readySubcategoryHrefs?: readonly string[];
   site: SiteSettings;
   onOpenFinder?: () => void;
   onMenuChange?: (open: boolean) => void;
 }) {
-  const headerNavigation = getPrimaryNavigationItems(navigation);
+  const headerNavigation = getPrimaryNavigationItems(navigation, readySubcategoryHrefs);
 
   const hydrated = useSyncExternalStore(
     subscribe,
@@ -38,12 +41,14 @@ export function PrimaryNavigation({
   );
   const [mobileMenu, setMobileMenu] = useState(false);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
+  const [openedByHover, setOpenedByHover] = useState(false);
   const pathname = usePathname();
   const [menuPathname, setMenuPathname] = useState(pathname);
   if (menuPathname !== pathname) {
     setMenuPathname(pathname);
     setMobileMenu(false);
     setMenuIndex(null);
+    setOpenedByHover(false);
   }
   const navRef = useRef<HTMLElement>(null);
   const linksRef = useRef<HTMLDivElement>(null);
@@ -63,6 +68,7 @@ export function PrimaryNavigation({
       linksRef.current?.querySelector<HTMLElement>(":scope > :hover") ?? null;
     setMobileMenu(false);
     setMenuIndex(null);
+    setOpenedByHover(false);
   }, [clearHover]);
   useLayoutEffect(() => {
     clearHover();
@@ -90,9 +96,11 @@ export function PrimaryNavigation({
         blockedTrigger.current !== trigger &&
         trigger.matches(":hover") &&
         trigger.getClientRects().length > 0
-      )
+      ) {
+        setOpenedByHover(true);
         setMenuIndex(index);
-    }, 300);
+      }
+    }, 600);
   };
   const leaveTrigger = (trigger: HTMLElement) => {
     clearHover();
@@ -101,6 +109,7 @@ export function PrimaryNavigation({
   };
   const openWithKeyboard = (index: number) => {
     clearHover();
+    setOpenedByHover(false);
     setMenuIndex(index);
     requestAnimationFrame(() => {
       navRef.current?.querySelector<HTMLAnchorElement>("#products-navigation-panel a")?.focus();
@@ -240,6 +249,7 @@ export function PrimaryNavigation({
                 onFocus={(event) => {
                   if (event.currentTarget.matches(":focus-visible")) {
                     clearHover();
+                    setOpenedByHover(false);
                     setMenuIndex(index);
                   }
                 }}
@@ -328,6 +338,9 @@ export function PrimaryNavigation({
             ) : (
               activeMenu && (
                 <div
+                  key={activeMenu.href}
+                  data-nav-hover-reveal={openedByHover && !mobileMenu ? "" : undefined}
+                  onFocusCapture={openedByHover ? () => setOpenedByHover(false) : undefined}
                   data-all-products={activeMenu.href === "/products" || undefined}
                   data-nav-menu={activeMenu.href}
                   className={`${styles.menuContent} ${styles.productMenuContent}`}
@@ -345,8 +358,12 @@ export function PrimaryNavigation({
                   )}
                   <div className={styles.menuPrimary} data-nav-column="primary">
                     <p>{activeMenu.submenuLabel ?? activeMenu.label}</p>
-                    {activeMenu.links.map((item) => (
-                      <div key={`${item.href}:${item.label}`}>
+                    {activeMenu.links.map((item, order) => (
+                      <div
+                        key={`${item.href}:${item.label}`}
+                        data-nav-hover-item
+                        style={{ "--nav-item-order": order } as CSSProperties}
+                      >
                         {link(item.href, item.label, item.disabled)}
                       </div>
                     ))}
@@ -358,8 +375,12 @@ export function PrimaryNavigation({
                       data-nav-column={groupIndex === 0 ? "uses" : "help"}
                     >
                       <p>{group.label}</p>
-                      {group.links.map((item) => (
-                        <div key={`${item.href}:${item.label}`}>
+                      {group.links.map((item, order) => (
+                        <div
+                          key={`${item.href}:${item.label}`}
+                          data-nav-hover-item
+                          style={{ "--nav-item-order": order } as CSSProperties}
+                        >
                           {link(item.href, item.label, item.disabled)}
                         </div>
                       ))}

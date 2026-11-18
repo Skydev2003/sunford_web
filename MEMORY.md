@@ -1,5 +1,11 @@
 # Project Memory
 
+## Recheck public image versions after the catalogue and detail pages refresh (2026-11-18)
+
+- Observed: the public API had 400 current SKUs while the first catalogue response still had 395 cards, and 42 detail pages returned earlier image URLs. The next catalogue/detail sample matched the same RPC image set.
+- Root cause: the API, catalogue and detail routes can serve snapshots of different ages during cache refresh.
+- Correct behavior: capture each route's cache headers, compare SKU and versioned image URL against a fresh RPC snapshot, and recheck mismatches after the route refreshes. Report an earlier served version separately from a missing source image or a failed decode.
+
 ## Update every linked Navbar fixture after an approved menu change (2026-11-17)
 
 - Observed: removing duplicate POS Android/Windows entries left four catalogue assertions expecting the older 92-position tree and stopped deployment at 198/202 passes.
@@ -839,3 +845,19 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 - Observed: A commit failed its Prettier hook after a separately formatted LF section was appended to CRLF Markdown files.
 - Root cause: The final files mixed line endings. Prettier had checked the standalone additions, so the mixed endings in the complete documents went undetected.
 - Correct behavior: Keep `plan.md` and `spec.md` in LF as defined in `.gitattributes`. After the last edit, format both complete files and run `bun run format:check` before handing off the commit. If a file was already staged, refresh only its intended changes in the index.
+
+## Check interactions on reference product cards
+
+- Earlier shelf checks covered layout and scrolling but missed the persistent corner chevron and full-card cursor.
+- For reference-driven cards, inspect the live resting and hover states at desktop and touch widths. Verify the rendered hit targets over text, image, whitespace and the corner icon, along with the actual destination.
+
+## Official product-detail actions (2026-11-18)
+
+- Observed: the first Figma design copied quantity and cart controls from the reference storefront. The owner confirmed that the official website has no cart.
+- Root cause: the storefront audit was treated as approval for its purchase flow.
+- Correct behavior: use the SUNFORD LINE inquiry as the primary product-detail action and show quotation access where eligible. Omit the shopping cart, purchase quantity stepper and checkout from official product-detail designs.
+
+## Pass explicit toggle values to the history state hook
+
+- Observed: an inline specification toggle opened and immediately reverted in development. The functional updater ran twice while useReturnState wrote to its history cache inside the updater.
+- Correct behavior: for UI toggles backed by useReturnState, compute the next value from the rendered state and pass that value to the setter. Verify switching and Back/Forward in Chrome.

@@ -1,41 +1,30 @@
 import type { NavigationItem } from "../types";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
+import { warehouseGatedSubcategoryHrefs } from "@/features/catalog/data/product-subcategory-pages";
 
 // Phase A keeps destinations awaiting pages, classification or verified data disabled.
 const unavailableDestinations = new Set([
   "/technical-specification",
   "/products/category/scales/checkweigher",
   "/products/category/scales/sets",
-  "/products/category/scales/analytical",
-  "/products/category/scales/counting",
-  "/products/category/scales/checkweighing",
-  "/products/category/indicators/waterproof",
-  "/products/category/indicators/rs232",
   "/products/category/platforms/tcs-tss",
   "/products/category/platforms/fcs-fss",
   "/products/category/platforms/bcs-bss",
   "/products/category/platforms/dcs-dss",
   "/products/category/platforms/other-series",
-  "/products/category/platforms/carbon-steel",
-  "/products/category/platforms/sus304",
-  "/products/category/platforms/sus201",
-  "/products/category/platforms/abs",
-  "/products/category/accessories/electronics",
   "/products/category/pos/terminals",
   "/products/category/pos/workstations",
   "/products/category/pos/sets",
-  "/products/category/pos/ios",
-  "/products/category/accessories/printers",
   "/products/category/accessories/pos",
-  "/products/category/accessories/weights",
-  "/products/category/accessories/thermal-paper",
-  "/products/category/accessories/labels",
   "/software/download",
 ]);
 
 const guideHref = "/guides/indicator-platform-compatibility";
 
-export function getPrimaryNavigationItems(navigation: NavigationItem[]): NavigationItem[] {
+export function getPrimaryNavigationItems(
+  navigation: NavigationItem[],
+  readySubcategoryHrefs: readonly string[] = [],
+): NavigationItem[] {
   const savedLinks = navigation.flatMap((item) => [
     ...item.links,
     ...(item.groups ?? []).flatMap((group) => group.links),
@@ -43,6 +32,7 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
   const savedDisabled = new Set(
     savedLinks.filter((link) => link.disabled).map((link) => resolveCategoryHref(link.href)),
   );
+  const readySubcategories = new Set(readySubcategoryHrefs);
   const links = (entries: [label: string, href: string][]): NavigationItem["links"] =>
     entries
       .toSorted(
@@ -52,7 +42,10 @@ export function getPrimaryNavigationItems(navigation: NavigationItem[]): Navigat
       )
       .map(([label, source]) => {
         const href = resolveCategoryHref(source);
-        const disabled = unavailableDestinations.has(href) || savedDisabled.has(href);
+        const disabled =
+          unavailableDestinations.has(href) ||
+          savedDisabled.has(href) ||
+          (warehouseGatedSubcategoryHrefs.has(href) && !readySubcategories.has(href));
         return { label, href, ...(disabled ? { disabled: true } : {}) };
       });
   const help = links([

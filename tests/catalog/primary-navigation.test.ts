@@ -70,8 +70,8 @@ const approvedMenus: MenuContract[] = [
           ["กันน้ำ", "/products/category/scales/water-dust", false],
           ["ตั้งโต๊ะ", "/products/category/scales/benchtop", false],
           ["ตั้งพื้น", "/products/category/scales/floor", false],
-          ["นับจำนวนชิ้น", "/products/category/scales/counting", true],
-          ["เตือนน้ำหนักขาด–เกิน", "/products/category/scales/checkweighing", true],
+          ["นับจำนวนชิ้น", "/products/category/scales/counting", false],
+          ["เตือนน้ำหนักขาด–เกิน", "/products/category/scales/checkweighing", false],
         ],
       },
       {
@@ -101,7 +101,7 @@ const approvedMenus: MenuContract[] = [
         label: "การใช้งาน",
         links: [
           ["ดูจอและไฟเตือน", "/products/category/accessories/displays", false],
-          ["เชื่อมต่อ RS232", "/products/category/indicators/rs232", true],
+          ["เชื่อมต่อ RS232", "/products/category/indicators/rs232", false],
           ["ดูโครงสร้างแท่นชั่ง", "/products/category/platforms", false],
         ],
       },
@@ -134,7 +134,7 @@ const approvedMenus: MenuContract[] = [
         links: [
           ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical", false],
           ["อินดิเคเตอร์แท่นชั่ง", "/products/category/indicators", false],
-          ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics", true],
+          ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics", false],
         ],
       },
       {
@@ -163,7 +163,7 @@ const approvedMenus: MenuContract[] = [
       {
         label: "ระบบและอุปกรณ์",
         links: [
-          ["เครื่องพิมพ์", "/products/category/accessories/printers", true],
+          ["เครื่องพิมพ์", "/products/category/accessories/printers", false],
           ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/pos", true],
         ],
       },
@@ -188,18 +188,18 @@ const approvedMenus: MenuContract[] = [
           ["อุปกรณ์ POS", "/products/category/accessories/pos", true],
           ["จอและไฟเตือน", "/products/category/accessories/displays", false],
           ["สายและหัวต่อ", "/products/category/accessories/cables", false],
-          ["เครื่องพิมพ์", "/products/category/accessories/printers", true],
+          ["เครื่องพิมพ์", "/products/category/accessories/printers", false],
           ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical", false],
-          ["ลูกตุ้มน้ำหนัก", "/products/category/accessories/weights", true],
-          ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics", true],
+          ["ลูกตุ้มน้ำหนัก", "/products/category/accessories/weights", false],
+          ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics", false],
         ],
       },
       {
         label: "วัสดุสิ้นเปลือง",
         links: [
           ["กระดาษและฉลาก", "/products/category/accessories/consumables", false],
-          ["กระดาษความร้อน", "/products/category/accessories/thermal-paper", true],
-          ["ฉลากและสติ๊กเกอร์", "/products/category/accessories/labels", true],
+          ["กระดาษความร้อน", "/products/category/accessories/thermal-paper", false],
+          ["ฉลากและสติ๊กเกอร์", "/products/category/accessories/labels", false],
         ],
       },
       {
@@ -289,7 +289,7 @@ test("every displayed label and column matches the owner-selected specification"
   assert.deepEqual(menuContract(items), approvedMenus);
 });
 
-test("owner-approved Navbar keeps 90 entries in three columns with 66 ready and 24 unavailable", () => {
+test("owner-approved Navbar keeps 90 entries in three columns with 76 ready and 14 unavailable", () => {
   const items = getPrimaryNavigationItems(defaultNavigation);
   assert.equal(items.length, 8);
   assert.ok(items.every((item) => item.groups?.length === 2));
@@ -316,8 +316,8 @@ test("owner-approved Navbar keeps 90 entries in three columns with 66 ready and 
     ...item.links,
     ...item.groups!.flatMap((group) => group.links),
   ]);
-  assert.equal(links.filter((link) => !link.disabled).length, 66);
-  assert.equal(links.filter((link) => link.disabled).length, 24);
+  assert.equal(links.filter((link) => !link.disabled).length, 76);
+  assert.equal(links.filter((link) => link.disabled).length, 14);
   assert.deepEqual(
     items.map((item) => columns(item).map((column) => column.links.length)),
     [
@@ -373,7 +373,7 @@ test("readiness follows the canonical destination across contexts without disabl
     if (readiness.has(href)) assert.equal(readiness.get(href), disabled, href);
     readiness.set(href, disabled);
   }
-  assert.equal([...readiness.values()].filter(Boolean).length, 18);
+  assert.equal([...readiness.values()].filter(Boolean).length, 10);
   assert.equal(links.length, expectedLinks.length);
   for (const link of links) {
     assert.ok(readiness.has(link.href), link.href);
@@ -416,7 +416,7 @@ test("both Header consumers get the approved category order without mutating CMS
   assert.equal(JSON.stringify(defaultNavigation), before);
 });
 
-test("product functions stay separate from machine families and pending functions remain disabled", () => {
+test("product functions link to dedicated listings separate from machine families", () => {
   const scales = getPrimaryNavigationItems(defaultNavigation).find(
     ({ href }) => href === "/products/category/scales",
   )!;
@@ -430,7 +430,7 @@ test("product functions stay separate from machine families and pending function
     "/products/category/scales/industrial",
   );
   assert.ok(!scales.groups![0].links[0].disabled);
-  assert.ok(scales.groups![0].links.slice(3).every((link) => link.disabled));
+  assert.ok(scales.groups![0].links.slice(3).every((link) => !link.disabled));
 });
 
 test("product menus keep approved short names and direct parent links without changing source categories", () => {
@@ -550,4 +550,36 @@ test("saved disabled links are preserved after alias normalization without mutat
   assert.equal(matching.length, 2);
   assert.ok(matching.every((link) => link.disabled));
   assert.equal(JSON.stringify(navigation), before);
+});
+
+test("the seven empty menus open individually from readiness while saved disables take precedence", () => {
+  const paths = [
+    "/products/category/scales/analytical",
+    "/products/category/indicators/waterproof",
+    "/products/category/platforms/carbon-steel",
+    "/products/category/platforms/sus304",
+    "/products/category/platforms/sus201",
+    "/products/category/platforms/abs",
+    "/products/category/pos/ios",
+  ];
+  const links = (ready?: string[], navigation = defaultNavigation) =>
+    getPrimaryNavigationItems(navigation, ready).flatMap((item) =>
+      columns(item).flatMap((column) => column.links),
+    );
+  for (const ready of [undefined, [paths[0]], [], paths]) {
+    const entries = links(ready);
+    assert.equal(entries.length, 90);
+    assert.equal(entries.filter((entry) => !entry.disabled).length, 76 + (ready?.length ?? 0));
+    for (const path of paths) {
+      const matching = entries.filter(({ href }) => href === path);
+      assert.equal(matching.length, 1, path);
+      assert.equal(Boolean(matching[0].disabled), !ready?.includes(path), path);
+    }
+  }
+  const navigation = structuredClone(defaultNavigation);
+  navigation[0].links.push({ href: "/product/laboratory", label: "งานวิเคราะห์", disabled: true });
+  assert.ok(links(paths, navigation).find(({ href }) => href === paths[0])?.disabled);
+  assert.ok(
+    links(["/software/download"]).find(({ href }) => href === "/software/download")?.disabled,
+  );
 });

@@ -18,7 +18,12 @@ async function getCopyrightYear() {
 }
 
 export async function ScalesOverview() {
-  const { products: catalogProducts, categories, cardNames } = await getProductCategories();
+  const {
+    products: catalogProducts,
+    categories,
+    cardNames,
+    readySubcategoryHrefs,
+  } = await getProductCategories();
   const category = categories.find(({ id }) => id === "scales")!;
   const ids = new Set(category.productIds);
   const products = catalogProducts.filter(({ id }) => ids.has(id));
@@ -114,6 +119,7 @@ export async function ScalesOverview() {
       cardNames={cardNames}
       categoryId="scales"
       navigation={resolveNavigationItems(navigation.items)}
+      readySubcategoryHrefs={readySubcategoryHrefs}
       site={site}
       copyrightYear={copyrightYear}
       stories={stories}

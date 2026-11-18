@@ -198,7 +198,7 @@
   padding-block: 32px 48px;
   opacity: 1;
   visibility: visible;
-  transition-delay: 0s;
+  transition: none;
 }
 .submenu-panel--solutions {
   width: 1120px;
@@ -257,7 +257,6 @@
   padding-block: 5px;
 }
 .submenu-group {
-  --nav-group-index: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -318,34 +317,33 @@
   transform-origin: left center;
   transition: transform 180ms ease;
 }
-.submenu-item {
-  --nav-item-index: 0;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    opacity 200ms var(--nav-ease),
-    transform 200ms var(--nav-ease);
+@media (min-width: 64rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-nav-hover-reveal] [data-nav-column="uses"] {
+    --nav-column-delay: 60ms;
+  }
+  [data-nav-hover-reveal] [data-nav-column="help"] {
+    --nav-column-delay: 120ms;
+  }
+  [data-nav-hover-reveal] :is([data-nav-column] > p, [data-nav-hover-item]) {
+    animation: navHoverReveal 320ms cubic-bezier(0.4, 0, 0.6, 1) backwards;
+    animation-delay: calc(
+      var(--nav-column-delay, 0ms) + min(240ms, var(--nav-item-order, 0) * 20ms)
+    );
+  }
 }
-.submenu-group > a:nth-child(2) {
-  --nav-item-index: 1;
-}
-.submenu-group > a:nth-child(3) {
-  --nav-item-index: 2;
-}
-.submenu-group > a:nth-child(4) {
-  --nav-item-index: 3;
-}
-.desktop-submenu.is-open .is-active .submenu-item {
-  opacity: 1;
-  transform: translateY(0);
-  transition-duration: 320ms;
-  transition-delay: calc(80ms + var(--nav-group-index) * 80ms + var(--nav-item-index) * 20ms);
+
+@keyframes navHoverReveal {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 .is-menu-switching .desktop-submenu {
   transition-duration: 120ms, 0s;
-}
-.is-menu-switching .desktop-submenu.is-open .is-active .submenu-item {
-  transition: none;
 }
 /* Keep outside-click dismissal without adding a second page-wide blur. */
 .nav-backdrop {
@@ -569,7 +567,6 @@
   .nav-glass,
   .desktop-submenu,
   .submenu-panel,
-  .submenu-item,
   .submenu-group a > span,
   .mobile-nav summary svg,
   .nav-backdrop {

@@ -477,6 +477,7 @@ export function ProductCategoryMock({
                 }
                 key={`${product.id}:${model}`}
                 modelOnly
+                categoryLift={presentation === "category" || presentation === "listing"}
                 product={{ ...product, name: product.warehouseSku ? product.name : model }}
                 decisionFacts={getCatalogDecisionFacts(
                   product,

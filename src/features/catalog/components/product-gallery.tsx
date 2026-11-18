@@ -1,7 +1,8 @@
 "use client";
 import { useReturnState } from "@/features/site/history/return-state";
 import { ProductImage } from "@/components/ui/product-image";
-import { Box } from "lucide-react";
+import { useRef, useState } from "react";
+import { Box, X } from "lucide-react";
 import { ProductModelViewer } from "./product-model-viewer";
 
 export function ProductGallery({
@@ -25,23 +26,63 @@ export function ProductGallery({
     initial >= 0 ? initial : !preferFirst && images.length > 1 ? 1 : 0,
   );
   const [showModel, setShowModel] = useReturnState("product-gallery.showModel", Boolean(model));
+  const zoom = useRef<HTMLDialogElement>(null);
+  const [zoomOpened, setZoomOpened] = useState(false);
+  const photo = images[active] || images[0];
+  if (!photo && !model) return null;
   return (
     <div className="product-gallery">
       <div className="detail-image">
         {showModel && model ? (
           <ProductModelViewer src={model.src} name={name} poster={model.poster} />
         ) : (
-          <ProductImage
-            placeholder="product"
-            src={images[active] || images[0]}
-            fallbackSrc={(images[active] || images[0]) === primaryImage ? fallbackImage : undefined}
-            alt={name}
-            fill
-            sizes="(width < 64rem) 90vw, 50vw"
-            preload
-          />
+          <>
+            <ProductImage
+              placeholder="product"
+              src={images[active] || images[0]}
+              fallbackSrc={
+                (images[active] || images[0]) === primaryImage ? fallbackImage : undefined
+              }
+              alt={name}
+              fill
+              sizes="(width < 64rem) 90vw, 50vw"
+              preload
+            />
+            <button
+              className="gallery-zoom"
+              type="button"
+              aria-label={`ขยายรูป ${name}`}
+              aria-haspopup="dialog"
+              onClick={() => {
+                setZoomOpened(true);
+                zoom.current?.showModal();
+              }}
+            />
+          </>
         )}
       </div>
+      <dialog
+        ref={zoom}
+        className="gallery-dialog"
+        aria-label={`ภาพขยาย ${name}`}
+        onClose={() => setZoomOpened(false)}
+      >
+        <div>
+          <strong>{name}</strong>
+          <button type="button" onClick={() => zoom.current?.close()} aria-label="ปิด">
+            <X size={20} />
+          </button>
+        </div>
+        {zoomOpened && (
+          <ProductImage
+            src={photo}
+            fallbackSrc={photo === primaryImage ? fallbackImage : undefined}
+            alt={name}
+            width={900}
+            height={700}
+          />
+        )}
+      </dialog>
       {(images.length > 1 || model) && (
         <div className="gallery-thumbnails" aria-label="เลือกรูปสินค้า">
           {model && (

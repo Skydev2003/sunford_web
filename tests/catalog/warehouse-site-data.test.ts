@@ -7,6 +7,163 @@ import { getWeighingOptions } from "../../src/features/content/data/weighing-opt
 import { warehouseContentPage } from "../../src/features/content/data/warehouse-content";
 import type { SourcePage } from "../../src/features/content/types";
 import { classifyWarehouseProduct } from "../../src/features/catalog/data/warehouse-classification";
+import { attachWarehouseCardFacts } from "../../src/features/catalog/data/warehouse-card-data";
+
+test("the seven Navbar groups use verified facts for the SKU and the correct product part", () => {
+  const scope = "ส่วนที่กันน้ำ";
+  const ip = "ระดับการป้องกัน IP";
+  const material = "วัสดุโครงสร้าง";
+  const highlight = "จุดเด่นสินค้า";
+  const uses = "โหมดการใช้งานเฉพาะทาง";
+  const os = "ระบบปฏิบัติการและเวอร์ชัน";
+  const cases: [string, Record<string, string>, string[]][] = [
+    ["เครื่องชั่งงานวิเคราะห์", {}, []],
+    ["เครื่องชั่ง A", { [uses]: "งานวิเคราะห์, ห้องปฏิบัติการ" }, ["scale-analytical"]],
+    ["เครื่องชั่ง A", { [uses]: "ไม่รองรับงานวิเคราะห์" }, []],
+    ["Indicator กันน้ำ IP67", {}, []],
+    ["Indicator A", { [ip]: "IP 67", [scope]: "ทั้งตัวเครื่อง" }, ["indicator-waterproof"]],
+    ["Indicator A", { [ip]: "IP68", [scope]: "ตัวเครื่องทั้งหมด" }, ["indicator-waterproof"]],
+    ["Indicator A", { [ip]: "IP67", [scope]: "เฉพาะจอ" }, []],
+    ["Indicator A", { [ip]: "IP65", [scope]: "ตัวเครื่อง" }, []],
+    ["Indicator A", { [ip]: "IP67/IP68", [scope]: "ตัวเครื่อง" }, []],
+    ["Platform A", { [material]: "Carbon Steel" }, []],
+    [
+      "Platform A",
+      { [material]: "เหล็กคาร์บอน", [highlight]: "พ่นอบสีกันสนิมที่ตัวโครง" },
+      ["platform-carbon-steel"],
+    ],
+    ["Platform A", { [material]: "เหล็กคาร์บอน", [highlight]: "จานพ่นอบสีกันสนิม" }, []],
+    ["Platform A", { [material]: "SUS304" }, ["platform-sus304"]],
+    ["Platform A", { [material]: "SUS 201" }, ["platform-sus201"]],
+    ["Platform A", { [material]: "SUS304 เฉพาะจาน" }, []],
+    ["Platform A", { [material]: "ABS" }, []],
+    [
+      "Platform A",
+      { [material]: "ABS", [highlight]: "ตัวโครงพลาสติก ABS เหนียวพิเศษ" },
+      ["platform-abs"],
+    ],
+    ["Platform A", { [material]: "ABS", [highlight]: "ตัวโครงไม่เหนียวพิเศษ" }, []],
+    ["POS iOS", {}, []],
+    ["POS A", { [os]: "iOS 16 ขึ้นไป" }, ["pos-ios"]],
+    ["POS A", { [os]: "iPadOS 16" }, []],
+    ["POS A", { [os]: "iOS 16 / Android" }, []],
+    ["POS A", { [os]: "iOS 16", ระบบปฏิบัติการ: "Windows" }, []],
+    ["POS Windows", {}, ["pos-windows"]],
+  ];
+  for (const [name, specifications, expected] of cases) {
+    const [raw] = warehouseCatalog(
+      [{ sku: "fixture", product_name: name, unit: "ชิ้น", sale_price: 1, image_url: null }],
+      [],
+    );
+    const [product] = warehouseSiteProducts(
+      attachWarehouseCardFacts(
+        [raw],
+        Object.entries(specifications).map(([title, value_text]) => ({
+          sku: "fixture",
+          title,
+          value_text,
+          value_number: null,
+          unit: null,
+        })),
+      ),
+    );
+    assert.deepEqual(
+      product.warehouseSubcategoryIds,
+      expected,
+      JSON.stringify([name, specifications]),
+    );
+  }
+});
+
+test("conflicting Warehouse material facts do not reach the subcategory classifier", () => {
+  const [raw] = warehouseCatalog(
+    [{ sku: "fixture", product_name: "Platform A", unit: "ชิ้น", sale_price: 1, image_url: null }],
+    [],
+  );
+  const [product] = warehouseSiteProducts(
+    attachWarehouseCardFacts(
+      [raw],
+      ["SUS304", "SUS201"].map((value_text) => ({
+        sku: "fixture",
+        title: "วัสดุโครงสร้าง",
+        value_text,
+        value_number: null,
+        unit: null,
+      })),
+    ),
+  );
+  assert.deepEqual(product.warehouseSubcategoryIds, []);
+});
+
+test("Warehouse scale aliases and verified use descriptions classify the intended SKU only", () => {
+  const cases: [string, string, Record<string, string>, string[]][] = [
+    ["SUNFORD เครื่องชั่งคำนวนราคา ACS-30-JE11", "", {}, ["scale-price"]],
+    ["เครื่องชั่งคำนวนราคา", "", { คำนวณราคาสินค้า: "ไม่รองรับ" }, []],
+    ["เครื่องชั่งทั่วไป พร้อมเครื่องชั่งคำนวนราคา", "", {}, []],
+    ["จัดชุดเครื่องชั่ง FCS-300-SW31 พร้อม Floor pole", "", {}, ["scale-pole"]],
+    ["เครื่องชั่ง FCS พร้อม Floor pole", "Without floor pole", {}, []],
+    ["เครื่องชั่ง FCS พร้อม Floor pole cover", "", {}, []],
+    [
+      "SUNFORD WPK5000 เครื่องชั่ง",
+      "",
+      {
+        จุดเด่นสินค้า: "ออกแบบเพื่อการชั่งน้ำหนักวัตถุดิบอาหารจำพวก ผงแป้ง และ อาหารเปียกน้ำ",
+      },
+      ["scale-kitchen"],
+    ],
+    ["เครื่องชั่ง A", "ออกแบบเพื่อการชั่งน้ำหนักวัตถุดิบอาหาร", {}, []],
+    ["เครื่องชั่ง A", "", { จุดเด่นสินค้า: "ไม่ได้ออกแบบเพื่อการชั่งน้ำหนักวัตถุดิบอาหาร" }, []],
+    [
+      "เครื่องชั่ง ACS-30-FC31",
+      "",
+      {
+        จุดเด่นสินค้า: "เหมาะกับงานชั่งในกระบวนการผลิตเชิงธุรกิจ\nจอ LCD",
+      },
+      ["scale-industrial"],
+    ],
+    [
+      "เครื่องชั่ง A",
+      "",
+      {
+        จุดเด่นสินค้า: "SUNFORD B22\nเหมาะกับงานชั่งในกระบวนการผลิตเชิงธุรกิจ",
+      },
+      [],
+    ],
+  ];
+  for (const [name, description, specifications, expected] of cases) {
+    const [raw] = warehouseCatalog(
+      [
+        {
+          sku: "fixture",
+          product_name: name,
+          unit: "ชิ้น",
+          sale_price: 1,
+          image_url: null,
+          description,
+          group_name: "เครื่องชั่ง",
+        },
+      ],
+      [],
+    );
+    const [product] = warehouseSiteProducts(
+      attachWarehouseCardFacts(
+        [raw],
+        Object.entries(specifications).map(([title, value_text]) => ({
+          sku: "fixture",
+          title,
+          value_text,
+          value_number: null,
+          unit: null,
+        })),
+      ),
+    );
+    assert.deepEqual(
+      product.warehouseSubcategoryIds,
+      expected,
+      JSON.stringify([name, description, specifications]),
+    );
+  }
+});
 
 test("Warehouse categories distinguish whole devices from cable and wheel substrings", () => {
   const [base] = warehouseCatalog(

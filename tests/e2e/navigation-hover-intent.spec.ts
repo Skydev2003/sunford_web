@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const variants = ["/", "/contact-us", "/products/category/scales"] as const;
+const hoverDelay = (route: string) => (route === "/" ? 500 : 600);
 const header = (page: Page, route: string) =>
   page.locator(route === "/" ? ".site-header:visible" : "[data-products-header]:visible");
 const panel = (page: Page, route: string) =>
@@ -61,8 +62,95 @@ async function leave(page: Page) {
   await page.clock.runFor(500);
 }
 
+for (const route of ["/", "/contact-us"]) {
+  test(`${route} hover motion follows the 1024px breakpoint`, async ({ page }) => {
+    await visit(page, route);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    const nav = header(page, route);
+    const mobile = nav.getByRole("button", { name: "เปิดเมนู", exact: true });
+    const scales = trigger(page, route);
+    for (const width of [390, 768, 1023]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await expect(mobile).toBeVisible();
+      await expect(scales).not.toBeVisible();
+    }
+    for (const width of [1024, 1025, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.mouse.move(10, 950);
+      await expect(mobile).not.toBeVisible();
+      await scales.hover();
+      const content = panel(page, route).locator("[data-nav-hover-reveal]");
+      const items = content.locator('[data-nav-column="primary"] [data-nav-hover-item]');
+      for (const [index, delay] of ["0s", "0.02s", "0.04s"].entries()) {
+        await expect(items.nth(index)).toHaveCSS("animation-name", "navHoverReveal");
+        await expect(items.nth(index)).toHaveCSS("animation-duration", "0.32s");
+        await expect(items.nth(index)).toHaveCSS("animation-delay", delay);
+      }
+      const delays = await items.evaluateAll((nodes) =>
+        nodes.map((node) => Math.round(parseFloat(getComputedStyle(node).animationDelay) * 1000)),
+      );
+      expect(delays).toEqual(delays.map((_, index) => Math.min(240, index * 20)));
+      for (const [column, headingDelay, nextDelay] of [
+        ["uses", "0.06s", "0.08s"],
+        ["help", "0.12s", "0.14s"],
+      ]) {
+        const group = content.locator(`[data-nav-column="${column}"]`);
+        const links = group.locator("[data-nav-hover-item]");
+        await expect(group.locator(":scope > p")).toHaveCSS("animation-delay", headingDelay);
+        await expect(links.first()).toHaveCSS("animation-delay", headingDelay);
+        await expect(links.nth(1)).toHaveCSS("animation-delay", nextDelay);
+      }
+      await page.keyboard.press("Escape");
+      await expect(content).toHaveCount(0);
+    }
+    await page.mouse.move(10, 950);
+    await scales.hover();
+    await expect(panel(page, route).locator("[data-nav-hover-reveal]")).toHaveCount(1);
+    await trigger(page, route, "อินดิเคเตอร์แท่นชั่ง").hover();
+    const indicators = panel(page, route).locator(
+      '[data-nav-menu="/products/category/indicators"]',
+    );
+    await expect(indicators.locator("[data-nav-hover-item]").first()).toHaveCSS(
+      "animation-name",
+      "navHoverReveal",
+    );
+    await page.mouse.move(10, 950);
+    await expect(panel(page, route).locator("[data-nav-hover-reveal]")).toHaveCount(0);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await scales.hover();
+    await expect(
+      panel(page, route).locator("[data-nav-hover-reveal] [data-nav-hover-item]").first(),
+    ).toHaveCSS("animation-name", "none");
+  });
+
+  test(`${route} touch at 1024px follows the category link without a hover reveal`, async ({
+    browser,
+    baseURL,
+  }) => {
+    const page = await browser.newPage({
+      baseURL,
+      viewport: { width: 1024, height: 900 },
+      hasTouch: true,
+    });
+    try {
+      await visit(page, route, 1024);
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      expect(await page.evaluate(() => matchMedia("(hover: none)").matches)).toBe(true);
+      await pauseTimers(page);
+      await trigger(page, route).hover();
+      await page.clock.runFor(hoverDelay(route) + 50);
+      await expect(panel(page, route).locator("[data-nav-hover-reveal]")).not.toBeVisible();
+      await trigger(page, route).tap();
+      await expect(page).toHaveURL(/\/products\/category\/scales$/);
+      await expect(page.locator("[data-nav-hover-reveal]")).toHaveCount(0);
+    } finally {
+      await page.close();
+    }
+  });
+}
+
 for (const route of variants) {
-  test(`${route} opens after 300ms, cancels quick passes and switches only to the intended trigger`, async ({
+  test(`${route} opens after ${hoverDelay(route)}ms, cancels quick passes and switches only to the intended trigger`, async ({
     page,
   }) => {
     await visit(page, route);
@@ -70,7 +158,7 @@ for (const route of variants) {
     const first = trigger(page, route);
     const second = trigger(page, route, "อินดิเคเตอร์แท่นชั่ง");
     await first.hover();
-    await page.clock.runFor(299);
+    await page.clock.runFor(hoverDelay(route) - 1);
     await expect(first).toHaveAttribute("aria-expanded", "false");
     await expect(panel(page, route)).not.toBeVisible();
     await page.clock.runFor(1);
@@ -81,7 +169,7 @@ for (const route of variants) {
     await first.hover();
     await page.clock.runFor(100);
     await second.hover();
-    await page.clock.runFor(299);
+    await page.clock.runFor(hoverDelay(route) - 1);
     await expect(first).toHaveAttribute("aria-expanded", "false");
     await expect(second).toHaveAttribute("aria-expanded", "false");
     await page.clock.runFor(1);
@@ -113,7 +201,7 @@ for (const route of variants) {
     await leave(page);
     const next = trigger(page, "/products/category/scales");
     await next.hover();
-    await page.clock.runFor(299);
+    await page.clock.runFor(hoverDelay("/products/category/scales") - 1);
     await expect(next).toHaveAttribute("aria-expanded", "false");
     await page.clock.runFor(1);
     await expect(next).toHaveAttribute("aria-expanded", "true");
@@ -148,7 +236,7 @@ for (const route of variants) {
     await pauseTimers(page);
     await trigger(page, route).hover();
     await page.clock.runFor(100);
-    await page.setViewportSize({ width: 768, height: 1000 });
+    await page.setViewportSize({ width: 1023, height: 1000 });
     await page.clock.runFor(700);
     await expect(panel(page, route)).not.toBeVisible();
     await expect(
@@ -160,6 +248,7 @@ for (const route of variants) {
     page,
   }) => {
     await visit(page, route);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await trigger(page, route).hover();
     await expect(panel(page, route)).toBeVisible();
     const child = panel(page, route).getByRole("link").first();

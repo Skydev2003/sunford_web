@@ -139,7 +139,7 @@ for (const width of [390, 1440]) {
     await expect(card.getByRole("img", { name: /ยังไม่มีข้อมูลสินค้าเครื่องชั่ง/ })).toBeVisible();
     await card.getByRole("link").first().click();
     await expect(page.locator("#product-overview h1")).toHaveText(item.name);
-    await expect(page.locator(".detail-image [data-product-image-placeholder]")).toBeVisible();
+    await expect(page.locator(".product-gallery")).toHaveCount(0);
     await page.goto(`/products/category/${item.warehouseCategoryId}`);
     await page
       .getByRole("button", { name: /^ดู.+ทั้งหมด$/ })
@@ -354,8 +354,7 @@ for (const width of [390, 834, 1440]) {
               .evaluate((img) => (img as HTMLImageElement).naturalWidth),
           )
           .toBeGreaterThan(0);
-      else
-        await expect(page.locator(".detail-image [data-product-image-placeholder]")).toBeVisible();
+      else await expect(page.locator(".product-gallery")).toHaveCount(0);
       await expect(page.locator("#product-overview h1")).toHaveText(item.name);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,

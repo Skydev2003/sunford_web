@@ -28,7 +28,12 @@ export default function ProductsPage() {
 }
 
 async function ProductsContent() {
-  const { products: clientProducts, categories, cardNames } = await getProductCategories();
+  const {
+    products: clientProducts,
+    categories,
+    cardNames,
+    readySubcategoryHrefs,
+  } = await getProductCategories();
   const [navigation, site, copyrightYear] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
@@ -186,6 +191,7 @@ async function ProductsContent() {
       site={site}
       copyrightYear={copyrightYear}
       navigation={resolveNavigationItems(navigation.items)}
+      readySubcategoryHrefs={readySubcategoryHrefs}
       stories={stories}
       services={services}
       accordion={accordion}

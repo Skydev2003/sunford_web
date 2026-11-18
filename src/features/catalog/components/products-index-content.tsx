@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { sunford } from "@/features/home/data/brand";
 import type { ClientProduct } from "../types";
@@ -30,7 +31,7 @@ export function ProductsIndexContent({
   return (
     <div className={styles.index} data-products-directory data-overview-section="index">
       <header className={styles.intro}>
-        <h1 id="products-title">ผลิตภัณฑ์ทั้งหมด</h1>
+        <h1 id="products-title">เครื่องชั่งน้ำหนักล้ำสมัย</h1>
         <div className={styles.help}>
           <p>
             ปรึกษาผู้เชี่ยวชาญ
@@ -42,8 +43,8 @@ export function ProductsIndexContent({
           </Link>
         </div>
       </header>
-      <nav aria-label="เลือกหมวดผลิตภัณฑ์">
-        <ProductsIndexRail id="products-categories" label="หมวดผลิตภัณฑ์">
+      <nav className={styles.categoryNav} aria-label="เลือกหมวดผลิตภัณฑ์">
+        <ProductsIndexRail id="products-categories" label="หมวดผลิตภัณฑ์" categoryRail>
           {sections.map(({ id, label, photo }) => (
             <li key={id} className={styles.category}>
               <Link href={`/products/category/${id}`}>
@@ -72,7 +73,6 @@ export function ProductsIndexContent({
         >
           <div className={styles.sectionHeading}>
             <h2 id={`products-category-${id}`}>{label}</h2>
-            <span>{members.length} รายการ</span>
             {id !== "uncategorized" && (
               <Link href={`/products/category/${id}`}>
                 ดูทั้งหมด <span aria-hidden="true">›</span>
@@ -92,6 +92,22 @@ export function ProductsIndexContent({
                 >
                   <div className={styles.cardCopy}>
                     <h3 id={`products-model-${product.id}`}>{catalogCardName(product)}</h3>
+                    {product.warehouseSku && (
+                      <div className={styles.cardSpecs}>
+                        {[
+                          ["พิกัดชั่ง", product.capacity],
+                          ["ความละเอียด", product.readability],
+                          ["การเชื่อมต่อ", product.connection],
+                        ]
+                          .filter(([, value]) => value.trim() && value.trim() !== "—")
+                          .slice(0, 2)
+                          .map(([label, value]) => (
+                            <span key={label} data-product-spec>
+                              {label} {value.trim()}
+                            </span>
+                          ))}
+                      </div>
+                    )}
                     {product.price != null ? (
                       <p>{formatPrice(product.price)} บาท (ก่อน VAT)</p>
                     ) : product.warehouseSku ? (
@@ -105,9 +121,10 @@ export function ProductsIndexContent({
                       fallbackSrc={product.fallbackImage}
                       alt={catalogCardName(product)}
                       fill
-                      sizes="(width < 40rem) 80vw, 384px"
+                      sizes="(width < 31rem) calc(78vw - 40px), (width < 64rem) 344px, 328px"
                     />
                   </div>
+                  <ChevronRight className={styles.cardChevron} aria-hidden="true" strokeWidth={3} />
                 </Link>
               </li>
             ))}

@@ -156,7 +156,7 @@ for (const width of [390, 1440]) {
           )
           .toBeGreaterThan(0);
       } else {
-        await expect(page.locator(".detail-image [data-product-image-placeholder]")).toBeVisible();
+        await expect(page.locator(".product-gallery")).toHaveCount(0);
       }
       await page.getByRole("button", { name: /^ค้นหาสินค้า(?:และข้อมูล)?$/ }).click();
       const search = page.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" });

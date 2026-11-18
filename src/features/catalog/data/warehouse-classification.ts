@@ -16,6 +16,16 @@ const outsideGroups = new Set([
   "ถุงมือและอุปกรณ์ป้องกัน",
 ]);
 
+const analyticalUse =
+  /^(?:(?:รองรับ|เหมาะสำหรับ|สำหรับ)\s*)?(?:งานวิเคราะห์(?:ความแม่นยำสูง)?|(?:งาน(?:ใน)?)?ห้องปฏิบัติการ|analytical(?: weighing)?|laboratory(?: weighing)?)$/i;
+const enclosureScope = /^(?:ทั้ง\s*)?ตัวเครื่อง(?:\s*อินดิเคเตอร์)?(?:\s*ทั้งหมด)?$/;
+const enclosureIp = /^IP\s*(?:67|68)$/i;
+const coatedFrame =
+  /^(?:(?:ตัวโครง|โครงแท่น|โครงสร้าง)\s*พ่นอบสี\s*กันสนิม|พ่นอบสี\s*กันสนิม\s*ที่\s*(?:ตัวโครง|โครงแท่น|โครงสร้าง))\.?$/;
+const toughFrame =
+  /^(?:(?:ตัวโครง|โครงแท่น|โครงสร้าง)\s*(?:พลาสติก\s*)?(?:ABS\s*)?เหนียวพิเศษ|ความเหนียวพิเศษของ(?:ตัวโครง|โครงแท่น|โครงสร้าง|โครง))\.?$/i;
+const iosVersion = /^iOS(?:\s+\d+(?:\.\d+)*(?:\s*(?:ขึ้นไป|\+))?)?$/i;
+
 export function classifyWarehouseProduct(
   product: Product,
   catalog: Product[] = [],
@@ -119,22 +129,30 @@ export function classifyWarehouseProduct(
   const prose = name + "\n" + description + "\n" + highlights;
   const supported = (value: string) => /^(รองรับ|ใช่|yes|true)$/i.test(value.trim());
   if (categoryId === "scales") {
-    if (/คำนวณราคา/.test(identity) || supported(fact("คำนวณราคาสินค้า")))
-      add("scale-price", fact("คำนวณราคาสินค้า") || identity);
-    if (/อุตสาหกรรม|โรงงาน|งานผลิต/.test(prose))
-      add(
-        "scale-industrial",
-        prose.match(/[^\n]*?(?:อุตสาหกรรม|โรงงาน|งานผลิต)[^\n]*/)?.[0] ?? name,
-      );
-    if (/ห้องปฏิบัติการ|งานวิเคราะห์ความแม่นยำสูง/.test(prose) || /วิเคราะห์/.test(identity))
-      add("scale-analytical", identity);
-    if (/งานครัว|กาแฟ|เบเกอรี่|ในครัว|ประกอบอาหาร|ส่วนผสมอาหาร/.test(prose))
-      add(
-        "scale-kitchen",
-        prose.match(
-          /[^\n]*?(?:งานครัว|กาแฟ|เบเกอรี่|ในครัว|ประกอบอาหาร|ส่วนผสมอาหาร)[^\n]*/,
-        )?.[0] ?? name,
-      );
+    const priceCalculation = fact("คำนวณราคาสินค้า");
+    const alternatePriceName =
+      !priceCalculation.trim() &&
+      /เครื่องชั่ง\s*คำนวนราคา/.test(name.split(/พร้อม|\bwith\b/i)[0]) &&
+      !/ไม่(?:รองรับ|สามารถ|คำนวน|คำนวณ)/.test(name);
+    if (/คำนวณราคา/.test(identity) || supported(priceCalculation) || alternatePriceName)
+      add("scale-price", priceCalculation || identity);
+    const industrialUse =
+      prose.match(/[^\n]*?(?:อุตสาหกรรม|โรงงาน|งานผลิต)[^\n]*/)?.[0] ??
+      highlights.match(/^เหมาะกับงานชั่งในกระบวนการผลิตเชิงธุรกิจ\s*$/m)?.[0]?.trim();
+    if (industrialUse) add("scale-industrial", industrialUse);
+    const use = fact("โหมดการใช้งานเฉพาะทาง").trim();
+    if (use.split(/[,/\r\n;]+|และ|หรือ/).every((value) => analyticalUse.test(value.trim())))
+      add("scale-analytical", use);
+    const kitchenUse =
+      prose.match(/[^\n]*?(?:งานครัว|กาแฟ|เบเกอรี่|ในครัว|ประกอบอาหาร|ส่วนผสมอาหาร)[^\n]*/)?.[0] ??
+      highlights
+        .split(/\r?\n/)
+        .find(
+          (line) =>
+            /^ออกแบบเพื่อการชั่งน้ำหนักวัตถุดิบอาหาร(?:จำพวก\s+.*)?$/.test(line.trim()) &&
+            !/ไม่(?:ได้|รองรับ|เหมาะ)/.test(line),
+        );
+    if (kitchenUse) add("scale-kitchen", kitchenUse);
     if (
       !/ไม่กันน้ำ/.test(identity) &&
       (/กันน้ำ/.test(identity) ||
@@ -145,15 +163,24 @@ export function classifyWarehouseProduct(
       add("scale-benchtop", identity + " " + highlights);
     if (/ตั้งพื้น/.test(identity) || /(?:แบบ|เครื่องชั่ง)ตั้งพื้น/.test(highlights))
       add("scale-floor", identity + " " + highlights);
-    if (!/ไม่มีเสา|poleless/i.test(identity) && /มีเสา|พร้อมเสา/.test(name + " " + description))
-      add("scale-pole", name + " " + description);
+    const assembly = name + " " + description;
+    const includesFloorPole =
+      /พร้อม\s+Floor pole\s*$/i.test(name) &&
+      !/ไม่มีเสา|poleless|(?:no|without)\s+(?:a\s+)?floor pole/i.test(assembly);
+    if (
+      includesFloorPole ||
+      (!/ไม่มีเสา|poleless/i.test(identity) && /มีเสา|พร้อมเสา/.test(assembly))
+    )
+      add("scale-pole", assembly);
   }
   if (categoryId === "indicators") {
     const display = fact("ชนิดหน้าจอ") || name.match(/\b(?:LCD|LED)\b/i)?.[0] || "";
     if (/LCD/i.test(display) && !/LED/i.test(display)) add("indicator-lcd", display);
     if (/LED/i.test(display) && !/LCD/i.test(display)) add("indicator-led", display);
-    if (/กันน้ำ/.test(name) || /ตัวเครื่องกันน้ำ|\bIP\s*(?:67|68)\b/i.test(highlights))
-      add("indicator-waterproof", name + " " + highlights);
+    const rating = fact("ระดับการป้องกัน IP").trim();
+    const scope = fact("ส่วนที่กันน้ำ").trim();
+    if (enclosureIp.test(rating) && enclosureScope.test(scope))
+      add("indicator-waterproof", `${rating} ${scope}`);
   }
   if (categoryId === "platforms") {
     const material = fact("วัสดุโครงสร้าง");
@@ -164,12 +191,24 @@ export function classifyWarehouseProduct(
       ["platform-abs", /\bABS\b/i],
     ] as const;
     const matches = materials.filter(([, pattern]) => pattern.test(material));
-    if (matches.length === 1) add(matches[0][0], material);
+    const wrongScope = /ไม่ใช่|ไม่ได้ใช้|เฉพาะ\s*(?:จาน|เสา|ชิ้นส่วน)|\bnot\b/i.test(material);
+    if (matches.length === 1 && !wrongScope) {
+      const [id] = matches[0];
+      const requiredHighlight =
+        id === "platform-carbon-steel" ? coatedFrame : id === "platform-abs" ? toughFrame : null;
+      const feature = requiredHighlight
+        ? highlights.split(/[\r\n;；]+/).find((line) => requiredHighlight.test(line.trim()))
+        : undefined;
+      if (!requiredHighlight || feature)
+        add(id, [material, feature?.trim()].filter(Boolean).join(" · "));
+    }
     if (matches.length > 1)
       reviewReasons.push("ข้อมูลวัสดุโครงระบุหลายชนิด ขอวัสดุของโครงแท่นที่ส่งมอบจริง");
   }
   if (categoryId === "pos") {
-    const os = fact("ระบบปฏิบัติการและเวอร์ชัน") || fact("ระบบปฏิบัติการ");
+    const osWithVersion = fact("ระบบปฏิบัติการและเวอร์ชัน").trim();
+    const osFamily = fact("ระบบปฏิบัติการ").trim();
+    const os = osWithVersion || osFamily;
     const operatingSystems = [
       ["pos-android", /\bAndroid\b/i],
       ["pos-windows", /\bWindows\b/i],
@@ -178,7 +217,11 @@ export function classifyWarehouseProduct(
     const matches = operatingSystems.filter(([, pattern]) =>
       pattern.test(os || name + " " + description),
     );
-    if (matches.length === 1) add(matches[0][0], os || name + " " + description);
+    if (matches.length === 1) {
+      const [id] = matches[0];
+      if (id !== "pos-ios" || (iosVersion.test(os) && (!osFamily || iosVersion.test(osFamily))))
+        add(id, os || name + " " + description);
+    }
     if (matches.length > 1)
       reviewReasons.push(
         "ข้อมูลระบุหลายระบบปฏิบัติการ ขอระบบของเครื่องหรือสิทธิ์ใช้งานที่ขายตาม SKU นี้",

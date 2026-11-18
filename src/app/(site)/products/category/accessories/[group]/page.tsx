@@ -3,17 +3,19 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductSubcategoryPage } from "@/features/catalog/components/product-subcategory-page";
 import { accessorySubcategoryPages } from "@/features/catalog/data/product-subcategory-pages";
+import { additionalAccessorySubcategoryPages } from "@/features/catalog/data/additional-subcategory-pages";
 
 type Props = { params: Promise<{ group: string }> };
+const pages = [...accessorySubcategoryPages, ...additionalAccessorySubcategoryPages];
 
 export function generateStaticParams() {
-  return accessorySubcategoryPages.map((page) => ({ group: page.slug }));
+  return pages.map((page) => ({ group: page.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { group } = await params;
   return {
-    title: accessorySubcategoryPages.find((page) => page.slug === group)?.title ?? "ไม่พบข้อมูล",
+    title: pages.find((page) => page.slug === group)?.title ?? "ไม่พบข้อมูล",
   };
 }
 
@@ -27,7 +29,7 @@ export default function AccessoryGroupPage({ params }: Props) {
 
 async function AccessoryGroupContent({ params }: Props) {
   const { group } = await params;
-  const page = accessorySubcategoryPages.find((item) => item.slug === group);
+  const page = pages.find((item) => item.slug === group);
   if (!page) notFound();
   return <ProductSubcategoryPage categoryId="accessories" subcategoryId={page.id} />;
 }

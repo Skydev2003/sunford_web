@@ -281,7 +281,7 @@ test("quotation picker draft reopens on Forward without issuing a quotation", as
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
 });
 
-test("storefront position and product-specification popup restore through Back and Forward", async ({
+test("storefront position and expanded product specifications restore through Back and Forward", async ({
   page,
 }) => {
   await page.goto("/products");
@@ -293,17 +293,17 @@ test("storefront position and product-specification popup restore through Back a
   expect(offset).toBeGreaterThan(0);
   await card.press("Enter");
   await expect(page).toHaveURL(/\/products\//);
-  const spec = page.locator("main:visible .product-spec-groups article > button").first();
+  const spec = page.locator("main:visible .product-spec-groups article > button").last();
   await expect(spec).toBeVisible();
   await spec.click();
-  await expect(page.locator("main:visible dialog[open]")).toHaveCount(1);
+  await expect(spec).toHaveAttribute("aria-expanded", "true");
   await page.goBack();
   await expect(card).toBeInViewport();
   await expect.poll(() => rail.evaluate((el) => el.scrollLeft)).toBe(offset);
   await page.goForward();
-  await expect(page.locator("main:visible dialog[open]")).toHaveCount(1);
-  await page.keyboard.press("Escape");
-  await expect(page.locator("main:visible dialog[open]")).toHaveCount(0);
+  await expect(spec).toHaveAttribute("aria-expanded", "true");
+  await spec.click();
+  await expect(page.locator("main:visible .product-spec-groups dl:visible")).toHaveCount(0);
   await page.locator(".skip-link").focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#main-content$/);

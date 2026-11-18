@@ -56,6 +56,17 @@ test("unrelated links stay unchanged and a corrected category cannot retain stal
   );
 });
 
+test("new listing routes only consume filter parameters for their own category", () => {
+  assert.equal(
+    resolveCategoryHref(
+      "/products?category=accessories&subcategory=accessory-printers&catalog=all&ref=menu#details",
+    ),
+    "/products/category/accessories/printers?ref=menu#details",
+  );
+  const crossCategory = "/products/category/pos?subcategory=accessory-printers&ref=menu";
+  assert.equal(resolveCategoryHref(crossCategory), crossCategory);
+});
+
 test("Home default and CMS category targets normalize while custom and disabled targets remain authoritative", () => {
   assert.equal(resolveHomeLink("digital", undefined, []), "/products/category/scales");
   assert.equal(resolveHomeLink("accessories", undefined, []), "/products/category/accessories");
