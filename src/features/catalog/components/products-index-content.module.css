@@ -1,21 +1,102 @@
 .index {
-  --inset: max(var(--page-gutter), calc((100% - 80rem) / 2));
+  --inset: clamp(1.375rem, calc((100vw - 72.5rem) / 2), 8.75rem);
   color: var(--ink);
   background: var(--paper);
   padding-bottom: var(--section-space-feature);
 }
 .intro {
+  position: relative;
+  isolation: isolate;
   display: grid;
   align-items: center;
   gap: 1.25rem;
   padding: clamp(2rem, 5vw, 5.5rem) var(--inset) var(--section-space);
 }
+.headerWash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  visibility: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 50%, transparent 98%);
+}
+.accessibleTitle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 .intro h1 {
   color: var(--red);
-  font-size: clamp(2.5rem, 5vw, 5rem);
-  line-height: 1.22;
-  font-weight: 650;
+  font-size: 3rem;
+  line-height: 1.333;
+  font-weight: 600;
   letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.logoMotion {
+  grid-column: 1 / -1;
+  display: grid;
+  align-items: center;
+  width: clamp(12rem, 24vw, 20rem);
+  height: clamp(5.5rem, 12vw, 10rem);
+}
+.wordmark {
+  position: relative;
+  aspect-ratio: 576 / 88;
+}
+.initial {
+  position: absolute;
+  top: 50%;
+  left: -1.91%;
+  width: 17.7083%;
+  translate: 0 -50%;
+  z-index: 1;
+}
+.initial img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.initial canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  /* The renderer fits the PNG to 60% of a square, using the PNG's height. */
+  width: calc(100% * 640 / 636 / 0.6);
+  height: auto;
+  aspect-ratio: 1;
+  visibility: hidden;
+}
+.letter {
+  position: absolute;
+  top: 0;
+  width: calc(100% / 6);
+  height: 100%;
+  background-size: 600% 100%;
+  background-repeat: no-repeat;
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .logoMotion:not([data-settled]) .initial {
+    transform: translateX(244%) scale(0.77);
+  }
+  .logoMotion:not([data-settled]) .letter {
+    opacity: 0;
+  }
+  .logoMotion:not([data-settled]):not([data-glass="letters"]) .initial img {
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .intro:has(.logoMotion[data-glass]) .headerWash,
+  .logoMotion[data-glass="playing"] canvas {
+    visibility: visible;
+  }
 }
 .help p {
   font-size: clamp(1rem, 1.6vw, 1.5rem);
@@ -55,7 +136,7 @@
   scroll-snap-align: start;
 }
 .category {
-  flex: 0 0 clamp(7.5rem, 11vw, 10rem);
+  flex: 0 0 8rem;
 }
 .category a {
   cursor: pointer;
@@ -65,21 +146,26 @@
   padding: 0.5rem 0.25rem;
   border-radius: 12px;
   text-align: center;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 .categoryImage {
   position: relative;
-  width: 100%;
-  height: clamp(4.75rem, 7vw, 6.5rem);
-  mix-blend-mode: multiply;
+  width: 6.75rem;
+  aspect-ratio: 20 / 13;
 }
-.categoryImage img,
-.media img {
+.categoryImagePair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.categoryImagePair > div {
+  position: relative;
+}
+.categoryImage img {
   object-fit: contain;
 }
 .section {
-  --shelf-gap: 1rem;
+  --shelf-gap: 1.25rem;
   padding-top: var(--section-space-feature);
 }
 .sectionHeading {
@@ -91,15 +177,22 @@
   padding-bottom: 0.5rem;
 }
 .sectionHeading h2 {
-  font-size: clamp(1.65rem, 3vw, 2.5rem);
-  line-height: 1.3;
+  font-size: 1.5rem;
+  line-height: 1.375;
   font-weight: 600;
+}
+.headingLead {
+  margin-inline-end: 0.16em;
+  color: var(--red);
+}
+.headingDetail {
+  color: var(--muted);
 }
 .sectionHeading a {
   margin-inline-start: auto;
 }
 .card {
-  flex: 0 0 min(78vw, 24rem);
+  flex: 0 0 min(calc(100% - 1rem), 19.3125rem);
   min-width: 0;
 }
 .card > a {
@@ -108,51 +201,218 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 19rem;
-  padding: 1.25rem;
+  min-height: 28.125rem;
+  padding: 1.75rem;
   border-radius: 28px;
   background: white;
   box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
   transition: background-color 100ms linear;
 }
-.cardChevron {
+.card > .aboutCard {
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 1.5rem;
+  background: var(--red);
+  color: #fff;
+}
+.aboutCard > p {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.aboutCard h3 {
+  font-size: clamp(2.125rem, 4vw, 2.625rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  max-inline-size: 7em;
+}
+.aboutCard h3 span {
+  white-space: nowrap;
+}
+.aboutArt {
+  position: absolute;
+  z-index: -1;
+  inset: 36% -6% -3%;
+  pointer-events: none;
+}
+.aboutArt img {
+  object-fit: cover;
+  object-position: center top;
+}
+.aboutArrow {
   position: absolute;
   inset-inline-end: 1rem;
   bottom: 1rem;
-  width: 24px;
-  height: 24px;
-  padding: 5px;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0.5rem;
   border-radius: 50%;
-  background: #e8e8ed;
-  color: rgb(0 0 0 / 56%);
+  background: var(--ink);
+  color: #fff;
   pointer-events: none;
 }
-.cardCopy h3 {
-  font-size: clamp(1.3rem, 2vw, 1.75rem);
-  line-height: 1.35;
-  font-weight: 600;
-  overflow-wrap: anywhere;
+.card > .aboutCard:active {
+  background: color-mix(in srgb, var(--red), var(--ink) 10%);
 }
-.cardCopy p {
-  padding-top: 0.4rem;
-  color: var(--muted);
-  font-size: 0.9375rem;
+.card > .editorialCard {
+  overflow: hidden;
+  isolation: isolate;
+  background: white;
+  color: var(--ink);
+}
+.card > .resultsCard {
+  background: white;
+  color: var(--ink);
+}
+.editorialCard > p {
+  margin-block-end: 0.5rem;
+  color: #58585e;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.resultsCard > p {
+  color: #58585e;
+}
+.editorialCard h3 {
+  max-inline-size: 12em;
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  line-height: 1.32;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+.editorialArt {
+  position: relative;
+  flex: 1;
+  margin: 0.75rem -1.75rem -1.75rem;
+  pointer-events: none;
+}
+.editorialArt img {
+  object-fit: cover;
+  object-position: center top;
+}
+.resultsCard .editorialArt img {
+  object-position: center;
+}
+.editorialCard h3 span {
+  display: block;
+}
+.editorialArrow {
+  position: absolute;
+  inset-inline-end: 1.25rem;
+  bottom: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: #e8e8ed;
+  color: #414146;
+}
+.resultsCard .editorialArrow {
+  background: #e8e8ed;
+  color: #414146;
+}
+.card > .editorialCard:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+.card > .softwareCard {
+  overflow: hidden;
+  isolation: isolate;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background: var(--app-paper);
+  color: var(--app-ink, var(--ink));
+}
+.softwareCopy {
+  z-index: 1;
+}
+.softwareCopy > p:first-child {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.softwareCopy h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+.softwareCopy > p:last-child {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 400;
+  opacity: 0.9;
+}
+.softwareVisual {
+  position: relative;
+  flex: 1;
+  min-height: 10rem;
+  margin: 1.25rem -1.5rem -1.5rem;
+  pointer-events: none;
+}
+.softwarePicture {
+  position: absolute;
+  inset: 2% 0.75rem 2%;
+}
+.softwarePicture img {
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 8px 8px rgb(28 32 35 / 16%));
+}
+.softwareArrow {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 12%);
+}
+.card[data-software="weweigh2"] {
+  --app-paper: #773b4a;
+  --app-ink: white;
+}
+[data-software="weweigh2"] .softwarePicture {
+  inset: 3% 0.875rem 8%;
+}
+@media (min-width: 48rem) {
+  .card > .softwareCard {
+    padding: 1.75rem;
+  }
+  .softwareVisual {
+    margin-inline: -1.75rem;
+    margin-bottom: -1.75rem;
+  }
+  .softwareCopy h3 {
+    font-size: 1.75rem;
+  }
+  .softwareCopy > p:last-child {
+    font-size: 1rem;
+  }
+}
+.index a:focus-visible,
+.controls button:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
 }
 .cardSpecs:not(:empty) {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 0.75rem;
   margin-top: 0.5rem;
-  color: var(--muted);
+  color: #424245;
   font-size: 0.875rem;
   overflow-wrap: anywhere;
 }
-.media {
-  position: relative;
-  flex: 1;
-  min-height: 9rem;
-  margin-top: 1.25rem;
-  mix-blend-mode: multiply;
+img.catalogCutout {
+  mask: var(--product-mask) center / contain no-repeat;
 }
 .controls {
   display: flex;
@@ -183,7 +443,7 @@
     text-underline-offset: 0.15em;
   }
   .controls button:enabled:hover svg {
-    background: #d9d9de;
+    background: #eeeef0;
   }
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -249,12 +509,42 @@
     background: transparent;
   }
 }
-@media (min-width: 48rem) {
+@media (min-width: 737px) {
+  .intro h1 {
+    font-size: 5rem;
+    line-height: 1.35;
+  }
+  .categoryImage {
+    width: 7.5rem;
+  }
+  .card {
+    flex-basis: 25rem;
+  }
+  .card > a {
+    min-height: 31.25rem;
+  }
+  .sectionHeading h2 {
+    font-size: 1.75rem;
+    line-height: 1.39;
+  }
+}
+@media (min-width: 64rem) {
   .intro {
-    grid-template-columns: 1fr auto;
-    padding-bottom: var(--section-space-feature);
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas: "title logo help";
+    min-height: 16.625rem;
+    padding-block: 2.5rem;
+  }
+  .intro h1 {
+    grid-area: title;
+    font-size: clamp(2.5rem, calc((100vw - 2 * var(--inset) - 16rem) / 19), 5rem);
+  }
+  .logoMotion {
+    grid-area: logo;
   }
   .help {
+    grid-area: help;
+    justify-self: end;
     text-align: end;
   }
 }
@@ -267,21 +557,7 @@
 }
 
 @media (min-width: 64rem) {
-  .section {
-    --shelf-gap: 1.25rem;
-  }
   .sectionHeading {
     padding-bottom: 1rem;
-  }
-  .card > a {
-    min-height: 28.75rem;
-    padding: 1.75rem;
-  }
-  .cardChevron {
-    inset-inline-end: 1.25rem;
-    bottom: 1.25rem;
-    width: 36px;
-    height: 36px;
-    padding: 8px;
   }
 }

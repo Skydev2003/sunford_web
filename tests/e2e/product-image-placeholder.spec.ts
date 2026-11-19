@@ -181,18 +181,13 @@ for (const width of [390, 834, 1440]) {
     const product = (products as ClientProduct[]).find((item) => item.warehouseCategoryId)!;
     expect(product).toBeTruthy();
     const missing = { ...product, image: "", fallbackImage: undefined, price: null };
-    const categories = [
-      { id: product.warehouseCategoryId, label: "หมวดทดสอบ", productIds: [product.id] },
-    ];
+    const categories = [{ id: "test-category", label: "หมวดทดสอบ", productIds: [product.id] }];
     await page.setViewportSize({ width, height: 900 });
     await harness(page);
     await sampleImages(page);
     await render(page, { products: [missing], categories });
-    const selected = page.locator("#products-categories li");
-    await expect(selected.locator("a")).toHaveAttribute(
-      "href",
-      `/products/category/${product.warehouseCategoryId}`,
-    );
+    const selected = page.locator("#products-categories li").filter({ hasText: "หมวดทดสอบ" });
+    await expect(selected.locator("a")).toHaveAttribute("href", "/products/category/test-category");
     await expect(selected.locator(placeholder)).toBeVisible();
     const card = page.locator("[data-products-category-section] li");
     await expect(card.locator(placeholder)).toBeVisible();
@@ -210,7 +205,7 @@ for (const width of [390, 834, 1440]) {
   });
 }
 
-test("live directory and product detail use the new icon with Warehouse-only data", async ({
+test("a product without a photo remains searchable after hiding the miscellaneous shelf", async ({
   page,
   request,
 }) => {
@@ -220,8 +215,12 @@ test("live directory and product detail use the new icon with Warehouse-only dat
       product.warehouseCard && !product.warehouseCard.image,
   );
   expect(missing).toBeTruthy();
-  await page.goto("/products");
-  const card = page.locator(`[data-warehouse-sku="${missing.warehouseSku}"]`).first();
+  await page.goto("/products?catalog=all");
+  const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
+  await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill(missing.warehouseSku);
+  const card = finder.locator("#mock-product-results article").filter({
+    has: page.locator(`a[href="/products/${missing.slug}"]`),
+  });
   await expect(card.locator(placeholder)).toBeVisible();
   await card.locator("a").first().click();
   await expect(page.locator("#product-overview h1")).toBeVisible();

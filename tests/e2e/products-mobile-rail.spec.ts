@@ -51,7 +51,7 @@ test("a horizontal swipe browses the shelf and a vertical swipe scrolls the page
 
 test("touch category selection and product taps open the linked pages", async ({ page }) => {
   await page.goto("/products");
-  const category = page.locator("#products-categories a").last();
+  const category = page.locator("#products-categories").getByRole("link", { name: "อุปกรณ์เสริม" });
   await category.tap();
   await expect(page).toHaveURL("/products/category/accessories");
   await page.goBack();

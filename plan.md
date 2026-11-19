@@ -9098,3 +9098,636 @@ Removed the image shadow from all three category menu styles at the owner’s re
 ผลกระทบเฉพาะการแสดงกลุ่มสเปก ย้อนกลับโดยคืน diff ของสองไฟล์แอป
 
 ตรวจ Chrome ผ่านที่ 390/768/1440 px สองโหมด การสลับเริ่ม transition ความสูง 220 ms ทั้งสองกลุ่มในเฟรมเดียวกัน โหมด Reduce เปลี่ยนความสูงทันที ผล Playwright เดิมผ่าน 2 ข้อ รวม Back/Forward และ typecheck ผ่าน
+
+## Plan: Apple Store TH layout, product colors and motion on /products (2026-11-19)
+
+### Files
+
+- `spec.md`, `plan.md` — หลักฐานก่อนแก้ ขอบเขต ผลตรวจ และบันทึกการอนุมัติ
+- `src/features/catalog/components/products-index-content.tsx` — ผูก motion กับ intro, จับคู่ภาพ Warehouse กับธีมที่ตรวจแล้ว และปรับ sizes ภาพให้ตรงกรอบ
+- `src/features/catalog/components/products-index-content.module.css` — ขนาดตามจอ แนววาง สีพื้น สีชื่อและป้าย กรอบภาพ รวมถึง focus, hover และ press ของหน้ารวม
+- `src/features/catalog/components/products-index-motion.tsx` — สร้างส่วนควบคุมคลิป intro ขนาดเล็กสำหรับ playback, visibility, Reduce Motion และ fallback ภาพนิ่ง
+- `public/videos/products-index-logo.mp4` — สร้างคลิป SUNFORD 5s จาก public/images/sunford-logo.png ที่มีอยู่ ใช้โลโก้เดิมเป็นภาพนิ่ง
+- `src/features/catalog/data/products-index-palettes.ts` — คู่สีที่คัดจากภาพ Warehouse พร้อมตัวระบุรุ่นภาพในข้อมูลหน้าร้าน และ fallback เป็นสีกลาง
+- `tests/e2e/products-full-overview.spec.ts`, `tests/e2e/products-index-carousel.spec.ts` — ปรับค่ารูปทรงที่ Spec เปลี่ยน เพิ่ม assertions สำหรับสีและวิดีโอ และเก็บ regression ของการนำทาง
+
+### Steps
+
+- [x] ตรวจเส้นทางจริง เทียบขนาดที่ 390/768/1440 px, สุ่มสีจากการ์ด Apple และภาพ Warehouse, ทดสอบการกดลูกศร โฮเวอร์ การปัด และย้อนกลับ
+- [x] บันทึกการอนุมัติจากเจ้าของสำหรับ Spec/Plan นี้ก่อนแก้ไฟล์แอปหรือสร้างวิดีโอ
+- [x] ตรวจเอกสาร Next ที่ติดตั้งสำหรับ Image, Client Components และ media; บันทึกภาพ baseline ทั้งสามจอและตรวจรายการลิงก์ที่หน้าแสดงจริง
+- [x] ปรับ index เฉพาะหน้า สร้างคลิปจากโลโก้จริง เลือกสีจากภาพ Warehouse ที่แยกชิ้นงานได้ชัด ตรวจสีหลัง compositing และความชัดภาษาไทย
+- [x] ตรวจวิดีโอด้วย ffprobe และ browser playback, fallback, การกลับหน้าเดิม, ลดการเคลื่อนไหว, ความกว้าง 320/390/736/737/768/1440 และซูม 200%; เก็บภาพและผลทดสอบ
+- [x] ตรวจการ์ดทุกชนิด ลิงก์ออกแต่ละประเภท และการเลื่อนผ่าน touch/mouse/keyboard; ตรวจหมวดและรายละเอียดในฐานะปลายทางที่คงเดิม
+- [x] ตรวจ format, typecheck, lint และ E2E ที่เกี่ยวข้องตาม package.json; บันทึกผลจริงใน Spec/Plan
+
+### Impact / Rollback
+
+ขอบเขตเป็นส่วน index ที่ route /products นำเข้า ใช้ไฟล์ media และคู่สีใหม่ของหน้านี้โดยเฉพาะ ตัวควบคุมเลื่อนเดิมคำนวณระยะจากขนาดจริง ให้ทดสอบซ้ำเมื่อเปลี่ยนขนาดการ์ด. หากต้องย้อนกลับ ให้คืนเฉพาะ diff ของหน้ารวมและชุดทดสอบนี้ พร้อมถอนการอ้างถึงคลิปและคู่สีจากหน้า
+
+### Verification Results
+
+ก่อนแก้ ณ 19 พฤศจิกายน 2026: Chrome local แสดง 400 SKU. ที่ 1440 px กดถัดไปบนชั้นเครื่องชั่งเลื่อน 404 px, คลิกการ์ดเข้ารุ่น RLS1100 และ Back กลับมาที่ 404 px. Apple Store กดถัดไปบนแถวแรกเลื่อน 420 px คลิกหมวด Mac ไปหน้าเลือกซื้อและ Back กลับ Store ได้. การปัดแบบ touch emulation ที่ 390 px ทำให้ตำแหน่งแถวเปลี่ยนบนทั้งสองหน้า. สีและสื่อวัดตาม Spec. ผลหลังลงมือด้านล่าง
+
+- ภาพก่อน/หลังทั้ง intro และชั้นสินค้า 390, 768 และ 1440 px อยู่ใน `output/products-store-colors-20261119/`. ตรวจแผ่นภาพ Warehouse 98 ภาพ คัด Ocean 16, Mist 7, Rose 17, Amber 2, Mint 6 รวม 48 จาก 400 รายการ. ภาพที่เหลือใช้พื้นกลาง รวมกรณีไม่มีรูปและโหลดรูปไม่สำเร็จ.
+- วัด contrast ของชื่อ สเปกและราคากับพิกเซลพื้นหลังที่ระดับข้อความบนการ์ดตัวแทน 6 แบบ ได้อย่างน้อย 6.83:1. เทียบภาพก่อน/หลังแล้วจบ gradient ที่ขอบบนของบริเวณรูปเพื่อเก็บสีสินค้าเดิม. ตรวจชื่อทั้ง 400 รายการที่ 320 px ไม่มีชื่อที่ล้นกรอบ.
+- Chrome ในโปรไฟล์ชั่วคราวที่ zoom จริง 200% เปลี่ยน viewport จาก 1422 เป็น 711 CSS px, DPR จาก 1 เป็น 2 และ document width เท่ากับ viewport. Touch emulation 390 px ปัดได้ 329 px แตะไป /products/rls1100 แล้ว Back คืน offset และ Forward ไป SKU เดิม. ลิงก์ดูทั้งหมดไป /products/category/scales.
+- ffprobe ยืนยัน H.264, 5.000 s, 150 เฟรม, 49,955 bytes. Chrome เล่นจริง หยุดนอกจอ เล่นต่อจนจบ และคืนภาพนิ่ง. ทดสอบสลับ Reduce Motion, ปิดคำขอคลิป และส่ง visibilitychange แบบจำลอง. Headless Chrome คง visible เมื่อสลับแท็บ จึงแยกผลจำลองนี้จากการทดสอบเลื่อนออกนอกจอจริง.
+- `bun run typecheck` และ `bun run lint` ผ่านด้วย Node 24.22.3.
+- ผล E2E สุดท้ายใน Chrome ผ่าน 35/35 ด้วย worker เดียว ทั้ง 11 ความกว้างและทั้งสองโหมด motion. รอบแรก 32/34 มีหน้า dev reload ระหว่าง bind assertion และ legacy route เกินเวลา 5s; ทดสอบซ้ำผ่านและชุดสุดท้ายผ่านทั้งหมด. ตรวจซ้ำ 3/3 บน dev server Node 24.22.3 รวมวิดีโอ สี และรูปทรงมือถือ. บันทึกผลใน `output/products-store-colors-20261119/final-tests.log` และ `node24.log`. รูปและคลิปอยู่ในเครื่อง ไม่มี release ในขอบเขตนี้.
+
+## Plan: หน้ารวมสินค้า SUNFORD บนจอกว้างและการ์ด WPS10KS (2026-11-19)
+
+- [x] ยืนยันคำอนุมัติ “แก้เลย” ตามข้อเปรียบเทียบจอกว้างและการ์ดตัวอย่าง
+- [x] ปรับ layout หัวหน้า แนวขอบ และการ์ดตัวอย่างใน `src/features/catalog/components/products-index-content.module.css` และ `src/features/catalog/components/products-index-content.tsx`; ใช้คู่สีเดิมและ SKU/รุ่นภาพที่ตรวจแล้ว
+- [x] สร้างหน้ากากตามเส้นขอบรูปจริงใน `public/images/products/wps10ks-store-mask.svg` เพื่อแสดงบนภาพ Warehouse รุ่นที่ตรวจ
+- [x] อัปเดตเกณฑ์จอกว้างใน `tests/e2e/products-full-overview.spec.ts`, ตรวจหลายขนาด สำรวจภาพหน้าจอ ทดสอบลิงก์และปุ่มเลื่อน, typecheck, lint และรูปแบบ
+- [x] บันทึกผลใน `spec.md` และ `plan.md`. ย้อนกลับเฉพาะ diff งานนี้และหน้ากาก WPS10KS; ผลกระทบอยู่ในหน้ารวมสินค้าเท่านั้น
+
+ผลตรวจ Chrome ที่ 1440/1920/2540 px: ขอบการ์ดแรก x=140, y=606 ขนาด 400×500 และปุ่มลูกศรขวาห่างขอบจอ 140px. ที่ 2540 เห็นห้าใบเต็ม. หัวข้อปรับขนาดให้พอดีกับคอลัมน์ด้านซ้าย โลโก้กึ่งกลางทุกจอเดสก์ท็อปที่ทดสอบ. วัดพิกเซลการ์ด WPS10KS ที่ y=16 และ 487 ได้ #b6d6ec ทั้งคู่. เปิด /products/wps10ks ได้ และการจำลองรูปโหลดเสียแสดงพื้นขาว. ชุด E2E 12/12, typecheck และ lint ผ่าน. หลักฐานใน `output/products-wide-20261119/`.
+
+## Plan: พื้นหลังส่วนหัว /products จับเวลากับโลโก้ (2026-11-19)
+
+- [x] บันทึกคำอนุมัติและสีอ้างอิงใน `spec.md`
+- [x] `src/features/catalog/components/products-index-motion.tsx` ผูกพื้นหลังตกแต่งกับเวลาคลิปและวงจรการเล่นเดิม
+- [x] `src/features/catalog/components/products-index-content.module.css` กำหนดหน้ากากเฉพาะ intro และผสานพื้นวิดีโอกับสีหัวหน้า
+- [x] `tests/e2e/products-index-carousel.spec.ts` ตรวจสีระหว่างเล่น หยุด เล่นต่อ จบและ fallback; ตรวจภาพที่ 390/2540 px และ format, lint, typecheck
+- [x] บันทึกผลใน `plan.md` / `spec.md`. ย้อนกลับเฉพาะการเปลี่ยนพื้นหลังและการทดสอบในสามไฟล์ข้างต้น
+
+Chrome E2E ผ่าน 3/3 รวมเวลาเปลี่ยนสี ช่วงหยุดนอกจอ เล่นต่อ จบ Reduce Motion และคลิปโหลดเสีย. ที่ 390/2540 px วัดพิกเซลช่วงสีฟ้าตรงขอบวิดีโอกับพิกเซลข้างเคียงได้สีเดียวกัน ขอบล่างและพื้นหลังหลังจบเป็น RGB(245,245,247). ภาพตรวจอยู่ใน `output/products-header-wash-20261119/`. Typecheck และ lint ผ่านด้วย Node 24.
+
+## Plan: พื้นสีเต็มใบสำหรับสินค้าที่มีภาพจริงใน /products (2026-11-19)
+
+- [x] บันทึกคำอนุมัติและตรวจภาพ Warehouse ทั้งหมดตาม `spec.md`
+- [x] `src/features/catalog/data/products-index-palettes.ts` เก็บสีและหน้ากากเฉพาะรุ่นภาพที่ตรวจแล้ว
+- [x] `src/features/catalog/components/products-index-content.tsx`, `src/features/catalog/components/products-index-content.module.css` ใช้พื้นสีเต็มใบตามรูปและรักษาสถานะสำรอง
+- [x] สร้างหน้ากากตามไฟล์ข้างล่าง ใช้หน้ากาก WPS10KS เดิม ตรวจภาพคอมโพสิตครบทุก SKU
+- [x] ตรวจด้วย `tests/e2e/products-full-overview.spec.ts`, ชุด carousel ที่เกี่ยวข้อง, typecheck, lint และ format. อัปเดต `spec.md` และ `plan.md`. ย้อนกลับเฉพาะ diff นี้พร้อมหน้ากากเพิ่มใหม่
+
+ไฟล์หน้ากากใหม่ตามภาพที่ตรวจ (ใช้หนึ่งไฟล์ต่อ URL ไม่ซ้ำ)
+
+- `public/images/products/store-masks/g106377.svg`
+- `public/images/products/store-masks/g106582.svg`
+- `public/images/products/store-masks/g106483.svg`
+- `public/images/products/store-masks/g106513.svg`
+- `public/images/products/store-masks/g107244.svg`
+- `public/images/products/store-masks/g106681.svg`
+- `public/images/products/store-masks/g106247.svg`
+- `public/images/products/store-masks/g106674.svg`
+- `public/images/products/store-masks/g106469.svg`
+- `public/images/products/store-masks/g106643.svg`
+- `public/images/products/store-masks/g106650.svg`
+- `public/images/products/store-masks/g106803.svg`
+- `public/images/products/store-masks/g106810.svg`
+- `public/images/products/store-masks/g106612.svg`
+- `public/images/products/store-masks/g106629.svg`
+- `public/images/products/store-masks/g106667.svg`
+- `public/images/products/store-masks/g106148.svg`
+- `public/images/products/store-masks/g106438.svg`
+- `public/images/products/store-masks/g106742.svg`
+- `public/images/products/store-masks/g106414.svg`
+- `public/images/products/store-masks/g106568.svg`
+- `public/images/products/store-masks/g106209.svg`
+- `public/images/products/store-masks/g106407.svg`
+- `public/images/products/store-masks/g108012.svg`
+- `public/images/products/store-masks/g108029.svg`
+- `public/images/products/store-masks/g108050.svg`
+- `public/images/products/store-masks/g107268.svg`
+- `public/images/products/store-masks/g107411.svg`
+- `public/images/products/store-masks/g106735.svg`
+- `public/images/products/store-masks/g106353.svg`
+- `public/images/products/store-masks/g106711.svg`
+- `public/images/products/store-masks/g106704.svg`
+- `public/images/products/store-masks/g106308.svg`
+- `public/images/products/store-masks/g106551.svg`
+- `public/images/products/store-masks/g106346.svg`
+- `public/images/products/store-masks/g106384.svg`
+- `public/images/products/store-masks/g106360.svg`
+- `public/images/products/store-masks/g106544.svg`
+- `public/images/products/store-masks/g106537.svg`
+- `public/images/products/store-masks/g106599.svg`
+- `public/images/products/store-masks/g106070.svg`
+- `public/images/products/store-masks/g106094.svg`
+- `public/images/products/store-masks/g106124.svg`
+- `public/images/products/store-masks/g106131.svg`
+- `public/images/products/store-masks/g106155.svg`
+- `public/images/products/store-masks/g106162.svg`
+- `public/images/products/store-masks/g106179.svg`
+- `public/images/products/store-masks/g106186.svg`
+- `public/images/products/store-masks/g106193.svg`
+- `public/images/products/store-masks/g106216.svg`
+- `public/images/products/store-masks/g106254.svg`
+- `public/images/products/store-masks/g106285.svg`
+- `public/images/products/store-masks/g106292.svg`
+- `public/images/products/store-masks/g106315.svg`
+- `public/images/products/store-masks/g106322.svg`
+- `public/images/products/store-masks/g106339.svg`
+- `public/images/products/store-masks/g106421.svg`
+- `public/images/products/store-masks/g106476.svg`
+- `public/images/products/store-masks/g106490.svg`
+- `public/images/products/store-masks/g106636.svg`
+- `public/images/products/store-masks/g106728.svg`
+- `public/images/products/store-masks/g106827.svg`
+- `public/images/products/store-masks/g106834.svg`
+- `public/images/products/store-masks/g106841.svg`
+- `public/images/products/store-masks/g106858.svg`
+- `public/images/products/store-masks/g106865.svg`
+- `public/images/products/store-masks/g106872.svg`
+- `public/images/products/store-masks/g106889.svg`
+- `public/images/products/store-masks/g106902.svg`
+- `public/images/products/store-masks/g106919.svg`
+- `public/images/products/store-masks/g106926.svg`
+- `public/images/products/store-masks/g106940.svg`
+- `public/images/products/store-masks/g107169.svg`
+- `public/images/products/store-masks/g107213.svg`
+- `public/images/products/store-masks/g107237.svg`
+- `public/images/products/store-masks/g107251.svg`
+- `public/images/products/store-masks/g107282.svg`
+- `public/images/products/store-masks/g107305.svg`
+- `public/images/products/store-masks/g107312.svg`
+- `public/images/products/store-masks/g108043.svg`
+- `public/images/products/store-masks/g108531.svg`
+- `public/images/products/store-masks/g108548.svg`
+- `public/images/products/store-masks/g108555.svg`
+- `public/images/products/store-masks/g108562.svg`
+- `public/images/products/store-masks/g108572.svg`
+- `public/images/products/store-masks/g108616.svg`
+- `public/images/products/store-masks/g108623.svg`
+- `public/images/products/store-masks/g108630.svg`
+- `public/images/products/store-masks/g108647.svg`
+- `public/images/products/store-masks/g108654.svg`
+- `public/images/products/store-masks/g108661.svg`
+- `public/images/products/store-masks/g108678.svg`
+- `public/images/products/store-masks/g108692.svg`
+- `public/images/products/store-masks/g108746.svg`
+- `public/images/products/store-masks/g108753.svg`
+- `public/images/products/store-masks/imp-00297.svg`
+
+ผลตรวจ 19 พ.ย. 2026: Chrome โหลดรูปและหน้ากากและบันทึกภาพครบ 98 ใบ ตรวจตัวอักษรชื่อ สเปก และราคามีคอนทราสต์ขั้นต่ำ 6.23:1. ตรวจพื้นขาวครบ 304 ใบ รวมถึงจำลองภาพ FEH5KS โหลดล้มเหลวแล้วกลับเป็นภาพสำรองบนพื้นขาว. ตรวจโฮเวอร์ คลิก แตะ และย้อนกลับ. Chromium E2E รอบสุดท้ายผ่าน 10/10 ที่ความกว้าง 390, 768, 1440 และ 2540 px. Typecheck, ESLint และ Prettier ผ่าน. หลักฐานอยู่ใน `output/products-full-color-20261119/` (ภาพเดสก์ท็อป มือถือ ภาพการ์ดรายใบและ report.json).
+
+## Plan: โลโก้ S แบบ Liquid Glass ในส่วนหัว /products
+
+### Files
+
+- `public/images/products/sunford-s-transparent.png` — เพิ่มภาพ S จากไฟล์ที่ตัดพื้นหลังแล้ว
+- `src/features/catalog/components/products-index-glass.ts` — ปรับตัววาด WebGL2 จากตัวอย่างสำหรับ PNG ของ SUNFORD และรักษาที่มาของโค้ด
+- `src/features/catalog/components/products-index-motion.tsx` — ใช้ภาพนิ่งและตัววาดแก้วแทนวิดีโอ จับเวลาพร้อมพื้นสี
+- `src/features/catalog/components/products-index-content.module.css` — จัดสัดส่วนโลโก้และสถานะเอฟเฟกต์ในส่วนหัวเดิม
+- `tests/e2e/products-index-carousel.spec.ts`, `tests/e2e/products-full-overview.spec.ts` — ปรับการทดสอบที่ผูกกับวิดีโอเดิมและตรวจการแสดงภาพสำรอง
+- `spec.md`, `plan.md` — บันทึกขอบเขต การอนุมัติ และผลตรวจ
+
+### Steps
+
+- [x] รับการอนุมัติขอบเขตและบันทึกการอนุมัติ
+- [x] อ่านคู่มือ Next.js ในโปรเจกต์ เพิ่มภาพแล้วเชื่อมเอฟเฟกต์โดยอิง alpha และสีต้นฉบับ
+- [x] ตรวจ TypeScript, lint และ Playwright ครอบคลุมการเล่นครั้งเดียว หยุด/เล่นต่อ Reduce Motion และ WebGL2 ใช้ไม่ได้ ตรวจภาพที่ 390, 768 และ 1440 px
+- [x] บันทึกผลจริงใน Spec และ Plan
+
+### Impact / Rollback / Verification Results
+
+จุดเสี่ยงคือความสูงหัวหน้าบนมือถือและสีพื้นรอบ canvas ย้อนกลับโดยคืนคอมโพเนนต์ส่วนหัวและ CSS เฉพาะส่วนโลโก้ไปใช้วิดีโอเดิม ตรวจแล้วว่าภาพต้นทางมีอยู่และพบตำแหน่งเรียกใช้งานจริง ตรวจเบราว์เซอร์หลังแก้จริงแล้ว
+
+- TypeScript และ ESLint สำหรับคอมโพเนนต์กับชุดทดสอบที่แก้ผ่าน
+- Chromium บน local dev server Node 24.22.3 ผ่านทั้ง 8 กรณี ครอบคลุมการพักเมื่อพ้นจอ/ซ่อนแท็บและเล่นต่อครั้งเดียว การแสดง S นิ่งเมื่อเปิด Reduce Motion หรือ WebGL2 ใช้ไม่ได้ และการจัดวางส่วนหัวและแคตตาล็อกที่ 390, 768 และ 1440 px
+- การตรวจรอบแรกพบความสูงช่องโลโก้บนมือถือยืดตามขนาด PNG จึงปรับให้ภาพอยู่ภายในกรอบสี่เหลี่ยมจัตุรัส เพิ่ม assertion ตรวจสัดส่วน และยืนยันภาพขณะเล่นและหลังจบที่ทั้งสามขนาด หลักฐานอยู่ใน `output/products-glass-verified/`
+
+## Plan: จังหวะจบ Liquid Glass จาก S เป็น SUNFORD บน /products
+
+### Files
+
+- `public/images/products/sunford-unford-transparent.png` — เตรียมภาพโปร่งใสเฉพาะ UNFORD จากโลโก้แบรนด์เดิมเพื่อควบคุมการเผยอักษร
+- `src/features/catalog/components/products-index-motion.tsx` — จัดวาง S และอักษรที่ตามมา ใช้เวลาเล่นชุดเดียวกับพื้นสีและแสดงชื่อเต็มเป็นภาพสำรอง
+- `src/features/catalog/components/products-index-glass.ts` — ปรับจังหวะคลายแก้วและขนาด S ให้รับกับเฟรมแรกของช่วงเผยชื่อเต็ม
+- `src/features/catalog/components/products-index-content.module.css` — จองพื้นที่คำเต็ม จัดระยะอักษรและกรอบแก้วตามขนาดหน้าจอ
+- `tests/e2e/products-index-carousel.spec.ts` — ตรวจเฟรมเปลี่ยนผ่าน ลำดับอักษร ตำแหน่งค้าง การพักเวลา และโหมดภาพนิ่ง
+- `spec.md`, `plan.md` — บันทึกการอนุมัติ ขอบเขตและผลตรวจ
+
+### Steps
+
+- [x] รับการอนุมัติขอบเขตจังหวะจบใหม่และบันทึก
+- [x] อ่านคู่มือ Next.js ที่เกี่ยวข้อง เตรียมภาพตัวอักษร และต่อจังหวะปล่อยแก้วกับการเผยชื่อครบ
+- [x] ตรวจ TypeScript, ESLint และ Playwright ทั้งการเล่นและ fallback เทียบภาพช่วงเริ่ม กลาง และจบที่ 390, 768 และ 1440 px
+- [x] บันทึกผลจริงใน Spec และ Plan
+
+### Impact / Rollback / Verification Results
+
+จุดเสี่ยงคือ S กระโดดเมื่อเปลี่ยนจาก canvas เป็นภาพและคำเต็มเบียดหัวข้อบนจอแคบ ย้อนเฉพาะการจัดวาง/ไทม์ไลน์ของงานนี้เพื่อกลับไปจบที่ S นิ่ง ตรวจแล้วว่ามีทั้งภาพ S โปร่งใสและโลโก้เต็มใน repo และบันทึกการอนุมัติของเจ้าของแล้ว
+
+- ทดสอบบน Chromium กับหน้า /products จริง ผ่าน 10 กรณี ตรวจเฟรมแก้ว การส่งต่อ S ที่ 3 วินาที ลำดับการเผยอักษรทั้งหก และคำเต็มที่ 4.99 วินาที รวมถึงหยุดเมื่อพ้นจอ/ซ่อนแท็บ ภาพนิ่งสำรอง และ layout ที่ 320, 390, 768, 1024 และ 1440 px
+- ตรวจภาพช่วงแก้ว ระหว่างเผยอักษร และภาพจบที่ 390, 768 และ 1440 px ใน `output/products-wordmark-verified/` การตรวจรอบแรกพบ grid track เดสก์ท็อปยุบช่องโลโก้เหลือศูนย์ แก้ความกว้างและยืนยันรอบสุดท้ายครบทั้งสามขนาด
+- TypeScript และ ESLint สำหรับไฟล์ที่แก้ผ่าน รูปตัวอักษรโปร่งใสหกตัวมาจากโลโก้แบรนด์ เป็นไฟล์ PNG ร่วมขนาด 18,602 ไบต์
+
+## Plan: ทดลอง Liquid Glass ทุกตัวอักษร SUNFORD บน /products
+
+### Files / Steps
+
+- [x] บันทึกการอนุมัติใน `spec.md` และแผนใน `plan.md`
+- [x] เก็บสำเนาก่อนทดลองของไฟล์แอปและชุดทดสอบที่แตะไว้ที่ `output/products-all-glass-trial/before/`
+- [x] ปรับ `src/features/catalog/components/products-index-motion.tsx` และ `src/features/catalog/components/products-index-content.module.css` เพื่อใช้แสงและผิวแก้วตาม alpha ของ S และ UNFORD โดยอิงนาฬิกาเดิม
+- [x] ปรับ `tests/e2e/products-index-carousel.spec.ts` ให้ตรวจผิวแก้วกับลำดับการปรากฏ และตรวจ TypeScript, ESLint, การจัดรูปแบบ และภาพเบราว์เซอร์ทั้งสามขนาด
+- [x] บันทึกผลจริงใน Spec และ Plan
+
+### Impact / Rollback
+
+ความเสี่ยงคือแสงแรงเกินไปจนอ่านตัวอักษรบนจอเล็กยาก ตรวจเทียบกับภาพก่อนทดลอง หากต้องย้อน ให้ย้อนเฉพาะส่วนต่างรอบนี้จากสำเนาในโฟลเดอร์ before
+
+- สำเนาก่อนทดลองทั้งสามไฟล์ตรงกับไฟล์ต้นทางจากการตรวจ SHA-256 ก่อนแก้
+- Chromium ผ่าน 5 กรณี ครอบคลุมช่วงเล่น พัก/เล่นต่อ ภาพระหว่างเผยอักษรและภาพจบที่ 390, 768, 1440 px รวมทั้งโหมดลดการเคลื่อนไหวและ WebGL2 ใช้ไม่ได้
+- ตรวจภาพเทียบกับชิ้นเดิม เห็นผิวแก้วบนอักษรครบเจ็ดตัวและอ่านครบคำ ไฟล์เทียบอยู่ที่ `output/products-all-glass-trial/before-after.png`
+- TypeScript และ ESLint สำหรับไฟล์ที่แก้ผ่าน
+
+## Plan: คืนโลโก้สีแดงก่อนทดลอง Liquid Glass ทั้งคำบน /products
+
+- [x] ยืนยันคำสั่งย้อนและตรวจ diff ระหว่างไฟล์ปัจจุบันกับสำเนาก่อนทดลอง
+- [x] คืน `src/features/catalog/components/products-index-motion.tsx`, `src/features/catalog/components/products-index-content.module.css` และ `tests/e2e/products-index-carousel.spec.ts` จากสำเนาที่ตรวจ แล้วเทียบ SHA-256
+- [x] ตรวจ Playwright ช่วงเปิด เผยอักษร ภาพจบภายใน 5 วินาทีและ fallback เทียบพิกเซลภาพจบกับรุ่นก่อนทดลอง แล้วบันทึกผลใน `spec.md` และ `plan.md`
+
+ผลตรวจ: SHA-256 ตรงกับสำเนาทั้งสามไฟล์ Chromium ผ่าน 5 กรณี รวมการเผยครบที่ 4.99 วินาที TypeScript และ ESLint ผ่าน ภาพทั้งส่วนหัวตอนจบตรงกับรุ่นก่อนทดลองทุกพิกเซลที่ 390, 768 และ 1440 px หลักฐานอยู่ใน `output/products-wordmark-rollback/`
+
+## Plan: เครื่องชั่งมาตรฐานที่ไว้วางใจ
+
+- [x] ตรวจข้อมูลและบันทึกคำสั่งให้ลงมือใน `spec.md` และแผนนี้
+- [x] สร้าง `src/features/catalog/data/scale-showcase.ts` สำหรับจับคู่สเปกกับงานและสุ่มโดยไม่ซ้ำ
+- [x] สร้าง `src/features/catalog/components/scale-showcase-card.tsx` และ `src/features/catalog/components/scale-showcase-card.module.css` สำหรับสิบแบบ ใช้ภาพ ราคาจริง และลิงก์เดิม
+- [x] เชื่อมเฉพาะแถวแรกใน `src/features/catalog/components/products-index-content.tsx`
+- [x] ปรับข้อทดสอบแถวแรกใน `tests/e2e/products-full-overview.spec.ts` และ `tests/e2e/products-index-carousel.spec.ts` ตรวจสี การสุ่ม ภาพ การเลื่อน และเข้ารายละเอียดบนมือถือและเดสก์ท็อป
+- [x] บันทึกผลตรวจใน Spec และ Plan ย้อนกลับด้วยการคืนการแสดงแถวเครื่องชั่งเดิมและถอดไฟล์แถวใหม่ ไม่มีการเขียนข้อมูล Warehouse
+
+ตรวจ Chrome ครบทั้งสิบดีไซน์ที่ 320, 390, 768 และ 1440 px รวม 40 การ์ด ภาพจริงโหลดครบ ทุกชุดมี SKU และดีไซน์ไม่ซ้ำ และได้ชุด SKU ต่างกันเมื่อเปิดใหม่ คอนทราสต์ชื่อรุ่นกับพื้นอย่างน้อย 8.23:1 ชุด E2E ที่เกี่ยวข้องผ่าน 13 กรณี และชุดสัมผัส/ปุ่มเลื่อน/ย้อนกลับผ่าน 5 กรณี TypeScript และ ESLint ผ่าน ภาพตรวจอยู่ใน `output/scale-showcase/`.
+
+## Plan: ตรึงชุดเครื่องชั่งมาตรฐานที่ไว้วางใจ
+
+- [x] บันทึกขอบเขตและการแก้ไขจากเจ้าของใน spec.md
+- [x] เปลี่ยน src/features/catalog/data/scale-showcase.ts เป็นรายการ SKU ตามภาพตัวอย่างพร้อมดีไซน์และข้อความเดิม และถอดการรอคำขอที่เคยใช้สุ่มใน src/features/catalog/components/products-index-content.tsx
+- [x] ตรวจการรีเฟรชและการเปิดใหม่จากเบราว์เซอร์คนละเซสชันใน tests/e2e/products-full-overview.spec.ts ตรวจราคาและรูปจากข้อมูลปัจจุบัน อัปเดตผลใน spec.md และ plan.md
+
+Chromium ผ่าน 4 กรณี รวมรีเฟรชหน้าและเปิดเซสชันมือถือใหม่ที่ 390 px ตรวจที่ 1440 px และเปิดรายละเอียดจากการ์ดได้ ตรวจ 10 รุ่นตรงกับภาพตัวอย่างเดิมทั้ง SKU, ดีไซน์, ลิงก์, รูป และราคา Warehouse. TypeScript และ ESLint ผ่าน.
+
+## Plan: ภาพหน้าตรงโปร่งใสประจำ 5 หมวดบน /products
+
+- [x] บันทึกขอบเขตและคำสั่งอนุมัติใน `spec.md` และ `plan.md`
+- [x] ย่อภาพที่อนุมัติเป็น `public/images/products/category-cutouts/acs-30-jc21et.webp`, `sunford-aw31.webp`, `stainless-weighing-platform.webp`, `sunford-pos.webp` และ `thermal-receipt-printer.webp`
+- [x] ตั้งภาพประจำหมวดตาม ID ใน `src/features/catalog/components/products-index-content.tsx` ใช้กรอบ ลิงก์ และ fallback component เดิม
+- [x] ตรวจขนาดไฟล์ alpha, TypeScript, ESLint และ Chromium ที่ 390, 768 และ 1440 px พร้อมทดสอบลิงก์และปุ่มเลื่อนมือถือ
+
+ย้อนเฉพาะการแมปในคอมโพเนนต์และไฟล์ WebP ทั้งห้าของงานนี้
+
+ผลตรวจ: Chromium โหลดภาพครบและจับคู่กับลิงก์ทั้งห้าตรงกันทุกขนาดที่กำหนด การทดสอบลิงก์และปุ่มเลื่อนมือถือผ่าน 2 กรณี TypeScript และ ESLint ผ่าน ไฟล์ WebP ทั้งห้ามี alpha ขนาดรวม 141 KiB ภาพตรวจอยู่ใน `output/products-category-cutouts/`
+
+## Plan: พื้นหลังเรียบโทนหม่นของแถวเครื่องชั่ง
+
+- [x] บันทึกคำสั่งและเกณฑ์ใน spec.md
+- [x] ปรับเฉพาะ src/features/catalog/components/scale-showcase-card.module.css ใช้พื้นสีทึบสิบสีและนำลายฉากออก ย้อนกลับได้ด้วยการคืนสไตล์พื้นหลังแถวนี้
+- [x] ตรวจรูปจริง คอนทราสต์ ชุดและลำดับของการ์ดข้ามขนาดจอ พร้อมอัปเดตผลใน spec.md และ plan.md
+
+- [x] เอกสารขยายขอบเขตรูปภาพ 4K ใน spec.md ปรับ src/features/catalog/data/products-index-palettes.ts, src/features/catalog/components/scale-showcase-card.tsx และ CSS Module ของการ์ด เพื่อจับคู่ไฟล์ตามรุ่นภาพและใช้แหล่งรูปสำรอง ตรวจใน tests/e2e/products-full-overview.spec.ts
+- [x] สร้างไฟล์ WebP 4096 × 4096 ใต้ public/images/products/scale-showcase/ สำหรับ g106889.webp, g106308.webp, g106742.webp, g106209.webp, g106414.webp, g106537.webp, g106681.webp, g108562.webp, g106650.webp, g106674.webp และตรวจไฟล์จริง การแสดงผลแบบ responsive กับขอบโปร่งใส
+
+- [x] แก้ src/features/catalog/data/scale-showcase.ts ให้ตรึงสิบคู่ SKU/กลุ่มและตรวจสมาชิกก่อนแสดง ใช้ชื่อห้าเมนูใน scale-showcase-card.tsx เพิ่มภาพ g106186.webp และ g106292.webp แทน g106889.webp กับ g106674.webp ตรวจสัดส่วนและลำดับเทียบกลุ่มจริงใน tests/e2e/products-full-overview.spec.ts
+
+ตรวจหน้าเว็บจริงที่ 390, 768 และ 1440 px ครบ 10 ใบทุกขนาด พื้นเรียบสิบสีและคอนทราสต์ข้อความขั้นต่ำ 8.97:1. เทียบกลุ่มและปลายทางกับ Warehouse ครบ ชุดคงที่เมื่อรีโหลดและเปลี่ยนเซสชัน. ไฟล์ WebP โปร่งใส 4096 × 4096 รวม 4,936,874 ไบต์ หน้าเว็บส่งขนาดย่อผ่าน Next Image. ตรวจ TypeScript, ESLint และสาม E2E เฉพาะการ์ดผ่าน. การทดสอบภาพรวม 390/1440 px สองกรณีหยุดที่หัวข้อ H1 ของหน้าซึ่งว่างในโค้ดปัจจุบัน (อยู่นอกขอบเขตการ์ด). หลักฐานใน `output/scale-muted-backgrounds/ten-cards.png`.
+
+## Plan: ภาพหน้าตรง 4K และครอปเต็มใบในแถวเครื่องชั่ง
+
+- [x] บันทึกข้อกำหนดและคำสั่งเจ้าของใน spec.md
+- [x] ทำเวอร์ชันหน้าตรงของ 10 SKU ใน public/images/products/scale-showcase/ เป็นไฟล์ <sku>-front-4k.webp และอ้างอิงจาก src/features/catalog/data/products-index-palettes.ts
+- [x] ปรับ src/features/catalog/components/scale-showcase-card.tsx และ scale-showcase-card.module.css เพื่อวางภาพแต่ละรุ่นและใช้สีตัวอักษรที่อ่านชัดบนสีการ์ด
+- [x] ปรับ tests/e2e/products-full-overview.spec.ts ให้รองรับการ์ดพื้นขาว ตรวจการโหลดจริง alpha ขนาด รูปครอปและคอนทราสต์บนมือถือ แท็บเล็ต เดสก์ท็อป บันทึกผลใน Spec/Plan ย้อนเฉพาะแถวนี้ด้วยภาพและสไตล์ก่อนปรับ
+
+ผลตรวจ: ภาพ WebP โปร่งใสครบ 10 ไฟล์ รวม 6,777,914 ไบต์ ทดสอบที่ 320, 390, 768 และ 1440 px ครบทุกใบ ภาพชิดขอบพื้นที่การ์ด ข้อความอยู่พ้นพื้นที่ภาพ รูปโหลดแบบ responsive คอนทราสต์ข้อความพื้นปกติขั้นต่ำ 4.92:1. ชุดทดสอบการ์ดและการสัมผัสผ่าน 5 กรณี ตรวจซ้ำชุดการ์ด 3 กรณีหลังปรับครอป. TypeScript, ESLint และ Prettier ผ่าน. ภาพตรวจและแพ็กรวมต้นฉบับส่งออกอยู่ใน `output/scale-front/`.
+
+## Plan: การ์ดเครื่องชั่งพาสเทลตามหมวด
+
+- [x] ตรวจสเปก คำอนุมัติ ข้อมูลหมวดจริง และเวอร์ชันแพ็กเกจ
+- [x] เพิ่ม Tailwind และปลั๊กอินใน package.json, bun.lock, package-lock.json ผ่าน postcss.config.mjs อิมพอร์ต theme และ utilities เฉพาะ src/features/catalog/components/scale-showcase.css ระบุแหล่งคลาสและ prefix ปิด Preflight คงแนวทางประมวลผล CSS เดิม
+- [x] ปรับ src/features/catalog/data/scale-showcase.ts, src/features/catalog/components/scale-showcase-card.tsx และ src/features/catalog/components/scale-showcase-card.module.css เพื่อจัดธีม ตัวอักษร ภาพ ลูกศร และ hover โดยใช้รางเดิม
+- [x] ปรับ tests/e2e/products-full-overview.spec.ts ตรวจธีม สี ขนาด ลูกศร การแตะ การเลื่อน การโฮเวอร์ และลดการเคลื่อนไหว พร้อมบันทึกผล. ขอบเขต build config มีผลต่อการคอมไพล์ CSS ของโปรเจกต์ ตรวจหน้าอื่นด้วย ย้อนเฉพาะ config/แพ็กเกจและไฟล์การ์ดในแผนนี้
+
+ผลตรวจ: TypeScript, ESLint และ Prettier ผ่าน ทดสอบ Chromium ผ่าน 7 กรณี ครอบคลุมลำดับ SKU สีตามหมวด การเปิดรายละเอียดจากลูกศรและคีย์บอร์ด reduced motion ลูกศรราง การเลื่อนด้วยล้อเมาส์ การปัดและแตะบนมือถือ ตรวจครบสิบใบที่ 320, 390, 768 และ 1440 px ทั้งความสูงการ์ด ขนาดปุ่ม ชื่อรุ่น ช่องว่าง และการโหลดภาพหน้าตรง ตรวจหน้าแยกหมวดครัวและคอมไพล์ CSS การ์ดกับ base.css ในโหมด production ผ่าน ภาพตรวจอยู่ใน output/scale-pastel/ten-cards.png และ mobile.png
+
+## Plan: ข้อความบนการ์ดเครื่องชั่งสิบใบ
+
+- [x] แก้ src/features/catalog/components/scale-showcase-card.tsx ตัดส่วนแสดงราคาและสเปก ตรวจข้อความของการ์ดทั้งสิบใบในเบราว์เซอร์และบันทึกผลใน spec.md กับ plan.md
+
+ผลตรวจ: TypeScript ผ่าน ตรวจ Chrome ครบสิบใบที่ 390, 768 และ 1440 px พบเฉพาะหมวดและชื่อรุ่น พร้อมรูปและลิงก์สินค้า
+
+## Plan: สิบรุ่นที่เจ้าของเลือกสำหรับแถวเครื่องชั่ง
+
+- [x] เชื่อม SKU รูปหน้าตรงและสีเฉพาะรุ่นใน src/features/catalog/data/scale-showcase.ts, src/features/catalog/components/scale-showcase-card.tsx และ scale-showcase-card.module.css ใช้รูป public/images/products/scale-showcase/<sku>-front-4k.webp
+- [x] ทวนเงื่อนไขเดิมใน tests/e2e/products-full-overview.spec.ts ให้ตรงรายการที่ระบุ ตรวจ alpha ขนาด รูป ชื่อ ลิงก์ คลิก และการแสดงผลของทั้งสิบใบ บันทึกผลใน spec.md และ plan.md ย้อนกลับได้เฉพาะรายการและรูปแถวแรก
+
+ผลตรวจ: 10 รุ่นเรียงตรงรายการที่อนุมัติ ลิงก์รายละเอียดตอบ 200 ครบทุกรุ่น ภาพ WebP 4096 × 4096 มี alpha โปร่งใส ตรวจชื่อ รูป ข้อความและลิงก์ใน Chrome ที่ 390, 768 และ 1440 px, E2E 5 กรณี TypeScript และ ESLint ผ่าน ภาพตรวจ output/selected-scale-cards/ten-cards.png
+
+## Plan: เลือกออกแบบได้ด้วยตัวคุณเอง
+
+- [x] ส่งออก public/images/products/component-showcase/<sku>-front-4k.webp จำนวนแปดภาพจากต้นฉบับที่ตรวจแล้ว
+- [x] เพิ่ม src/features/catalog/data/component-showcase.ts ปรับ src/features/catalog/components/products-index-content.tsx, scale-showcase-card.tsx, scale-showcase.css และ src/features/catalog/data/scale-showcase.ts เพื่อใช้การ์ดและรางร่วมกับแถวแรก จัดหัวย่อย สี ลิงก์เข้าจัดสเปค และ id เฉพาะแถว
+- [x] ปรับ tests/e2e/products-full-overview.spec.ts ตรวจ lineup/สีตามบริบท SKU ซ้ำข้ามแถว รูปโปร่งใส 4K ตรวจคลิกและ responsive พร้อมบันทึกผลใน spec.md และ plan.md ย้อนกลับเฉพาะไฟล์/รายการในงาน
+
+ผลตรวจ: Chrome 390/768/1440 px แสดงชื่อ หมวด สี และรูปตรง SKU ครบทั้งแปดใบ เลื่อนด้วยลูกศร กด Enter เข้ารายละเอียด และเปิดหน้าจัดสเปคได้ ตรวจรูป WebP 4096 × 4096 มี alpha โปร่งใสครบแปดและลิงก์สินค้าตอบ 200 แถวแรกคง 10 ใบ E2E ที่เกี่ยวข้องผ่าน 6 กรณี TypeScript, ESLint, Prettier ผ่าน. ภาพตรวจและชุดไฟล์อยู่ใน output/modular-cards/
+
+## Plan: ภาพกลุ่มสินค้าสำหรับเมนูห้าหมวด
+
+- [x] จัดวางภาพหน้าตรงแยกตามหมวดเป็น public/images/products/category-families/{scales,indicators,platforms,pos,accessories}.webp โปร่งใส 4K
+- [x] เชื่อมภาพใน src/features/catalog/components/products-index-content.tsx ปรับเฉพาะระยะของเมนูใน products-index-content.module.css ตรวจชื่อและปลายทางเดิมทั้งห้า การเลื่อนบนมือถือ และหน้าเว็บจริงบนแท็บเล็ต/เดสก์ท็อป บันทึกผลใน spec.md กับ plan.md
+
+ผลตรวจ: WebP โปร่งใส 4096 × 2662 px ครบห้าหมวด ตรวจภาพย่อจริงใน Chrome ที่ 390, 768, 1440 px ทั้งชื่อ ปลายทาง และการโหลดผ่าน Next Image กดเปิดหมวดทั้งห้าได้ ตรวจเมนูบนมือถือและการนำทางด้วย Playwright ผ่าน 2 กรณี TypeScript และ Prettier ผ่าน ภาพตรวจและไฟล์รวมใน output/category-families/
+
+## Plan: คำโปรยและกรอบภาพสิบรุ่นบนแถวเครื่องชั่ง
+
+- [x] เพิ่ม tagline และ imageMode ใน src/features/catalog/data/scale-showcase.ts เตรียมภาพที่ตัดขอบ alpha จากสิบต้นฉบับใน public/images/products/scale-showcase/framed/ และปรับ src/features/catalog/components/scale-showcase-card.tsx เฉพาะการ์ดเครื่องชั่ง
+- [x] ตรวจชุดทดสอบเดิมใน tests/e2e/products-full-overview.spec.ts รวมทั้งวัดกรอบและการแสดงผลทุกภาพในเบราว์เซอร์ที่มือถือและเดสก์ท็อป สรุปผลใน spec.md/plan.md
+
+ผลตรวจ: Chromium ที่ 320/390/768/1440 px ตรวจคำโปรยตรงต้นฉบับครบสิบรุ่น ขนาดตัวอักษร 12/14 px สูงหนึ่งบรรทัด แถบภาพ 210/230 px ตรงขอบล่าง เก้ารุ่น fit ในกรอบ และ WPK5000 ล้นด้านข้าง ตรวจจอแยก AVS และตู้ C1 ที่ hover 105% อยู่ครบด้วย ดู output/scale-framing/ten-cards.png. E2E ที่เกี่ยวข้อง 4 กรณีผ่าน TypeScript, ESLint และ Prettier ผ่าน
+
+## Plan: พื้นหลังสองโทนของแถวเครื่องชั่ง
+
+- [x] ปรับ src/features/catalog/data/scale-showcase.ts และ src/features/catalog/components/scale-showcase-card.tsx ให้จับคู่สีและระดับตามลำดับจริง แล้ววางชั้นพื้นหลังตกแต่งใต้ภาพและข้อความ
+- [x] อัปเดต tests/e2e/products-full-overview.spec.ts ทดสอบสี/ความสูง การคลิกและ hover เทียบภาพ ชื่อ คำโปรย และปุ่มกับพิกัดก่อนแก้ที่มือถือ แท็บเล็ต และเดสก์ท็อป บันทึกผลใน spec.md/plan.md
+
+ผลตรวจ: เปรียบเทียบพิกัดและขนาดรูป ชื่อ คำโปรย และลูกศรของสิบการ์ดก่อน/หลังที่ 390, 768, 1440 px ตรงกัน ตรวจสี/alpha ความสูงพื้นล่างทุกใบและ hover จบที่ 48% ใน 500 ms ครบ ตรวจ reduced motion และการแตะ/คลิกเปิดสินค้า ผ่าน E2E 5 กรณี TypeScript และ ESLint ผ่าน ภาพตรวจ output/scale-split-tone/ten-cards.png
+
+## Plan: โทนสีตุ่นและขนาดภาพแถวเครื่องชั่ง
+
+- [x] ปรับสีและความสูงใน src/features/catalog/data/scale-showcase.ts ปรับตัวอักษร กรอบภาพ และเงาใน src/features/catalog/components/scale-showcase-card.tsx เฉพาะแถวเครื่องชั่ง
+- [x] ตรวจค่าที่แสดงจริงบนมือถือ แท็บเล็ต เดสก์ท็อป การเลื่อน โฮเวอร์ และการเปิดสินค้า อัปเดต tests/e2e/products-full-overview.spec.ts และสรุปผลใน spec.md/plan.md
+
+ผลตรวจ: วัดสีทั้ง 12 ค่า ขนาดและน้ำหนักตัวอักษร ความสูงพื้นและรูป สัดส่วนกรอบและเงาครบสิบใบที่ 320, 390, 737, 768 และ 1440 px ตรวจ hover จริงที่ 320, 390, 768 และ 1440 px ภาพ full-bottom อยู่ครบ คำโปรยไม่ถูกทับ ทดสอบ E2E 5 กรณีผ่าน ตรวจซ้ำ 2 กรณีหลังเผื่อขอบซูม TypeScript, ESLint และ Prettier ผ่าน ภาพตรวจ output/scale-muted-finish/ten-cards.png
+
+## Plan: หัวข้อแถวเครื่องชั่งสองสี
+
+- [x] ปรับหัวข้อใน src/features/catalog/components/products-index-content.tsx และ products-index-content.module.css เฉพาะแถวเครื่องชั่ง ทวนชื่อที่โปรแกรมอ่านหน้าจอใช้ สี ความกว้าง และลิงก์ข้างหัวข้อ บันทึกผลใน spec.md และ plan.md
+
+ผลตรวจ: ตรวจบน Chrome ที่ 320, 390, 768 และ 1440 px หัวข้อ h2 มีชื่อเต็มเดิม ทั้งสองช่วงอ่านได้บนพื้น #F5F5F7 ด้วยอัตราส่วนคอนทราสต์ 4.74 และ 4.66 ตามลำดับ หัวข้อและลิงก์ดูทั้งหมดไม่ซ้อนกัน TypeScript, ESLint และ Prettier ผ่าน เก็บภาพที่ output/scale-heading/desktop.png และ mobile.png การทดสอบ server response ผ่านจุดตรวจชื่อหัวข้อ แต่ assertion จำนวน data-design นับทั้งหน้าได้ 18 จากเครื่องชั่ง 10 และอินดิเคเตอร์ 8 ขณะที่เทสต์เดิมคาด 10
+
+## Plan: คำโปรยเครื่องชั่งที่อ่านจบในบรรทัดเดียว
+
+- [x] ย่อคำโปรยรายรุ่นใน src/features/catalog/data/scale-showcase.ts โดยอิงจุดขายเดิมตามคำขอเจ้าของ
+- [x] ปรับข้อความอ้างอิงใน tests/e2e/products-full-overview.spec.ts และเพิ่มการตรวจทุกคำโปรยว่าพอดีในกรอบจริง ตรวจด้วย Chrome และบันทึกผลใน spec.md และ plan.md
+
+ผลกระทบจำกัดอยู่ที่คำบรรยายสั้นของการ์ดเครื่องชั่ง ย้อนกลับได้ด้วยการคืนคำโปรยเดิม
+
+ผลตรวจ: Chrome ตรวจทั้ง 10 คำโปรยที่ 320, 390, 736, 737, 768 และ 1440 px ผ่านครบหนึ่งบรรทัด การตรวจชุดรุ่นเดิมเมื่อรีโหลดและเปิดเซสชันใหม่ผ่าน ตรวจ TypeScript, ESLint และ Prettier ผ่าน ภาพตัวอย่าง output/scale-card-copy/three-models.png
+
+## Plan: การ์ดแม่นยำในทุกน้ำหนัก
+
+- [x] เตรียมภาพประกอบ public/images/products/precision-weights.webp และแทรกการ์ดก่อนสินค้าเดิมของแถว indicators ใน src/features/catalog/components/products-index-content.tsx พร้อมสไตล์เฉพาะใน src/features/catalog/components/products-index-content.module.css
+- [x] ตรวจลำดับ 9 ใบ ปลายทาง ขนาด การคลิกและคีย์บอร์ด ปรับ tests/e2e/products-full-overview.spec.ts และบันทึกผลจริงใน spec.md และ plan.md
+
+การย้อนกลับทำได้โดยนำการ์ดแนะนำพร้อมภาพและสไตล์เฉพาะออก ไม่มีการเปลี่ยนข้อมูลสินค้า
+
+ผลตรวจ: Chrome ที่ 320, 390, 768 และ 1440 px การ์ดแรกมีขนาดเท่าการ์ด AW31 และไม่มีข้อความทับรูป พบการ์ดแนะนำ 1 ใบและสินค้าเดิม 8 ใบตามลำดับ คลิกที่ภาพและมุมลูกศร และกด Enter จากคีย์บอร์ดเปิด /about-us ได้ เลื่อนไปและย้อนกลับได้ครบทุกขนาด Playwright 2 กรณี, typecheck, ESLint และ Prettier ผ่าน
+
+## Plan: สัดส่วนการ์ดเครื่องชั่งและข้อความสี่ระดับ
+
+- [x] เพิ่มมาตรฐานและสเปกตามเจ้าของใน src/features/catalog/data/scale-showcase.ts แสดงคำแต่ละระดับ ปรับความสูงและจัดพื้นที่ข้อความกับภาพใน src/features/catalog/components/scale-showcase-card.tsx
+- [x] ปรับการตรวจขนาดเดิมและทดสอบสเปกใน tests/e2e/products-full-overview.spec.ts วัดการแสดงผลทั้ง 10 รุ่นเมื่อเปลี่ยนขนาดหน้าจอ พร้อมตรวจภาพปกติและโฮเวอร์
+- [x] บันทึกผลใน spec.md และ plan.md
+
+เปลี่ยนเฉพาะแถวเครื่องชั่ง ย้อนคืนได้ด้วยการคืนข้อมูลและรูปแบบการ์ดเดิม การจัดการคลังและหน้ารายละเอียดอยู่นอกขอบเขต
+
+ผลตรวจ: แถวเครื่องชั่งทั้งสิบใบมีความสูงจริง 400/420 px (md ที่ 768 px) ตรวจสเปกตาม SKU ชื่อ คำโปรยหนึ่งบรรทัด และสเปกที่อ่านครบได้ที่ความกว้าง 320, 390, 736, 737, 768 และ 1440 px พื้นหลังและสัดส่วนแถบสีผ่านการตรวจเดิม ทดสอบ hover จริงทั้ง 10 รุ่นบนสี่ขนาดจอ ระยะห่างข้อความถึงกรอบรูปอย่างน้อย 8 px แถวอุปกรณ์และการคลิกผ่าน E2E 5 กรณี ตรวจซ้ำ 2 กรณีหลังปรับระยะสุดท้าย TypeScript, ESLint และ Prettier ผ่าน ภาพที่ output/scale-four-tier/desktop.png
+
+## Plan: ย่อข้อมูลหน้าเครื่องชั่งตามรอยขีดและแก้ AVS-25-K1 / FEH5KS
+
+- [x] แก้คำโปรยสองรุ่นและนำข้อมูลสำหรับสองตำแหน่งที่เลิกใช้จาก src/features/catalog/data/scale-showcase.ts ออก ปรับการแสดงผลและคำอธิบายลิงก์ใน src/features/catalog/components/scale-showcase-card.tsx
+- [x] ปรับการตรวจข้อความของทั้งสิบใบใน tests/e2e/products-full-overview.spec.ts ทดสอบการอ่าน คำบรรยาย การคลิก และการจัดวางตามขนาดจอ บันทึกผลใน spec.md และ plan.md
+
+ขอบเขตคือแถวเครื่องชั่งบน /products ย้อนกลับได้โดยคืนค่าข้อความและโครงสร้างคำบรรยายเดิม
+
+ผลตรวจ: หมวด ชื่อรุ่น และคำโปรยแสดงครบทั้ง 10 ใบ แก้คำโปรย AVS-25-K1 เป็นพิกัด 30 กก. และ FEH5KS เป็นพอร์ต RS232 ตรงกับคลัง ตรวจ Chrome ที่ 320, 390, 736, 737, 768 และ 1440 px คำโปรยอยู่บรรทัดเดียว ลิงก์มีคำอธิบายปัจจุบัน Playwright ผ่าน 4 กรณี TypeScript, ESLint และ Prettier ผ่าน ภาพตรวจ output/scale-card-corrections/cards.png
+
+## Plan: คู่สีรายรุ่นของการ์ดเครื่องชั่ง
+
+- [x] แก้ src/features/catalog/data/scale-showcase.ts ผูกคู่สีพาสเทลกับ SKU แทนการวนสีตามตำแหน่ง
+- [x] ปรับ tests/e2e/products-full-overview.spec.ts ให้ตรวจสีรายรุ่น ตรวจกรณีแสดงสินค้าไม่ครบ และรักษาการตรวจระนาบสีเดิม
+- [x] ตรวจสีในเบราว์เซอร์ คอนทราสต์ การโฮเวอร์ และภาพรวมทั้ง 10 ใบบนมือถือและเดสก์ท็อป แล้วบันทึกผลใน spec.md และ plan.md
+
+การเปลี่ยนมีผลต่อพื้นหลังของแถวเครื่องชั่ง ย้อนกลับได้ด้วยการคืนค่าเฉพาะคู่สี
+
+## Plan: ลบลิงก์ดูทั้งหมดบนหน้า /products
+
+- [x] รับและบันทึกการอนุมัติขอบเขตใน spec.md
+- [x] แก้ src/features/catalog/components/products-index-content.tsx ให้หัวข้อกลุ่มแสดงลิงก์เฉพาะ “จัดสเปค” ของกลุ่มอุปกรณ์
+- [x] ตรวจในเบราว์เซอร์ที่ 390, 768 และ 1440 px ตามเกณฑ์ใน Spec แล้วบันทึกผลใน spec.md และ plan.md
+
+ผลกระทบจำกัดอยู่ที่หัวข้อกลุ่มการ์ดใน /products ย้อนกลับได้ด้วยการคืนเงื่อนไขแสดงลิงก์ในคอมโพเนนต์เดิม
+
+ผลตรวจ: แถวเครื่องชั่งแสดงสีประจำ SKU ครบ 10 คู่ ตรวจสีพื้นบนและล่างจาก Chrome ที่ 320, 390, 768 และ 1440 px อัตราส่วนคอนทราสต์ต่ำสุดของหมวด ชื่อ และคำโปรยเท่ากับ 4.77:1 ตรวจการเลือกสินค้าแบบเหลือรุ่นเดียวและการโฮเวอร์แถบสีแล้ว Playwright 4 กรณีผ่าน พร้อม TypeScript, ESLint และ Prettier ภาพรวมจากหน้าจริง output/scale-model-palettes/ten-cards.png
+
+ผลตรวจ: Chrome ที่ 390, 768 และ 1440 px พบหัวข้อและการ์ดครบ 6 กลุ่ม ลิงก์ “จัดสเปค” และทางเข้าหมวด 5 รายการยังอยู่และปลายทางตอบสำเร็จ ไม่พบ “ดูทั้งหมด” ในกลุ่มการ์ด ESLint และ Prettier ของคอมโพเนนต์ผ่าน
+
+## Plan: คืนขนาดเดิมของการ์ดเครื่องชั่งบน /products
+
+- [x] ใช้ค่าความสูงเดิมร่วมกันใน src/features/catalog/components/scale-showcase-card.tsx และปรับค่าคาดหวังใน tests/e2e/products-full-overview.spec.ts
+- [x] วัดการ์ดจริงเทียบแถวอุปกรณ์ที่มือถือ ช่วง 736/737 px แท็บเล็ต และเดสก์ท็อป ตรวจการโฮเวอร์/คลิกและบันทึกผลใน spec.md และ plan.md
+
+การคืนค่าก่อนปรับครั้งนี้ทำได้โดยใส่ความสูง 400/420 px กลับเฉพาะแถวเครื่องชั่ง
+
+ผลตรวจ: Chrome วัดการ์ดเครื่องชั่ง 10 ใบเทียบแถวอุปกรณ์ 9 ใบตรงกันที่ 320, 360, 369, 390, 736, 737, 767, 768, 1024, 1440 และ 2560 px การทดสอบ Playwright 4 กรณีผ่าน รวมถึงการโฮเวอร์และเปิดสินค้า TypeScript, ESLint และ Prettier ผ่าน ภาพตัวอย่างอยู่ใน output/scale-card-original-size/
+
+## Plan: ลบลิงก์จัดสเปคจากหัวข้อกลุ่มอุปกรณ์บน /products
+
+- [x] รับและบันทึกการอนุมัติใน spec.md
+- [x] ลบบล็อกลิงก์ “จัดสเปค” ใน src/features/catalog/components/products-index-content.tsx
+- [x] ปรับเงื่อนไขตรวจเดิมใน tests/e2e/products-full-overview.spec.ts ให้ยืนยันว่าลิงก์ถูกนำออก
+- [x] ตรวจใน Chrome ที่ 390, 768 และ 1440 px แล้วบันทึกผลใน spec.md และ plan.md
+
+ย้อนกลับได้ด้วยการคืนบล็อกลิงก์และเงื่อนไขตรวจเดิม
+
+ผลตรวจ: Chrome ที่ 390, 768 และ 1440 px แสดงหัวข้อและการ์ดอุปกรณ์ครบ 9 ใบและไม่มีลิงก์ “จัดสเปค” ข้างหัวข้อ ปลายทางเมนูเดิมทั้งห้าและหน้าคู่มือตอบสำเร็จ ESLint และ Prettier ผ่าน
+
+## Plan: เพิ่มเมนูภาพจัดสเปคด้านบน /products
+
+- [x] รับและบันทึกการอนุมัติแผนเพิ่มเมนูภาพ
+- [x] เพิ่มรายการ “จัดสเปค” ใน src/features/catalog/components/products-index-content.tsx และจัดรูปคู่ในกรอบเดิมผ่าน src/features/catalog/components/products-index-content.module.css โดยใช้ภาพที่มีอยู่
+- [x] ปรับการตรวจเมนูใน tests/e2e/products-full-overview.spec.ts ให้ครอบคลุมเมนูเดิมทั้งห้าและรายการใหม่ ตรวจการโหลดภาพ การเข้าถึงด้วยเมาส์และคีย์บอร์ด และการเลื่อนแถวที่ 390, 768 และ 1440 px
+- [x] บันทึกผลใน spec.md และ plan.md
+- [x] ปรับตัวเลือกใน tests/e2e/product-image-placeholder.spec.ts และ tests/e2e/products-mobile-rail.spec.ts ให้ตรวจหมวดเดิมตามลิงก์หรือชื่อเดิม หลังเพิ่มรายการที่หก
+
+ผลกระทบจำกัดที่แถวเมนูภาพของ /products ย้อนกลับได้โดยนำรายการ รูปแบบภาพคู่ และเงื่อนไขตรวจรายการใหม่ออก
+
+## Plan: เพิ่มน้ำหนักสีและสลับพื้นสีเดียวในแถวเครื่องชั่ง
+
+- [x] ปรับสีฐาน พื้นรอง และสีข้อความราย SKU ใน src/features/catalog/data/scale-showcase.ts และแสดงสีข้อความใน src/features/catalog/components/scale-showcase-card.tsx ให้ครบทั้งสามระดับ
+- [x] ปรับ tests/e2e/products-full-overview.spec.ts เพื่อตรวจพื้นสีเดียวและแถบรอง การอ่าน ลำดับ SKU และการโฮเวอร์
+- [x] ตรวจจริงทั้ง 10 ใบที่มือถือ แท็บเล็ต และเดสก์ท็อป เก็บภาพตัวอย่างและผลใน spec.md / plan.md
+
+จำกัดขอบเขตแถวเครื่องชั่ง 10 รุ่น ย้อนกลับได้ด้วยชุดสีและแถบรองรายรุ่นเดิม
+
+ผลตรวจแถวเครื่องชั่ง: Chrome 320, 390, 737, 768 และ 1440 px ตรวจครบ 10 รุ่นทั้งพื้น ขนาด และสีข้อความ คอนทราสต์ต่ำสุด 5.37:1 ตรวจ hover ครบ 10 ใบ Playwright ผ่าน 5 กรณี รวมคลิกและแป้นพิมพ์ TypeScript, ESLint และ Prettier ผ่าน ภาพจากหน้าเว็บ output/scale-store-colors/ten-cards.png
+
+ผลตรวจ: Chrome ที่ 390, 768 และ 1440 px โหลดภาพคู่ในกรอบเดิมและเปิดคู่มือได้ด้วย Enter และการคลิก การเลื่อนแถวผ่านที่ 390 และ 768 px ปลายทางหมวดเดิมทั้งห้าตอบสำเร็จ ตรวจภาพที่ 1440 px แล้ว Playwright ผ่าน 9 กรณีที่เกี่ยวข้อง พร้อม TypeScript, ESLint และ Prettier
+
+## Plan: คำโปรยเครื่องชั่งน้ำหนักปกติ
+
+- [x] ปรับเฉพาะคลาสข้อความคำโปรยใน src/features/catalog/components/scale-showcase-card.tsx และตรวจน้ำหนักฟอนต์ในกรณีเดิมของ tests/e2e/products-full-overview.spec.ts
+- [x] ตรวจการแสดงผลทั้ง 10 รุ่นใน Chrome หลายขนาดจอ รวมพื้นเข้มและสีอ่อน บันทึกผลใน spec.md และ plan.md
+
+ผลกระทบจำกัดที่ตัวอักษรคำโปรยในแถวเครื่องชั่ง คืนค่าได้ด้วยการย้อนคลาสของคำโปรย
+
+ผลตรวจ: ที่ 320, 390, 736, 737, 768 และ 1440 px คำโปรยทั้ง 10 รุ่นมีน้ำหนัก 400 แสดงครบหนึ่งบรรทัด คอนทราสต์ต่ำสุด 5.99:1 Playwright ผ่าน 2 กรณี พร้อม TypeScript, ESLint และ Prettier ภาพตรวจ output/scale-regular-taglines/preview.png
+
+## Plan: ระบบอัจฉริยะ ยกระดับงานชั่ง
+
+### สองแถวเฉพาะงาน
+
+- [x] เทียบแหล่งภาพจริงและชื่อรุ่นในคลังกับชุดที่แสดงเดิม คัด 16 รายการตามหมวดที่ขอ
+- [x] เตรียมภาพหน้าตรงสำหรับ public/images/products/specialty-scales/ ตาม SKU ที่ระบุใน spec.md
+- [x] ผูกข้อมูลใน src/features/catalog/data/scale-showcase.ts และแสดงใน src/features/catalog/components/products-index-content.tsx โดยใช้ src/features/catalog/components/scale-showcase-card.tsx ร่วมกับแถวเดิม
+- [x] ตรวจภาพจริงหลายขนาดจอ พร้อมอัปเดตการทดสอบใน tests/e2e/products-full-overview.spec.ts และบันทึกผลใน spec.md / plan.md
+
+ขอบเขตเป็นการนำเสนอในสองแถว เมนูหมวดและหน้ารายละเอียดใช้ลิงก์เดิม ย้อนกลับได้โดยยกเลิกข้อมูลชุดที่คัดและผังแสดงผลสองแถว
+
+ผลตรวจ typecheck, ESLint และ Prettier ผ่าน การทดสอบ Playwright เฉพาะหน้ารวมสินค้า 4 กรณีผ่าน ตรวจไฟล์ 16 ชิ้น ขนาดด้านยาว 4096 px ช่อง alpha และแฮชไม่ซ้ำ ตรวจภาพหน้าจอครบสองแถว การเลื่อนหน้า/ย้อนกลับและการเปิดการ์ดด้วย Enter บน Chrome ผ่าน
+
+### รายการเจ็ดใบและภาพหน้าตรง 4K
+
+- [x] เทียบรูปแนบกับ SKU สี่รุ่นแรก เลือก RLS1800 และ LP50 เป็นใบที่หกและเจ็ด ตรวจต้นฉบับภาพ
+- [x] จัดไฟล์หน้าตรงใน public/images/products/software-showcase/ สำหรับ p1w, p1, p4, p3, weweigh2-home, rls1800 และใช้ภาพ 4K ของ LP50 ใน public/images/products/component-showcase/
+- [x] ปรับ src/features/catalog/components/software-showcase.tsx, products-index-content.tsx และ products-index-content.module.css สำหรับรายการผสมฮาร์ดแวร์และเว็บแอป
+- [x] ตรวจ alpha ขนาดจริง ลำดับ ราคา ปลายทาง ภาพอ้างอิง WeWeigh2 การเลื่อนและการแสดงผลหลายขนาดจอ ปรับกรณีใน tests/e2e/products-full-overview.spec.ts พร้อมบันทึกผลใน spec.md และ plan.md
+
+งานนี้เปลี่ยนเฉพาะรายการนำเสนอและภาพของแถวระบบอัจฉริยะ ย้อนกลับได้โดยคืนการ์ด เวอร์ชันภาพ และตัวเลือก CSS ของแถวก่อนหน้านี้
+
+ผลตรวจ: รูปทุกใบมี alpha โปร่งใสที่มุมทั้งสี่ ด้านยาว 4096 px ราคาตรงกับคลังและปลายทางตอบ 200 ทั้งเจ็ดใบ เปรียบเทียบภาพด้านในของ WeWeigh2 กับไฟล์แนบหลังย่อเท่ากันได้ส่วนต่างสีเฉลี่ย 0.74/255 ผ่าน Chrome หกความกว้าง และ Playwright 3 กรณี รวม TypeScript, ESLint และ Prettier ภาพรวม output/smart-systems-seven/seven-cards.png
+
+### ประวัติการดำเนินงานแถวแอปห้าใบ
+
+- [x] ตรวจเว็บ WeWeigh2 หน้าซอฟต์แวร์ของ SUNFORD และภาพในคลังแอป ยืนยันขอบเขตที่เจ้าของมอบหมาย
+- [x] แสดงแถวแอปแทนรายการแท่นชั่งใน src/features/catalog/components/products-index-content.tsx ทำการ์ดใน src/features/catalog/components/software-showcase.tsx และจัดภาพใน src/features/catalog/components/products-index-content.module.css ใช้ภาพของเดิมร่วมกับ public/images/products/software-showcase/weweigh2.webp, weweigh-android.webp และ pos-android.webp จากหน้าทางการและวิดีโอสาธิตที่แสดงบนหน้า POS Android
+- [x] ปรับสัญญาข้อมูลและทดสอบใน tests/e2e/products-full-overview.spec.ts ตรวจสี ลิงก์ ขนาด การเลื่อน และภาพจาก Chrome บันทึกผลใน spec.md / plan.md
+
+ผลกระทบจำกัดที่แถวที่สามของ /products ย้อนกลับได้ด้วยการคืนการแสดง members ของหมวด platforms และถอดการ์ดซอฟต์แวร์ออก เมนูและหน้าหมวดแท่นชั่งใช้สัญญาเดิม
+
+ผลตรวจ: ภาพและขนาดการ์ดผ่านที่หกความกว้าง แถวสินค้าที่เหลือตรงกับข้อมูล API ตรวจปลายทางแอปทั้งห้าและหน้าหมวดแท่นชั่งได้ HTTP 200 ชุด Playwright ของแอปและสองแถวแรกผ่าน 4 กรณี TypeScript, ESLint และ Prettier ผ่าน ส่วนการทดสอบภาพรวมเดิมอีก 4 ขนาดจอหยุดที่ข้อกำหนด H1 “เครื่องชั่งน้ำหนักล้ำสมัย” เนื่องจากหัวหน้า /products ใน workspace ว่างอยู่ก่อนงานนี้
+
+## Plan: สีและคำโปรยรายรุ่นของการ์ดอุปกรณ์ 8 ใบ
+
+- [x] ส่วนหัวเพิ่มเติมตามภาพที่เจ้าของชี้: ใช้สีของสองวลีจากหัวข้อแถวแรกใน src/features/catalog/components/products-index-content.tsx ตรวจสีและชื่อที่เข้าถึงได้ใน tests/e2e/products-full-overview.spec.ts ตรวจขอบจอที่ 320, 390, 768, 1440 px และบันทึกผลใน spec.md / plan.md ขอบเขตการแก้คือหัวข้อแถวอุปกรณ์ ย้อนกลับได้เฉพาะรายการหัวข้อนี้
+
+ผลตรวจหัวข้อ: Chrome แสดงทั้งสองสีตามโทเคนและข้อความอยู่ภายในจอทั้งสี่ขนาด กรณี Playwright ของแถวอุปกรณ์, TypeScript และ Prettier ผ่าน ภาพตรวจที่ output/equipment-heading-color/mobile.png
+
+- [x] ตรวจข้อมูลคลัง ภาพสินค้า ขอบเขตที่เจ้าของมอบหมาย และรูปแบบตัวอักษรของแถวแรก
+- [x] จับคู่สีและคำโปรยกับ SKU ใน src/features/catalog/data/component-showcase.ts และใช้รูปแบบข้อความร่วมใน src/features/catalog/components/scale-showcase-card.tsx
+- [x] ตรวจสี รูป ลิงก์ และข้อความที่ทุก breakpoint ด้วย tests/e2e/products-full-overview.spec.ts ตรวจภาพรวมที่ output/component-shelf-copy-colors/eight-cards.png
+- [x] บันทึกผลจริงใน spec.md และ plan.md
+
+ผลกระทบอยู่ที่การนำเสนอการ์ดอุปกรณ์ในหน้า /products ย้อนกลับได้ด้วยการคืนค่าชุดสี ข้อความ และคลาสเดิมของการ์ดอุปกรณ์
+
+ผลตรวจ: Playwright ผ่าน 5 กรณีที่เกี่ยวข้อง ข้อความทั้ง 18 ใบในสองแถวผ่านการตรวจที่ 320, 390, 736, 737, 768 และ 1440 px ตรวจภาพทั้ง 8 ใบและวัดคอนทราสต์จากสีจริงใน Chrome ตรวจลิงก์อุปกรณ์ทั้ง 8 และการ์ดแบรนด์ รวมถึงกรณีภาพ FCS 4050 โหลดไม่ได้ TypeScript, ESLint และ Prettier ผ่าน
+
+## Plan: เริ่มโลโก้เปิดหน้า /products ด้วย Liquid Glass
+
+- [x] รับและบันทึกการอนุมัติใน spec.md
+- [x] ปรับกฎการมองเห็นใน src/features/catalog/components/products-index-content.module.css ให้ซ่อนภาพ S ขณะรอและระหว่าง Liquid Glass แล้วแสดงเมื่อเข้าสู่ช่วงประกอบตัวอักษรหรือแสดงโลโก้เต็ม
+- [x] ปรับ tests/e2e/products-index-carousel.spec.ts ให้ตรวจสถานะระหว่างรอเฟรมแรก และรันกรณีส่งต่อแอนิเมชันกับกรณีแสดงโลโก้เต็ม
+- [x] บันทึกผลการตรวจใน spec.md และ plan.md
+
+ผลกระทบจำกัดที่การมองเห็นภาพ S ในคอมโพเนนต์เปิดหน้า /products ย้อนกลับได้โดยคืนกฎ CSS และเงื่อนไขตรวจเดิม
+
+ผลตรวจ: Chrome ที่ 390, 768 และ 1440 px ซ่อน S ก่อนเฟรมแรกและระหว่าง Liquid Glass แสดง S ที่จุดส่งต่อและประกอบ SUNFORD ในไทม์ไลน์เดิม 5 วินาที Playwright ผ่าน 5 กรณี รวมการพักแอนิเมชันและการแสดงโลโก้เต็มเมื่อใช้ Reduce Motion หรือ WebGL2 ใช้ไม่ได้ ตรวจ CSS ใน Chrome เพิ่มเติมเมื่อปิด JavaScript พบว่า S และตัวอักษรอีก 6 ตัวแสดงครบ ESLint และ Prettier ผ่าน
+
+## Plan: เพิ่ม R3, R6 และ TGS600S ในหมวดงานวิเคราะห์
+
+- [x] บันทึกขอบเขตและการอนุมัติใน `spec.md` และแผนใน `plan.md`
+- [x] ตรวจ SKU, รายการสินค้าที่เชื่อม และแอตทริบิวต์เดิมแบบอ่านอย่างเดียว
+- [x] เพิ่มสามแถวใน Warehouse ภายในธุรกรรมเดียว ตรวจ RPC และข้อมูลเดิมก่อน commit
+- [x] ตรวจ API และหน้าหมวดเดิม แล้วบันทึกผลใน `spec.md` และ `plan.md`
+
+ถ้าข้อมูลก่อน/หลังไม่ตรงตามขอบเขตให้ rollback ก่อน commit การย้อนหลัง commit จำกัดเฉพาะสามแถวที่เพิ่มและต้องตรวจค่าและที่มาก่อน
+
+ผลตรวจหลัง commit: RPC ส่งค่า “งานวิเคราะห์” ครบทั้งสี่ SKU และทั้ง localhost กับ Vercel แสดงลิงก์รายละเอียดสินค้าครบสี่รุ่นในหน้าหมวด
+
+## Plan: แสดงจุดขายแทนราคาในการ์ด POS สี่รุ่นบน /products
+
+- [x] ยืนยันการ์ดสี่ใบจากราคาในภาพและตรวจข้อมูลจาก Warehouse
+- [x] รับอนุมัติ Spec/Plan และยืนยันจุดขายรายรุ่นจากหน้าสินค้าทางการที่บันทึกใน `spec.md`
+- [x] ปรับ `src/features/catalog/components/software-showcase.tsx` ให้การ์ด POS สี่รุ่นแสดงจุดขายที่สรุปจากหน้าสินค้าทางการในบรรทัดเดิม
+- [x] อัปเดตกรณีตรวจแถวเดิมใน `tests/e2e/products-full-overview.spec.ts` และตรวจรูปแบบ ลิงก์ และข้อความในเบราว์เซอร์
+- [x] บันทึกผลใน `spec.md` และ `plan.md`
+
+ผลกระทบอยู่ที่บรรทัดราคาในการ์ด POS สี่ใบของแถวระบบอัจฉริยะ ย้อนกลับได้โดยคืนเงื่อนไขแสดงข้อความของการ์ดเดิม
+
+ผลตรวจ: Playwright บน Chrome ผ่านที่ 390, 768 และ 1440 px ข้อความจุดขายของการ์ด POS ทั้งสี่แสดงครบหนึ่งบรรทัดและแทนที่ราคา ตรวจลำดับ ลิงก์ และรูปครบทั้งเจ็ดใบ รวมการเลื่อนแถวและเปิด LP50 ด้วยคีย์บอร์ด TypeScript, ESLint และ Prettier ผ่าน
+
+## Plan: ปรับการ์ดสินค้าให้รูปอยู่ด้านบนบน /products
+
+### Files
+
+- `src/features/catalog/components/scale-showcase-card.tsx` และ `src/features/catalog/components/scale-showcase-card.module.css` — เพิ่มรูปแบบภาพด้านบนสำหรับการ์ดอุปกรณ์และสองแถวเครื่องชั่งเฉพาะงาน แยกเงื่อนไขจากแถวเครื่องชั่งแรก
+- `src/features/catalog/components/software-showcase.tsx` — ใช้รูปแบบใหม่เฉพาะการ์ดฮาร์ดแวร์ทั้งหกใบ
+- `src/features/catalog/components/products-index-content.tsx` และ `src/features/catalog/components/products-index-content.module.css` — ใช้รูปแบบเดียวกันกับการ์ดสินค้าที่เหลือ ใช้คลาสเฉพาะการ์ดเป้าหมาย
+- `tests/e2e/products-full-overview.spec.ts` — ตรวจผังการ์ด ข้อความ ปลายทาง และการ์ดที่อยู่นอกขอบเขต
+- `spec.md` และ `plan.md` — บันทึกการอนุมัติและผลจริง
+
+### Steps
+
+- [x] ยืนยันแถวแรกและการ์ดเป้าหมายจากเส้นทางจริงและภาพของเจ้าของ
+- [x] บันทึกการอนุมัติ Spec/Plan
+- [x] ปรับการ์ดสินค้าในขอบเขตและตรวจว่าการ์ดที่ยกเว้นยังใช้การแสดงผลเดิม
+- [x] ตรวจ Chrome ที่ 320, 390, 768 และ 1440px พร้อมภาพหน้าจอ ตรวจลิงก์ การเลื่อน และการเข้าถึงด้วยคีย์บอร์ด รัน TypeScript, ESLint และ Prettier สำหรับไฟล์ที่แก้
+- [x] บันทึกผลตรวจใน Spec/Plan
+
+### Impact / Rollback
+
+คอมโพเนนต์การ์ดเครื่องชั่งถูกใช้ร่วมกับแถวแรก จึงให้รูปแบบใหม่ทำงานจากเงื่อนไขเฉพาะการ์ดเป้าหมายและตรวจแถวแรกเทียบกับค่าก่อนแก้ การย้อนกลับทำได้โดยถอดการจัดวางและ CSS เฉพาะงานนี้ ราคาและข้อมูลยังอ่านจากแหล่งเดิม
+
+### ผลตรวจ
+
+ตรวจชุดล่าสุดบน /products ครบ 30 ใบ แถว “รายการอื่น ๆ” ถูกซ่อนตามงานส่วนท้ายของหน้าที่ทำพร้อมกัน
+
+Chrome ตรวจที่ 320, 390, 768 และ 1440 px พบรูปอยู่เหนือข้อมูลและลูกศรไม่ซ้อนข้อความในการ์ดสินค้าที่เข้าขอบเขตทั้งหมด ตรวจการเลื่อน การคลิกและ Enter เปิดสินค้าตรงรุ่น ตรวจจุดขาย POS และการ์ดกรณีรูปหาย เปรียบเทียบก่อนและหลังที่ทั้งสี่ความกว้างแล้ว ข้อความ ลิงก์ แหล่งภาพ สี ขนาดการ์ด และตำแหน่งชื่อภายในการ์ดของแถวแรก การ์ดเกี่ยวกับ SUNFORD, WeWeigh2 และเมนูหมวดตรงกัน
+
+Playwright ผ่านชุดการ์ดที่เกี่ยวข้อง 8 กรณี และรอบตรวจผังล่าสุดรวมกรณีรูปหายผ่าน 4 กรณี TypeScript, ESLint และ Prettier สำหรับไฟล์โค้ดผ่าน ตรวจรูปแบบส่วนที่เพิ่มในเอกสารแล้ว Prettier ทั้งไฟล์ยังแจ้งรูปแบบในหัวข้องานก่อนหน้า
+
+ภาพหน้าจอ [มือถือ 390 px](test-results/product-photo-layout-final/products-full-overview-pro-4d751-uct-cards-keep-their-layout-chromium/product-cards-390.png) และ [เดสก์ท็อป 1440 px](test-results/product-photo-layout-final/products-full-overview-pro-4d751-uct-cards-keep-their-layout-chromium/product-cards-1440.png)
+
+## Plan: ส่วนท้ายมาตรฐานการสอบเทียบบน /products (2026-11-19)
+
+- [x] ขยายกรอบสแกนทั้งสองใบเต็มความกว้างใน src/features/catalog/components/products-index-content.module.css และแก้ sizes ใน src/features/catalog/components/products-index-content.tsx ให้ตรงกับราง ตรวจใน Chrome ความกว้าง 320, 390, 736, 737, 768 และ 1440 px ขอบภาพซ้ายและขวาตรงกับขอบการ์ดทุกใบ ภาพตั้งตรงตามสัดส่วนเดิม การทดสอบเลื่อนและเปิดเอกสารผ่าน 3 กรณี TypeScript และ Prettier ผ่าน
+- [x] ปรับ src/features/catalog/components/products-index-content.tsx และ src/features/catalog/components/products-index-content.module.css ให้สแกนตั้งตรงและพอดีกรอบ ตรวจ Chrome ที่ 320, 390, 736, 737, 768 และ 1440 px ภาพทั้งสองเห็นครบ กึ่งกลางกรอบ และปุ่มลูกศรอยู่นอกหน้ากระดาษทุกขนาด ทดสอบลิงก์เอกสารด้วย Playwright ผ่าน 3 กรณี TypeScript, ESLint และ Prettier ผ่าน
+- [x] ตรวจเนื้อหาและสแกนสามหน้าจากบทความเอกสารสอบเทียบเครื่องชั่งของ SUNFORD
+- [x] สร้าง public/documents/scale-calibration-sample.pdf จากภาพทั้งสามหน้า วางภาพแบบเต็มหน้าและรักษาลำดับเดิม
+- [x] แก้ src/features/catalog/components/products-index-content.tsx เพื่อซ่อนแถวสินค้าที่ไม่จัดหมวด และเพิ่มส่วนท้ายการ์ดคู่
+- [x] แก้ src/features/catalog/components/products-index-content.module.css เพื่อจัดภาพและข้อความการ์ดคู่บนรางเดิม
+- [x] ปรับ tests/e2e/products-full-overview.spec.ts และตรวจจริงหลายขนาดหน้าจอ พร้อมบันทึกผลใน spec.md และ plan.md
+- [x] ปรับ tests/e2e/product-image-placeholder.spec.ts ให้ตรวจสินค้าที่ไม่มีรูปผ่านการค้นหาสินค้าทั้งหมดเมื่อซ่อนแถวเดิม
+
+ขอบเขตเฉพาะหน้ารวมสินค้า อาศัยไฟล์ภาพและลิงก์เดิมของเว็บไซต์ ย้อนกลับโดยถอดส่วนท้ายและคืนเงื่อนไขแถวสินค้าที่ไม่จัดหมวด
+
+ตรวจไฟล์ PDF 3 หน้า (2,377,166 ไบต์) เทียบผลเรนเดอร์กับสแกนต้นทางครบทุกหน้า ตรวจการโหลดภาพเต็ม 3306 px ตรวจแถวบน Chrome 4 ความกว้าง และทดสอบ Playwright 5 กรณีผ่าน พร้อม TypeScript, ESLint และ Prettier สำหรับโค้ดที่แก้
+
+## Plan: การ์ดสินค้าสีขาวล้วนตามขนาดภาพอ้างอิงบน /products
+
+- [x] รับข้อแก้ไขและยืนยันขนาดกับเจ้าของ ตรวจภาพอ้างอิง
+- [x] ปรับการจัดวางใน src/features/catalog/components/scale-showcase-card.module.css และ sizes ใน src/features/catalog/components/scale-showcase-card.tsx, src/features/catalog/components/software-showcase.tsx และ src/features/catalog/components/products-index-content.tsx ให้สัมพันธ์กับกรอบรูป
+- [x] ตรวจขนาด พื้นรูป ข้อความ การเปิดลิงก์ และข้อยกเว้นด้วย tests/e2e/products-full-overview.spec.ts เก็บภาพ Chrome และบันทึกผลใน spec.md / plan.md
+
+ย้อนกลับได้โดยคืนค่าเฉพาะผังการ์ดสินค้าและขนาดภาพของงานนี้
+
+Chrome ตรวจการ์ดสินค้า 30 ใบที่ 320, 390, 768, 1326 และ 1440 px พบพื้นการ์ดสีขาว พื้นกรอบรูปโปร่งใส ขนาดเดสก์ท็อป 313 × 500 px และลูกศรอยู่มุมขวาล่าง ตรวจภาพที่ความกว้างอ้างอิง 1326 px แล้ว ตัวเลือกสีไม่มีบนการ์ด การทดสอบ Playwright ผ่าน 5 กรณี พร้อม TypeScript และ ESLint เทียบสี ขนาด เนื้อหาและลิงก์ของแถวแรกกับรายการยกเว้นที่บันทึกไว้ตรงกันทั้งสี่ความกว้าง
+
+## Plan: ขยับคำโปรยการ์ดพื้นขาวให้ชิดชื่อรุ่น
+
+- [x] ยืนยันขอบเขตตามภาพและคำสั่งล่าสุด
+- [x] แก้ระยะบรรทัดข้อความใน src/features/catalog/components/scale-showcase-card.module.css และตรวจระยะใน tests/e2e/products-full-overview.spec.ts
+- [x] ตรวจหน้า /products ด้วย Chrome และบันทึกผลใน spec.md / plan.md
+
+Chrome วัดระยะใต้ชื่อรุ่นได้ 4 px ครบทั้ง 30 ใบที่ 320, 390, 768, 1440 และ 2443 px ชุดทดสอบ Playwright ผ่าน 3 กรณี ตรวจ Prettier ผ่านทั้งสองไฟล์ที่แก้ [ภาพแถวงานบ้านและงานขาย](output/model-caption-spacing/retail-cards.png)
+
+## Plan: ลดความสดของสีป้ายหมวดบนการ์ดพื้นขาว
+
+- [x] เปลี่ยนสีใน src/features/catalog/components/scale-showcase-card.module.css
+- [x] ตรวจสีบน /products ด้วย Chrome และบันทึกผล
+
+ตรวจ Chrome ที่ 390 และ 1440 px ป้ายหมวดทั้ง 30 ใบแสดงสี #651219 และ Prettier ผ่าน
+
+- [x] ปรับพื้นการ์ดผลการวัดเป็นสีขาวใน products-index-content.module.css และตรวจสีพื้น/ข้อความจริงใน Chrome
+
+## Plan: Review and push current product changes (2026-11-19)
+
+- [x] Review changed source, configuration, tests, assets and notes.
+- [x] Repair empty accessible heading and normalize document formatting.
+- [x] TypeScript, repository ESLint, formatting, catalog and UAT tests pass. Production build completed with 722 pages. Browser run passed 66 of 67 tests; corrected the stale five-item menu expectation, and the remaining test passed on rerun.
+- [ ] Commit code and notes only, excluding public media, push uat and verify remote revision.

@@ -861,3 +861,7 @@ Production catalog and builder/quotation checks passed, but the pre-existing dev
 
 - Observed: an inline specification toggle opened and immediately reverted in development. The functional updater ran twice while useReturnState wrote to its history cache inside the updater.
 - Correct behavior: for UI toggles backed by useReturnState, compute the next value from the rendered state and pass that value to the setter. Verify switching and Back/Forward in Chrome.
+
+## Measure wide reference layouts beyond their matching breakpoint
+
+- A centered maximum-width layout matched the reference inset at 1440px but diverged by 550px at 2540px. The earlier check inferred a desktop rule from one matching size. Compare the actual left and right edges, logo center and number of fully visible cards at the reference screenshot width and at a second wider viewport before declaring desktop parity.
