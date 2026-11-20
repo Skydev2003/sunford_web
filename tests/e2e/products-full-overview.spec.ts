@@ -1,6 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 import { recordStaggerMotion, type StaggerWindow } from "./helpers/stagger-motion";
-import { productsIndexArtwork } from "../../src/features/catalog/data/products-index-palettes";
 import { selectScaleShowcase } from "../../src/features/catalog/data/scale-showcase";
 import type { ClientProduct } from "../../src/features/catalog/types";
 
@@ -361,65 +360,26 @@ test("showcase taglines fit on one line at mobile, tablet and desktop sizes", as
   }
 });
 
-test("store cards preserve approved image revisions on neutral product surfaces", async ({
+test("the products index renders five shelves and loads all first-shelf product images", async ({
   page,
 }) => {
-  const reviewed = "/api/products/G106698/image?v=2026-11-18%2003%3A38%3A38.863088%2B00";
-  expect(productsIndexArtwork(reviewed)?.palette).toBe("ocean");
-  expect(productsIndexArtwork(reviewed.replace("2026-", "2027-"))).toBeUndefined();
-  expect(productsIndexArtwork("")).toBeUndefined();
   await page.goto("/products");
-  const response = await page.request.get("/api/products");
-  const { products } = await response.json();
-  const cards = page.locator("[data-products-directory] [data-warehouse-sku]");
-  await expect(page.locator("#products-rail-scales li")).toHaveCount(10);
-  const rendered = await cards.evaluateAll((nodes) =>
-    nodes.map((el) => ({
-      sku: el.getAttribute("data-warehouse-sku"),
-      showcase: el.hasAttribute("data-design"),
-      component: !!el.closest("#products-rail-indicators"),
-      specialty: !!el.closest("#products-rail-pos, #products-rail-accessories"),
-      palette: el.getAttribute("data-palette"),
-      heading: getComputedStyle(el.querySelector("h3")!).color,
-      placeholder: !!el.querySelector("[data-product-image-placeholder]"),
-      background: getComputedStyle(el.querySelector("a")!).backgroundColor,
-      surface: Array.from(
-        el.querySelectorAll("[data-scale-surface]"),
-        (surface) => getComputedStyle(surface).backgroundColor,
-      ),
-      mask: getComputedStyle(el.querySelector("img")!).maskImage,
-      source: el.querySelector("img")!.getAttribute("src"),
-    })),
-  );
-  const images = new Map<string, string>(
-    products.map((product: { warehouseSku: string; image: string; fallbackImage?: string }) => [
-      product.warehouseSku,
-      product.fallbackImage && product.fallbackImage !== product.image ? "" : product.image,
-    ]),
-  );
-  for (const card of rendered) {
-    if (card.showcase) {
-      expect(card.placeholder).toBe(false);
-      expect(decodeURIComponent(card.source!)).toContain(
-        `/${card.specialty ? "specialty-scales" : card.component ? "component-showcase" : "scale-showcase/framed"}/${card.sku!.toLowerCase()}-front-4k.webp`,
-      );
-      if (card.component || card.specialty) {
-        expect(card.background).toBe("rgb(255, 255, 255)");
-        expect(card.surface).toEqual([]);
-        expect(card.heading).toBe("rgb(29, 29, 31)");
-      }
-      expect(card.mask).toBe("none");
-      continue;
-    }
-    const artwork = productsIndexArtwork(images.get(card.sku!)!);
-    expect(card.palette).toBe(artwork?.palette ?? null);
-    expect(card.heading).toBe("rgb(29, 29, 31)");
-    expect(card.background).toBe("rgb(255, 255, 255)");
-    if (card.placeholder || !artwork) {
-      expect(card.mask).toBe("none");
-    } else {
-      expect(card.mask).toContain(artwork.mask);
-    }
+  const shelves = page.locator("[data-products-category-section]");
+  await expect(shelves).toHaveCount(5);
+
+  const cards = shelves.first().locator("#products-rail-scales li[data-warehouse-sku]");
+  await expect(cards).toHaveCount(10);
+  for (const card of await cards.all()) {
+    const sku = (await card.getAttribute("data-warehouse-sku"))!;
+    const image = card.locator("img");
+    await card.scrollIntoViewIfNeeded();
+    const source = await image.evaluate(async (img: HTMLImageElement) => {
+      await img.decode();
+      return decodeURIComponent(img.currentSrc || img.src);
+    });
+    expect(source).toContain(
+      `/images/products/scale-showcase/framed/${sku.toLowerCase()}-front-4k.webp`,
+    );
   }
 });
 

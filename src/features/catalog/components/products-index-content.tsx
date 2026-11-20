@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { sunford } from "@/features/home/data/brand";
@@ -15,7 +14,6 @@ import photoStyles from "./scale-showcase-card.module.css";
 import { SmartSystemShowcaseCards } from "./software-showcase";
 import { selectComponentShowcase } from "../data/component-showcase";
 import { selectScaleShowcase } from "../data/scale-showcase";
-import { productsIndexArtwork } from "../data/products-index-palettes";
 import styles from "./products-index-content.module.css";
 
 const categoryFamilies = new Set(["scales", "indicators", "platforms", "pos", "accessories"]);
@@ -175,23 +173,11 @@ export function ProductsIndexContent({
               ) : (
                 members.map((product) => {
                   const name = catalogCardName(product);
-                  const artwork =
-                    !product.fallbackImage || product.fallbackImage === product.image
-                      ? productsIndexArtwork(product.image)
-                      : undefined;
                   return (
                     <li
                       key={product.id}
                       className={photoStyles.card}
                       data-warehouse-sku={product.warehouseSku}
-                      data-palette={artwork?.palette}
-                      style={
-                        artwork
-                          ? ({
-                              "--product-mask": `url("/images/products/${artwork.mask}")`,
-                            } as CSSProperties)
-                          : undefined
-                      }
                     >
                       <ProductPhotoCard
                         href={`/products/${product.slug}`}
@@ -203,7 +189,6 @@ export function ProductsIndexContent({
                             src={product.image}
                             fallbackSrc={product.fallbackImage}
                             alt={name}
-                            className={artwork ? styles.catalogCutout : undefined}
                             fill
                             sizes="216px"
                           />

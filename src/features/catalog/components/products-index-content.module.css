@@ -411,9 +411,6 @@
   font-size: 0.875rem;
   overflow-wrap: anywhere;
 }
-img.catalogCutout {
-  mask: var(--product-mask) center / contain no-repeat;
-}
 .controls {
   display: flex;
   justify-content: flex-end;

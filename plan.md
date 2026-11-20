@@ -9731,3 +9731,11 @@ Chrome วัดระยะใต้ชื่อรุ่นได้ 4 px ค�
 - [x] Repair empty accessible heading and normalize document formatting.
 - [x] TypeScript, repository ESLint, formatting, catalog and UAT tests pass. Production build completed with 722 pages. Browser run passed 66 of 67 tests; corrected the stale five-item menu expectation, and the remaining test passed on rerun.
 - [ ] Commit code and notes only, excluding public media, push uat and verify remote revision.
+
+## Plan: ถอดโค้ด store-masks จาก /products
+
+- [x] ถอดการอ้างอิงใน products-index-content.tsx และ products-index-content.module.css และลบ products-index-palettes.ts ใน src/features/catalog
+- [x] ปรับกรณีตรวจภาพใน tests/e2e/products-full-overview.spec.ts ให้ตรวจห้าแถวกับภาพแถวแรก
+- [x] ตรวจ Chrome และบันทึกผลใน spec.md / plan.md
+
+ตรวจ Chrome ที่ 1440 px ก่อนและหลังแก้ ลำดับห้าแถวตรงกัน รูปแถวแรกโหลดครบ 10 ใบและ URL, hash, ขนาดภาพ และการจัดวางตรงกันทุกใบ Playwright ผ่านสามกรณีที่เกี่ยวข้องและ TypeScript ผ่าน

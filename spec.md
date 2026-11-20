@@ -12550,3 +12550,12 @@ Approval: Owner requested reviewing all changes and commit/push, then instructed
 Review correction restores the empty page heading as visually hidden accessible text and formats accumulated project notes.
 
 Review validation completed. Production build generated 722 pages. Browser coverage comprises 66 passing cases in the full run plus the corrected menu test passing on rerun. Repository typecheck, lint, catalog tests, UAT tests and formatting passed. Public media remain local under the owner exclusion.
+
+## Task: ถอดโค้ด store-masks จาก /products
+
+Status: "Implemented — verified locally"
+Approval: เจ้าของขอให้ลบโค้ดที่อ้าง store-masks หลังย้ายไฟล์ และตรวจห้าแถวกับรูปแถวเครื่องชั่งมาตรฐานที่ไว้วางใจ
+
+ถอดการเลือกแม่แบบและ CSS mask จากการ์ดสำรองบน /products วัดผลก่อนและหลังจาก Chrome โดยเทียบลำดับทั้งห้าแถวและ URL, hash และขนาดภาพของแถวแรกครบ 10 ใบ
+
+ตรวจ Chrome ที่ 1440 px ก่อนและหลังแก้ ลำดับห้าแถวตรงกัน รูปแถวแรกโหลดครบ 10 ใบและ URL, hash, ขนาดภาพ และการจัดวางตรงกันทุกใบ Playwright ผ่านสามกรณีที่เกี่ยวข้องและ TypeScript ผ่าน
