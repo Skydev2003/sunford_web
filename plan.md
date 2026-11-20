@@ -9739,3 +9739,29 @@ Chrome วัดระยะใต้ชื่อรุ่นได้ 4 px ค�
 - [x] ตรวจ Chrome และบันทึกผลใน spec.md / plan.md
 
 ตรวจ Chrome ที่ 1440 px ก่อนและหลังแก้ ลำดับห้าแถวตรงกัน รูปแถวแรกโหลดครบ 10 ใบและ URL, hash, ขนาดภาพ และการจัดวางตรงกันทุกใบ Playwright ผ่านสามกรณีที่เกี่ยวข้องและ TypeScript ผ่าน
+
+## Plan: Remove the retired carousel and duplicate logo (2026-11-20)
+
+- [x] Verify the JSON lists exactly the 13 tracked PNGs and the duplicate logo matches the studio copy by SHA-256.
+- [x] Delete these approved files.
+
+  - `public/images/products-index-carousel/sunford-10614-front.png`
+  - `public/images/products-index-carousel/sunford-10617-front.png`
+  - `public/images/products-index-carousel/sunford-10653-front.png`
+  - `public/images/products-index-carousel/sunford-10665-front.png`
+  - `public/images/products-index-carousel/sunford-10670-front.png`
+  - `public/images/products-index-carousel/sunford-10671-front.png`
+  - `public/images/products-index-carousel/sunford-10680-front.png`
+  - `public/images/products-index-carousel/sunford-10725-front.png`
+  - `public/images/products-index-carousel/sunford-10801-front.png`
+  - `public/images/products-index-carousel/sunford-10802-front.png`
+  - `public/images/products-index-carousel/sunford-10805-front.png`
+  - `public/images/products-index-carousel/sunford-10867-front.png`
+  - `public/images/products-index-carousel/sunford-TSS-150-SW31S-front.png`
+  - `src/features/catalog/data/products-index-carousel.json`
+  - `public/videos/ChatGPT Image Nov 4, 2026, 02_14_56 PM.png`
+
+- [x] Compare local Chrome before and after on / and /products at 390 and 1440 px. Check image decoding, requests, hero and shelves.
+- [x] Verify the Git deletion set and record results in `spec.md` and `plan.md`. Tracked files can be recovered from Git.
+
+Local Chrome at 390 and 1440 px returned HTTP 200 on both routes. Before/after results matched: all 309 homepage and 124 product-page image elements decoded at each width. The homepage hero, five product sections, ten ordered framed scale images and five category images were present. No page exceptions, local HTTP failures, requests for the deleted assets or viewport overflow in these checks. The sampled removed PNG and duplicate logo URLs returned the HTML not-found fallback with HTTP 200; the retained logo served PNG bytes. Git showed exactly 15 approved deletions (20,970,442 bytes).

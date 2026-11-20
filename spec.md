@@ -12559,3 +12559,12 @@ Approval: เจ้าของขอให้ลบโค้ดที่อ้�
 ถอดการเลือกแม่แบบและ CSS mask จากการ์ดสำรองบน /products วัดผลก่อนและหลังจาก Chrome โดยเทียบลำดับทั้งห้าแถวและ URL, hash และขนาดภาพของแถวแรกครบ 10 ใบ
 
 ตรวจ Chrome ที่ 1440 px ก่อนและหลังแก้ ลำดับห้าแถวตรงกัน รูปแถวแรกโหลดครบ 10 ใบและ URL, hash, ขนาดภาพ และการจัดวางตรงกันทุกใบ Playwright ผ่านสามกรณีที่เกี่ยวข้องและ TypeScript ผ่าน
+
+## Task: Remove the retired carousel and duplicate logo (2026-11-20)
+
+Status: "Implemented and verified locally"
+Approval: Owner explicitly approved deleting the 13 carousel PNGs, their JSON and only the duplicate logo ending in 02_14_56 PM.png. Preserve code and scale imagery. Verify the homepage and /products.
+
+Acceptance requires exactly the approved asset and data deletions, an intact matching studio logo, and local Chrome checks on both pages at mobile and desktop widths.
+
+Local Chrome at 390 and 1440 px returned HTTP 200 on both routes. Before/after results matched: all 309 homepage and 124 product-page image elements decoded at each width. The homepage hero, five product sections, ten ordered framed scale images and five category images were present. No page exceptions, local HTTP failures, requests for the deleted assets or viewport overflow in these checks. The sampled removed PNG and duplicate logo URLs returned the HTML not-found fallback with HTTP 200; the retained logo served PNG bytes. Git showed exactly 15 approved deletions (20,970,442 bytes).
