@@ -12,7 +12,7 @@ import { ProductsIndexRail } from "./products-index-rail";
 import { EquipmentVideoCard } from "./equipment-video-card";
 import { FeaturedCardMedia } from "./featured-card-media";
 import { ProductsIndexMotion } from "./products-index-motion";
-import { ProductPhotoCard, ProductShowcaseCard } from "./scale-showcase-card";
+import { ProductPhotoCard, ProductShowcaseCard, showcasePhotoSizes } from "./scale-showcase-card";
 import photoStyles from "./scale-showcase-card.module.css";
 import { SmartSystemShowcaseCards } from "./software-showcase";
 import { selectComponentShowcase } from "../data/component-showcase";
@@ -143,7 +143,11 @@ export function ProductsIndexContent({
                 )}
               </h2>
             </div>
-            <ProductsIndexRail id={`products-rail-${id}`} label={id === "scales" ? label : title}>
+            <ProductsIndexRail
+              id={`products-rail-${id}`}
+              label={id === "scales" ? label : title}
+              prepareImages={categoryFamilies.has(id)}
+            >
               {id === "indicators" && (
                 <li className={styles.card}>
                   <Link href={sunford.about} className={styles.aboutCard}>
@@ -163,7 +167,7 @@ export function ProductsIndexContent({
                           src="/images/products/precision-weights.webp"
                           alt=""
                           fill
-                          sizes="(max-width: 736px) 346px, 448px"
+                          sizes="(max-width: 736px) min(calc((100vw - 60px) * 1.12), 346px), 448px"
                         />
                       </FeaturedCardMedia>
                     </div>
@@ -206,7 +210,7 @@ export function ProductsIndexContent({
                             fallbackSrc={product.fallbackImage}
                             alt={name}
                             fill
-                            sizes="216px"
+                            sizes={showcasePhotoSizes()}
                           />
                         }
                       >

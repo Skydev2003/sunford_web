@@ -10,7 +10,7 @@ export function FeaturedCardMedia({
   children,
 }: {
   src: string;
-  openingPoster?: string;
+  openingPoster?: { srcSet: string; sizes?: string };
   restorePosterOnEnd?: boolean;
   replayOnHover?: boolean;
   children: ReactNode;
@@ -18,7 +18,7 @@ export function FeaturedCardMedia({
   const videoRef = useRef<HTMLVideoElement>(null);
   const pictureRef = useRef<HTMLPictureElement>(null);
   const [prepareFinalPoster, setPrepareFinalPoster] = useState(false);
-  const [playbackFailed, setPlaybackFailed] = useState(false);
+  const [openingUnavailable, setOpeningUnavailable] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -32,7 +32,7 @@ export function FeaturedCardMedia({
       void video.play().catch((error: DOMException) => {
         if (error.name === "NotAllowedError") {
           delete video.dataset.started;
-          setPlaybackFailed(true);
+          setOpeningUnavailable(true);
         }
       });
     };
@@ -78,11 +78,15 @@ export function FeaturedCardMedia({
 
   return (
     <>
-      <picture ref={pictureRef}>
-        {openingPoster && !playbackFailed && !prepareFinalPoster && (
+      <picture
+        ref={pictureRef}
+        onErrorCapture={openingPoster ? () => setOpeningUnavailable(true) : undefined}
+      >
+        {openingPoster && !openingUnavailable && !prepareFinalPoster && (
           <source
             media="(prefers-reduced-motion: no-preference) and (scripting: enabled)"
-            srcSet={openingPoster}
+            srcSet={openingPoster.srcSet}
+            sizes={openingPoster.sizes}
           />
         )}
         {children}
@@ -113,7 +117,7 @@ export function FeaturedCardMedia({
         }}
         onError={(event) => {
           delete event.currentTarget.dataset.started;
-          setPlaybackFailed(true);
+          setOpeningUnavailable(true);
         }}
       />
     </>

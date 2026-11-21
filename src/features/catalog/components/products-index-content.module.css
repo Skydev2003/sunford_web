@@ -396,6 +396,7 @@
   overflow: hidden;
 }
 .softwarePieces > span > span {
+  background-image: var(--weweigh-image);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }

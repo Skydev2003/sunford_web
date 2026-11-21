@@ -15,6 +15,7 @@ export function ProductImage({
   width,
   height,
   sizes,
+  fallbackSizes = sizes,
   preload = false,
   unoptimized = false,
   className,
@@ -27,18 +28,19 @@ export function ProductImage({
   width?: number;
   height?: number;
   sizes?: string;
+  fallbackSizes?: string;
   preload?: boolean;
   unoptimized?: boolean;
   className?: string;
   placeholder?: "media" | "product";
 }) {
   const [failedSources, setFailedSources] = useState<string[]>([]);
-  const displayed =
-    src && !failedSources.includes(src)
-      ? src
-      : fallbackSrc && !failedSources.includes(fallbackSrc)
-        ? fallbackSrc
-        : undefined;
+  const primary = src && !failedSources.includes(src);
+  const displayed = primary
+    ? src
+    : fallbackSrc && !failedSources.includes(fallbackSrc)
+      ? fallbackSrc
+      : undefined;
   if (!displayed && placeholder === "product")
     return (
       <div
@@ -80,7 +82,7 @@ export function ProductImage({
       fill={fill}
       width={width}
       height={height}
-      sizes={sizes}
+      sizes={primary ? sizes : fallbackSizes}
       preload={preload}
       unoptimized={unoptimized}
       className={className}
