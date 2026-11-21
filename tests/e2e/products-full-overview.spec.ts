@@ -864,40 +864,50 @@ test("the featured video shows the product pair if the media fails", async ({ pa
     .toMatch(/\/aw31-lp50-poster\.webp$/);
 });
 
-test("a failed opening poster falls back before the featured clip can play", async ({ page }) => {
+test("an opening poster that fails before hydration recovers before video plays", async ({
+  page,
+}) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 850 });
   const opening = "/images/products/aw31-lp50-opening.webp";
+  const scripts = Promise.withResolvers<void>();
+  const clip = Promise.withResolvers<void>();
+  await page.route("**/_next/static/**", async (route) => {
+    if (route.request().resourceType() === "script") await scripts.promise;
+    await route.continue();
+  });
   await page.route(
     (url) => imageAssetPath(url) === opening,
     (route) => route.abort(),
   );
-  let finishVideoRequest!: () => void;
-  const holdVideo = new Promise<void>((resolve) => (finishVideoRequest = resolve));
   await page.route("**/videos/aw31-lp50.mp4", async (route) => {
-    await holdVideo;
+    await clip.promise;
     await route.abort();
   });
   try {
-    const openingRequest = page.waitForRequest(
-      (request) => imageAssetPath(new URL(request.url())) === opening,
-    );
-    await page.goto("/products", { waitUntil: "domcontentloaded" });
+    await page.goto("/products", { waitUntil: "commit" });
     const card = page.locator("#products-rail-indicators").getByRole("img", { name: /LP50.*AW31/ });
     await card.scrollIntoViewIfNeeded();
-    await openingRequest;
     const poster = card.locator("picture img");
-    await expect
-      .poll(async () => {
-        const selected = await poster.evaluate((img: HTMLImageElement) => img.currentSrc);
-        return selected && imageAssetPath(new URL(selected));
-      })
-      .toBe("/images/products/aw31-lp50-poster.webp");
+    const video = card.locator("video");
+    const selectedPoster = async () => {
+      const selected = await poster.evaluate((img: HTMLImageElement) => img.currentSrc);
+      return selected && imageAssetPath(new URL(selected));
+    };
+    await expect.poll(selectedPoster).toBe(opening);
+    await expect(poster).toHaveJSProperty("complete", true);
+    await expect(poster).toHaveJSProperty("naturalWidth", 0);
+    expect(await video.getAttribute("src")).toBeNull();
+
+    scripts.resolve();
+    await expect.poll(selectedPoster).toBe("/images/products/aw31-lp50-poster.webp");
     await expect
       .poll(() => poster.evaluate((img: HTMLImageElement) => img.naturalWidth))
       .toBeGreaterThan(0);
-    await expect(card.locator("video")).toHaveCSS("opacity", "0");
+    await expect(video).toHaveCSS("opacity", "0");
   } finally {
-    finishVideoRequest();
+    scripts.resolve();
+    clip.resolve();
     await page.unrouteAll({ behavior: "wait" });
   }
 });
@@ -955,6 +965,7 @@ test("product photos lead later shelves while the first shelf and non-product ca
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/products");
   const directory = page.locator("[data-products-directory]");
+  await expect(directory).toBeVisible();
   const products = directory.locator("a[data-product-card-photo-first]");
   const excluded = directory.locator(
     "#products-rail-scales > li > a, #products-rail-indicators a[href='/about-us'], [data-software='weweigh2'] > a",
@@ -1252,7 +1263,7 @@ test("a far-off product photo loads once when its rail is reached", async ({ pag
 
   await page.goto("/products", { waitUntil: "domcontentloaded" });
   const photo = page.locator("#products-rail-accessories [data-warehouse-sku='G106674'] img");
-  await expect(photo).toBeAttached();
+  await expect(photo).toBeVisible();
   const source = imageAssetPath(new URL(await photo.evaluate((img: HTMLImageElement) => img.src)));
   expect(await photo.evaluate((img) => img.getBoundingClientRect().top)).toBeGreaterThan(2000);
   expect(images).not.toContain(source);
