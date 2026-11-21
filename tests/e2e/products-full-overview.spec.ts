@@ -1189,6 +1189,76 @@ test("mobile product rail supports native horizontal keyboard scrolling", async 
   await expect(rail).toHaveCSS("scroll-snap-type", /x mandatory|inline mandatory/);
 });
 
+function imageAssetPath(url: URL) {
+  return new URL(url.searchParams.get("url") ?? url.href, url.origin).pathname;
+}
+
+test("a far-off product photo loads once when its rail is reached", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const images: string[] = [];
+  page.on("request", (request) => {
+    if (request.resourceType() === "image") images.push(imageAssetPath(new URL(request.url())));
+  });
+
+  await page.goto("/products", { waitUntil: "domcontentloaded" });
+  const photo = page.locator("#products-rail-accessories [data-warehouse-sku='G106674'] img");
+  await expect(photo).toBeAttached();
+  const source = imageAssetPath(new URL(await photo.evaluate((img: HTMLImageElement) => img.src)));
+  expect(await photo.evaluate((img) => img.getBoundingClientRect().top)).toBeGreaterThan(2000);
+  expect(images).not.toContain(source);
+
+  await photo.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => photo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0))
+    .toBe(true);
+  expect(images.filter((image) => image === source)).toHaveLength(1);
+});
+
+test("a portrait card uses the full frame for its fallback and keeps a placeholder on failure", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get("/api/products");
+  expect(response.ok()).toBe(true);
+  const { products }: { products: ClientProduct[] } = await response.json();
+  const product = products.find((entry) => entry.warehouseSku === "G106209")!;
+  const fallback = new URL(product.image || product.fallbackImage!, response.url()).pathname;
+  const primary = "/images/products/specialty-scales/g106209-front-4k.webp";
+  const matchesFallback = (url: URL) => imageAssetPath(url) === fallback;
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route(
+    (url) => imageAssetPath(url) === primary,
+    (route) => route.abort(),
+  );
+  await page.route(matchesFallback, (route) =>
+    route.fulfill({
+      contentType: "image/svg+xml",
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"/>',
+    }),
+  );
+  const card = page.locator("#products-rail-pos [data-warehouse-sku='G106209']");
+  await page.goto("/products");
+  await card.scrollIntoViewIfNeeded();
+  const photo = card.locator("img");
+  await expect
+    .poll(async () =>
+      imageAssetPath(new URL(await photo.evaluate((img: HTMLImageElement) => img.src))),
+    )
+    .toBe(fallback);
+  await expect(photo).toHaveAttribute("sizes", "216px");
+  await expect
+    .poll(() => photo.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+
+  await page.unroute(matchesFallback);
+  await page.route(matchesFallback, (route) => route.abort());
+  await page.reload();
+  await card.scrollIntoViewIfNeeded();
+  await expect(card.locator("[data-product-image-placeholder]")).toBeVisible();
+  await expect(card.getByRole("link")).toHaveAttribute("href", `/products/${product.slug}`);
+});
+
 test("server response contains actual category products without motion hiding", async ({
   request,
 }) => {
