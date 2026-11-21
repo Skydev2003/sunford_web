@@ -2,7 +2,7 @@ import { productCategoryDefinitions } from "./mock-categories";
 import type { ProductCategory } from "./mock-categories";
 import type { ProductCardData } from "../types";
 import { getIndicatorSubcategories } from "./indicator-subcategories";
-import { platformSubcategoryDefinitions } from "./platform-subcategories";
+import { platformSubcategoryDefinitions } from "./platform-subcategory-definitions";
 import { getPosSubcategories } from "./pos-subcategories";
 import { accessorySubcategoryDefinitions } from "./accessory-subcategories";
 import { scaleSubcategoryPages, type ScaleReturnContext } from "./scale-subcategory-pages";

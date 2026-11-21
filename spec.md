@@ -19,6 +19,7 @@
 - รักษาแบรนด์ CSS และ component ที่ใช้งานจริง อ้างอิงค่าออกแบบตาม [กติกาโปรเจกต์](AGENTS.md) เว็บไซต์ใช้ mobile-first โดย Header เปลี่ยนเป็นเดสก์ท็อปที่ 64rem เมนูที่มีปลายทางพร้อมใช้เป็นลิงก์จริง รายการที่รอข้อมูลแสดงจางและกดไม่ได้
 - รูปโปรโมตยึดภาพสินค้าจริง มุมหน้าตรง เก็บโลโก้และรายละเอียดที่พิมพ์บนตัวสินค้า แยกข้อความบนหน้าเว็บออกจากภาพสินค้า SUNFORD ไม่มีบริการรับสอบเทียบ
 - เว็บพัฒนาสาธารณะใช้พอร์ต 3001 ตาม README ให้ตรวจ origin และชนิดข้อมูลก่อนทดสอบ API เมื่อทำงานคู่กับ Warehouse แยกสถานะตรวจในเครื่อง UAT และ Production ตรวจการปล่อย Production ตาม [คู่มือปล่อยรุ่นบน Vercel](docs/vercel.md)
+- Client modules for catalog navigation and return links use shared route definitions. Legacy CMS snapshots stay in server-side product grouping and content processing.
 
 ## งานที่รอเจ้าของตัดสินใจ
 
