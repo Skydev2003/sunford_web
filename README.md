@@ -116,7 +116,7 @@ PLAYWRIGHT_BASE_URL=http://localhost:3001 npm run test:e2e
 
 ## Deploy บน Vercel
 
-ดู [คู่มือปล่อยรุ่นบน Vercel](docs/vercel.md) สำหรับการตั้งค่า Preview และ Production การปล่อยจาก `uat` และการตรวจ revision หลังปล่อย
+ดู [คู่มือปล่อยรุ่นบน Vercel](docs/vercel.md) สำหรับการตั้งค่า Preview และ Production การปล่อยจาก `Javis1` และการตรวจ revision หลังปล่อย
 
 ## UAT บน LAN ชั่วคราว
 
