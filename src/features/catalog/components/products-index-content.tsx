@@ -143,11 +143,7 @@ export function ProductsIndexContent({
                 )}
               </h2>
             </div>
-            <ProductsIndexRail
-              id={`products-rail-${id}`}
-              label={id === "scales" ? label : title}
-              prepareImages={categoryFamilies.has(id)}
-            >
+            <ProductsIndexRail id={`products-rail-${id}`} label={id === "scales" ? label : title}>
               {id === "indicators" && (
                 <li className={styles.card}>
                   <Link href={sunford.about} className={styles.aboutCard}>
