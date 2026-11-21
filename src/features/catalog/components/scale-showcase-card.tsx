@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { getImageProps } from "next/image";
 import type { CSSProperties, ReactNode } from "react";
+import { preload } from "react-dom";
 import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { catalogCardName } from "../data/catalog-card-names";
@@ -16,6 +18,7 @@ type ShowcaseItem = {
   surface?: string;
   lightText?: boolean;
   photo: string;
+  photoAspect?: number;
   tagline?: string;
   imageMode?: ScaleShowcaseItem["imageMode"];
   lettering?: ScaleShowcaseItem["lettering"];
@@ -73,6 +76,18 @@ export function ProductShowcaseCard({
   const { product, background, label, photo, tagline, imageMode, surface } = item;
   const name = catalogCardName(product);
   const lettering = item.lettering;
+  // The photo frame is capped at 13.5rem. Portraits fit by height within that frame.
+  const photoWidth = shelf === "pos" ? Math.ceil(216 * (item.photoAspect ?? 1)) : 216;
+  const photoSizes = `${photoWidth}px`;
+  if (shelf === "pos" && first) {
+    const { props } = getImageProps({ src: photo, alt: name, fill: true, sizes: photoSizes });
+    preload(props.src, {
+      as: "image",
+      fetchPriority: "low",
+      imageSizes: props.sizes,
+      imageSrcSet: props.srcSet,
+    });
+  }
   const prefix = shelf === "indicators" ? "components" : shelf;
   const heading =
     shelf === "scales" ? `products-model-${product.id}` : `products-${prefix}-model-${product.id}`;
@@ -102,7 +117,7 @@ export function ProductShowcaseCard({
               alt={name}
               placeholder="product"
               fill
-              sizes="216px"
+              sizes={photoSizes}
             />
           }
         >
