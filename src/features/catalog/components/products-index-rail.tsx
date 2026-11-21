@@ -7,66 +7,16 @@ import { useReturnState } from "@/features/site/history/return-state";
 import styles from "./products-index-content.module.css";
 
 const shelfEase = cubicBezier(0.25, 0.1, 0.25, 0.9);
-const shelfImageLead = 360;
-
-function prepareNearbyImages(list: HTMLUListElement) {
-  if (!("IntersectionObserver" in window)) return;
-
-  const cards = new IntersectionObserver(
-    (entries) => {
-      for (const { isIntersecting, target } of entries) {
-        if (!isIntersecting) continue;
-        for (const image of target.querySelectorAll<HTMLImageElement>('img[loading="lazy"]')) {
-          if (image.complete && image.naturalWidth) continue;
-          image.loading = "eager";
-        }
-        cards.unobserve(target);
-      }
-    },
-    { root: list, rootMargin: `0px ${shelfImageLead}px` },
-  );
-  const viewport = new IntersectionObserver(
-    ([entry]) => {
-      if (!entry.isIntersecting) {
-        cards.disconnect();
-        return;
-      }
-      for (const card of list.children) cards.observe(card);
-    },
-    { rootMargin: "800px 0px" },
-  );
-  const stopListening = () => {
-    window.removeEventListener("scroll", start);
-    list.removeEventListener("scroll", start);
-  };
-  const start = () => {
-    stopListening();
-    viewport.observe(list);
-  };
-  // Leave initial navigation to native image loading and the existing first-card hints.
-  if (window.scrollY > 0 || list.scrollLeft !== 0) start();
-  else {
-    window.addEventListener("scroll", start, { passive: true, once: true });
-    list.addEventListener("scroll", start, { passive: true, once: true });
-  }
-  return () => {
-    stopListening();
-    viewport.disconnect();
-    cards.disconnect();
-  };
-}
 
 export function ProductsIndexRail({
   id,
   label,
   categoryRail = false,
-  prepareImages = false,
   children,
 }: {
   id: string;
   label: string;
   categoryRail?: boolean;
-  prepareImages?: boolean;
   children: ReactNode;
 }) {
   const track = useRef<HTMLUListElement>(null);
@@ -82,11 +32,6 @@ export function ProductsIndexRail({
   }
 
   useEffect(() => stopMotion, []);
-
-  useEffect(() => {
-    const list = track.current;
-    if (list && prepareImages) return prepareNearbyImages(list);
-  }, [prepareImages, children]);
 
   useLayoutEffect(() => {
     const list = track.current;
