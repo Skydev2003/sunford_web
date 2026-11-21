@@ -17,7 +17,7 @@ import {
   ShieldCheck,
   Wrench,
 } from "lucide-react";
-import { useRef, useSyncExternalStore, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, useSyncExternalStore, type KeyboardEvent } from "react";
 import { sunford } from "@/features/home/data/brand";
 import { useReturnState } from "@/features/site/history/return-state";
 import { afterSalesContact, afterSalesServices, type AfterSalesService } from "../data/after-sales";
@@ -65,6 +65,14 @@ const stepHeadings: Record<string, string[]> = {
 const subscribeHydration = () => () => {};
 const readHydration = () => true;
 const serverHydration = () => false;
+
+function initialServiceTab() {
+  if (typeof window === "undefined") return 0;
+  const index = afterSalesServices.findIndex(
+    ({ id }) => window.location.hash === `#service-panel-${id}`,
+  );
+  return index < 0 ? 0 : index;
+}
 
 function ServiceInstructions({ service, index }: { service: AfterSalesService; index: number }) {
   const Icon = serviceIcons[index];
@@ -180,9 +188,23 @@ function ServiceContact({ pickup = false }: { pickup?: boolean }) {
 }
 
 export function AfterSalesPage() {
-  const [selected, setSelected] = useReturnState("after-sales-page.selected", 0);
+  const [selected, setSelected] = useReturnState("after-sales-page.selected", initialServiceTab);
   const interactive = useSyncExternalStore(subscribeHydration, readHydration, serverHydration);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const activePanel = useRef<HTMLDivElement>(null);
+  const needsAnchorHandoff = useRef(!interactive);
+
+  useLayoutEffect(() => {
+    if (!interactive || !needsAnchorHandoff.current) return;
+    needsAnchorHandoff.current = false;
+    const panel = activePanel.current;
+    if (!panel || window.location.hash !== `#${panel.id}`) return;
+
+    // The anchor can move above the viewport when the other server-rendered panels collapse.
+    const { top } = panel.getBoundingClientRect();
+    if (top < 0 || top >= window.innerHeight)
+      panel.scrollIntoView({ block: "start", behavior: "instant" });
+  }, [interactive, selected]);
 
   function handleTabKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     let next = index;
@@ -268,6 +290,7 @@ export function AfterSalesPage() {
             return (
               <div
                 className={styles.panel}
+                ref={interactive && !hidden ? activePanel : undefined}
                 key={service.id}
                 id={`service-panel-${service.id}`}
                 role={interactive ? "tabpanel" : undefined}
