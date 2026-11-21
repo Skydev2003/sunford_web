@@ -14,24 +14,19 @@ for (const viewport of [
     await page.goto("/");
     await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-ready", "true");
     const header = page.locator(".site-header");
+    const glass = header.locator(".nav-glass");
     await expect(header).toHaveAttribute("data-hero-backdrop", "");
     await expect(header).toHaveCSS("position", "fixed");
     await expect(header).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    await expect(header.locator(".nav-glass")).toHaveCSS(
-      "background-color",
-      "rgba(17, 17, 17, 0.5)",
-    );
+    await expect(glass).toHaveCSS("background-color", "rgba(17, 17, 17, 0.5)");
     const title = (await page.locator("main h1").boundingBox())!;
-    await page.evaluate(
-      (top) => scrollTo({ top, behavior: "instant" }),
-      title.y + title.height / 2 - 25,
-    );
+    const partialScroll = title.y + title.height / 2 - 25;
+    const scrollTo = (top: number) =>
+      page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), top);
+    await scrollTo(partialScroll);
     await expect(header).not.toHaveAttribute("data-hero-backdrop");
-    await expect(header.locator(".nav-glass")).toHaveCSS(
-      "background-color",
-      "rgba(17, 17, 17, 0.5)",
-    );
-    await expect(header.locator(".nav-glass")).toHaveCSS("backdrop-filter", "blur(12px)");
+    await expect(glass).toHaveCSS("background-color", "rgba(17, 17, 17, 0.5)");
+    await expect(glass).toHaveCSS("backdrop-filter", "blur(12px)");
     const search = header.getByRole("button", { name: "ค้นหาสินค้า", exact: true });
     expect(
       await search.evaluate((element) => {
@@ -39,54 +34,60 @@ for (const viewport of [
         return element.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
       }),
     ).toBe(true);
-    if (viewport.width >= 1400) {
-      const menu = header.locator(".desktop-nav a").first();
-      await menu.focus();
-      await expect(menu).toHaveAttribute("aria-expanded", "true");
-      await expect(header.locator("#desktop-submenu")).toBeVisible();
+    const desktop = viewport.width >= 1024;
+    const desktopMenu = header
+      .locator(".desktop-nav")
+      .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true });
+    const mobileToggle = header.getByRole("button", { name: "เปิดเมนู", exact: true });
+    const panel = header.locator(desktop ? "#desktop-submenu" : "#mobile-navigation");
+    const openMenu = async () => {
+      if (desktop) {
+        await desktopMenu.focus();
+        await expect(desktopMenu).toHaveAttribute("aria-expanded", "true");
+      } else {
+        await mobileToggle.click();
+        await expect(panel.locator("summary")).toHaveCount(8);
+        await panel.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).click();
+      }
+      await expect(panel).toBeVisible();
+      await expect(glass).toHaveCSS("background-color", "rgb(0, 0, 0)");
+    };
+    await openMenu();
+    if (desktop) {
       await expect(page.locator(".nav-backdrop")).toHaveCSS("backdrop-filter", "none");
       await expect(page.locator(".nav-backdrop")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-      await expect(header.locator("#desktop-submenu")).toHaveCSS(
-        "background-color",
-        "rgba(17, 17, 17, 0.97)",
-      );
-      await expect(header.locator("#desktop-submenu a:visible").first()).toHaveAttribute(
-        "href",
-        /\//,
-      );
+      await expect(panel).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await page.keyboard.press("Escape");
-      await expect(header.locator("#desktop-submenu")).toBeHidden();
+      await expect(panel).toBeHidden();
     } else {
-      await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-      const mobile = header.getByRole("navigation", { name: "เมนูมือถือ" });
-      await expect(mobile).toBeVisible();
-      await expect(mobile).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-      await expect(header.locator(".nav-glass")).toHaveCSS(
-        "background-color",
-        "rgba(17, 17, 17, 0.5)",
-      );
-      await expect(mobile.locator("summary")).toHaveCount(5);
-      await mobile.locator("summary").first().click();
-      expect(await mobile.getByRole("link").count()).toBeGreaterThan(7);
+      await expect(panel).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
       await header.getByRole("button", { name: "ปิดเมนู", exact: true }).click();
-      await expect(mobile).toHaveCount(0);
+      await expect(panel).toHaveCount(0);
     }
+    await expect(glass).toHaveCSS("background-color", "rgba(17, 17, 17, 0.5)");
     await search.click();
     const dialog = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
     await expect(dialog).toBeVisible();
-    await dialog.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" }).fill("ACS");
-    await expect(dialog.locator(".search-results a").first()).toContainText("ACS");
+    await dialog.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" }).fill("G106094");
+    await expect(
+      dialog.locator('.search-results a[href="/products/warehouse-G106094"]'),
+    ).toContainText("JC21");
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
-    const compare = header.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true });
-    await compare.click();
-    await expect(compare).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator(".compare-bar")).toBeVisible();
-    await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
-    await expect(compare).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator(".compare-bar")).toHaveCount(0);
-    await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+    await expect(
+      header.getByRole("link", { name: "ร้านค้า SUNFORD", exact: true }),
+    ).toHaveAttribute("href", "https://sunfordshop.com/");
+    await scrollTo(0);
     await expect(header).toHaveAttribute("data-hero-backdrop", "");
     await page.screenshot({ path: test.info().outputPath(`header-${viewport.width}.png`) });
+    await scrollTo(partialScroll);
+    await expect(header).not.toHaveAttribute("data-hero-backdrop");
+    await openMenu();
+    const pos = panel
+      .locator('[data-nav-menu="/products"] [data-nav-column="primary"]')
+      .getByRole("link", { name: "ระบบ POS", exact: true });
+    await expect(pos).toHaveAttribute("href", "/products/category/pos");
+    await pos.click();
+    await expect(page).toHaveURL(/\/products\/category\/pos$/);
   });
 }
