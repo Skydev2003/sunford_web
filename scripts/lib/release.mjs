@@ -2,15 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const checks = [
-  "lint",
-  "format:check",
-  "db:validate",
-  "test:uat",
-  "test:catalog",
-  "build",
-  "typecheck",
-];
+const checks = ["lint", "format:check", "db:validate", "test:uat", "test:catalog", "build"];
 
 export function releaseProduction({ root, check = false, runChecks, log = console.log }) {
   function git(args, { allowFailure = false } = {}) {

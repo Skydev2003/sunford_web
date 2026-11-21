@@ -12,10 +12,10 @@
 
 ```bash
 npm install
-npm run dev
+npm run dev -- --port 3001
 ```
 
-เปิด URL ที่ Next.js แสดงใน terminal (ปกติ http://localhost:3000) สินค้า ราคา หน่วย และรูปหลักอ่านจาก Warehouse PostgreSQL/storage โดยตรง ไม่ต้องเปิดแอป Warehouse ส่วนหน้าสินค้าและใบเสนอราคาใช้ข้อมูล Warehouse เท่านั้น ช่องที่ไม่มีข้อมูลเว้นว่าง ส่วนหน้าแรก/Hero คงภาพและเนื้อหาเดิมจากไฟล์โปรเจกต์ ไม่มีการอ่านฐาน CMS
+เปิดเว็บไซต์ที่ http://localhost:3001 ได้โดยตรง แม้แอป Warehouse บนพอร์ต 3000 จะปิดอยู่
 
 ## โครงสร้าง
 
@@ -62,14 +62,11 @@ public/
 
 ## แหล่งข้อมูลหลังถอด CMS
 
-- `WAREHOUSE_DATABASE_URL` และ `WAREHOUSE_COMPANY_ID` ใช้อ่านสินค้า/ราคาจาก PostgreSQL แบบ read-only ส่วน `WAREHOUSE_S3_*` ใช้อ่านรูปใหม่หรือรูปที่เปลี่ยน ดู [คู่มือ Warehouse](docs/warehouse/direct-postgres.md)
-- `data/site/content.json` เก็บค่าตั้งเว็บและเมนู ตัวอ่านอยู่ใน `src/features/site/`
-- `src/features/content/data/products.json` เก็บสเปก คำอธิบาย แกลเลอรี และข้อมูลอ้างอิงสินค้าเดิม166รายการ ส่วน `pages.json` เก็บหน้าเนื้อหาเดิม409หน้า ไฟล์เหล่านี้เก็บเป็นข้อมูลอ้างอิงและใช้ในข้อยกเว้นหน้าแรก/Hero หน้าภายในไม่ใช้เติมชื่อ รูป สเปก หรือคำอธิบายที่ Warehouse ไม่มี
-- `public/images/` เก็บรูปอ้างอิง ภาพแคมเปญ และ cache รูป Warehouse ส่วน `data/warehouse/images.json` เก็บ metadata ของ cache รูป Warehouse
-- `QUOTATION_DATABASE_URL` ใช้ Prisma กับทะเบียนของเว็บใน `warehouse_db.ecommerce.quotation_issues` แยกจาก counter เอกสารของ Warehouse และ pool อ่านสินค้า Production ต้องตั้งค่าการเชื่อมต่อนี้ เครื่องพัฒนาใช้ SQLite ใน `.local/quotation-issues.sqlite` เฉพาะเมื่อไม่ได้ตั้งค่าทะเบียน
-- เก็บ Prisma/client/schema และประวัติ migration เดิมเป็นอ้างอิง `db:deploy` ใช้ `scripts/migrate-quotation-registry.mjs` เพื่อตั้งค่า/ตรวจเฉพาะตารางทะเบียน ไม่รัน migration ของ CMS/auth เข้า Warehouse ไม่ใช้ `DATABASE_URL`, `DIRECT_URL` หรือ Supabase สำหรับเนื้อหา/ทะเบียนที่ runtime แล้ว
+ดู [กติกา Warehouse และใบเสนอราคา](spec.md#warehouse) สำหรับแหล่งข้อมูลสินค้า ราคา รูป และการออกเลข ส่วนตัวแปรเชื่อมต่อและการตรวจข้อมูลอยู่ใน [คู่มือเชื่อม Warehouse](docs/warehouse/direct-postgres.md)
 
-สินค้า/ราคาและรูป Warehouse อัปเดตตามรอบ catalog เดิมโดยไม่ต้องรันคำสั่งนำเข้า รูปมีเวอร์ชันใน URL ส่วนหน้าภายในเว้นรูปว่างเมื่อ Warehouse ไม่มีรูป การแก้เนื้อหาในไฟล์โปรเจกต์ให้ตรวจและ build/deploy ตามกระบวนการเดิม
+- ค่าตั้งเว็บและเมนูอยู่ใน `data/site/content.json` โดยมีตัวอ่านใน `src/features/site/`
+- ข้อมูลที่นำเข้าจากเว็บเดิมอยู่ใน `src/features/content/data/products.json` และ `pages.json` ในโฟลเดอร์เดียวกัน
+- รูปอ้างอิง ภาพแคมเปญ และ cache รูปอยู่ใน `public/images/` ส่วน metadata ของ cache อยู่ใน `data/warehouse/images.json`
 
 ## คำสั่งพัฒนา
 
@@ -93,14 +90,12 @@ npm run start
 npm run db:validate
 ```
 
-ตั้งค่า/ตรวจทะเบียนเลขเว็บด้วย `npm run db:deploy` หลังตั้ง `QUOTATION_DATABASE_URL` คำสั่งรันซ้ำได้และไม่รีเซ็ตเลข หาก schema ไม่ตรงจะหยุดแทนการเขียนทับ เก็บคำสั่ง/ประวัติ Prisma migration เดิมสำหรับอ้างอิงเท่านั้น ห้ามใช้ `db:migrate` หรือ migration เดิมกับ Warehouse
-
 ## ตรวจการใช้งานด้วยเบราว์เซอร์
 
 ```bash
 npx playwright install chromium
 # รัน dev server แยกอีก terminal
-PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
+PLAYWRIGHT_BASE_URL=http://localhost:3001 npm run test:e2e
 ```
 
 หากมี Chrome ในเครื่อง สามารถใช้ `PLAYWRIGHT_CHANNEL=chrome` แทนการติดตั้ง Chromium ค่าเริ่มต้นของ test config ใช้ URL `http://127.0.0.1:3001`; กำหนด `PLAYWRIGHT_BASE_URL` ให้ตรงกับ server ที่รัน
@@ -115,23 +110,13 @@ PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e
 
 ## เนื้อหาและภาพ
 
-แหล่งข้อมูลหลักคือเว็บไซต์ [Sunford](https://www.sunford.co) เก็บข้อมูลเต็มไว้ใน snapshot ส่วนภาพสินค้าแบบตัดพื้นหลังเดิมและภาพแบรนด์บางส่วนมาจาก [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) แสดงราคาจาก Warehouse ตามกติกาที่อนุมัติ ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford
+แหล่งอ้างอิงของเนื้อหาที่นำเข้าคือเว็บไซต์ [Sunford](https://www.sunford.co) เก็บข้อมูลเต็มไว้ใน snapshot ส่วนภาพสินค้าแบบตัดพื้นหลังเดิมและภาพแบรนด์บางส่วนมาจาก [Sunford Shop](https://sunfordshop.com) ดูรายละเอียดต้นทางใน [docs/content-sources.md](docs/content-sources.md) ติดต่อสอบถามผ่าน LINE หรือโทรศัพท์จริงของ Sunford
 
 ฟอนต์ Inter และ Noto Sans Thai ถูก self-host ด้วย `next/font/local` ดูใบอนุญาตใน `src/app/fonts` การติดตั้งและ build ไม่ต้องเรียก Google Fonts
 
-## การดูแลเนื้อหา
-
-ดูแลเนื้อหาเว็บผ่านไฟล์ใน repository ไม่มีระบบ CMS หรือหน้าจัดการเนื้อหา ข้อมูลสินค้าเดิมเก็บเป็นอ้างอิง/ข้อยกเว้นหน้าแรกเท่านั้น การตั้ง DATABASE_URL เก่าจะไม่เปิดการอ่าน CMS กลับมา ประวัติ schema/migrations ยังเก็บไว้เป็นอ้างอิง การลบ Supabase project เดิมเป็นขั้นตอนแยกหลังตรวจ production cutover ไม่ใช่งานของ build หรือ migration
-
 ## Deploy บน Vercel
 
-ใช้ `vercel.json` สำหรับ Next.js บน Node.js 24 โดยติดตั้งด้วย npm และ build ผ่าน `npm run vercel-build` ใช้ Warehouse PostgreSQL/storage สำหรับสินค้า และตารางทะเบียนเลขของเว็บแยกใน schema ecommerce ฟังก์ชันยังรันที่ Mumbai (`bom1`) ตาม config เดิม จึงต้องตรวจการเชื่อมถึง Warehouse จาก region นี้
-
-Production จาก branch `main` รัน migration ทะเบียนเอกสาร → build ส่วน Preview รันเฉพาะ build ไม่มี CMS seed ตั้งค่า Warehouse และทะเบียนเอกสารแยก Production/Preview ดูขั้นตอน import repo, ตั้งค่า และย้าย URL ใน [docs/vercel.md](docs/vercel.md)
-
-ปล่อย Production จาก branch `uat` ด้วย `bun run deploy`: commit งานให้ครบก่อน แล้วสคริปต์จะ fetch, sync `uat`, rebase บน `origin/main`, ตรวจ lint/format/tests/build ด้วยข้อมูลจำลอง แล้ว push revision ที่ตรวจแล้วเข้า `main` ให้ Vercel deploy อัตโนมัติ ไม่ force-push และไม่รัน migration/seed ในเครื่อง ใช้ `bun run deploy --check` เพื่อตรวจความพร้อมโดยไม่เปลี่ยน Git หรือ push
-
-ขั้นตอน migration ทะเบียนเอกสารและ build บน Vercel แยกอยู่ใน `bun run vercel-build` อย่าตั้ง Vercel Build Command เป็น `bun run deploy`
+ดู [คู่มือปล่อยรุ่นบน Vercel](docs/vercel.md) สำหรับการตั้งค่า Preview และ Production การปล่อยจาก `uat` และการตรวจ revision หลังปล่อย
 
 ## UAT บน LAN ชั่วคราว
 

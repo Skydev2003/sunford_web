@@ -1,6 +1,6 @@
 # Deploy บน Vercel
 
-ใช้ Vercel สำหรับ Next.js อ่านสินค้า/ราคาจาก Warehouse PostgreSQL และรูปหลักจาก storage ของ Warehouse หน้าภายในไม่ใช้รูปหรือข้อมูลสินค้าเดิมเติมช่องว่าง ส่วนค่าตั้งเว็บ เนื้อหาทั่วไป และข้อยกเว้นหน้าแรก/Hero อยู่ในโปรเจกต์ ไม่มีการอ่าน CMS ทะเบียนเลขของเว็บอยู่แยกใน Warehouse schema ecommerce ไฟล์ `vercel.json` ยังคง Function Region Mumbai (`bom1`) ตาม config เดิม ต้องตรวจการเชื่อมถึง Warehouse จาก region นี้ก่อน cutover
+คู่มือนี้ใช้ตั้งค่า Vercel ปล่อย Production จาก `uat` และตรวจว่าเว็บใช้ revision ที่ปล่อยแล้ว ก่อน cutover ให้ตรวจว่า Functions ใน Mumbai (`bom1` ตาม `vercel.json`) เชื่อมถึง Warehouse ได้ ดู [กติกา Warehouse และใบเสนอราคา](../spec.md#warehouse)
 
 ## ตั้งค่าครั้งแรก
 
@@ -32,13 +32,13 @@
 | Production | `main`                       | ตรวจ config → `db:deploy` → `build` |
 | Preview    | `uat`, feature branch และ PR | ตรวจ config → `build`               |
 
-Production ปฏิเสธ branch/environment ที่ไม่ตรงก่อนแตะฐานข้อมูล ขั้น `db:deploy` ใช้สคริปต์ setup เฉพาะ ecommerce.quotation_issues ที่ตรวจ schema/constraints/สิทธิ์ก่อนใช้ รันซ้ำได้โดยไม่รีเซ็ตเลข ประวัติ Prisma migration เดิมเก็บไว้แต่ไม่ถูก execute ไม่มี CMS seed การ rollback deployment ไม่ย้อนเลขที่ออกแล้ว
+Production ตรวจ branch และ environment ก่อนเรียก `db:deploy` เพื่อตั้งค่าทะเบียนใบเสนอราคา แล้วจึง build เว็บ ไม่มีขั้นตอน seed การ rollback deployment จะไม่ย้อนเลขที่ออกแล้ว
 
-Preview ไม่รัน setup อัตโนมัติ เตรียมทะเบียนทดสอบก่อนใช้งานออกเลขและอย่าใช้ counter ร่วมกับ production การเขียน Warehouse ของเว็บไซต์จำกัดเฉพาะตารางทะเบียนที่อนุมัติ สินค้า/สต็อกยัง read-only และไม่ใช้เลขเอกสารภายใน Warehouse ร่วมกัน
+สำหรับ Preview ที่จะทดสอบออกเลข ให้เตรียมทะเบียนทดสอบแยกจาก Production ด้วย `npm run db:deploy` โดยตั้ง `QUOTATION_DATABASE_URL` ให้ชี้ทะเบียนทดสอบก่อนรัน เพราะ Preview build ไม่ได้เตรียมตารางให้
 
 ทุก target ต้องตั้ง `WAREHOUSE_DATABASE_URL`, `WAREHOUSE_COMPANY_ID`, `WAREHOUSE_S3_ENDPOINT`, `WAREHOUSE_S3_BUCKET`, `WAREHOUSE_S3_REGION`, `WAREHOUSE_S3_KEY` และ `WAREHOUSE_S3_SECRET` ฝั่งเซิร์ฟเวอร์ ดู [คู่มือ Warehouse](warehouse/direct-postgres.md) เนื้อหา local มากับ build ไม่ต้องตั้งฐาน CMS
 
-Vercel Git integration สร้าง deployment เมื่อ push ตามการตั้งค่า project โดย CI เดิมยังทำงานอยู่ แต่ไม่ได้รอ GitHub Actions ผ่านเหมือน Render โดยอัตโนมัติ หากต้องการ gate ก่อน promote ให้ตั้ง [Deployment Checks](https://vercel.com/docs/deployment-checks) ที่บัญชีรองรับ และคง branch protection ให้ PR ผ่าน CI ก่อน merge เข้า `main`
+Vercel Git integration สร้าง deployment เมื่อ push ตามการตั้งค่า project โดย CI เดิมยังทำงานอยู่ แต่ไม่ได้รอ GitHub Actions ผ่านเหมือน Render โดยอัตโนมัติ หากต้องการ gate ก่อน promote ให้ตั้ง [Deployment Checks](https://vercel.com/docs/deployment-checks) ที่บัญชีรองรับ
 
 ## ปล่อย Production จาก uat
 
@@ -52,12 +52,12 @@ bun run deploy
 สคริปต์ทำตามลำดับนี้:
 
 1. ตรวจว่าอยู่ branch `uat`, working tree สะอาด และไม่มี rebase/merge ค้าง
-2. `git fetch origin` แล้ว rebase บน `origin/uat` เพื่อรับงานทีม จากนั้น `git rebase origin/main`
-3. รัน lint, format check, schema validation, UAT/catalogue tests, build และ typecheck ด้วย Bun โดยปิดการเชื่อมต่อทะเบียนเขียนใน process ตรวจงาน สินค้ายังคงอ่าน Warehouse ผ่าน pool แบบ read-only ไม่มีการออกเลขจริงหรือแก้ข้อมูล production ระหว่างตรวจ
+2. `git fetch origin` แล้ว rebase บน `origin/uat` และ `origin/main` ตามลำดับ เฉพาะเมื่อมี commit จาก branch นั้นที่ยังไม่อยู่ใน `HEAD`
+3. รัน lint, format check, schema validation, UAT/catalogue tests และ build ด้วย Bun โดย Next.js ตรวจ TypeScript ระหว่าง build ขั้นตรวจงานปิดการเชื่อมต่อทะเบียนเขียน ส่วนสินค้ายังคงอ่าน Warehouse ผ่าน pool แบบ read-only
 4. ตรวจว่าระหว่าง build ไม่มีไฟล์หรือ commit เปลี่ยน และ fetch `main` อีกครั้ง ถ้า `main` มีงานใหม่ที่ยังไม่อยู่ใน revision ที่ตรวจจะหยุด ให้รันใหม่เพื่อ rebase และตรวจอีกครั้ง
-5. `git push origin HEAD:refs/heads/main` จาก `uat` เพื่อให้ Vercel Git integration deploy Production จาก commit ที่ผ่านการตรวจแล้ว
+5. ถ้า `main` มี revision นี้แล้ว สคริปต์จบโดยไม่สร้าง deployment ใหม่ ถ้ามี revision ใหม่ สคริปต์จะ push `HEAD` ที่ตรวจแล้วเข้า `main` เพื่อให้ Vercel Git integration ปล่อย Production
 
-ไม่มีการ force-push, auto-commit หรือ auto-stash ไม่เขียนทับ local branch `main` และไม่ rewrite remote `uat` หากมี rebase conflict ให้แก้ไฟล์แล้ว `git add` และ `git rebase --continue` หรือยกเลิกด้วย `git rebase --abort` จากนั้นรัน `bun run deploy` ใหม่ หากตรวจงานไม่ผ่านจะไม่ push Production หาก branch protection ไม่อนุญาต push ตรง ให้ส่ง PR จาก `uat` เข้า `main` ตามกติกา repository
+ไม่มีการ force-push, auto-commit หรือ auto-stash ไม่เขียนทับ local branch `main` และไม่ rewrite remote `uat` หากมี rebase conflict ให้แก้ไฟล์แล้ว `git add` และ `git rebase --continue` หรือยกเลิกด้วย `git rebase --abort` จากนั้นรัน `bun run deploy` ใหม่ หากตรวจงานไม่ผ่านจะไม่ push Production หาก branch protection ปฏิเสธการ push ให้หยุดและประสานผู้ดูแล repository ห้ามข้ามขั้นตอนด้วยการ push เองหรือ deploy ผ่าน Vercel CLI
 
 ตรวจความพร้อมโดยไม่ fetch/rebase/build/push ด้วย:
 
