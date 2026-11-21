@@ -14,6 +14,8 @@ type FeaturedScale = {
   group: keyof typeof groupLabels;
   imageMode?: "full-bottom" | "bleed";
   photoFile?: string;
+  // Portrait artwork uses only part of the square photo frame's width.
+  photoAspect?: number;
   tagline: string;
   background: string;
   surface?: string;
@@ -188,12 +190,14 @@ const homeAndRetail: readonly FeaturedScale[] = [
   {
     sku: "G106179",
     group: "scale-kitchen",
+    photoAspect: 3507 / 4096,
     tagline: "ชั่งส่วนผสมได้ถึง 5 กก.",
     background: "sc:bg-[#B6CFAE]",
   },
   {
     sku: "G106209",
     group: "scale-price",
+    photoAspect: 2539 / 4096,
     tagline: "คำนวณราคาบนแท่น 60 กก.",
     background: "sc:bg-[#B9CCE3]",
     surface: "sc:bg-[#6E91B6] sc:h-[35%]",
@@ -207,6 +211,7 @@ const homeAndRetail: readonly FeaturedScale[] = [
   {
     sku: "G106216",
     group: "scale-price",
+    photoAspect: 3060 / 4096,
     tagline: "จอบนเสา เห็นราคาฝั่งลูกค้า",
     background: "sc:bg-[#CCC0E3]",
     surface: "sc:bg-[#9D88B7] sc:h-[30%]",
@@ -220,6 +225,7 @@ const homeAndRetail: readonly FeaturedScale[] = [
   {
     sku: "G108562",
     group: "scale-price",
+    photoAspect: 2987 / 4096,
     tagline: "จอสองด้าน เห็นราคาทั้งคู่",
     background: "sc:bg-[#384D69]",
     surface: "sc:bg-[#667C92] sc:h-[34%]",
