@@ -10,7 +10,7 @@ export function HeroScene({
   logo,
   showAnnouncement = false,
 }: {
-  description?: string;
+  description?: ReactNode;
   logo: ReactNode;
   showAnnouncement?: boolean;
 }) {
@@ -22,15 +22,20 @@ export function HeroScene({
   useEffect(() => {
     const element = video.current;
     if (!element) return;
-    if (allowed) void element.play().catch(() => {});
-    else element.pause();
+    if (allowed) {
+      if (!element.hasAttribute("src")) element.src = "/videos/sunford-web.mp4";
+      void element.play().catch(() => {});
+    } else {
+      element.pause();
+    }
   }, [allowed]);
 
   useEffect(() => {
     const scene = root.current;
     if (!scene) return;
-    const header = document.querySelector<HTMLElement>(".site-header");
-    const headerInner = header?.querySelector<HTMLElement>(".header-inner");
+    const frame = scene.closest("[data-home-route]");
+    let header: HTMLElement | null | undefined;
+    let headerInner: HTMLElement | null | undefined;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false;
     let backdropFrame = 0;
@@ -66,16 +71,26 @@ export function HeroScene({
     );
     observer.observe(scene);
     const resize = new ResizeObserver(measureHeader);
-    if (headerInner) resize.observe(headerInner);
+    const connectHeader = () => {
+      header = frame?.querySelector<HTMLElement>(":scope > .site-header");
+      headerInner = header?.querySelector<HTMLElement>(".header-inner");
+      if (!headerInner) return;
+      headerObserver.disconnect();
+      resize.observe(headerInner);
+      measureHeader();
+    };
+    const headerObserver = new MutationObserver(connectHeader);
+    if (frame) headerObserver.observe(frame, { childList: true });
+    connectHeader();
     window.addEventListener("scroll", requestBackdrop, { passive: true });
     window.addEventListener("resize", measureHeader);
     document.addEventListener("visibilitychange", sync);
     reduced.addEventListener("change", sync);
-    measureHeader();
     sync();
     return () => {
       observer.disconnect();
       resize.disconnect();
+      headerObserver.disconnect();
       window.removeEventListener("scroll", requestBackdrop);
       window.removeEventListener("resize", measureHeader);
       cancelAnimationFrame(backdropFrame);
@@ -155,13 +170,11 @@ export function HeroScene({
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         poster="/videos/sunford-poster.jpg"
         aria-hidden="true"
         tabIndex={-1}
-      >
-        <source src="/videos/sunford-web.mp4" type="video/mp4" />
-      </video>
+      />
       <div className={styles.overlay} aria-hidden="true" />
       <div className={`hero-main ${styles.main}`}>
         <h1 id="hero-title" className={styles.heading}>

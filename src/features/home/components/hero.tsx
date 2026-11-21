@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react";
+import type { ReactNode } from "react";
 import type { HeroSettings, SiteSettings } from "@/features/site/types";
 import { BrandOpening } from "./brand-opening";
 import { HeroScene } from "./hero-scene";
@@ -20,7 +21,7 @@ export function Hero({
   brand,
   showAnnouncement = true,
 }: {
-  description?: string;
+  description?: ReactNode;
   settings: Omit<HeroSettings, "slides">;
   brand: Pick<SiteSettings, "logo" | "name">;
   showAnnouncement?: boolean;

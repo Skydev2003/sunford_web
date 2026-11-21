@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { SiteLoading } from "@/features/site/components/site-loading";
 import { Hero } from "@/features/home/components/hero";
 import { SectionTwoVideo } from "@/features/home/components/section-two-video";
 import { HomeMotion } from "@/features/home/components/home-motion";
@@ -13,36 +12,30 @@ import { getHomeImages, getHomeLinkTargets } from "@/features/home/server/home-i
 import { getSettings } from "@/features/site/server/documents";
 import { defaultHero, catalogDefaults, defaultSite } from "@/features/site/data/settings";
 import { heroSlideData } from "@/features/home/data/hero-slides";
+import { companyIntro } from "@/features/home/data/brand";
 import { getClientProducts } from "@/features/catalog/server/client-products";
 import styles from "@/features/home/components/home-page.module.css";
 
 // Temporarily hide the homepage catalogue while keeping /products available.
 const showHomepageCatalog = false;
 
-export default function Home() {
-  return (
-    <Suspense fallback={<SiteLoading label="กำลังโหลดหน้าแรก…" />}>
-      <HomeContent />
-    </Suspense>
-  );
-}
-
-async function HomeContent() {
-  const [products, images, targets, hero, catalog, site] = await Promise.all([
-    getHomeProducts(),
-    getHomeImages(),
-    getHomeLinkTargets(),
+export default async function Home() {
+  const [hero, site] = await Promise.all([
     getSettings("hero", defaultHero),
-    getSettings("catalog", catalogDefaults),
     getSettings("site", defaultSite),
   ]);
   const { slides, ...heroCopy } = hero;
-  const [featured] = heroSlideData(products, slides);
   return (
     <main id="main-content" className={styles.page}>
       <Hero
         brand={{ logo: site.logo, name: site.name }}
-        description={featured?.descriptionOverride}
+        description={
+          slides.some((slide) => slide.description) ? (
+            <Suspense fallback={companyIntro.description}>
+              <HomeHeroDescription slides={slides} />
+            </Suspense>
+          ) : undefined
+        }
         showAnnouncement={false}
         settings={{
           ...heroCopy,
@@ -53,6 +46,35 @@ async function HomeContent() {
         }}
       />
       <SectionTwoVideo />
+      <Suspense fallback={null}>
+        <HomeProducts />
+      </Suspense>
+      <HomeMotion>
+        <BrandStory />
+      </HomeMotion>
+      <HomeMotion>
+        <SunfordStories />
+      </HomeMotion>
+      <HomeMotion>
+        <SunfordVideos />
+      </HomeMotion>
+    </main>
+  );
+}
+
+async function HomeHeroDescription({ slides }: { slides: typeof defaultHero.slides }) {
+  const [featured] = heroSlideData(await getHomeProducts(), slides);
+  return featured?.descriptionOverride || companyIntro.description;
+}
+
+async function HomeProducts() {
+  const [products, images, targets] = await Promise.all([
+    getHomeProducts(),
+    getHomeImages(),
+    getHomeLinkTargets(),
+  ]);
+  return (
+    <>
       <HomeMotion>
         <div className="homepage-lead">
           <ProductSpotlight
@@ -65,20 +87,14 @@ async function HomeContent() {
       </HomeMotion>
       <HomeMotion>
         {showHomepageCatalog ? (
-          <ProductCatalog products={await getClientProducts()} copy={catalog} />
+          <ProductCatalog
+            products={await getClientProducts()}
+            copy={await getSettings("catalog", catalogDefaults)}
+          />
         ) : (
           <CategoryFeature products={products} images={images} />
         )}
       </HomeMotion>
-      <HomeMotion>
-        <BrandStory />
-      </HomeMotion>
-      <HomeMotion>
-        <SunfordStories />
-      </HomeMotion>
-      <HomeMotion>
-        <SunfordVideos />
-      </HomeMotion>
-    </main>
+    </>
   );
 }

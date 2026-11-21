@@ -22,6 +22,7 @@ for (const viewport of [
       await expect(hero).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await expect(hero.locator("h1")).toBeVisible({ timeout: 500 });
       await expect(hero.locator("p")).toBeVisible();
+      await expect(hero.locator("video[src], video source")).toHaveCount(0);
       await expect(page.locator(".site-header .brand")).toBeVisible();
       const cta = hero.getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" });
       await expect(cta).toBeVisible();

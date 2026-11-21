@@ -34,7 +34,7 @@ for (const [width, height] of [
     await expect(page.locator("main h1")).toHaveCount(1);
     await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
     await expect(scene(page).locator("video")).toHaveCount(1);
-    await expect(page.locator('video source[src="/videos/sunford-web.mp4"]')).toHaveCount(1);
+    await expect(scene(page).locator("video[src], video source")).toHaveCount(0);
     await expect(scene(page).locator("video")).toHaveAttribute(
       "poster",
       "/videos/sunford-poster.jpg",
@@ -66,7 +66,9 @@ for (const [width, height] of [
       false,
     );
     expect(
-      requests.filter((url) => /\/images\/hero\/|\.glb(?:\?|$)|model-viewer/.test(url)),
+      requests.filter((url) =>
+        /\/videos\/sunford-web\.mp4|\/images\/hero\/|\.glb(?:\?|$)|model-viewer/.test(url),
+      ),
     ).toEqual([]);
     expect(errors).toEqual([]);
     await page.screenshot({ path: test.info().outputPath(`video-hero-${width}.png`) });
@@ -108,12 +110,20 @@ test("video plays in view and pauses offscreen, then resumes", async ({ page }) 
 
 test("live reduced motion pauses the video and disables section reveal", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
+  const videoRequests: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/videos/sunford-web.mp4")
+      videoRequests.push(request.url());
+  });
   await page.goto("/");
   await ready(page);
   const video = scene(page).locator("video");
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
   await expect(nextSection(page)).toHaveAttribute("data-hero-scroll-reveal", "reduced");
+  expect(videoRequests).toEqual([]);
+  const requestingVideo = page.waitForRequest("**/videos/sunford-web.mp4");
   await page.emulateMedia({ reducedMotion: "no-preference" });
+  await requestingVideo;
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
@@ -154,6 +164,7 @@ for (const width of [1440, 390]) {
         "poster",
         "/videos/sunford-poster.jpg",
       );
+      await expect(scene(page).locator("video[src], video source")).toHaveCount(0);
       await expect(scene(page).locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
       await expect(page.locator("[data-brand-opening]")).toBeHidden();
       await scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" }).click();
@@ -189,10 +200,6 @@ test("consultation is keyboard reachable and internal pages release the Hero hea
   expect(await cta.evaluate((n) => getComputedStyle(n).outlineWidth)).toBe("3px");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/contact-us$/);
-  await expect(page.locator(".site-header")).not.toHaveAttribute("data-hero-backdrop");
-  await expect(page.locator(".site-header")).toHaveAttribute("data-nav-tone", "light");
-  await expect(page.locator(".nav-glass")).toHaveCSS(
-    "background-color",
-    "rgba(255, 255, 255, 0.72)",
-  );
+  await expect(page.locator(".site-header:visible")).toHaveCount(0);
+  await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
 });

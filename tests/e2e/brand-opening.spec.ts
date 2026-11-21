@@ -182,7 +182,7 @@ for (const viewport of [
     );
     await page.screenshot({ path: test.info().outputPath(`brand-revealed-${viewport.width}.png`) });
     await expect(page.locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
-    await expect(page.locator("[data-hero-scene] video source")).toHaveAttribute(
+    await expect(page.locator("[data-hero-scene] video")).toHaveAttribute(
       "src",
       "/videos/sunford-web.mp4",
     );

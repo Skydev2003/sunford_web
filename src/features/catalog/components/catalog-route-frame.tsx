@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, Fragment, useContext, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  Fragment,
+  Suspense,
+  useContext,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useStaggerBounce } from "@/components/ui/use-stagger-bounce";
@@ -46,7 +54,15 @@ export function CatalogRouteFrame({
         <a href="#main-content" className="skip-link">
           ข้ามไปยังเนื้อหา
         </a>
-        {!productsPage && header}
+        {pathname === "/" ? (
+          <Suspense
+            fallback={<div aria-hidden="true" style={{ height: "var(--site-header-height)" }} />}
+          >
+            {header}
+          </Suspense>
+        ) : (
+          !productsPage && header
+        )}
         {children}
         {!productsPage && <Fragment key={pathname}>{footer}</Fragment>}
         {productsPage && overlayHost ? createPortal(overlays, overlayHost) : overlays}
