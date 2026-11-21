@@ -5,10 +5,10 @@ export function validateDeploymentEnvironment(env) {
   if (env.VERCEL === "1" && !["production", "preview"].includes(env.VERCEL_ENV))
     errors.push("VERCEL_ENV must be production or preview for a deployment build.");
   const expectedBranch =
-    env.APP_ENV === "production" ? "main" : env.APP_ENV === "uat" ? "uat" : undefined;
+    env.APP_ENV === "production" ? "main" : env.APP_ENV === "uat" ? "Javis1" : undefined;
   if (!expectedBranch) errors.push("APP_ENV must be uat or production.");
-  if (!env.DEPLOY_BRANCH || (!preview && !["main", "uat"].includes(env.DEPLOY_BRANCH)))
-    errors.push("Deployment branch must be main or uat; detached HEAD is not allowed.");
+  if (!env.DEPLOY_BRANCH || (!preview && !["main", "Javis1"].includes(env.DEPLOY_BRANCH)))
+    errors.push("Deployment branch must be main or Javis1; detached HEAD is not allowed.");
   if (!preview && expectedBranch && env.DEPLOY_BRANCH && env.DEPLOY_BRANCH !== expectedBranch)
     errors.push(`Deploy the ${expectedBranch} branch for this environment.`);
   if (env.VERCEL === "1" && env.APP_ENV !== (preview ? "uat" : "production"))

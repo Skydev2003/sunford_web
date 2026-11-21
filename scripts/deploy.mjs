@@ -7,7 +7,7 @@ if (args.some((arg) => arg !== "--check")) {
   process.exit(1);
 }
 if (process.env.VERCEL === "1") {
-  console.error("Use vercel-build on Vercel. Run bun run deploy locally from uat.");
+  console.error("Use vercel-build on Vercel. Run bun run deploy locally from Javis1.");
   process.exit(1);
 }
 

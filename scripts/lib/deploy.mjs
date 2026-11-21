@@ -11,7 +11,7 @@ export function deploymentEnvironment(env, localBranch) {
         : "production"
       : branch === "main"
         ? "production"
-        : branch === "uat"
+        : branch === "Javis1"
           ? "uat"
           : undefined;
   const deploymentEnv = {
