@@ -34,22 +34,24 @@ function fixture(t) {
   const initial = commit("base.txt");
   git(["remote", "add", "origin", remote]);
   git(["push", "origin", "main"]);
-  git(["switch", "-c", "uat"]);
-  git(["push", "origin", "uat"]);
+  git(["switch", "-c", "Javis1"]);
+  git(["push", "origin", "Javis1"]);
   const remoteHead = (branch) => git(["rev-parse", `refs/heads/${branch}`], remote);
   const release = (options = {}) =>
     releaseProduction({ root, log: () => {}, runChecks: () => {}, ...options });
   return { root, remote, git, commit, release, remoteHead, initial };
 }
 
-test("release rebases uat onto main and pushes the validated revision without rewriting remote uat", (t) => {
+test("release includes remote Javis1 changes and publishes to main without rewriting Javis1", (t) => {
   const f = fixture(t);
   f.git(["switch", "main"]);
   const main = f.commit("production.txt");
   f.git(["push", "origin", "main"]);
-  f.git(["switch", "uat"]);
+  f.git(["switch", "-c", "teammate", "Javis1"]);
+  const teammate = f.commit("teammate.txt");
+  f.git(["push", "origin", "HEAD:Javis1"]);
+  f.git(["switch", "Javis1"]);
   const before = f.commit("feature.txt");
-  f.git(["push", "origin", "uat"]);
   let checked;
   f.release({
     runChecks() {
@@ -57,15 +59,16 @@ test("release rebases uat onto main and pushes the validated revision without re
       assert.notEqual(checked, before);
       assert.equal(f.remoteHead("main"), main);
       f.git(["merge-base", "--is-ancestor", main, "HEAD"]);
+      assert.ok(existsSync(join(f.root, "teammate.txt")));
     },
   });
   assert.equal(f.remoteHead("main"), checked);
-  assert.equal(f.remoteHead("uat"), before);
-  assert.equal(f.git(["branch", "--show-current"]), "uat");
+  assert.equal(f.remoteHead("Javis1"), teammate);
+  assert.equal(f.git(["branch", "--show-current"]), "Javis1");
   assert.ok(existsSync(join(f.root, "feature.txt")));
   assert.ok(existsSync(join(f.root, "production.txt")));
 
-  // A second release works even when origin/uat still has the original, unre-based commits.
+  // A second release works even when origin/Javis1 still has the original, unre-based commits.
   f.commit("next-feature.txt");
   f.release();
   assert.equal(f.remoteHead("main"), f.git(["rev-parse", "HEAD"]));
@@ -80,7 +83,7 @@ test("release preserves a main-first merge when both remote branches are already
   f.git(["push", "origin", "main"]);
   f.git(["switch", "-c", "safe", f.initial]);
   const safe = f.commit("feature.txt");
-  f.git(["switch", "uat"]);
+  f.git(["switch", "Javis1"]);
   f.git(["merge", "--ff-only", "main"]);
   f.git(["merge", "--no-ff", "safe", "-m", "Merge safe into mainline"]);
   const merged = f.git(["rev-parse", "HEAD"]);
@@ -92,7 +95,7 @@ test("release preserves a main-first merge when both remote branches are already
     },
   });
   assert.equal(f.remoteHead("main"), merged);
-  assert.equal(f.remoteHead("uat"), f.initial);
+  assert.equal(f.remoteHead("Javis1"), f.initial);
   f.release();
   assert.equal(f.remoteHead("main"), merged);
 });
@@ -100,8 +103,10 @@ test("release preserves a main-first merge when both remote branches are already
 test("release refuses dirty trees, wrong branches and existing Git operations", (t) => {
   const f = fixture(t);
   f.git(["switch", "main"]);
-  assert.throws(() => f.release(), /uat branch/);
-  f.git(["switch", "uat"]);
+  assert.throws(() => f.release(), /Javis1 branch/);
+  f.git(["switch", "-c", "uat"]);
+  assert.throws(() => f.release(), /Javis1 branch/);
+  f.git(["switch", "Javis1"]);
   writeFileSync(join(f.root, "uncommitted.txt"), "keep this");
   assert.throws(() => f.release(), /Commit or stash/);
   rmSync(join(f.root, "uncommitted.txt"));
@@ -145,8 +150,8 @@ test("rebase conflicts preserve changes and stop before validation or push", (t)
   f.git(["switch", "main"]);
   const main = f.commit("base.txt", "production change");
   f.git(["push", "origin", "main"]);
-  f.git(["switch", "uat"]);
-  f.commit("base.txt", "uat change");
+  f.git(["switch", "Javis1"]);
+  f.commit("base.txt", "Javis1 change");
   assert.throws(
     () =>
       f.release({
@@ -170,7 +175,7 @@ test("a concurrent main release or changed working tree stops publication", (t) 
           f.git(["switch", "main"]);
           const concurrent = f.commit("concurrent.txt");
           f.git(["push", "origin", "main"]);
-          f.git(["switch", "uat"]);
+          f.git(["switch", "Javis1"]);
           assert.equal(f.remoteHead("main"), concurrent);
         },
       }),

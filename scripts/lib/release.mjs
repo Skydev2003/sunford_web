@@ -16,8 +16,8 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
   }
   function assertReady() {
     const branch = git(["symbolic-ref", "--quiet", "--short", "HEAD"], { allowFailure: true });
-    if (branch.status !== 0 || branch.stdout.trim() !== "uat")
-      throw new Error("Run bun run deploy from the uat branch.");
+    if (branch.status !== 0 || branch.stdout.trim() !== "Javis1")
+      throw new Error("Run bun run deploy from the Javis1 branch.");
     for (const state of [
       "rebase-merge",
       "rebase-apply",
@@ -30,13 +30,13 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
         throw new Error("Finish or abort the existing Git operation before deploying.");
     }
     if (git(["status", "--porcelain"]).stdout.trim())
-      throw new Error("Commit or stash all changes on uat before running bun run deploy.");
+      throw new Error("Commit or stash all changes on Javis1 before running bun run deploy.");
     git(["remote", "get-url", "origin"]);
   }
 
   assertReady();
   if (check) {
-    log("Ready: fetch origin → sync uat → rebase onto origin/main → checks → push HEAD:main.");
+    log("Ready: fetch origin → sync Javis1 → rebase onto origin/main → checks → push HEAD:main.");
     log("No fetch, rebase, checks, database writes or push were run.");
     return;
   }
@@ -44,20 +44,21 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
   log("Fetching origin...");
   git(["fetch", "origin"]);
   git(["rev-parse", "--verify", "refs/remotes/origin/main"]);
-  // Include teammates' UAT commits without force-pushing the shared UAT branch.
+  // Include teammates' commits without force-pushing the shared Javis1 branch.
   // Preserve approved merges when the remote commits are already included.
   if (
-    git(["rev-parse", "--verify", "refs/remotes/origin/uat"], { allowFailure: true }).status ===
+    git(["rev-parse", "--verify", "refs/remotes/origin/Javis1"], { allowFailure: true }).status ===
       0 &&
-    git(["merge-base", "--is-ancestor", "origin/uat", "HEAD"], { allowFailure: true }).status !== 0
+    git(["merge-base", "--is-ancestor", "origin/Javis1", "HEAD"], { allowFailure: true }).status !==
+      0
   ) {
-    log("Synchronizing uat with origin/uat...");
-    git(["rebase", "origin/uat"]);
+    log("Synchronizing Javis1 with origin/Javis1...");
+    git(["rebase", "origin/Javis1"]);
   }
   if (
     git(["merge-base", "--is-ancestor", "origin/main", "HEAD"], { allowFailure: true }).status !== 0
   ) {
-    log("Rebasing uat onto origin/main...");
+    log("Rebasing Javis1 onto origin/main...");
     git(["rebase", "origin/main"]);
   }
   assertReady();
@@ -87,7 +88,7 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
 
   assertReady();
   if (git(["rev-parse", "HEAD"]).stdout.trim() !== revision)
-    throw new Error("uat changed during validation. Run bun run deploy again.");
+    throw new Error("Javis1 changed during validation. Run bun run deploy again.");
   // Re-check main after the build. A concurrent release must be rebased and tested again.
   git(["fetch", "origin", "main"]);
   if (
