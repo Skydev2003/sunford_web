@@ -2,9 +2,9 @@ name: UAT checks
 
 on:
   pull_request:
-    branches: [uat, main]
+    branches: [Javis1, main]
   push:
-    branches: [uat, main, NaThong]
+    branches: [Javis1, main, NaThong]
   workflow_dispatch:
 
 permissions:

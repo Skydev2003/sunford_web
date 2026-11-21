@@ -8,22 +8,31 @@ const valid = {
   QUOTATION_DATABASE_URL: "postgresql://writer:password@warehouse.example.com:5432/warehouse_db",
 };
 
-test("local deployments infer the environment only from main or uat", () => {
+test("local deployments infer the environment only from main or Javis1", () => {
   assert.equal(deploymentEnvironment(valid, "main").APP_ENV, "production");
-  assert.equal(deploymentEnvironment(valid, "uat").APP_ENV, "uat");
-  for (const branch of ["feature/test", "NaThong", "MAIN", "__proto__", "", undefined]) {
-    assert.throws(() => deploymentEnvironment(valid, branch), /branch must be main or uat/);
+  assert.equal(deploymentEnvironment(valid, "Javis1").APP_ENV, "uat");
+  for (const branch of [
+    "uat",
+    "javis1",
+    "feature/test",
+    "NaThong",
+    "MAIN",
+    "__proto__",
+    "",
+    undefined,
+  ]) {
+    assert.throws(() => deploymentEnvironment(valid, branch), /branch must be main or Javis1/);
   }
   assert.throws(
     () => deploymentEnvironment({ ...valid, VERCEL_GIT_COMMIT_REF: "main" }, "feature/test"),
-    /branch must be main or uat/,
+    /branch must be main or Javis1/,
   );
 });
 
 test("Vercel uses its linked branch with detached HEAD and rejects missing branch metadata", () => {
   for (const [branch, target] of [
     ["main", "production"],
-    ["uat", "preview"],
+    ["Javis1", "preview"],
     ["feature/test", "preview"],
   ]) {
     const env = deploymentEnvironment({
@@ -33,11 +42,12 @@ test("Vercel uses its linked branch with detached HEAD and rejects missing branc
       VERCEL_GIT_COMMIT_REF: branch,
     });
     assert.equal(env.DEPLOY_BRANCH, branch);
+    assert.equal(env.APP_ENV, target === "preview" ? "uat" : "production");
     assert.equal(env.NODE_ENV, "production");
   }
   assert.throws(
     () => deploymentEnvironment({ ...valid, VERCEL: "1", VERCEL_ENV: "production" }, "main"),
-    /branch must be main or uat/,
+    /branch must be main or Javis1/,
   );
   assert.throws(
     () =>
@@ -47,18 +57,18 @@ test("Vercel uses its linked branch with detached HEAD and rejects missing branc
         VERCEL_ENV: "production",
         VERCEL_GIT_COMMIT_REF: "feature/test",
       }),
-    /branch must be main or uat/,
+    /branch must be main or Javis1/,
   );
 });
 
 test("deployment rejects mismatched environments and missing credentials before running steps", () => {
   assert.throws(
-    () => deploymentEnvironment({ ...valid, APP_ENV: "production" }, "uat"),
+    () => deploymentEnvironment({ ...valid, APP_ENV: "production" }, "Javis1"),
     /Deploy the main branch/,
   );
   assert.throws(
     () => deploymentEnvironment({ ...valid, APP_ENV: "uat" }, "main"),
-    /Deploy the uat branch/,
+    /Deploy the Javis1 branch/,
   );
   assert.throws(() => deploymentEnvironment({}, "main"), /Configure QUOTATION_DATABASE_URL/);
 });
@@ -88,7 +98,7 @@ test("deployment stops immediately after a failed registry migration or build", 
 test("CLI check validates both Vercel branches without touching the database", () => {
   for (const [branch, appEnv] of [
     ["main", "production"],
-    ["uat", "uat"],
+    ["Javis1", "uat"],
   ]) {
     const result = spawnSync(process.execPath, ["scripts/vercel-build.mjs", "--check"], {
       cwd: fileURLToPath(new URL("../../", import.meta.url)),
@@ -103,6 +113,7 @@ test("CLI check validates both Vercel branches without touching the database", (
       },
     });
     assert.equal(result.status, 0, result.stderr);
+    assert.ok(result.stdout.includes(`Deployment: ${branch} → ${appEnv}`));
     assert.match(result.stdout, /No migrations or build were run/);
   }
 });
@@ -137,6 +148,7 @@ test("Vercel rejects wrong target settings before any database mutation", () => 
     { VERCEL_ENV: "development" },
     { VERCEL_ENV: undefined },
     { APP_ENV: "uat" },
+    { VERCEL_GIT_COMMIT_REF: "Javis1" },
     { VERCEL_GIT_COMMIT_REF: "uat" },
     { QUOTATION_DATABASE_URL: undefined },
     { VERCEL_ENV: "preview", APP_ENV: "production" },

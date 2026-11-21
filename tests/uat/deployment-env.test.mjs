@@ -4,7 +4,7 @@ import { validateDeploymentEnvironment } from "../../scripts/lib/deployment-env.
 
 const valid = {
   APP_ENV: "uat",
-  DEPLOY_BRANCH: "uat",
+  DEPLOY_BRANCH: "Javis1",
   QUOTATION_DATABASE_URL:
     "postgresql://writer:test-password@warehouse.example.com:5432/warehouse_db",
 };
@@ -27,6 +27,10 @@ test("UAT requires real configuration instead of silently deploying catalogue fi
 
 test("deployment rejects the wrong branch and transaction pooler for migrations", () => {
   assert.ok(validateDeploymentEnvironment({ ...valid, DEPLOY_BRANCH: "main" }).length);
+  assert.deepEqual(validateDeploymentEnvironment({ ...valid, DEPLOY_BRANCH: "uat" }), [
+    "Deployment branch must be main or Javis1; detached HEAD is not allowed.",
+    "Deploy the Javis1 branch for this environment.",
+  ]);
   assert.ok(validateDeploymentEnvironment({ ...valid, APP_ENV: "production" }).length);
   assert.ok(
     validateDeploymentEnvironment({
@@ -42,7 +46,8 @@ test("production deploys main while UAT keeps its own branch", () => {
     [],
   );
   assert.ok(
-    validateDeploymentEnvironment({ ...valid, APP_ENV: "production", DEPLOY_BRANCH: "uat" }).length,
+    validateDeploymentEnvironment({ ...valid, APP_ENV: "production", DEPLOY_BRANCH: "Javis1" })
+      .length,
   );
   assert.ok(validateDeploymentEnvironment({ ...valid, APP_ENV: "ci" }).length);
 });
