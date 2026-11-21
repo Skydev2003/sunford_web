@@ -52,9 +52,9 @@ feature branch ของแต่ละคน → Pull Request เข้า Javi
 → เครื่อง UAT pull branch Javis1 → restart UAT → ทีมทดสอบ
 ```
 
-ไฟล์ `.github/workflows/uat-ci.yml` ตรวจ PR ที่เข้า `Javis1`/`main` และ push เข้า `Javis1` โดยรัน lint, formatting, Prisma schema validation, LAN configuration tests, production build, TypeScript และ browser tests ของแคตตาล็อก โดย **ไม่ใช้ Supabase secrets และไม่รัน migration/seed** ใน GitHub Actions
+ไฟล์ `.github/workflows/uat-ci.yml` ตรวจ PR ที่เข้า `Javis1` และ `main` รวมถึง push เข้า `Javis1`, `main` และ `NaThong` โดยรัน `lint`, `format:check`, `db:validate`, `test:uat`, `test:catalog`, `next typegen` และ `typecheck` โดย **ไม่ใช้ Supabase secrets และไม่รัน migration/seed**
 
-GitHub Actions เปิด production server ชั่วคราวภายใน CI runner เพื่อทดสอบ แล้วจบลงพร้อม job ไม่มีการ deploy โค้ดมายังเครื่อง LAN ของคุณอัตโนมัติ
+GitHub Actions ไม่เปิด production server, ไม่รัน production build หรือ browser E2E และไม่ deploy โค้ดมายังเครื่อง LAN อัตโนมัติ
 
 ครั้งแรกที่นำชุดไฟล์นี้ขึ้น GitHub:
 
