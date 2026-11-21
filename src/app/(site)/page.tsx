@@ -49,15 +49,17 @@ export default async function Home() {
       <Suspense fallback={null}>
         <HomeProducts />
       </Suspense>
-      <HomeMotion>
-        <BrandStory />
-      </HomeMotion>
-      <HomeMotion>
-        <SunfordStories />
-      </HomeMotion>
-      <HomeMotion>
-        <SunfordVideos />
-      </HomeMotion>
+      <Suspense fallback={null}>
+        <HomeMotion>
+          <BrandStory />
+        </HomeMotion>
+        <HomeMotion>
+          <SunfordStories />
+        </HomeMotion>
+        <HomeMotion>
+          <SunfordVideos />
+        </HomeMotion>
+      </Suspense>
     </main>
   );
 }

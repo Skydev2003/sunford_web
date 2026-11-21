@@ -35,6 +35,7 @@ export function CatalogRouteFrame({
   const root = useRef<HTMLDivElement>(null);
   useHistoryRestoration(root);
   useStaggerBounce(root, pathname);
+  const homePage = pathname === "/";
   const productsPage =
     pathname === "/products" ||
     pathname === "/products/category/scales" ||
@@ -48,13 +49,13 @@ export function CatalogRouteFrame({
       <div
         ref={root}
         className={productsPage ? styles.routeSurface : className}
-        data-home-route={pathname === "/" || undefined}
+        data-home-route={homePage || undefined}
         data-page-surface={pathname === "/service" ? "paper" : undefined}
       >
         <a href="#main-content" className="skip-link">
           ข้ามไปยังเนื้อหา
         </a>
-        {pathname === "/" ? (
+        {homePage ? (
           <Suspense
             fallback={<div aria-hidden="true" style={{ height: "var(--site-header-height)" }} />}
           >
@@ -64,7 +65,11 @@ export function CatalogRouteFrame({
           !productsPage && header
         )}
         {children}
-        {!productsPage && <Fragment key={pathname}>{footer}</Fragment>}
+        {!productsPage && (
+          <Fragment key={pathname}>
+            {homePage ? <Suspense fallback={null}>{footer}</Suspense> : footer}
+          </Fragment>
+        )}
         {productsPage && overlayHost ? createPortal(overlays, overlayHost) : overlays}
       </div>
     </OverlayHostContext.Provider>

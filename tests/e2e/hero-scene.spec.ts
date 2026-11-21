@@ -157,7 +157,14 @@ for (const width of [1440, 390]) {
     });
     try {
       const page = await context.newPage();
+      const videoRequests: string[] = [];
+      page.on("request", (request) => {
+        if (new URL(request.url()).pathname === "/videos/sunford-web.mp4")
+          videoRequests.push(request.url());
+      });
+      const poster = page.waitForResponse("**/videos/sunford-poster.jpg");
       await page.goto("/");
+      expect((await poster).ok()).toBe(true);
       await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
       await expect(scene(page).locator("video")).toBeVisible();
       await expect(scene(page).locator("video")).toHaveAttribute(
@@ -165,10 +172,21 @@ for (const width of [1440, 390]) {
         "/videos/sunford-poster.jpg",
       );
       await expect(scene(page).locator("video[src], video source")).toHaveCount(0);
-      await expect(scene(page).locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
+      const space = scene(page).locator("[data-hero-logo-space]");
+      await expect(space).toBeVisible();
+      expect((await space.boundingBox())!.height).toBeGreaterThan(0);
+      await expect(space.locator("[data-brand-opening]")).toBeHidden();
       await expect(page.locator("[data-brand-opening]")).toBeHidden();
+      const contact = page.waitForResponse(
+        (response) =>
+          response.request().isNavigationRequest() &&
+          new URL(response.url()).pathname === "/contact-us",
+      );
       await scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" }).click();
       await expect(page).toHaveURL(/\/contact-us$/);
+      expect((await contact).ok()).toBe(true);
+      await expect(page.locator("main h1")).toContainText("ติดต่อเรา");
+      expect(videoRequests).toEqual([]);
     } finally {
       await context.close();
     }
