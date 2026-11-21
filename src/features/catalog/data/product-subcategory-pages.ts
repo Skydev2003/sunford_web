@@ -74,7 +74,7 @@ export const platformSubcategoryPages = platformSubcategoryDefinitions.map((chil
     id,
     categoryId: "platforms" as const,
     label: child.label,
-    title: `${platformLabel} ${child.label}`,
+    title: id === "platform-carbon-steel" ? child.label : `${platformLabel} ${child.label}`,
     slug: platformSlugs[id],
     href: `/products/category/platforms/${platformSlugs[id]}`,
     returnContext: id,

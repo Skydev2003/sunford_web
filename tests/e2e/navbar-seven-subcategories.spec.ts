@@ -20,7 +20,7 @@ const groups = [
     category: "platforms",
     parent: "โครงสร้างแท่นชั่ง",
     children: [
-      ["carbon-steel", "เหล็กคาร์บอนพ่นอบสีกันสนิม", "platform-carbon-steel"],
+      ["carbon-steel", "แท่นเหล็กคาร์บอน", "platform-carbon-steel"],
       ["sus304", "สแตนเลส SUS304", "platform-sus304"],
       ["sus201", "สแตนเลส SUS201", "platform-sus201"],
       ["abs", "พลาสติก ABS เหนียวพิเศษ", "platform-abs"],
@@ -96,9 +96,21 @@ async function verifyMenu(
         : "#desktop-submenu"
       : "#products-navigation-panel";
     const panel = header.locator(`${panelId} [data-nav-menu="${parentHref}"]`);
+    const features = panel.locator('[data-nav-column="uses"]');
+    if (category === "scales" || category === "indicators") {
+      await expect(features.locator("p").first()).toHaveText("คุณสมบัติ");
+      await expect(features.getByRole("link")).toHaveText(
+        category === "scales"
+          ? ["นับจำนวนชิ้น", "เตือนน้ำหนักขาด–เกิน"]
+          : ["เชื่อมต่อ RS232", "ตัวเครื่องกันน้ำ IP67"],
+      );
+    }
     for (const [slug, label, id] of children) {
       const href = `${parentHref}/${slug}`;
-      const link = panel.getByRole("link", { name: label, exact: true });
+      const link =
+        category === "indicators" && slug === "waterproof"
+          ? features.getByRole("link", { name: "ตัวเครื่องกันน้ำ IP67", exact: true })
+          : panel.getByRole("link", { name: label, exact: true });
       await expect(link).toBeVisible();
       if (members(products, category, id).length && !savedDisabled.has(href)) {
         await expect(link).toHaveAttribute("href", href);
@@ -189,6 +201,10 @@ test("tablet category entrances and direct listings agree with Warehouse members
       expect(response?.ok()).toBe(true);
       const main = page.locator(`[data-product-subcategory-page="${id}"]`);
       await expect(main).toBeVisible();
+      if (id === "platform-carbon-steel")
+        await expect(
+          main.getByRole("heading", { level: 1, name: "แท่นเหล็กคาร์บอน", exact: true }),
+        ).toBeVisible();
       const cards = main.locator("#mock-product-results article");
       for (let shown = 24; shown < expected.length; shown += 24)
         await main.getByRole("button", { name: /ดูเพิ่มเติม/ }).click();

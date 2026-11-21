@@ -1126,7 +1126,7 @@ test("Navbar category/industrial navigation retains one active header/footer thr
   await page.goto("/products");
   for (const [name, href] of [
     ["เครื่องชั่ง", "/products/category/scales"],
-    ["อุตสาหกรรม", "/products/category/scales/industrial"],
+    ["การผลิต", "/products/category/scales/industrial"],
   ]) {
     const panel = await openScalesMenu(page);
     if (name === "เครื่องชั่ง")

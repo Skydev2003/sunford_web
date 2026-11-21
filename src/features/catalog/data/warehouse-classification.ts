@@ -20,8 +20,7 @@ const analyticalUse =
   /^(?:(?:รองรับ|เหมาะสำหรับ|สำหรับ)\s*)?(?:งานวิเคราะห์(?:ความแม่นยำสูง)?|(?:งาน(?:ใน)?)?ห้องปฏิบัติการ|analytical(?: weighing)?|laboratory(?: weighing)?)$/i;
 const enclosureScope = /^(?:ทั้ง\s*)?ตัวเครื่อง(?:\s*อินดิเคเตอร์)?(?:\s*ทั้งหมด)?$/;
 const enclosureIp = /^IP\s*(?:67|68)$/i;
-const coatedFrame =
-  /^(?:(?:ตัวโครง|โครงแท่น|โครงสร้าง)\s*พ่นอบสี\s*กันสนิม|พ่นอบสี\s*กันสนิม\s*ที่\s*(?:ตัวโครง|โครงแท่น|โครงสร้าง))\.?$/;
+const carbonSteelFrame = /^(?:Carbon\s+Steel|เหล็กคาร์บอน)$/i;
 const toughFrame =
   /^(?:(?:ตัวโครง|โครงแท่น|โครงสร้าง)\s*(?:พลาสติก\s*)?(?:ABS\s*)?เหนียวพิเศษ|ความเหนียวพิเศษของ(?:ตัวโครง|โครงแท่น|โครงสร้าง|โครง))\.?$/i;
 const iosVersion = /^iOS(?:\s+\d+(?:\.\d+)*(?:\s*(?:ขึ้นไป|\+))?)?$/i;
@@ -194,13 +193,14 @@ export function classifyWarehouseProduct(
     const wrongScope = /ไม่ใช่|ไม่ได้ใช้|เฉพาะ\s*(?:จาน|เสา|ชิ้นส่วน)|\bnot\b/i.test(material);
     if (matches.length === 1 && !wrongScope) {
       const [id] = matches[0];
-      const requiredHighlight =
-        id === "platform-carbon-steel" ? coatedFrame : id === "platform-abs" ? toughFrame : null;
-      const feature = requiredHighlight
-        ? highlights.split(/[\r\n;；]+/).find((line) => requiredHighlight.test(line.trim()))
-        : undefined;
-      if (!requiredHighlight || feature)
-        add(id, [material, feature?.trim()].filter(Boolean).join(" · "));
+      if (id === "platform-carbon-steel") {
+        if (carbonSteelFrame.test(material.trim())) add(id, material);
+      } else if (id === "platform-abs") {
+        const feature = highlights.split(/[\r\n;；]+/).find((line) => toughFrame.test(line.trim()));
+        if (feature) add(id, `${material} · ${feature.trim()}`);
+      } else {
+        add(id, material);
+      }
     }
     if (matches.length > 1)
       reviewReasons.push("ข้อมูลวัสดุโครงระบุหลายชนิด ขอวัสดุของโครงแท่นที่ส่งมอบจริง");

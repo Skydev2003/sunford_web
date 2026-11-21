@@ -7,7 +7,7 @@ type PlatformMaterial = {
 export const platformSubcategoryDefinitions: PlatformMaterial[] = [
   {
     id: "platform-carbon-steel",
-    label: "เหล็กคาร์บอนพ่นอบสีกันสนิม",
+    label: "แท่นเหล็กคาร์บอน",
     models: [
       { model: "TCS 4050", sourceId: "10755" },
       { model: "TCS 4560", sourceId: "10756" },

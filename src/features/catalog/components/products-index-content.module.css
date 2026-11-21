@@ -4,6 +4,17 @@
   background: var(--paper);
   padding-bottom: var(--section-space-feature);
 }
+
+@media (scripting: none) {
+  /* React leaves the streamed catalogue in a hidden container without JavaScript. */
+  :global([hidden]):has(.index) {
+    display: contents;
+  }
+
+  :global(body):has(.index) :global(main#main-content):not(:has(.index)) {
+    display: none;
+  }
+}
 .intro {
   position: relative;
   isolation: isolate;
@@ -11,14 +22,6 @@
   align-items: center;
   gap: 1.25rem;
   padding: clamp(2rem, 5vw, 5.5rem) var(--inset) var(--section-space);
-}
-.headerWash {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  visibility: hidden;
-  pointer-events: none;
-  mask-image: linear-gradient(to bottom, black 50%, transparent 98%);
 }
 .accessibleTitle {
   position: absolute;
@@ -62,17 +65,6 @@
   width: 100%;
   height: auto;
 }
-.initial canvas {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  /* The renderer fits the PNG to 60% of a square, using the PNG's height. */
-  width: calc(100% * 640 / 636 / 0.6);
-  height: auto;
-  aspect-ratio: 1;
-  visibility: hidden;
-}
 .letter {
   position: absolute;
   top: 0;
@@ -87,15 +79,6 @@
   }
   .logoMotion:not([data-settled]) .letter {
     opacity: 0;
-  }
-  .logoMotion:not([data-settled]):not([data-glass="letters"]) .initial img {
-    visibility: hidden;
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .intro:has(.logoMotion[data-glass]) .headerWash,
-  .logoMotion[data-glass="playing"] canvas {
-    visibility: visible;
   }
 }
 .help p {

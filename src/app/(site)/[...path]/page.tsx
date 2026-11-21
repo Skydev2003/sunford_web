@@ -18,6 +18,7 @@ import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { AboutPage } from "@/features/content/components/about-page";
 import { SolutionsPage } from "@/features/content/components/solutions-page";
 import { getProductSection } from "@/features/content/data/product-sections";
+import { technicalManualRedirects } from "@/features/content/data/technical-manuals";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
 import { getProductSubcategoryPageByHref } from "@/features/catalog/data/product-subcategory-pages";
 import {
@@ -27,9 +28,14 @@ import {
 
 export const instant = false;
 export function generateStaticParams() {
-  return staticContentParams(
-    importedPages.filter(({ path }) => path !== "/contact-us" && path !== "/service"),
-  );
+  const explicitPaths = [
+    "/contact-us",
+    "/service",
+    "/technical-specification",
+    "/software/download",
+    ...technicalManualRedirects.map(({ source }) => source),
+  ];
+  return staticContentParams(importedPages.filter(({ path }) => !explicitPaths.includes(path)));
 }
 
 export async function generateMetadata({

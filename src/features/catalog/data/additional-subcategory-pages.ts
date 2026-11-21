@@ -11,6 +11,13 @@ const consumables = { href: `${accessories}/consumables`, label: "วัสด�
 const scaleGuide = { href: "/guides/scales", label: "คู่มือเลือกเครื่องชั่ง" };
 const labelPrinting = { href: "/solutions/label-printing", label: "โซลูชันงานพิมพ์ฉลาก" };
 const pos = { href: `${categoryRoot}/pos`, label: "ระบบ POS" };
+const scannerAndCashDrawerSkus = new Set([
+  "G107374",
+  "G107381",
+  "G107411",
+  "SUNFORDDRW350-B",
+  "SUNFORDDRW350-W",
+]);
 
 export const consumableSubtypeLinks = [thermalPaper, labels];
 
@@ -121,6 +128,14 @@ export const additionalAccessorySubcategoryPages = [
     printers.label,
     [pos, labelPrinting, thermalPaper, labels],
     ({ warehouseGroup }) => warehouseGroup === "เครื่องพิมพ์",
+  ),
+  definePage(
+    "accessories",
+    "accessory-scanners-and-cash-drawers",
+    "scanners-and-cash-drawers",
+    "สแกนเนอร์และลิ้นชัก",
+    [pos, { href: `${accessories}/pos`, label: "อุปกรณ์ POS" }],
+    ({ warehouseSku }) => scannerAndCashDrawerSkus.has(warehouseSku ?? ""),
   ),
   definePage(
     "accessories",

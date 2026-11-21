@@ -4,7 +4,6 @@ import { warehouseGatedSubcategoryHrefs } from "@/features/catalog/data/product-
 
 // Phase A keeps destinations awaiting pages, classification or verified data disabled.
 const unavailableDestinations = new Set([
-  "/technical-specification",
   "/products/category/scales/checkweigher",
   "/products/category/scales/sets",
   "/products/category/platforms/tcs-tss",
@@ -15,15 +14,15 @@ const unavailableDestinations = new Set([
   "/products/category/pos/terminals",
   "/products/category/pos/workstations",
   "/products/category/pos/sets",
-  "/products/category/accessories/pos",
-  "/software/download",
 ]);
 
 const guideHref = "/guides/indicator-platform-compatibility";
+type MenuEntry = [label: string, href: string, disabled?: boolean];
 
 export function getPrimaryNavigationItems(
   navigation: NavigationItem[],
   readySubcategoryHrefs: readonly string[] = [],
+  surface: "navbar" | "category-chapters" = "navbar",
 ): NavigationItem[] {
   const savedLinks = navigation.flatMap((item) => [
     ...item.links,
@@ -33,21 +32,26 @@ export function getPrimaryNavigationItems(
     savedLinks.filter((link) => link.disabled).map((link) => resolveCategoryHref(link.href)),
   );
   const readySubcategories = new Set(readySubcategoryHrefs);
-  const links = (entries: [label: string, href: string][]): NavigationItem["links"] =>
-    entries
-      .toSorted(
-        ([first], [second]) =>
-          Number(second.endsWith("ทั้งหมด")) - Number(first.endsWith("ทั้งหมด")) ||
-          first.length - second.length,
-      )
-      .map(([label, source]) => {
-        const href = resolveCategoryHref(source);
-        const disabled =
-          unavailableDestinations.has(href) ||
-          savedDisabled.has(href) ||
-          (warehouseGatedSubcategoryHrefs.has(href) && !readySubcategories.has(href));
-        return { label, href, ...(disabled ? { disabled: true } : {}) };
-      });
+  const links = (
+    entries: MenuEntry[],
+    order: "length" | "configured" = "length",
+  ): NavigationItem["links"] =>
+    (order === "configured"
+      ? entries
+      : entries.toSorted(
+          ([first], [second]) =>
+            Number(second.endsWith("ทั้งหมด")) - Number(first.endsWith("ทั้งหมด")) ||
+            first.length - second.length,
+        )
+    ).map(([label, source, disabledInMenu]) => {
+      const href = resolveCategoryHref(source);
+      const disabled =
+        disabledInMenu ||
+        unavailableDestinations.has(href) ||
+        savedDisabled.has(href) ||
+        (warehouseGatedSubcategoryHrefs.has(href) && !readySubcategories.has(href));
+      return { label, href, ...(disabled ? { disabled: true } : {}) };
+    });
   const help = links([
     ["คู่มือและสเปก", "/technical-specification"],
     ["ลงทะเบียนรับประกัน", "/warranty/register"],
@@ -61,16 +65,17 @@ export function getPrimaryNavigationItems(
   const menu = (
     label: string,
     href: string,
-    children: [string, string][],
-    uses: [string, string][],
+    children: MenuEntry[],
+    uses: MenuEntry[],
     assistance = help,
     submenuLabel = "สินค้า",
     secondaryLabel = "การใช้งาน",
+    childOrder: "length" | "configured" = "length",
   ): NavigationItem => ({
     label,
     href,
     submenuLabel,
-    links: links(children),
+    links: links(children, childOrder),
     groups: [
       { label: secondaryLabel, links: links(uses) },
       { label: "ช่วยเหลือ", links: assistance },
@@ -101,31 +106,53 @@ export function getPrimaryNavigationItems(
     menu(
       categoryLabel("scales", "เครื่องชั่ง"),
       "/products/category/scales",
-      [
-        ["คำนวณราคา", "/products/category/scales/price"],
-        ["อุตสาหกรรม", "/products/category/scales/industrial"],
-        ["งานวิเคราะห์", "/products/category/scales/analytical"],
-        ["ครัวและกาแฟ", "/products/category/scales/kitchen"],
-        ["กันน้ำ–กันฝุ่น", "/products/category/scales/water-dust"],
-        ["ตั้งโต๊ะ", "/products/category/scales/benchtop"],
-        ["ตั้งพื้น", "/products/category/scales/floor"],
-        ["มีเสา", "/products/category/scales/pole"],
-      ],
-      [
-        ["กันน้ำ", "/products/category/scales/water-dust"],
-        ["นับจำนวนชิ้น", "/products/category/scales/counting"],
-        ["เตือนน้ำหนักขาด–เกิน", "/products/category/scales/checkweighing"],
-        ["ตั้งโต๊ะ", "/products/category/scales/benchtop"],
-        ["ตั้งพื้น", "/products/category/scales/floor"],
-      ],
-      links([
-        ["คู่มือและสเปก", "/technical-specification"],
-        ["ขอใบเสนอราคา", "/service/quotation"],
-        ["ลงทะเบียนรับประกัน", "/warranty/register"],
-        ["ติดต่อฝ่ายบริการ", "/contact-us"],
-      ]),
+      surface === "navbar"
+        ? [
+            ["ครัวเรือน", "/products/category/scales/kitchen"],
+            ["การผลิต", "/products/category/scales/industrial"],
+            ["คำนวณราคา", "/products/category/scales/price"],
+            ["งานวิเคราะห์", "/products/category/scales/analytical"],
+          ]
+        : [
+            ["คำนวณราคา", "/products/category/scales/price"],
+            ["อุตสาหกรรม", "/products/category/scales/industrial"],
+            ["งานวิเคราะห์", "/products/category/scales/analytical"],
+            ["ครัวและกาแฟ", "/products/category/scales/kitchen"],
+            ["กันน้ำ–กันฝุ่น", "/products/category/scales/water-dust"],
+            ["ตั้งโต๊ะ", "/products/category/scales/benchtop"],
+            ["ตั้งพื้น", "/products/category/scales/floor"],
+            ["มีเสา", "/products/category/scales/pole"],
+          ],
+      surface === "navbar"
+        ? [
+            ["นับจำนวนชิ้น", "/products/category/scales/counting"],
+            ["เตือนน้ำหนักขาด–เกิน", "/products/category/scales/checkweighing"],
+          ]
+        : [
+            ["กันน้ำ", "/products/category/scales/water-dust"],
+            ["นับจำนวนชิ้น", "/products/category/scales/counting"],
+            ["เตือนน้ำหนักขาด–เกิน", "/products/category/scales/checkweighing"],
+            ["ตั้งโต๊ะ", "/products/category/scales/benchtop"],
+            ["ตั้งพื้น", "/products/category/scales/floor"],
+          ],
+      surface === "navbar"
+        ? links(
+            [
+              ["ขอใบเสนอราคา", "/service/quotation"],
+              ["ติดต่อฝ่ายบริการ", "/contact-us"],
+              ["ลงทะเบียนรับประกัน", "/warranty/register"],
+            ],
+            "configured",
+          )
+        : links([
+            ["คู่มือและสเปก", "/technical-specification"],
+            ["ขอใบเสนอราคา", "/service/quotation"],
+            ["ลงทะเบียนรับประกัน", "/warranty/register"],
+            ["ติดต่อฝ่ายบริการ", "/contact-us"],
+          ]),
       "สินค้า",
       "คุณสมบัติ",
+      surface === "navbar" ? "configured" : "length",
     ),
     menu(
       categoryLabel("indicators", "อินดิเคเตอร์แท่นชั่ง"),
@@ -133,27 +160,43 @@ export function getPrimaryNavigationItems(
       [
         ["LCD", "/products/category/indicators/lcd"],
         ["LED", "/products/category/indicators/led"],
-        ["กันน้ำ", "/products/category/indicators/waterproof"],
+        ...(surface === "category-chapters"
+          ? [["กันน้ำ", "/products/category/indicators/waterproof"] as [string, string]]
+          : []),
       ],
-      [
-        ["เชื่อมต่อ RS232", "/products/category/indicators/rs232"],
-        ["ดูโครงสร้างแท่นชั่ง", "/products/category/platforms"],
-        ["ดูจอและไฟเตือน", "/products/category/accessories/displays"],
-      ],
-      links([
-        ["คู่มือเลือกหัวอ่านและแท่นชั่ง", guideHref],
-        ["ขอใบเสนอราคา", "/service/quotation"],
-        ["เงื่อนไขรับประกัน", "/warranty/policy"],
-        ["ติดต่อฝ่ายบริการ", "/contact-us"],
-      ]),
+      surface === "navbar"
+        ? [
+            ["เชื่อมต่อ RS232", "/products/category/indicators/rs232"],
+            ["ตัวเครื่องกันน้ำ IP67", "/products/category/indicators/waterproof"],
+          ]
+        : [
+            ["เชื่อมต่อ RS232", "/products/category/indicators/rs232"],
+            ["ดูโครงสร้างแท่นชั่ง", "/products/category/platforms"],
+            ["ดูจอและไฟเตือน", "/products/category/accessories/displays"],
+          ],
+      surface === "navbar"
+        ? links(
+            [
+              ["ขอใบเสนอราคา", "/service/quotation"],
+              ["ติดต่อฝ่ายบริการ", "/contact-us"],
+              ["คู่มือเลือกหัวอ่านและแท่นชั่ง", guideHref],
+            ],
+            "configured",
+          )
+        : links([
+            ["คู่มือเลือกหัวอ่านและแท่นชั่ง", guideHref],
+            ["ขอใบเสนอราคา", "/service/quotation"],
+            ["เงื่อนไขรับประกัน", "/warranty/policy"],
+            ["ติดต่อฝ่ายบริการ", "/contact-us"],
+          ]),
       "สินค้า",
-      "การใช้งาน",
+      surface === "navbar" ? "คุณสมบัติ" : "การใช้งาน",
     ),
     menu(
       categoryLabel("platforms", "โครงสร้างแท่นชั่ง"),
       "/products/category/platforms",
       [
-        ["เหล็กคาร์บอนพ่นอบสีกันสนิม", "/products/category/platforms/carbon-steel"],
+        ["แท่นเหล็กคาร์บอน", "/products/category/platforms/carbon-steel"],
         ["สแตนเลส SUS304", "/products/category/platforms/sus304"],
         ["สแตนเลส SUS201", "/products/category/platforms/sus201"],
         ["พลาสติก ABS เหนียวพิเศษ", "/products/category/platforms/abs"],
@@ -182,7 +225,9 @@ export function getPrimaryNavigationItems(
       ],
       [
         ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-        ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/pos"],
+        surface === "navbar"
+          ? ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/scanners-and-cash-drawers"]
+          : ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/pos", true],
       ],
       links([
         ["คู่มือและสเปก", "/technical-specification"],
@@ -200,7 +245,7 @@ export function getPrimaryNavigationItems(
         ["จอและไฟเตือน", "/products/category/accessories/displays"],
         ["สายและหัวต่อ", "/products/category/accessories/cables"],
         ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-        ["อุปกรณ์ POS", "/products/category/accessories/pos"],
+        ["อุปกรณ์ POS", "/products/category/accessories/pos", surface === "category-chapters"],
         ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical"],
         ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics"],
         ["ลูกตุ้มน้ำหนัก", "/products/category/accessories/weights"],

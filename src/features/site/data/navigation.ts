@@ -30,7 +30,7 @@ const productSubcategories: Record<
     { id: "indicator-waterproof", label: "กันน้ำ" },
   ],
   platforms: [
-    { id: "platform-carbon-steel", label: "เหล็กคาร์บอนพ่นอบสีกันสนิม" },
+    { id: "platform-carbon-steel", label: "แท่นเหล็กคาร์บอน" },
     { id: "platform-sus304", label: "สแตนเลส SUS304" },
     { id: "platform-sus201", label: "สแตนเลส SUS201" },
     { id: "platform-abs", label: "พลาสติก ABS เหนียวพิเศษ" },

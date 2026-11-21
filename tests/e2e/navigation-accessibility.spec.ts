@@ -11,11 +11,11 @@ test("desktop keyboard reaches submenu destinations and Escape returns focus", a
   await products.focus();
   await page.keyboard.press("ArrowDown");
   const panel = page.locator(".submenu-panel.is-active");
+  await expect(panel.getByRole("link", { name: "ครัวเรือน", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(panel.getByRole("link", { name: "การผลิต", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
   await expect(panel.getByRole("link", { name: "คำนวณราคา", exact: true })).toBeFocused();
-  await page.keyboard.press("Tab");
-  await expect(panel.getByRole("link", { name: "ครัวและกาแฟ", exact: true })).toBeFocused();
-  await page.keyboard.press("Tab");
-  await expect(panel.getByRole("link", { name: "เครื่องชั่งทั้งหมด", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(products).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
@@ -26,7 +26,7 @@ test("desktop keyboard reaches submenu destinations and Escape returns focus", a
   await expect(page).toHaveURL(/\/service\/quotation$/);
 });
 
-test("touch navigation expands products and follows the company coffee destination", async ({
+test("touch navigation expands scales and follows the household destination", async ({
   browser,
   baseURL,
 }) => {
@@ -41,10 +41,10 @@ test("touch navigation expands products and follows the company coffee destinati
     const page = await context.newPage();
     await page.goto("/");
     await page.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
-    await page.locator("#mobile-navigation summary").first().tap();
+    await page.getByLabel("เปิดเมนูย่อยเครื่องชั่ง", { exact: true }).tap();
     await page
       .locator("#mobile-navigation")
-      .getByRole("link", { name: "ครัวและกาแฟ", exact: true })
+      .getByRole("link", { name: "ครัวเรือน", exact: true })
       .tap();
     await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen$/);
     await expect(page.locator('[data-product-subcategory-page="scale-kitchen"]')).toBeVisible();

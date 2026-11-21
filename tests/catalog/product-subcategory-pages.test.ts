@@ -198,13 +198,14 @@ test("accessory expansion preserves broader aliases and cross-family boundaries"
   assert.equal(getProductReturnPage("/products/category/accessories/pos"), undefined);
 });
 
-test("eight new listings have distinct canonical paths and safe product return contexts", () => {
+test("additional listings have distinct canonical paths and safe product return contexts", () => {
   for (const [category, slug, id] of [
     ["scales", "counting", "scale-counting"],
     ["scales", "checkweighing", "scale-checkweighing"],
     ["indicators", "rs232", "indicator-rs232"],
     ["accessories", "electronics", "accessory-electronics"],
     ["accessories", "printers", "accessory-printers"],
+    ["accessories", "scanners-and-cash-drawers", "accessory-scanners-and-cash-drawers"],
     ["accessories", "weights", "accessory-weights"],
     ["accessories", "thermal-paper", "accessory-thermal-paper"],
     ["accessories", "labels", "accessory-labels"],
@@ -318,6 +319,21 @@ test("new listings require matching Warehouse identity, group or specification",
     false,
   );
   check("accessory-printers", "accessories", { warehouseGroup: "เครื่องพิมพ์" }, true);
+  const scannerListing = "accessory-scanners-and-cash-drawers";
+  for (const warehouseSku of [
+    "G107374",
+    "G107381",
+    "G107411",
+    "SUNFORDDRW350-B",
+    "SUNFORDDRW350-W",
+  ])
+    check(scannerListing, "accessories", { warehouseSku }, true);
+  check(
+    scannerListing,
+    "accessories",
+    { warehouseSku: "G107374-OTHER", warehouseSubcategoryIds: ["accessory-pos"] },
+    false,
+  );
   check(
     "accessory-printers",
     "accessories",

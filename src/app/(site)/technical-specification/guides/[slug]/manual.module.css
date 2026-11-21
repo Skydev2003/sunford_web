@@ -1,0 +1,41 @@
+.heading {
+  padding-block-end: 0;
+}
+
+.heading h1 {
+  margin-block-start: var(--card-padding-compact);
+}
+
+.article {
+  padding-block-start: var(--card-padding-content);
+}
+
+.article :is(ol, ul) {
+  padding-inline-start: var(--card-padding-content);
+}
+
+.article li + li {
+  margin-block-start: 0.5rem;
+}
+
+.article figure {
+  margin: var(--card-padding-content) 0;
+}
+
+.article figure img {
+  margin-block: 0;
+}
+
+.article figcaption {
+  margin-block-start: 0.5rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.article table {
+  max-inline-size: 100%;
+}
+
+.article :is(th, td) {
+  overflow-wrap: anywhere;
+}

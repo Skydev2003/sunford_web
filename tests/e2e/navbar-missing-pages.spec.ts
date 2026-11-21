@@ -113,6 +113,40 @@ test("the home Navbar supports keyboard activation of the new links", async ({ p
   });
 });
 
+test("the POS scanner and cash drawer listing shows only the selected SKUs and has a return link", async ({
+  page,
+  request,
+}) => {
+  const href = `${accessories}/scanners-and-cash-drawers`;
+  const from = "accessory-scanners-and-cash-drawers";
+  const skus = ["G107374", "G107381", "G107411", "SUNFORDDRW350-B", "SUNFORDDRW350-W"];
+  const response = await request.get("/api/products");
+  expect(response.ok()).toBe(true);
+  const { products } = (await response.json()) as { products: Product[] };
+  const expectedPaths = skus.map((sku) => {
+    const product = products.find(({ warehouseSku }) => warehouseSku === sku);
+    expect(product, sku).toBeDefined();
+    return `/products/${product!.slug}?from=${from}`;
+  });
+
+  await page.goto(href);
+  const listing = page.locator(`[data-product-subcategory-page="${from}"]`);
+  await expect(
+    listing.getByRole("heading", { level: 1, name: "สแกนเนอร์และลิ้นชัก" }),
+  ).toBeVisible();
+  const headings = listing.locator("#mock-product-results article h3");
+  await expect(headings).toHaveCount(skus.length);
+  const actualPaths = await headings.evaluateAll((nodes) =>
+    nodes.map((node) => node.closest("a")?.getAttribute("href")),
+  );
+  expect(actualPaths.sort()).toEqual(expectedPaths.sort());
+  await headings.first().click();
+  const back = page.locator(".back-link:visible");
+  await expect(back).toHaveAttribute("href", href);
+  await back.click();
+  await expect(listing).toBeVisible();
+});
+
 test("all eight direct URLs show Warehouse listings and related pages at tablet width", async ({
   page,
   request,

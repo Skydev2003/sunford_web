@@ -200,7 +200,7 @@ test("mobile native arrows expand children while names remain separate touch lin
   expect(linkBox!.x + linkBox!.width).toBeLessThanOrEqual(arrowBox!.x + 1);
   await arrow.tap();
   await expect(group.locator("details")).toHaveAttribute("open", "");
-  const child = group.getByRole("link", { name: "ครัวและกาแฟ", exact: true });
+  const child = group.getByRole("link", { name: "ครัวเรือน", exact: true });
   await child.scrollIntoViewIfNeeded();
   await child.tap();
   await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen$/);
@@ -218,7 +218,7 @@ test("Home keyboard preserves parent navigation and first-child focus", async ({
   await parent.focus();
   await page.keyboard.press("ArrowDown");
   const panel = page.locator(".submenu-panel.is-active");
-  await expect(panel.getByRole("link", { name: "คำนวณราคา", exact: true })).toBeFocused();
+  await expect(panel.getByRole("link", { name: "ครัวเรือน", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(parent).toBeFocused();
   await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
