@@ -102,10 +102,11 @@ for (const width of [390, 1440]) {
 for (const width of [320, 390, 768, 1440]) {
   test(`service and form card zones retain readable content at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
+    const servicePadding = width < 640 ? 16 : 24;
     for (const [route, selector, expected] of [
       ["/contact-us", `a${moduleClass("channel")}`, 24],
-      ["/service", moduleClass("contactCard"), 24],
-      ["/service", moduleClass("panelHeading"), 24],
+      ["/service", moduleClass("contactCard"), servicePadding],
+      ["/service", moduleClass("instructions"), servicePadding],
       ["/service/quotation", "form", width >= 1280 ? 32 : width >= 768 ? 24 : 16],
     ] as const) {
       await page.goto(route);
