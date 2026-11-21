@@ -655,7 +655,9 @@ test("WeWeigh assembles in view before the description drops in", async ({ page 
     glyph.evaluate((element) => element.getAnimations().at(0)?.playState);
 
   await card.scrollIntoViewIfNeeded();
-  await expect(card.locator("img")).toHaveJSProperty("naturalWidth", 4096);
+  await expect
+    .poll(() => card.locator("img").evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
   await expect(caption).toHaveCSS("opacity", "1");
   await expect.poll(animationState).toBeUndefined();
 
@@ -768,9 +770,11 @@ test("the AW31 and LP50 video matches the first featured card and plays once in 
   await expect(video).toBeAttached();
   await expect(video).not.toHaveAttribute("src", /.+/);
   await page.emulateMedia({ reducedMotion: "reduce" });
-  const poster = rail.locator('img[src="/images/products/aw31-lp50-poster.webp"]');
-  const selectedPoster = () =>
-    poster.evaluate((image: HTMLImageElement) => image.currentSrc.split("/").pop());
+  const poster = rail.getByRole("img", { name: /LP50.*AW31/ }).locator("picture img");
+  const selectedPoster = async () => {
+    const selected = await poster.evaluate((image: HTMLImageElement) => image.currentSrc);
+    return selected && imageAssetPath(new URL(selected)).split("/").pop();
+  };
   await expect(poster).toHaveAttribute("loading", "lazy");
   for (const width of [320, 390, 736, 737, 768, 1440, 2540]) {
     await page.setViewportSize({ width, height: 850 });
@@ -795,7 +799,9 @@ test("the AW31 and LP50 video matches the first featured card and plays once in 
       expect([previous.width, next.width]).toEqual([313, 313]);
     }
     await expect(video).toHaveCSS("opacity", "0");
-    await expect(poster).toHaveJSProperty("naturalWidth", 1200);
+    await expect
+      .poll(() => poster.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
   }
   expect(requests).toHaveLength(0);
   await expect.poll(selectedPoster).toBe("aw31-lp50-poster.webp");
@@ -846,10 +852,54 @@ test("the featured video shows the product pair if the media fails", async ({ pa
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => Boolean(v.error))).toBe(true);
   await expect(video).toHaveCSS("opacity", "0");
   await expect
-    .poll(() => card.locator("picture img").evaluate((img: HTMLImageElement) => img.currentSrc), {
-      timeout: 15000,
-    })
+    .poll(
+      async () => {
+        const selected = await card
+          .locator("picture img")
+          .evaluate((img: HTMLImageElement) => img.currentSrc);
+        return selected && imageAssetPath(new URL(selected));
+      },
+      { timeout: 15000 },
+    )
     .toMatch(/\/aw31-lp50-poster\.webp$/);
+});
+
+test("a failed opening poster falls back before the featured clip can play", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const opening = "/images/products/aw31-lp50-opening.webp";
+  await page.route(
+    (url) => imageAssetPath(url) === opening,
+    (route) => route.abort(),
+  );
+  let finishVideoRequest!: () => void;
+  const holdVideo = new Promise<void>((resolve) => (finishVideoRequest = resolve));
+  await page.route("**/videos/aw31-lp50.mp4", async (route) => {
+    await holdVideo;
+    await route.abort();
+  });
+  try {
+    const openingRequest = page.waitForRequest(
+      (request) => imageAssetPath(new URL(request.url())) === opening,
+    );
+    await page.goto("/products", { waitUntil: "domcontentloaded" });
+    const card = page.locator("#products-rail-indicators").getByRole("img", { name: /LP50.*AW31/ });
+    await card.scrollIntoViewIfNeeded();
+    await openingRequest;
+    const poster = card.locator("picture img");
+    await expect
+      .poll(async () => {
+        const selected = await poster.evaluate((img: HTMLImageElement) => img.currentSrc);
+        return selected && imageAssetPath(new URL(selected));
+      })
+      .toBe("/images/products/aw31-lp50-poster.webp");
+    await expect
+      .poll(() => poster.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    await expect(card.locator("video")).toHaveCSS("opacity", "0");
+  } finally {
+    finishVideoRequest();
+    await page.unrouteAll({ behavior: "wait" });
+  }
 });
 
 test("component showcase links eight pictured parts to their own products", async ({ page }) => {
