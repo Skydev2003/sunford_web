@@ -36,7 +36,8 @@ export function CatalogRouteFrame({
   useHistoryRestoration(root);
   useStaggerBounce(root, pathname);
   const homePage = pathname === "/";
-  const streamSiteChrome = homePage || pathname === "/contact-us";
+  const servicePage = pathname === "/service";
+  const streamSiteChrome = homePage || pathname === "/contact-us" || servicePage;
   const productsPage =
     pathname === "/products" ||
     pathname === "/products/category/scales" ||
@@ -51,7 +52,7 @@ export function CatalogRouteFrame({
         ref={root}
         className={productsPage ? styles.routeSurface : className}
         data-home-route={homePage || undefined}
-        data-page-surface={pathname === "/service" ? "paper" : undefined}
+        data-page-surface={servicePage ? "paper" : undefined}
       >
         <a href="#main-content" className="skip-link">
           ข้ามไปยังเนื้อหา

@@ -98,6 +98,8 @@ export async function getContentPageIndex(): Promise<Record<string, SourcePage>>
 }
 export async function getContentPage(path: string) {
   const page = (await getContentPageIndex())[normalize(path)] as SourcePage | undefined;
+  // The built-in service page does not project Warehouse data.
+  if (page?.path === "/service" && page.kind === "page" && !page.managed) return page;
   return page ? warehouseContentPage(page, await getProducts()) : undefined;
 }
 

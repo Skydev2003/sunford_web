@@ -27,7 +27,9 @@ import {
 
 export const instant = false;
 export function generateStaticParams() {
-  return staticContentParams(importedPages.filter((page) => page.path !== "/contact-us"));
+  return staticContentParams(
+    importedPages.filter(({ path }) => path !== "/contact-us" && path !== "/service"),
+  );
 }
 
 export async function generateMetadata({
