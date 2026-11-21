@@ -1,12 +1,12 @@
 # SUNFORD — แผนงานที่ยังเปิด
 
-## การ์ด VB3000S × JC81 บน `/products` (Apple Feature Card + Ambient Loop + `↗` Modal)
+## การ์ดแนะนำแถว Home & Retail บน `/products` (Apple Feature Card + Ambient Loop + `↗` Modal — ไม่ใช้รูปเครื่องชั่ง)
 
-**รอเจ้าของอนุมัติก่อนแก้เว็บไซต์** ต้นแบบ Figma (`nodeId: 21:2` และ `nodeId: 21:34`) พร้อมไฟล์วิดีโอ Ambient Loop (`vb3000s-jc81-ambient.mp4`, `699,656 bytes`) และภาพนิ่ง (`vb3000s-jc81-ambient-poster.webp`, `53,096 bytes`) เตรียมไว้ใน `scratch/` แล้ว ดู [ข้อกำหนดและต้นแบบ](spec.md) การเผยแพร่ขึ้น Production ต้องมีคำสั่งแยก
+**รอเจ้าของอนุมัติก่อนแก้เว็บไซต์** ต้นแบบ Figma (`nodeId: 21:2` และ `nodeId: 21:34`) พร้อมไฟล์วิดีโอ Ambient Loop (`home-retail-ambient.mp4`) และภาพนิ่ง (`home-retail-ambient-poster.webp`) เตรียมไว้ใน `scratch/` แล้ว ดู [ข้อกำหนดและต้นแบบ](spec.md) การเผยแพร่ขึ้น Production ต้องมีคำสั่งแยก
 
-- [x] สร้างภาพมุมหน้าตรงเกรดแสงสตูดิโอดำของ `VB3000S` (`G106469`) และ `ACS-30-JC81` (`G106186`) พร้อมออกแบบ Apple Feature Card (Eyebrow + Headline + Ambient Loop Video + ปุ่ม `↗`) และหน้าต่าง Detail Modal ในไฟล์ Figma เดิม (`TImCwzaDvOMRkGMalbzIcx`)
+- [x] สร้างภาพถ่ายสตูดิโอวัตถุมุมหน้าตรงโดยไม่ใช้รูปเครื่องชั่ง (ชุดดริปกาแฟแก้วใส + โถบรรจุภัณฑ์และป้ายบาร์โค้ดหน้าร้าน บนพื้นดำ `#000000`) พร้อมออกแบบ Apple Feature Card (Eyebrow + Headline + Ambient Loop Video + ปุ่ม `↗`) และหน้าต่าง Detail Modal ในไฟล์ Figma เดิม (`TImCwzaDvOMRkGMalbzIcx`)
 - [ ] เจ้าของตรวจภาพ ข้อความ ตำแหน่งหลัง VR5000 วิดีโอ Ambient Loop และหน้าต่าง Modal แล้วบันทึกผลตัดสินใจ
-- [ ] เมื่ออนุมัติ ให้นำ `vb3000s-jc81-ambient.mp4` เข้า `public/videos/` และ `vb3000s-jc81-ambient-poster.webp` เข้า `public/images/products/`
+- [ ] เมื่ออนุมัติ ให้นำ `home-retail-ambient.mp4` เข้า `public/videos/` และ `home-retail-ambient-poster.webp` เข้า `public/images/products/`
 - [ ] สร้าง/อัปเดตคอมโพเนนต์การ์ดและ `<dialog>` Modal ใน `src/features/catalog/components/equipment-video-card.tsx` (และสไตล์ใน `src/features/catalog/components/products-index-content.module.css`) แล้วแทรกหลัง `G106179` ใน `src/features/catalog/components/products-index-content.tsx`
 - [ ] ตรวจ 320, 390, 737, 768 และ 1440 px ทั้ง motion ปกติและ reduced motion ตรวจการเล่นวนลูป การพักเมื่อพ้นจอ การคลิกปุ่ม `↗` เปิด/ปิด Modal ด้วย `×`, `Escape`, คลิกฉากหลัง และการคืนโฟกัส ปุ่มลูกศรเลื่อนราง ลำดับและลิงก์ของสินค้าเดิมทั้ง 8 ใบ จากนั้นรัน `bun run typecheck`, `bun run lint` และ `bun run format:check`
 
