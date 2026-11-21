@@ -21,6 +21,25 @@ export function FeaturedCardMedia({
   const [openingUnavailable, setOpeningUnavailable] = useState(false);
 
   useEffect(() => {
+    if (!openingPoster) return;
+    const picture = pictureRef.current;
+    const image = picture?.querySelector("img");
+    if (!image || !picture) return;
+
+    const switchToFinalPoster = () => {
+      const source = picture.querySelector("source");
+      if (source && matchMedia(source.media).matches) setOpeningUnavailable(true);
+    };
+    image.addEventListener("error", switchToFinalPoster);
+    // The browser can reject an opening poster before the image's event handler is ready.
+    if (image.currentSrc && image.complete && !image.naturalWidth)
+      queueMicrotask(() => {
+        if (image.isConnected && image.complete && !image.naturalWidth) switchToFinalPoster();
+      });
+    return () => image.removeEventListener("error", switchToFinalPoster);
+  }, [openingPoster]);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (!video || !("IntersectionObserver" in window)) return;
 
@@ -78,10 +97,7 @@ export function FeaturedCardMedia({
 
   return (
     <>
-      <picture
-        ref={pictureRef}
-        onErrorCapture={openingPoster ? () => setOpeningUnavailable(true) : undefined}
-      >
+      <picture ref={pictureRef}>
         {openingPoster && !openingUnavailable && !prepareFinalPoster && (
           <source
             media="(prefers-reduced-motion: no-preference) and (scripting: enabled)"
