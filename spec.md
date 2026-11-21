@@ -21,6 +21,9 @@
 - เว็บพัฒนาสาธารณะใช้พอร์ต 3001 ตาม README ให้ตรวจ origin และชนิดข้อมูลก่อนทดสอบ API เมื่อทำงานคู่กับ Warehouse แยกสถานะตรวจในเครื่อง UAT และ Production ตรวจการปล่อย Production ตาม [คู่มือปล่อยรุ่นบน Vercel](docs/vercel.md)
 - Client modules for catalog navigation and return links use shared route definitions. Legacy CMS snapshots stay in server-side product grouping and content processing.
 
+- หน้า `/service` แสดงขั้นตอนซ่อมบำรุง เปลี่ยน เคลม คืน และรับสินค้าที่โรงงานจาก `src/features/content/data/after-sales.ts` เมื่อปิด JavaScript ลิงก์ในหน้าต้องพาไปอ่านได้ครบทั้งห้าบริการ เมื่อเปิด JavaScript ให้ใช้แท็บด้วยคีย์บอร์ดได้และรักษาบริการที่เลือกเมื่อกดย้อนกลับหรือเปิดลิงก์ตรงไปยังขั้นตอน
+- หน้าบริการใช้ breakpoint หน่วย rem ตามเนื้อหา และใช้ระยะขอบการ์ดของ SUNFORD ที่ 1 และ 1.5rem เพื่อให้ขั้นตอนอ่านง่ายบนมือถือและยังพอดีจอ 1280×720 ภาพเจ้าหน้าที่ใช้ `object-fit: contain` เพื่อแสดงภาพเต็ม อ้างอิง Tailwind CSS Docs v4.3 เมื่อ 21 พ.ย. 2026 [Responsive design](https://tailwindcss.com/docs/responsive-design) · [Padding](https://tailwindcss.com/docs/padding) · [Object fit](https://tailwindcss.com/docs/object-fit)
+
 ## งานที่รอเจ้าของตัดสินใจ
 
 **การ์ดแนะนำแถว Home & Retail (Apple-style Feature Card + Ambient Loop + `↗` Modal — ไม่ใช้รูปเครื่องชั่ง)** — ข้อมูลพร้อม (`Status: "Ready to Code"`) เจ้าของอนุมัติการทำต้นแบบแล้ว การนำภาพ ข้อความ ตำแหน่ง วิดีโอ และ Modal ขึ้นเว็บยังรออนุมัติ (`Approval: "Pending"`)
