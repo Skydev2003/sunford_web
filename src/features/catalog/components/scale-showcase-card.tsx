@@ -24,6 +24,12 @@ type ShowcaseItem = {
   lettering?: ScaleShowcaseItem["lettering"];
 };
 
+export const productRailCardSizes = "(max-width: 736px) min(calc(100vw - 60px), 309px), 400px";
+
+export function showcasePhotoSizes(aspect = 1) {
+  return `${Math.ceil(216 * Math.min(1, aspect))}px`;
+}
+
 export function ProductPhotoCard({
   href,
   heading,
@@ -76,9 +82,14 @@ export function ProductShowcaseCard({
   const { product, background, label, photo, tagline, imageMode, surface } = item;
   const name = catalogCardName(product);
   const lettering = item.lettering;
-  // The photo frame is capped at 13.5rem. Portraits fit by height within that frame.
-  const photoWidth = shelf === "pos" ? Math.ceil(216 * (item.photoAspect ?? 1)) : 216;
-  const photoSizes = `${photoWidth}px`;
+  const photoSizes = showcasePhotoSizes(item.photoAspect);
+  const bleed = imageMode === "bleed";
+  // The framed artwork box is 98% of the card width and 95% of the 54% artwork area.
+  const aspect = item.photoAspect ?? 2;
+  const mobileWidth = Math.ceil(Math.min(bleed ? 371 : 303, (bleed ? 243 : 231) * aspect));
+  const desktopWidth = Math.ceil(Math.min(bleed ? 480 : 392, (bleed ? 270 : 257) * aspect));
+  const scaleImageSizes = `(max-width: 736px) min(calc(100vw - 60px), ${mobileWidth}px), ${desktopWidth}px`;
+  const scaleFallbackSizes = "(max-width: 736px) min(calc(100vw - 60px), 303px), 392px";
   if (shelf === "pos" && first) {
     const { props } = getImageProps({ src: photo, alt: name, fill: true, sizes: photoSizes });
     preload(props.src, {
@@ -118,6 +129,7 @@ export function ProductShowcaseCard({
               placeholder="product"
               fill
               sizes={photoSizes}
+              fallbackSizes={showcasePhotoSizes()}
             />
           }
         >
@@ -190,7 +202,8 @@ export function ProductShowcaseCard({
                 }`}
                 fill
                 preload={first}
-                sizes="(max-width: 370px) calc(100vw - 24px), (max-width: 736px) 340px, 440px"
+                sizes={scaleImageSizes}
+                fallbackSizes={scaleFallbackSizes}
               />
             </div>
           </div>

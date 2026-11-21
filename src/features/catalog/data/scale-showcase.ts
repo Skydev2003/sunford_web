@@ -14,7 +14,7 @@ type FeaturedScale = {
   group: keyof typeof groupLabels;
   imageMode?: "full-bottom" | "bleed";
   photoFile?: string;
-  // Portrait artwork uses only part of the square photo frame's width.
+  // Width-to-height ratio of the original artwork used to size its contained image.
   photoAspect?: number;
   tagline: string;
   background: string;
@@ -27,6 +27,7 @@ type FeaturedScale = {
 const featuredScales: readonly FeaturedScale[] = [
   {
     sku: "G106094",
+    photoAspect: 4096 / 2570,
     lettering: { ink: "#69360C", nameWidthEm: 2.421 },
     photoFile: "g106094-front-hd.webp",
     background: "sc:bg-[#EEA03D]",
@@ -36,6 +37,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106315",
+    photoAspect: 4096 / 2951,
     lettering: { ink: "#FFFFFF", nameWidthEm: 2.226 },
     background: "sc:bg-[#64213E]",
     surface: "sc:bg-[#E99F95] sc:h-[33%]",
@@ -46,6 +48,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106193",
+    photoAspect: 4096 / 2889,
     lettering: { ink: "#234369", nameWidthEm: 2.481 },
     background: "sc:bg-[#AFC9E7]",
     surface: "sc:bg-[#274D87] sc:h-[27%]",
@@ -55,6 +58,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106681",
+    photoAspect: 4096 / 3589,
     lettering: { ink: "#0D4035", nameWidthEm: 5.179 },
     background: "sc:bg-[#50B99C]",
     group: "scale-kitchen",
@@ -63,6 +67,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106131",
+    photoAspect: 4096 / 2516,
     lettering: { ink: "#43491A", nameWidthEm: 5.319 },
     background: "sc:bg-[#D4DC8A]",
     surface: "sc:bg-[#A9B248] sc:h-[40%]",
@@ -72,6 +77,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106285",
+    photoAspect: 4096 / 2645,
     lettering: { ink: "#683529", nameWidthEm: 4.333 },
     background: "sc:bg-[#F2A68E]",
     group: "scale-kitchen",
@@ -80,6 +86,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106124",
+    photoAspect: 4096 / 3111,
     lettering: { ink: "#5D3D22", nameWidthEm: 6.829 },
     background: "sc:bg-[#DCB882]",
     surface: "sc:bg-[#AD794D] sc:h-[32%]",
@@ -89,6 +96,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106353",
+    photoAspect: 4096 / 3606,
     lettering: { ink: "#FFFFFF", nameWidthEm: 4.362 },
     background: "sc:bg-[#2A4054]",
     lightText: true,
@@ -98,6 +106,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106377",
+    photoAspect: 3760 / 4096,
     lettering: { ink: "#2A5142", nameWidthEm: 3.834 },
     background: "sc:bg-[#A5CFB7]",
     surface: "sc:bg-[#477E67] sc:h-[41%]",
@@ -107,6 +116,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106643",
+    photoAspect: 3433 / 4096,
     lettering: { ink: "#493C68", nameWidthEm: 1.185 },
     background: "sc:bg-[#C3B8E3]",
     surface: "sc:bg-[#8070A8] sc:h-[33%]",
@@ -132,6 +142,7 @@ const industrialAndLab: readonly FeaturedScale[] = [
   },
   {
     sku: "G106537",
+    photoAspect: 3772 / 4096,
     group: "scale-industrial",
     tagline: "จอแยก วางได้ตามหน้างาน",
     background: "sc:bg-[#384E61]",
@@ -146,6 +157,7 @@ const industrialAndLab: readonly FeaturedScale[] = [
   },
   {
     sku: "G106308",
+    photoAspect: 3371 / 4096,
     group: "scale-industrial",
     tagline: "ชั่งบนแท่นได้ถึง 60 กก.",
     background: "sc:bg-[#C5D8AC]",
@@ -166,6 +178,7 @@ const industrialAndLab: readonly FeaturedScale[] = [
   },
   {
     sku: "G106674",
+    photoAspect: 3870 / 4096,
     group: "scale-analytical",
     tagline: "จานกลม ชั่งละเอียด 0.01 กรัม",
     background: "sc:bg-[#DCBE88]",

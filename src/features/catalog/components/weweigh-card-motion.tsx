@@ -21,7 +21,7 @@ const percent = (value: number, total: number) => `${(value / total) * 100}%`;
 const frameTime = (frames: number) => (frames * 1000) / 60;
 const easing = "cubic-bezier(0.22, 0.04, 0.25, 1)";
 
-export function WeWeighCardMotion({ src, children }: { src: string; children: ReactNode }) {
+export function WeWeighCardMotion({ children }: { children: ReactNode }) {
   const markRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -110,6 +110,8 @@ export function WeWeighCardMotion({ src, children }: { src: string; children: Re
     const prepare = () => {
       void image.decode().then(
         () => {
+          if (disposed) return;
+          mark.style.setProperty("--weweigh-image", `url("${image.currentSrc}")`);
           ready = true;
           sync();
         },
@@ -127,7 +129,7 @@ export function WeWeighCardMotion({ src, children }: { src: string; children: Re
       for (const animation of animations) animation.cancel();
       delete link.dataset.weweighMotion;
     };
-  }, [src]);
+  }, []);
 
   return (
     <div ref={markRef} className={styles.softwareMark}>
@@ -146,7 +148,6 @@ export function WeWeighCardMotion({ src, children }: { src: string; children: Re
           >
             <span
               style={{
-                backgroundImage: `url("${src}")`,
                 left: percent(-left, right - left),
                 top: percent(-top, bottom - top),
                 width: percent(size, right - left),
