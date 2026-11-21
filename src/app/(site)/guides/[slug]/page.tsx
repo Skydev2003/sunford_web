@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import { ArrowLeft } from "lucide-react";
 import { buyingGuides } from "@/features/content/data/buying-guides";
 
@@ -23,7 +24,7 @@ type GuidePageProps = { params: Promise<{ slug: string }> };
 
 export default function BuyingGuidePage({ params }: GuidePageProps) {
   return (
-    <Suspense fallback={<p role="status">กำลังโหลดคู่มือ…</p>}>
+    <Suspense fallback={<SiteLoading label="กำลังโหลดคู่มือ…" />}>
       <BuyingGuideContent params={params} />
     </Suspense>
   );

@@ -14,6 +14,7 @@ import {
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, Search, Menu, X } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
+import { ShopIcon } from "./shop-icon";
 import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
 import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
@@ -282,20 +283,7 @@ export function PrimaryNavigation({
             </button>
             <Tooltip>
               <a href="https://sunfordshop.com/" aria-label="ร้านค้า SUNFORD" onClick={closeMenu}>
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M8 6a4 4 0 0 1 8 0" />
-                  <rect x="4" y="6" width="16" height="16" rx="2" />
-                </svg>
+                <ShopIcon />
               </a>
             </Tooltip>
             <button

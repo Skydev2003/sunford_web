@@ -6,6 +6,7 @@ import { formatPrice } from "../data/price-format";
 import type { ClientProduct } from "../types";
 import { ProductPhotoCard } from "./scale-showcase-card";
 import photoStyles from "./scale-showcase-card.module.css";
+import { WeWeighCardMotion } from "./weweigh-card-motion";
 import styles from "./products-index-content.module.css";
 
 const systems = [
@@ -35,10 +36,10 @@ const systems = [
   },
   {
     id: "weweigh2",
-    category: "งานชั่งในโรงงาน",
+    category: "ชั่งงานโรงงานได้แม้ออฟไลน์",
     name: "WeWeigh2",
-    caption: "ดูน้ำหนักสด เทียบช่วงเป้าหมาย",
-    image: "/images/products/software-showcase/weweigh2-home-front-4k.webp",
+    caption: "เชื่อมเครื่องชั่งจริง จัดการสูตร พิมพ์ฉลาก ส่งข้อมูลเข้า ERP",
+    image: "/images/products/software-showcase/weweigh-card-mark-4k.webp",
     href: "https://weweigh.app/",
   },
   { id: "rls1800", sku: "G106827", category: "เครื่องชั่งพิมพ์ฉลาก" },
@@ -96,21 +97,16 @@ export function SmartSystemShowcaseCards({ products }: { products: ClientProduct
           aria-labelledby={heading}
           aria-describedby={`${heading}-tagline`}
         >
-          <div className={styles.softwareCopy}>
+          <div className={styles.softwareCopy} data-weweigh-copy>
             <p>{category}</p>
-            <h3 id={heading}>{name}</h3>
+            <h3 id={heading} className={styles.accessibleTitle}>
+              {name}
+            </h3>
             <p id={`${heading}-tagline`}>{caption}</p>
           </div>
-          <div className={styles.softwareVisual}>
-            <div className={styles.softwarePicture}>
-              <Image
-                src={image}
-                alt=""
-                fill
-                sizes="(max-width: 370px) calc(100vw - 60px), (max-width: 736px) 309px, 400px"
-              />
-            </div>
-          </div>
+          <WeWeighCardMotion src={image}>
+            <Image src={image} alt="" fill unoptimized />
+          </WeWeighCardMotion>
           <ChevronRight className={styles.softwareArrow} aria-hidden="true" />
         </Link>
       </li>

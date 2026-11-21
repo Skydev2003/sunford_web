@@ -313,7 +313,7 @@ test("the featured scales keep their lineup on reload and in a fresh session", a
   }
 });
 
-test("showcase taglines fit on one line at mobile, tablet and desktop sizes", async ({ page }) => {
+test("scale card copy fits the card at mobile, tablet and desktop sizes", async ({ page }) => {
   await page.goto("/products");
   const taglines = page.locator("#products-rail-scales [data-warehouse-sku] h3 + p");
   await expect(taglines).toHaveCount(10);
@@ -325,25 +325,48 @@ test("showcase taglines fit on one line at mobile, tablet and desktop sizes", as
         .filter(
           (line) =>
             line.scrollWidth > line.clientWidth ||
-            line.scrollHeight > Math.ceil(parseFloat(getComputedStyle(line).lineHeight)),
+            line.scrollHeight > Math.ceil(2 * parseFloat(getComputedStyle(line).lineHeight)),
         )
         .map((line) => line.textContent),
     );
-    expect(overflowing, `Clipped or wrapping showcase taglines at ${width}px`).toEqual([]);
+    expect(overflowing, `Clipped or longer than two lines at ${width}px`).toEqual([]);
     const layout = await taglines.evaluateAll((lines) =>
       lines.map((line) => {
         const card = line.closest("a")!;
-        const image = card.querySelector("img")!;
+        const artwork = card.querySelector("[data-scale-artwork]")!;
+        const photoBounds = artwork.getBoundingClientRect();
         const text = document.createRange();
         text.selectNodeContents(line);
         const content = text.getBoundingClientRect();
         const bounds = card.getBoundingClientRect();
+        const heading = card.querySelector("h3")!;
+        const title = heading.getBoundingClientRect();
+        const name = document.createRange();
+        name.selectNodeContents(heading);
+        const nameBounds = name.getBoundingClientRect();
+        const label = card.querySelector("p")!;
+        const labelBounds = label.getBoundingClientRect();
+        const style = getComputedStyle(line);
+        const size = parseFloat(style.fontSize);
         return {
           height: bounds.height,
-          weight: getComputedStyle(line).fontWeight,
+          weight: style.fontWeight,
+          labelWeight: getComputedStyle(label).fontWeight,
+          container: getComputedStyle(card).containerType,
+          titleTop: title.top - bounds.top,
+          captionGap: line.getBoundingClientRect().top - title.bottom,
+          fitsTitle: title.left === labelBounds.left && nameBounds.right <= labelBounds.right + 0.5,
+          copyScale: Math.abs(size - Math.min(17.6, Math.max(15.2, bounds.width * 0.05))) < 0.01,
+          leading: Math.abs(parseFloat(style.lineHeight) - size * 1.45) < 0.01,
           readable:
             content.width > 0 && content.left >= bounds.left && content.right <= bounds.right,
-          clearOfPhoto: content.bottom <= image.getBoundingClientRect().top,
+          clearOfPhoto: line.getBoundingClientRect().bottom <= photoBounds.top,
+          photoFits:
+            photoBounds.height <= bounds.height * 0.54 + 0.5 &&
+            photoBounds.bottom === bounds.bottom,
+          copyInFront:
+            Number(getComputedStyle(heading.parentElement!).zIndex) >
+            Number(getComputedStyle(artwork).zIndex),
           described: card.getAttribute("aria-describedby") === line.id,
         };
       }),
@@ -351,9 +374,18 @@ test("showcase taglines fit on one line at mobile, tablet and desktop sizes", as
     expect(layout).toEqual(
       Array(10).fill({
         height: width >= 737 ? 500 : 450,
-        weight: "400",
+        weight: "500",
+        labelWeight: "600",
+        container: "inline-size",
+        titleTop: width >= 768 ? 52 : 48,
+        captionGap: 10,
+        fitsTitle: true,
+        copyScale: true,
+        leading: true,
         readable: true,
         clearOfPhoto: true,
+        photoFits: true,
+        copyInFront: true,
         described: true,
       }),
     );
@@ -377,41 +409,88 @@ test("the products index renders five shelves and loads all first-shelf product 
       await img.decode();
       return decodeURIComponent(img.currentSrc || img.src);
     });
-    expect(source).toContain(
-      `/images/products/scale-showcase/framed/${sku.toLowerCase()}-front-4k.webp`,
-    );
+    const photoFile =
+      sku === "G106094" ? "g106094-front-hd.webp" : `${sku.toLowerCase()}-front-4k.webp`;
+    expect(source).toContain(`/images/products/scale-showcase/framed/${photoFile}`);
   }
 });
 
 test("each scale keeps its solid or split background and matching text color", async ({ page }) => {
   await page.goto("/products");
   const cards = page.locator("#products-rail-scales li");
-  const palette: Record<
-    string,
-    { top: string; bottom?: string; height?: number; whiteText?: boolean }
-  > = {
-    G106094: { top: "rgb(238, 160, 61)" },
-    G106315: { top: "rgb(100, 33, 62)", bottom: "rgb(233, 159, 149)", height: 33, whiteText: true },
-    G106193: { top: "rgb(175, 201, 231)", bottom: "rgb(39, 77, 135)", height: 27 },
-    G106681: { top: "rgb(80, 185, 156)" },
-    G106131: { top: "rgb(212, 220, 138)", bottom: "rgb(169, 178, 72)", height: 40 },
-    G106285: { top: "rgb(242, 166, 142)" },
-    G106124: { top: "rgb(220, 184, 130)", bottom: "rgb(173, 121, 77)", height: 32 },
-    G106353: { top: "rgb(42, 64, 84)", whiteText: true },
-    G106377: { top: "rgb(165, 207, 183)", bottom: "rgb(71, 126, 103)", height: 41 },
-    G106643: { top: "rgb(195, 184, 227)", bottom: "rgb(128, 112, 168)", height: 33 },
+  const palette: Record<string, { top: string; ink: string; bottom?: string; height?: number }> = {
+    G106094: { ink: "rgb(105, 54, 12)", top: "rgb(238, 160, 61)" },
+    G106315: {
+      ink: "rgb(255, 255, 255)",
+      top: "rgb(100, 33, 62)",
+      bottom: "rgb(233, 159, 149)",
+      height: 33,
+    },
+    G106193: {
+      ink: "rgb(35, 67, 105)",
+      top: "rgb(175, 201, 231)",
+      bottom: "rgb(39, 77, 135)",
+      height: 27,
+    },
+    G106681: { ink: "rgb(13, 64, 53)", top: "rgb(80, 185, 156)" },
+    G106131: {
+      ink: "rgb(67, 73, 26)",
+      top: "rgb(212, 220, 138)",
+      bottom: "rgb(169, 178, 72)",
+      height: 40,
+    },
+    G106285: { ink: "rgb(104, 53, 41)", top: "rgb(242, 166, 142)" },
+    G106124: {
+      ink: "rgb(93, 61, 34)",
+      top: "rgb(220, 184, 130)",
+      bottom: "rgb(173, 121, 77)",
+      height: 32,
+    },
+    G106353: { ink: "rgb(255, 255, 255)", top: "rgb(42, 64, 84)" },
+    G106377: {
+      ink: "rgb(42, 81, 66)",
+      top: "rgb(165, 207, 183)",
+      bottom: "rgb(71, 126, 103)",
+      height: 41,
+    },
+    G106643: {
+      ink: "rgb(73, 60, 104)",
+      top: "rgb(195, 184, 227)",
+      bottom: "rgb(128, 112, 168)",
+      height: 33,
+    },
   };
   await expect(cards).toHaveCount(10);
   await expect(cards.locator("[data-scale-surface]")).toHaveCount(6);
   for (const item of await cards.all()) {
     const sku = (await item.getAttribute("data-warehouse-sku"))!;
-    const { top, bottom, height, whiteText } = palette[sku];
+    const { top, bottom, height, ink } = palette[sku];
     const card = item.getByRole("link");
     await expect(card).toHaveCSS("background-color", top);
-    await expect(card.locator("h3")).toHaveCSS(
-      "color",
-      whiteText ? "rgb(255, 255, 255)" : "rgb(29, 29, 31)",
-    );
+    for (const text of await card.locator("h3, p").all()) {
+      await expect(text).toHaveCSS("color", ink);
+      await expect(text).toHaveCSS("opacity", "1");
+    }
+    const contrast = await card.evaluate((link) => {
+      function luminance(rgb: string) {
+        const [r, g, b] = rgb.match(/\d+/g)!.map((channel) => {
+          const value = Number(channel) / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return r * 0.2126 + g * 0.7152 + b * 0.0722;
+      }
+      const background = luminance(getComputedStyle(link).backgroundColor);
+      return [...link.querySelectorAll("p")].map((text) => {
+        const foreground = luminance(getComputedStyle(text).color);
+        return (
+          (Math.max(background, foreground) + 0.05) / (Math.min(background, foreground) + 0.05)
+        );
+      });
+    });
+    expect(
+      Math.min(...contrast),
+      `Category and tagline contrast for ${sku}`,
+    ).toBeGreaterThanOrEqual(4.5);
     const surface = card.locator("[data-scale-surface]");
     if (!bottom || height === undefined) {
       await expect(surface).toHaveCount(0);
@@ -550,7 +629,7 @@ test("smart system showcase opens seven featured systems in order and keeps plat
     await expect(link).toHaveAttribute("href", href);
     await expect(link).toHaveAccessibleDescription(/\S/);
     expect(decodeURIComponent((await link.locator("img").getAttribute("src"))!)).toContain(
-      name === "WeWeigh2" ? "/weweigh2-home-front-4k.webp" : "-front-4k.webp",
+      name === "WeWeigh2" ? "/weweigh-card-mark-4k.webp" : "-front-4k.webp",
     );
     await link.scrollIntoViewIfNeeded();
     await expect
@@ -565,6 +644,214 @@ test("smart system showcase opens seven featured systems in order and keeps plat
   await expect(page).toHaveURL(/\/products\/warehouse-G107282$/);
 });
 
+test("WeWeigh assembles in view before the description drops in", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 850 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/products");
+  const card = page.getByRole("link", { name: "WeWeigh2", exact: true });
+  const caption = card.locator("[id$='-tagline']");
+  const glyph = card.locator("[data-weweigh-piece]").first();
+  const animationState = () =>
+    glyph.evaluate((element) => element.getAnimations().at(0)?.playState);
+
+  await card.scrollIntoViewIfNeeded();
+  await expect(card.locator("img")).toHaveJSProperty("naturalWidth", 4096);
+  await expect(caption).toHaveCSS("opacity", "1");
+  await expect.poll(animationState).toBeUndefined();
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(card).toHaveAttribute("data-weweigh-motion", "active");
+  await expect.poll(animationState).toBe("running");
+  await expect(caption).toHaveCSS("opacity", "0");
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(animationState).toBe("paused");
+
+  await card.scrollIntoViewIfNeeded();
+  await expect(card).toHaveAttribute("data-weweigh-motion", "complete");
+  await expect(caption).toHaveCSS("opacity", "1");
+  await expect(card.locator("img")).toBeVisible();
+  await expect(card).toHaveAttribute("href", "https://weweigh.app/");
+  await expect(card.locator("video")).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await card.scrollIntoViewIfNeeded();
+  await expect(card).toHaveAttribute("data-weweigh-motion", "complete");
+});
+
+test("the precision weights play once inside the first linked featured card", async ({ page }) => {
+  const clips: string[] = [];
+  page.on("request", (request) => {
+    const path = new URL(request.url()).pathname;
+    if (path === "/videos/precision-weights.mp4" || path === "/videos/aw31-lp50.mp4")
+      clips.push(path);
+  });
+  await page.setViewportSize({ width: 390, height: 850 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/products");
+  const card = page.locator("#products-rail-indicators a[href='/about-us']");
+  const video = card.locator("video");
+  await expect(video).not.toHaveAttribute("src", /.+/);
+  await card.scrollIntoViewIfNeeded();
+  await expect(card.getByRole("heading", { name: "แม่นยำในทุกน้ำหนัก" })).toBeVisible();
+  await expect
+    .poll(() => card.locator("img").evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+  await expect(video).toHaveCSS("opacity", "0");
+  expect(clips).toEqual([]);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect
+    .poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime))
+    .toBeGreaterThan(0);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect(video).toHaveJSProperty("paused", true);
+  await card.scrollIntoViewIfNeeded();
+  await expect(video).toHaveJSProperty("ended", true, { timeout: 8000 });
+  await expect(video).toHaveCSS("opacity", "0");
+  expect(new Set(clips)).toEqual(new Set(["/videos/precision-weights.mp4"]));
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await card.scrollIntoViewIfNeeded();
+  await expect(video).toHaveJSProperty("ended", true);
+  await card.focus();
+  await card.press("Enter");
+  await expect(page).toHaveURL(/\/about-us$/);
+});
+
+test("only a new mouse entry replays the finished precision-weights effect", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/products");
+  const card = page.locator("#products-rail-indicators a[href='/about-us']");
+  const video = card.locator("video");
+  const currentTime = () => video.evaluate((v: HTMLVideoElement) => v.currentTime);
+  const leaveCard = () => page.mouse.move(1, 1);
+  await leaveCard();
+  await card.scrollIntoViewIfNeeded();
+  await expect.poll(currentTime).toBeGreaterThan(0.5);
+  const beforeEntry = await currentTime();
+  await card.getByRole("heading").hover();
+  expect(await currentTime()).toBeGreaterThanOrEqual(beforeEntry);
+  await expect(video).toHaveJSProperty("ended", true);
+
+  await card.hover({ position: { x: 80, y: 320 } });
+  await expect(video).toHaveJSProperty("ended", true);
+  await leaveCard();
+  await card.dispatchEvent("pointerenter", { pointerType: "touch" });
+  await expect(video).toHaveJSProperty("ended", true);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await card.hover();
+  await expect(video).toHaveJSProperty("ended", true);
+  await expect(video).toHaveCSS("opacity", "0");
+  await leaveCard();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+
+  for (let replay = 0; replay < 2; replay++) {
+    await card.getByRole("heading").hover();
+    await expect(video).toHaveJSProperty("paused", false);
+    expect(await currentTime()).toBeLessThan(1.5);
+    await leaveCard();
+    await expect(video).toHaveJSProperty("ended", true);
+    await expect(video).toHaveCSS("opacity", "0");
+  }
+});
+
+test("the AW31 and LP50 video matches the first featured card and plays once in view", async ({
+  page,
+}) => {
+  const requests: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/videos/aw31-lp50.mp4") requests.push(request.url());
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 850 });
+  await page.goto("/products");
+  const rail = page.locator("#products-rail-indicators");
+  const video = rail.getByRole("img", { name: /LP50.*AW31/ }).locator("video");
+  await expect(video).toBeAttached();
+  await expect(video).not.toHaveAttribute("src", /.+/);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const poster = rail.locator('img[src="/images/products/aw31-lp50-poster.webp"]');
+  const selectedPoster = () =>
+    poster.evaluate((image: HTMLImageElement) => image.currentSrc.split("/").pop());
+  await expect(poster).toHaveAttribute("loading", "lazy");
+  for (const width of [320, 390, 736, 737, 768, 1440, 2540]) {
+    await page.setViewportSize({ width, height: 850 });
+    await video.scrollIntoViewIfNeeded();
+    const [reference, previous, featured, next] = await rail
+      .locator(":scope > li")
+      .evaluateAll((items) =>
+        [items[0], ...items.slice(3, 6)].map((li) => {
+          const card = li.firstElementChild!;
+          const { width, height, left, right, top } = card.getBoundingClientRect();
+          return { width, height, left, right, top, radius: getComputedStyle(card).borderRadius };
+        }),
+      );
+    expect(featured.width).toBe(reference.width);
+    expect(featured.height).toBe(reference.height);
+    expect(featured.top).toBe(reference.top);
+    expect(featured.radius).toBe(reference.radius);
+    expect(featured.left - previous.right).toBeCloseTo(20, 1);
+    expect(next.left - featured.right).toBeCloseTo(20, 1);
+    if (width >= 737) {
+      expect([featured.width, featured.height]).toEqual([400, 500]);
+      expect([previous.width, next.width]).toEqual([313, 313]);
+    }
+    await expect(video).toHaveCSS("opacity", "0");
+    await expect(poster).toHaveJSProperty("naturalWidth", 1200);
+  }
+  expect(requests).toHaveLength(0);
+  await expect.poll(selectedPoster).toBe("aw31-lp50-poster.webp");
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect.poll(selectedPoster).toBe("aw31-lp50-opening.webp");
+  await video.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime))
+    .toBeGreaterThan(0);
+  const partiallyVisibleTime = await video.evaluate((v: HTMLVideoElement) => {
+    const box = v.getBoundingClientRect();
+    window.scrollBy({ top: box.top - innerHeight + box.height * 0.49, behavior: "instant" });
+    return v.currentTime;
+  });
+  await expect
+    .poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime))
+    .toBeGreaterThan(partiallyVisibleTime + 0.15);
+  await rail.evaluate((el) => el.scrollTo({ left: 0, behavior: "instant" }));
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+  const time = await video.evaluate((v: HTMLVideoElement) => v.currentTime);
+  expect(time).toBeLessThan(5);
+  await video.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => video.evaluate((v: HTMLVideoElement) => v.ended), { timeout: 10000 })
+    .toBe(true);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await video.scrollIntoViewIfNeeded();
+  await expect(video).toHaveJSProperty("ended", true);
+  await video.hover();
+  await expect(video).toHaveJSProperty("ended", true);
+  await expect(video).toHaveCSS("opacity", "0");
+  await expect.poll(selectedPoster).toBe("aw31-lp50-poster.webp");
+  await expect(video).toHaveJSProperty("videoWidth", 1200);
+  expect(
+    await video.evaluate((v: HTMLVideoElement) => v.getVideoPlaybackQuality().totalVideoFrames),
+  ).toBeGreaterThan(200);
+});
+
+test("the featured video shows the product pair if the media fails", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.route("**/videos/aw31-lp50.mp4", (route) => route.abort());
+  await page.goto("/products");
+  const card = page.locator("#products-rail-indicators").getByRole("img", { name: /LP50.*AW31/ });
+  const video = card.locator("video");
+  await video.scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => Boolean(v.error))).toBe(true);
+  await expect(video).toHaveCSS("opacity", "0");
+  await expect
+    .poll(() => card.locator("picture img").evaluate((img: HTMLImageElement) => img.currentSrc), {
+      timeout: 15000,
+    })
+    .toMatch(/\/aw31-lp50-poster\.webp$/);
+});
+
 test("component showcase links eight pictured parts to their own products", async ({ page }) => {
   await page.goto("/products");
   const section = page.locator('[aria-labelledby="products-category-indicators"]');
@@ -577,7 +864,10 @@ test("component showcase links eight pictured parts to their own products", asyn
   await expect(heading.locator("span").first()).toHaveCSS("color", "rgb(215, 25, 45)");
   await expect(heading.locator("span").last()).toHaveCSS("color", "rgb(110, 110, 115)");
   const shelfItems = section.getByRole("listitem");
-  await expect(shelfItems).toHaveCount(9);
+  await expect(shelfItems).toHaveCount(10);
+  await expect(shelfItems.nth(3)).toHaveAttribute("data-warehouse-sku", "G107268");
+  await expect(shelfItems.nth(4).getByRole("img", { name: /LP50.*AW31/ })).toBeAttached();
+  await expect(shelfItems.nth(5)).toHaveAttribute("data-warehouse-sku", "G107787");
   const aboutCard = shelfItems.first().getByRole("link");
   await expect(aboutCard).toHaveAttribute("href", "/about-us");
   await expect(aboutCard.getByRole("heading", { level: 3 })).toHaveText("แม่นยำในทุกน้ำหนัก");
@@ -1000,4 +1290,86 @@ test.describe("shared scales gallery touch gestures", () => {
     await page.screenshot({ path: test.info().outputPath("native-touch-gallery.png") });
     await session.detach();
   });
+});
+
+test("isolated Warehouse can pause the whole scale shelf and restore it", async ({
+  page,
+  browser,
+  baseURL,
+}) => {
+  const session = process.env.FEATURED_SCALES_UAT_MANAGER_SESSION;
+  const adminUrl = process.env.FEATURED_SCALES_UAT_ADMIN_URL;
+  test.skip(
+    !session || !adminUrl,
+    "Requires a disposable Warehouse fixture with ten published cards",
+  );
+  test.setTimeout(120_000);
+  expect(new URL(baseURL!).hostname).toBe("127.0.0.1");
+  expect(new URL(adminUrl!).hostname).toBe("127.0.0.1");
+  const adminContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await adminContext.addCookies([
+    { name: "session_token", value: session!, url: adminUrl!, httpOnly: true },
+  ]);
+  const admin = await adminContext.newPage();
+  try {
+    await admin.goto(new URL("/ecommerce/content?kind=featured-scales", adminUrl).href);
+    const rows = admin.locator("[data-scale-row]");
+    const status = admin.getByRole("status");
+    await expect(rows).toHaveCount(10);
+    await expect(rows.getByRole("button", { name: /^พัก / })).toHaveCount(10);
+    await page.goto("/products");
+    const shelf = page.locator("#products-rail-scales");
+    const baseline = await shelf
+      .locator("[data-warehouse-sku]")
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-warehouse-sku")));
+    expect(baseline).toHaveLength(10);
+    const neighbors = page.locator(
+      "[data-products-category-section] h2:not(#products-category-scales)",
+    );
+    const headings = await neighbors.allTextContents();
+    expect(headings.length).toBeGreaterThan(0);
+    async function loadDirectory() {
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await neighbors.first().waitFor();
+    }
+    try {
+      for (const row of await rows.all()) await row.getByRole("button", { name: /^พัก / }).click();
+      await expect(status.filter({ hasText: "บันทึกร่างแล้ว" })).toBeVisible();
+      await expect(admin.getByText("ไม่มีการ์ดที่พร้อมแสดงบนเว็บ")).toBeVisible();
+      await loadDirectory();
+      await expect(shelf.locator("[data-warehouse-sku]")).toHaveCount(10);
+      await admin.getByRole("button", { name: "เผยแพร่", exact: true }).click();
+      await expect(status.filter({ hasText: /^เผยแพร่แล้ว$/ })).toBeVisible();
+      await expect
+        .poll(
+          async () => {
+            await loadDirectory();
+            return shelf.count();
+          },
+          { timeout: 45000 },
+        )
+        .toBe(0);
+      expect(await neighbors.allTextContents()).toEqual(headings);
+    } finally {
+      for (const row of await rows.all()) {
+        const paused = row.getByRole("button", { name: /^เปิด / });
+        if (await paused.count()) await paused.click();
+      }
+      await admin.getByRole("button", { name: "เผยแพร่", exact: true }).click();
+      await expect(status.filter({ hasText: /^เผยแพร่แล้ว$/ })).toBeVisible();
+    }
+    await expect
+      .poll(
+        async () => {
+          await loadDirectory();
+          return shelf
+            .locator("[data-warehouse-sku]")
+            .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-warehouse-sku")));
+        },
+        { timeout: 45000 },
+      )
+      .toEqual(baseline);
+  } finally {
+    await adminContext.close();
+  }
 });

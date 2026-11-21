@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { Fragment } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import { sunford } from "@/features/home/data/brand";
 import type { ClientProduct } from "../types";
@@ -8,12 +9,14 @@ import type { ProductCategory } from "../data/mock-categories";
 import { catalogCardName } from "../data/catalog-card-names";
 import { formatPrice } from "../data/price-format";
 import { ProductsIndexRail } from "./products-index-rail";
+import { EquipmentVideoCard } from "./equipment-video-card";
+import { FeaturedCardMedia } from "./featured-card-media";
 import { ProductsIndexMotion } from "./products-index-motion";
 import { ProductPhotoCard, ProductShowcaseCard } from "./scale-showcase-card";
 import photoStyles from "./scale-showcase-card.module.css";
 import { SmartSystemShowcaseCards } from "./software-showcase";
 import { selectComponentShowcase } from "../data/component-showcase";
-import { selectScaleShowcase } from "../data/scale-showcase";
+import { selectScaleShowcase, type PublishedScaleCard } from "../data/scale-showcase";
 import styles from "./products-index-content.module.css";
 
 const categoryFamilies = new Set(["scales", "indicators", "platforms", "pos", "accessories"]);
@@ -28,9 +31,11 @@ const showcaseHeadings: Partial<Record<string, { lead: string; detail: string }>
 export function ProductsIndexContent({
   products,
   categories,
+  publishedScales,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
+  publishedScales?: PublishedScaleCard[];
 }) {
   const sections = categories.map(({ id, label, productIds }) => {
     const members = products.filter((product) => productIds.includes(product.id));
@@ -116,8 +121,9 @@ export function ProductsIndexContent({
           id === "indicators"
             ? selectComponentShowcase(products)
             : id === "scales" || id === "pos" || id === "accessories"
-              ? selectScaleShowcase(id === "scales" ? members : products, id)
+              ? selectScaleShowcase(id === "scales" ? members : products, id, publishedScales)
               : undefined;
+        if (id === "scales" && publishedScales && !showcase?.length) return null;
         return (
           <section
             key={id}
@@ -148,12 +154,18 @@ export function ProductsIndexContent({
                       <span>ในทุกน้ำหนัก</span>
                     </h3>
                     <div className={styles.aboutArt}>
-                      <Image
-                        src="/images/products/precision-weights.webp"
-                        alt=""
-                        fill
-                        sizes="(max-width: 736px) 346px, 448px"
-                      />
+                      <FeaturedCardMedia
+                        src="/videos/precision-weights.mp4"
+                        restorePosterOnEnd
+                        replayOnHover
+                      >
+                        <Image
+                          src="/images/products/precision-weights.webp"
+                          alt=""
+                          fill
+                          sizes="(max-width: 736px) 346px, 448px"
+                        />
+                      </FeaturedCardMedia>
                     </div>
                     <ArrowUpRight className={styles.aboutArrow} aria-hidden="true" />
                   </Link>
@@ -163,12 +175,16 @@ export function ProductsIndexContent({
                 <SmartSystemShowcaseCards products={products} />
               ) : showcase ? (
                 showcase.map((item, index) => (
-                  <ProductShowcaseCard
-                    key={item.product.id}
-                    item={item}
-                    shelf={id}
-                    first={id === "scales" && index === 0}
-                  />
+                  <Fragment key={item.product.id}>
+                    <ProductShowcaseCard
+                      item={item}
+                      shelf={id}
+                      first={id === "scales" && index === 0}
+                    />
+                    {id === "indicators" && item.product.warehouseSku === "G107268" && (
+                      <EquipmentVideoCard />
+                    )}
+                  </Fragment>
                 ))
               ) : (
                 members.map((product) => {

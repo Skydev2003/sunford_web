@@ -195,25 +195,56 @@
   flex: 0 0 min(calc(100% - 1rem), 19.3125rem);
   min-width: 0;
 }
-.card > a {
+.card > a,
+.featuredVideoCard {
   position: relative;
+  height: 100%;
+  min-height: 28.125rem;
+  box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+}
+.card > a {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 28.125rem;
   padding: 1.75rem;
   border-radius: 28px;
   background: white;
-  box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
   transition: background-color 100ms linear;
 }
-.card > .aboutCard {
+.card > .aboutCard,
+.featuredVideoCard {
   overflow: hidden;
   isolation: isolate;
   border-radius: 1.5rem;
+}
+.card > .aboutCard {
   background: var(--red);
   color: #fff;
+}
+.featuredVideoCard {
+  background-color: #552739;
+}
+.featuredVideoCard img,
+.featuredVideoCard video,
+.aboutArt video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.featuredVideoCard video,
+.aboutArt video {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .featuredVideoCard video[data-started],
+  .aboutArt video[data-started] {
+    opacity: 1;
+  }
+  .aboutArt video[data-started] {
+    mask: url("/images/products/precision-weights-outline.webp") center top / cover no-repeat;
+  }
 }
 .aboutCard > p {
   margin-bottom: 0.25rem;
@@ -236,7 +267,8 @@
   inset: 36% -6% -3%;
   pointer-events: none;
 }
-.aboutArt img {
+.aboutArt img,
+.aboutArt video {
   object-fit: cover;
   object-position: center top;
 }
@@ -318,50 +350,62 @@
   outline-offset: 2px;
 }
 .card > .softwareCard {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.5rem;
   overflow: hidden;
   isolation: isolate;
-  padding: 1.5rem;
   border-radius: 1.5rem;
-  background: var(--app-paper);
-  color: var(--app-ink, var(--ink));
+  background: #d91e25;
+  color: white;
 }
 .softwareCopy {
-  z-index: 1;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 .softwareCopy > p:first-child {
   margin-bottom: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  opacity: 0.85;
-}
-.softwareCopy h3 {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
 }
-.softwareCopy > p:last-child {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  font-weight: 400;
-  opacity: 0.9;
-}
-.softwareVisual {
+.softwareMark {
   position: relative;
-  flex: 1;
-  min-height: 10rem;
-  margin: 1.25rem -1.5rem -1.5rem;
+  min-height: 0;
+  margin-bottom: 1.75rem;
   pointer-events: none;
+  container-type: size;
 }
-.softwarePicture {
-  position: absolute;
-  inset: 2% 0.75rem 2%;
-}
-.softwarePicture img {
+.softwareMark img {
   object-fit: contain;
-  object-position: center bottom;
-  filter: drop-shadow(0 8px 8px rgb(28 32 35 / 16%));
+  object-position: center;
+}
+.softwarePieces {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100cqw, 100cqh);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  visibility: hidden;
+}
+.softwarePieces > span,
+.softwarePieces > span > span {
+  position: absolute;
+}
+.softwarePieces > span {
+  overflow: hidden;
+}
+.softwarePieces > span > span {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-weweigh-motion="active"] .softwarePieces {
+    visibility: visible;
+  }
+  [data-weweigh-motion="active"] .softwareMark > img {
+    visibility: hidden;
+  }
 }
 .softwareArrow {
   position: absolute;
@@ -374,28 +418,6 @@
   background: white;
   color: var(--ink);
   box-shadow: 0 2px 6px rgb(0 0 0 / 12%);
-}
-.card[data-software="weweigh2"] {
-  --app-paper: #773b4a;
-  --app-ink: white;
-}
-[data-software="weweigh2"] .softwarePicture {
-  inset: 3% 0.875rem 8%;
-}
-@media (min-width: 48rem) {
-  .card > .softwareCard {
-    padding: 1.75rem;
-  }
-  .softwareVisual {
-    margin-inline: -1.75rem;
-    margin-bottom: -1.75rem;
-  }
-  .softwareCopy h3 {
-    font-size: 1.75rem;
-  }
-  .softwareCopy > p:last-child {
-    font-size: 1rem;
-  }
 }
 .index a:focus-visible,
 .controls button:focus-visible {
@@ -517,7 +539,8 @@
   .card {
     flex-basis: 25rem;
   }
-  .card > a {
+  .card > a,
+  .featuredVideoCard {
     min-height: 31.25rem;
   }
   .sectionHeading h2 {

@@ -55,7 +55,8 @@ void main() {
   float t = progress * 3.5;
   float grow = spring(t + 0.01, 0.42);
   float release = spring(t - 2.4, 0.95);
-  float radius = mix(0.10, 0.80, grow) * (1.0 + 0.1 * release);
+  // Widen the glass face while keeping its fading rim inside the canvas.
+  float radius = mix(0.10, 0.92, grow) + 0.02 * release;
   float exponent = mix(2.0, 4.8, spring(t - 0.27, 0.4));
   vec2 a = max(abs(position / radius), vec2(0.00001));
   float field = pow(pow(a.x, exponent) + pow(a.y, exponent), 1.0 / exponent);

@@ -8,7 +8,7 @@ import styles from "./products-index-content.module.css";
 const duration = 5000;
 const glassDuration = 3000;
 const logo = "/images/products/sunford-s-transparent.png";
-const suffix = "/images/products/sunford-unford-transparent.png";
+const suffix = "/images/products/sunford-unford-transparent.svg";
 // Left edges in the 576-unit brand layout. Each sprite cell includes its italic overhang.
 const letters = [
   ["U", 80],

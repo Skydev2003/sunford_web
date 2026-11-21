@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import { ScaleSubcategoryPage } from "@/features/catalog/components/scale-subcategory-page";
 import { scaleSubcategoryPages } from "@/features/catalog/data/scale-subcategory-pages";
 import { additionalScaleSubcategoryPages } from "@/features/catalog/data/additional-subcategory-pages";
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function ScaleGroupPage({ params }: Props) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading />}>
       <ScaleGroupContent params={params} />
     </Suspense>
   );

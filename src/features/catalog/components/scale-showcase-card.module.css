@@ -11,6 +11,43 @@
   position: absolute;
   inset: 0;
 }
+@font-face {
+  font-family: "Scale Sora";
+  src: url("./fonts/sora-latin-variable.woff2") format("woff2");
+  font-weight: 100 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Scale Noto Medium";
+  src: url("./fonts/noto-sans-thai-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+.card > .scaleLink {
+  color: var(--scale-ink, var(--ink));
+}
+.card > .scaleLink:has([data-product-image-placeholder]) {
+  color: var(--ink);
+}
+.scaleTagline {
+  font-family: "Scale Noto Medium", var(--font-sunford), sans-serif;
+}
+.scaleName {
+  --name-limit: 3.75rem;
+  --name-safe-width: calc(100cqw - 2 * var(--copy-inset));
+  font-family: "Scale Sora", Arial, sans-serif;
+  font-size: min(var(--name-limit), calc(var(--name-safe-width) / var(--name-width-em)));
+  font-size: round(
+    down,
+    min(var(--name-limit), calc(var(--name-safe-width) / var(--name-width-em))),
+    1px
+  );
+}
+@container (min-width: 22rem) {
+  .scaleName {
+    --name-limit: 4.375rem;
+  }
+}
 .card:has([data-product-image-placeholder]) > a {
   background-color: white;
 }

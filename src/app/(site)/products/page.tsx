@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import Link from "next/link";
 import { ProductsOverview } from "@/features/catalog/components/products-overview";
 import { ProductsIndexContent } from "@/features/catalog/components/products-index-content";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
+import { getPublishedScaleShelf } from "@/features/catalog/server/featured-scale-shelf";
 import { buyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
@@ -21,7 +23,7 @@ async function getCopyrightYear() {
 }
 export default function ProductsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading />}>
       <ProductsContent />
     </Suspense>
   );
@@ -34,10 +36,11 @@ async function ProductsContent() {
     cardNames,
     readySubcategoryHrefs,
   } = await getProductCategories();
-  const [navigation, site, copyrightYear] = await Promise.all([
+  const [navigation, site, copyrightYear, publishedScales] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
     getCopyrightYear(),
+    getPublishedScaleShelf(),
   ]);
   const photos = new Map<string, string>(
     categories.map((category) => {
@@ -184,7 +187,13 @@ async function ProductsContent() {
   ];
   return (
     <ProductsOverview
-      indexContent={<ProductsIndexContent products={clientProducts} categories={categories} />}
+      indexContent={
+        <ProductsIndexContent
+          products={clientProducts}
+          categories={categories}
+          publishedScales={publishedScales}
+        />
+      }
       products={clientProducts}
       categories={categories}
       cardNames={cardNames}

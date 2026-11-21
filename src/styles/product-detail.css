@@ -64,14 +64,6 @@
   background: var(--paper);
   pointer-events: none;
 }
-.model-loading svg {
-  animation: model-loading-spin 1s linear infinite;
-}
-@keyframes model-loading-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 .model-toolbar {
   position: absolute;
   left: 18px;
@@ -468,10 +460,5 @@
 @media (min-width: 80rem) {
   .detail-grid {
     gap: clamp(32px, 4.6vw, 56px);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .model-loading svg {
-    animation: none;
   }
 }

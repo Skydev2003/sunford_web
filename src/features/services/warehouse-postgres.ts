@@ -56,6 +56,14 @@ async function queryWarehouse<Row extends QueryResultRow>(sql: string, values: u
   }
 }
 
+export async function readPublishedScaleShelf(): Promise<unknown> {
+  const result = await queryWarehouse<{ cards: unknown }>(
+    "select ecommerce.get_website_featured_scales($1::bigint) as cards",
+    [process.env.WAREHOUSE_COMPANY_ID],
+  );
+  return result.rows[0]?.cards;
+}
+
 type ItemRow = {
   description?: string | null;
   group_name?: string | null;

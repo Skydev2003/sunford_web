@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import { Hero } from "@/features/home/components/hero";
 import { SectionTwoVideo } from "@/features/home/components/section-two-video";
 import { HomeMotion } from "@/features/home/components/home-motion";
@@ -20,7 +21,7 @@ const showHomepageCatalog = false;
 
 export default function Home() {
   return (
-    <Suspense fallback={<p role="status">กำลังโหลดหน้าแรก…</p>}>
+    <Suspense fallback={<SiteLoading label="กำลังโหลดหน้าแรก…" />}>
       <HomeContent />
     </Suspense>
   );

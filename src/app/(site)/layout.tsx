@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { SiteHeader } from "@/features/site/components/site-header";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import { Footer } from "@/components/layout/footer";
 import styles from "@/components/layout/site-background.module.css";
 import { CatalogOverlays } from "@/features/catalog/components/catalog-overlays";
@@ -19,7 +20,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
     </Suspense>
   );
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading />}>
       <CatalogRouteFrame
         className={styles.surface}
         header={header}

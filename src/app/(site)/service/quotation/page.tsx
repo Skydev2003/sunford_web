@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import { connection } from "next/server";
 import { QuotationFromSelection } from "@/features/catalog/components/quotation-form";
 import { getWeighingOptions } from "@/features/content/data/weighing-options";
@@ -40,7 +41,7 @@ async function WarehouseQuotation() {
 
 export default function QuotationPage() {
   return (
-    <Suspense fallback={<p>กำลังเตรียมใบเสนอราคา…</p>}>
+    <Suspense fallback={<SiteLoading label="กำลังเตรียมใบเสนอราคา…" />}>
       <WarehouseQuotation />
     </Suspense>
   );

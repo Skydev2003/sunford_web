@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { ProductCategoryMock } from "@/features/catalog/components/product-category-mock";
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function ProductCategoryPage({ params }: Props) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading />}>
       <ProductCategoryContent params={params} />
     </Suspense>
   );

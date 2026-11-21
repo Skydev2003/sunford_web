@@ -243,12 +243,34 @@ export function QuotationForm({
       ).join("");
       pendingIssue.current = { draft, key };
     }
-    const response = await fetch("/api/quotations/issue", {
-      method: "POST",
-      headers: { "Idempotency-Key": pendingIssue.current.key },
-    });
-    if (!response.ok) throw new Error("ออกเลขเอกสารไม่ได้ในขณะนี้ กรุณาลองอีกครั้ง");
-    return response.json();
+    try {
+      const response = await fetch("/api/quotations/issue", {
+        method: "POST",
+        redirect: "error",
+        headers: { Accept: "application/json", "Idempotency-Key": pendingIssue.current.key },
+      });
+      if (
+        response.ok &&
+        /^application\/json(?:\s*;|$)/i.test(response.headers.get("content-type") ?? "")
+      ) {
+        const issue: unknown = await response.json();
+        if (
+          issue &&
+          typeof issue === "object" &&
+          "number" in issue &&
+          typeof issue.number === "string" &&
+          /^\d{8,}$/.test(issue.number) &&
+          "createdAt" in issue &&
+          typeof issue.createdAt === "string" &&
+          Number.isFinite(Date.parse(issue.createdAt))
+        ) {
+          return { number: issue.number, createdAt: issue.createdAt };
+        }
+      }
+    } catch {
+      // Keep the allocation key for a retry after a transport or parsing error.
+    }
+    throw new Error("ออกเลขเอกสารไม่ได้ในขณะนี้ กรุณาลองอีกครั้ง");
   }
   async function print(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

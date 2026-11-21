@@ -98,7 +98,6 @@ for (const width of [390, 834, 1440]) {
   test(`shop icon matches the homepage across public pages at ${width}px`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width, height: 900 });
-    let reference: string | undefined;
     for (const route of [
       "/",
       "/products",
@@ -112,14 +111,25 @@ for (const width of [390, 834, 1440]) {
       await expect(shop).toBeVisible();
       await expect(shop).toHaveAttribute("href", "https://sunfordshop.com/");
       expect(await shop.getAttribute("target")).toBeNull();
-      const svg = shop.locator("svg");
-      const markup = await svg.evaluate((node) => node.outerHTML);
-      reference ??= markup;
-      expect(markup).toBe(reference);
-      const iconBox = (await svg.boundingBox())!;
-      expect(iconBox.width).toBe(20);
-      expect(iconBox.height).toBe(20);
+      const icon = shop.locator("picture img");
+      await expect(icon).toHaveAttribute("alt", "");
+      for (const motion of ["no-preference", "reduce"] as const) {
+        await page.emulateMedia({ reducedMotion: motion });
+        const filename = motion === "reduce" ? "shopping-loader-still.png" : "shopping-loader.svg";
+        await expect
+          .poll(() =>
+            icon.evaluate((img: HTMLImageElement) =>
+              img.complete && img.naturalWidth > 0 ? new URL(img.currentSrc).pathname : "",
+            ),
+          )
+          .toBe(`/images/navigation/${filename}`);
+        await expect(icon).toHaveCSS("width", "36px");
+        await expect(icon).toHaveCSS("height", "36px");
+      }
       const box = (await shop.boundingBox())!;
+      const iconBox = (await icon.boundingBox())!;
+      expect(iconBox.x + iconBox.width / 2).toBeCloseTo(box.x + box.width / 2, 0);
+      expect(iconBox.y + iconBox.height / 2).toBeCloseTo(box.y + box.height / 2, 0);
       expect(box.x).toBeGreaterThanOrEqual(0);
       expect(box.x + box.width).toBeLessThanOrEqual(width);
       expect(box.height).toBe(44);

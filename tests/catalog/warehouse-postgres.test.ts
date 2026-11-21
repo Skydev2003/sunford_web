@@ -12,6 +12,52 @@ import {
   warehouseRows,
 } from "../../src/features/services/warehouse-postgres";
 import { readWarehouseStorageImage } from "../../src/features/services/warehouse-storage";
+import {
+  parsePublishedScales,
+  selectScaleShowcase,
+} from "../../src/features/catalog/data/scale-showcase";
+import type { ClientProduct } from "../../src/features/catalog/types";
+
+test("the published scale shelf orders only its own ten cards and preserves SKU artwork", () => {
+  const skus = [
+    "G106094",
+    "G106315",
+    "G106193",
+    "G106681",
+    "G106131",
+    "G106285",
+    "G106124",
+    "G106353",
+    "G106377",
+    "G106643",
+  ];
+  const members = skus.map((warehouseSku) => ({
+    warehouseSku,
+    warehouseCategoryId: "scales",
+    slug: warehouseSku,
+  })) as ClientProduct[];
+  const original = selectScaleShowcase(members);
+  const cards = parsePublishedScales(
+    skus.map((sku) => ({ sku, tagline: "ทดสอบ", visible: sku !== skus[9] })).reverse(),
+  );
+  const result = selectScaleShowcase(members, "scales", cards);
+  assert.deepEqual(
+    result.map((item) => item.product.warehouseSku),
+    skus.slice(0, 9).reverse(),
+  );
+  assert.equal(result.at(-1)?.photo, original[0].photo);
+  assert.equal(result[0].tagline, "ทดสอบ");
+  assert.deepEqual(selectScaleShowcase(members.slice(0, 0), "scales", cards), []);
+  assert.deepEqual(
+    selectScaleShowcase(
+      members,
+      "scales",
+      cards.map((c) => ({ ...c, visible: false })),
+    ),
+    [],
+  );
+  assert.throws(() => parsePublishedScales([...cards.slice(1), cards[1]]));
+});
 
 test("Warehouse configuration never falls back to CMS and enforces bounded read-only sessions", () => {
   assert.throws(

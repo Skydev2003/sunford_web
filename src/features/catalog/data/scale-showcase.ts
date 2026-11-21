@@ -13,15 +13,20 @@ type FeaturedScale = {
   sku: string;
   group: keyof typeof groupLabels;
   imageMode?: "full-bottom" | "bleed";
+  photoFile?: string;
   tagline: string;
   background: string;
   surface?: string;
   lightText?: boolean;
+  // The name's advance in Sora determines how large it can fit inside the card's padding.
+  lettering?: { ink: string; nameWidthEm: number };
 };
 
 const featuredScales: readonly FeaturedScale[] = [
   {
     sku: "G106094",
+    lettering: { ink: "#69360C", nameWidthEm: 2.421 },
+    photoFile: "g106094-front-hd.webp",
     background: "sc:bg-[#EEA03D]",
     group: "scale-price",
     imageMode: "full-bottom",
@@ -29,6 +34,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106315",
+    lettering: { ink: "#FFFFFF", nameWidthEm: 2.226 },
     background: "sc:bg-[#64213E]",
     surface: "sc:bg-[#E99F95] sc:h-[33%]",
     lightText: true,
@@ -38,6 +44,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106193",
+    lettering: { ink: "#234369", nameWidthEm: 2.481 },
     background: "sc:bg-[#AFC9E7]",
     surface: "sc:bg-[#274D87] sc:h-[27%]",
     group: "scale-price",
@@ -46,6 +53,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106681",
+    lettering: { ink: "#0D4035", nameWidthEm: 5.179 },
     background: "sc:bg-[#50B99C]",
     group: "scale-kitchen",
     imageMode: "bleed",
@@ -53,6 +61,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106131",
+    lettering: { ink: "#43491A", nameWidthEm: 5.319 },
     background: "sc:bg-[#D4DC8A]",
     surface: "sc:bg-[#A9B248] sc:h-[40%]",
     group: "scale-industrial",
@@ -61,6 +70,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106285",
+    lettering: { ink: "#683529", nameWidthEm: 4.333 },
     background: "sc:bg-[#F2A68E]",
     group: "scale-kitchen",
     imageMode: "full-bottom",
@@ -68,6 +78,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106124",
+    lettering: { ink: "#5D3D22", nameWidthEm: 6.829 },
     background: "sc:bg-[#DCB882]",
     surface: "sc:bg-[#AD794D] sc:h-[32%]",
     group: "scale-industrial",
@@ -76,6 +87,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106353",
+    lettering: { ink: "#FFFFFF", nameWidthEm: 4.362 },
     background: "sc:bg-[#2A4054]",
     lightText: true,
     group: "scale-industrial",
@@ -84,6 +96,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106377",
+    lettering: { ink: "#2A5142", nameWidthEm: 3.834 },
     background: "sc:bg-[#A5CFB7]",
     surface: "sc:bg-[#477E67] sc:h-[41%]",
     group: "scale-industrial",
@@ -92,6 +105,7 @@ const featuredScales: readonly FeaturedScale[] = [
   },
   {
     sku: "G106643",
+    lettering: { ink: "#493C68", nameWidthEm: 1.185 },
     background: "sc:bg-[#C3B8E3]",
     surface: "sc:bg-[#8070A8] sc:h-[33%]",
     group: "scale-analytical",
@@ -215,14 +229,46 @@ const homeAndRetail: readonly FeaturedScale[] = [
 
 const scaleShelves = { scales: featuredScales, pos: homeAndRetail, accessories: industrialAndLab };
 
+export type PublishedScaleCard = { sku: string; tagline: string; visible: boolean };
+
+export function parsePublishedScales(value: unknown): PublishedScaleCard[] {
+  const remaining = new Set(featuredScales.map((item) => item.sku));
+  if (!Array.isArray(value) || value.length !== remaining.size)
+    throw new Error("Invalid featured scales response");
+  for (const card of value) {
+    if (
+      !card ||
+      !remaining.delete(card.sku) ||
+      typeof card.tagline !== "string" ||
+      typeof card.visible !== "boolean"
+    )
+      throw new Error("Invalid featured scale card");
+  }
+  return value;
+}
+
 export function selectScaleShowcase(
   members: ClientProduct[],
   shelf: keyof typeof scaleShelves = "scales",
+  published?: PublishedScaleCard[],
 ) {
   const bySku = new Map(members.map((product) => [product.warehouseSku, product]));
   const directory = shelf === "scales" ? "scale-showcase/framed" : "specialty-scales";
-  return scaleShelves[shelf].flatMap(
-    ({ sku, group, imageMode = "full-bottom", ...presentation }) => {
+  const entries =
+    shelf === "scales" && published
+      ? published.flatMap((card) => {
+          const artwork = featuredScales.find((item) => item.sku === card.sku);
+          return artwork && card.visible ? [{ ...artwork, tagline: card.tagline }] : [];
+        })
+      : scaleShelves[shelf];
+  return entries.flatMap(
+    ({
+      sku,
+      group,
+      photoFile = `${sku.toLowerCase()}-front-4k.webp`,
+      imageMode = "full-bottom",
+      ...presentation
+    }) => {
       const product = bySku.get(sku);
       if (
         !product ||
@@ -237,7 +283,7 @@ export function selectScaleShowcase(
           imageMode,
           group,
           label: group === "scale-kitchen" && shelf === "pos" ? "ครัวและกาแฟ" : groupLabels[group],
-          photo: `/images/products/${directory}/${sku.toLowerCase()}-front-4k.webp`,
+          photo: `/images/products/${directory}/${photoFile}`,
         },
       ];
     },

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { catalogCardName } from "../data/catalog-card-names";
@@ -18,6 +18,7 @@ type ShowcaseItem = {
   photo: string;
   tagline?: string;
   imageMode?: ScaleShowcaseItem["imageMode"];
+  lettering?: ScaleShowcaseItem["lettering"];
 };
 
 export function ProductPhotoCard({
@@ -69,14 +70,15 @@ export function ProductShowcaseCard({
   shelf: string;
   first: boolean;
 }) {
-  const { product, background, label, photo, tagline, imageMode, surface, lightText } = item;
+  const { product, background, label, photo, tagline, imageMode, surface } = item;
   const name = catalogCardName(product);
+  const lettering = item.lettering;
   const prefix = shelf === "indicators" ? "components" : shelf;
   const heading =
     shelf === "scales" ? `products-model-${product.id}` : `products-${prefix}-model-${product.id}`;
   const imageFrame =
     imageMode === "bleed"
-      ? "sc:absolute sc:bottom-0 sc:aspect-square sc:max-h-[calc(100%+0.875rem)] sc:w-[120%] sc:max-w-none sc:translate-y-3"
+      ? "sc:absolute sc:bottom-0 sc:aspect-square sc:max-h-full sc:w-[120%] sc:max-w-none sc:translate-y-3"
       : "sc:absolute sc:bottom-0 sc:h-[95%] sc:w-[98%]";
   return (
     <li
@@ -111,7 +113,14 @@ export function ProductShowcaseCard({
           href={`/products/${product.slug}`}
           aria-labelledby={heading}
           aria-describedby={tagline ? `${heading}-tagline` : undefined}
-          className={`sc:group sc:relative sc:flex sc:h-full sc:min-h-[28.125rem] sc:min-[737px]:min-h-[31.25rem] sc:cursor-pointer sc:flex-col sc:justify-between sc:overflow-hidden sc:rounded-3xl sc:shadow-sm sc:motion-safe:transition-all sc:motion-safe:duration-300 sc:motion-safe:hover:-translate-y-1 sc:hover:shadow-lg sc:motion-reduce:transition-none ${lightText ? "sc:text-white sc:has-data-product-image-placeholder:text-[#1D1D1F]" : "sc:text-[#1D1D1F]"} ${imageMode ? "" : "sc:p-7"} ${background}`}
+          style={
+            lettering &&
+            ({
+              "--scale-ink": lettering.ink,
+              "--name-width-em": lettering.nameWidthEm,
+            } as CSSProperties)
+          }
+          className={`sc:@container sc:group sc:relative sc:flex sc:h-full sc:min-h-[28.125rem] sc:min-[737px]:min-h-[31.25rem] sc:cursor-pointer sc:flex-col sc:justify-between sc:overflow-hidden sc:rounded-3xl sc:shadow-sm sc:motion-safe:transition-all sc:motion-safe:duration-300 sc:motion-safe:hover:-translate-y-1 sc:hover:shadow-lg sc:motion-reduce:transition-none ${styles.scaleLink} ${background}`}
         >
           {surface && (
             <div
@@ -120,34 +129,38 @@ export function ProductShowcaseCard({
               className={`sc:pointer-events-none sc:absolute sc:inset-x-0 sc:bottom-0 sc:z-0 sc:motion-safe:transition-[height] sc:motion-safe:duration-500 sc:motion-safe:group-hover:h-[48%] ${surface}`}
             />
           )}
-          <div className={`sc:relative sc:z-10 sc:shrink-0 ${imageMode ? "sc:p-6 sc:md:p-7" : ""}`}>
-            <p
-              className={`sc:text-xs sc:opacity-85 ${imageMode ? "sc:mb-1! sc:font-semibold sc:tracking-wide" : "sc:mb-1 sc:font-medium"}`}
-            >
+          <div className="sc:relative sc:z-15 sc:shrink-0 sc:[--copy-inset:1.5rem] sc:p-(--copy-inset) sc:md:[--copy-inset:1.75rem]">
+            <p className="sc:text-[clamp(0.75rem,4cqw,0.8125rem)] sc:leading-4 sc:font-semibold sc:tracking-wide">
               {label}
             </p>
             <h3
               id={heading}
-              className={`sc:font-bold sc:tracking-tight sc:wrap-anywhere ${imageMode ? "sc:text-2xl sc:md:text-[28px] sc:leading-none" : "sc:text-xl sc:md:text-2xl"}`}
+              aria-label={name}
+              className={`sc:mt-2! sc:w-max sc:max-w-full sc:leading-none sc:font-extrabold sc:tracking-[-0.02em] sc:whitespace-nowrap ${styles.scaleName}`}
             >
-              {name}
+              {name.split(/(\d+)/).map((part, index) =>
+                index % 2 ? (
+                  part
+                ) : (
+                  <span className="sc:font-normal" key={index}>
+                    {part}
+                  </span>
+                ),
+              )}
             </h3>
             {tagline && (
               <p
                 id={`${heading}-tagline`}
                 title={tagline}
-                className="sc:mt-2! sc:line-clamp-1 sc:text-sm sc:md:text-base sc:font-normal sc:leading-normal sc:opacity-90"
+                className={`sc:mt-2.5! sc:line-clamp-2 sc:text-[clamp(0.95rem,5cqw,1.1rem)] sc:leading-[1.45] sc:font-medium ${styles.scaleTagline}`}
               >
                 {tagline}
               </p>
             )}
           </div>
           <div
-            className={
-              imageMode
-                ? `sc:relative sc:z-10 sc:isolate sc:mt-auto sc:flex sc:min-h-0 sc:max-h-[250px] sc:w-full sc:flex-1 sc:items-end sc:justify-center sc:md:max-h-[270px] ${imageMode === "bleed" ? "sc:overflow-visible" : "sc:overflow-hidden"}`
-                : "sc:relative sc:z-10 sc:isolate sc:-mx-7 sc:mt-5 sc:-mb-7 sc:flex-1 sc:overflow-hidden"
-            }
+            data-scale-artwork
+            className="sc:relative sc:z-10 sc:isolate sc:mt-auto sc:flex sc:min-h-0 sc:max-h-[54%] sc:w-full sc:flex-1 sc:items-end sc:justify-center sc:overflow-hidden"
           >
             <div className={imageMode ? imageFrame : styles.photo}>
               <ProductImage

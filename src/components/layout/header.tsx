@@ -1,5 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
+import { ShopIcon } from "./shop-icon";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -317,20 +318,7 @@ export function Header({
                 aria-label="ร้านค้า SUNFORD"
                 onClick={closeDesktopMenu}
               >
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M8 6a4 4 0 0 1 8 0" />
-                  <rect x="4" y="6" width="16" height="16" rx="2" />
-                </svg>
+                <ShopIcon />
               </a>
             </Tooltip>
             <Tooltip>

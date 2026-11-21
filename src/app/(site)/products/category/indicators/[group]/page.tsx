@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { SiteLoading } from "@/features/site/components/site-loading";
 import { ProductSubcategoryPage } from "@/features/catalog/components/product-subcategory-page";
 import { indicatorSubcategoryPages } from "@/features/catalog/data/product-subcategory-pages";
 import { additionalIndicatorSubcategoryPages } from "@/features/catalog/data/additional-subcategory-pages";
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function IndicatorGroupPage({ params }: Props) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SiteLoading />}>
       <IndicatorGroupContent params={params} />
     </Suspense>
   );

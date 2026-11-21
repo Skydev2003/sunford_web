@@ -65,30 +65,43 @@ export function ProductsIndexRail({
     const first = list?.firstElementChild;
     if (!list || !first) return;
     const css = getComputedStyle(list);
-    const step = first.getBoundingClientRect().width + parseFloat(css.columnGap);
+    const firstCard = first.getBoundingClientRect();
+    const gap = parseFloat(css.columnGap);
+    const step = firstCard.width + gap;
     const space = list.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight);
     const desktop = matchMedia("(min-width: 64rem)").matches;
-    const count =
-      !categoryRail && desktop
-        ? 1
-        : Math.max(1, Math.floor((space + parseFloat(css.columnGap)) / step));
-    const distance = direction * count * step;
+    const count = !categoryRail && desktop ? 1 : Math.max(1, Math.floor((space + gap) / step));
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     if (categoryRail) {
-      list.scrollBy({ left: distance, behavior: reduced.matches ? "instant" : "smooth" });
+      list.scrollBy({
+        left: direction * count * step,
+        behavior: reduced.matches ? "instant" : "smooth",
+      });
       return;
     }
 
     const start = list.scrollLeft;
-    const target = Math.max(
-      0,
-      Math.min(list.scrollWidth - list.clientWidth, (motion.current?.target ?? start) + distance),
+    const end = list.scrollWidth - list.clientWidth;
+    // The track uses the same inline inset for its padding and snap alignment.
+    const cardStarts = Array.from(
+      list.children,
+      (card) => card.getBoundingClientRect().left - firstCard.left,
     );
+    const stops = [0, ...cardStarts.filter((left) => left > 0 && left < end), end];
+    const origin = motion.current?.target ?? start;
+    const currentIndex = stops.reduce(
+      (closest, left, index) =>
+        Math.abs(left - origin) < Math.abs(stops[closest] - origin) ? index : closest,
+      0,
+    );
+    const targetIndex = Math.max(0, Math.min(stops.length - 1, currentIndex + direction * count));
+    const target = stops[targetIndex];
     if (reduced.matches || target === start) {
       stopMotion();
       list.scrollTo({ left: target, behavior: "instant" });
       return;
     }
+    if (motion.current?.target === target) return;
 
     if (motion.current) cancelAnimationFrame(motion.current.frame);
     list.dataset.stepping = "";
@@ -99,8 +112,8 @@ export function ProductsIndexRail({
     const tick = (now: number) => {
       const progress = Math.min(1, Math.max(0, (now - started) / duration));
       if (progress === 1 || reduced.matches) {
-        stopMotion();
         list.scrollTo({ left: target, behavior: "instant" });
+        stopMotion();
         saveLeft(list.scrollLeft);
         return;
       }

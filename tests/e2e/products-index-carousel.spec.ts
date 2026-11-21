@@ -348,6 +348,56 @@ for (const width of [390, 1521]) {
   });
 }
 
+for (const width of [768, 1440]) {
+  test(`shelf arrows settle on real card starts at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 940 });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/products");
+
+    const indicators = page.locator("#products-rail-indicators");
+    const indicatorNext = page.locator('button[aria-controls="products-rail-indicators"]').last();
+    await indicatorNext.scrollIntoViewIfNeeded();
+    await expect(indicatorNext).toBeEnabled();
+    const thirdStop = await indicators.evaluate(
+      (list) =>
+        list.children[3].getBoundingClientRect().left -
+        list.firstElementChild!.getBoundingClientRect().left,
+    );
+    await indicatorNext.evaluate((node) => {
+      const button = node as HTMLButtonElement;
+      button.click();
+      button.click();
+      button.click();
+    });
+    await expect(indicators).not.toHaveAttribute("data-stepping");
+    expect(
+      Math.abs((await indicators.evaluate((list) => list.scrollLeft)) - thirdStop),
+    ).toBeLessThan(1);
+
+    const scales = page.locator("#products-rail-scales");
+    const [scalePrevious, scaleNext] = await page
+      .locator('button[aria-controls="products-rail-scales"]')
+      .all();
+    await scaleNext.scrollIntoViewIfNeeded();
+    const lastCardStart = await scales.evaluate((list) => {
+      const rightEdge = list.scrollWidth - list.clientWidth;
+      const firstLeft = list.firstElementChild!.getBoundingClientRect().left;
+      const cardStarts = Array.from(
+        list.children,
+        (card) => card.getBoundingClientRect().left - firstLeft,
+      );
+      list.scrollTo({ left: rightEdge, behavior: "instant" });
+      return cardStarts.findLast((left) => left < rightEdge)!;
+    });
+    await expect(scaleNext).toBeDisabled();
+    await scalePrevious.click();
+    await expect(scales).not.toHaveAttribute("data-stepping");
+    expect(
+      Math.abs((await scales.evaluate((list) => list.scrollLeft)) - lastCardStart),
+    ).toBeLessThan(1);
+  });
+}
+
 for (const [route, selector] of [
   ["/products", "#products-categories a"],
   ["/products/category/scales", "#products-chapters button:enabled"],

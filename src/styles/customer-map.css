@@ -259,19 +259,6 @@
   color: #fff;
   border-radius: 20px;
 }
-.customer-map-spinner {
-  width: 25px;
-  height: 25px;
-  border: 2px solid #e8d6da;
-  border-top-color: var(--red);
-  border-radius: 50%;
-  animation: customer-map-spin 900ms linear infinite;
-}
-@keyframes customer-map-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 .customer-map-legend {
   display: flex;
   justify-content: center;
@@ -624,8 +611,5 @@
   .is-smooth .customer-map-geography,
   .customer-map-area {
     transition: none;
-  }
-  .customer-map-spinner {
-    animation: none;
   }
 }

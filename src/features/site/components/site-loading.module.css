@@ -1,0 +1,58 @@
+.page {
+  display: grid;
+  min-height: 55svh;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.status {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  color: var(--muted);
+}
+
+.clouds {
+  flex: none;
+  vertical-align: middle;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .near,
+  .far {
+    animation: near-cloud 3s cubic-bezier(0.333, 0, 0.833, 0.833) infinite;
+  }
+
+  .far {
+    animation-name: far-cloud;
+  }
+}
+
+@keyframes near-cloud {
+  0%,
+  100% {
+    transform: translate(15px, 63px);
+    animation-timing-function: linear;
+  }
+  25% {
+    transform: translate(21px, 63px);
+  }
+  50% {
+    transform: translate(15px, 63px);
+  }
+  75% {
+    transform: translate(19px, 63px);
+  }
+}
+
+@keyframes far-cloud {
+  0%,
+  44.4444%,
+  100% {
+    transform: translate(149px, 53px);
+  }
+  19.4444%,
+  69.4444% {
+    transform: translate(153px, 53px);
+  }
+}
