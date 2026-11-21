@@ -1,6 +1,6 @@
 # Deploy บน Vercel
 
-คู่มือนี้ใช้ตั้งค่า Vercel ปล่อย Production จาก `uat` และตรวจว่าเว็บใช้ revision ที่ปล่อยแล้ว ก่อน cutover ให้ตรวจว่า Functions ใน Mumbai (`bom1` ตาม `vercel.json`) เชื่อมถึง Warehouse ได้ ดู [กติกา Warehouse และใบเสนอราคา](../spec.md#warehouse)
+คู่มือนี้ใช้ตั้งค่า Vercel ปล่อย Production จาก `Javis1` และตรวจว่าเว็บใช้ revision ที่ปล่อยแล้ว ก่อน cutover ให้ตรวจว่า Functions ใน Mumbai (`bom1` ตาม `vercel.json`) เชื่อมถึง Warehouse ได้ ดู [กติกา Warehouse และใบเสนอราคา](../spec.md#warehouse)
 
 ## ตั้งค่าครั้งแรก
 
@@ -27,10 +27,10 @@
 
 ## Production และ Preview
 
-| Target     | Branch                       | ขั้นตอน build                       |
-| ---------- | ---------------------------- | ----------------------------------- |
-| Production | `main`                       | ตรวจ config → `db:deploy` → `build` |
-| Preview    | `uat`, feature branch และ PR | ตรวจ config → `build`               |
+| Target     | Branch                          | ขั้นตอน build                       |
+| ---------- | ------------------------------- | ----------------------------------- |
+| Production | `main`                          | ตรวจ config → `db:deploy` → `build` |
+| Preview    | `Javis1`, feature branch และ PR | ตรวจ config → `build`               |
 
 Production ตรวจ branch และ environment ก่อนเรียก `db:deploy` เพื่อตั้งค่าทะเบียนใบเสนอราคา แล้วจึง build เว็บ ไม่มีขั้นตอน seed การ rollback deployment จะไม่ย้อนเลขที่ออกแล้ว
 
@@ -40,24 +40,24 @@ Production ตรวจ branch และ environment ก่อนเรียก
 
 Vercel Git integration สร้าง deployment เมื่อ push ตามการตั้งค่า project โดย CI เดิมยังทำงานอยู่ แต่ไม่ได้รอ GitHub Actions ผ่านเหมือน Render โดยอัตโนมัติ หากต้องการ gate ก่อน promote ให้ตั้ง [Deployment Checks](https://vercel.com/docs/deployment-checks) ที่บัญชีรองรับ
 
-## ปล่อย Production จาก uat
+## ปล่อย Production จาก Javis1
 
-commit งานทั้งหมดบน `uat` ให้เรียบร้อย แล้วใช้คำสั่งเดียว:
+commit งานทั้งหมดบน `Javis1` ให้เรียบร้อย แล้วใช้คำสั่งเดียว:
 
 ```bash
-git switch uat
+git switch Javis1
 bun run deploy
 ```
 
 สคริปต์ทำตามลำดับนี้:
 
-1. ตรวจว่าอยู่ branch `uat`, working tree สะอาด และไม่มี rebase/merge ค้าง
-2. `git fetch origin` แล้ว rebase บน `origin/uat` และ `origin/main` ตามลำดับ เฉพาะเมื่อมี commit จาก branch นั้นที่ยังไม่อยู่ใน `HEAD`
+1. ตรวจว่าอยู่ branch `Javis1`, working tree สะอาด และไม่มี rebase/merge ค้าง
+2. `git fetch origin` แล้ว rebase บน `origin/Javis1` และ `origin/main` ตามลำดับ เฉพาะเมื่อมี commit จาก branch นั้นที่ยังไม่อยู่ใน `HEAD`
 3. รัน lint, format check, schema validation, UAT/catalogue tests และ build ด้วย Bun โดย Next.js ตรวจ TypeScript ระหว่าง build ขั้นตรวจงานปิดการเชื่อมต่อทะเบียนเขียน ส่วนสินค้ายังคงอ่าน Warehouse ผ่าน pool แบบ read-only
 4. ตรวจว่าระหว่าง build ไม่มีไฟล์หรือ commit เปลี่ยน และ fetch `main` อีกครั้ง ถ้า `main` มีงานใหม่ที่ยังไม่อยู่ใน revision ที่ตรวจจะหยุด ให้รันใหม่เพื่อ rebase และตรวจอีกครั้ง
 5. ถ้า `main` มี revision นี้แล้ว สคริปต์จบโดยไม่สร้าง deployment ใหม่ ถ้ามี revision ใหม่ สคริปต์จะ push `HEAD` ที่ตรวจแล้วเข้า `main` เพื่อให้ Vercel Git integration ปล่อย Production
 
-ไม่มีการ force-push, auto-commit หรือ auto-stash ไม่เขียนทับ local branch `main` และไม่ rewrite remote `uat` หากมี rebase conflict ให้แก้ไฟล์แล้ว `git add` และ `git rebase --continue` หรือยกเลิกด้วย `git rebase --abort` จากนั้นรัน `bun run deploy` ใหม่ หากตรวจงานไม่ผ่านจะไม่ push Production หาก branch protection ปฏิเสธการ push ให้หยุดและประสานผู้ดูแล repository ห้ามข้ามขั้นตอนด้วยการ push เองหรือ deploy ผ่าน Vercel CLI
+ไม่มีการ force-push, auto-commit หรือ auto-stash ไม่เขียนทับ local branch `main` และไม่ rewrite remote `Javis1` หากมี rebase conflict ให้แก้ไฟล์แล้ว `git add` และ `git rebase --continue` หรือยกเลิกด้วย `git rebase --abort` จากนั้นรัน `bun run deploy` ใหม่ หากตรวจงานไม่ผ่านจะไม่ push Production หาก branch protection ปฏิเสธการ push ให้หยุดและประสานผู้ดูแล repository ห้ามข้ามขั้นตอนด้วยการ push เองหรือ deploy ผ่าน Vercel CLI
 
 ตรวจความพร้อมโดยไม่ fetch/rebase/build/push ด้วย:
 
