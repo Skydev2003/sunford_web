@@ -12,6 +12,7 @@
   text-align: center;
 }
 
+.poster,
 .video {
   position: absolute;
   z-index: var(--z-background);
@@ -20,6 +21,16 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+.video:not([data-started]) {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video {
+    visibility: hidden;
+  }
 }
 
 .overlay {

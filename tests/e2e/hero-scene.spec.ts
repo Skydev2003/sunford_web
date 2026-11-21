@@ -3,6 +3,8 @@ import { contactLocations } from "../../src/features/content/data/contact-locati
 
 const title = "เครื่องชั่ง สำหรับธุรกิจของคุณ";
 const scene = (page: Page) => page.locator("[data-hero-scene]");
+const heroPoster = (page: Page) => scene(page).locator("[data-hero-poster] img");
+const posterRequest = /\/videos\/sunford-poster[^/]*\.(?:jpg|webp)$/;
 const nextSection = (page: Page) => page.locator('[data-home-section="2"]');
 async function ready(page: Page) {
   await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
@@ -63,12 +65,12 @@ for (const [width, height] of [
     await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
     await expect(scene(page).locator("video")).toHaveCount(1);
     await expect(scene(page).locator("video[src], video source")).toHaveCount(0);
-    await expect(scene(page).locator("video")).toHaveAttribute(
-      "poster",
-      "/videos/sunford-poster.jpg",
-    );
+    await expect(scene(page).locator("video")).toBeHidden();
+    await expect(heroPoster(page)).toBeVisible();
     await expect(
-      scene(page).locator("img:visible, [data-hero-product], [data-hero-object], canvas"),
+      scene(page).locator(
+        "img:visible:not([data-hero-poster] img), [data-hero-product], [data-hero-object], canvas",
+      ),
     ).toHaveCount(0);
     const blank = scene(page).locator("[data-hero-logo-space]");
     await expect(blank.locator("[data-brand-opening]")).toBeHidden();
@@ -98,6 +100,9 @@ for (const [width, height] of [
         /\/videos\/sunford-web\.mp4|\/images\/hero\/|\.glb(?:\?|$)|model-viewer/.test(url),
       ),
     ).toEqual([]);
+    const posterRequests = requests.filter((url) => posterRequest.test(url));
+    expect(posterRequests).toHaveLength(1);
+    expect(posterRequests[0]).toMatch(/\.webp$/);
     expect(errors).toEqual([]);
     await page.screenshot({ path: test.info().outputPath(`video-hero-${width}.png`) });
   });
@@ -126,6 +131,7 @@ test("video plays in view and pauses offscreen, then resumes", async ({ page }) 
   await expect
     .poll(() => video.evaluate((v: HTMLVideoElement) => !v.paused && v.currentTime > 0))
     .toBe(true);
+  await expect(video).toBeVisible();
   expect(await video.evaluate((v: HTMLVideoElement) => v.muted && v.loop && v.playsInline)).toBe(
     true,
   );
@@ -155,6 +161,8 @@ test("live reduced motion pauses the video and disables section reveal", async (
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+  await expect(video).toBeHidden();
+  await expect(heroPoster(page)).toBeVisible();
   await expect(scene(page).locator("button")).toHaveCount(0);
 });
 
@@ -190,15 +198,18 @@ for (const width of [1440, 390]) {
         if (new URL(request.url()).pathname === "/videos/sunford-web.mp4")
           videoRequests.push(request.url());
       });
-      const poster = page.waitForResponse("**/videos/sunford-poster.jpg");
+      const poster = page.waitForResponse(posterRequest);
       await page.goto("/");
-      expect((await poster).ok()).toBe(true);
-      await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
-      await expect(scene(page).locator("video")).toBeVisible();
-      await expect(scene(page).locator("video")).toHaveAttribute(
-        "poster",
-        "/videos/sunford-poster.jpg",
+      const picture = await poster;
+      expect(picture.ok()).toBe(true);
+      expect(new URL(picture.url()).pathname).toBe(
+        width === 390
+          ? "/videos/sunford-poster-portrait-642.webp"
+          : "/videos/sunford-poster-1920.webp",
       );
+      await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
+      await expect(heroPoster(page)).toBeVisible();
+      await expect(scene(page).locator("video")).toBeHidden();
       await expect(scene(page).locator("video[src], video source")).toHaveCount(0);
       const space = scene(page).locator("[data-hero-logo-space]");
       await expect(space).toBeVisible();
@@ -225,10 +236,8 @@ test("unavailable video leaves text, poster and consultation usable", async ({ p
   await page.route("**/videos/sunford-web.mp4", (route) => route.abort());
   await page.goto("/");
   await ready(page);
-  await expect(scene(page).locator("video")).toHaveAttribute(
-    "poster",
-    "/videos/sunford-poster.jpg",
-  );
+  await expect(heroPoster(page)).toBeVisible();
+  await expect(scene(page).locator("video")).toBeHidden();
   await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
   await scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" }).click();
   await expect(page).toHaveURL(/\/contact-us$/);

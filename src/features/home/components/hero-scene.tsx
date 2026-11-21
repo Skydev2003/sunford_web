@@ -164,6 +164,27 @@ export function HeroScene({
       data-ready="true"
       data-running={allowed}
     >
+      <picture data-hero-poster="">
+        <source
+          type="image/webp"
+          media="(max-aspect-ratio: 2/3)"
+          srcSet="/videos/sunford-poster-portrait-480.webp 480w, /videos/sunford-poster-portrait-642.webp 642w"
+          sizes="max(100vw, 75dvh)"
+        />
+        <source
+          type="image/webp"
+          srcSet="/videos/sunford-poster-960.webp 960w, /videos/sunford-poster-1440.webp 1440w, /videos/sunford-poster-1920.webp 1920w"
+          sizes="max(100vw, 224.3dvh)"
+        />
+        <img
+          className={styles.poster}
+          src="/videos/sunford-poster.jpg"
+          alt=""
+          width={1920}
+          height={856}
+          fetchPriority="high"
+        />
+      </picture>
       <video
         ref={video}
         className={styles.video}
@@ -171,9 +192,14 @@ export function HeroScene({
         loop
         playsInline
         preload="none"
-        poster="/videos/sunford-poster.jpg"
         aria-hidden="true"
         tabIndex={-1}
+        onPlaying={(event) => {
+          event.currentTarget.dataset.started = "";
+        }}
+        onError={(event) => {
+          delete event.currentTarget.dataset.started;
+        }}
       />
       <div className={styles.overlay} aria-hidden="true" />
       <div className={`hero-main ${styles.main}`}>

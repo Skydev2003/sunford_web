@@ -38,7 +38,9 @@ test("homepage introduces Sunford through the brand video and consultation", asy
   await expect(heading).toHaveText("เครื่องชั่ง สำหรับธุรกิจของคุณ");
   await expect(hero.locator("video")).toHaveAttribute("src", "/videos/sunford-web.mp4");
   await expect(hero.locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
-  await expect(hero.locator("[data-hero-product], img:visible")).toHaveCount(0);
+  await expect(
+    hero.locator("[data-hero-product], img:visible:not([data-hero-poster] img)"),
+  ).toHaveCount(0);
   await expect(hero.locator('a[href="/contact-us"]')).toBeVisible();
   await expect(page.locator(".hero-model-stage, model-viewer")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
