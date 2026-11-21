@@ -112,7 +112,7 @@ $catalog.products |
 
 รายงานเดิมใน `output/warehouse-direct-postgres-20261111/`, `output/warehouse-image-only-20261111/`, `output/warehouse-primary-images-20261111/` และ `output/cms-removal-20261111/` บันทึกช่วงก่อนกติกา Warehouse-only ขยายครบหน้าภายใน ตัวเลข SKU และผลทดสอบ fallback ของช่วงนั้นเป็นประวัติ ไม่ใช่นโยบายปัจจุบัน
 
-ผล Warehouse-only ล่าสุดและข้อยกเว้นหน้าแรกอยู่ใน Current architecture ของ `spec.md` การ push branch safe ไม่ใช่การปล่อย production ให้ใช้กระบวนการ `uat` และ `bun run deploy` ตามคู่มือเดิม
+ผล Warehouse-only ล่าสุดและข้อยกเว้นหน้าแรกอยู่ใน Current architecture ของ `spec.md` การ push branch `Javis3` ไม่ใช่การปล่อย production ให้ใช้กระบวนการ `Javis1` และ `bun run deploy` ตามคู่มือเดิม
 
 ## หน้าร้านครบจาก RPC และชื่อจาก Warehouse (2026-11-13)
 
