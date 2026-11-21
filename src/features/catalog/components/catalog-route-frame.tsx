@@ -36,6 +36,7 @@ export function CatalogRouteFrame({
   useHistoryRestoration(root);
   useStaggerBounce(root, pathname);
   const homePage = pathname === "/";
+  const streamSiteChrome = homePage || pathname === "/contact-us";
   const productsPage =
     pathname === "/products" ||
     pathname === "/products/category/scales" ||
@@ -55,7 +56,7 @@ export function CatalogRouteFrame({
         <a href="#main-content" className="skip-link">
           ข้ามไปยังเนื้อหา
         </a>
-        {homePage ? (
+        {streamSiteChrome ? (
           <Suspense
             fallback={<div aria-hidden="true" style={{ height: "var(--site-header-height)" }} />}
           >
@@ -67,7 +68,7 @@ export function CatalogRouteFrame({
         {children}
         {!productsPage && (
           <Fragment key={pathname}>
-            {homePage ? <Suspense fallback={null}>{footer}</Suspense> : footer}
+            {streamSiteChrome ? <Suspense fallback={null}>{footer}</Suspense> : footer}
           </Fragment>
         )}
         {productsPage && overlayHost ? createPortal(overlays, overlayHost) : overlays}

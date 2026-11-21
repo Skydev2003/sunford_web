@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { contactLocations } from "../../src/features/content/data/contact-locations";
 
 const title = "เครื่องชั่ง สำหรับธุรกิจของคุณ";
 const scene = (page: Page) => page.locator("[data-hero-scene]");
@@ -9,6 +10,33 @@ async function ready(page: Page) {
   });
   await expect(scene(page)).toHaveAttribute("data-ready", "true");
   await page.evaluate(() => document.fonts.ready);
+}
+
+async function expectContactDetails(page: Page) {
+  const main = page.getByRole("main");
+  await expect(main.getByRole("heading", { level: 1, name: /ติดต่อเรา/ })).toBeVisible();
+  const channels = main.getByRole("region", { name: "ช่องทางติดต่อซันฟอร์ด" });
+  const phone = channels.getByRole("link", { name: /03-427-6999/ });
+  const email = channels.getByRole("link", { name: /info@sunford\.co\.th/ });
+  await expect(phone).toHaveAttribute("href", "tel:034276999");
+  await expect(email).toHaveAttribute("href", "mailto:info@sunford.co.th");
+  for (const link of [phone, email]) {
+    await link.scrollIntoViewIfNeeded();
+    await expect(link).toBeVisible();
+    await expect(link).toBeInViewport();
+  }
+
+  const office = contactLocations.find((location) => location.id === "office")!;
+  const map = main.getByRole("link", { name: `ดูแผนที่ ${office.title}`, exact: true });
+  const company = map.getByText(office.company, { exact: true });
+  const address = map.locator("address");
+  await expect(map).toHaveAttribute("href", office.map);
+  await expect(address).toHaveText(office.address);
+  await address.scrollIntoViewIfNeeded();
+  await expect(company).toBeVisible();
+  await expect(address).toBeVisible();
+  await expect(company).toBeInViewport();
+  await expect(address).toBeInViewport();
 }
 
 for (const [width, height] of [
@@ -185,7 +213,7 @@ for (const width of [1440, 390]) {
       await scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" }).click();
       await expect(page).toHaveURL(/\/contact-us$/);
       expect((await contact).ok()).toBe(true);
-      await expect(page.locator("main h1")).toContainText("ติดต่อเรา");
+      await expectContactDetails(page);
       expect(videoRequests).toEqual([]);
     } finally {
       await context.close();
@@ -220,4 +248,5 @@ test("consultation is keyboard reachable and internal pages release the Hero hea
   await expect(page).toHaveURL(/\/contact-us$/);
   await expect(page.locator(".site-header:visible")).toHaveCount(0);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
+  await expectContactDetails(page);
 });
