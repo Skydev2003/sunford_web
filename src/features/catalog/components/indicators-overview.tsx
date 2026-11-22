@@ -17,6 +17,7 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G107770: "/images/products/component-showcase/g107770-front-4k.webp",
   G107787: "/images/products/component-showcase/g107787-front-4k.webp",
   G107794: "/images/products/component-showcase/g107794-front-4k.webp",
+  G107800: "/images/imported/35fa49963ac8026213d6.png",
   G107848: "/images/imported/4da6b5c950692b2f8632.png",
   G107817: "/images/imported/12d2d8043dafefed4896.png",
   G107763: "/images/imported/86b57e7a903c21ab8ee2.png",

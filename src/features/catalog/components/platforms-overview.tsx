@@ -12,14 +12,31 @@ import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 import styles from "./products-overview.module.css";
 
-// Catalogue photographs are used only for the matching Warehouse model.
+// Legacy stand-alone platform photos verified against their Warehouse SKU and size.
 const modelPhotos: Readonly<Record<string, string>> = {
-  G107596: "/images/imported/269ef3127cbbc0907a14.png",
-  G107664: "/images/imported/f03fd071497037c3e90f.png",
-  G107633: "/images/imported/e9d32c0db502fd0f9717.png",
-  G107657: "/images/imported/7557c79447a8a5f71165.png",
-  G107558: "/images/imported/73affb8e71209dc1f9bb.png",
+  G107510: "/images/imported/347f70775613b9706d42.png",
+  G107527: "/images/imported/96f05f244ed4f52631e6.png",
   G107534: "/images/imported/1534540d1d3eedbfc3dc.png",
+  G107541: "/images/imported/a90bac4ef7d41f341a22.png",
+  G107558: "/images/imported/73affb8e71209dc1f9bb.png",
+  G107565: "/images/imported/0ed3cc6ed76d803f0139.png",
+  G107572: "/images/imported/75accd084f5db8791ed2.png",
+  G107589: "/images/imported/0305d9db630d571d6d84.png",
+  G107596: "/images/imported/269ef3127cbbc0907a14.png",
+  G107602: "/images/imported/aba98861513472429b71.png",
+  G107619: "/images/imported/430a724fef459d748451.png",
+  G107626: "/images/imported/9fe1a4617f0394d5ccf6.png",
+  G107633: "/images/imported/e9d32c0db502fd0f9717.png",
+  G107640: "/images/imported/5a8c450d126a23152282.png",
+  G107657: "/images/imported/7557c79447a8a5f71165.png",
+  G107664: "/images/imported/f03fd071497037c3e90f.png",
+  G107671: "/images/imported/0df2cedfd9dd9e48cbb2.png",
+  G107701: "/images/imported/70ccb27b4aab09b1d298.png",
+  G107718: "/images/imported/73e68501627a43fb96b6.png",
+  G107725: "/images/imported/99e73f8a97d3c8bbdd09.png",
+  G107732: "/images/imported/68cfe52031574214baf0.png",
+  G107749: "/images/imported/5922ef5e5d2c1fc27eea.png",
+  G107756: "/images/imported/612b35e7737a02b05731.png",
 };
 
 const topics: Readonly<Record<string, { introduction: string; image: string; detail: string }>> = {
