@@ -1,0 +1,91 @@
+.scroll {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  padding: 2px;
+  scrollbar-width: thin;
+}
+
+.tray {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  inline-size: max-content;
+  padding: 4px;
+  border-radius: 999px;
+  background: #e8e8ed;
+  color: #1d1d1f;
+}
+
+.tray > :is(button, a) {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-block-size: var(--segment-height, 44px);
+  border: 0;
+  border-radius: inherit;
+  padding: 5px var(--segment-padding, 14px);
+  background: transparent;
+  color: inherit;
+  font-size: var(--segment-font-size, 14px);
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.tray > button[aria-pressed="true"] {
+  background: #1d1d1f;
+  color: #fff;
+}
+
+.tray[data-segmented-ready] > button[aria-pressed="true"] {
+  background: transparent;
+}
+
+.tray > :is(button[aria-pressed="false"]:not(:disabled), a):hover {
+  background: rgb(255 255 255 / 45%);
+}
+
+.tray > :is(button, a):focus-visible {
+  outline: 2px solid #0071e3;
+  outline-offset: 1px;
+}
+
+.tray > button:disabled {
+  cursor: default;
+}
+
+.tray > button:disabled:not([aria-pressed="true"]) {
+  color: var(--muted);
+}
+
+.indicator {
+  visibility: hidden;
+  position: absolute;
+  z-index: 0;
+  inset-block: 4px;
+  left: 0;
+  width: 0;
+  border-radius: inherit;
+  background: #1d1d1f;
+  pointer-events: none;
+}
+
+.tray[data-segmented-ready] > .indicator {
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tray[data-segmented-animate] > .indicator {
+    transition:
+      transform 300ms cubic-bezier(0.32, 0.72, 0, 1),
+      width 300ms cubic-bezier(0.32, 0.72, 0, 1);
+    will-change: transform, width;
+  }
+}

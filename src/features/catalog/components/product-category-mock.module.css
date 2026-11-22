@@ -297,21 +297,13 @@
   gap: 4px;
 }
 .subcategories {
-  display: flex;
-  flex-wrap: nowrap;
   flex: 1;
   min-width: 0;
-  overflow-x: hidden;
-  touch-action: pan-y;
-  gap: 8px;
   padding: 8px;
-}
-.subcategories button {
-  flex: 0 0 auto;
-  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 .subcategoryArrow,
-.subcategories button,
 .toolbar button,
 .toolbar select,
 .all,
@@ -330,11 +322,6 @@
   justify-content: center;
   flex: 0 0 44px;
   padding: 0;
-}
-.subcategories button[aria-pressed="true"] {
-  border-color: var(--red);
-  background: var(--red);
-  color: white;
 }
 .all {
   margin-left: auto;

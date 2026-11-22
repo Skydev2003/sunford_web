@@ -1748,50 +1748,11 @@
   scroll-padding-inline: var(--catalog-rail-inset);
 }
 .lineupFilters {
+  --segment-height: 36px;
   padding: 5px var(--overview-gutter) 7px;
   overflow-x: auto;
   scroll-padding-inline: var(--overview-gutter);
   scrollbar-width: thin;
-}
-.lineupFilterTray {
-  display: flex;
-  width: max-content;
-  gap: 2px;
-  padding: 4px;
-  border-radius: 999px;
-  background: var(--line);
-}
-.lineupFilterTray > :is(button, a) {
-  min-height: 36px;
-  padding: 5px 14px;
-  border-radius: 999px;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-.lineupFilterTray > a {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
-.lineupFilterTray > button[aria-pressed="true"] {
-  background: var(--red);
-  color: #fff;
-}
-.lineupFilterTray > :is(button[aria-pressed="false"]:not(:disabled), a):hover {
-  background: #fff;
-}
-.lineupFilterTray > :is(button, a):focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-}
-.lineupFilterTray > button:disabled {
-  cursor: default;
-}
-.lineupFilterTray > button:disabled:not([aria-pressed="true"]) {
-  color: var(--muted);
 }
 .lineupStatus {
   position: absolute;
@@ -2011,10 +1972,10 @@
   .categoryLineup .chapterTrack li {
     font-size: 14px;
   }
-  .lineupFilterTray > :is(button, a) {
-    min-height: 44px;
-    padding-inline: 18px;
-    font-size: 16px;
+  .lineupFilters {
+    --segment-height: 44px;
+    --segment-padding: 18px;
+    --segment-font-size: 16px;
   }
   .categoryLineup .lineupCopy {
     align-items: center;

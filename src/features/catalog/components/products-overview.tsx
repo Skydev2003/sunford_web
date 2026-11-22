@@ -70,6 +70,7 @@ import { selectComponentShowcase } from "../data/component-showcase";
 import { lineupSalesCopy } from "../data/lineup-sales-copy";
 import { catalogProductPhoto } from "./catalog-product-card";
 import { ProductCategoryMock } from "./product-category-mock";
+import { SegmentedFilter } from "./segmented-filter";
 import { ProductsIndexRail } from "./products-index-rail";
 import { useCatalogOverlayHost } from "./catalog-route-frame";
 import styles from "./products-overview.module.css";
@@ -982,7 +983,7 @@ export function ProductsOverview({
               </div>
               {categoryLineup && (
                 <div className={styles.lineupFilters} role="group" aria-label="กรองผลิตภัณฑ์">
-                  <div className={styles.lineupFilterTray}>
+                  <SegmentedFilter value={selectedGroup?.id ?? "all"}>
                     <button
                       type="button"
                       aria-pressed={!selectedGroup}
@@ -1009,7 +1010,7 @@ export function ProductsOverview({
                         เลือกตามการใช้งาน
                       </Link>
                     )}
-                  </div>
+                  </SegmentedFilter>
                 </div>
               )}
               {categoryLineup && (

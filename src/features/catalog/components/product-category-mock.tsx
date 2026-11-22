@@ -15,6 +15,7 @@ import { catalogModelLabel } from "../data/catalog-card-names";
 import { CatalogProductCard, catalogProductPhoto } from "./catalog-product-card";
 import cardStyles from "./product-browser.module.css";
 import styles from "./product-category-mock.module.css";
+import { SegmentedFilter } from "./segmented-filter";
 
 function CatalogCategoryUrlSync({
   categories,
@@ -161,22 +162,32 @@ export function ProductCategoryMock({
   };
   const scrollSubcategories = (direction: number) => {
     const track = subcategoryTrack.current;
-    if (!track) return;
-    const buttons = Array.from(track.children) as HTMLElement[];
+    const buttons = [...(track?.querySelectorAll<HTMLButtonElement>("button[aria-pressed]") ?? [])];
+    if (!track || !buttons.length) return;
+    const sign = getComputedStyle(track).direction === "rtl" ? -1 : 1;
+    const first = buttons[0];
+    const origin = first.offsetLeft + (sign < 0 ? first.offsetWidth : 0);
     const maximum = Math.max(0, track.scrollWidth - track.clientWidth);
     const positions = [
       ...new Set([
         0,
-        ...buttons.map((button) => Math.min(maximum, button.offsetLeft - buttons[0].offsetLeft)),
+        ...buttons.map((button) => {
+          const edge = button.offsetLeft + (sign < 0 ? button.offsetWidth : 0);
+          return Math.min(maximum, Math.max(0, (edge - origin) * sign));
+        }),
         maximum,
       ]),
     ];
     const pending = subcategoryScrollTarget.current;
-    const current = Math.min(maximum, pending?.track === track ? pending.left : track.scrollLeft);
-    const left =
-      direction > 0
+    const current = Math.min(
+      maximum,
+      (pending?.track === track ? pending.left : track.scrollLeft) * sign,
+    );
+    const offset =
+      direction * sign > 0
         ? (positions.find((position) => position > current + 1) ?? maximum)
         : (positions.findLast((position) => position < current - 1) ?? 0);
+    const left = offset * sign;
     subcategoryScrollTarget.current = { track, left };
     track.scrollTo({
       left,
@@ -401,6 +412,12 @@ export function ProductCategoryMock({
                   className={styles.subcategories}
                   role="group"
                   aria-label="หมวดหมู่ย่อยสินค้า"
+                  onPointerDown={() => {
+                    subcategoryScrollTarget.current = null;
+                  }}
+                  onWheel={() => {
+                    subcategoryScrollTarget.current = null;
+                  }}
                   onScroll={(event) => {
                     const track = event.currentTarget;
                     const pending = subcategoryScrollTarget.current;
@@ -408,23 +425,27 @@ export function ProductCategoryMock({
                       subcategoryScrollTarget.current = null;
                   }}
                 >
-                  <button
-                    type="button"
-                    aria-pressed={subcategory === "all"}
-                    onClick={() => selectSubcategory("all")}
-                  >
-                    ทั้งหมด
-                  </button>
-                  {activeCategory?.subcategories.map((item) => (
+                  <SegmentedFilter value={subcategory}>
                     <button
                       type="button"
-                      key={item.id}
-                      aria-pressed={subcategory === item.id}
-                      onClick={() => selectSubcategory(item.id)}
+                      aria-pressed={subcategory === "all"}
+                      onClick={() => selectSubcategory("all")}
                     >
-                      {category === "scales" ? item.label.replace(/^เครื่องชั่ง/, "") : item.label}
+                      ทั้งหมด
                     </button>
-                  ))}
+                    {activeCategory?.subcategories.map((item) => (
+                      <button
+                        type="button"
+                        key={item.id}
+                        aria-pressed={subcategory === item.id}
+                        onClick={() => selectSubcategory(item.id)}
+                      >
+                        {category === "scales"
+                          ? item.label.replace(/^เครื่องชั่ง/, "")
+                          : item.label}
+                      </button>
+                    ))}
+                  </SegmentedFilter>
                 </div>
                 {activeCategory && (
                   <button

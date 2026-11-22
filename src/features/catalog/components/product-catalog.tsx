@@ -6,6 +6,8 @@ import { ArrowRight, Search } from "lucide-react";
 import { type CatalogProduct } from "../types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { ProductCard } from "./product-card";
+import { SegmentedFilter } from "./segmented-filter";
+import segmentedStyles from "./segmented-filter.module.css";
 import { catalogDefaults } from "@/features/site/data/settings";
 
 export function ProductCatalog({
@@ -76,17 +78,19 @@ export function ProductCatalog({
       </div>
       <div className="catalog-toolbar">
         {!scoped && (
-          <div className="category-tabs" aria-label="กรองหมวดหมู่สินค้า">
-            {categories.map((c) => (
-              <button
-                key={c.id}
-                className={category === c.id ? "active" : ""}
-                onClick={() => setCategory(c.id)}
-                aria-pressed={category === c.id}
-              >
-                {c.label}
-              </button>
-            ))}
+          <div className={segmentedStyles.scroll} role="group" aria-label="กรองหมวดหมู่สินค้า">
+            <SegmentedFilter value={category}>
+              {categories.map((c) => (
+                <button
+                  type="button"
+                  key={c.id}
+                  onClick={() => setCategory(c.id)}
+                  aria-pressed={category === c.id}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </SegmentedFilter>
           </div>
         )}
         {full ? (
