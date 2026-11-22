@@ -1,4 +1,4 @@
-import { downloadQuotation } from "./quotation-download";
+import { downloadQuotation } from "./helpers/quotation-download";
 import { expect, test } from "@playwright/test";
 import { loadEnvConfig } from "@next/env";
 import { warehouseDisplayName } from "../../src/features/catalog/data/catalog-card-names";

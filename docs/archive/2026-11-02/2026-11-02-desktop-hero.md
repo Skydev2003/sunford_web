@@ -8,7 +8,7 @@
 
 **Tech Stack:** Existing Next.js 16.4.3, React 19.3, next/image, CSS, native browser animation/scroll/IntersectionObserver, Playwright. No new dependency.
 
-**Spec:** `docs/superpowers/specs/2026-11-02-desktop-hero-design.md`
+**Spec:** `docs/archive/2026-11-02/2026-11-02-desktop-hero-design.md`
 
 ## Global Constraints
 

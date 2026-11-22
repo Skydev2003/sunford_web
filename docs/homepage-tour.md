@@ -62,8 +62,6 @@ page.tsx
 - โลโก้/ชื่อรับมาจาก `site.logo` / `site.name` ผ่าน props ส่วนคำอธิบายรับ `featured.descriptionOverride` ที่หน้าแรกเตรียมจาก `heroSlideData`; ถ้าไม่มีข้อความนี้ใช้ `companyIntro.description` จาก [brand.ts](../src/features/home/data/brand.ts) ซึ่งเป็นข้อความที่เห็นในการตรวจรอบนี้
 - สีพื้นปุ่มใช้ `var(--red)` จาก [base.css](../src/styles/base.css) แต่สี hover, ขนาดและระยะบางค่ากำหนดเฉพาะใน CSS ของ Hero
 
-**จุดที่อาจหาไฟล์ผิด:** ตอนนี้ไม่มี model-viewer ใน Hero ที่เรนเดอร์อยู่ แม้จะมี `hero-studio.tsx`, `hero-product-model.tsx`, `hero-product-ribbon.tsx` และข้อมูลโมเดลเก็บไว้ หัวเรื่องที่เห็นก็ไม่ได้อ่าน `defaultHero.tagline` การแก้ค่าที่ไม่ถูกส่งมาใช้จะไม่เปลี่ยนหัวเรื่องปัจจุบัน
-
 หน้าแรกส่ง `showAnnouncement={false}` จึงไม่เห็นแถบประกาศ แม้มีโค้ด `HeroAnnouncement` อยู่ใน `hero.tsx`
 
 ## 2. วิดีโอ — “แข็งแรงทนทาน ใช้งานง่าย มีประสิทธิภาพ”

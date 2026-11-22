@@ -19,7 +19,7 @@ npm run dev -- --port 3001
 
 ## โครงสร้าง
 
-เริ่มดูแลโปรเจกต์ด้วย [คู่มือหาไฟล์ใน VS Code](docs/project-guide.md): อธิบายหน้าที่แต่ละส่วน พร้อมตาราง “อยากแก้อะไร ให้เปิดไฟล์ไหน” และแหล่งค่ากลางที่มีให้ใช้แล้ว ดูรายละเอียดการจัด Explorer และโค้ดกลางใน [บันทึกงาน](docs/vscode-organization-proposal-20261117.md)
+เริ่มดูแลโปรเจกต์ด้วย [คู่มือหาไฟล์ใน VS Code](docs/project-guide.md): อธิบายหน้าที่แต่ละส่วน พร้อมตาราง “อยากแก้อะไร ให้เปิดไฟล์ไหน” และแหล่งค่ากลางที่มีให้ใช้แล้ว ดูรายละเอียดการจัด Explorer และโค้ดกลางใน [บันทึกงาน](docs/archive/2026-11-17/vscode-organization-proposal-20261117.md)
 
 ```text
 src/
@@ -45,7 +45,12 @@ src/
 prisma/
   schema.prisma              # ทะเบียนเลขใบเสนอราคาและ schema เดิมที่คงไว้
   migrations/                # ประวัติ migration; ไม่ลบตาราง CMS จริง
-tests/e2e/                  # Playwright user journeys
+tests/
+  catalog/                   # ข้อมูลและกฎของแค็ตตาล็อก (npm run test:catalog)
+  uat/                       # สคริปต์ UAT และการปล่อยรุ่น (npm run test:uat)
+  e2e/                       # เส้นทางผู้ใช้ด้วย Playwright (npm run test:e2e)
+    helpers/                 # ฟังก์ชันที่เทสต์เบราว์เซอร์ใช้ร่วมกัน
+  customer-map/, home/, ui/  # เทสต์เฉพาะส่วนของเว็บ
 public/
   images/                   # รูปที่เว็บใช้งาน
   models/                   # โมเดล GLB และไฟล์ต้นฉบับประกอบโมเดล

@@ -1,4 +1,4 @@
-import { downloadQuotation } from "./quotation-download";
+import { downloadQuotation } from "./helpers/quotation-download";
 import { expect, test } from "@playwright/test";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 
