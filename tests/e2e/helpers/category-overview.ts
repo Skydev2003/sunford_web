@@ -18,7 +18,16 @@ export async function verifyCategoryOverview(page: Page, id: string, width: numb
     await sections.evaluateAll((nodes) =>
       nodes.map((n) => n.getAttribute("data-overview-section")),
     ),
-  ).toEqual(["chapters", "lineup", "services", "features", "essentials", "accordion", "index"]);
+  ).toEqual([
+    "chapters",
+    "lineup",
+    ...(id === "scales" ? ["applications"] : []),
+    "services",
+    "features",
+    "essentials",
+    "accordion",
+    "index",
+  ]);
   const lineup = main.locator('[data-overview-section="lineup"]');
   const products = lineup.locator("#products-lineup > li > a");
   const destinations = () =>
@@ -94,8 +103,13 @@ export async function verifyCategoryOverview(page: Page, id: string, width: numb
     const detail = dialog.getByRole("link", { name: "ดูเพิ่มเติม", exact: true });
     if (trackId === "products-features") {
       await expect(detail).toHaveAttribute("href", `/guides/${id}#${guide.sections[0].id}`);
-      for (const link of guide.sections[0].links)
-        await expect(dialog.locator(`a[href="${link.href}"]`).first()).toBeVisible();
+      for (const link of guide.sections[0].links) {
+        const href =
+          id === "scales" && link.href === guide.productHref
+            ? "/products/category/scales/applications"
+            : link.href;
+        await expect(dialog.locator(`a[href="${href}"]`).first()).toBeVisible();
+      }
     } else {
       await expect(detail).toHaveAttribute("href", /^\//);
     }
@@ -103,12 +117,18 @@ export async function verifyCategoryOverview(page: Page, id: string, width: numb
     await expect(dialog).toBeHidden();
     await expect(trigger).toBeFocused();
   }
-  const finder = lineup.getByRole("button", { name: /^ดู.*ทั้งหมด$/ });
-  await finder.press("Enter");
-  const catalog = page.getByRole("dialog", { name: await finder.innerText(), exact: true });
-  await expect(catalog.getByRole("status")).toHaveText(`${all.length} รายการ`);
-  await page.keyboard.press("Escape");
-  await expect(catalog).toBeHidden();
+  if (id === "scales") {
+    await expect(
+      lineup.getByRole("link", { name: "เลือกเครื่องชั่งตามการใช้งาน", exact: true }),
+    ).toHaveAttribute("href", "/products/category/scales/applications");
+  } else {
+    const finder = lineup.getByRole("button", { name: /^ดู.*ทั้งหมด$/ });
+    await finder.press("Enter");
+    const catalog = page.getByRole("dialog", { name: await finder.innerText(), exact: true });
+    await expect(catalog.getByRole("status")).toHaveText(`${all.length} รายการ`);
+    await page.keyboard.press("Escape");
+    await expect(catalog).toBeHidden();
+  }
   const disclosures = main.locator('[data-overview-section="accordion"] details');
   await expect(disclosures.locator("summary")).toHaveText(guide.sections.map((s) => s.title));
   for (const [i, section] of guide.sections.entries()) {

@@ -87,14 +87,15 @@ for (const route of ["/products/category/scales", "/software/download", "/servic
           { timeout: 45000 },
         );
         await expectStaggerMotion(page.locator("#products-title"));
-        const open = page
-          .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })
-          .first();
-        await open.click();
+        await page
+          .locator('[data-overview-section="lineup"]')
+          .getByRole("link", { name: "เลือกเครื่องชั่งตามการใช้งาน", exact: true })
+          .click();
         await expect(
-          page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true }),
+          page.getByRole("heading", { level: 1, name: "เลือกเครื่องชั่งตามการใช้งาน" }),
         ).toBeVisible();
-        await page.keyboard.press("Escape");
+        await page.goBack();
+        await expect(page.locator("#products-title")).toBeVisible();
       } else if (route.includes("software")) {
         const filter = page.locator(".software-filters a").nth(1);
         await filter.click();

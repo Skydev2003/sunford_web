@@ -293,7 +293,7 @@ function FinderQuerySync({
   onClose,
   categoryId,
 }: {
-  onOpen: () => void;
+  onOpen?: () => void;
   onClose?: () => void;
   categoryId?: string;
 }) {
@@ -336,10 +336,10 @@ function FinderQuerySync({
         url.searchParams.get("subcategory") ||
         url.searchParams.get("catalog") === "all"
       )
-        onOpen();
+        onOpen?.();
       return;
     }
-    if (category || subcategory || catalog === "all") onOpen();
+    if (category || subcategory || catalog === "all") onOpen?.();
     else onClose?.();
   }, [category, subcategory, catalog, onOpen, onClose, categoryId, router]);
   return null;
@@ -378,6 +378,8 @@ export function ProductsOverview({
 }) {
   const router = useRouter();
   const activeCategory = categories.find((category) => category.id === categoryId);
+  const scaleApplicationsHref =
+    categoryId === "scales" ? "/products/category/scales/applications" : undefined;
   const categoryLineup = Boolean(categoryId && lineupCategoryIds.has(categoryId));
   const categoryEntrance = Boolean(indexContent) || categoryLineup || categoryId === "accessories";
   const categoryItems = activeCategory?.subcategories ?? categories;
@@ -417,7 +419,8 @@ export function ProductsOverview({
     setLineupSelection({ id, revision: lineupRevision + 1 });
   };
   const railScope = categoryLineup ? `products-overview.${categoryId}` : undefined;
-  const [finderOpen, setFinderOpen] = useReturnState("products-overview.finderOpen", false);
+  const [restoredFinderOpen, setFinderOpen] = useReturnState("products-overview.finderOpen", false);
+  const finderOpen = !scaleApplicationsHref && restoredFinderOpen;
   const hydrated = useHydratedControls();
   const [story, setStory] = useReturnState<Story | null>("products-overview.story", null);
   const [service, setService] = useReturnState<Service | null>("products-overview.service", null);
@@ -519,6 +522,7 @@ export function ProductsOverview({
       router.push(destination);
       return;
     }
+    if (scaleApplicationsHref) return;
     const url = new URL(window.location.href);
     if (activeCategory) {
       url.searchParams.delete("category");
@@ -532,7 +536,15 @@ export function ProductsOverview({
     openFinder();
   };
   const activateLink = (event: MouseEvent<HTMLElement>, href: string) => {
-    if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (
+      scaleApplicationsHref ||
+      event.button ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
     const url = new URL(href, window.location.origin);
     if (activeCategory && url.pathname === `/products/category/${activeCategory.id}`) {
       event.preventDefault();
@@ -679,7 +691,7 @@ export function ProductsOverview({
     >
       <Suspense fallback={null}>
         <FinderQuerySync
-          onOpen={openFinder}
+          onOpen={scaleApplicationsHref ? undefined : openFinder}
           onClose={indexContent ? closeFinder : undefined}
           categoryId={activeCategory?.id}
         />
@@ -688,7 +700,7 @@ export function ProductsOverview({
         navigation={navigation}
         readySubcategoryHrefs={readySubcategoryHrefs}
         site={site}
-        onOpenFinder={openFinder}
+        onOpenFinder={scaleApplicationsHref ? undefined : openFinder}
         onMenuChange={setMobileMenu}
       />
       <main
@@ -953,15 +965,23 @@ export function ProductsOverview({
                     ? `ดูข้อมูล${activeCategory.label}`
                     : "ดูข้อมูลผลิตภัณฑ์ตระกูลนี้"}
                 </h2>
-                <button
-                  disabled={!hydrated}
-                  type="button"
-                  className={styles.textLink}
-                  onClick={() => (activeCategory ? openCategory(activeCategory.id) : openFinder())}
-                >
-                  {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}{" "}
-                  <ChevronRight size={16} aria-hidden="true" />
-                </button>
+                {scaleApplicationsHref ? (
+                  <CatalogNavigationLink href={scaleApplicationsHref} className={styles.textLink}>
+                    เลือกเครื่องชั่งตามการใช้งาน <ChevronRight size={16} aria-hidden="true" />
+                  </CatalogNavigationLink>
+                ) : (
+                  <button
+                    disabled={!hydrated}
+                    type="button"
+                    className={styles.textLink}
+                    onClick={() =>
+                      activeCategory ? openCategory(activeCategory.id) : openFinder()
+                    }
+                  >
+                    {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}{" "}
+                    <ChevronRight size={16} aria-hidden="true" />
+                  </button>
+                )}
               </div>
               {categoryLineup && (
                 <div className={styles.lineupFilters} role="group" aria-label="กรองผลิตภัณฑ์">
@@ -1319,15 +1339,21 @@ export function ProductsOverview({
                 <div className={styles.indexColumns}>
                   <div className={styles.indexPrimary}>
                     <p>{activeCategory ? `สำรวจ${activeCategory.label}` : "สำรวจผลิตภัณฑ์"}</p>
-                    <button
-                      disabled={!hydrated}
-                      type="button"
-                      onClick={() =>
-                        activeCategory ? openCategory(activeCategory.id) : openFinder()
-                      }
-                    >
-                      {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
-                    </button>
+                    {scaleApplicationsHref ? (
+                      <CatalogNavigationLink href={scaleApplicationsHref}>
+                        เลือกเครื่องชั่งตามการใช้งาน
+                      </CatalogNavigationLink>
+                    ) : (
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        onClick={() =>
+                          activeCategory ? openCategory(activeCategory.id) : openFinder()
+                        }
+                      >
+                        {activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
+                      </button>
+                    )}
                     {categoryLineup
                       ? chapterItems.map((item) =>
                           item.disabled ? (
@@ -1358,14 +1384,16 @@ export function ProductsOverview({
                             {category.label}
                           </button>
                         ))}
-                    <button
-                      disabled={!hydrated}
-                      type="button"
-                      className={styles.indexCompare}
-                      onClick={compare}
-                    >
-                      เลือกสินค้าเพื่อเปรียบเทียบ
-                    </button>
+                    {!scaleApplicationsHref && (
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        className={styles.indexCompare}
+                        onClick={compare}
+                      >
+                        เลือกสินค้าเพื่อเปรียบเทียบ
+                      </button>
+                    )}
                   </div>
                   <div>
                     <p>เลือกให้ตรงกับงาน</p>
@@ -1599,22 +1627,24 @@ export function ProductsOverview({
           </>
         )}
       </ReferenceModal>
-      <ReferenceModal
-        open={finderOpen}
-        onClose={closeFinder}
-        title={activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
-        large
-        finder
-      >
-        <ProductCategoryMock
-          products={products}
-          categories={categories}
-          cardNames={cardNames}
-          presentation="finder"
-          categoryId={activeCategory?.id}
-        />
-        {finderOpen && <div ref={overlayHost} />}
-      </ReferenceModal>
+      {!scaleApplicationsHref && (
+        <ReferenceModal
+          open={finderOpen}
+          onClose={closeFinder}
+          title={activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
+          large
+          finder
+        >
+          <ProductCategoryMock
+            products={products}
+            categories={categories}
+            cardNames={cardNames}
+            presentation="finder"
+            categoryId={activeCategory?.id}
+          />
+          {finderOpen && <div ref={overlayHost} />}
+        </ReferenceModal>
+      )}
     </div>
   );
 }

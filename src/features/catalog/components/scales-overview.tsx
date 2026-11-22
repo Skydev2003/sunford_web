@@ -78,11 +78,17 @@ export async function ScalesOverview() {
       <div className={styles.storyBlocks}>
         <section>
           <p>{topics[section.id].detail}</p>
-          {section.links.map((link) => (
-            <Link key={link.href} href={link.href}>
-              {link.label} ›
-            </Link>
-          ))}
+          {section.links.map(({ href, label }) =>
+            href === guide.productHref ? (
+              <Link key={href} href="/products/category/scales/applications">
+                เลือกเครื่องชั่งตามการใช้งาน <span aria-hidden="true">›</span>
+              </Link>
+            ) : (
+              <Link key={href} href={href}>
+                {label} ›
+              </Link>
+            ),
+          )}
         </section>
       </div>
     ),

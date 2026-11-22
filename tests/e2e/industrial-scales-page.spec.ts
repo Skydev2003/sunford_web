@@ -131,14 +131,13 @@ test("industrial heading retains latest entrance and reduced-motion fallback", a
   await expect(page.locator("h1")).toHaveCSS("translate", "none");
 });
 
-test("industrial chapter clears a closed finder query before returning through history", async ({
+test("industrial chapter clears an obsolete finder query before returning through history", async ({
   page,
 }) => {
   await page.goto("/products/category/scales?catalog=all");
-  await expect(
-    page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true }),
-  ).toBeVisible();
-  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })).toHaveCount(
+    0,
+  );
   await page
     .locator("#products-chapters")
     .getByRole("link", { name: "การผลิต", exact: true })

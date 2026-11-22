@@ -138,13 +138,22 @@ for (const [id, count, label] of [
             (animation) => (animation.effect as KeyframeEffect).target?.id === "products-title",
           ).length,
       );
-      await overview
-        .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
-        .first()
-        .click();
       const finder = page.getByRole("dialog", { name: `ดู${label}ทั้งหมด`, exact: true });
-      await expect(finder).toBeVisible();
-      await page.keyboard.press("Escape");
+      if (id === "scales") {
+        await expect(
+          overview.locator('[data-overview-section="lineup"]').getByRole("link", {
+            name: "เลือกเครื่องชั่งตามการใช้งาน",
+            exact: true,
+          }),
+        ).toHaveAttribute("href", "/products/category/scales/applications");
+      } else {
+        await overview
+          .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
+          .first()
+          .click();
+        await expect(finder).toBeVisible();
+        await page.keyboard.press("Escape");
+      }
       await expect(finder).not.toBeVisible();
       expect(
         await page.evaluate(
@@ -255,6 +264,7 @@ test("normal-motion client entry and cached history keep controls usable", async
     await expect(overview.locator("#products-title")).toBeVisible();
     await page.mouse.move(1400, 700);
     await expect(overview.locator("#products-title")).toHaveCSS("scale", "none");
+    if (id === "scales") continue;
     await overview
       .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
       .first()
@@ -277,15 +287,11 @@ test("normal-motion client entry and cached history keep controls usable", async
     await page.keyboard.press("Escape");
     await expect(menuScrim).toBeHidden();
   }
-  await page
-    .locator('[data-overview-category="scales"]:visible')
-    .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })
-    .first()
-    .click();
   await expect(
-    page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true }),
-  ).toBeVisible();
-  await page.keyboard.press("Escape");
+    page
+      .locator('[data-overview-category="scales"]:visible [data-overview-section="lineup"]')
+      .getByRole("link", { name: "เลือกเครื่องชั่งตามการใช้งาน", exact: true }),
+  ).toHaveAttribute("href", "/products/category/scales/applications");
   await page.goForward();
   await expect(
     page.locator('[data-overview-category="indicators"]:visible #products-title'),
