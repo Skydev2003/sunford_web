@@ -1,4 +1,5 @@
 import { ProductImage } from "@/components/ui/product-image";
+import { ProductsIndexRail } from "@/features/catalog/components/products-index-rail";
 import { getProducts } from "@/features/catalog/server/product-repository";
 import type { CSSProperties } from "react";
 import Link from "next/link";
@@ -109,7 +110,13 @@ export async function SolutionsOverview() {
         <div className={overview.sectionHeading}>
           <h2 id="solutions-all-title">โซลูชันทั้งหมด</h2>
         </div>
-        <ul className={styles.solutionTrack} aria-label="โซลูชันทั้งหมด" tabIndex={0}>
+        <ProductsIndexRail
+          id="solutions-cards"
+          label="โซลูชันทั้งหมด"
+          trackClassName={styles.solutionTrack}
+          showControls={false}
+          revealTabFocus
+        >
           {solutions.map((item) => (
             <li key={item.id}>
               <Link
@@ -125,7 +132,7 @@ export async function SolutionsOverview() {
               </Link>
             </li>
           ))}
-        </ul>
+        </ProductsIndexRail>
       </section>
 
       <section

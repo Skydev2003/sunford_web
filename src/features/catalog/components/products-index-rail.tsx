@@ -114,6 +114,7 @@ export function ProductsIndexRail({
   controlLabels,
   controlIconSize,
   hideUnavailableControls = false,
+  showControls = true,
   revealTabFocus = false,
   returnKey = id,
   children,
@@ -128,6 +129,7 @@ export function ProductsIndexRail({
   controlLabels?: { previous: string; next: string };
   controlIconSize?: number;
   hideUnavailableControls?: boolean;
+  showControls?: boolean;
   revealTabFocus?: boolean;
   returnKey?: string;
   children: ReactNode;
@@ -208,7 +210,7 @@ export function ProductsIndexRail({
 
   useEffect(() => {
     const list = track.current;
-    if (!list) return;
+    if (!list || !showControls) return;
     const measure = () => {
       const previous = list.scrollLeft > 1;
       const next = list.scrollWidth - list.clientWidth - list.scrollLeft > 1;
@@ -224,7 +226,7 @@ export function ProductsIndexRail({
       observer.disconnect();
       list.removeEventListener("scroll", measure);
     };
-  }, [children]);
+  }, [children, showControls]);
 
   useEffect(() => {
     const list = track.current;
@@ -314,7 +316,7 @@ export function ProductsIndexRail({
       >
         {children}
       </ul>
-      {(edges.previous || edges.next) && (
+      {showControls && (edges.previous || edges.next) && (
         <div className={controlsClassName}>
           {!hideUnavailableControls || edges.previous ? (
             <button
