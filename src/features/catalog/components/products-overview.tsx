@@ -68,6 +68,7 @@ import {
 import { selectComponentShowcase } from "../data/component-showcase";
 import { catalogProductPhoto } from "./catalog-product-card";
 import { ProductCategoryMock } from "./product-category-mock";
+import { ProductsIndexRail } from "./products-index-rail";
 import { useCatalogOverlayHost } from "./catalog-route-frame";
 import styles from "./products-overview.module.css";
 
@@ -119,17 +120,39 @@ const chapterArtwork = new Map([
   ["/products/category/scales/price", priceArt.src],
 ]);
 
-function Gallery({
-  id,
-  label,
-  children,
-  className = "",
-}: {
+type GalleryProps = {
   id: string;
   label: string;
   children: ReactNode;
-  className?: string;
-}) {
+  returnKey?: string;
+  prepareImages?: boolean;
+};
+
+function Gallery({ id, label, children, returnKey, prepareImages }: GalleryProps) {
+  return (
+    <div className={styles.gallery} role="group" aria-label={label}>
+      {returnKey ? (
+        <ProductsIndexRail
+          id={id}
+          label={label}
+          returnKey={returnKey}
+          trackClassName={styles.galleryTrack}
+          controlsClassName={styles.galleryControls}
+          controlLabels={{ previous: `${label}ก่อนหน้า`, next: `${label}ถัดไป` }}
+          prepareImages={prepareImages}
+        >
+          {children}
+        </ProductsIndexRail>
+      ) : (
+        <LegacyGallery id={id} label={label}>
+          {children}
+        </LegacyGallery>
+      )}
+    </div>
+  );
+}
+
+function LegacyGallery({ id, label, children }: GalleryProps) {
   const track = useRef<HTMLUListElement>(null);
   const hydrated = useHydratedControls();
   const [edges, setEdges] = useState({ start: true, end: false });
@@ -157,7 +180,7 @@ function Gallery({
     });
   };
   return (
-    <div className={`${styles.gallery} ${className}`} role="group" aria-label={label}>
+    <>
       <ul
         id={id}
         className={styles.galleryTrack}
@@ -194,7 +217,7 @@ function Gallery({
           <ChevronRight aria-hidden="true" />
         </button>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -376,13 +399,20 @@ export function ProductsOverview({
         href: getProductSubcategoryPage(category.id)?.href ?? `/products/category/${category.id}`,
         disabled: false,
       }));
-  const [lineupFilter, setLineupFilter] = useReturnState<string | null>(
-    "products-overview.lineupFilter",
-    null,
-  );
+  const [lineupSelection, setLineupSelection] = useReturnState<{
+    id: string | null;
+    revision: number;
+  } | null>("products-overview.lineupSelection", null);
+  const lineupFilter = lineupSelection?.id ?? null;
+  const lineupRevision = lineupSelection?.revision ?? 0;
   const selectedGroup = categoryLineup
     ? chapterItems.find((item) => !item.disabled && item.id === lineupFilter)
     : undefined;
+  const selectLineupFilter = (id: string | null) => {
+    if (lineupFilter === id) return;
+    setLineupSelection({ id, revision: lineupRevision + 1 });
+  };
+  const railScope = categoryLineup ? `products-overview.${categoryId}` : undefined;
   const [finderOpen, setFinderOpen] = useReturnState("products-overview.finderOpen", false);
   const hydrated = useHydratedControls();
   const [story, setStory] = useReturnState<Story | null>("products-overview.story", null);
@@ -469,10 +499,12 @@ export function ProductsOverview({
       });
   }, []);
   useEffect(() => {
+    const track = chapterTrack.current;
+    if (!track) return;
     const observer = new ResizeObserver(syncChapters);
-    if (chapterTrack.current) observer.observe(chapterTrack.current);
+    observer.observe(track);
     return () => observer.disconnect();
-  }, [syncChapters]);
+  }, [categoryLineup, syncChapters]);
   const openCategory = (id: string, href?: string) => {
     const page = activeCategory ? getProductSubcategoryPage(id, activeCategory.id) : undefined;
     const destination = href ?? page?.href;
@@ -596,6 +628,44 @@ export function ProductsOverview({
     </Link>
   );
 
+  const chapterCards = chapterItems.map((category, index) => {
+    const content = (
+      <>
+        <span className={styles.chapterArt}>
+          <ProductImage placeholder="product" {...chapterImages[index]} alt="" fill />
+        </span>
+        <span>{category.label}</span>
+      </>
+    );
+    return (
+      <li
+        key={category.id}
+        style={categoryEntrance ? ({ "--chapter-index": index } as CSSProperties) : undefined}
+      >
+        {categoryLineup && !category.disabled ? (
+          <Link
+            href={category.href}
+            prefetch={false}
+            onNavigate={(event) => {
+              event.preventDefault();
+              openCategory(category.id, category.href);
+            }}
+          >
+            {content}
+          </Link>
+        ) : (
+          <button
+            disabled={!hydrated || category.disabled}
+            type="button"
+            onClick={() => openCategory(category.id, category.href)}
+          >
+            {content}
+          </button>
+        )}
+      </li>
+    );
+  });
+
   return (
     <div
       className={`${styles.overview} ${categoryEntrance ? styles.categoryEntrance : ""} ${categoryLineup ? styles.categoryLineup : ""}`}
@@ -649,92 +719,72 @@ export function ProductsOverview({
                 {activeCategory && <Link href="/products">สินค้าทั้งหมด</Link>}
               </div>
               <div className={styles.chapterRail}>
-                <ul
-                  ref={chapterTrack}
-                  className={styles.chapterTrack}
-                  id="products-chapters"
-                  onScroll={syncChapters}
-                >
-                  {chapterItems.map((category, index) => {
-                    const content = (
-                      <>
-                        <span className={styles.chapterArt}>
-                          <ProductImage
-                            placeholder="product"
-                            {...chapterImages[index]}
-                            alt=""
-                            fill
-                          />
-                        </span>
-                        <span>{category.label}</span>
-                      </>
-                    );
-                    return (
-                      <li
-                        key={category.id}
-                        style={
-                          categoryEntrance
-                            ? ({ "--chapter-index": index } as CSSProperties)
-                            : undefined
+                {railScope ? (
+                  <ProductsIndexRail
+                    id="products-chapters"
+                    label="หมวดหมู่สินค้า"
+                    categoryRail
+                    trackClassName={styles.chapterTrack}
+                    controlsClassName=""
+                    controlClassNames={{
+                      previous: `${styles.chapterNext} ${styles.chapterPrevious}`,
+                      next: styles.chapterNext,
+                    }}
+                    controlLabels={{
+                      previous: "หมวดหมู่สินค้าก่อนหน้า",
+                      next: "หมวดหมู่สินค้าถัดไป",
+                    }}
+                    controlIconSize={20}
+                    hideUnavailableControls
+                    returnKey={`${railScope}.chapters`}
+                  >
+                    {chapterCards}
+                  </ProductsIndexRail>
+                ) : (
+                  <>
+                    <ul
+                      ref={chapterTrack}
+                      className={styles.chapterTrack}
+                      id="products-chapters"
+                      onScroll={syncChapters}
+                    >
+                      {chapterCards}
+                    </ul>
+                    {!chapterEdges.start && (
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        className={`${styles.chapterNext} ${styles.chapterPrevious}`}
+                        aria-label="หมวดหมู่สินค้าก่อนหน้า"
+                        aria-controls="products-chapters"
+                        onClick={() =>
+                          chapterTrack.current?.scrollBy({
+                            left: -220,
+                            behavior: reducedMotion ? "instant" : "smooth",
+                          })
                         }
                       >
-                        {categoryLineup && !category.disabled ? (
-                          <Link
-                            href={category.href}
-                            prefetch={false}
-                            onNavigate={(event) => {
-                              event.preventDefault();
-                              openCategory(category.id, category.href);
-                            }}
-                          >
-                            {content}
-                          </Link>
-                        ) : (
-                          <button
-                            disabled={!hydrated || category.disabled}
-                            type="button"
-                            onClick={() => openCategory(category.id, category.href)}
-                          >
-                            {content}
-                          </button>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-                {!chapterEdges.start && (
-                  <button
-                    disabled={!hydrated}
-                    type="button"
-                    className={`${styles.chapterNext} ${styles.chapterPrevious}`}
-                    aria-label="หมวดหมู่สินค้าก่อนหน้า"
-                    aria-controls="products-chapters"
-                    onClick={() =>
-                      chapterTrack.current?.scrollBy({
-                        left: -220,
-                        behavior: reducedMotion ? "instant" : "smooth",
-                      })
-                    }
-                  >
-                    <ChevronLeft size={20} aria-hidden="true" />
-                  </button>
-                )}
-                {!chapterEdges.end && (
-                  <button
-                    disabled={!hydrated}
-                    type="button"
-                    className={styles.chapterNext}
-                    aria-label="หมวดหมู่สินค้าถัดไป"
-                    aria-controls="products-chapters"
-                    onClick={() =>
-                      chapterTrack.current?.scrollBy({
-                        left: 220,
-                        behavior: reducedMotion ? "instant" : "smooth",
-                      })
-                    }
-                  >
-                    <ChevronRight size={20} aria-hidden="true" />
-                  </button>
+                        <ChevronLeft size={20} aria-hidden="true" />
+                      </button>
+                    )}
+                    {!chapterEdges.end && (
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        className={styles.chapterNext}
+                        aria-label="หมวดหมู่สินค้าถัดไป"
+                        aria-controls="products-chapters"
+                        onClick={() =>
+                          chapterTrack.current?.scrollBy({
+                            left: 220,
+                            behavior: reducedMotion ? "instant" : "smooth",
+                          })
+                        }
+                      >
+                        <ChevronRight size={20} aria-hidden="true" />
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </section>
@@ -916,7 +966,7 @@ export function ProductsOverview({
                       aria-pressed={!selectedGroup}
                       aria-controls="products-lineup"
                       disabled={!hydrated}
-                      onClick={() => setLineupFilter(null)}
+                      onClick={() => selectLineupFilter(null)}
                     >
                       ทุกผลิตภัณฑ์
                     </button>
@@ -927,7 +977,7 @@ export function ProductsOverview({
                         aria-pressed={selectedGroup?.id === item.id}
                         aria-controls="products-lineup"
                         disabled={!hydrated || item.disabled}
-                        onClick={() => setLineupFilter(item.id)}
+                        onClick={() => selectLineupFilter(item.id)}
                       >
                         {item.label}
                       </button>
@@ -943,9 +993,11 @@ export function ProductsOverview({
                 </p>
               )}
               <Gallery
-                key={selectedGroup?.id ?? "all"}
+                key={lineupRevision}
                 id="products-lineup"
                 label="เลื่อนผลิตภัณฑ์"
+                returnKey={railScope && `${railScope}.lineup.${lineupRevision}`}
+                prepareImages={categoryLineup}
               >
                 {lineupProducts.length === 0 && categoryLineup && (
                   <li className={styles.lineupEmpty}>ยังไม่มีรุ่นสินค้าในกลุ่มนี้</li>
@@ -1034,7 +1086,11 @@ export function ProductsOverview({
                   ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={16} aria-hidden="true" />
                 </Link>
               </div>
-              <Gallery id="products-services" label="เลื่อนบริการ">
+              <Gallery
+                id="products-services"
+                label="เลื่อนบริการ"
+                returnKey={railScope && `${railScope}.services`}
+              >
                 {services.map((item, index) => {
                   const href = item.href.split(/[?#]/)[0];
                   const Icon = categoryLineup
@@ -1066,7 +1122,12 @@ export function ProductsOverview({
                     : "รู้จักผลิตภัณฑ์ SUNFORD"}
                 </h2>
               </div>
-              <Gallery id="products-features" label="เลื่อนเรื่องราวผลิตภัณฑ์">
+              <Gallery
+                id="products-features"
+                label="เลื่อนเรื่องราวผลิตภัณฑ์"
+                returnKey={railScope && `${railScope}.features`}
+                prepareImages={categoryLineup}
+              >
                 {stories.map((item) => (
                   <li className={styles.storyCard} key={item.id}>
                     <div className={styles.storyCopy}>
@@ -1101,7 +1162,12 @@ export function ProductsOverview({
                     ดูอุปกรณ์เสริมทั้งหมด <ChevronRight size={16} aria-hidden="true" />
                   </Link>
                 </div>
-                <Gallery id="products-essentials" label="เลื่อนอุปกรณ์และซอฟต์แวร์">
+                <Gallery
+                  id="products-essentials"
+                  label="เลื่อนอุปกรณ์และซอฟต์แวร์"
+                  returnKey={railScope && `${railScope}.essentials`}
+                  prepareImages={categoryLineup}
+                >
                   {[
                     {
                       title: "อุปกรณ์เสริม",
