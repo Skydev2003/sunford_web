@@ -58,8 +58,12 @@ export async function ScalesOverview() {
   const products = catalogProducts
     .filter(({ id }) => ids.has(id))
     .map((product) => {
-      const image = product.warehouseSku && modelPhotos[product.warehouseSku];
-      return !product.image && image ? { ...product, image } : product;
+      const localPhoto = product.warehouseSku && modelPhotos[product.warehouseSku];
+      if (!localPhoto) return product;
+      if (!product.image) return { ...product, image: localPhoto };
+      if (!product.fallbackImage && product.image !== localPhoto)
+        return { ...product, fallbackImage: localPhoto };
+      return product;
     });
   const guide = buyingGuides.find(({ slug }) => slug === "scales")!;
   const guideHref = "/guides/scales";
