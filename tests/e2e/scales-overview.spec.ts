@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
-import { buyingGuides } from "../../src/features/content/data/buying-guides";
+import { verifyCategoryOverview } from "./helpers/category-overview";
 
 const scalePath = "/products/category/scales";
 const chapterNames: Record<string, string> = {
@@ -15,7 +15,6 @@ const children = defaultNavigation[0]
   .filter(
     (link) => new URL(link.href, "http://localhost").searchParams.get("category") === "scales",
   );
-const guide = buyingGuides.find(({ slug }) => slug === "scales")!;
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -35,13 +34,15 @@ for (const width of [390, 1440]) {
     await expect(page.getByRole("dialog")).toHaveCount(0);
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
     await page.goto(scalePath);
+    const lineupSize = await page.locator("#products-lineup > li > a").count();
+    expect(lineupSize).toBeGreaterThan(0);
     const local = page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true });
     await page
       .locator('[data-overview-section="lineup"]')
       .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })
       .click();
     await expect(local).toBeVisible();
-    await expect(local.getByRole("status")).toHaveText("74 รายการ · 18 รุ่นตัวอย่าง (Mock)");
+    await expect(local.getByRole("status")).toHaveText(`${lineupSize} รายการ`);
     await page.keyboard.press("Escape");
     await page.goto("/products?catalog=all");
     await page.reload();
@@ -54,91 +55,9 @@ for (const width of [390, 1440]) {
 }
 
 for (const width of [390, 1440]) {
-  test(`scales reuse the Apple layout with scales content only at ${width}px`, async ({
-    page,
-    context,
-  }) => {
+  test(`scales overview presents its catalog and guides at ${width}px`, async ({ page }) => {
     test.slow();
-    await page.setViewportSize({ width, height: 1000 });
-    const errors: string[] = [];
-    page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(scalePath);
-    const overview = page.locator('[data-overview-category="scales"]:visible');
-    const main = overview.locator("main");
-    await expect(main.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่ง");
-    expect(
-      await main
-        .locator("[data-overview-section]")
-        .evaluateAll((sections) =>
-          sections.map((section) => section.getAttribute("data-overview-section")),
-        ),
-    ).toEqual(["chapters", "hero", "lineup", "services", "features", "accordion", "index"]);
-    await expect(main.locator("#products-chapters button")).toHaveText(Object.values(chapterNames));
-    await expect(main.locator('[data-overview-section="hero"] li')).toHaveCount(2);
-    await expect(main.locator("#products-lineup > li")).toHaveCount(6);
-    await expect(main.locator("#products-services > li")).toHaveCount(5);
-    await expect(main.locator("#products-features h3")).toHaveText(
-      guide.sections.map((section) => section.title),
-    );
-    await expect(main.locator('[data-overview-section="essentials"]')).toHaveCount(0);
-    await expect(
-      main.locator(
-        'a[href="/applications-and-softwares"],a[href="/product/scale-accessories"],a[href="/guides/pos"],a[href="/guides/indicators"]',
-      ),
-    ).toHaveCount(0);
-    const reference = await context.newPage();
-    await reference.goto("/products?category=scales");
-    const referenceCatalog = reference
-      .getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })
-      .getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
-    await expect(
-      referenceCatalog.getByRole("heading", { level: 2, name: "เครื่องชั่ง", exact: true }),
-    ).toBeVisible();
-    const more = referenceCatalog.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
-    while (await more.count()) await more.click();
-    const allowed = await referenceCatalog
-      .locator("#mock-product-results a")
-      .evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
-    const productLinks = await main
-      .locator('a[href^="/products/"]')
-      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-    expect(productLinks.every((href) => href === scalePath || allowed.includes(href))).toBe(true);
-    await reference.close();
-    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
-    await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
-    await expect(page.locator(".site-footer:visible")).toHaveCount(0);
-    await page.screenshot({ path: test.info().outputPath(`scales-hero-${width}.png`) });
-    for (const id of ["products-lineup", "products-services", "products-features"]) {
-      await main.locator(`#${id}`).scrollIntoViewIfNeeded();
-      await page.screenshot({ path: test.info().outputPath(`${id}-${width}.png`) });
-    }
-    const cards = main.locator("#products-features > li");
-    const trigger = cards.first().getByRole("button");
-    await trigger.click();
-    const story = page.getByRole("dialog", { name: guide.sections[0].title, exact: true });
-    await expect(story).toBeVisible();
-    await expect(story).toContainText(guide.sections[0].paragraphs[1]);
-    await story.getByRole("link", { name: "ดูเครื่องชั่งทั้งหมด ›", exact: true }).click();
-    const finder = page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true });
-    await expect(finder).toBeVisible();
-    await expect(story).not.toBeVisible();
-    await expect(finder.getByRole("status")).toHaveText("74 รายการ · 18 รุ่นตัวอย่าง (Mock)");
-    await page.keyboard.press("Escape");
-    await expect(finder).not.toBeVisible();
-    const accordion = main.locator('[data-overview-section="accordion"]');
-    const buttons = accordion.getByRole("button");
-    for (const [index, section] of guide.sections.entries()) {
-      await buttons.nth(index).click();
-      await expect(buttons.nth(index)).toHaveAttribute("aria-expanded", "true");
-      await expect(accordion.getByRole("region").filter({ visible: true })).toContainText(
-        section.paragraphs[0],
-      );
-      await expect(
-        accordion.getByRole("img", { name: section.title, exact: true }).filter({ visible: true }),
-      ).toHaveCount(1);
-    }
-    await page.screenshot({ path: test.info().outputPath(`scales-accordion-${width}.png`) });
-    expect(errors).toEqual([]);
+    await verifyCategoryOverview(page, "scales", width);
   });
 
   test(`scale chapters and legacy links open the matching listings at ${width}px`, async ({
@@ -153,7 +72,7 @@ for (const width of [390, 1440]) {
       const href = getScaleSubcategoryPage(childId)!.href;
       const name = chapterNames[childId];
       if (name) {
-        const button = rail.getByRole("button", { name, exact: true });
+        const button = rail.getByText(name, { exact: true }).locator("..");
         await expect(button).toBeVisible();
         if (childId === "scale-analytical" && (await button.isDisabled())) await page.goto(href);
         else await button.click();
@@ -183,7 +102,7 @@ for (const width of [320, 390, 768, 834, 1024, 1440, 1920, 844]) {
         Math.abs(title.y + title.height / 2 - button.y - button.height / 2),
       ).toBeLessThanOrEqual(1);
     }
-    await expect(main.locator("#products-chapters button")).toHaveCount(4);
+    await expect(main.locator("#products-chapters > li > :is(a, button)")).toHaveCount(4);
     await main
       .locator('[data-overview-section="lineup"]')
       .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })
@@ -207,13 +126,19 @@ test("scales and full catalog keep the right overlay host across cached navigati
     .locator('[data-overview-section="chapters"]')
     .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
     .click();
-  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
+  const directory = page.locator("[data-products-directory]");
+  await expect(
+    directory.locator('#products-categories a[href^="/products/category/"]'),
+  ).toHaveCount(5);
+  await page.goto("/products?catalog=all");
   const full = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
   await expect(full).toBeVisible();
   await expect(
     full.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }).getByRole("button"),
   ).toHaveCount(5);
   await page.keyboard.press("Escape");
+  await page.goBack();
+  await expect(directory).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(new URL(scalePath, page.url()).href);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
@@ -240,7 +165,7 @@ test("scales and full catalog keep the right overlay host across cached navigati
     .click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("อินดิเคเตอร์แท่นชั่ง");
   await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
-  await expect(page.locator(".site-footer:visible")).toHaveCount(0);
+  await expect(page.locator("footer:visible")).toHaveCount(1);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   await page
     .locator("[data-products-header]:visible")

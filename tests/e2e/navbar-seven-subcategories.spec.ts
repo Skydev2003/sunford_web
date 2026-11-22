@@ -189,7 +189,8 @@ test("tablet category entrances and direct listings agree with Warehouse members
       const href = `${parentHref}/${slug}`;
       const button = page
         .locator("#products-chapters")
-        .getByRole("button", { name: label, exact: true });
+        .getByText(label, { exact: true })
+        .locator("..");
       if (category === "indicators") {
         await expect(button).toHaveCount(0);
         continue;

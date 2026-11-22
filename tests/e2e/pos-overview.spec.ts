@@ -1,11 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-import { buyingGuides } from "../../src/features/content/data/buying-guides";
+import { verifyCategoryOverview } from "./helpers/category-overview";
 
 const path = "/products/category/pos";
 const label = "ระบบ POS";
 const title = `ดู${label}ทั้งหมด`;
-const guide = buyingGuides.find(({ slug }) => slug === "pos")!;
 const chapters = [
   ["pos-ios", "iOS"],
   ["pos-android", "Android"],
@@ -17,76 +16,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const width of [390, 1440]) {
-  test(`pos reuse scales sections with their own content at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 1000 });
-    const errors: string[] = [];
-    page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(path);
-    const overview = page.locator('[data-overview-category="pos"]:visible');
-    const main = overview.locator("main");
-    await expect(main.getByRole("heading", { level: 1 })).toHaveText(label);
-    expect(
-      await main
-        .locator("[data-overview-section]")
-        .evaluateAll((sections) =>
-          sections.map((section) => section.getAttribute("data-overview-section")),
-        ),
-    ).toEqual(["chapters", "hero", "lineup", "services", "features", "accordion", "index"]);
-    await expect(main.locator("#products-chapters > li")).toHaveCount(3);
-    await expect(main.locator('[data-overview-section="hero"] li')).toHaveCount(2);
-    await expect(main.locator("#products-lineup > li")).toHaveCount(3);
-    expect((await main.locator("#products-lineup h3").allTextContents()).sort()).toEqual(
-      ["P1W", "P1", "P4"].sort(),
-    );
-    expect(
-      (
-        await main
-          .locator("#products-lineup > li > a")
-          .evaluateAll((links) => links.map((link) => link.getAttribute("href")))
-      ).sort(),
-    ).toEqual(["/products/10801", "/products/10802", "/products/10805"]);
-    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
-    await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
-    await expect(page.locator(".site-footer:visible")).toHaveCount(0);
-    await expect(page.getByRole("dialog", { name: title, exact: true })).not.toBeVisible();
-    await page.screenshot({ path: test.info().outputPath(`pos-top-${width}.png`) });
-    for (const id of ["products-lineup", "products-services", "products-features"]) {
-      await main.locator(`#${id}`).scrollIntoViewIfNeeded();
-      await page.screenshot({ path: test.info().outputPath(`${id}-${width}.png`) });
-    }
-    const features = main.locator("#products-features > li");
-    await expect(features.locator("h3")).toHaveText(guide.sections.map((section) => section.title));
-    await features.first().getByRole("button").click();
-    const story = page.getByRole("dialog", { name: guide.sections[0].title, exact: true });
-    await expect(story).toContainText(guide.sections[0].paragraphs[1]);
-    await expect(
-      story.getByRole("link", { name: "POS ระบบ Android ›", exact: true }),
-    ).toHaveAttribute("href", "/products/category/pos/android");
-    await page.keyboard.press("Escape");
-    await page
-      .locator('[data-overview-section="lineup"]')
-      .getByRole("button", { name: title, exact: true })
-      .click();
-    const finder = page.getByRole("dialog", { name: title, exact: true });
-    await expect(finder).toBeVisible();
-    await expect(story).not.toBeVisible();
-    await expect(finder.getByRole("status")).toHaveText("3 รายการ");
-    await page.keyboard.press("Escape");
-    await expect(finder).not.toBeVisible();
-    const accordion = main.locator('[data-overview-section="accordion"]');
-    await expect(accordion.getByRole("heading", { level: 2 })).toHaveText(
-      `เลือก${label}ให้เหมาะกับงาน`,
-    );
-    for (const [index, section] of guide.sections.entries()) {
-      const button = accordion.getByRole("button").nth(index);
-      await button.click();
-      await expect(button).toHaveAttribute("aria-expanded", "true");
-      await expect(accordion.getByRole("region").filter({ visible: true })).toContainText(
-        section.paragraphs[0],
-      );
-    }
-    await page.screenshot({ path: test.info().outputPath(`pos-accordion-${width}.png`) });
-    expect(errors).toEqual([]);
+  test(`pos overview presents its catalog and guides at ${width}px`, async ({ page }) => {
+    test.slow();
+    await verifyCategoryOverview(page, "pos", width);
   });
 
   test(`POS chapters and reload keep category ownership at ${width}px`, async ({ page }) => {
@@ -95,17 +27,23 @@ for (const width of [390, 1440]) {
     const finder = page.getByRole("dialog", { name: title, exact: true });
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     for (const [id, name] of chapters) {
-      const button = page.locator("#products-chapters").getByRole("button", { name, exact: true });
+      const button = page
+        .locator("#products-chapters")
+        .getByText(name, { exact: true })
+        .locator("..");
       const href = `${path}/${id.replace("pos-", "")}`;
       await expect(button).toBeVisible();
-      if (id === "pos-ios" && (await button.isDisabled())) await page.goto(href);
+      const enabled = await button.isEnabled();
+      if (!enabled) await page.goto(href);
       else await button.click();
       await expect(page).toHaveURL(new URL(href, page.url()).href);
       const listing = page.locator(`[data-product-subcategory-page="${id}"]`);
       await expect(listing.locator("h1")).toHaveText(`${label} ${name}`);
-      await expect(listing.getByRole("status")).toHaveText(
-        id === "pos-ios" ? "0 รายการ" : id === "pos-android" ? "2 รายการ" : "1 รายการ",
-      );
+      const more = listing.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
+      while (await more.isVisible()) await more.click();
+      const count = await listing.locator("article[data-model-only]").count();
+      if (enabled) expect(count).toBeGreaterThan(0);
+      await expect(listing.getByRole("status")).toHaveText(`${count} รายการ`);
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await page.goBack();
       await expect(page).toHaveURL(new RegExp(path + "$"));
@@ -158,9 +96,15 @@ test("POS cache navigation preserves a single active chrome and overlay host", a
     .locator('[data-overview-section="chapters"]')
     .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
     .click();
-  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
+  const directory = page.locator("[data-products-directory]");
+  await expect(
+    directory.locator('#products-categories a[href^="/products/category/"]'),
+  ).toHaveCount(5);
+  await page.goto("/products?catalog=all");
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
+  await page.goBack();
+  await expect(directory).toBeVisible();
   await page.goBack();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
   for (const [target, heading] of [

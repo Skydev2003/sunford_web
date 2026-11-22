@@ -314,7 +314,7 @@ for (const width of [768, 1440]) {
 
 for (const [route, selector] of [
   ["/products", "#products-categories a"],
-  ["/products/category/scales", "#products-chapters button:enabled"],
+  ["/products/category/scales", "#products-chapters a[href]"],
   ["/products?catalog=all", "#catalog-categories button:enabled"],
 ]) {
   test(`image menus show the pointer over their visible content on ${route}`, async ({ page }) => {

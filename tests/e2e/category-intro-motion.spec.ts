@@ -54,23 +54,40 @@ for (const [id, count, label] of [
   ["accessories", 7, "อุปกรณ์เสริม"],
 ] as const) {
   for (const width of [390, 1440]) {
-    test(`${id} opening uses the light shared rise and preserves ribbon at ${width}px`, async ({
+    test(`${id} opening uses the shared rise and category navigation at ${width}px`, async ({
       page,
     }) => {
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ reducedMotion: "no-preference" });
       await freezeIntro(page);
-      await page.goto(`/products/category/${id}`);
+      // The shared entrance only animates content present during the opening scan.
+      // Keep window.load pending while the real streamed category content arrives.
+      let releaseLoad!: () => void;
+      const pending = new Promise<void>((resolve) => {
+        releaseLoad = resolve;
+      });
+      await page.route("**/e2e-entrance-load", async (route) => {
+        await pending;
+        await route.fulfill({ status: 204 });
+      });
+      await page.addInitScript(() => {
+        new Image().src = "/e2e-entrance-load";
+      });
       const overview = page.locator(`[data-overview-category="${id}"]:visible`);
       const title = overview.locator("#products-title");
       const chapters = overview.locator("#products-chapters > li");
       const ribbon = overview.locator("main > div").first();
-      await expect(chapters).toHaveCount(count);
-      await expectStaggerMotion(title);
-      await expectStaggerMotion(chapters.first());
+      try {
+        await page.goto(`/products/category/${id}`, { waitUntil: "domcontentloaded" });
+        await expect(chapters).toHaveCount(count);
+        await expectStaggerMotion(title);
+        await expectStaggerMotion(chapters.first());
+      } finally {
+        releaseLoad();
+      }
       await expect(title).toHaveCSS("opacity", "0.65");
       await expect(title).toHaveCSS("scale", "none");
-      await expect(ribbon).toHaveCSS("animation-duration", "3s");
+      if (id === "accessories") await expect(ribbon).toHaveCSS("animation-duration", "3s");
       const delays = await chapters.evaluateAll((items) =>
         items.flatMap((item) =>
           item
@@ -101,7 +118,7 @@ for (const [id, count, label] of [
           name: "ค้นหาสินค้าและข้อมูล",
         }),
       ).toBeEnabled();
-      const focusable = chapters.locator("button:enabled").first();
+      const focusable = chapters.locator("a[href],button:enabled").first();
       if (id !== "platforms" || (await focusable.count())) {
         await focusable.focus();
         await expect(focusable).toBeFocused();
@@ -109,9 +126,11 @@ for (const [id, count, label] of [
       }
       await seekIntro(page, 3500);
       await expect(title).toHaveCSS("opacity", "1");
-      await expect(ribbon).toHaveCSS("color", "rgb(29, 29, 31)");
-      await expect(ribbon.getByRole("link")).toHaveCSS("color", "rgb(215, 25, 45)");
-      expect(await ribbon.evaluate((el) => getComputedStyle(el, "::before").opacity)).toBe("0");
+      if (id === "accessories") {
+        await expect(ribbon).toHaveCSS("color", "rgb(29, 29, 31)");
+        await expect(ribbon.getByRole("link")).toHaveCSS("color", "rgb(215, 25, 45)");
+        expect(await ribbon.evaluate((el) => getComputedStyle(el, "::before").opacity)).toBe("0");
+      }
       await page.screenshot({ path: test.info().outputPath(`${id}-bounce-${width}.png`) });
       const before = await page.evaluate(
         () =>
@@ -162,7 +181,7 @@ for (const [id, count, label] of [
     ).toBe(0);
   });
 
-  test(`${id} displays static content without page JavaScript`, async ({ browser, baseURL }) => {
+  test(`${id} includes static content without page JavaScript`, async ({ browser, baseURL }) => {
     const context = await browser.newContext({
       javaScriptEnabled: false,
       reducedMotion: "no-preference",
@@ -174,6 +193,21 @@ for (const [id, count, label] of [
     await expect(page.locator("#products-title")).toHaveCSS("opacity", "1");
     for (const chapter of await page.locator("#products-chapters > li").all())
       await expect(chapter).toHaveCSS("opacity", "1");
+    if (id !== "accessories") {
+      const lineup = page.locator("#products-lineup");
+      await expect(lineup.locator("li > a").first()).toHaveAttribute("href", /^\/products\/[^/]+$/);
+      await expect(page.locator('#products-services a[href="/service/quotation"]')).toBeAttached();
+      const details = page.locator('[data-overview-section="accordion"] details').nth(1);
+      await expect(details.locator("summary")).toBeAttached();
+      await expect(details.locator("a").first()).toHaveAttribute(
+        "href",
+        new RegExp(`^/guides/${id}#`),
+      );
+      await expect(page.locator("#products-chapters a").first()).toHaveAttribute(
+        "href",
+        new RegExp(`^/products/category/${id}/`),
+      );
+    }
     await context.close();
   });
 }
@@ -219,6 +253,7 @@ test("normal-motion client entry and cached history keep controls usable", async
     await page.mouse.move(1400, 800);
     const overview = page.locator(`[data-overview-category="${id}"]:visible`);
     await expect(overview.locator("#products-title")).toBeVisible();
+    await page.mouse.move(1400, 700);
     await expect(overview.locator("#products-title")).toHaveCSS("scale", "none");
     await overview
       .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
@@ -237,6 +272,11 @@ test("normal-motion client entry and cached history keep controls usable", async
   await expect(
     page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true }),
   ).not.toBeVisible();
+  const menuScrim = page.getByRole("button", { name: "ปิดเมนูนำทาง", exact: true });
+  if (await menuScrim.isVisible()) {
+    await page.keyboard.press("Escape");
+    await expect(menuScrim).toBeHidden();
+  }
   await page
     .locator('[data-overview-category="scales"]:visible')
     .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })

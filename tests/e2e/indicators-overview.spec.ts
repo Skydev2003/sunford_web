@@ -1,10 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { buyingGuides } from "../../src/features/content/data/buying-guides";
+import { verifyCategoryOverview } from "./helpers/category-overview";
 
 const path = "/products/category/indicators";
 const label = "อินดิเคเตอร์แท่นชั่ง";
 const title = `ดู${label}ทั้งหมด`;
-const guide = buyingGuides.find(({ slug }) => slug === "indicators")!;
 const chapters = [
   ["indicator-lcd", "LCD"],
   ["indicator-led", "LED"],
@@ -15,61 +14,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const width of [390, 1440]) {
-  test(`indicators reuse scales sections with their own content at ${width}px`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 1000 });
-    const errors: string[] = [];
-    page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(path);
-    const overview = page.locator('[data-overview-category="indicators"]:visible');
-    const main = overview.locator("main");
-    await expect(main.getByRole("heading", { level: 1 })).toHaveText(label);
-    expect(
-      await main
-        .locator("[data-overview-section]")
-        .evaluateAll((sections) =>
-          sections.map((section) => section.getAttribute("data-overview-section")),
-        ),
-    ).toEqual(["chapters", "hero", "lineup", "services", "features", "accordion", "index"]);
-    await expect(main.locator("#products-chapters > li")).toHaveCount(2);
-    await expect(main.locator('[data-overview-section="hero"] li')).toHaveCount(2);
-    await expect(main.locator("#products-lineup > li")).toHaveCount(6);
-    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
-    await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
-    await expect(page.locator(".site-footer:visible")).toHaveCount(0);
-    await expect(page.getByRole("dialog", { name: title, exact: true })).not.toBeVisible();
-    await page.screenshot({ path: test.info().outputPath(`indicators-top-${width}.png`) });
-    for (const id of ["products-lineup", "products-services", "products-features"]) {
-      await main.locator(`#${id}`).scrollIntoViewIfNeeded();
-      await page.screenshot({ path: test.info().outputPath(`${id}-${width}.png`) });
-    }
-    const features = main.locator("#products-features > li");
-    await expect(features.locator("h3")).toHaveText(guide.sections.map((section) => section.title));
-    await features.last().getByRole("button").click();
-    const story = page.getByRole("dialog", { name: guide.sections[2].title, exact: true });
-    await expect(story).toContainText(guide.sections[2].paragraphs[1]);
-    await story.getByRole("link", { name: "ดูอินดิเคเตอร์ทั้งหมด ›", exact: true }).click();
-    const finder = page.getByRole("dialog", { name: title, exact: true });
-    await expect(finder).toBeVisible();
-    await expect(story).not.toBeVisible();
-    await expect(finder.getByRole("status")).toHaveText("10 รายการ · 2 รุ่นตัวอย่าง (Mock)");
-    await page.keyboard.press("Escape");
-    await expect(finder).not.toBeVisible();
-    const accordion = main.locator('[data-overview-section="accordion"]');
-    await expect(accordion.getByRole("heading", { level: 2 })).toHaveText(
-      `เลือก${label}ให้เหมาะกับงาน`,
-    );
-    for (const [index, section] of guide.sections.entries()) {
-      const button = accordion.getByRole("button").nth(index);
-      await button.click();
-      await expect(button).toHaveAttribute("aria-expanded", "true");
-      await expect(accordion.getByRole("region").filter({ visible: true })).toContainText(
-        section.paragraphs[0],
-      );
-    }
-    await page.screenshot({ path: test.info().outputPath(`indicators-accordion-${width}.png`) });
-    expect(errors).toEqual([]);
+  test(`indicators overview presents its catalog and guides at ${width}px`, async ({ page }) => {
+    test.slow();
+    await verifyCategoryOverview(page, "indicators", width);
   });
 
   test(`indicator chapters and reload keep category ownership at ${width}px`, async ({ page }) => {
@@ -78,7 +25,11 @@ for (const width of [390, 1440]) {
     const finder = page.getByRole("dialog", { name: title, exact: true });
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     for (const [id, name] of chapters) {
-      await page.locator("#products-chapters").getByRole("button", { name, exact: true }).click();
+      await page
+        .locator("#products-chapters")
+        .getByText(name, { exact: true })
+        .locator("..")
+        .click();
       await expect(page.locator(`[data-indicator-subcategory-page="${id}"]`)).toBeVisible();
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await page.goBack();
@@ -138,9 +89,15 @@ test("indicator cache navigation preserves a single active chrome and overlay ho
     .locator('[data-overview-section="chapters"]')
     .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
     .click();
-  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
+  const directory = page.locator("[data-products-directory]");
+  await expect(
+    directory.locator('#products-categories a[href^="/products/category/"]'),
+  ).toHaveCount(5);
+  await page.goto("/products?catalog=all");
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
+  await page.goBack();
+  await expect(directory).toBeVisible();
   await page.goBack();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
   for (const [target, heading] of [

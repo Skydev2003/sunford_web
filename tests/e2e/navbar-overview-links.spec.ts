@@ -26,7 +26,7 @@ async function visit(page: Page, route: string) {
 }
 
 async function verifyChapterLayout(page: Page, width: number) {
-  const chapters = page.locator("#products-chapters > li > button");
+  const chapters = page.locator("#products-chapters > li > :is(a, button)");
   const dimensions = await chapters.evaluateAll((buttons) =>
     buttons.map((button) => {
       const caption = button.lastElementChild as HTMLElement;
@@ -166,7 +166,7 @@ for (const width of [320, 390, 834, 1440]) {
       else await page.keyboard.press("Escape");
       await expect(productColumn).not.toBeVisible();
 
-      const chapters = page.locator("#products-chapters > li > button");
+      const chapters = page.locator("#products-chapters > li > :is(a, button)");
       await expect(chapters.locator(":scope > span:last-child")).toHaveText(
         expected.map((link) => link.label),
       );
