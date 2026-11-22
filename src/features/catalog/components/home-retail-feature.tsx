@@ -7,6 +7,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./home-retail-feature.module.css";
 
+const featureTitle = "ชั่งให้พอดี";
+
 export function HomeRetailFeature({
   topics,
   sizes,
@@ -46,7 +48,7 @@ export function HomeRetailFeature({
     <article ref={card} className={styles.card} data-home-retail-feature>
       <div className={styles.copy}>
         <p>ครัวและกาแฟ · คำนวณราคา</p>
-        <h3>ชั่งให้พอดี</h3>
+        <h3>{featureTitle}</h3>
       </div>
       <div className={styles.scene} aria-hidden="true">
         <Image src="/images/products/home-retail-editorial.webp" alt="" fill sizes={sizes} />
@@ -57,13 +59,15 @@ export function HomeRetailFeature({
         className={styles.trigger}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="สำรวจครัวและกาแฟ และงานขายหน้าร้าน"
+        aria-label={`${featureTitle} · สำรวจครัวและกาแฟ และงานขายหน้าร้าน`}
         onClick={() => {
           dialog.current?.showModal();
           setOpen(true);
         }}
       >
-        <ArrowUpRight aria-hidden="true" />
+        <span className={styles.triggerIcon}>
+          <ArrowUpRight aria-hidden="true" />
+        </span>
       </button>
       <noscript>
         <ul className={styles.directLinks}>

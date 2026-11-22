@@ -67,7 +67,7 @@
   object-fit: contain;
 }
 
-.card .trigger,
+.triggerIcon,
 .dialogHeading button {
   display: grid;
   inline-size: 2.75rem;
@@ -83,9 +83,30 @@
 
 .card .trigger {
   position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.card .trigger:focus-visible {
+  outline-offset: -3px;
+}
+
+.triggerIcon {
+  position: absolute;
   inset-inline-end: 1rem;
   inset-block-end: 1rem;
   background: #faf4e9;
+  pointer-events: none;
+}
+
+.trigger:active .triggerIcon {
+  background: #e6d7c2;
 }
 
 .trigger svg,
@@ -199,7 +220,7 @@
 }
 
 @media (hover: hover) {
-  .card .trigger:hover,
+  .trigger:hover:not(:active) .triggerIcon,
   .dialogHeading button:hover {
     background: #d4d4da;
   }
