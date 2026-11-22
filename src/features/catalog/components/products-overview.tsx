@@ -735,7 +735,6 @@ export function ProductsOverview({
                 className={`${styles.sectionInner} ${activeCategory ? styles.categoryHeading : ""}`}
               >
                 <h1 id="products-title">{activeCategory?.label ?? "ผลิตภัณฑ์"}</h1>
-                {activeCategory && <Link href="/products">สินค้าทั้งหมด</Link>}
               </div>
               <div className={styles.chapterRail}>
                 {railScope ? (

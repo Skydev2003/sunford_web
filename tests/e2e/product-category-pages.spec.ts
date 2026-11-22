@@ -97,8 +97,8 @@ for (const width of [390, 1440]) {
       const allProducts = page
         .locator('[data-overview-section="chapters"]')
         .getByRole("link", { name: "สินค้าทั้งหมด", exact: true });
-      await expect(allProducts).toHaveAttribute("href", "/products");
-      await allProducts.click();
+      await expect(allProducts).toHaveCount(0);
+      await page.goto("/products");
       await expect(page).toHaveURL(/\/products$/);
       await expect(
         page.locator(
@@ -129,9 +129,7 @@ test("legacy child URLs reach their canonical category listings", async ({ page 
   }
 });
 for (const width of [320, 768, 834, 1920]) {
-  test(`category pages keep products and all-products button reachable at ${width}px`, async ({
-    page,
-  }) => {
+  test(`category pages keep products reachable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     for (const { id, label } of productCategoryDefinitions) {
       await page.goto(`/products/category/${id}`);
@@ -141,7 +139,7 @@ for (const width of [320, 768, 834, 1920]) {
           page
             .locator('[data-overview-section="chapters"]')
             .getByRole("link", { name: "สินค้าทั้งหมด", exact: true }),
-        ).toBeInViewport();
+        ).toHaveCount(0);
         await expect(page.locator('[data-overview-section="lineup"]')).toBeVisible();
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
           true,

@@ -54,10 +54,7 @@ for (const width of [1440, 390]) {
         await page.keyboard.press("Escape");
       }
     }
-    await page
-      .locator('[data-overview-section="chapters"]')
-      .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
-      .click();
+    await page.goto("/products");
     await expect(page).toHaveURL(/\/products$/);
     await expect(
       page

@@ -175,16 +175,7 @@ for (const width of [320, 390, 768, 834, 1024, 1440, 1920, 844]) {
     await page.goto(scalePath);
     const main = page.locator('[data-overview-category="scales"]:visible main');
     await expect(main.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่ง");
-    await expect(main.getByRole("link", { name: "สินค้าทั้งหมด", exact: true })).toBeVisible();
-    if (width >= 390) {
-      const title = (await main.getByRole("heading", { level: 1 }).boundingBox())!;
-      const button = (await main
-        .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
-        .boundingBox())!;
-      expect(
-        Math.abs(title.y + title.height / 2 - button.y - button.height / 2),
-      ).toBeLessThanOrEqual(1);
-    }
+    await expect(main.getByRole("link", { name: "สินค้าทั้งหมด", exact: true })).toHaveCount(0);
     await expect(main.locator("#products-chapters > li > :is(a, button)")).toHaveCount(4);
     const applications = main
       .locator('[data-overview-section="lineup"]')
@@ -204,10 +195,13 @@ test("scales and full catalog keep the right overlay host across cached navigati
   page,
 }) => {
   await page.goto(scalePath);
-  await page
-    .locator('[data-overview-section="chapters"]')
-    .getByRole("link", { name: "สินค้าทั้งหมด", exact: true })
-    .click();
+  await expect(page.locator('[data-overview-section="chapters"]')).toBeVisible();
+  await expect(
+    page
+      .locator('[data-overview-section="chapters"]')
+      .getByRole("link", { name: "สินค้าทั้งหมด", exact: true }),
+  ).toHaveCount(0);
+  await page.goto("/products");
   const directory = page.locator("[data-products-directory]");
   await expect(
     directory.locator('#products-categories a[href^="/products/category/"]'),
