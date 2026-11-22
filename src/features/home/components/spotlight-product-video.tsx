@@ -20,7 +20,7 @@ export function SpotlightProductVideo({
 
   useEffect(() => {
     const element = video.current;
-    if (!element || failed) return;
+    if (!element || failed || typeof IntersectionObserver === "undefined") return;
     if (element.error) {
       setFailed(true);
       return;

@@ -153,7 +153,8 @@ test("live reduced motion pauses the video and disables section reveal", async (
   await ready(page);
   const video = scene(page).locator("video");
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
-  await expect(nextSection(page)).toHaveAttribute("data-hero-scroll-reveal", "reduced");
+  await expect(page.locator("#main-content")).toHaveAttribute("data-scroll-reveal-mode", "reduced");
+  await expect(nextSection(page).getByRole("heading")).toHaveCSS("translate", "none");
   expect(videoRequests).toEqual([]);
   const requestingVideo = page.waitForRequest("**/videos/sunford-web.mp4");
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -166,16 +167,15 @@ test("live reduced motion pauses the video and disables section reveal", async (
   await expect(scene(page).locator("button")).toHaveCount(0);
 });
 
-test("native scrolling reveals the next content once, without a second brand film", async ({
-  page,
-}) => {
+test("the next content uses the shared reveal without a second brand film", async ({ page }) => {
   await page.goto("/");
   await ready(page);
   const next = nextSection(page);
   await next.scrollIntoViewIfNeeded();
-  await expect(next).toHaveAttribute("data-hero-scroll-reveal", "complete");
+  await expect(next.getByRole("heading")).toHaveAttribute("data-scroll-reveal", "");
+  await expect(next.getByRole("heading")).toHaveCSS("opacity", "1");
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
-  await expect(next).toHaveAttribute("data-hero-scroll-reveal", "complete");
+  await expect(next.getByRole("heading")).toHaveCSS("translate", "none");
   await expect(page.locator("#brand-film")).toHaveCount(1);
   await expect(page.locator("#brand-film")).toHaveAttribute("data-hero-scene", "");
   await expect(page.locator("[data-home-motion]")).toHaveCount(5);

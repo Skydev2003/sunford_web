@@ -27,7 +27,7 @@ export function SectionTwoVideo() {
       aria-labelledby="section-two-title"
     >
       <div className={styles.inner}>
-        <h2 id="section-two-title">
+        <h2 id="section-two-title" data-scroll-reveal="">
           <span className={styles.phrase}>แข็งแรงทนทาน</span>{" "}
           <span className={`${styles.phrase} ${styles.silver}`}>ใช้งานง่าย</span>{" "}
           <span className={`${styles.phrase} ${styles.accent}`}>มีประสิทธิภาพ</span>

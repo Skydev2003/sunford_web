@@ -83,14 +83,13 @@ test("full description search and comparison survive client navigation", async (
   await expect(page.locator(".compare-bar")).toHaveCount(0);
 });
 
-test("mini motion preserves reveal timing, final appearance and live reduced motion", async ({
-  page,
-}) => {
+test("homepage reveal preserves its visible baseline and live reduced motion", async ({ page }) => {
   await page.goto("/");
   const section = page
     .locator('[data-home-motion="reveal"]')
     .filter({ has: page.locator("#story") });
-  await expect(section).toHaveAttribute("data-motion-enabled", "true");
+  const main = page.locator("#main-content");
+  await expect(main).toHaveAttribute("data-scroll-reveal-mode", "enabled");
   await page.evaluate(() => {
     document.documentElement.style.scrollBehavior = "auto";
   });
@@ -99,13 +98,13 @@ test("mini motion preserves reveal timing, final appearance and live reduced mot
   await expect(heading).toHaveCSS("opacity", "1");
   await expect(heading).toHaveCSS("transform", "none");
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(section).toHaveAttribute("data-motion-enabled", "false");
+  await expect(main).toHaveAttribute("data-scroll-reveal-mode", "reduced");
   for (const copy of await section.locator("h2, h3, p").all()) {
     await expect(copy).toHaveCSS("opacity", "1");
     await expect(copy).toHaveCSS("transform", "none");
   }
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(section).toHaveAttribute("data-motion-enabled", "true");
+  await expect(main).toHaveAttribute("data-scroll-reveal-mode", "enabled");
   await page.evaluate(() => scrollTo(0, 0));
   await section.scrollIntoViewIfNeeded();
   await expect(heading).toHaveCSS("opacity", "1");

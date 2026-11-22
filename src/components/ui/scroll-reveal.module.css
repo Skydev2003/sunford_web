@@ -1,0 +1,5 @@
+@media (prefers-reduced-motion: no-preference) {
+  .pending:not(:focus-within) {
+    opacity: 0;
+  }
+}
