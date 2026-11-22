@@ -5,7 +5,7 @@ import { useLayoutEffect, type RefObject } from "react";
 const targets =
   "h1, h2, h3, h4, p, li, figure, table, dl, a, button, summary, img, video, iframe, footer span";
 const excluded =
-  '[hidden], [inert], [aria-hidden="true"], dialog, [role="dialog"], [role="tooltip"], [role="tablist"], [data-focus-ready], model-viewer, [data-overview-section="index"], [data-products-footer], .site-footer, .detail-weighing';
+  '[hidden], [inert], [aria-hidden="true"], dialog, [role="dialog"], [role="tooltip"], [role="tablist"], [data-focus-ready], model-viewer, [data-overview-section="index"], [data-products-footer], [data-scroll-reveal], [data-scroll-reveal-grid], [data-scroll-reveal-listing] #mock-product-results, .site-footer, .detail-weighing';
 const group = "ul, ol, section, header, article, nav, footer, main";
 const animationId = "sunford-stagger-bounce";
 

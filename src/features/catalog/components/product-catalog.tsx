@@ -1,4 +1,5 @@
 "use client";
+import { useRef } from "react";
 import { useReturnState } from "@/features/site/history/return-state";
 import { useCategories } from "@/features/site/components/categories-provider";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import { type CatalogProduct } from "../types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { ProductCard } from "./product-card";
 import { catalogDefaults } from "@/features/site/data/settings";
+import { useScrollReveal } from "@/components/ui/scroll-reveal";
 
 export function ProductCatalog({
   products,
@@ -51,6 +53,8 @@ export function ProductCatalog({
   });
   const limit = pagination.key === filterKey ? pagination.limit : 24;
   const visible = matching.slice(0, limit);
+  const grid = useRef<HTMLDivElement>(null);
+  useScrollReveal(grid, { grid: true });
   const Heading = headingLevel ?? (full && !scoped ? "h1" : "h2");
   return (
     <section id="products" className={`catalog-section container ${full ? "full-catalog" : ""}`}>
@@ -106,7 +110,7 @@ export function ProductCatalog({
           {filtered.length} ผลิตภัณฑ์
         </p>
       )}
-      <div className="product-grid" aria-live="polite">
+      <div ref={grid} className="product-grid" aria-live="polite" data-scroll-reveal-grid="">
         {visible.map((product) => (
           <ProductCard key={product.id} product={product} categoryLabel={categoryLabel} />
         ))}

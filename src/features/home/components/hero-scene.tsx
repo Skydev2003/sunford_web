@@ -16,7 +16,6 @@ export function HeroScene({
 }) {
   const root = useRef<HTMLElement>(null);
   const video = useRef<HTMLVideoElement>(null);
-  const revealPlayed = useRef(false);
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ export function HeroScene({
 
   useEffect(() => {
     const scene = root.current;
-    if (!scene) return;
+    if (!scene || typeof IntersectionObserver === "undefined") return;
     const frame = scene.closest("[data-home-route]");
     let header: HTMLElement | null | undefined;
     let headerInner: HTMLElement | null | undefined;
@@ -101,54 +100,6 @@ export function HeroScene({
         delete header.dataset.heroBackdrop;
         delete header.dataset.heroBackdropTracked;
       }
-    };
-  }, []);
-
-  useEffect(() => {
-    const next = root.current?.nextElementSibling as HTMLElement | null;
-    const content = next?.firstElementChild as HTMLElement | null;
-    if (!next || !content) return;
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    let animation: Animation | undefined;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting || reduced.matches || revealPlayed.current) return;
-        revealPlayed.current = true;
-        observer.unobserve(next);
-        next.setAttribute("data-hero-scroll-reveal", "revealing");
-        animation = content.animate(
-          [
-            { opacity: 0.65, transform: "translateY(24px)" },
-            { opacity: 1, transform: "none" },
-          ],
-          { duration: 750, easing: "cubic-bezier(0.22,1,0.36,1)" },
-        );
-        void animation.finished
-          .then(() => {
-            next.setAttribute("data-hero-scroll-reveal", "complete");
-            animation = undefined;
-          })
-          .catch(() => {});
-      },
-      { threshold: 0.12 },
-    );
-    const sync = () => {
-      animation?.cancel();
-      animation = undefined;
-      next.setAttribute(
-        "data-hero-scroll-reveal",
-        reduced.matches ? "reduced" : revealPlayed.current ? "complete" : "pending",
-      );
-      if (!reduced.matches && !revealPlayed.current) observer.observe(next);
-      else observer.unobserve(next);
-    };
-    reduced.addEventListener("change", sync);
-    sync();
-    return () => {
-      animation?.cancel();
-      observer.disconnect();
-      reduced.removeEventListener("change", sync);
-      delete next.dataset.heroScrollReveal;
     };
   }, []);
 

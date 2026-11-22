@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, GitCompareArrows, Package, Search } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
+import { useScrollReveal } from "@/components/ui/scroll-reveal";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { ClientProduct } from "../types";
 import { getCatalogDecisionFacts } from "../data/catalog-decision-facts";
@@ -71,6 +72,9 @@ export function ProductCategoryMock({
   const categoryTrack = useRef<HTMLElement>(null);
   const showcaseTrack = useRef<HTMLUListElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
+  const listing = useRef<HTMLElement>(null);
+  const gridReveal = presentation === "listing" || presentation === "category";
+  useScrollReveal(listing, { grid: true, selector: "#mock-product-results > article" });
   const subcategoryScrollTarget = useRef<{ track: HTMLDivElement; left: number } | null>(null);
   const catalogQuery = useCatalogStore((state) => state.query);
   const setCatalogQuery = useCatalogStore((state) => state.setQuery);
@@ -196,6 +200,8 @@ export function ProductCategoryMock({
 
   return (
     <section
+      ref={gridReveal ? listing : undefined}
+      data-scroll-reveal-listing={gridReveal ? "" : undefined}
       id="products"
       className={`${styles.browser} ${presentation === "finder" ? styles.embedded : ""} ${presentation === "category" ? styles.categoryPage : ""}`}
       data-page-surface={presentation === "overview" ? "paper" : undefined}

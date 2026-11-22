@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { Hero } from "@/features/home/components/hero";
 import { SectionTwoVideo } from "@/features/home/components/section-two-video";
 import { HomeMotion } from "@/features/home/components/home-motion";
@@ -60,6 +61,10 @@ export default async function Home() {
           <SunfordVideos />
         </HomeMotion>
       </Suspense>
+      <ScrollReveal
+        rootId="main-content"
+        selector="[data-scroll-reveal], [data-home-motion] :is(h2, h3, p):not([data-scroll-reveal-grid] *)"
+      />
     </main>
   );
 }

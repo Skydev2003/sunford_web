@@ -20,7 +20,10 @@ for (const viewport of [
     });
     const sections = page.locator('[data-home-motion="reveal"]');
     await expect(sections).toHaveCount(5);
-    await expect(sections.first()).toHaveAttribute("data-motion-enabled", "true");
+    await expect(page.locator("#main-content")).toHaveAttribute(
+      "data-scroll-reveal-mode",
+      "enabled",
+    );
     await page.evaluate(() => {
       document.documentElement.style.scrollBehavior = "auto";
     });
@@ -125,10 +128,7 @@ test("spotlight loops without playback controls and respects visibility and moti
   await expect(video).toHaveJSProperty("paused", false);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(video).toHaveJSProperty("paused", true);
-  await expect(page.locator('[data-home-motion="reveal"]').first()).toHaveAttribute(
-    "data-motion-enabled",
-    "false",
-  );
+  await expect(page.locator("#main-content")).toHaveAttribute("data-scroll-reveal-mode", "reduced");
   await expect(page.locator('[data-home-motion="reveal"] > div').first()).toHaveCSS(
     "position",
     "static",
