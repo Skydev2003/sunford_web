@@ -151,6 +151,12 @@ async function expectProductCardLayout(cards: Locator, reference: CardLayout, sc
       const links = [...item.querySelectorAll<HTMLAnchorElement>("a[href]")];
       const [photo, details, inquiry] = links;
       const image = photo?.querySelector("img");
+      const actions = details?.parentElement;
+      const caption = actions?.previousElementSibling;
+      const actionGap =
+        actions && caption
+          ? actions.getBoundingClientRect().top - caption.getBoundingClientRect().bottom
+          : 0;
       const invalid =
         Math.round(card.width) !== width ||
         Math.round(card.height) !== height ||
@@ -160,6 +166,8 @@ async function expectProductCardLayout(cards: Locator, reference: CardLayout, sc
         !photo?.getAttribute("href")?.startsWith("/products/") ||
         details?.href !== photo.href ||
         !inquiry?.getAttribute("href")?.startsWith("/contact-us") ||
+        actionGap < 15 ||
+        actionGap > 25 ||
         links.some((link) => {
           const box = link.getBoundingClientRect();
           return box.right > card.right + 1 || box.bottom > card.bottom + 1;
@@ -170,6 +178,7 @@ async function expectProductCardLayout(cards: Locator, reference: CardLayout, sc
               model: item.querySelector("h3")?.textContent,
               width: card.width,
               height: card.height,
+              actionGap,
             },
           ]
         : [];

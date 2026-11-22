@@ -598,26 +598,26 @@
   }
 }
 .lineupArt {
-  flex-shrink: 0;
+  flex: 1 0 10rem;
   display: block;
   position: relative;
-  aspect-ratio: 372 / 252;
   border-radius: 1.75rem 1.75rem 0 0;
 }
 .lineupArt img {
+  max-block-size: 15rem;
+  margin-block: auto;
   object-fit: contain;
   padding: 20px;
   mix-blend-mode: multiply;
 }
 .lineupCopy {
   display: flex;
-  flex: 1;
+  flex: 0 0 auto;
   flex-direction: column;
   padding: var(--card-padding-compact) var(--card-padding-compact) 12px;
 }
 .lineupCopy .tileActions {
-  margin-top: auto;
-  padding-top: 16px;
+  margin-top: 1rem;
 }
 .lineupCopy h3 {
   font-size: 1.125rem;
