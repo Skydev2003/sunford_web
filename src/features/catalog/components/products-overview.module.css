@@ -1594,7 +1594,7 @@
 
 /* Category landings share the SUNFORD palette and spacing with the product index. */
 .categoryLineup {
-  composes: railSpacing from "./products-index-content.module.css";
+  composes: railSpacing from "./catalog-rail-spacing.module.css";
   --overview-gutter: max(var(--page-gutter), 6.25vw);
 }
 .categoryLineup .chapters {
@@ -1651,11 +1651,16 @@
   line-height: 1.3;
 }
 .categoryLineup .lineup {
-  padding-bottom: var(--section-space);
   background: var(--paper);
 }
 .categoryLineup :is(.lineup, .services, .features, .essentials) {
   padding-top: var(--section-space-feature);
+}
+.categoryLineup :is(.lineup, .services, .features) {
+  padding-bottom: 0;
+}
+.categoryLineup .services .gallery {
+  margin-bottom: 0;
 }
 .categoryLineup :is(.lineup, .services, .features, .essentials) .sectionHeading {
   margin-inline: var(--catalog-rail-inset);

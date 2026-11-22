@@ -1,16 +1,5 @@
-.railSpacing {
-  --catalog-rail-inset: clamp(1.375rem, calc((100vw - 72.5rem) / 2), 8.75rem);
-  --catalog-rail-gap: 1.25rem;
-  --catalog-rail-fluid-gap: clamp(0.875rem, 1.5vw, 1.5rem);
-  --catalog-rail-padding-start: 0.5rem;
-  --catalog-rail-padding-end: 0.875rem;
-  --catalog-rail-controls-gap: 0.25rem;
-  --catalog-rail-control-hit: 44px;
-  --catalog-rail-control-face: 36px;
-  --catalog-rail-heading-space: 0.5rem;
-}
 .index {
-  composes: railSpacing;
+  composes: railSpacing from "./catalog-rail-spacing.module.css";
   --inset: var(--catalog-rail-inset);
   color: var(--ink);
   background: var(--paper);
