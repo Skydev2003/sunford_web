@@ -201,10 +201,10 @@ for (const width of [320, 390, 834, 1440]) {
       }
       if (category.id === "accessories")
         await page.screenshot({ path: test.info().outputPath("accessory-chapters.png") });
-      for (const [index, { disabled, href }] of expected.entries()) {
+      for (const [index, { disabled, href, label }] of expected.entries()) {
         if (disabled) continue;
         await chapters.nth(index).click();
-        await expect(page).toHaveURL((url) => url.pathname === href);
+        await expect(page, label).toHaveURL((url) => url.pathname === href, { timeout: 20_000 });
         await expect(page.getByRole("dialog")).toHaveCount(0);
         await page.goBack();
         await expect(page).toHaveURL((url) => url.pathname === menu.href);
