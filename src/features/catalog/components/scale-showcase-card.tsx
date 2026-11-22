@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { getImageProps } from "next/image";
 import type { CSSProperties, ReactNode } from "react";
-import { preload } from "react-dom";
 import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { catalogCardName } from "../data/catalog-card-names";
@@ -90,15 +88,6 @@ export function ProductShowcaseCard({
   const desktopWidth = Math.ceil(Math.min(bleed ? 480 : 392, (bleed ? 270 : 257) * aspect));
   const scaleImageSizes = `(max-width: 736px) min(calc(100vw - 60px), ${mobileWidth}px), ${desktopWidth}px`;
   const scaleFallbackSizes = "(max-width: 736px) min(calc(100vw - 60px), 303px), 392px";
-  if (shelf === "pos" && first) {
-    const { props } = getImageProps({ src: photo, alt: name, fill: true, sizes: photoSizes });
-    preload(props.src, {
-      as: "image",
-      fetchPriority: "low",
-      imageSizes: props.sizes,
-      imageSrcSet: props.srcSet,
-    });
-  }
   const prefix = shelf === "indicators" ? "components" : shelf;
   const heading =
     shelf === "scales" ? `products-model-${product.id}` : `products-${prefix}-model-${product.id}`;

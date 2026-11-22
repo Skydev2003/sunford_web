@@ -143,7 +143,11 @@ export function ProductsIndexContent({
                 )}
               </h2>
             </div>
-            <ProductsIndexRail id={`products-rail-${id}`} label={id === "scales" ? label : title}>
+            <ProductsIndexRail
+              id={`products-rail-${id}`}
+              label={id === "scales" ? label : title}
+              prepareImages={categoryFamilies.has(id)}
+            >
               {id === "indicators" && (
                 <li className={styles.card}>
                   <Link href={sunford.about} className={styles.aboutCard}>
@@ -179,7 +183,7 @@ export function ProductsIndexContent({
                     <ProductShowcaseCard
                       item={item}
                       shelf={id}
-                      first={(id === "scales" || id === "pos") && index === 0}
+                      first={id === "scales" && index === 0}
                     />
                     {id === "indicators" && item.product.warehouseSku === "G107268" && (
                       <EquipmentVideoCard />

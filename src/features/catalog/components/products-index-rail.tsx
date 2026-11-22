@@ -7,16 +7,101 @@ import { useReturnState } from "@/features/site/history/return-state";
 import styles from "./products-index-content.module.css";
 
 const shelfEase = cubicBezier(0.25, 0.1, 0.25, 0.9);
+const imageLeadViewports = 1.25;
+
+function prepareCardImage(card: Element | undefined) {
+  const image = card?.querySelector<HTMLImageElement>('img[loading="lazy"]');
+  if (image && !(image.complete && image.naturalWidth)) image.loading = "eager";
+}
+
+function prepareRailImages(list: HTMLUListElement) {
+  if (typeof IntersectionObserver === "undefined") return;
+
+  let nearViewport = false;
+  let previousLeft = 0;
+  let frame = 0;
+  // Clamp the scroll position so overscroll bounce does not reverse the detected direction.
+  const scrollPosition = () =>
+    Math.max(0, Math.min(list.scrollLeft, list.scrollWidth - list.clientWidth));
+
+  const prepareNext = () => {
+    frame = 0;
+    const left = scrollPosition();
+    const delta = left - previousLeft;
+    if (!nearViewport || Math.abs(delta) < 1) return;
+    previousLeft = left;
+    const viewport = list.getBoundingClientRect();
+    const cards = Array.from(list.children, (card) => ({
+      card,
+      bounds: card.getBoundingClientRect(),
+    }));
+    if (!cards.length) return;
+    // The track's inline padding and snap inset are equal.
+    const snapStart = cards[0].bounds.left + list.scrollLeft;
+    // Lead the next snap position as soon as scrolling starts, including when the
+    // currently clipped card is one of the two images we already prepared.
+    const forward = delta > 0;
+    const target = forward
+      ? cards.findIndex(({ bounds }) => bounds.left >= snapStart - 1)
+      : cards.findLastIndex(({ bounds }) => bounds.left <= snapStart + 1);
+    if (target < 0) return;
+    const travel = cards[target].bounds.left - snapStart;
+    const upcoming = forward
+      ? cards.find(({ bounds }, index) => index > target && bounds.right > viewport.right + travel)
+      : cards.findLast(
+          ({ bounds }, index) => index < target && bounds.left < viewport.left + travel,
+        );
+    prepareCardImage(upcoming?.card);
+  };
+
+  const onScroll = () => {
+    if (nearViewport && !frame) frame = requestAnimationFrame(prepareNext);
+  };
+
+  const observeViewport = () => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        nearViewport = entry.isIntersecting;
+        if (!nearViewport) return;
+        previousLeft = scrollPosition();
+        const cards = Array.from(list.children);
+        if (!cards.length) return;
+        const snapStart = cards[0].getBoundingClientRect().left + list.scrollLeft;
+        const start = cards.findIndex((card) => card.getBoundingClientRect().right > snapStart + 1);
+        if (start < 0) return;
+        for (const card of cards.slice(start, start + 2)) prepareCardImage(card);
+      },
+      { rootMargin: `${Math.round(innerHeight * imageLeadViewports)}px 0px` },
+    );
+    observer.observe(list);
+    return observer;
+  };
+  let observer = observeViewport();
+  const onResize = () => {
+    observer.disconnect();
+    observer = observeViewport();
+  };
+  window.addEventListener("resize", onResize);
+  list.addEventListener("scroll", onScroll, { passive: true });
+  return () => {
+    observer.disconnect();
+    window.removeEventListener("resize", onResize);
+    list.removeEventListener("scroll", onScroll);
+    cancelAnimationFrame(frame);
+  };
+}
 
 export function ProductsIndexRail({
   id,
   label,
   categoryRail = false,
+  prepareImages = false,
   children,
 }: {
   id: string;
   label: string;
   categoryRail?: boolean;
+  prepareImages?: boolean;
   children: ReactNode;
 }) {
   const track = useRef<HTMLUListElement>(null);
@@ -59,6 +144,11 @@ export function ProductsIndexRail({
       list.removeEventListener("scroll", measure);
     };
   }, [children]);
+
+  useEffect(() => {
+    const list = track.current;
+    if (prepareImages && list) return prepareRailImages(list);
+  }, [children, prepareImages]);
 
   function advance(direction: number) {
     const list = track.current;

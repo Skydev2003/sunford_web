@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { load } from "cheerio";
 import { recordStaggerMotion, type StaggerWindow } from "./helpers/stagger-motion";
 import { selectScaleShowcase } from "../../src/features/catalog/data/scale-showcase";
 import type { ClientProduct } from "../../src/features/catalog/types";
@@ -1254,6 +1255,90 @@ function imageAssetPath(url: URL) {
   return new URL(url.searchParams.get("url") ?? url.href, url.origin).pathname;
 }
 
+test("Home & Retail requests two photos before the row enters and leads the first swipe", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const photoPaths = ["g106469", "g106186", "g106179", "g106209"].map(
+    (sku) => `/images/products/specialty-scales/${sku}-front-4k.webp`,
+  );
+  const requested = new Set<string>();
+  const photos = Promise.withResolvers<void>();
+  await page.route(
+    (url) => photoPaths.includes(imageAssetPath(url)),
+    async (route) => {
+      requested.add(imageAssetPath(new URL(route.request().url())));
+      await photos.promise;
+      await route.fulfill({
+        contentType: "image/svg+xml",
+        body: '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"/>',
+      });
+    },
+  );
+  try {
+    await page.goto("/products", { waitUntil: "domcontentloaded" });
+    const rail = page.locator("#products-rail-pos");
+    const images = rail.locator(":scope > li img");
+    await expect(images.nth(3)).toBeVisible();
+    expect(await rail.evaluate((track) => track.getBoundingClientRect().top)).toBeGreaterThan(1900);
+    expect(requested.size).toBe(0);
+    const sizes = await images.nth(2).getAttribute("sizes");
+    expect(sizes).toMatch(/px$/);
+
+    // Bring only the vertical approach into range. No rail card is in the viewport yet.
+    await rail.evaluate((track) => {
+      const top = track.getBoundingClientRect().top;
+      window.scrollBy({ top: top - innerHeight - 450, behavior: "instant" });
+    });
+    expect(
+      await rail.evaluate((track) => track.getBoundingClientRect().top - innerHeight),
+    ).toBeGreaterThan(100);
+    await expect(images.nth(0)).toHaveAttribute("loading", "eager");
+    await expect(images.nth(1)).toHaveAttribute("loading", "eager");
+    await expect.poll(() => photoPaths.slice(0, 2).every((path) => requested.has(path))).toBe(true);
+    await expect(images.nth(2)).toHaveAttribute("loading", "lazy");
+
+    const next = page.getByRole("button", { name: /เลื่อนงานบ้าน.*ถัดไป/ });
+    await next.scrollIntoViewIfNeeded();
+    const record = (index: number) =>
+      rail.evaluate((track, index) => {
+        const cards = track.querySelectorAll(":scope > li");
+        const image = cards[index].querySelector("img")!;
+        const destination =
+          cards[index - 1].getBoundingClientRect().left - cards[0].getBoundingClientRect().left;
+        return new Promise<{ left: number; offscreen: boolean; destination: number }>((resolve) => {
+          const observer = new MutationObserver(() => {
+            if (image.loading !== "eager") return;
+            observer.disconnect();
+            resolve({
+              left: track.scrollLeft,
+              offscreen:
+                cards[index].getBoundingClientRect().left >= track.getBoundingClientRect().right,
+              destination,
+            });
+          });
+          observer.observe(image, { attributes: true, attributeFilter: ["loading"] });
+        });
+      }, index);
+    for (const index of [2, 3]) {
+      const [early] = await Promise.all([record(index), next.click()]);
+      expect(early.left).toBeGreaterThan(0);
+      expect(early.left).toBeLessThan(early.destination);
+      expect(early.offscreen).toBe(true);
+      await expect.poll(() => requested.has(photoPaths[index])).toBe(true);
+      await expect
+        .poll(() => rail.evaluate((track) => track.scrollLeft))
+        .toBeCloseTo(early.destination, 0);
+    }
+    await expect(images.nth(2)).toHaveAttribute("sizes", sizes!);
+    expect(await images.nth(2).getAttribute("srcset")).toMatch(/\d+w,/);
+  } finally {
+    photos.resolve();
+    await page.unrouteAll({ behavior: "wait" });
+  }
+});
+
 test("a far-off product photo loads once when its rail is reached", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const images: string[] = [];
@@ -1345,6 +1430,18 @@ test("server response contains actual category products without motion hiding", 
   expect(html).not.toContain('id="products-rail-uncategorized"');
   expect(html).toContain("data-warehouse-sku");
   expect(html).not.toContain("data-stagger-bounce=");
+  const $ = load(html);
+  const lead = $("#products-rail-scales > li img").first();
+  const retail = $("#products-rail-pos > li img").first();
+  expect(retail.attr("loading")).toBe("lazy");
+  expect(retail.attr("srcset")).toMatch(/\d+w,/);
+  const preloaded = $('link[rel="preload"][as="image"]')
+    .map((_, link) => $(link).attr("imagesrcset") || $(link).attr("href") || "")
+    .get()
+    .join(" ");
+  const optimizedPath = (src: string) => imageAssetPath(new URL(src, response.url()));
+  expect(decodeURIComponent(preloaded)).toContain(optimizedPath(lead.attr("src")!));
+  expect(decodeURIComponent(preloaded)).not.toContain(optimizedPath(retail.attr("src")!));
 });
 
 test("shared scales hero pauses for reduced motion, supports keyboard tabs, play and offscreen pause", async ({
