@@ -19,6 +19,7 @@ import { AboutPage } from "@/features/content/components/about-page";
 import { SolutionsPage } from "@/features/content/components/solutions-page";
 import { getProductSection } from "@/features/content/data/product-sections";
 import { technicalManualRedirects } from "@/features/content/data/technical-manuals";
+import { softwareSupportPages } from "@/features/content/data/software-support";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
 import { getProductSubcategoryPageByHref } from "@/features/catalog/data/product-subcategory-pages";
 import {
@@ -33,6 +34,7 @@ export function generateStaticParams() {
     "/service",
     "/technical-specification",
     "/software/download",
+    ...softwareSupportPages.map(({ slug }) => `/software/download/${slug}`),
     ...technicalManualRedirects.map(({ source }) => source),
   ];
   return staticContentParams(importedPages.filter(({ path }) => !explicitPaths.includes(path)));
@@ -178,7 +180,12 @@ export default async function SourceContentPage({
           </a>
         )}
       </header>
-      {softwareIndex && softwareCatalog && <SoftwareCatalog catalog={softwareCatalog} />}
+      {softwareIndex && softwareCatalog && (
+        <SoftwareCatalog
+          catalog={softwareCatalog}
+          showDownloadLinks={page.path === "/applications-and-softwares"}
+        />
+      )}
       {/^\/software\/download\/sunford-rls(1100|1800)$/.test(page.path) && (
         <nav
           className="container source-section-links"

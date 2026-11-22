@@ -95,18 +95,9 @@ test("keyboard activation opens the source clip, and all twelve local thumbnail 
   }
 });
 
-test("a non-homepage gallery keeps its existing embedded modal player", async ({ page }) => {
-  await page.route("https://www.youtube-nocookie.com/**", (route) => route.abort());
+test("POS Android support does not load legacy YouTube embeds", async ({ page }) => {
   await page.goto("/software/download/sunford-pos-android", { waitUntil: "domcontentloaded" });
-  const gallery = page.locator(".video-gallery");
-  await gallery.scrollIntoViewIfNeeded();
-  await expect(gallery.locator(".video-card").first()).toHaveJSProperty("tagName", "BUTTON");
-  await gallery.locator(".video-card").first().click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.locator(".video-player")).toHaveAttribute(
-    "src",
-    /^https:\/\/www\.youtube-nocookie\.com\/embed\/[\w-]{11}\?autoplay=1$/,
-  );
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toBeHidden();
+  const main = page.getByRole("main");
+  await expect(main.getByRole("heading", { level: 1, name: "SUNFORD POS ANDROID" })).toBeVisible();
+  await expect(main.locator(".video-gallery, iframe")).toHaveCount(0);
 });

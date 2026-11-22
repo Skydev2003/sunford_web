@@ -98,7 +98,7 @@ for (const width of [320, 390, 768, 1440]) {
   });
 }
 
-test("Biz Talk covers and existing Driver videos render in the current content templates", async ({
+test("Biz Talk covers and Driver support render in the current content templates", async ({
   page,
 }) => {
   await page.goto("/news-and-activities");
@@ -108,6 +108,11 @@ test("Biz Talk covers and existing Driver videos render in the current content t
   await expect(card.locator("img")).toBeVisible();
   await expect(card).not.toContainText("พื้นที่สำหรับรูปภาพ");
   await page.goto("/software/download/sunford-drv");
-  await expect(page.locator("main iframe")).toHaveCount(2);
-  await expect(page.locator("main")).toContainText("Excel / ERP / WMS");
+  const main = page.getByRole("main");
+  await expect(main.getByRole("heading", { level: 1, name: "SUNFORD DRV" })).toBeVisible();
+  await expect(main.getByRole("link", { name: "ติดต่อฝ่ายบริการ" })).toHaveAttribute(
+    "href",
+    "/contact-us",
+  );
+  await expect(main.locator("iframe")).toHaveCount(0);
 });

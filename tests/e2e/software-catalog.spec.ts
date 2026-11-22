@@ -67,56 +67,180 @@ test("download deep links work without JavaScript", async ({ browser }) => {
   }
 });
 
-test("applications and software keeps its legacy industry filter", async ({ page }) => {
-  await page.goto("/applications-and-softwares#industrial-software");
-  await expect(page.locator(".software-card")).toHaveCount(4);
-  await expect(page.locator(".software-card h2")).toHaveText([
-    "WEWEIGH",
-    "INDUS",
-    "DRV",
-    "LP Label Editor",
-  ]);
-});
-
-test("all software details, downloads, manuals and videos are rendered", async ({ request }) => {
-  test.setTimeout(120000);
-  for (const source of sourcePages.filter((page) => page.path.startsWith("/software/download/"))) {
-    const response = await request.get(source.path);
-    expect(response.status(), source.path).toBe(200);
-    const migratedManuals: Record<string, string> = {
-      "/software/download/sunford-pos-smart-retail/sql-server-settings": "sql-server",
-      "/software/download/sunford-lp50-label-printer/settings": "lp50",
+for (const width of [390, 1440]) {
+  test(`Warehouse software filter offers verified industrial downloads at ${width}px`, async ({
+    page,
+    request,
+  }) => {
+    const response = await request.get("/api/products");
+    expect(response.ok()).toBe(true);
+    const { products } = (await response.json()) as {
+      products: { warehouseGroup?: string; slug: string }[];
     };
-    const manual = migratedManuals[source.path];
-    if (manual) {
-      expect(new URL(response.url()).pathname).toBe(`/technical-specification/guides/${manual}`);
-      continue;
-    }
-    const $ = load(await response.text());
-    expect($(".source-prose").length, source.path).toBeGreaterThan(0);
-    expect($(".source-empty").length, source.path).toBe(0);
-    const original = load(source.html);
-    original("a[href]").each((_, anchor) => {
-      const href = original(anchor).attr("href")!;
-      expect(
-        $("main a[href]")
-          .toArray()
-          .some((link) => $(link).attr("href") === href),
-        `${source.path}: ${href}`,
-      ).toBe(true);
+    const expected = products
+      .filter(({ warehouseGroup }) => warehouseGroup === "โปรแกรมและสิทธิ์ใช้งาน")
+      .map(({ slug }) => "/products/" + slug)
+      .sort();
+    expect(expected.length).toBeGreaterThan(0);
+
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/applications-and-softwares#all");
+    const cards = page.locator(".software-card");
+    await expect(cards).toHaveCount(expected.length);
+    expect(
+      (await cards.evaluateAll((links) => links.map((link) => link.getAttribute("href")))).sort(),
+    ).toEqual(expected);
+    await page.locator('.software-filters a[href="#industrial-software"]').click();
+    await expect(page).toHaveURL("/applications-and-softwares#industrial-software");
+    await expect(cards).toHaveCount(0);
+    await expect(page.getByText(/ยังไม่มี SKU ใน Warehouse ที่จัดอยู่ในหมวดนี้/)).toBeVisible();
+    await page.getByRole("link", { name: "ดูไฟล์ดาวน์โหลดในหมวดนี้" }).click();
+    await expect(page).toHaveURL("/software/download#industrial-software");
+    await expect(
+      page.locator("#industrial-software").getByRole("heading", { level: 4 }),
+    ).toHaveText(["SUNFORD Connect INDUS 1.10", "LP Label Editor สำหรับ LP50", "WeWeigh"]);
+  });
+
+  test(`POS Android and both RLS editions have usable support pages at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/software/download/sunford-pos-android");
+    const main = page.getByRole("main");
+    await expect(main.getByRole("heading", { level: 1 })).toHaveText("SUNFORD POS ANDROID");
+    await expect(
+      main.getByText(/ยังไม่มีคู่มือ วิดีโอแนะนำ หรือไฟล์ดาวน์โหลดที่ยืนยัน/),
+    ).toBeVisible();
+    await expect(main.getByRole("link", { name: "ติดต่อฝ่ายบริการ" })).toHaveAttribute(
+      "href",
+      "/contact-us",
+    );
+    await expect(main.locator(".video-card, iframe")).toHaveCount(0);
+    await page.goto("/software/download/sunford-rls1100");
+    await expect(main.getByRole("heading", { level: 1 })).toContainText("RLS1100");
+    await expect(main.getByRole("link", { name: "ดาวน์โหลดโปรแกรม" })).toHaveAttribute(
+      "href",
+      verifiedDownloads[0],
+    );
+    await expect(main.getByRole("link", { name: "คู่มือติดตั้ง RLS1100" })).toHaveAttribute(
+      "href",
+      "/technical-specification/guides/rls1100",
+    );
+    const models = main.getByRole("navigation", { name: "เลือกซอฟต์แวร์ตามรุ่นเครื่องชั่ง RLS" });
+    await models.getByRole("link", { name: "SUNFORD RLS1800", exact: true }).click();
+    await expect(main.getByRole("heading", { level: 1 })).toContainText("RLS1800");
+    await expect(main.getByRole("link", { name: "ดาวน์โหลดโปรแกรม" })).toHaveAttribute(
+      "href",
+      verifiedDownloads[1],
+    );
+    await expect(
+      models.getByRole("link", { name: "SUNFORD RLS1800", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+  });
+
+  test(`POS Android and RLS navigation work without JavaScript at ${width}px`, async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      viewport: { width, height: 900 },
     });
-    expect($(".source-prose iframe").length, source.path).toBe(original("iframe").length);
-    expect($(".video-card").length, source.path).toBe(source.videos?.length ?? 0);
+    try {
+      const page = await context.newPage();
+      const main = page.getByRole("main");
+      await page.goto("/software/download/sunford-pos-android");
+      await expect(
+        main.getByRole("heading", { level: 1, name: "SUNFORD POS ANDROID" }),
+      ).toBeVisible();
+      await expect(
+        main.getByText(/ยังไม่มีคู่มือ วิดีโอแนะนำ หรือไฟล์ดาวน์โหลดที่ยืนยัน/),
+      ).toBeVisible();
+      await expect(main.getByRole("link", { name: "ติดต่อฝ่ายบริการ" })).toBeVisible();
+      await page.goto("/software/download/sunford-rls1100");
+      await expect(main.getByRole("heading", { level: 1 })).toContainText("RLS1100");
+      const download = main.getByRole("link", { name: "ดาวน์โหลดโปรแกรม" });
+      await expect(download).toBeVisible();
+      await expect(download).toHaveAttribute("href", verifiedDownloads[0]);
+      await main.getByRole("link", { name: "SUNFORD RLS1800", exact: true }).click();
+      await expect(page).toHaveURL("/software/download/sunford-rls1800");
+      await expect(main.getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(main.getByRole("heading", { level: 1 })).toContainText("RLS1800");
+      await expect(download).toBeVisible();
+      await expect(download).toHaveAttribute("href", verifiedDownloads[1]);
+    } finally {
+      await context.close();
+    }
+  });
+}
+
+test("software detail routes expose only verified downloads or current support options", async ({
+  request,
+}) => {
+  test.setTimeout(120000);
+  const approved: Record<string, number[]> = {
+    "sunford-pos-android": [],
+    "sunford-pos-basic": [],
+    "sunford-drv": [],
+    "sunford-rls1100": [0],
+    "sunford-rls1800": [1],
+    "sunford-pos-smart-retail": [2, 3],
+    "sunford-indus": [4],
+    "sunford-lp50-label-printer": [5],
+    "sunford-we-weight": [6],
+    fitdays: [7, 8],
+  };
+  const guides: Record<string, string> = {
+    "sunford-rls1100": "rls1100",
+    "sunford-lp50-label-printer": "lp50",
+    "sunford-pos-smart-retail": "sql-server",
+  };
+  for (const [slug, indexes] of Object.entries(approved)) {
+    const path = "/software/download/" + slug;
+    const source = sourcePages.find((page) => page.path === path)!;
+    const response = await request.get(path);
+    expect(response.ok(), path).toBe(true);
+    const $ = load(await response.text());
+    expect($("main.source-content-page h1").text(), path).toBe(source.title);
+    const links = $("main.source-content-page a[href]")
+      .map((_, link) => $(link).attr("href"))
+      .get();
+    expect(
+      links.filter((link) => /^https?:/i.test(link)),
+      path,
+    ).toEqual(indexes.map((index) => verifiedDownloads[index]));
+    expect(links, path).toContain("/software/download");
+    if (guides[slug])
+      expect(links, path).toContain("/technical-specification/guides/" + guides[slug]);
+    if (!indexes.length) expect(links, path).toContain("/contact-us");
+    expect(
+      $("main.source-content-page .video-card, main.source-content-page iframe").length,
+      path,
+    ).toBe(0);
   }
 });
 
-test("RLS download offers both supported model downloads", async ({ page }) => {
-  await page.goto("/software/download/sunford-rls1100");
-  const models = page.getByRole("navigation", { name: "เลือกซอฟต์แวร์ตามรุ่นเครื่องชั่ง RLS" });
-  await models.getByRole("link", { name: "SUNFORD RLS1800", exact: true }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("RLS1800");
-  await expect(page.getByRole("link", { name: "ดาวน์โหลดโปรแกรม", exact: true })).toHaveAttribute(
-    "href",
-    "https://drive.google.com/file/d/1F5d8ou7_pKoi9WWbMJDN0IEdW2r-ZjaM/view",
-  );
+test("retired manual paths redirect to readable local guides and unknown software is not indexed", async ({
+  page,
+  request,
+}) => {
+  for (const [path, slug] of [
+    ["/software/download/sunford-pos-smart-retail/sql-server-settings", "sql-server"],
+    ["/software/download/sunford-lp50-label-printer/settings", "lp50"],
+  ]) {
+    const target = "/technical-specification/guides/" + slug;
+    const redirect = await request.get(path, { maxRedirects: 0 });
+    expect(redirect.status()).toBe(308);
+    expect(redirect.headers().location).toBe(target);
+    await page.goto(path);
+    await expect(page).toHaveURL(target);
+    await expect(page.getByRole("main").getByRole("article")).toBeVisible();
+  }
+  await page.goto("/software/download/not-a-verified-program");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "ยังไม่พบหน้าที่คุณกำลังมองหา" }),
+  ).toBeVisible();
+  await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();
 });

@@ -12,8 +12,10 @@ function subscribe(callback: () => void) {
 
 export function SoftwareCatalog({
   catalog,
+  showDownloadLinks = false,
 }: {
   catalog: NonNullable<SourcePage["softwareCatalog"]>;
+  showDownloadLinks?: boolean;
 }) {
   const hash = useSyncExternalStore(
     subscribe,
@@ -63,7 +65,17 @@ export function SoftwareCatalog({
           </Link>
         ))}
       </div>
-      {!items.length && <p className="empty-state">ไม่มีข้อมูลที่ตรงกับหมวดหมู่ที่เลือก</p>}
+      {!items.length &&
+        (showDownloadLinks && category !== "all" ? (
+          <div className="empty-state">
+            <p>ยังไม่มี SKU ใน Warehouse ที่จัดอยู่ในหมวดนี้ แต่มีไฟล์ซอฟต์แวร์ให้ดาวน์โหลด</p>
+            <Link className="button button-outline" href={`/software/download#${category}`}>
+              ดูไฟล์ดาวน์โหลดในหมวดนี้
+            </Link>
+          </div>
+        ) : (
+          <p className="empty-state">ไม่มีข้อมูลที่ตรงกับหมวดหมู่ที่เลือก</p>
+        ))}
     </section>
   );
 }

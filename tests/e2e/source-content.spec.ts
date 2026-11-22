@@ -60,8 +60,10 @@ test("imported company, collection, software and warranty pages are available", 
     page.getByRole("main").getByRole("heading", { name: "SUNFORD RLS1100" }),
   ).toBeVisible();
   await page.goto("/software/download/sunford-pos-android");
-  await expect(page.locator("main")).toContainText("Android");
-  await expect(page.locator(".video-card").first()).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "SUNFORD POS ANDROID" })).toBeVisible();
+  await expect(
+    page.getByRole("main").getByRole("link", { name: "ติดต่อฝ่ายบริการ" }),
+  ).toHaveAttribute("href", "/contact-us");
   await page.goto("/warranty/register");
   await expect(page.getByRole("link", { name: "เปิดแบบฟอร์ม Sunford" })).toHaveAttribute(
     "href",
