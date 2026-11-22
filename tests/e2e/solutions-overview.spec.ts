@@ -91,6 +91,7 @@ for (const width of [390, 1440]) {
       const track = page.getByRole("list", { name: "โซลูชันทั้งหมด", exact: true });
       const cards = track.getByRole("link");
       await expect(cards).toHaveCount(solutions.length);
+      await expect(track).toHaveAttribute("data-tab-focus-ready", "");
       await page.evaluate(() => document.fonts.ready);
       await track.evaluate((list) => {
         list.scrollIntoView({ block: "center", behavior: "instant" });
@@ -199,6 +200,7 @@ test("keyboard and native touch reach the last solution without a catalogue popu
     const page = await context.newPage();
     await page.goto("/solutions");
     const list = page.getByRole("list", { name: "โซลูชันทั้งหมด", exact: true });
+    await expect(list).toHaveAttribute("data-tab-focus-ready", "");
     await list.scrollIntoViewIfNeeded();
     const box = (await list.boundingBox())!;
     const y = Math.min(650, Math.max(120, box.y + 90));

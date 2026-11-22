@@ -148,9 +148,39 @@ export function ProductsIndexRail({
 
   useEffect(() => stopMotion, [stopMotion]);
 
-  useEffect(() => {
-    if (!revealTabFocus) return;
+  useLayoutEffect(() => {
+    const list = track.current;
+    if (!revealTabFocus || !list) return;
     let frame = 0;
+    let tabTarget: HTMLElement | null = null;
+    const revealTabTarget = () => {
+      const focused = tabTarget;
+      if (!focused || document.activeElement !== focused) return;
+      const left = list.getBoundingClientRect().left + list.clientLeft;
+      const isClipped = () => {
+        const target = focused.getBoundingClientRect();
+        return target.left < left || target.right > left + list.clientWidth;
+      };
+      if (!isClipped()) return;
+      stopMotion();
+      focused.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" });
+      if (isClipped()) {
+        // A short nearest adjustment can snap back to the current card.
+        const card = focused.closest("li");
+        const first = list.firstElementChild;
+        if (card?.parentElement === list && first) {
+          list.scrollTo({
+            left: card.getBoundingClientRect().left - first.getBoundingClientRect().left,
+            behavior: "instant",
+          });
+        }
+      }
+      saveLeft(list.scrollLeft);
+    };
+    const stopFollowingFocus = () => {
+      tabTarget = null;
+      cancelAnimationFrame(frame);
+    };
     const onTab = (event: KeyboardEvent) => {
       if (!event.isTrusted || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey)
         return;
@@ -159,11 +189,9 @@ export function ProductsIndexRail({
       cancelAnimationFrame(frame);
       // Wait for native Tab navigation; focus restored by a dialog or history should not scroll.
       frame = requestAnimationFrame(() => {
-        const list = track.current;
         const focused = document.activeElement;
         if (
           event.defaultPrevented ||
-          !list ||
           !(focused instanceof HTMLElement) ||
           focused === previousFocus ||
           focused === list ||
@@ -171,33 +199,23 @@ export function ProductsIndexRail({
           !focused.matches(":focus-visible")
         )
           return;
-        const left = list.getBoundingClientRect().left + list.clientLeft;
-        const isClipped = () => {
-          const target = focused.getBoundingClientRect();
-          return target.left < left || target.right > left + list.clientWidth;
-        };
-        if (!isClipped()) return;
-        stopMotion();
-        focused.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" });
-        if (isClipped()) {
-          // A short nearest adjustment can snap back to the current card.
-          const card = focused.closest("li");
-          const first = list.firstElementChild;
-          if (card?.parentElement === list && first) {
-            list.scrollTo({
-              left: card.getBoundingClientRect().left - first.getBoundingClientRect().left,
-              behavior: "instant",
-            });
-          }
-        }
-        // A pending scrollend update can still hold the previous card during rapid Tab presses.
-        saveLeft(list.scrollLeft);
+        tabTarget = focused;
+        revealTabTarget();
       });
     };
     document.addEventListener("keydown", onTab, true);
+    // Native touch momentum can move the newly focused card again after the Tab frame.
+    list.addEventListener("scrollend", revealTabTarget);
+    list.addEventListener("pointerdown", stopFollowingFocus);
+    list.addEventListener("wheel", stopFollowingFocus, { passive: true });
+    list.dataset.tabFocusReady = "";
     return () => {
       document.removeEventListener("keydown", onTab, true);
-      cancelAnimationFrame(frame);
+      list.removeEventListener("scrollend", revealTabTarget);
+      list.removeEventListener("pointerdown", stopFollowingFocus);
+      list.removeEventListener("wheel", stopFollowingFocus);
+      stopFollowingFocus();
+      delete list.dataset.tabFocusReady;
     };
   }, [revealTabFocus, saveLeft, stopMotion]);
 
