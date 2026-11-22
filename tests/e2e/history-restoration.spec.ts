@@ -158,14 +158,10 @@ test("quotation draft fields and quantities survive eviction without issuing a q
 
 test("service tab survives eviction", async ({ page }) => {
   await page.goto("/service");
-  const tab = page.getByRole("tab").last();
-  await tab.click();
-  const label = (await tab.getAttribute("aria-label"))!;
+  const pickup = page.getByRole("tab", { name: "รับสินค้าที่โรงงาน", exact: true });
+  await pickup.click();
   await leaveAndReturn(page, ["/contact-us", "/about-us", "/solutions", "/products"]);
-  await expect(page.getByRole("tab", { name: label, exact: true })).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
+  await expect(pickup).toHaveAttribute("aria-selected", "true");
 });
 
 test("builder filters survive eviction", async ({ page }) => {

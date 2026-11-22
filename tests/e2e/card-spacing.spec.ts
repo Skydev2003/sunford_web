@@ -52,7 +52,7 @@ for (const width of [390, 1440]) {
       await page.goto(route);
       const main = page.locator("main:visible");
       await expect(main).toBeVisible();
-      const cardSelector = `${moduleClass("channel")},${moduleClass("contactCard")}`;
+      const cardSelector = `${moduleClass("channel")},#service-contact`;
       await expect(main.locator(cardSelector).first()).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
       const outside = await main.evaluate((element, selector) => {
@@ -105,7 +105,7 @@ for (const width of [320, 390, 768, 1440]) {
     const servicePadding = width < 640 ? 16 : 24;
     for (const [route, selector, expected] of [
       ["/contact-us", `a${moduleClass("channel")}`, 24],
-      ["/service", moduleClass("contactCard"), servicePadding],
+      ["/service", "#service-contact", servicePadding],
       ["/service", moduleClass("instructions"), servicePadding],
       ["/service/quotation", "form", width >= 1280 ? 32 : width >= 768 ? 24 : 16],
     ] as const) {
@@ -136,17 +136,8 @@ for (const width of [320, 390, 768, 1440]) {
     }
     await page.setViewportSize({ width: 1440, height: 700 });
     await page.goto("/service");
-    await expect(page.locator("main:visible").locator(moduleClass("contactCard"))).toHaveCSS(
-      "padding-left",
-      "16px",
-    );
-    await expect(page.locator("main:visible").locator(moduleClass("hero"))).toHaveCSS(
-      "padding-top",
-      "10px",
-    );
-    await expect(page.locator("main:visible").locator(moduleClass("hero"))).toHaveCSS(
-      "padding-bottom",
-      "8px",
-    );
+    const main = page.locator("main:visible");
+    await expect(main.locator("#service-contact")).toHaveCSS("padding-block-start", "16px");
+    await expect(main.locator(moduleClass("shell"))).toHaveCSS("padding-top", "10px");
   });
 }

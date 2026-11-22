@@ -11,19 +11,19 @@ const viewports = [
 const services = [
   {
     name: "ซ่อมบำรุง",
-    title: "ขั้นตอนการส่งสินค้าเข้ารับบริการซ่อมบำรุง",
+    title: "ส่งเครื่องซ่อม",
     steps: 6,
     conditions: [/ส่งเฉพาะตัวเครื่อง.*ไม่ส่งสายชั่งและปลั๊ก/, /ระบุอาการที่พบ/],
   },
   {
     name: "เปลี่ยนสินค้า",
-    title: "ขั้นตอนการเปลี่ยนรุ่นสินค้า",
+    title: "ส่งสินค้าเปลี่ยนรุ่น",
     steps: 5,
     conditions: [/สินค้า.*เอกสารว่ามีครบทุกชิ้น/, /“ขอเปลี่ยนสินค้า”/, /อาจมีค่าใช้จ่ายตามจริง/],
   },
   {
     name: "เคลมสินค้า",
-    title: "ขั้นตอนการเคลมสินค้า",
+    title: "ส่งสินค้าเคลม",
     steps: 4,
     conditions: [
       /เฉพาะชิ้นที่ได้รับความเสียหาย/,
@@ -33,13 +33,13 @@ const services = [
   },
   {
     name: "คืนสินค้า",
-    title: "ขั้นตอนการคืนสินค้า",
+    title: "ส่งสินค้าคืน",
     steps: 5,
     conditions: [/สินค้า.*เอกสารว่ามีครบทุกชิ้น/, /“คืนสินค้า”/, /อาจมีค่าใช้จ่ายตามจริง/],
   },
   {
     name: "รับสินค้าที่โรงงาน",
-    title: "ขั้นตอนการนัดเข้ารับสินค้าที่โรงงาน",
+    title: "นัดรับสินค้าที่โรงงาน",
     steps: 4,
     conditions: [
       /โดยมิได้นัดหมาย/,
@@ -51,7 +51,7 @@ const services = [
   },
 ];
 
-const serviceHeading = /บริการหลังการขาย|เลือกบริการที่คุณต้องการ/;
+const serviceHeading = "บริการหลังการขาย";
 const lineUrl = "https://line.me/R/ti/p/@sunford";
 
 test.use({ reducedMotion: "reduce" });
@@ -69,6 +69,13 @@ function serviceTab(main: Locator, name: string) {
 async function expectInstructions(area: Locator, service: (typeof services)[number]) {
   await expect(area.getByRole("heading", { name: service.title, exact: true })).toBeVisible();
   await expect(area.locator("ol").getByRole("listitem")).toHaveCount(service.steps);
+  if (service.name === "รับสินค้าที่โรงงาน") {
+    const details = area.locator("details");
+    const summary = details.locator("summary");
+    await summary.focus();
+    await summary.press("Enter");
+    await expect(details.getByRole("listitem")).toHaveCount(4);
+  }
   for (const text of service.conditions) await expect(area.getByText(text).first()).toBeVisible();
 }
 
@@ -146,11 +153,6 @@ for (const viewport of viewports) {
         await expectInstructions(panel, service);
         await expectContactAndPolicies(main);
         await expectHorizontalFit(main);
-        if (viewport.height === 720) {
-          await expect
-            .poll(() => main.evaluate((el) => el.getBoundingClientRect().bottom + scrollY))
-            .toBeLessThanOrEqual(viewport.height);
-        }
       });
     }
 
@@ -189,10 +191,25 @@ test("keyboard moves focus, selects the matching service, and enters the active 
   await expect(main.getByRole("tabpanel")).toBeFocused();
 });
 
+test("a direct service hash opens the matching panel after hydration", async ({ page }) => {
+  await page.goto("/service#service-panel-claim");
+  const main = serviceMain(page);
+  await expect(serviceTab(main, "เคลมสินค้า")).toHaveAttribute("aria-selected", "true");
+  const panel = main.getByRole("tabpanel", { name: "เคลมสินค้า" });
+  await expect(panel).toBeInViewport();
+  await expectInstructions(panel, services[2]);
+});
+
 test("service shortcuts reach LINE and the policy links", async ({ page }) => {
   await page.goto("/service");
   const main = serviceMain(page);
-  const line = main.getByRole("link", { name: "สอบถามทาง LINE", exact: true });
+  const contact = main.getByRole("link", { name: "ติดต่อฝ่ายบริการ", exact: true });
+  await contact.click();
+  await expect(page).toHaveURL("/service#service-contact");
+  const line = main
+    .locator("#service-contact")
+    .getByRole("link", { name: "LINE @sunford", exact: true });
+  await expect(line).toBeInViewport();
   await expect(line).toHaveAttribute("href", lineUrl);
   await expect(line).toHaveAttribute("target", "_blank");
 
@@ -231,8 +248,8 @@ test.describe("with JavaScript disabled", () => {
         await page.keyboard.press("Enter");
         await expect(page).toHaveURL(`/service${href}`);
         const section = main.locator(href);
-        await expectInstructions(section, service);
         await expect(section.getByRole("heading", { name: service.title })).toBeInViewport();
+        await expectInstructions(section, service);
         await expectHorizontalFit(main);
       }
       await expectContactAndPolicies(main);

@@ -229,7 +229,7 @@ test("Products intro aligns across md and the storefront stays within the viewpo
   }
 });
 
-test("Service tabs retain the short desktop layout and reflow through every variant", async ({
+test("Service tabs keep policies reachable on short desktops and reflow through every variant", async ({
   page,
 }) => {
   test.setTimeout(120_000);
@@ -239,15 +239,15 @@ test("Service tabs retain the short desktop layout and reflow through every vari
   const policy = page
     .locator("main")
     .getByRole("link", { name: "นโยบายการรับประกัน", exact: true });
-  let policyTop: number | undefined;
+  await expect(page.getByRole("tab")).toHaveCount(5);
   for (const tab of await page.getByRole("tab").all()) {
     await tab.click();
     await expect(page.getByRole("tabpanel")).toBeVisible();
-    const top = (await policy.boundingBox())!.y;
-    policyTop ??= top;
-    expect(Math.abs(top - policyTop)).toBeLessThan(1);
-    const main = (await page.locator("main").boundingBox())!;
-    expect(main.y + main.height).toBeLessThanOrEqual(720);
+    await expect(policy).toBeInViewport();
+    const bottom = await page
+      .locator("main:visible")
+      .evaluate((main) => main.getBoundingClientRect().bottom + scrollY);
+    expect(bottom).toBeLessThanOrEqual(720);
   }
   for (const width of [320, 390, 639, 640, 767, 768, 769, 1023, 1024, 1279, 1280, 1281]) {
     await page.setViewportSize({ width, height: 900 });
