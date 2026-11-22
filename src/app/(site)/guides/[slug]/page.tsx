@@ -48,7 +48,10 @@ async function BuyingGuideContent({ params }: GuidePageProps) {
       <header className="content-heading container">
         <p className="eyebrow">SUNFORD BUYING GUIDE</p>
         <h1>{guide.title}</h1>
-        <p>{guide.introduction}</p>
+        <p>
+          {guide.introduction ||
+            "คู่มือนี้ยังไม่มีคำอธิบายที่ยืนยันแล้ว เลือกหัวข้อเพื่อดูสินค้าหรือข้อมูลที่เกี่ยวข้องได้จากลิงก์ด้านล่าง"}
+        </p>
       </header>
       <article className="source-prose source-article container">
         <nav aria-label="หัวข้อในคู่มือ">
@@ -63,7 +66,7 @@ async function BuyingGuideContent({ params }: GuidePageProps) {
         {guide.sections.map((section) => (
           <section id={section.id} key={section.id}>
             <h2>{section.title}</h2>
-            {section.paragraphs.map((paragraph) => (
+            {section.paragraphs.filter(Boolean).map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
             <ul>
@@ -75,6 +78,9 @@ async function BuyingGuideContent({ params }: GuidePageProps) {
             </ul>
           </section>
         ))}
+        <Link className="text-link" href="/contact-us">
+          สอบถามเกี่ยวกับการเลือกสินค้า
+        </Link>
       </article>
     </main>
   );
