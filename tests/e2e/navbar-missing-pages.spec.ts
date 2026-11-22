@@ -214,14 +214,18 @@ test("all eight direct URLs show Warehouse listings and related pages at tablet 
   ).toBeVisible();
 });
 
-async function follow(page: Page, parent: string, label: string, href: string) {
+async function follow(
+  page: Page,
+  parent: string,
+  label: string,
+  href: string,
+  fromChapter = false,
+) {
   await page.goto(parent);
   const main = page.getByRole("main");
-  const link = main.locator(`a[href="${href}"]`);
-  const chapter = main
-    .locator("#products-chapters")
-    .getByRole("button", { name: label, exact: true });
-  const target = link.or(chapter);
+  const target = fromChapter
+    ? main.locator("#products-chapters").getByRole("button", { name: label, exact: true })
+    : main.locator(`a[href="${href}"]`);
   await expect(target).toContainText(label);
   await target.click({ timeout: 12_000 });
   await expect(page).toHaveURL(new URL(href, page.url()).href, { timeout: 20_000 });
@@ -246,7 +250,11 @@ test("category pages, consumables and product detail connect back to the new lis
     "accessories",
   ];
   for (const [index, [, label, href]] of menuEntries.entries()) {
-    await follow(page, `${root}/${parents[index]}`, label, href);
+    const parent = parents[index];
+    const fromChapter =
+      parent === "accessories" &&
+      [`${accessories}/weights`, `${accessories}/electronics`, printers].includes(href);
+    await follow(page, `${root}/${parent}`, label, href, fromChapter);
   }
   await follow(page, consumables, "กระดาษความร้อน", paper);
   await follow(page, consumables, "ฉลากและสติ๊กเกอร์", labels);

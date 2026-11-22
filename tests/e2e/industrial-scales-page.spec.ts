@@ -110,7 +110,7 @@ test("old URLs, guide and scales chapter reach industrial without finder", async
   await page.goto("/products/category/scales");
   await page
     .locator("#products-chapters")
-    .getByRole("button", { name: "เครื่องชั่งอุตสาหกรรมงานผลิต", exact: true })
+    .getByRole("button", { name: "การผลิต", exact: true })
     .click();
   await expect(page).toHaveURL(new RegExp(path + "$"));
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -141,7 +141,7 @@ test("industrial chapter clears a closed finder query before returning through h
   await page.keyboard.press("Escape");
   await page
     .locator("#products-chapters")
-    .getByRole("button", { name: "เครื่องชั่งอุตสาหกรรมงานผลิต", exact: true })
+    .getByRole("button", { name: "การผลิต", exact: true })
     .click();
   await expect(page).toHaveURL(new RegExp(path + "$"));
   await page.goBack();

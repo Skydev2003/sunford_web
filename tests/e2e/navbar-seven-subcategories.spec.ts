@@ -190,6 +190,10 @@ test("tablet category entrances and direct listings agree with Warehouse members
       const button = page
         .locator("#products-chapters")
         .getByRole("button", { name: label, exact: true });
+      if (category === "indicators") {
+        await expect(button).toHaveCount(0);
+        continue;
+      }
       if (members(products, category, id).length && !savedDisabled.has(href))
         await expect(button).toBeEnabled();
       else await expect(button).toBeDisabled();

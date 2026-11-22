@@ -428,27 +428,31 @@ test("product functions link to dedicated listings separate from machine familie
   assert.ok(scales.groups![0].links.every((link) => !link.disabled));
 });
 
-test("category chapter rails retain their existing links when the Navbar is shortened", () => {
+test("the five chapter rails use the approved Navbar product entries and readiness", () => {
+  const productCategories = approvedMenus.slice(1, 6);
+  const readyHrefs = productCategories.flatMap(({ columns }) =>
+    columns[0].links.filter(([, , disabled]) => disabled).map(([, href]) => href),
+  );
+  for (const ready of [[], readyHrefs]) {
+    const chapterMenus = getPrimaryNavigationItems(defaultNavigation, ready, "category-chapters");
+    for (const { href, columns } of productCategories) {
+      const actual = chapterMenus.find((menu) => menu.href === href)!;
+      assert.deepEqual(
+        actual.links.map(({ label, href, disabled }) => [label, href, Boolean(disabled)]),
+        columns[0].links.map(([label, href, gated]) => [
+          label,
+          href,
+          gated && !ready.includes(href),
+        ]),
+        href,
+      );
+    }
+  }
+});
+
+test("category overview keeps its separate feature links", () => {
   const chapterMenus = getPrimaryNavigationItems(defaultNavigation, [], "category-chapters");
   const [scales, indicators] = chapterMenus.slice(1, 3);
-  assert.deepEqual(
-    scales.links.map(({ label }) => label),
-    [
-      "มีเสา",
-      "ตั้งโต๊ะ",
-      "ตั้งพื้น",
-      "คำนวณราคา",
-      "อุตสาหกรรม",
-      "ครัวและกาแฟ",
-      "งานวิเคราะห์",
-      "กันน้ำ–กันฝุ่น",
-    ],
-  );
-  assert.deepEqual(
-    indicators.links.map(({ label }) => label),
-    ["LCD", "LED", "กันน้ำ"],
-  );
-  assert.ok(indicators.links.at(-1)?.disabled);
   assert.deepEqual(
     scales.groups![0].links.map(({ label }) => label),
     ["กันน้ำ", "ตั้งโต๊ะ", "ตั้งพื้น", "นับจำนวนชิ้น", "เตือนน้ำหนักขาด–เกิน"],
@@ -589,8 +593,9 @@ test("the scanner Navbar listing is separate from POS accessories and keeps chap
   });
   for (const [source, surface, accessoriesDisabled] of [
     [defaultNavigation, "navbar", false],
-    [defaultNavigation, "category-chapters", true],
+    [defaultNavigation, "category-chapters", false],
     [navigation, "navbar", true],
+    [navigation, "category-chapters", true],
   ] as const) {
     const menus = getPrimaryNavigationItems(source, [href], surface);
     const accessories = menus.find((menu) => menu.href === "/products/category/accessories")!;

@@ -47,11 +47,11 @@ async function seekIntro(page: Page, time: number) {
 }
 
 for (const [id, count, label] of [
-  ["scales", 8, "เครื่องชั่ง"],
-  ["indicators", 3, "อินดิเคเตอร์แท่นชั่ง"],
+  ["scales", 4, "เครื่องชั่ง"],
+  ["indicators", 2, "อินดิเคเตอร์แท่นชั่ง"],
   ["platforms", 4, "โครงสร้างแท่นชั่ง"],
   ["pos", 3, "ระบบ POS"],
-  ["accessories", 5, "อุปกรณ์เสริม"],
+  ["accessories", 7, "อุปกรณ์เสริม"],
 ] as const) {
   for (const width of [390, 1440]) {
     test(`${id} opening uses the light shared rise and preserves ribbon at ${width}px`, async ({
@@ -96,9 +96,17 @@ for (const [id, count, label] of [
       expect(properties[0].iterations).toBe(1);
       expect(properties[0].frames.map((frame) => frame.translate)).toEqual(["0px 16px", "0px"]);
       expect(properties[0].frames.map((frame) => frame.scale ?? null)).toEqual([null, null]);
-      await expect(chapters.first().getByRole("button")).toBeEnabled();
-      await chapters.first().getByRole("button").focus();
-      await expect(chapters.first()).toHaveCSS("opacity", "1");
+      await expect(
+        page.locator("[data-products-header]:visible").getByRole("button", {
+          name: "ค้นหาสินค้าและข้อมูล",
+        }),
+      ).toBeEnabled();
+      const focusable = chapters.locator("button:enabled").first();
+      if (id !== "platforms" || (await focusable.count())) {
+        await focusable.focus();
+        await expect(focusable).toBeFocused();
+        await expect(focusable.locator("..")).toHaveCSS("opacity", "1");
+      }
       await seekIntro(page, 3500);
       await expect(title).toHaveCSS("opacity", "1");
       await expect(ribbon).toHaveCSS("color", "rgb(29, 29, 31)");
