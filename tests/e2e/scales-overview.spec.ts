@@ -195,13 +195,10 @@ test("scales and full catalog keep the right overlay host across cached navigati
   page,
 }) => {
   await page.goto(scalePath);
-  await expect(page.locator('[data-overview-section="chapters"]')).toBeVisible();
-  await expect(
-    page
-      .locator('[data-overview-section="chapters"]')
-      .getByRole("link", { name: "สินค้าทั้งหมด", exact: true }),
-  ).toHaveCount(0);
-  await page.goto("/products");
+  await page
+    .locator("[data-products-nav]:visible")
+    .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
+    .click();
   const directory = page.locator("[data-products-directory]");
   await expect(
     directory.locator('#products-categories a[href^="/products/category/"]'),
@@ -230,10 +227,10 @@ test("scales and full catalog keep the right overlay host across cached navigati
   const indicatorFinder = page.getByRole("dialog", { name: "ดูอินดิเคเตอร์แท่นชั่งทั้งหมด" });
   await page
     .locator('[data-overview-section="lineup"]:visible')
-    .getByRole("button", { name: "ดูอินดิเคเตอร์แท่นชั่งทั้งหมด" })
+    .getByRole("link", { name: "เลือกตามคุณสมบัติ", exact: true })
     .click();
-  await expect(indicatorFinder).toBeVisible();
-  await page.keyboard.press("Escape");
+  await expect(page).toHaveURL(/\/products\/category\/indicators\/applications$/);
+  await page.goBack();
   await expect(indicatorFinder).toBeHidden();
   await page
     .locator("[data-products-header]:visible")

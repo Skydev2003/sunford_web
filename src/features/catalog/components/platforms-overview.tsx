@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { overviewGuideLinks } from "../data/category-applications";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuides } from "@/features/content/data/buying-guides";
@@ -102,7 +103,7 @@ export async function PlatformsOverview() {
       <div className={styles.storyBlocks}>
         <section>
           <p>{topics[section.id].detail}</p>
-          {section.links.map((link) => (
+          {overviewGuideLinks("platforms", section.links).map((link) => (
             <Link key={link.href} href={link.href}>
               {link.label} ›
             </Link>

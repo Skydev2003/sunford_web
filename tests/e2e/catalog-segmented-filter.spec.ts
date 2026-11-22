@@ -54,10 +54,23 @@ test("lineup selection moves the dark pill, realigns on resize, and keeps keyboa
   await expect(tray).toHaveCSS("background-color", "rgb(232, 232, 237)");
   const kitchen = filters.getByRole("button", { name: "ครัวเรือน" });
   const industrial = filters.getByRole("button", { name: "การผลิต" });
+  await industrial.evaluate((button) => {
+    const indicator = button.parentElement?.querySelector("[data-segmented-indicator]");
+    if (!indicator || !(button instanceof HTMLButtonElement)) throw new Error("Missing filter UI");
+    indicator.addEventListener("transitionstart", function retarget(event) {
+      if (!(event instanceof TransitionEvent) || event.propertyName !== "transform") return;
+      indicator.removeEventListener("transitionstart", retarget);
+      button.focus();
+      button.click();
+    });
+  });
   await kitchen.press("Enter");
-  await expect(pill).toHaveCSS("transition-duration", "0.3s, 0.3s");
-  await industrial.press("Enter");
   await expect(industrial).toHaveAttribute("aria-pressed", "true");
+  await expect(pill).toHaveCSS("transition-duration", "0.48s, 0.48s");
+  await expect(pill).toHaveCSS(
+    "transition-timing-function",
+    "cubic-bezier(0.33, 0, 0.2, 1), cubic-bezier(0.33, 0, 0.2, 1)",
+  );
   await expect(industrial).toHaveCSS("outline-color", "rgb(0, 113, 227)");
   await expectIndicatorAtSelection(tray);
   await industrial.evaluate((button) => ((button as HTMLElement).style.fontSize = "21px"));

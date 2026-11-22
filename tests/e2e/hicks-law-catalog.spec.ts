@@ -80,11 +80,8 @@ for (const width of [320, 390, 834, 1440]) {
       categoryNavigation.getByRole("button", { name: "เครื่องชั่ง", exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
     await page.getByRole("button", { name: "ปิดแคตตาล็อกสินค้า" }).click();
-    await page.goto("/products/category/platforms");
-    await page
-      .locator('[data-overview-section="lineup"]')
-      .getByRole("button", { name: "ดูโครงสร้างแท่นชั่งทั้งหมด", exact: true })
-      .click();
+    await page.goto("/products?category=platforms");
+    await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
     if (width < 1100) {
       const sizes = await page.getByRole("region", { name: catalogName }).evaluate((element) => ({
         catalog: element.getBoundingClientRect().width,

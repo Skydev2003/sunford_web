@@ -3,7 +3,8 @@ import { verifyCategoryOverview } from "./helpers/category-overview";
 
 const path = "/products/category/indicators";
 const label = "อินดิเคเตอร์แท่นชั่ง";
-const title = `ดู${label}ทั้งหมด`;
+const title = "ดูสินค้าทั้งหมด";
+const catalogPath = "/products?category=indicators";
 const chapters = [
   ["indicator-lcd", "LCD"],
   ["indicator-led", "LED"],
@@ -47,18 +48,17 @@ for (const width of [390, 1440]) {
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
     await expect(finder).not.toBeVisible();
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
-    await page.goto(path);
-    await page
-      .locator('[data-overview-section="lineup"]')
-      .getByRole("button", { name: title, exact: true })
-      .click();
+    await page.goto(catalogPath);
+    await expect(finder).toBeVisible();
     await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("no-indicator-match");
     await expect(
       catalog.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),
     ).toBeVisible();
-    await catalog.getByRole("button", { name: "ล้างตัวกรองทั้งหมด", exact: true }).click();
+    await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).clear();
     await catalog.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
-    const compare = catalog.locator("article[data-model-only]").first().getByRole("button");
+    const compare = catalog
+      .getByRole("button", { name: /^(เพิ่มเพื่อ|นำออกจาก)เปรียบเทียบ/ })
+      .first();
     await compare.click();
     await expect(compare).toHaveAttribute("aria-pressed", "true");
     await page.keyboard.press("Escape");
@@ -85,13 +85,10 @@ test("indicator cache navigation preserves a single active chrome and overlay ho
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(path);
-  await expect(page.locator('[data-overview-section="chapters"]')).toBeVisible();
-  await expect(
-    page
-      .locator('[data-overview-section="chapters"]')
-      .getByRole("link", { name: "สินค้าทั้งหมด", exact: true }),
-  ).toHaveCount(0);
-  await page.goto("/products");
+  await page
+    .locator("[data-products-nav]:visible")
+    .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
+    .click();
   const directory = page.locator("[data-products-directory]");
   await expect(
     directory.locator('#products-categories a[href^="/products/category/"]'),
@@ -120,10 +117,7 @@ test("indicator cache navigation preserves a single active chrome and overlay ho
       1,
     );
   }
-  await page
-    .locator('[data-overview-section="lineup"]:visible')
-    .getByRole("button", { name: title, exact: true })
-    .click();
+  await page.goto(catalogPath);
   const finder = page.getByRole("dialog", { name: title, exact: true });
   await expect(finder).toBeVisible();
   await finder.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
@@ -136,6 +130,8 @@ test("indicator cache navigation preserves a single active chrome and overlay ho
   await expect(comparison.locator("table thead th")).toHaveCount(3);
   await comparison.getByRole("button", { name: "ปิด", exact: true }).click();
   await page.keyboard.press("Escape");
+  await page.goBack();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
   await page
     .locator("[data-products-header]:visible")
     .getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true })

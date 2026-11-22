@@ -73,9 +73,9 @@ test("homepage heading reveals once when scrolled into view", async ({ page }) =
     .poll(async () => (await reveals(page)).filter(({ target }) => target === "story"))
     .toContainEqual(
       expect.objectContaining({
-        duration: 700,
+        duration: 950,
         delay: 0,
-        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        easing: "cubic-bezier(0.25, 0.35, 0.25, 1)",
         startOpacity: 0,
         endOpacity: 1,
         translate: "0 24px",
@@ -108,7 +108,7 @@ for (const [path, heading] of [
     const matching = async () => (await reveals(page)).filter((item) => item.target === heading);
     await expect
       .poll(matching)
-      .toContainEqual(expect.objectContaining({ duration: 700, delay: 0, translate: "0 24px" }));
+      .toContainEqual(expect.objectContaining({ duration: 950, delay: 0, translate: "0 24px" }));
     await expect(target).toHaveCSS("translate", "none");
     await approach(target);
     await target.scrollIntoViewIfNeeded();
@@ -137,11 +137,12 @@ test("product listing reveals grid cards with only four repeating delays", async
   await expect(card).toBeInViewport({ ratio: 0.1 });
   await expect
     .poll(async () => (await reveals(page)).find(({ index }) => index === 9)?.delay)
-    .toBe(80);
+    .toBe(100);
   const animated = await reveals(page);
-  for (const { index, delay, duration } of animated) {
-    expect(delay).toBe((index % 4) * 80);
-    expect(duration).toBe(700);
+  for (const { index, delay, duration, easing } of animated) {
+    expect(delay).toBe((index % 4) * 100);
+    expect(duration).toBe(950);
+    expect(easing).toBe("cubic-bezier(0.25, 0.35, 0.25, 1)");
   }
   const link = card.locator("a").last();
   await link.focus();

@@ -711,12 +711,10 @@ for (const width of [390, 834, 1440]) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     for (const category of productCategoryDefinitions) {
-      await page.goto(`/products/category/${category.id}`);
-      const title = `ดู${category.label}ทั้งหมด`;
-      await page
-        .locator('[data-overview-section="lineup"]')
-        .getByRole("button", { name: title, exact: true })
-        .click();
+      await page.goto(
+        category.id === "scales" ? "/products?catalog=all" : `/products?category=${category.id}`,
+      );
+      const title = "ดูสินค้าทั้งหมด";
       const finder = page.getByRole("dialog", { name: title, exact: true });
       const region = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
       await expectGridOnly(region);
@@ -760,7 +758,9 @@ for (const width of [390, 834, 1440]) {
       if (category.id === "scales") {
         await page.getByRole("button", { name: "ยกเลิกการเปรียบเทียบ", exact: true }).click();
       }
-      const child = productSubcategoryPages.find((item) => item.categoryId === category.id)!;
+      const child = productSubcategoryPages.find(
+        (item) => item.categoryId === category.id && item.id !== "pos-ios",
+      )!;
       await page.goto(child.href);
       const listing = page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
       await expectGridOnly(listing);

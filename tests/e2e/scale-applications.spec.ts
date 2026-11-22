@@ -14,35 +14,23 @@ for (const [width, slug] of [
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(overview, { waitUntil: "domcontentloaded" });
-    const section = page.getByRole("region", { name: "เลือกเครื่องชั่งตามการใช้งาน" });
-    const rail = section.getByRole("list", { name: "กลุ่มการใช้งานเครื่องชั่ง" });
-    const tiles = rail.locator(":scope > li > a");
-    await expect(tiles.first()).toBeVisible();
-    await page.evaluate(() => document.fonts.ready);
-    const links = await tiles.evaluateAll((items) =>
-      items.map((item) => item.getAttribute("href")),
-    );
-    expect(links).toContain(`${applications}/${slug}`);
-    expect(new Set(links).size).toBe(links.length);
-    const allOverviewLinks = await section
-      .locator(`a[href^="${applications}/"]`)
-      .evaluateAll((items) => items.map((item) => item.getAttribute("href")));
-    expect(allOverviewLinks.length).toBeGreaterThan(links.length);
-    await section.getByRole("link", { name: "ดูทุกกลุ่มการใช้งาน" }).press("Enter");
+    const filters = page.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+    const link = filters.getByRole("link", { name: "เลือกตามการใช้งาน", exact: true });
+    await expect(link).toHaveAttribute("href", applications);
+    await expect(page.locator('[data-overview-section="applications"]')).toHaveCount(0);
+    await expect(page.locator(`main:visible a[href^="${applications}/"]`)).toHaveCount(0);
+    await link.press("Enter");
     await expect(page).toHaveURL(new RegExp(`${applications}$`), { timeout: 20_000 });
     const indexLinks = page.locator(`main:visible a[href^="${applications}/"]`);
-    await expect(indexLinks).toHaveCount(allOverviewLinks.length);
+    const groupLink = indexLinks.and(page.locator(`a[href="${applications}/${slug}"]`));
+    await expect(groupLink).toBeVisible();
     const allLinks = await indexLinks.evaluateAll((items) =>
       items.map((item) => item.getAttribute("href")),
     );
-    expect(allLinks.toSorted()).toEqual(allOverviewLinks.toSorted());
-
-    await page.goBack({ waitUntil: "domcontentloaded" });
-    const tile = rail.locator(`a[href="${applications}/${slug}"]`);
-    const label = await tile.getByRole("heading").innerText();
-    await tile.scrollIntoViewIfNeeded();
-    await expect(tile).toBeInViewport();
-    await tile.click();
+    expect(allLinks.length).toBeGreaterThan(1);
+    expect(new Set(allLinks).size).toBe(allLinks.length);
+    const label = await groupLink.innerText();
+    await groupLink.click();
     await expect(page).toHaveURL(new RegExp(`${applications}/${slug}$`), { timeout: 20_000 });
     await expect(page.getByRole("heading", { level: 1, name: label, exact: true })).toBeVisible();
     const models = page.getByRole("list", { name: "เครื่องชั่งสำหรับงานนี้" });

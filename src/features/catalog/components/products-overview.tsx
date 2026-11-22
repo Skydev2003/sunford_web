@@ -69,6 +69,7 @@ import {
 } from "@/features/home/data/image-slots";
 import { selectComponentShowcase } from "../data/component-showcase";
 import { lineupSalesCopy } from "../data/lineup-sales-copy";
+import { categoryApplicationsLink, hasCategoryApplications } from "../data/category-applications";
 import { catalogProductPhoto } from "./catalog-product-card";
 import { ProductCategoryMock } from "./product-category-mock";
 import { SegmentedFilter } from "./segmented-filter";
@@ -109,7 +110,6 @@ const categoryServiceIcons = new Map([
   [sunford.software, Download],
   [sunford.downloads, Download],
 ]);
-const lineupCategoryIds = new Set(["scales", "indicators", "platforms", "pos"]);
 const chapterArtwork = new Map([
   ["/products/category/indicators/lcd", lcdArt.src],
   ["/products/category/indicators/led", ledArt.src],
@@ -362,7 +362,6 @@ export function ProductsOverview({
   categoryId,
   chapterPhotoIdByHref,
   indexContent,
-  applications,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
@@ -377,13 +376,14 @@ export function ProductsOverview({
   categoryId?: string;
   chapterPhotoIdByHref?: Record<string, string>;
   indexContent?: ReactNode;
-  applications?: ReactNode;
 }) {
   const router = useRouter();
   const activeCategory = categories.find((category) => category.id === categoryId);
-  const scaleApplicationsHref =
-    categoryId === "scales" ? "/products/category/scales/applications" : undefined;
-  const categoryLineup = Boolean(categoryId && lineupCategoryIds.has(categoryId));
+  const applicationsLink =
+    categoryId && hasCategoryApplications(categoryId)
+      ? categoryApplicationsLink(categoryId)
+      : undefined;
+  const categoryLineup = Boolean(applicationsLink);
   const categoryEntrance = Boolean(indexContent) || categoryLineup || categoryId === "accessories";
   const categoryItems = activeCategory?.subcategories ?? categories;
   const categoryHref = categoryId ? `/products/category/${categoryId}` : undefined;
@@ -423,7 +423,7 @@ export function ProductsOverview({
   };
   const railScope = categoryLineup ? `products-overview.${categoryId}` : undefined;
   const [restoredFinderOpen, setFinderOpen] = useReturnState("products-overview.finderOpen", false);
-  const finderOpen = !scaleApplicationsHref && restoredFinderOpen;
+  const finderOpen = !applicationsLink && restoredFinderOpen;
   const hydrated = useHydratedControls();
   const [story, setStory] = useReturnState<Story | null>("products-overview.story", null);
   const [service, setService] = useReturnState<Service | null>("products-overview.service", null);
@@ -525,7 +525,7 @@ export function ProductsOverview({
       router.push(destination);
       return;
     }
-    if (scaleApplicationsHref) return;
+    if (applicationsLink) return;
     const url = new URL(window.location.href);
     if (activeCategory) {
       url.searchParams.delete("category");
@@ -540,7 +540,7 @@ export function ProductsOverview({
   };
   const activateLink = (event: MouseEvent<HTMLElement>, href: string) => {
     if (
-      scaleApplicationsHref ||
+      applicationsLink ||
       event.button ||
       event.metaKey ||
       event.ctrlKey ||
@@ -694,7 +694,7 @@ export function ProductsOverview({
     >
       <Suspense fallback={null}>
         <FinderQuerySync
-          onOpen={scaleApplicationsHref ? undefined : openFinder}
+          onOpen={applicationsLink ? undefined : openFinder}
           onClose={indexContent ? closeFinder : undefined}
           categoryId={activeCategory?.id}
         />
@@ -703,7 +703,7 @@ export function ProductsOverview({
         navigation={navigation}
         readySubcategoryHrefs={readySubcategoryHrefs}
         site={site}
-        onOpenFinder={scaleApplicationsHref ? undefined : openFinder}
+        onOpenFinder={applicationsLink ? undefined : openFinder}
         onMenuChange={setMobileMenu}
       />
       <main
@@ -968,7 +968,7 @@ export function ProductsOverview({
                     ? `ดูข้อมูล${activeCategory.label}`
                     : "ดูข้อมูลผลิตภัณฑ์ตระกูลนี้"}
                 </h2>
-                {!scaleApplicationsHref && (
+                {!applicationsLink && (
                   <button
                     disabled={!hydrated}
                     type="button"
@@ -1006,9 +1006,9 @@ export function ProductsOverview({
                         {item.label}
                       </button>
                     ))}
-                    {scaleApplicationsHref && (
-                      <Link href={scaleApplicationsHref} prefetch={false}>
-                        เลือกตามการใช้งาน
+                    {applicationsLink && (
+                      <Link href={applicationsLink.href} prefetch={false}>
+                        {applicationsLink.shortLabel}
                       </Link>
                     )}
                   </SegmentedFilter>
@@ -1097,8 +1097,6 @@ export function ProductsOverview({
                 })}
               </Gallery>
             </section>
-
-            {applications}
 
             <section
               className={`${styles.section} ${styles.paper} ${styles.services}`}
@@ -1339,9 +1337,9 @@ export function ProductsOverview({
                 <div className={styles.indexColumns}>
                   <div className={styles.indexPrimary}>
                     <p>{activeCategory ? `สำรวจ${activeCategory.label}` : "สำรวจผลิตภัณฑ์"}</p>
-                    {scaleApplicationsHref ? (
-                      <CatalogNavigationLink href={scaleApplicationsHref}>
-                        เลือกเครื่องชั่งตามการใช้งาน
+                    {applicationsLink ? (
+                      <CatalogNavigationLink href={applicationsLink.href}>
+                        {applicationsLink.label}
                       </CatalogNavigationLink>
                     ) : (
                       <button
@@ -1384,7 +1382,7 @@ export function ProductsOverview({
                             {category.label}
                           </button>
                         ))}
-                    {!scaleApplicationsHref && (
+                    {!applicationsLink && (
                       <button
                         disabled={!hydrated}
                         type="button"
@@ -1416,7 +1414,7 @@ export function ProductsOverview({
             </section>
           </>
         )}
-        {additionalCategoryLinks.length > 0 && (
+        {!categoryLineup && additionalCategoryLinks.length > 0 && (
           <nav
             className={`${styles.sectionInner} ${directoryStyles.related}`}
             aria-label="หมวดสินค้าที่เกี่ยวข้อง"
@@ -1628,7 +1626,7 @@ export function ProductsOverview({
           </>
         )}
       </ReferenceModal>
-      {!scaleApplicationsHref && (
+      {!applicationsLink && (
         <ReferenceModal
           open={finderOpen}
           onClose={closeFinder}

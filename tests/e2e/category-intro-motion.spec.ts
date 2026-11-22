@@ -1,4 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
+import {
+  categoryApplicationsLink,
+  hasCategoryApplications,
+} from "../../src/features/catalog/data/category-applications";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 
 type IntroWindow = Window & { introAnimations: Animation[]; pauseIntro: boolean };
@@ -139,13 +143,14 @@ for (const [id, count, label] of [
           ).length,
       );
       const finder = page.getByRole("dialog", { name: `ดู${label}ทั้งหมด`, exact: true });
-      if (id === "scales") {
+      if (hasCategoryApplications(id)) {
+        const applications = categoryApplicationsLink(id);
         await expect(
           overview.locator('[data-overview-section="lineup"]').getByRole("link", {
-            name: "เลือกตามการใช้งาน",
+            name: applications.shortLabel,
             exact: true,
           }),
-        ).toHaveAttribute("href", "/products/category/scales/applications");
+        ).toHaveAttribute("href", applications.href);
       } else {
         await overview
           .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
@@ -254,7 +259,7 @@ test("normal-motion client entry and cached history keep controls usable", async
   for (const [id, label] of [
     ["scales", "เครื่องชั่ง"],
     ["indicators", "อินดิเคเตอร์แท่นชั่ง"],
-  ]) {
+  ] as const) {
     await page
       .locator("[data-products-header]:visible")
       .getByRole("link", { name: label, exact: true })
@@ -264,15 +269,10 @@ test("normal-motion client entry and cached history keep controls usable", async
     await expect(overview.locator("#products-title")).toBeVisible();
     await page.mouse.move(1400, 700);
     await expect(overview.locator("#products-title")).toHaveCSS("scale", "none");
-    if (id === "scales") continue;
-    await overview
-      .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
-      .first()
-      .click();
-    const finder = page.getByRole("dialog", { name: `ดู${label}ทั้งหมด`, exact: true });
-    await expect(finder).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(finder).not.toBeVisible();
+    const applications = categoryApplicationsLink(id);
+    await expect(
+      overview.getByRole("link", { name: applications.shortLabel, exact: true }),
+    ).toHaveAttribute("href", applications.href);
   }
   await page.goBack();
   await expect(page.locator('[data-overview-category="scales"]:visible #products-title')).toHaveCSS(
@@ -301,13 +301,13 @@ test("normal-motion client entry and cached history keep controls usable", async
   ).not.toBeVisible();
   await page
     .locator('[data-overview-category="indicators"]:visible')
-    .getByRole("button", { name: "ดูอินดิเคเตอร์แท่นชั่งทั้งหมด", exact: true })
-    .first()
-    .click();
+    .getByRole("link", { name: "เลือกตามคุณสมบัติ", exact: true })
+    .press("Enter");
+  await expect(page).toHaveURL(/\/products\/category\/indicators\/applications$/);
+  await page.goBack();
   await expect(
     page.getByRole("dialog", { name: "ดูอินดิเคเตอร์แท่นชั่งทั้งหมด", exact: true }),
-  ).toBeVisible();
-  await page.keyboard.press("Escape");
+  ).not.toBeVisible();
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
   expect(errors).toEqual([]);

@@ -140,12 +140,8 @@ for (const width of [390, 1440]) {
     await card.getByRole("link").first().click();
     await expect(page.locator("#product-overview h1")).toHaveText(item.name);
     await expect(page.locator(".product-gallery")).toHaveCount(0);
-    await page.goto(`/products/category/${item.warehouseCategoryId}`);
-    await page
-      .getByRole("button", { name: /^ดู.+ทั้งหมด$/ })
-      .first()
-      .click();
-    const finder = page.getByRole("dialog", { name: /^ดู.+ทั้งหมด$/ });
+    await page.goto(`/products?category=${item.warehouseCategoryId}`);
+    const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
     await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill(item.warehouseSku);
     const link = finder.locator(`a[href^="/products/${item.slug}"]`).first();
     await expect(link).toBeVisible();
@@ -259,12 +255,9 @@ for (const width of [390, 834, 1440]) {
         (p: { warehouseCategoryId: string; image: string }) => p.warehouseCategoryId === category,
       );
       if (!(await page.locator(`main a[href^="/products/${member.slug}"]`).count())) {
+        await page.goto(`/products?category=${category}`);
         await page
-          .getByRole("button", { name: /^ดู.+ทั้งหมด$/ })
-          .first()
-          .click();
-        await page
-          .getByRole("dialog")
+          .getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })
           .getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })
           .fill(member.warehouseSku);
       }

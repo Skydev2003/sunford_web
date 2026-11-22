@@ -39,6 +39,17 @@
   color: var(--muted);
 }
 
+.applicationGroups {
+  display: grid;
+  gap: var(--section-space);
+}
+
+.applicationGroupHeading {
+  margin-bottom: var(--catalog-rail-heading-space);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
 .list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

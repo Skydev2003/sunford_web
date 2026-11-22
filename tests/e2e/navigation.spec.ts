@@ -21,6 +21,7 @@ for (const width of [1440, 390]) {
   test(`primary product links match the catalog and select each real family at ${width}px`, async ({
     page,
   }) => {
+    test.slow();
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
@@ -32,35 +33,61 @@ for (const width of [1440, 390]) {
       await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
       await parent.click();
       await expect(page).toHaveURL(new URL(`/products/category/${id}`, page.url()).href);
-      const local = ["scales", "indicators", "platforms", "pos", "accessories"].includes(id);
-      if (local)
-        await page
-          .locator('[data-overview-section="lineup"]')
-          .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
-          .click();
+      const chapters = page.locator('[data-overview-section="chapters"]:visible');
+      await expect(chapters.getByRole("heading", { level: 1, name: label })).toBeVisible();
+      await expect(chapters.getByRole("link", { name: "สินค้าทั้งหมด", exact: true })).toHaveCount(
+        0,
+      );
+      if (width < 1024) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+      await page
+        .locator(width < 1024 ? "#products-navigation-panel" : "[data-products-nav]:visible")
+        .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
+        .click();
+      await expect(page).toHaveURL(/\/products$/);
+      await expect(page.locator("[data-products-directory]:visible")).toBeVisible();
+      await page.goBack();
+      await expect(page).toHaveURL(new URL(`/products/category/${id}`, page.url()).href);
+      if (id !== "accessories") {
+        await expect(
+          page.getByRole("heading", { level: 1, name: label, exact: true }),
+        ).toBeVisible();
+        await expect(page.locator("#products-lineup > li:has(h3)").first()).toBeVisible();
+        await expect(
+          page.locator(
+            `[data-overview-category="${id}"]:visible [data-return-scope="catalog-finder"]`,
+          ),
+        ).toHaveCount(0);
+        continue;
+      }
+      await page
+        .locator('[data-overview-section="lineup"]')
+        .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
+        .click();
       const catalog = page
         .getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" })
         .filter({ visible: true });
       await expect(
-        catalog.getByRole("heading", { level: local ? 2 : 1, name: label, exact: true }),
+        catalog.getByRole("heading", { level: 2, name: label, exact: true }),
       ).toBeVisible();
       await expect(catalog.locator("#mock-product-results article").first()).toBeVisible();
-      if (local) {
-        await expect(
-          catalog
-            .getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true })
-            .getByRole("button", { name: label, exact: true }),
-        ).toHaveAttribute("aria-pressed", "true");
-        await page.keyboard.press("Escape");
-      }
+      await expect(
+        catalog
+          .getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true })
+          .getByRole("button", { name: label, exact: true }),
+      ).toHaveAttribute("aria-pressed", "true");
+      await page.keyboard.press("Escape");
     }
-    await page.goto("/products");
+    if (width < 1024) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+    await page
+      .locator(width < 1024 ? "#products-navigation-panel" : "[data-products-nav]:visible")
+      .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
+      .click();
     await expect(page).toHaveURL(/\/products$/);
     await expect(
       page
         .locator("main:visible")
-        .getByRole("heading", { level: 1, name: "ผลิตภัณฑ์ทั้งหมด", exact: true }),
-    ).toBeVisible();
+        .getByRole("heading", { level: 1, name: "เครื่องชั่งน้ำหนักล้ำสมัย", exact: true }),
+    ).toBeAttached();
     await expect(
       page
         .locator("main:visible")

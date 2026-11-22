@@ -129,11 +129,8 @@ for (const width of [390, 1440]) {
         "data-controls-ready",
         "true",
       );
-      await page
-        .getByRole("button", { name: /^ดู.+ทั้งหมด$/ })
-        .first()
-        .click();
-      const finder = page.getByRole("dialog", { name: /^ดู.+ทั้งหมด$/ });
+      await page.goto(`/products?category=${choice.categoryId}`);
+      const finder = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
       for (const query of [sku, sku.toLowerCase()]) {
         await finder.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill(query);
         await expect(finder.locator("#mock-product-results article h3")).toHaveText([item.name]);

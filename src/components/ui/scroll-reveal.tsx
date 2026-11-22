@@ -73,9 +73,9 @@ function observeReveal(root: HTMLElement | null, { selector, grid = false }: Opt
           ],
           {
             id: "sunford-scroll-reveal",
-            duration: 700,
-            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-            delay: grid ? (target.index % 4) * 80 : 0,
+            duration: 950,
+            easing: "cubic-bezier(0.25, 0.35, 0.25, 1)",
+            delay: grid ? (target.index % 4) * 100 : 0,
             fill: "backwards",
           },
         );

@@ -180,16 +180,15 @@ test("accessory cache navigation preserves a single active chrome and overlay ho
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(path);
-  await expect(page.locator('[data-overview-section="chapters"]')).toBeVisible();
-  await expect(
-    page
-      .locator('[data-overview-section="chapters"]')
-      .getByRole("link", { name: "สินค้าทั้งหมด", exact: true }),
-  ).toHaveCount(0);
-  await page.goto("/products");
-  await page.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }).click();
+  await page
+    .locator("[data-products-nav]:visible")
+    .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/products$/);
+  await page.goto("/products?catalog=all");
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
+  await page.goBack();
   await page.goBack();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
   for (const [target, heading] of [

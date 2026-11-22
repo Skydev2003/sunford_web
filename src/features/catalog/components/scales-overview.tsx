@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ProductsOverview } from "./products-overview";
-import { ScaleApplicationsSection } from "./scale-applications-section";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
@@ -163,7 +162,6 @@ export async function ScalesOverview() {
       stories={stories}
       services={services}
       accordion={accordion}
-      applications={<ScaleApplicationsSection />}
     />
   );
 }

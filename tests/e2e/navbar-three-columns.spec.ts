@@ -1,4 +1,8 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import {
+  categoryApplicationsLink,
+  hasCategoryApplications,
+} from "../../src/features/catalog/data/category-applications";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 
@@ -341,18 +345,27 @@ for (const route of routes) {
               await expect(main.locator("h1").first()).not.toHaveText("");
               expect((await main.innerText()).trim().length).toBeGreaterThan(80);
               if (/^\/products\/category\/[^/]+$/.test(expected.href)) {
-                const category = menus.find((menu) => menu.href === expected.href)!;
-                await main
-                  .locator('[data-overview-section="lineup"]')
-                  .getByRole("button", { name: `ดู${category.label}ทั้งหมด`, exact: true })
-                  .click();
-                const finder = page.getByRole("dialog", {
-                  name: `ดู${category.label}ทั้งหมด`,
-                  exact: true,
-                });
-                await expect(finder.locator("#mock-product-results article").first()).toBeVisible();
-                await page.keyboard.press("Escape");
-                await expect(finder).not.toBeVisible();
+                const categoryId = expected.href.split("/").at(-1)!;
+                const lineup = main.locator('[data-overview-section="lineup"]');
+                if (hasCategoryApplications(categoryId)) {
+                  const { href, shortLabel } = categoryApplicationsLink(categoryId);
+                  await expect(
+                    lineup.getByRole("link", { name: shortLabel, exact: true }),
+                  ).toHaveAttribute("href", href);
+                  await expect(
+                    lineup.locator("#products-lineup > li:has(h3)").first(),
+                  ).toBeVisible();
+                } else {
+                  const category = menus.find((menu) => menu.href === expected.href)!;
+                  const name = `ดู${category.label}ทั้งหมด`;
+                  await lineup.getByRole("button", { name, exact: true }).click();
+                  const finder = page.getByRole("dialog", { name, exact: true });
+                  await expect(
+                    finder.locator("#mock-product-results article").first(),
+                  ).toBeVisible();
+                  await page.keyboard.press("Escape");
+                  await expect(finder).not.toBeVisible();
+                }
               } else if (expected.href.startsWith("/products/category/")) {
                 await expect(
                   main.locator('a[href^="/products/"]:not([href^="/products/category/"])').first(),

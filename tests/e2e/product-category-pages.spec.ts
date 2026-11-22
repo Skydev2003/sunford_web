@@ -1,25 +1,11 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { getProductSubcategoryPage } from "../../src/features/catalog/data/product-subcategory-pages";
+import { hasCategoryApplications } from "../../src/features/catalog/data/category-applications";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 
 const children = defaultNavigation[0].groups!.flatMap((group) => group.links);
 const catalogName = "แคตตาล็อกสินค้า Sunford";
-
-async function categoryCatalog(page: Page, id: string) {
-  if (["indicators", "platforms", "pos", "accessories"].includes(id)) {
-    const title = `ดู${productCategoryDefinitions.find((category) => category.id === id)!.label}ทั้งหมด`;
-    const finder = page.getByRole("dialog", { name: title, exact: true });
-    if (!new URL(page.url()).searchParams.has("subcategory") && !(await finder.isVisible()))
-      await page
-        .locator('[data-overview-section="lineup"]')
-        .getByRole("button", { name: title, exact: true })
-        .click();
-    await expect(finder).toBeVisible();
-    return finder.getByRole("region", { name: catalogName });
-  }
-  return page.getByRole("region", { name: catalogName }).filter({ visible: true });
-}
 
 async function catalogState(catalog: Locator) {
   const more = catalog.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
@@ -54,20 +40,27 @@ for (const width of [390, 1440]) {
       const path = `/products/category/${id}`;
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
-      if (id === "scales") {
+      if (hasCategoryApplications(id)) {
         await expect(page.locator("#products-lineup > li > a").first()).toBeVisible();
         await expect(page.locator('[data-return-scope="catalog-finder"]')).toHaveCount(0);
         await expect(
           page
             .locator('[data-overview-section="chapters"]')
-            .getByRole("link", { name: "สินค้าทั้งหมด" }),
-        ).toHaveAttribute("href", "/products");
+            .getByRole("link", { name: "สินค้าทั้งหมด", exact: true }),
+        ).toHaveCount(0);
         continue;
       }
-      const catalog = await categoryCatalog(page, id);
+      const finderName = `ดู${label}ทั้งหมด`;
+      await page
+        .locator('[data-overview-section="lineup"]')
+        .getByRole("button", { name: finderName, exact: true })
+        .click();
+      const finder = page.getByRole("dialog", { name: finderName, exact: true });
+      await expect(finder).toBeVisible();
+      const catalog = finder.getByRole("region", { name: catalogName });
       await expect(
         catalog.getByRole("navigation", { name: "หมวดหมู่สินค้า", exact: true }),
-      ).toHaveCount(["indicators", "platforms", "pos", "accessories"].includes(id) ? 1 : 0);
+      ).toHaveCount(1);
       await expect(catalog.getByRole("group", { name: "สินค้าเด่น", exact: true })).toHaveCount(0);
       await expect(
         page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true }),
@@ -89,11 +82,7 @@ for (const width of [390, 1440]) {
         oldCatalog.getByRole("heading", { level: 2, name: label, exact: true }),
       ).toBeVisible();
       expect(await catalogState(catalog)).toEqual(await catalogState(oldCatalog));
-      if (["indicators", "platforms", "pos", "accessories"].includes(id))
-        await page
-          .getByRole("dialog", { name: `ดู${label}ทั้งหมด`, exact: true })
-          .getByRole("button", { name: "ปิดแคตตาล็อกสินค้า" })
-          .click();
+      await finder.getByRole("button", { name: "ปิดแคตตาล็อกสินค้า" }).click();
       const allProducts = page
         .locator('[data-overview-section="chapters"]')
         .getByRole("link", { name: "สินค้าทั้งหมด", exact: true });
