@@ -1288,7 +1288,9 @@ test("Home & Retail prepares the first two images and leads product and market i
     const images = rail.locator(":scope > li img");
     await expect(images.nth(5)).toBeVisible();
     expect(await rail.evaluate((track) => track.getBoundingClientRect().top)).toBeGreaterThan(1900);
-    expect(requested.size).toBe(0);
+    await expect(images.nth(0)).toHaveAttribute("loading", "lazy");
+    await expect(images.nth(1)).toHaveAttribute("loading", "lazy");
+    expect(requested.has(photoPaths[4])).toBe(false);
     const sizes = await images.nth(3).getAttribute("sizes");
     expect(sizes).toMatch(/px$/);
 

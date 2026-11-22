@@ -2,14 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ChevronRight, X } from "lucide-react";
-import { useEffect, useId, useRef, useState, type ReactNode, type Ref } from "react";
-import { ProductImage } from "@/components/ui/product-image";
+import { ArrowUpRight } from "lucide-react";
+import { useEffect, useRef, type Ref } from "react";
 import styles from "./home-retail-feature.module.css";
-
-const featureTitle = "ชั่งให้พอดี";
-const marketTitle = "ชั่งขายที่แผง";
-const marketLabel = "ค้าส่งและตลาดสด";
 
 function RetailEditorialCard({
   kind,
@@ -18,7 +13,7 @@ function RetailEditorialCard({
   image,
   sizes,
   cardRef,
-  children,
+  href,
 }: {
   kind: "coffee" | "market";
   heading: string;
@@ -26,7 +21,7 @@ function RetailEditorialCard({
   image: string;
   sizes: string;
   cardRef?: Ref<HTMLElement>;
-  children: ReactNode;
+  href: string;
 }) {
   return (
     <article
@@ -44,16 +39,17 @@ function RetailEditorialCard({
           <Image src={image} alt="" fill sizes={sizes} />
         </div>
       </div>
-      {children}
+      <Link
+        href={href}
+        prefetch={false}
+        className={styles.trigger}
+        aria-label={`${heading} · ${label}`}
+      >
+        <span className={styles.triggerIcon}>
+          <ArrowUpRight aria-hidden="true" />
+        </span>
+      </Link>
     </article>
-  );
-}
-
-function EditorialArrow() {
-  return (
-    <span className={styles.triggerIcon}>
-      <ArrowUpRight aria-hidden="true" />
-    </span>
   );
 }
 
@@ -61,35 +57,17 @@ export function MarketRetailFeature({ sizes }: { sizes: string }) {
   return (
     <RetailEditorialCard
       kind="market"
-      heading={marketTitle}
-      label={marketLabel}
+      heading="ชั่งขายที่แผง"
+      label="ค้าส่งและตลาดสด"
       image="/images/products/market-retail-editorial.webp"
+      href="/products/category/scales/applications/wholesale-markets"
       sizes={sizes}
-    >
-      <Link
-        href="/products/category/scales/applications/wholesale-markets"
-        prefetch={false}
-        className={styles.trigger}
-        aria-label={`${marketTitle} · ${marketLabel}`}
-      >
-        <EditorialArrow />
-      </Link>
-    </RetailEditorialCard>
+    />
   );
 }
 
-export function HomeRetailFeature({
-  topics,
-  sizes,
-}: {
-  topics: { context: string; label: string; href: string; image?: string }[];
-  sizes: string;
-}) {
+export function HomeRetailFeature({ sizes }: { sizes: string }) {
   const card = useRef<HTMLElement>(null);
-  const dialog = useRef<HTMLDialogElement>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
-  const titleId = useId();
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const element = card.current;
@@ -117,82 +95,11 @@ export function HomeRetailFeature({
     <RetailEditorialCard
       kind="coffee"
       cardRef={card}
-      heading={featureTitle}
-      label="ครัวและกาแฟ · คำนวณราคา"
+      heading="ชั่งให้พอดี"
+      label="ครัวและกาแฟ"
       image="/images/products/home-retail-editorial.webp"
+      href="/products/category/scales/kitchen"
       sizes={sizes}
-    >
-      <button
-        ref={trigger}
-        type="button"
-        className={styles.trigger}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label={`${featureTitle} · สำรวจครัวและกาแฟ และงานขายหน้าร้าน`}
-        onClick={() => {
-          dialog.current?.showModal();
-          setOpen(true);
-        }}
-      >
-        <EditorialArrow />
-      </button>
-      <noscript>
-        <ul className={styles.directLinks}>
-          {topics.map(({ label, href }) => (
-            <li key={href}>
-              <Link href={href}>{label}</Link>
-            </li>
-          ))}
-        </ul>
-      </noscript>
-      <dialog
-        ref={dialog}
-        aria-labelledby={titleId}
-        className={styles.dialog}
-        onClose={() => {
-          setOpen(false);
-          trigger.current?.focus({ preventScroll: true });
-        }}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) event.currentTarget.close();
-        }}
-      >
-        <div className={styles.dialogContent}>
-          <div className={styles.dialogHeading}>
-            <h2 id={titleId}>ครัวและกาแฟ · คำนวณราคา</h2>
-            <form method="dialog">
-              <button type="submit" autoFocus aria-label="ปิดหน้าต่างรายละเอียด">
-                <X aria-hidden="true" />
-              </button>
-            </form>
-          </div>
-          {open && (
-            <ul className={styles.topicGrid}>
-              {topics.map(({ context, label, href, image }) => (
-                <li key={href}>
-                  <Link href={href} onNavigate={() => dialog.current?.close()}>
-                    {image && (
-                      <div className={styles.topicArt}>
-                        <ProductImage
-                          src={image}
-                          alt=""
-                          fill
-                          sizes="(max-width: 639px) 80vw, 260px"
-                        />
-                      </div>
-                    )}
-                    <p>{context}</p>
-                    <h3>
-                      {label}
-                      <ChevronRight size={18} aria-hidden="true" />
-                    </h3>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </dialog>
-    </RetailEditorialCard>
+    />
   );
 }

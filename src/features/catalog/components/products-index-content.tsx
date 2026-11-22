@@ -27,20 +27,6 @@ import { selectScaleShowcase, type PublishedScaleCard } from "../data/scale-show
 import styles from "./products-index-content.module.css";
 
 const categoryFamilies = new Set(["scales", "indicators", "platforms", "pos", "accessories"]);
-const homeRetailTopics = [
-  {
-    id: "scale-kitchen",
-    context: "งานบ้านและคาเฟ่",
-    label: "ครัวและกาแฟ",
-    href: "/products/category/scales/kitchen",
-  },
-  {
-    id: "scale-price",
-    context: "งานขายหน้าร้าน",
-    label: "คำนวณราคา",
-    href: "/products/category/scales/price",
-  },
-];
 const showcaseHeadings: Partial<Record<string, { lead: string; detail: string }>> = {
   scales: { lead: "เครื่องชั่ง", detail: "มาตรฐานที่ไว้วางใจ" },
   indicators: { lead: "เลือกออกแบบ", detail: "ได้ด้วยตัวคุณเอง" },
@@ -65,15 +51,6 @@ export function ProductsIndexContent({
       members.find((product) => product.image);
     return { id, label, members, photo };
   });
-  const scaleGroups = categories.find(({ id }) => id === "scales")?.subcategories;
-  const homeRetail = homeRetailTopics.map(({ id, ...topic }) => {
-    const memberIds = new Set(scaleGroups?.find((group) => group.id === id)?.productIds);
-    const representative = products.find(
-      (product) => memberIds.has(product.id) && product.warehouseSku && product.image,
-    );
-    return { ...topic, image: representative?.image };
-  });
-
   return (
     <div className={styles.index} data-products-directory data-overview-section="index">
       <header className={styles.intro}>
@@ -186,7 +163,7 @@ export function ProductsIndexContent({
             >
               {id === "pos" && (
                 <li className={styles.card}>
-                  <HomeRetailFeature topics={homeRetail} sizes={productRailCardSizes} />
+                  <HomeRetailFeature sizes={productRailCardSizes} />
                 </li>
               )}
               {id === "indicators" && (

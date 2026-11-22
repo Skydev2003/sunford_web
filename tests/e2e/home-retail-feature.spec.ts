@@ -1,12 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+const coffeePath = "/products/category/scales/kitchen";
 const marketPath = "/products/category/scales/applications/wholesale-markets";
 
 for (const [width, reducedMotion] of [
   [390, "reduce"],
   [1440, "no-preference"],
 ] as const) {
-  test(`Home & Retail story opens its source categories at ${width}px`, async ({ page }) => {
+  test(`Home & Retail coffee links directly to the kitchen category at ${width}px`, async ({
+    page,
+  }) => {
     test.slow();
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion });
@@ -14,7 +17,9 @@ for (const [width, reducedMotion] of [
     const rail = page.locator("#products-rail-pos");
     const feature = rail.locator(":scope > li:first-child [data-retail-editorial='coffee']");
     await expect(feature.getByRole("heading", { level: 3 })).toHaveText("ชั่งให้พอดี");
-    const trigger = feature.getByRole("button", { name: /^ชั่งให้พอดี/ });
+    const trigger = feature.getByRole("link", { name: "ชั่งให้พอดี · ครัวและกาแฟ" });
+    await expect(trigger).toHaveAttribute("href", coffeePath);
+    await expect(feature.locator("dialog")).toHaveCount(0);
     const scene = feature.locator("div[aria-hidden='true']");
     const playState = () =>
       scene.evaluate((element) => getComputedStyle(element, "::before").animationPlayState);
@@ -49,6 +54,7 @@ for (const [width, reducedMotion] of [
     } else {
       await expect.poll(playState).toBe("running");
     }
+    await expect(rail).toHaveAttribute("data-tab-focus-ready", "");
     await rail.focus();
     await page.keyboard.press("Tab");
     await expect(trigger).toBeFocused();
@@ -59,43 +65,10 @@ for (const [width, reducedMotion] of [
     await page.keyboard.press("Shift+Tab");
     await expect(trigger).toBeFocused();
     await page.keyboard.press("Enter");
-    const dialog = feature.getByRole("dialog", { name: "ครัวและกาแฟ · คำนวณราคา" });
-    await expect(dialog).toBeVisible();
-    const close = dialog.getByRole("button", { name: "ปิดหน้าต่างรายละเอียด" });
-    await expect(close).toBeFocused();
-    await expect(dialog.getByRole("link", { name: /ครัวและกาแฟ/ })).toHaveAttribute(
-      "href",
-      "/products/category/scales/kitchen",
-    );
-    await expect(dialog.getByRole("link", { name: /คำนวณราคา/ })).toHaveAttribute(
-      "href",
-      "/products/category/scales/price",
-    );
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
-    await expect(trigger).toBeFocused();
-
-    await trigger.press("Space");
-    await close.click();
-    await expect(dialog).toBeHidden();
-    await expect(trigger).toBeFocused();
-
-    await trigger.click({ position: { x: 32, y: 58 } });
-    await expect(dialog).toBeVisible();
-    await page.mouse.click(2, 2);
-    await expect(dialog).toBeHidden();
-    await expect(trigger).toBeFocused();
-
-    const destination = reducedMotion === "reduce" ? "kitchen" : "price";
-    await trigger.click({ position: { x: 132, y: 245 } });
-    await dialog.locator(`a[href$="/${destination}"]`).click();
-    await expect(page).toHaveURL(new RegExp(`/products/category/scales/${destination}$`), {
-      timeout: 20_000,
-    });
-    await expect(page.getByRole("heading", { level: 1, name: /ครัว|คำนวณราคา/ })).toBeVisible();
+    await expect(page).toHaveURL(coffeePath, { timeout: 20_000 });
+    await expect(page.getByRole("heading", { level: 1, name: /ครัวและกาแฟ/ })).toBeVisible();
     await page.goBack();
     await expect(trigger).toBeVisible();
-    await expect(dialog).toBeHidden();
   });
 
   test(`the market story follows VR5000 and opens the related scales at ${width}px`, async ({
@@ -150,6 +123,7 @@ for (const [width, reducedMotion] of [
       .toBeGreaterThan(0);
     await expect(image).toHaveCSS("object-fit", "cover");
 
+    await expect(rail).toHaveAttribute("data-tab-focus-ready", "");
     await rail.locator(':scope > li[data-warehouse-sku="G106179"]').getByRole("link").focus();
     await page.keyboard.press("Tab");
     await expect(link).toBeFocused();
@@ -175,6 +149,14 @@ for (const [width, reducedMotion] of [
 test.describe("Home & Retail touch", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 
+  test("tapping the coffee photo opens the kitchen category", async ({ page }) => {
+    await page.goto("/products");
+    const coffee = page.locator('[data-retail-editorial="coffee"]').getByRole("link");
+    await coffee.tap({ position: { x: 140, y: 230 } });
+    await expect(page).toHaveURL(coffeePath);
+    await expect(page.getByRole("heading", { level: 1, name: /ครัวและกาแฟ/ })).toBeVisible();
+  });
+
   for (const story of ["coffee", "market"]) {
     test(`a swipe starting on the ${story} image scrolls the rail without opening details`, async ({
       page,
@@ -183,7 +165,7 @@ test.describe("Home & Retail touch", () => {
       await page.goto("/products", { waitUntil: "domcontentloaded" });
       const rail = page.locator("#products-rail-pos");
       const feature = rail.locator(`[data-retail-editorial="${story}"]`);
-      const trigger = feature.getByRole(story === "coffee" ? "button" : "link");
+      const trigger = feature.getByRole("link");
       await trigger.scrollIntoViewIfNeeded();
       await expect(trigger).toBeInViewport({ ratio: 0.9 });
       const bounds = (await trigger.boundingBox())!;
@@ -204,8 +186,22 @@ test.describe("Home & Retail touch", () => {
       await touch.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
       await expect.poll(() => rail.evaluate((list) => list.scrollLeft)).toBeGreaterThan(before);
       await expect(page).toHaveURL("/products");
-      await expect(feature.getByRole("dialog")).toBeHidden();
-      if (story === "coffee") await expect(trigger).toHaveAttribute("aria-expanded", "false");
     });
   }
+});
+
+test.describe("Home & Retail without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("both editorial cards keep native links", async ({ page }) => {
+    await page.goto("/products");
+    const rail = page.locator("#products-rail-pos");
+    await expect(
+      rail.getByRole("link", { name: "ชั่งขายที่แผง · ค้าส่งและตลาดสด" }),
+    ).toHaveAttribute("href", marketPath);
+    const coffee = rail.getByRole("link", { name: "ชั่งให้พอดี · ครัวและกาแฟ" });
+    await expect(coffee).toBeVisible();
+    await coffee.click();
+    await expect(page).toHaveURL(coffeePath);
+  });
 });
