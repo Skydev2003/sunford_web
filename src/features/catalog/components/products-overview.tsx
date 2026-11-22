@@ -67,6 +67,7 @@ import {
   defaultSpotlightPoster,
 } from "@/features/home/data/image-slots";
 import { selectComponentShowcase } from "../data/component-showcase";
+import { lineupSalesCopy } from "../data/lineup-sales-copy";
 import { catalogProductPhoto } from "./catalog-product-card";
 import { ProductCategoryMock } from "./product-category-mock";
 import { ProductsIndexRail } from "./products-index-rail";
@@ -1053,11 +1054,7 @@ export function ProductsOverview({
                               fallbackSrc={fallbackPhoto}
                               alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                               fill
-                              sizes={
-                                categoryLineup
-                                  ? "(width < 48rem) 232px, 372px"
-                                  : "(width < 48rem) 260px, 372px"
-                              }
+                              sizes="(max-width: 736px) min(calc(100vw - 60px), 309px), 313px"
                             />
                             {categoryLineup && (
                               <span className={`${styles.lineupPlaceholder} ${styles.lineupError}`}>
@@ -1070,11 +1067,7 @@ export function ProductsOverview({
                       <div className={styles.lineupCopy}>
                         {product.badge && <p className={styles.productBadge}>{product.badge}</p>}
                         <h3>{cardNames[product.id] ?? product.name}</h3>
-                        {categoryLineup &&
-                          product.subtitle &&
-                          product.subtitle !== (cardNames[product.id] ?? product.name) && (
-                            <p className={styles.lineupDescription}>{product.subtitle}</p>
-                          )}
+                        <p className={styles.lineupDescription}>{lineupSalesCopy(product)}</p>
                         {typeof product.price === "number" && product.price > 0 ? (
                           <p className={styles.price}>
                             {product.price.toLocaleString("th-TH")} บาท

@@ -125,6 +125,59 @@ test("the scale lineup prepares two pending images and the next image on advance
   }
 });
 
+test("the lineup shows the WPS10KS selling point with its price and product link", async ({
+  page,
+}) => {
+  await page.goto("/products/category/scales");
+  const product = page.locator("#products-lineup > li").filter({
+    has: page.getByRole("heading", { name: "WPS10KS", exact: true }),
+  });
+  await expect(product.getByText("ชาร์จได้ ไม่ต้องซื้อถ่าน", { exact: true })).toBeVisible();
+  await expect(product.getByText(/^(?:[\d,.]+ บาท|สอบถามราคา)$/)).toBeVisible();
+  await expect(product.getByRole("link", { name: "ดูรายละเอียดรุ่น" })).toHaveAttribute(
+    "href",
+    /^\/products\/[^/?#]+$/,
+  );
+});
+
+type CardLayout = { width: number; height: number; background: string; radius: string };
+
+async function expectProductCardLayout(cards: Locator, reference: CardLayout, scope: string) {
+  await expect(cards.first()).toBeVisible();
+  const issues = await cards.evaluateAll((items, { width, height, background, radius }) => {
+    return items.flatMap((item) => {
+      const card = item.getBoundingClientRect();
+      const style = getComputedStyle(item);
+      const links = [...item.querySelectorAll<HTMLAnchorElement>("a[href]")];
+      const [photo, details, inquiry] = links;
+      const image = photo?.querySelector("img");
+      const invalid =
+        Math.round(card.width) !== width ||
+        Math.round(card.height) !== height ||
+        style.backgroundColor !== background ||
+        style.borderRadius !== radius ||
+        (image && getComputedStyle(image).objectFit !== "contain") ||
+        !photo?.getAttribute("href")?.startsWith("/products/") ||
+        details?.href !== photo.href ||
+        !inquiry?.getAttribute("href")?.startsWith("/contact-us") ||
+        links.some((link) => {
+          const box = link.getBoundingClientRect();
+          return box.right > card.right + 1 || box.bottom > card.bottom + 1;
+        });
+      return invalid
+        ? [
+            {
+              model: item.querySelector("h3")?.textContent,
+              width: card.width,
+              height: card.height,
+            },
+          ]
+        : [];
+    });
+  }, reference);
+  expect(issues, scope).toEqual([]);
+}
+
 for (const width of [390, 834, 1440]) {
   test(`category rails match the product directory spacing and paging at ${width}px`, async ({
     page,
@@ -136,6 +189,20 @@ for (const width of [390, 834, 1440]) {
     const chapters = await spacing(page.locator("#products-categories"));
     const shelf = await spacing(page.locator("#products-rail-scales"));
     const sectionGap = await gapAfterShelf(page.locator("#products-rail-scales"));
+    const reference = page.locator(
+      '#products-rail-indicators > li[data-warehouse-sku="G107770"] > a',
+    );
+    await expect(reference).toBeVisible();
+    const referenceLayout = await reference.evaluate((card) => {
+      const style = getComputedStyle(card);
+      const rect = card.getBoundingClientRect();
+      return {
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        background: style.backgroundColor,
+        radius: style.borderRadius,
+      };
+    });
 
     for (const category of ["scales", "indicators", "platforms", "pos"]) {
       await page.goto(`/products/category/${category}`);
@@ -188,6 +255,33 @@ for (const width of [390, 834, 1440]) {
       expect(trailingSpace).toBeCloseTo(parseFloat(shelf[1]), 0);
       await previous.press("Enter");
       await expect(next).toBeEnabled();
+
+      const filters = page.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+      for (const filter of await filters.locator("button:enabled").all()) {
+        await filter.press("Enter");
+        await expect(filter).toHaveAttribute("aria-pressed", "true");
+        const cards = track.locator(":scope > li:has(h3)");
+        if (!(await cards.count())) {
+          await expect(
+            page
+              .getByRole("status", { name: "" })
+              .filter({ hasText: "ยังไม่มีรุ่นสินค้าในกลุ่มนี้" }),
+          ).toHaveCount(1);
+          continue;
+        }
+        await expectProductCardLayout(
+          cards,
+          referenceLayout,
+          [category, await filter.innerText()].join(" / "),
+        );
+      }
     }
+    await page.goto("/products/category/accessories");
+    await expect(page.locator('[data-overview-section="hero"]')).toBeVisible();
+    await expectProductCardLayout(
+      page.locator("#products-lineup > li:has(h3)"),
+      referenceLayout,
+      "accessories",
+    );
   });
 }

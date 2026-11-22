@@ -574,8 +574,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 28px;
-  background: var(--paper);
+  border-radius: 1.75rem;
+  background: var(--background);
   box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
   text-align: center;
 }
@@ -601,8 +601,8 @@
   flex-shrink: 0;
   display: block;
   position: relative;
-  height: 260px;
-  border-radius: 28px;
+  aspect-ratio: 372 / 252;
+  border-radius: 1.75rem 1.75rem 0 0;
 }
 .lineupArt img {
   object-fit: contain;
@@ -613,17 +613,18 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 28px var(--card-padding-compact) 0;
+  padding: var(--card-padding-compact) var(--card-padding-compact) 12px;
 }
 .lineupCopy .tileActions {
   margin-top: auto;
   padding-top: 16px;
 }
 .lineupCopy h3 {
-  font-size: 24px;
+  font-size: 1.125rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.35;
   letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
 }
 .lineupCopy > p:not(.productBadge) {
   margin: 12px auto 0;
@@ -1192,15 +1193,6 @@
   .services .gallery {
     margin-bottom: -20px;
   }
-  .lineupArt {
-    height: 344px;
-  }
-  .lineupCopy h3 {
-    font-size: 28px;
-  }
-  .lineupCopy > p:not(.productBadge) {
-    font-size: 17px;
-  }
   .serviceCard {
     min-height: 535px;
     padding: var(--card-padding-feature) var(--card-padding-feature) 80px;
@@ -1502,9 +1494,6 @@
   }
   .lineup {
     padding-bottom: 0;
-  }
-  .lineupArt {
-    height: 372px;
   }
   .serviceCard {
     min-height: 575px;
@@ -1845,20 +1834,22 @@
   background: #e2e2e5;
   content: "";
 }
+.lineup .galleryTrack > .productTile {
+  flex-basis: min(calc(100vw - 3.75rem), 19.3125rem);
+  min-inline-size: 0;
+  min-block-size: 28.125rem;
+}
+@media (min-width: 737px) {
+  .lineup .galleryTrack > .productTile {
+    flex-basis: 19.5625rem;
+    min-block-size: 31.25rem;
+  }
+}
 .categoryLineup .galleryTrack > .productTile {
-  flex-basis: 260px;
-  background: transparent;
-  box-shadow: none;
   text-align: left;
 }
 .categoryLineup .productTile:hover {
   transform: none;
-}
-.categoryLineup .lineupArt {
-  width: min(232px, 100%);
-  height: 157px;
-  border-radius: 16px;
-  background: #fff;
 }
 .categoryLineup .lineupArt:focus-visible {
   outline-offset: -4px;
@@ -1880,20 +1871,14 @@
 .categoryLineup .lineupArt img {
   padding: 10px;
 }
-.categoryLineup .lineupCopy {
-  max-width: 232px;
-  padding: 24px 0 12px;
-}
-.categoryLineup .lineupCopy h3 {
-  overflow-wrap: anywhere;
-}
 .categoryLineup .lineupCopy > p:not(.productBadge) {
   margin: 8px 0 0;
 }
-.categoryLineup .lineupDescription {
+.lineupCopy .lineupDescription {
   display: -webkit-box;
   overflow: hidden;
   color: var(--muted);
+  line-height: 1.5;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -2031,17 +2016,9 @@
     padding-inline: 18px;
     font-size: 16px;
   }
-  .categoryLineup .galleryTrack > .productTile {
-    flex-basis: 372px;
-  }
-  .categoryLineup .lineupArt {
-    width: 100%;
-    height: 252px;
-  }
   .categoryLineup .lineupCopy {
-    max-width: none;
     align-items: center;
-    padding: 32px 22px 12px;
+    padding-inline: 22px;
     text-align: center;
   }
   .categoryLineup .lineupCopy .tileActions {
