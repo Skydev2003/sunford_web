@@ -1,29 +1,16 @@
 import type { NavigationItem } from "../types";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
-import { warehouseGatedSubcategoryHrefs } from "@/features/catalog/data/product-subcategory-pages";
-
-// Phase A keeps destinations awaiting pages, classification or verified data disabled.
-const unavailableDestinations = new Set([
-  "/products/category/scales/checkweigher",
-  "/products/category/scales/sets",
-  "/products/category/platforms/tcs-tss",
-  "/products/category/platforms/fcs-fss",
-  "/products/category/platforms/bcs-bss",
-  "/products/category/platforms/dcs-dss",
-  "/products/category/platforms/other-series",
-  "/products/category/pos/terminals",
-  "/products/category/pos/workstations",
-  "/products/category/pos/sets",
-]);
 
 const guideHref = "/guides/indicator-platform-compatibility";
-type MenuEntry = [label: string, href: string, disabled?: boolean];
+type MenuEntry = [label: string, href: string];
 
 export function getPrimaryNavigationItems(
   navigation: NavigationItem[],
   readySubcategoryHrefs: readonly string[] = [],
   surface: "navbar" | "category-chapters" = "navbar",
 ): NavigationItem[] {
+  // Older catalog callers still supply inventory readiness; route availability is independent of it.
+  void readySubcategoryHrefs;
   const savedLinks = navigation.flatMap((item) => [
     ...item.links,
     ...(item.groups ?? []).flatMap((group) => group.links),
@@ -31,7 +18,6 @@ export function getPrimaryNavigationItems(
   const savedDisabled = new Set(
     savedLinks.filter((link) => link.disabled).map((link) => resolveCategoryHref(link.href)),
   );
-  const readySubcategories = new Set(readySubcategoryHrefs);
   const links = (
     entries: MenuEntry[],
     order: "length" | "configured" = "length",
@@ -43,14 +29,10 @@ export function getPrimaryNavigationItems(
             Number(second.endsWith("ทั้งหมด")) - Number(first.endsWith("ทั้งหมด")) ||
             first.length - second.length,
         )
-    ).map(([label, source, disabledInMenu]) => {
+    ).map(([label, source]) => {
       const href = resolveCategoryHref(source);
-      const disabled =
-        disabledInMenu ||
-        unavailableDestinations.has(href) ||
-        savedDisabled.has(href) ||
-        (warehouseGatedSubcategoryHrefs.has(href) && !readySubcategories.has(href));
-      return { label, href, ...(disabled ? { disabled: true } : {}) };
+      // Known destinations can explain an empty catalogue without disabling navigation.
+      return { label, href, ...(savedDisabled.has(href) ? { disabled: true } : {}) };
     });
   const help = links([
     ["คู่มือและสเปก", "/technical-specification"],
@@ -182,10 +164,10 @@ export function getPrimaryNavigationItems(
       categoryLabel("platforms", "โครงสร้างแท่นชั่ง"),
       "/products/category/platforms",
       [
-        ["แท่นเหล็กคาร์บอน", "/products/category/platforms/carbon-steel"],
         ["สแตนเลส SUS304", "/products/category/platforms/sus304"],
         ["สแตนเลส SUS201", "/products/category/platforms/sus201"],
-        ["พลาสติก ABS เหนียวพิเศษ", "/products/category/platforms/abs"],
+        ["แท่นเหล็กคาร์บอน", "/products/category/platforms/carbon-steel"],
+        ["พลาสติก ABS", "/products/category/platforms/abs"],
       ],
       [
         ["อินดิเคเตอร์แท่นชั่ง", "/products/category/indicators"],
@@ -200,6 +182,7 @@ export function getPrimaryNavigationItems(
       ]),
       "สินค้า",
       "เลือกอุปกรณ์ร่วม",
+      "configured",
     ),
     menu(
       categoryLabel("pos", "ระบบ POS"),
@@ -211,9 +194,7 @@ export function getPrimaryNavigationItems(
       ],
       [
         ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-        surface === "navbar"
-          ? ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/scanners-and-cash-drawers"]
-          : ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/pos", true],
+        ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/scanners-and-cash-drawers"],
       ],
       links([
         ["คู่มือและสเปก", "/technical-specification"],

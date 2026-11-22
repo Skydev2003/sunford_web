@@ -33,7 +33,7 @@ const productSubcategories: Record<
     { id: "platform-carbon-steel", label: "แท่นเหล็กคาร์บอน" },
     { id: "platform-sus304", label: "สแตนเลส SUS304" },
     { id: "platform-sus201", label: "สแตนเลส SUS201" },
-    { id: "platform-abs", label: "พลาสติก ABS เหนียวพิเศษ" },
+    { id: "platform-abs", label: "พลาสติก ABS" },
   ],
   pos: [
     { id: "pos-ios", label: "iOS" },

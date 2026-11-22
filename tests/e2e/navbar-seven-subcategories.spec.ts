@@ -23,7 +23,7 @@ const groups = [
       ["carbon-steel", "แท่นเหล็กคาร์บอน", "platform-carbon-steel"],
       ["sus304", "สแตนเลส SUS304", "platform-sus304"],
       ["sus201", "สแตนเลส SUS201", "platform-sus201"],
-      ["abs", "พลาสติก ABS เหนียวพิเศษ", "platform-abs"],
+      ["abs", "พลาสติก ABS", "platform-abs"],
     ],
   },
   {
@@ -68,12 +68,7 @@ async function homeReady(page: Page) {
   await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
 }
 
-async function verifyMenu(
-  page: Page,
-  products: Product[],
-  home: boolean,
-  input: "touch" | "keyboard" | "mouse",
-) {
+async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard" | "mouse") {
   const touch = input === "touch";
   const header = page.locator(home ? ".site-header:visible" : "[data-products-header]:visible");
   if (!home)
@@ -105,14 +100,14 @@ async function verifyMenu(
           : ["เชื่อมต่อ RS232", "ตัวเครื่องกันน้ำ IP67"],
       );
     }
-    for (const [slug, label, id] of children) {
+    for (const [slug, label] of children) {
       const href = `${parentHref}/${slug}`;
       const link =
         category === "indicators" && slug === "waterproof"
           ? features.getByRole("link", { name: "ตัวเครื่องกันน้ำ IP67", exact: true })
           : panel.getByRole("link", { name: label, exact: true });
       await expect(link).toBeVisible();
-      if (members(products, category, id).length && !savedDisabled.has(href)) {
+      if (!savedDisabled.has(href)) {
         await expect(link).toHaveAttribute("href", href);
         await expect(link).toBeEnabled();
       } else {
@@ -140,33 +135,36 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-test("desktop keyboard menus use the same readiness across the homepage and catalogue navigation", async ({
+test("desktop keyboard menus offer the same destinations across the homepage and catalogue navigation", async ({
   page,
   request,
 }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1440, height: 900 });
-  const products = await catalogue(request);
+  await catalogue(request);
   await page.goto("/");
   await homeReady(page);
-  await verifyMenu(page, products, true, "keyboard");
+  await verifyMenu(page, true, "keyboard");
   await page.locator(".desktop-nav").getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด" }).click();
   await expect(page).toHaveURL(/\/products$/);
-  await verifyMenu(page, products, false, "keyboard");
+  await verifyMenu(page, false, "keyboard");
   await page.reload();
-  await verifyMenu(page, products, false, "mouse");
+  await verifyMenu(page, false, "mouse");
 });
 
 test.describe("390px touch", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
-  test("both mobile menus reflect the live Warehouse listings", async ({ page, request }) => {
+  test("both mobile menus open known routes with or without published inventory", async ({
+    page,
+    request,
+  }) => {
     test.setTimeout(90_000);
-    const products = await catalogue(request);
+    await catalogue(request);
     await page.goto("/");
     await homeReady(page);
-    await verifyMenu(page, products, true, "touch");
+    await verifyMenu(page, true, "touch");
     await page.goto("/contact-us");
-    await verifyMenu(page, products, false, "touch");
+    await verifyMenu(page, false, "touch");
   });
 });
 
@@ -185,7 +183,7 @@ test("tablet category entrances and direct listings agree with Warehouse members
         .locator("[data-products-header]:visible")
         .getByRole("button", { name: "ค้นหาสินค้าและข้อมูล" }),
     ).toBeEnabled();
-    for (const [slug, label, id] of children) {
+    for (const [slug, label] of children) {
       const href = `${parentHref}/${slug}`;
       const button = page
         .locator("#products-chapters")
@@ -195,8 +193,7 @@ test("tablet category entrances and direct listings agree with Warehouse members
         await expect(button).toHaveCount(0);
         continue;
       }
-      if (members(products, category, id).length && !savedDisabled.has(href))
-        await expect(button).toBeEnabled();
+      if (!savedDisabled.has(href)) await expect(button).toHaveAttribute("href", href);
       else await expect(button).toBeDisabled();
     }
     for (const [slug, , id] of children) {
@@ -223,15 +220,23 @@ test("tablet category entrances and direct listings agree with Warehouse members
         expect(hrefs.sort()).toEqual(
           expected.map(({ slug }) => `/products/${slug}?from=${id}`).sort(),
         );
-        await cards.first().getByRole("heading", { level: 3 }).click();
+        const detail = cards.first().getByRole("heading", { level: 3 }).locator("..");
+        const destination = await detail.getAttribute("href");
+        await detail.click();
+        await expect(page).toHaveURL(new URL(destination!, page.url()).href, { timeout: 20000 });
         const back = page.locator(".back-link:visible");
         await expect(back).toHaveAttribute("href", href);
         await back.click();
         await expect(main).toBeVisible();
       } else {
         await expect(
-          main.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" }),
+          main.getByRole("heading", { name: "ยังไม่มีรายการสินค้าที่เผยแพร่ในหมวดนี้" }),
         ).toBeVisible();
+        await expect(
+          main
+            .getByRole("navigation", { name: "ข้อมูลที่เกี่ยวข้อง" })
+            .getByRole("link", { name: /ปรึกษาผู้เชี่ยวชาญ/ }),
+        ).toHaveAttribute("href", "/contact-us");
       }
     }
   }

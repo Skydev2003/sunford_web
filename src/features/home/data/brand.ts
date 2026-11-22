@@ -12,7 +12,7 @@ export const companyIntro = {
   ],
 };
 export const sunford = {
-  website: "https://www.sunford.co/",
+  website: "/",
   about: "/about-us",
   contact: "/contact-us",
   service: "/service",

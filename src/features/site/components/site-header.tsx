@@ -6,21 +6,16 @@ import {
   resolveNavigationItems,
 } from "../data/navigation";
 import { defaultSite } from "../data/settings";
-import { getProductCategories } from "@/features/catalog/server/product-categories";
 
 export async function SiteHeader() {
-  const [navigation, site, readySubcategoryHrefs] = await Promise.all([
+  const [navigation, site] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
-    getProductCategories()
-      .then((catalog) => catalog.readySubcategoryHrefs)
-      .catch(() => []),
   ]);
   const items = resolveNavigationItems(navigation.items);
   return (
     <SiteNavigation
       navigation={items}
-      readySubcategoryHrefs={readySubcategoryHrefs}
       site={site}
       extras={{
         exploreLabel: navigation.exploreLabel,

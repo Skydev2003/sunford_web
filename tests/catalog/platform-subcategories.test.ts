@@ -15,7 +15,7 @@ const children = getPlatformSubcategories(products);
 test("platform materials preserve the four owner labels and classify all 23 existing structures", () => {
   assert.deepEqual(
     children.map(({ label }) => label),
-    ["แท่นเหล็กคาร์บอน", "สแตนเลส SUS304", "สแตนเลส SUS201", "พลาสติก ABS เหนียวพิเศษ"],
+    ["แท่นเหล็กคาร์บอน", "สแตนเลส SUS304", "สแตนเลส SUS201", "พลาสติก ABS"],
   );
   assert.deepEqual(
     children.map(({ productIds }) => productIds.length),

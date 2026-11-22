@@ -9,6 +9,18 @@ import { sunford } from "@/features/home/data/brand";
 import overview from "./products-overview.module.css";
 import styles from "./product-directory.module.css";
 
+const alternatives: Record<string, readonly { href: string; label: string }[]> = {
+  "platform-abs": [
+    { href: "/products/category/platforms/carbon-steel", label: "แท่นเหล็กคาร์บอน" },
+    { href: "/products/category/platforms/sus304", label: "แท่นสแตนเลส SUS304" },
+    { href: "/products/category/platforms/sus201", label: "แท่นสแตนเลส SUS201" },
+  ],
+  "pos-ios": [
+    { href: "/products/category/pos/android", label: "ระบบ POS Android" },
+    { href: "/products/category/pos/windows", label: "ระบบ POS Windows" },
+  ],
+};
+
 export async function ProductSubcategoryPage({
   categoryId,
   subcategoryId,
@@ -35,9 +47,14 @@ export async function ProductSubcategoryPage({
   if (!child) notFound();
   const ids = new Set(child.productIds);
   const listingCategory = additional ? { ...category, subcategories: [child] } : category;
+  const publishedProducts = products.filter(
+    (product) => product.warehouseSku && ids.has(product.id),
+  );
   const relatedLinks =
     additional?.relatedLinks ??
-    (subcategoryId === "accessory-consumables" ? consumableSubtypeLinks : []);
+    (subcategoryId === "accessory-consumables"
+      ? consumableSubtypeLinks
+      : (alternatives[subcategoryId] ?? []));
   const titleId = `${categoryId === "scales" ? "" : `${categoryId}-`}${definition.slug}-title`;
   return (
     <main
@@ -63,15 +80,22 @@ export async function ProductSubcategoryPage({
         </div>
       </section>
       <div className={`${overview.sectionInner} ${styles.listing}`}>
-        <ProductCategoryMock
-          key={subcategoryId}
-          products={products.filter((product) => ids.has(product.id))}
-          categories={[listingCategory]}
-          cardNames={cardNames}
-          categoryId={categoryId}
-          subcategoryId={subcategoryId}
-          presentation="listing"
-        />
+        {publishedProducts.length ? (
+          <ProductCategoryMock
+            key={subcategoryId}
+            products={publishedProducts}
+            categories={[listingCategory]}
+            cardNames={cardNames}
+            categoryId={categoryId}
+            subcategoryId={subcategoryId}
+            presentation="listing"
+          />
+        ) : (
+          <section aria-labelledby="subcategory-status-title" data-subcategory-empty>
+            <h2 id="subcategory-status-title">ยังไม่มีรายการสินค้าที่เผยแพร่ในหมวดนี้</h2>
+            <p>สำรวจรุ่นในหมวดที่เกี่ยวข้องด้านล่าง หรือติดต่อซันฟอร์ดเพื่อสอบถามข้อมูลเพิ่มเติม</p>
+          </section>
+        )}
       </div>
       <nav
         className={`${overview.sectionInner} ${styles.related}`}
