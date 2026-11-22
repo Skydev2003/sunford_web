@@ -39,6 +39,11 @@
   pointer-events: none;
 }
 
+.sceneArtwork {
+  position: absolute;
+  inset: 0;
+}
+
 .scene img {
   object-fit: cover;
   object-position: center;
@@ -61,6 +66,17 @@
   z-index: 2;
   inset: 0;
   background: linear-gradient(180deg, rgb(249 238 219 / 86%), transparent 40%);
+}
+
+@media (width < 360px) {
+  .card[data-retail-editorial="market"] .scene {
+    background: #d5d7af;
+  }
+
+  .card[data-retail-editorial="market"] .sceneArtwork {
+    inset-block-start: 4.375rem;
+    mask-image: linear-gradient(transparent, #000 3rem);
+  }
 }
 
 .topicArt img {
@@ -95,6 +111,10 @@
 
 .card .trigger:focus-visible {
   outline-offset: -3px;
+}
+
+.card a.trigger:active {
+  background-color: transparent;
 }
 
 .triggerIcon {
@@ -214,7 +234,7 @@
 }
 
 @media (scripting: none) {
-  .card .trigger {
+  .card[data-home-retail-feature] .trigger {
     display: none;
   }
 }

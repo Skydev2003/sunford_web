@@ -3,11 +3,80 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, ChevronRight, X } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode, type Ref } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./home-retail-feature.module.css";
 
 const featureTitle = "ชั่งให้พอดี";
+const marketTitle = "ชั่งขายที่แผง";
+const marketLabel = "ค้าส่งและตลาดสด";
+
+function RetailEditorialCard({
+  kind,
+  heading,
+  label,
+  image,
+  sizes,
+  cardRef,
+  children,
+}: {
+  kind: "coffee" | "market";
+  heading: string;
+  label: string;
+  image: string;
+  sizes: string;
+  cardRef?: Ref<HTMLElement>;
+  children: ReactNode;
+}) {
+  return (
+    <article
+      ref={cardRef}
+      className={styles.card}
+      data-home-retail-feature={kind === "coffee" ? true : undefined}
+      data-retail-editorial={kind}
+    >
+      <div className={styles.copy}>
+        <p>{label}</p>
+        <h3>{heading}</h3>
+      </div>
+      <div className={styles.scene} aria-hidden="true">
+        <div className={styles.sceneArtwork}>
+          <Image src={image} alt="" fill sizes={sizes} />
+        </div>
+      </div>
+      {children}
+    </article>
+  );
+}
+
+function EditorialArrow() {
+  return (
+    <span className={styles.triggerIcon}>
+      <ArrowUpRight aria-hidden="true" />
+    </span>
+  );
+}
+
+export function MarketRetailFeature({ sizes }: { sizes: string }) {
+  return (
+    <RetailEditorialCard
+      kind="market"
+      heading={marketTitle}
+      label={marketLabel}
+      image="/images/products/market-retail-editorial.webp"
+      sizes={sizes}
+    >
+      <Link
+        href="/products/category/scales/applications/wholesale-markets"
+        prefetch={false}
+        className={styles.trigger}
+        aria-label={`${marketTitle} · ${marketLabel}`}
+      >
+        <EditorialArrow />
+      </Link>
+    </RetailEditorialCard>
+  );
+}
 
 export function HomeRetailFeature({
   topics,
@@ -45,14 +114,14 @@ export function HomeRetailFeature({
   }, []);
 
   return (
-    <article ref={card} className={styles.card} data-home-retail-feature>
-      <div className={styles.copy}>
-        <p>ครัวและกาแฟ · คำนวณราคา</p>
-        <h3>{featureTitle}</h3>
-      </div>
-      <div className={styles.scene} aria-hidden="true">
-        <Image src="/images/products/home-retail-editorial.webp" alt="" fill sizes={sizes} />
-      </div>
+    <RetailEditorialCard
+      kind="coffee"
+      cardRef={card}
+      heading={featureTitle}
+      label="ครัวและกาแฟ · คำนวณราคา"
+      image="/images/products/home-retail-editorial.webp"
+      sizes={sizes}
+    >
       <button
         ref={trigger}
         type="button"
@@ -65,9 +134,7 @@ export function HomeRetailFeature({
           setOpen(true);
         }}
       >
-        <span className={styles.triggerIcon}>
-          <ArrowUpRight aria-hidden="true" />
-        </span>
+        <EditorialArrow />
       </button>
       <noscript>
         <ul className={styles.directLinks}>
@@ -126,6 +193,6 @@ export function HomeRetailFeature({
           )}
         </div>
       </dialog>
-    </article>
+    </RetailEditorialCard>
   );
 }

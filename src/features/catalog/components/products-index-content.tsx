@@ -12,7 +12,7 @@ import { formatPrice } from "../data/price-format";
 import { ProductsIndexRail } from "./products-index-rail";
 import { EquipmentVideoCard } from "./equipment-video-card";
 import { FeaturedCardMedia } from "./featured-card-media";
-import { HomeRetailFeature } from "./home-retail-feature";
+import { HomeRetailFeature, MarketRetailFeature } from "./home-retail-feature";
 import { ProductsIndexMotion } from "./products-index-motion";
 import {
   ProductPhotoCard,
@@ -182,7 +182,13 @@ export function ProductsIndexContent({
               id={`products-rail-${id}`}
               label={id === "scales" ? label : title}
               prepareImages={categoryFamilies.has(id)}
+              revealTabFocus={id === "pos"}
             >
+              {id === "pos" && (
+                <li className={styles.card}>
+                  <HomeRetailFeature topics={homeRetail} sizes={productRailCardSizes} />
+                </li>
+              )}
               {id === "indicators" && (
                 <li className={styles.card}>
                   <Link href={sunford.about} className={styles.aboutCard}>
@@ -225,7 +231,7 @@ export function ProductsIndexContent({
                     )}
                     {id === "pos" && item.product.warehouseSku === "G106179" && (
                       <li className={styles.card}>
-                        <HomeRetailFeature topics={homeRetail} sizes={productRailCardSizes} />
+                        <MarketRetailFeature sizes={productRailCardSizes} />
                       </li>
                     )}
                   </Fragment>

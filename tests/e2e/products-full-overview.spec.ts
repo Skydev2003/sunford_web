@@ -1255,14 +1255,20 @@ function imageAssetPath(url: URL) {
   return new URL(url.searchParams.get("url") ?? url.href, url.origin).pathname;
 }
 
-test("Home & Retail requests two photos before the row enters and leads the first swipe", async ({
+test("Home & Retail prepares the first two images and leads product and market images on advance", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  const photoPaths = ["g106469", "g106186", "g106179", "g106209"].map(
-    (sku) => `/images/products/specialty-scales/${sku}-front-4k.webp`,
-  );
+  const skuPhoto = (sku: string) => `/images/products/specialty-scales/${sku}-front-4k.webp`;
+  const photoPaths = [
+    "/images/products/home-retail-editorial.webp",
+    skuPhoto("g106469"),
+    skuPhoto("g106186"),
+    skuPhoto("g106179"),
+    "/images/products/market-retail-editorial.webp",
+    skuPhoto("g106209"),
+  ];
   const requested = new Set<string>();
   const photos = Promise.withResolvers<void>();
   await page.route(
@@ -1279,11 +1285,11 @@ test("Home & Retail requests two photos before the row enters and leads the firs
   try {
     await page.goto("/products", { waitUntil: "domcontentloaded" });
     const rail = page.locator("#products-rail-pos");
-    const images = rail.locator(":scope > li[data-warehouse-sku] img");
-    await expect(images.nth(3)).toBeVisible();
+    const images = rail.locator(":scope > li img");
+    await expect(images.nth(5)).toBeVisible();
     expect(await rail.evaluate((track) => track.getBoundingClientRect().top)).toBeGreaterThan(1900);
     expect(requested.size).toBe(0);
-    const sizes = await images.nth(2).getAttribute("sizes");
+    const sizes = await images.nth(3).getAttribute("sizes");
     expect(sizes).toMatch(/px$/);
 
     // Bring only the vertical approach into range. No rail card is in the viewport yet.
@@ -1298,17 +1304,16 @@ test("Home & Retail requests two photos before the row enters and leads the firs
     await expect(images.nth(1)).toHaveAttribute("loading", "eager");
     await expect.poll(() => photoPaths.slice(0, 2).every((path) => requested.has(path))).toBe(true);
     await expect(images.nth(2)).toHaveAttribute("loading", "lazy");
+    await expect(images.nth(4)).toHaveAttribute("loading", "lazy");
 
     const next = page.getByRole("button", { name: /เลื่อนงานบ้าน.*ถัดไป/ });
     await next.scrollIntoViewIfNeeded();
     const record = (index: number) =>
       rail.evaluate((track, index) => {
         const cards = track.querySelectorAll(":scope > li");
-        const image = track.querySelectorAll<HTMLImageElement>(
-          ":scope > li[data-warehouse-sku] img",
-        )[index];
-        const card = image.closest("li")!;
-        const previous = card.previousElementSibling!;
+        const card = cards[index];
+        const image = card.querySelector("img")!;
+        const previous = cards[index - 1];
         const destination =
           previous.getBoundingClientRect().left - cards[0].getBoundingClientRect().left;
         return new Promise<{ left: number; offscreen: boolean; destination: number }>((resolve) => {
@@ -1324,22 +1329,7 @@ test("Home & Retail requests two photos before the row enters and leads the firs
           observer.observe(image, { attributes: true, attributeFilter: ["loading"] });
         });
       }, index);
-    for (const index of [2, 3]) {
-      if (index === 3) {
-        await next.click();
-        await expect
-          .poll(() =>
-            rail.evaluate((track) => {
-              const left = track
-                .querySelector('[data-warehouse-sku="G106179"]')!
-                .getBoundingClientRect().left;
-              return (
-                left - track.firstElementChild!.getBoundingClientRect().left - track.scrollLeft
-              );
-            }),
-          )
-          .toBeCloseTo(0, 0);
-      }
+    for (const index of [2, 3, 4, 5]) {
       const [early] = await Promise.all([record(index), next.click()]);
       expect(early.left).toBeGreaterThan(0);
       expect(early.left).toBeLessThan(early.destination);
@@ -1349,8 +1339,8 @@ test("Home & Retail requests two photos before the row enters and leads the firs
         .poll(() => rail.evaluate((track) => track.scrollLeft))
         .toBeCloseTo(early.destination, 0);
     }
-    await expect(images.nth(2)).toHaveAttribute("sizes", sizes!);
-    expect(await images.nth(2).getAttribute("srcset")).toMatch(/\d+w,/);
+    await expect(images.nth(3)).toHaveAttribute("sizes", sizes!);
+    expect(await images.nth(3).getAttribute("srcset")).toMatch(/\d+w,/);
   } finally {
     photos.resolve();
     await page.unrouteAll({ behavior: "wait" });
