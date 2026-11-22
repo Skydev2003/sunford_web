@@ -965,11 +965,7 @@ export function ProductsOverview({
                     ? `ดูข้อมูล${activeCategory.label}`
                     : "ดูข้อมูลผลิตภัณฑ์ตระกูลนี้"}
                 </h2>
-                {scaleApplicationsHref ? (
-                  <CatalogNavigationLink href={scaleApplicationsHref} className={styles.textLink}>
-                    เลือกเครื่องชั่งตามการใช้งาน <ChevronRight size={16} aria-hidden="true" />
-                  </CatalogNavigationLink>
-                ) : (
+                {!scaleApplicationsHref && (
                   <button
                     disabled={!hydrated}
                     type="button"
@@ -1007,6 +1003,11 @@ export function ProductsOverview({
                         {item.label}
                       </button>
                     ))}
+                    {scaleApplicationsHref && (
+                      <Link href={scaleApplicationsHref} prefetch={false}>
+                        เลือกตามการใช้งาน
+                      </Link>
+                    )}
                   </div>
                 </div>
               )}

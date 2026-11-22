@@ -1772,7 +1772,7 @@
   border-radius: 999px;
   background: var(--line);
 }
-.lineupFilterTray > button {
+.lineupFilterTray > :is(button, a) {
   min-height: 36px;
   padding: 5px 14px;
   border-radius: 999px;
@@ -1782,14 +1782,19 @@
   line-height: 1.4;
   white-space: nowrap;
 }
+.lineupFilterTray > a {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
 .lineupFilterTray > button[aria-pressed="true"] {
   background: var(--red);
   color: #fff;
 }
-.lineupFilterTray > button[aria-pressed="false"]:not(:disabled):hover {
+.lineupFilterTray > :is(button[aria-pressed="false"]:not(:disabled), a):hover {
   background: #fff;
 }
-.lineupFilterTray > button:focus-visible {
+.lineupFilterTray > :is(button, a):focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 1px;
 }
@@ -2021,7 +2026,7 @@
   .categoryLineup .chapterTrack li {
     font-size: 14px;
   }
-  .lineupFilterTray > button {
+  .lineupFilterTray > :is(button, a) {
     min-height: 44px;
     padding-inline: 18px;
     font-size: 16px;

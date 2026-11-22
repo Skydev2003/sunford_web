@@ -142,7 +142,7 @@ for (const [id, count, label] of [
       if (id === "scales") {
         await expect(
           overview.locator('[data-overview-section="lineup"]').getByRole("link", {
-            name: "เลือกเครื่องชั่งตามการใช้งาน",
+            name: "เลือกตามการใช้งาน",
             exact: true,
           }),
         ).toHaveAttribute("href", "/products/category/scales/applications");
@@ -290,7 +290,7 @@ test("normal-motion client entry and cached history keep controls usable", async
   await expect(
     page
       .locator('[data-overview-category="scales"]:visible [data-overview-section="lineup"]')
-      .getByRole("link", { name: "เลือกเครื่องชั่งตามการใช้งาน", exact: true }),
+      .getByRole("link", { name: "เลือกตามการใช้งาน", exact: true }),
   ).toHaveAttribute("href", "/products/category/scales/applications");
   await page.goForward();
   await expect(

@@ -6,6 +6,7 @@ import { verifyCategoryOverview } from "./helpers/category-overview";
 const scalePath = "/products/category/scales";
 const applicationsPath = `${scalePath}/applications`;
 const applicationsName = "เลือกเครื่องชั่งตามการใช้งาน";
+const applicationsFilterName = "เลือกตามการใช้งาน";
 const chapterNames: Record<string, string> = {
   "scale-kitchen": "ครัวเรือน",
   "scale-industrial": "การผลิต",
@@ -64,13 +65,37 @@ for (const width of [390, 1440]) {
       await expect(
         overview.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ" }),
       ).toHaveCount(0);
-      await expect(overview.getByRole("link", { name: applicationsName, exact: true })).toHaveCount(
-        2,
+      const lineup = overview.locator('[data-overview-section="lineup"]');
+      await expect(lineup.getByRole("link", { name: applicationsName, exact: true })).toHaveCount(
+        0,
       );
+      const filters = lineup.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+      await expect(filters.locator("button, a")).toHaveText([
+        "ทุกผลิตภัณฑ์",
+        "ครัวเรือน",
+        "การผลิต",
+        "คำนวณราคา",
+        "งานวิเคราะห์",
+        applicationsFilterName,
+      ]);
+      const applicationFilter = filters.getByRole("link", { name: applicationsFilterName });
+      await expect(applicationFilter).not.toHaveAttribute("aria-pressed", /.+/);
+      await expect(applicationFilter).not.toHaveAttribute("aria-selected", /.+/);
+      await expect(applicationFilter).not.toHaveAttribute("aria-current", /.+/);
+      await expect(filters.getByRole("button", { name: "ทุกผลิตภัณฑ์" })).toBeEnabled();
+      await filters.locator("button:enabled").last().focus();
+      await page.keyboard.press("Tab");
+      await expect(applicationFilter).toBeFocused();
+      await expect(applicationFilter).toBeInViewport({ ratio: 1 });
+      if (width === 390)
+        await expect.poll(() => filters.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
       for (const section of ["lineup", "index"]) {
-        const link = overview
-          .locator(`[data-overview-section="${section}"]`)
-          .getByRole("link", { name: applicationsName, exact: true });
+        const link =
+          section === "lineup"
+            ? applicationFilter
+            : overview
+                .locator('[data-overview-section="index"]')
+                .getByRole("link", { name: applicationsName, exact: true });
         await expect(link).toHaveAttribute("href", applicationsPath);
         if (width === 390) await link.tap();
         else {
@@ -163,7 +188,7 @@ for (const width of [320, 390, 768, 834, 1024, 1440, 1920, 844]) {
     await expect(main.locator("#products-chapters > li > :is(a, button)")).toHaveCount(4);
     const applications = main
       .locator('[data-overview-section="lineup"]')
-      .getByRole("link", { name: applicationsName, exact: true });
+      .getByRole("link", { name: applicationsFilterName, exact: true });
     await applications.scrollIntoViewIfNeeded();
     await expect(applications).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(

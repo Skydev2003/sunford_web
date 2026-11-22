@@ -119,7 +119,7 @@ export async function verifyCategoryOverview(page: Page, id: string, width: numb
   }
   if (id === "scales") {
     await expect(
-      lineup.getByRole("link", { name: "เลือกเครื่องชั่งตามการใช้งาน", exact: true }),
+      filters.getByRole("link", { name: "เลือกตามการใช้งาน", exact: true }),
     ).toHaveAttribute("href", "/products/category/scales/applications");
   } else {
     const finder = lineup.getByRole("button", { name: /^ดู.*ทั้งหมด$/ });

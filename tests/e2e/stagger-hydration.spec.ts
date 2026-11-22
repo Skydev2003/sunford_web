@@ -89,7 +89,7 @@ for (const route of ["/products/category/scales", "/software/download", "/servic
         await expectStaggerMotion(page.locator("#products-title"));
         await page
           .locator('[data-overview-section="lineup"]')
-          .getByRole("link", { name: "เลือกเครื่องชั่งตามการใช้งาน", exact: true })
+          .getByRole("link", { name: "เลือกตามการใช้งาน", exact: true })
           .click();
         await expect(
           page.getByRole("heading", { level: 1, name: "เลือกเครื่องชั่งตามการใช้งาน" }),
