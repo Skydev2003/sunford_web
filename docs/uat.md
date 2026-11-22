@@ -1,6 +1,6 @@
 # UAT บนคลาวด์และ LAN
 
-สำหรับ UAT ที่ไม่ต้องเปิดเครื่องตัวเอง ใช้ [Vercel ตามคู่มือนี้](vercel.md) โดย Production deploy จาก branch `main` และ Preview รองรับ `Javis1` กับ branch อื่น ใช้การเชื่อมต่อ Warehouse สำหรับอ่านสินค้า และฐานทะเบียนเอกสารแยกสำหรับ Preview; เนื้อหาเว็บใช้ไฟล์ local ไม่มี CMS ส่วนวิธี LAN ด้านล่างยังใช้ทดสอบชั่วคราวได้ ต้อง import repository และตั้ง Environment Variables บน Vercel ครั้งแรกก่อน
+สำหรับ UAT ของ `Javis1`, `Javis2` และ `Javis3` ให้ทดสอบบนเครื่องหรือผ่าน LAN ตามขั้นตอนด้านล่าง สำหรับ UAT บนคลาวด์ ใช้ [Vercel ตามคู่มือนี้](vercel.md) โดย Production deploy จาก branch `main` และ Preview รองรับ branch อื่นที่เปิดใช้งาน ใช้การเชื่อมต่อ Warehouse สำหรับอ่านสินค้า และฐานทะเบียนเอกสารแยกสำหรับ Preview; เนื้อหาเว็บใช้ไฟล์ local ไม่มี CMS ส่วนวิธี LAN ด้านล่างยังใช้ทดสอบชั่วคราวได้ ต้อง import repository และตั้ง Environment Variables บน Vercel ครั้งแรกก่อน
 
 `nip.io` เป็น DNS ที่อ่าน IP จากชื่อโดเมน ไม่ได้ให้พื้นที่รัน Next.js ตัวอย่าง `64.176.22.9.nip.io` บนเว็บไซต์ nip.io เป็นเว็บของผู้ให้บริการเอง จึงใช้เป็นเซิร์ฟเวอร์ Sunford ไม่ได้
 
@@ -102,6 +102,6 @@ npm run uat:local
 
 ## Hosting บนคลาวด์
 
-`vercel.json` ตั้ง build สำหรับ Production (`main`) และ Preview (`Javis1`/branch อื่น) ใช้ CI เดิมต่อได้ แต่ต้องตั้ง Deployment Checks เพิ่มหากต้องการรอ CI ก่อน promote เว็บ ดู Environment Variables และขั้นตอน deploy ใน [vercel.md](vercel.md)
+`vercel.json` ตั้ง build สำหรับ Production (`main`) และ Preview ของ branch ที่เปิดใช้งาน ใช้ CI เดิมต่อได้ แต่ต้องตั้ง Deployment Checks เพิ่มหากต้องการรอ CI ก่อน promote เว็บ ดู Environment Variables และขั้นตอน deploy ใน [vercel.md](vercel.md)
 
 ดูพฤติกรรม DNS และข้อกำหนดการออก TLS ได้จาก [nip.io](https://nip.io/) และ [Next.js self-hosting](https://nextjs.org/docs/app/guides/self-hosting)
