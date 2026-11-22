@@ -1,0 +1,78 @@
+.page {
+  composes: railSpacing from "../../../../../../features/catalog/components/catalog-rail-spacing.module.css";
+  background: var(--background);
+  color: var(--ink);
+  padding: var(--section-space-compact) var(--catalog-rail-inset) var(--section-space-feature);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--catalog-rail-heading-space);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.breadcrumb a,
+.contact {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--catalog-rail-control-hit);
+}
+
+.heading {
+  margin: var(--section-space-compact) 0 var(--section-space);
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  line-height: 1.2;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--catalog-rail-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groupLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catalog-rail-heading-space);
+  min-height: var(--catalog-rail-control-hit);
+  padding: var(--card-padding-compact);
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+}
+
+.groupLink:hover,
+.breadcrumb a:hover,
+.contact {
+  color: var(--red);
+}
+
+.groupLink svg {
+  flex-shrink: 0;
+}
+
+.conditional {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 40rem) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
