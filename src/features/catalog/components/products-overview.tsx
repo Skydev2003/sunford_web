@@ -140,6 +140,7 @@ function Gallery({ id, label, children, returnKey, prepareImages }: GalleryProps
           controlsClassName={styles.galleryControls}
           controlLabels={{ previous: `${label}ก่อนหน้า`, next: `${label}ถัดไป` }}
           prepareImages={prepareImages}
+          revealTabFocus
         >
           {children}
         </ProductsIndexRail>
@@ -736,6 +737,7 @@ export function ProductsOverview({
                     }}
                     controlIconSize={20}
                     hideUnavailableControls
+                    revealTabFocus
                     returnKey={`${railScope}.chapters`}
                   >
                     {chapterCards}

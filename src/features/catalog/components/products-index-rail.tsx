@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cubicBezier } from "motion";
 import { useReturnState } from "@/features/site/history/return-state";
@@ -114,6 +114,7 @@ export function ProductsIndexRail({
   controlLabels,
   controlIconSize,
   hideUnavailableControls = false,
+  revealTabFocus = false,
   returnKey = id,
   children,
 }: {
@@ -127,6 +128,7 @@ export function ProductsIndexRail({
   controlLabels?: { previous: string; next: string };
   controlIconSize?: number;
   hideUnavailableControls?: boolean;
+  revealTabFocus?: boolean;
   returnKey?: string;
   children: ReactNode;
 }) {
@@ -135,14 +137,64 @@ export function ProductsIndexRail({
   const [savedLeft, saveLeft] = useReturnState<number | null>(`storefront.${returnKey}.left`, null);
   const [edges, setEdges] = useState({ previous: false, next: false });
 
-  function stopMotion() {
+  const stopMotion = useCallback(() => {
     if (!motion.current) return;
     cancelAnimationFrame(motion.current.frame);
     motion.current = null;
     if (track.current) delete track.current.dataset.stepping;
-  }
+  }, []);
 
-  useEffect(() => stopMotion, []);
+  useEffect(() => stopMotion, [stopMotion]);
+
+  useEffect(() => {
+    if (!revealTabFocus) return;
+    let frame = 0;
+    const onTab = (event: KeyboardEvent) => {
+      if (!event.isTrusted || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey)
+        return;
+      const previousFocus = document.activeElement;
+      if (previousFocus?.closest("dialog[open]")) return;
+      cancelAnimationFrame(frame);
+      // Wait for native Tab navigation; focus restored by a dialog or history should not scroll.
+      frame = requestAnimationFrame(() => {
+        const list = track.current;
+        const focused = document.activeElement;
+        if (
+          event.defaultPrevented ||
+          !list ||
+          !(focused instanceof HTMLElement) ||
+          focused === previousFocus ||
+          focused === list ||
+          !list.contains(focused) ||
+          !focused.matches(":focus-visible")
+        )
+          return;
+        const left = list.getBoundingClientRect().left + list.clientLeft;
+        const isClipped = () => {
+          const target = focused.getBoundingClientRect();
+          return target.left < left || target.right > left + list.clientWidth;
+        };
+        if (!isClipped()) return;
+        stopMotion();
+        focused.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" });
+        if (!isClipped()) return;
+        // A short nearest adjustment can snap back to the current card.
+        const card = focused.closest("li");
+        const first = list.firstElementChild;
+        if (card?.parentElement === list && first) {
+          list.scrollTo({
+            left: card.getBoundingClientRect().left - first.getBoundingClientRect().left,
+            behavior: "instant",
+          });
+        }
+      });
+    };
+    document.addEventListener("keydown", onTab, true);
+    return () => {
+      document.removeEventListener("keydown", onTab, true);
+      cancelAnimationFrame(frame);
+    };
+  }, [revealTabFocus, stopMotion]);
 
   useLayoutEffect(() => {
     const list = track.current;
