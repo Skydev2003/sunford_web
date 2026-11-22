@@ -12,6 +12,34 @@ import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 import styles from "./products-overview.module.css";
 
+// Catalogue photographs are used only for the matching Warehouse model.
+const modelPhotos: Readonly<Record<string, string>> = {
+  G108029: "/images/products/software-showcase/p1-front-4k.webp",
+  G108012: "/images/products/software-showcase/p1w-front-4k.webp",
+  G108050: "/images/products/software-showcase/p4-front-4k.webp",
+};
+
+const topics: Readonly<Record<string, { introduction: string; image: string; detail: string }>> = {
+  systems: {
+    introduction: "เลือกจากซอฟต์แวร์ที่ร้านใช้ แล้วตรวจรุ่น Android หรือ Windows ที่รองรับ",
+    image: "/images/category-chapters/pos/windows.webp",
+    detail:
+      "ชุด P1 เป็นตัวเลือก Android และชุด P1W เป็นตัวเลือก Windows ให้ตรวจระบบที่ซอฟต์แวร์ เครื่องพิมพ์ และอุปกรณ์ของร้านรองรับก่อนเลือก",
+  },
+  workflows: {
+    introduction: "ลองขั้นตอนรับน้ำหนัก คำนวณราคา และพิมพ์เอกสารหรือฉลากตามงานจริง",
+    image: "/images/products/software-showcase/pos-android.webp",
+    detail:
+      "เริ่มจากงานขายจริงของร้าน ทดลองรับน้ำหนัก คำนวณราคา และพิมพ์ตัวอย่าง ตรวจว่าชนิดเอกสารและฉลากตรงกับที่ใช้",
+  },
+  scales: {
+    introduction: "ตรวจรุ่นเครื่องชั่ง พอร์ต และรูปแบบข้อมูลก่อนต่อกับระบบ POS",
+    image: "/images/category-chapters/pos/android.webp",
+    detail:
+      "ชุด P1 พร้อม RLS1100 เป็นตัวอย่างชุด Android ที่มีอยู่ หากนำเครื่องเดิมมาใช้ร่วมกัน ให้ยืนยันสาย พอร์ต หน่วยน้ำหนัก และรูปแบบข้อมูลของทั้งสองฝั่ง",
+  },
+};
+
 async function getCopyrightYear() {
   "use cache";
   return new Date().getFullYear();
@@ -26,28 +54,26 @@ export async function POSOverview() {
   } = await getProductCategories();
   const category = categories.find(({ id }) => id === "pos")!;
   const ids = new Set(category.productIds);
-  const products = catalogProducts.filter(({ id }) => ids.has(id));
-  const images = [
-    ...products.filter((product) => product.featured && product.image),
-    ...products.filter((product) => !product.featured && product.image),
-  ];
+  const products = catalogProducts
+    .filter(({ id }) => ids.has(id))
+    .map((product) => {
+      const image = product.warehouseSku && modelPhotos[product.warehouseSku];
+      return !product.image && image ? { ...product, image } : product;
+    });
   const guide = buyingGuides.find(({ slug }) => slug === "pos")!;
-  const categoryHref = "/products/category/pos";
-  const localHref = (href: string) => (href === "/Product/POS" ? categoryHref : href);
-  const stories = guide.sections.map((section, index) => ({
+  const guideHref = "/guides/pos";
+  const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: section.paragraphs[0],
-    image: images[index]?.image ?? "",
-    href: "/guides/pos",
+    introduction: topics[section.id].introduction,
+    image: topics[section.id].image,
+    href: `${guideHref}#${section.id}`,
     content: (
       <div className={styles.storyBlocks}>
         <section>
-          {section.paragraphs.slice(1).map((paragraph, paragraphIndex) => (
-            <p key={paragraphIndex}>{paragraph}</p>
-          ))}
+          <p>{topics[section.id].detail}</p>
           {section.links.map((link) => (
-            <Link key={link.href} href={localHref(link.href)}>
+            <Link key={link.href} href={link.href}>
               {link.label} ›
             </Link>
           ))}
@@ -57,21 +83,21 @@ export async function POSOverview() {
   }));
   const services = [
     {
-      title: "จัดส่งถึงคุณ.",
-      detail: "ครอบคลุมทั่วประเทศไทย",
-      href: sunford.contact,
-      content: <p>จัดส่งทั่วประเทศไทย พร้อมทีมดูแล และให้คำปรึกษา</p>,
+      title: "ขอใบเสนอราคา",
+      detail: "เลือกรุ่นและจำนวนที่ต้องการ",
+      href: "/service/quotation",
+      content: <p>เลือกรุ่นที่มีราคาในแบบฟอร์ม หรือติดต่อฝ่ายขายหากรุ่นที่ต้องการไม่แสดงราคา</p>,
     },
     {
-      title: "ปรึกษาผู้เชี่ยวชาญ.",
-      detail: "เลือกให้ตรงกับงานของคุณ",
+      title: "เลือกชุด POS สำหรับร้าน",
+      detail: "แจ้งซอฟต์แวร์และอุปกรณ์ที่ใช้อยู่",
       href: sunford.contact,
-      content: <p>{guide.introduction}</p>,
+      content: <p>เตรียมรุ่นเครื่องชั่ง เครื่องพิมพ์ และระบบปฏิบัติการก่อนปรึกษาเลือกชุด</p>,
     },
     {
-      title: "ดูแลหลังการขาย.",
-      detail: "พร้อมข้อมูลการรับประกัน",
-      href: sunford.warrantyPolicy,
+      title: "บริการหลังการขาย",
+      detail: "ดูขั้นตอนซ่อม เปลี่ยน เคลม และคืนสินค้า",
+      href: sunford.service,
       content: (
         <p>
           <Link href={sunford.service}>บริการหลังการขาย</Link> ·{" "}
@@ -80,14 +106,14 @@ export async function POSOverview() {
       ),
     },
     {
-      title: "เปรียบเทียบก่อนเลือก.",
-      detail: "ดูรายละเอียดได้สูงสุด 3 รุ่น",
-      href: categoryHref,
-      content: <p>{guide.sections[2].paragraphs[1]}</p>,
+      title: "ดูซอฟต์แวร์ POS",
+      detail: "ตรวจระบบและไฟล์ที่มีให้ดาวน์โหลด",
+      href: "/software/download",
+      content: <p>ตรวจชื่อและรุ่นบนหน้าดาวน์โหลดก่อนติดตั้ง เลือกชุดที่รองรับระบบของร้าน</p>,
     },
     {
       title: "ลงทะเบียนรับประกัน",
-      detail: "พร้อมข้อมูลการรับประกัน",
+      detail: "ลงทะเบียนและอ่านเงื่อนไข",
       href: sunford.warranty,
       content: (
         <p>
@@ -97,13 +123,13 @@ export async function POSOverview() {
       ),
     },
   ];
-  const accordion = guide.sections.map((section, index) => ({
-    title: section.title,
-    image: stories[index].image,
+  const accordion = stories.map((story) => ({
+    title: story.title,
+    image: story.image,
     content: (
       <>
-        <p>{section.paragraphs[0]}</p>
-        <Link href="/guides/pos">ดูเพิ่มเติม ›</Link>
+        <p>{story.introduction}</p>
+        <Link href={story.href}>อ่านคู่มือ ›</Link>
       </>
     ),
   }));

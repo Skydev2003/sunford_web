@@ -12,6 +12,35 @@ import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 import styles from "./products-overview.module.css";
 
+// Catalogue photographs are used only for the matching Warehouse model.
+const modelPhotos: Readonly<Record<string, string>> = {
+  G106131: "/images/products/scale-showcase/g106131-front-4k.webp",
+  G106643: "/images/products/scale-showcase/g106643-front-4k.webp",
+  G106094: "/images/products/scale-showcase/g106094-front-4k.webp",
+  G106193: "/images/products/scale-showcase/g106193-front-4k.webp",
+};
+
+const topics: Readonly<Record<string, { introduction: string; image: string; detail: string }>> = {
+  capacity: {
+    introduction: "ชั่งสินค้ารวมภาชนะ แล้วเลือกพิกัดและขนาดจานให้พอกับงาน",
+    image: "/images/products/scale-showcase/g106131-front-4k.webp",
+    detail:
+      "ชั่งวัตถุดิบเล็กน้อยกับชั่งสินค้าทั้งลังต้องใช้คนละช่วงน้ำหนัก วัดขนาดภาชนะที่ใช้จริงก่อนตรวจพิกัดและจานชั่งของรุ่นที่สนใจ",
+  },
+  resolution: {
+    introduction: "เทียบค่าละเอียดกับหน่วยที่ต้องใช้ และอ่านค่าความคลาดเคลื่อนในสเปก",
+    image: "/images/products/scale-showcase/g106643-front-4k.webp",
+    detail:
+      "ค่าละเอียดคือขั้นเล็กสุดที่จอแสดง อ่านค่าความคลาดเคลื่อนและเงื่อนไขในคู่มือแยกต่างหาก โดยเฉพาะเมื่อชั่งปริมาณน้อย",
+  },
+  compare: {
+    introduction: "เทียบพิกัด จานชั่ง และฟังก์ชัน เช่น คำนวณราคาหรือพิมพ์ฉลาก",
+    image: "/images/category-chapters/scales/price.webp",
+    detail:
+      "เลือกเปรียบเทียบจากการ์ดสินค้า แล้วเช็กว่าฟังก์ชันที่ต้องใช้มีในรุ่นนั้น เช่น นับชิ้น คำนวณราคา หรือพิมพ์ฉลาก",
+  },
+};
+
 async function getCopyrightYear() {
   "use cache";
   return new Date().getFullYear();
@@ -26,28 +55,26 @@ export async function ScalesOverview() {
   } = await getProductCategories();
   const category = categories.find(({ id }) => id === "scales")!;
   const ids = new Set(category.productIds);
-  const products = catalogProducts.filter(({ id }) => ids.has(id));
-  const images = [
-    ...products.filter((product) => product.featured && product.image),
-    ...products.filter((product) => !product.featured && product.image),
-  ];
+  const products = catalogProducts
+    .filter(({ id }) => ids.has(id))
+    .map((product) => {
+      const image = product.warehouseSku && modelPhotos[product.warehouseSku];
+      return !product.image && image ? { ...product, image } : product;
+    });
   const guide = buyingGuides.find(({ slug }) => slug === "scales")!;
-  const categoryHref = "/products/category/scales";
-  const localHref = (href: string) => (href === "/products" ? categoryHref : href);
-  const stories = guide.sections.map((section, index) => ({
+  const guideHref = "/guides/scales";
+  const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: section.paragraphs[0],
-    image: images[index]?.image ?? "",
-    href: "/guides/scales",
+    introduction: topics[section.id].introduction,
+    image: topics[section.id].image,
+    href: `${guideHref}#${section.id}`,
     content: (
       <div className={styles.storyBlocks}>
         <section>
-          {section.paragraphs.slice(1).map((paragraph, paragraphIndex) => (
-            <p key={paragraphIndex}>{paragraph}</p>
-          ))}
+          <p>{topics[section.id].detail}</p>
           {section.links.map((link) => (
-            <Link key={link.href} href={localHref(link.href)}>
+            <Link key={link.href} href={link.href}>
               {link.label} ›
             </Link>
           ))}
@@ -57,21 +84,21 @@ export async function ScalesOverview() {
   }));
   const services = [
     {
-      title: "จัดส่งถึงคุณ.",
-      detail: "ครอบคลุมทั่วประเทศไทย",
-      href: sunford.contact,
-      content: <p>จัดส่งทั่วประเทศไทย พร้อมทีมดูแล และให้คำปรึกษา</p>,
+      title: "ขอใบเสนอราคา",
+      detail: "เลือกรุ่นและจำนวนที่ต้องการ",
+      href: "/service/quotation",
+      content: <p>เลือกรุ่นที่มีราคาในแบบฟอร์ม หรือติดต่อฝ่ายขายหากรุ่นที่ต้องการไม่แสดงราคา</p>,
     },
     {
-      title: "ปรึกษาผู้เชี่ยวชาญ.",
-      detail: "เลือกให้ตรงกับงานของคุณ",
+      title: "เลือกเครื่องชั่ง",
+      detail: "แจ้งน้ำหนัก ภาชนะ และพื้นที่วางเครื่อง",
       href: sunford.contact,
-      content: <p>{guide.introduction}</p>,
+      content: <p>เตรียมน้ำหนักต่ำสุดและสูงสุด รวมภาชนะ และขนาดจานที่ต้องใช้ก่อนคุยกับฝ่ายขาย</p>,
     },
     {
-      title: "ดูแลหลังการขาย.",
-      detail: "พร้อมข้อมูลการรับประกัน",
-      href: sunford.warrantyPolicy,
+      title: "บริการหลังการขาย",
+      detail: "ดูขั้นตอนซ่อม เปลี่ยน เคลม และคืนสินค้า",
+      href: sunford.service,
       content: (
         <p>
           <Link href={sunford.service}>บริการหลังการขาย</Link> ·{" "}
@@ -80,14 +107,14 @@ export async function ScalesOverview() {
       ),
     },
     {
-      title: "เปรียบเทียบก่อนเลือก.",
-      detail: "ดูรายละเอียดได้สูงสุด 3 รุ่น",
-      href: categoryHref,
-      content: <p>{guide.sections[2].paragraphs[1]}</p>,
+      title: "ดูคู่มือและสเปก",
+      detail: "ตรวจพิกัดและความละเอียดตามรุ่น",
+      href: "/technical-specification",
+      content: <p>ค้นด้วยรุ่นหรือ SKU เพื่ออ่านสเปกและคู่มือที่มีข้อมูลยืนยัน</p>,
     },
     {
       title: "ลงทะเบียนรับประกัน",
-      detail: "พร้อมข้อมูลการรับประกัน",
+      detail: "ลงทะเบียนและอ่านเงื่อนไข",
       href: sunford.warranty,
       content: (
         <p>
@@ -97,13 +124,13 @@ export async function ScalesOverview() {
       ),
     },
   ];
-  const accordion = guide.sections.map((section, index) => ({
-    title: section.title,
-    image: stories[index].image,
+  const accordion = stories.map((story) => ({
+    title: story.title,
+    image: story.image,
     content: (
       <>
-        <p>{section.paragraphs[0]}</p>
-        <Link href="/guides/scales">ดูเพิ่มเติม ›</Link>
+        <p>{story.introduction}</p>
+        <Link href={story.href}>อ่านคู่มือ ›</Link>
       </>
     ),
   }));
