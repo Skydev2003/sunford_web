@@ -7,6 +7,8 @@ const sparse = {
   subtitle: "",
   description: "",
   readability: "",
+  capacity: "",
+  connection: "",
   warehouseSku: "RC-10",
 };
 
@@ -16,7 +18,7 @@ test("published showcase copy is keyed to an exact Warehouse SKU", () => {
     lineupSalesCopy({ ...indicator, warehouseSku: "G107770" }),
     "จอ LCD อ่านได้ไกล 4 เมตร",
   );
-  assert.equal(lineupSalesCopy(indicator), "หัวอ่านสำหรับแสดงน้ำหนัก");
+  assert.equal(lineupSalesCopy(indicator), "อ่านค่าน้ำหนักจากแท่นชั่ง");
   assert.equal(
     lineupSalesCopy({ ...sparse, name: "WPS10KS", warehouseSku: "G106698" }),
     "ชาร์จได้ ไม่ต้องซื้อถ่าน",
@@ -70,7 +72,7 @@ test("numeric claims come from explicitly labeled specifications or pack facts",
   );
 });
 
-test("sparse records use recorded types or a neutral link prompt", () => {
+test("sparse records describe their verified use and avoid repeating the model name", () => {
   assert.equal(
     lineupSalesCopy({
       ...sparse,
@@ -86,18 +88,88 @@ test("sparse records use recorded types or a neutral link prompt", () => {
       warehouseCategoryId: "platforms",
       warehouseName: "SUNFORD Platform TIS 3949",
     }),
-    "โครงสร้างสำหรับแท่นชั่ง",
+    "แท่นสำหรับวางของขณะชั่ง",
   );
   assert.equal(
     lineupSalesCopy({
       ...sparse,
       warehouseCategoryId: "indicators",
-      name: "หัวอ่านสำหรับแสดงน้ำหนัก",
+      name: "อ่านค่าน้ำหนักจากแท่นชั่ง",
     }),
-    "ดูข้อมูลของรุ่นนี้",
+    "",
+  );
+  assert.equal(lineupSalesCopy({ ...sparse, warehouseSku: undefined, subtitle: "ล้างน้ำได้" }), "");
+});
+
+test("explicit current Warehouse specs take precedence over product type", () => {
+  const scale = { ...sparse, warehouseCategoryId: "scales" };
+  assert.equal(lineupSalesCopy({ ...scale, capacity: "5000 g" }), "ชั่งได้ถึง 5 กก.");
+  assert.equal(
+    lineupSalesCopy({ ...scale, connection: "ส่งข้อมูลผ่านพอร์ท RS232" }),
+    "ส่งข้อมูลผ่านพอร์ต RS232",
   );
   assert.equal(
-    lineupSalesCopy({ ...sparse, warehouseSku: undefined, subtitle: "ล้างน้ำได้" }),
-    "ดูข้อมูลของรุ่นนี้",
+    lineupSalesCopy({ ...scale, connection: "เพิ่ม Bluetooth ได้เมื่อซื้ออุปกรณ์เสริม" }),
+    "ชั่งน้ำหนักสินค้า",
+  );
+});
+
+test("suite, part and display copy come from the full Warehouse record", () => {
+  assert.equal(
+    lineupSalesCopy({
+      ...sparse,
+      warehouseSku: "G106155",
+      name: "TGS1000M",
+      warehouseCategoryId: "scales",
+    }),
+    "มีแบตเตอรี่เป็นส่วนประกอบ",
+  );
+  assert.equal(
+    lineupSalesCopy({
+      ...sparse,
+      warehouseCategoryId: "pos",
+      description: "Set SUNFORD POS1100A P1",
+    }),
+    "ชุด POS พร้อมเครื่องชั่ง",
+  );
+  assert.equal(
+    lineupSalesCopy({
+      ...sparse,
+      warehouseCategoryId: "accessories",
+      subtitle: "สติ๊กเกอร์เลเบล (1 ลัง = 50 ม้วน)",
+    }),
+    "ลังละ 50 ม้วน",
+  );
+  assert.equal(
+    lineupSalesCopy({
+      ...sparse,
+      warehouseCategoryId: "accessories",
+      warehouseName: "SUNFORD จอแสดงผล C1/C5",
+    }),
+    "จอเสริมสำหรับรุ่น C1/C5",
+  );
+});
+
+test("platform model digits never become dimensions or a material claim", () => {
+  assert.equal(
+    lineupSalesCopy({
+      ...sparse,
+      warehouseSku: "G107572",
+      name: "TMS 3040",
+      warehouseCategoryId: "platforms",
+      warehouseName: "SUNFORD ชิ้นส่วน - Platform TMS 3040",
+    }),
+    "แท่นสำหรับวางของขณะชั่ง",
+  );
+});
+
+test("specific Warehouse benefits distinguish neighboring scale cards", () => {
+  assert.equal(
+    lineupSalesCopy({ ...sparse, warehouseSku: "G106582", name: "POS1100-A" }),
+    "ชั่งสินค้าได้ถึง 30 กก.",
+  );
+  assert.equal(
+    lineupSalesCopy({ ...sparse, warehouseSku: "G106483", name: "TSS-150-SW31S" }),
+    "เตือนเมื่อชั่งขาดหรือเกิน",
   );
 });

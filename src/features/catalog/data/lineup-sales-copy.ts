@@ -6,6 +6,8 @@ type LineupProduct = Pick<
   | "subtitle"
   | "description"
   | "readability"
+  | "capacity"
+  | "connection"
   | "warehouseSku"
   | "warehouseName"
   | "warehouseGroup"
@@ -18,6 +20,8 @@ const maxLength = 34;
 // One fact per SKU from the published /products showcases or the SKU's Warehouse card.
 const highlights = new Map([
   ["G106698", "ชาร์จได้ ไม่ต้องซื้อถ่าน"],
+  ["G106582", "ชั่งสินค้าได้ถึง 30 กก."],
+  ["G106483", "เตือนเมื่อชั่งขาดหรือเกิน"],
   ["G106094", "ชั่งได้ถึง 30 กก."],
   ["G106315", "ตัวเลขสีแดง อ่านได้ไกล 5 เมตร"],
   ["G106193", "ต่อลิ้นชักเก็บเงินได้"],
@@ -59,14 +63,17 @@ const highlights = new Map([
   ["G108029", "จอสัมผัส 15.6 นิ้ว"],
   ["G108050", "จอสัมผัส 12.5 นิ้ว"],
   ["G108043", "พิมพ์สลิปขนาด 80 มม."],
+  // Exact component lists for these Warehouse SKUs.
+  ["11", "ใช้กับอะแดปเตอร์"],
+  ["G106155", "มีแบตเตอรี่เป็นส่วนประกอบ"],
 ]);
 
 const categoryFacts = new Map([
-  ["scales", "สินค้าในหมวดเครื่องชั่ง"],
-  ["indicators", "หัวอ่านสำหรับแสดงน้ำหนัก"],
-  ["platforms", "โครงสร้างสำหรับแท่นชั่ง"],
-  ["pos", "สินค้าในหมวดระบบ POS"],
-  ["accessories", "สินค้าในหมวดอุปกรณ์เสริม"],
+  ["scales", "ชั่งน้ำหนักสินค้า"],
+  ["indicators", "อ่านค่าน้ำหนักจากแท่นชั่ง"],
+  ["platforms", "แท่นสำหรับวางของขณะชั่ง"],
+  ["pos", "สำหรับงานขายหน้าร้าน"],
+  ["accessories", "อุปกรณ์สำหรับใช้งานร่วมกัน"],
 ]);
 
 const materials = new Map([
@@ -97,7 +104,8 @@ const scaleNames: readonly Rule[] = [
   [/Fitdays Smart Scale/i, "เครื่องชั่งระบบ Fitdays"],
   [/\(3 buttons\)/i, "แผงควบคุม 3 ปุ่ม"],
   [/^SUNFORD .+ Poleless$/i, "รุ่นไม่มีเสา"],
-  [/^แท่นแสตนเลสทรงเก้าอี้/, "แท่นสเตนเลสทรงเก้าอี้"],
+  [/^แท่นชั่งพร้อมโหลดเซล(?:ล์|ส์)(?=\s|$)/, "แท่นชั่งพร้อมเซนเซอร์รับน้ำหนัก"],
+  [/^แท่น(?:แสตน|สแตน|สเตน)เลสทรงเก้าอี้/, "แท่นสเตนเลสทรงเก้าอี้"],
   [
     /^(?:พร้อม Certificate of calibration|.*\(Free Certificate of calibration\))/i,
     "มาพร้อมใบรับรองการสอบเทียบ",
@@ -116,6 +124,12 @@ const scaleNames: readonly Rule[] = [
 ];
 
 const accessoryNames: readonly Rule[] = [
+  [/จอแสดงผล C1\/C5(?=\s|$)/i, "จอเสริมสำหรับรุ่น C1/C5"],
+  [/ลิ้นชักไฟฟ้า/, "ลิ้นชักเก็บเงินระบบไฟฟ้า"],
+  [/กล้องถ่ายภาพ AI\b/i, "กล้องสำหรับถ่ายภาพ"],
+  [/^Accessory for POS - Basic$/i, "อุปกรณ์ต่อพ่วงสำหรับ POS"],
+  [/^(?:ล้อ PU 2"|ล้อแท่นชั่ง พียูดำ 2นิ้ว)/i, "ล้อพียูขนาด 2 นิ้ว"],
+  [/ลูกตุ้มน้ำหนัก/, "ตุ้มน้ำหนักสำหรับงานชั่ง"],
   [/สแกนเนอร์.*(?:1D|1 มิติ).*ไร้สาย/i, "อ่านบาร์โค้ด 1 มิติแบบไร้สาย"],
   [/สแกนเนอร์.*(?:1D|1 มิติ).*มีสาย/i, "อ่านบาร์โค้ด 1 มิติแบบมีสาย"],
   [/คีย์บอร์ดและเม้าส์\s*ไร้สาย/, "ชุดคีย์บอร์ดและเมาส์ไร้สาย"],
@@ -157,8 +171,7 @@ const accessoryNames: readonly Rule[] = [
   [/ขาตั้งเครื่องพิมพ์/, "ขาตั้งสำหรับเครื่องพิมพ์"],
   [/ชิ้นส่วน - RAMP\s/i, "ทางลาดสำหรับขึ้นแท่นชั่ง"],
   [/วงจรแท่นชั่งเทอร์มินอล/, "วงจรสำหรับแท่นชั่งเทอร์มินอล"],
-  [/อะไหล่เพื่องานซ่อม/, "อะไหล่สำหรับงานซ่อม"],
-  [/^ล้อแท่นชั่ง พียูดำ 2นิ้ว/, "ล้อพียูขนาด 2 นิ้ว"],
+  [/อะไหล่เพื่องานซ่อม|อะไหล่เบ็ดเตล็ด/, "อะไหล่สำหรับงานซ่อม"],
   [/^เสาแสตนเลส$/, "เสาทำจากสเตนเลส"],
 ];
 
@@ -177,6 +190,21 @@ const units = new Map([
   ["กก.", "กก."],
   ["กิโลกรัม", "กก."],
 ]);
+
+const connectionFacts: readonly Rule[] = [
+  [/^ส่งข้อมูลผ่าน Bluetooth(?=\s|$)/i, "ส่งข้อมูลผ่าน Bluetooth"],
+  [/^ส่งข้อมูลผ่านพอ(?:ร์ต|ร์ท|รท)\s*RS[- ]?232(?=\s|$)/i, "ส่งข้อมูลผ่านพอร์ต RS232"],
+  [/^มีพอ(?:ร์ต|ร์ท|รท)\s*RS[- ]?232(?=\s|$)/i, "มีพอร์ต RS232"],
+];
+
+function statedCapacity(capacity: string) {
+  const match = /^(\d+(?:\.\d+)?)\s*(kg|g|กก\.|กิโลกรัม|กรัม)$/i.exec(capacity.trim());
+  if (!match || Number(match[1]) <= 0) return;
+  const unit = units.get(match[2].toLowerCase());
+  if (unit === "กรัม" && Number(match[1]) >= 1_000)
+    return "ชั่งได้ถึง " + Number(match[1]) / 1_000 + " กก.";
+  if (unit) return "ชั่งได้ถึง " + match[1] + " " + unit;
+}
 
 function scaleCopy(product: LineupProduct, name: string, lines: string[]) {
   const copy = matchingCopy(scaleNames, [name, ...lines]) ?? matchingCopy(scaleFeatures, lines);
@@ -199,8 +227,13 @@ function scaleCopy(product: LineupProduct, name: string, lines: string[]) {
     })
     .find(Boolean);
   if (capacityValue && Number(capacityValue) > 0) return "ชั่งได้ถึง " + capacityValue + " กก.";
-  const display = /\(จอ\s*(LCD|LED)\)/i.exec(name);
+  const display =
+    /\(จอ\s*(LCD|LED)\)/i.exec(name) ??
+    lines.map((line) => /^\d+(?:\.\d+)?kg_(LCD|LED)(?=\s|$)/i.exec(line)).find(Boolean);
   if (display) return "จอแสดงผลชนิด " + display[1].toUpperCase();
+  const fact =
+    matchingCopy(connectionFacts, [product.connection.trim()]) ?? statedCapacity(product.capacity);
+  if (fact) return fact;
   if (groups.includes("scale-analytical")) return "สำหรับงานชั่งในห้องปฏิบัติการ";
   if (groups.includes("scale-benchtop")) return "สำหรับชั่งแบบตั้งโต๊ะ";
   if (groups.includes("scale-floor")) return "สำหรับชั่งแบบตั้งพื้น";
@@ -230,6 +263,10 @@ function posCopy(product: LineupProduct, name: string, lines: string[]) {
   const copy = matchingCopy(
     [
       [/^Set\b.*Drawer/i, "ชุดขายพร้อมลิ้นชักเก็บเงิน"],
+      [/^Set SUNFORD POS1100[AB] P1$/i, "ชุด POS พร้อมเครื่องชั่ง"],
+      [/^Set SUNFORD POS P1$/i, "ชุดขายระบบ Android"],
+      [/^Set SUNFORD POS P4$/i, "ชุด POS พร้อมจอสัมผัส"],
+      [/^Set SUNFORD POS P2$/i, "ชุดระบบขายหน้าร้าน"],
       [/^.*ชุดโปรแกรมจัดการขาย\s*พร้อมเครื่องชั่งดิจิตอล/, "ชุดโปรแกรมขายพร้อมเครื่องชั่ง"],
       [/Connect POS/i, "โปรแกรมระบบขาย POS"],
       [/WEWEIGH\s*(?:2\s*)?WORK\s*ST(?:A|S)T/i, "เวิร์กสเตชันระบบ WeWeigh"],
@@ -244,6 +281,14 @@ function posCopy(product: LineupProduct, name: string, lines: string[]) {
 }
 
 function accessoryCopy(name: string, lines: string[]) {
+  if (/Cash Drawer/i.test(name)) {
+    if (lines.some((line) => /^ดำ-SUNFORDDRW350-B$/i.test(line))) return "ลิ้นชักเก็บเงินสีดำ";
+    if (lines.some((line) => /^ขาว-SUNFORDDRW350-W$/i.test(line))) return "ลิ้นชักเก็บเงินสีขาว";
+  }
+  const carton = lines
+    .map((line) => /(?:^|[\s(])1\s*ลัง\s*(?:=|\()\s*(\d+)\s*ม้วน/.exec(line))
+    .find(Boolean);
+  if (carton) return "ลังละ " + carton[1] + " ม้วน";
   const consumable = [name, ...lines].find((line) => /กระดาษความร้อน|สติ๊กเกอร์เลเบล/.test(line));
   const rollCount = /(?:บรรจุ|แพ[็กค]+)\s*(\d+)\s*ม้วน/u.exec(consumable ?? "")?.[1];
   if (rollCount) return "แพ็ก " + rollCount + " ม้วน";
@@ -260,7 +305,7 @@ function warehouseHighlight(product: LineupProduct) {
     case "scales":
       return scaleCopy(product, name, lines);
     case "indicators":
-      return indicatorCopy(lines);
+      return indicatorCopy(lines) ?? matchingCopy(connectionFacts, [product.connection.trim()]);
     case "platforms":
       if (/ชิ้นส่วน - Platform Terminal\b/i.test(name)) return "แท่นชั่งแบบเทอร์มินอล";
       return (
@@ -275,26 +320,31 @@ function warehouseHighlight(product: LineupProduct) {
 }
 
 const groupFacts = new Map([
-  ["สินค้าจำหน่ายแบบแพ็ก", "จำหน่ายเป็นชุด"],
+  ["สินค้าจำหน่ายแบบแพ็ก", "รวมสินค้าเป็นชุด"],
   ["โปรแกรมและสิทธิ์ใช้งาน", "ซอฟต์แวร์และสิทธิ์ใช้งาน"],
-  ["เครื่องพิมพ์", "อุปกรณ์ในกลุ่มเครื่องพิมพ์"],
-  ["วัสดุสิ้นเปลือง", "วัสดุสิ้นเปลืองสำหรับเปลี่ยน"],
-  ["อุปกรณ์ต่อพ่วง", "ใช้เป็นอุปกรณ์ต่อพ่วง"],
-  ["ลูกตุ้มและตุ้มน้ำหนัก", "อุปกรณ์กลุ่มตุ้มน้ำหนัก"],
+  ["เครื่องพิมพ์", "สำหรับงานพิมพ์"],
+  ["วัสดุสิ้นเปลือง", "วัสดุสำหรับเติมหรือเปลี่ยน"],
+  ["อุปกรณ์ต่อพ่วง", "ต่อพ่วงกับอุปกรณ์หลัก"],
+  ["ลูกตุ้มและตุ้มน้ำหนัก", "ตุ้มน้ำหนักสำหรับงานชั่ง"],
 ]);
 
 export function lineupSalesCopy(product: LineupProduct): string {
-  if (!product.warehouseSku) return "ดูข้อมูลของรุ่นนี้";
+  if (!product.warehouseSku) return "";
   const name = product.name.trim().toLocaleLowerCase("th");
+  const type =
+    product.warehouseGroup === "เครื่องพิมพ์" &&
+    product.warehouseSubcategoryIds?.includes("accessory-pos")
+      ? "พิมพ์ที่จุดขาย"
+      : groupFacts.get(product.warehouseGroup ?? "");
   const alternatives = [
     highlights.get(product.warehouseSku),
     warehouseHighlight(product),
-    groupFacts.get(product.warehouseGroup ?? ""),
+    type,
     categoryFacts.get(product.warehouseCategoryId ?? ""),
   ];
   return (
     alternatives.find(
       (copy) => copy && copy.length <= maxLength && copy.toLocaleLowerCase("th") !== name,
-    ) ?? "ดูข้อมูลของรุ่นนี้"
+    ) ?? ""
   );
 }
