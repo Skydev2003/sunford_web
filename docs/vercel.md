@@ -27,10 +27,12 @@
 
 ## Production และ Preview
 
-| Target     | Branch                          | ขั้นตอน build                       |
-| ---------- | ------------------------------- | ----------------------------------- |
-| Production | `main`                          | ตรวจ config → `db:deploy` → `build` |
-| Preview    | `Javis1`, feature branch และ PR | ตรวจ config → `build`               |
+| Target     | Branch                                | ขั้นตอน build                       |
+| ---------- | ------------------------------------- | ----------------------------------- |
+| Production | `main`                                | ตรวจ config → `db:deploy` → `build` |
+| Preview    | feature branch และ PR ที่เปิด Preview | ตรวจ config → `build`               |
+
+การ push ไปยัง `Javis1`, `Javis2` และ `Javis3` ปิด Preview อัตโนมัติด้วย `git.deploymentEnabled` ใน `vercel.json` ส่วน GitHub Actions ยังตรวจตาม workflow เดิม
 
 Production ตรวจ branch และ environment ก่อนเรียก `db:deploy` เพื่อตั้งค่าทะเบียนใบเสนอราคา แล้วจึง build เว็บ ไม่มีขั้นตอน seed การ rollback deployment จะไม่ย้อนเลขที่ออกแล้ว
 
