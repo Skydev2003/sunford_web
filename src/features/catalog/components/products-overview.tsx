@@ -82,6 +82,19 @@ const serverHydration = () => false;
 const useHydratedControls = () =>
   useSyncExternalStore(subscribeHydration, readHydration, serverHydration);
 const serviceIcons = [Truck, Headphones, ShieldCheck, GitCompareArrows, ClipboardCheck, Download];
+const chapterArtworkHrefs = new Set([
+  "/products/category/indicators/lcd",
+  "/products/category/indicators/led",
+  "/products/category/platforms/carbon-steel",
+  "/products/category/platforms/sus201",
+  "/products/category/platforms/sus304",
+  "/products/category/pos/android",
+  "/products/category/pos/windows",
+  "/products/category/scales/analytical",
+  "/products/category/scales/industrial",
+  "/products/category/scales/kitchen",
+  "/products/category/scales/price",
+]);
 
 function Gallery({
   id,
@@ -378,16 +391,24 @@ export function ProductsOverview({
     !mobileMenu &&
     heroes.length > 1;
   const productsById = new Map(products.map((product) => [product.id, product]));
-  const categoryPhotos = chapterItems.map((category) => {
+  const chapterImages = chapterItems.map((category) => {
     const members = category.productIds
       .map((id) => productsById.get(id))
       .filter((product) => product?.image);
     const fallbackId = chapterPhotoIdByHref?.[category.href];
-    return (
+    const photo =
       members.find((product) => product?.featured) ??
       members[0] ??
-      (fallbackId ? productsById.get(fallbackId) : undefined)
-    );
+      (fallbackId ? productsById.get(fallbackId) : undefined);
+    const memberPhoto = photo && catalogProductPhoto(photo);
+    const artwork = chapterArtworkHrefs.has(category.href)
+      ? `/images/category-chapters/${category.href.slice("/products/category/".length)}.webp`
+      : undefined;
+    return {
+      src: artwork ?? memberPhoto,
+      fallbackSrc: artwork ? memberPhoto || photo?.fallbackImage : photo?.fallbackImage,
+      sizes: artwork ? "(min-width: 48rem) 100px, 90px" : "96px",
+    };
   });
   const startCompare = useCatalogStore((state) => state.startCompare);
   const compare = () => {
@@ -579,15 +600,9 @@ export function ProductsOverview({
                         <span className={styles.chapterArt}>
                           <ProductImage
                             placeholder="product"
-                            src={
-                              categoryPhotos[index]
-                                ? catalogProductPhoto(categoryPhotos[index])
-                                : undefined
-                            }
-                            fallbackSrc={categoryPhotos[index]?.fallbackImage}
+                            {...chapterImages[index]}
                             alt=""
                             fill
-                            sizes="96px"
                           />
                         </span>
                         <span>{category.label}</span>

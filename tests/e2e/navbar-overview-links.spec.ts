@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { existsSync } from "node:fs";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
@@ -183,6 +184,20 @@ for (const width of [320, 390, 834, 1440]) {
           await expect(button).toBeEnabled();
         }
         const configuredHref = menu.links.find(({ label }) => label === link.label)?.href;
+        const artwork =
+          configuredHref &&
+          `${configuredHref.replace("/products/category/", "/images/category-chapters/")}.webp`;
+        if (artwork && existsSync(`public${artwork}`)) {
+          const image = button.locator("img");
+          await image.scrollIntoViewIfNeeded();
+          await image.evaluate((element: HTMLImageElement) => element.decode());
+          expect(
+            await image.evaluate((element: HTMLImageElement) =>
+              new URL(element.currentSrc).searchParams.get("url"),
+            ),
+          ).toBe(artwork);
+          await expect(image).toHaveCSS("object-fit", "contain");
+        }
         if (configuredHref && !getProductSubcategoryPageByHref(configuredHref)) {
           await expect(button.locator("[data-product-image-placeholder]")).toHaveCount(1);
           await expect(button.locator("img")).toHaveAttribute(
