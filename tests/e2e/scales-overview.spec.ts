@@ -2,9 +2,14 @@ import { expect, test } from "@playwright/test";
 import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
-import { scaleSubcategoryDefinitions } from "../../src/features/catalog/data/scale-subcategories";
 
 const scalePath = "/products/category/scales";
+const chapterNames: Record<string, string> = {
+  "scale-kitchen": "ครัวเรือน",
+  "scale-industrial": "การผลิต",
+  "scale-price": "คำนวณราคา",
+  "scale-analytical": "งานวิเคราะห์",
+};
 const children = defaultNavigation[0]
   .groups!.flatMap((group) => group.links)
   .filter(
@@ -68,9 +73,7 @@ for (const width of [390, 1440]) {
           sections.map((section) => section.getAttribute("data-overview-section")),
         ),
     ).toEqual(["chapters", "hero", "lineup", "services", "features", "accordion", "index"]);
-    await expect(main.locator("#products-chapters button")).toHaveText(
-      scaleSubcategoryDefinitions.map((child) => child.label),
-    );
+    await expect(main.locator("#products-chapters button")).toHaveText(Object.values(chapterNames));
     await expect(main.locator('[data-overview-section="hero"] li')).toHaveCount(2);
     await expect(main.locator("#products-lineup > li")).toHaveCount(6);
     await expect(main.locator("#products-services > li")).toHaveCount(5);
@@ -138,21 +141,24 @@ for (const width of [390, 1440]) {
     expect(errors).toEqual([]);
   });
 
-  test(`eight scale chapters open the matching listing at ${width}px`, async ({ page }) => {
+  test(`scale chapters and legacy links open the matching listings at ${width}px`, async ({
+    page,
+  }) => {
     test.slow();
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(scalePath);
     const rail = page.locator('[data-overview-category="scales"]:visible #products-chapters');
-    for (const [index, child] of children.entries()) {
-      const button = rail.getByRole("button", {
-        name: scaleSubcategoryDefinitions[index].label,
-        exact: true,
-      });
-      await button.click();
+    for (const child of children) {
       const childId = new URL(child.href, page.url()).searchParams.get("subcategory")!;
-      await expect(page).toHaveURL(
-        new URL(getScaleSubcategoryPage(childId)!.href, page.url()).href,
-      );
+      const href = getScaleSubcategoryPage(childId)!.href;
+      const name = chapterNames[childId];
+      if (name) {
+        const button = rail.getByRole("button", { name, exact: true });
+        await expect(button).toBeVisible();
+        if (childId === "scale-analytical" && (await button.isDisabled())) await page.goto(href);
+        else await button.click();
+      } else await page.goto(child.href);
+      await expect(page).toHaveURL(new URL(href, page.url()).href);
       await expect(page.locator(`[data-scale-subcategory-page="${childId}"]`)).toBeVisible();
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await page.goBack();
@@ -177,7 +183,7 @@ for (const width of [320, 390, 768, 834, 1024, 1440, 1920, 844]) {
         Math.abs(title.y + title.height / 2 - button.y - button.height / 2),
       ).toBeLessThanOrEqual(1);
     }
-    await expect(main.locator("#products-chapters button")).toHaveCount(8);
+    await expect(main.locator("#products-chapters button")).toHaveCount(4);
     await main
       .locator('[data-overview-section="lineup"]')
       .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })

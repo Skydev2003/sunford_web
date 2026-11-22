@@ -174,8 +174,8 @@ test("category filters, refresh, navigation history and comparison stay inside t
     page.getByRole("heading", { level: 1, name: "เครื่องชั่ง", exact: true }),
   ).toBeVisible();
   await page
-    .locator("#products-chapters")
-    .getByRole("button", { name: "เครื่องชั่งตั้งพื้น", exact: true })
+    .locator('[data-overview-section="lineup"]')
+    .getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })
     .click();
   await expect(
     subcategories.getByRole("button", { name: "ตั้งพื้น", exact: true }),

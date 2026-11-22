@@ -6,7 +6,12 @@ const path = "/products/category/accessories";
 const label = "อุปกรณ์เสริม";
 const title = `ดู${label}ทั้งหมด`;
 const guide = buyingGuides.find(({ slug }) => slug === "accessories")!;
-const chapters = accessorySubcategoryDefinitions.map(({ id, label }) => [id, label]);
+const chapterNames: Record<string, string> = {
+  "accessory-displays": "จอและไฟเตือน",
+  "accessory-cables": "สายและหัวต่อ",
+  "accessory-mechanical": "ชิ้นส่วนแท่น",
+  "accessory-pos": "อุปกรณ์ POS",
+};
 const statuses: Record<string, string> = {
   "accessory-displays": "3 รายการ · 1 รุ่นตัวอย่าง (Mock)",
   "accessory-cables": "0 รายการ · 3 รุ่นตัวอย่าง (Mock)",
@@ -37,10 +42,9 @@ for (const width of [390, 1440]) {
           sections.map((section) => section.getAttribute("data-overview-section")),
         ),
     ).toEqual(["chapters", "hero", "lineup", "services", "features", "accordion", "index"]);
-    await expect(main.locator("#products-chapters > li")).toHaveCount(5);
+    await expect(main.locator("#products-chapters > li")).toHaveCount(7);
     await expect(main.locator('[data-overview-section="hero"] li')).toHaveCount(2);
     await expect(main.locator("#products-lineup > li")).toHaveCount(6);
-    await expect(main.locator("#products-chapters > li").nth(1).locator("img")).toHaveCount(0);
     await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
     await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
     await expect(page.locator(".site-footer:visible")).toHaveCount(0);
@@ -100,9 +104,16 @@ for (const width of [390, 1440]) {
     await page.goto(path);
     const finder = page.getByRole("dialog", { name: title, exact: true });
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
-    for (const [id, name] of chapters) {
-      await page.locator("#products-chapters").getByRole("button", { name, exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(path + "/" + id.replace("accessory-", "") + "$"));
+    for (const { id, label: name } of accessorySubcategoryDefinitions) {
+      const href = `${path}/${id.replace("accessory-", "")}`;
+      const chapterName = chapterNames[id];
+      if (chapterName)
+        await page
+          .locator("#products-chapters")
+          .getByRole("button", { name: chapterName, exact: true })
+          .click();
+      else await page.goto(href);
+      await expect(page).toHaveURL(new URL(href, page.url()).href);
       const listing = page.locator(`[data-product-subcategory-page="${id}"]`);
       await expect(listing.locator("h1")).toHaveText(`${label} ${name}`);
       await expect(listing.getByRole("status")).toHaveText(statuses[id]);
@@ -141,7 +152,7 @@ for (const width of [768, 834]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
-    await expect(page.locator("#products-chapters > li")).toHaveCount(5);
+    await expect(page.locator("#products-chapters > li")).toHaveCount(7);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

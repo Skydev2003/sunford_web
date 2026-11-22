@@ -5,6 +5,7 @@ import { productCategoryDefinitions } from "../../src/features/catalog/data/mock
 import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
 
 const menus = getPrimaryNavigationItems(defaultNavigation);
+const chapterCounts = { scales: 4, indicators: 2, platforms: 4, pos: 3, accessories: 7 };
 
 function header(page: Page, route: string) {
   return page.locator(
@@ -127,16 +128,43 @@ for (const width of [320, 390, 834, 1440]) {
     });
   }
 
-  test(`overview image captions match Navbar names without changing category destinations at ${width}px`, async ({
-    page,
-  }) => {
+  test(`overview chapters match the live Navbar product column at ${width}px`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const category of productCategoryDefinitions) {
       const menu = menus.find((item) => item.href === `/products/category/${category.id}`)!;
-      const expected = menu.links;
       await visit(page, menu.href);
+      const nav = header(page, menu.href);
+      if (width < 1024) {
+        await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+        await nav.getByRole("button", { name: `เปิดเมนูย่อย${menu.label}`, exact: true }).click();
+      } else {
+        await nav
+          .locator("[data-products-nav]")
+          .getByRole("link", { name: menu.label, exact: true })
+          .press("ArrowDown");
+      }
+      const productColumn = nav.locator(
+        `[data-nav-menu="${menu.href}"]:visible [data-nav-column="primary"]`,
+      );
+      await expect(productColumn).toBeVisible();
+      await expect(productColumn.locator("p").first()).toHaveText("สินค้า");
+      const navbarLinks = productColumn.getByRole("link");
+      await expect(navbarLinks).toHaveCount(
+        chapterCounts[category.id as keyof typeof chapterCounts],
+      );
+      const expected = await navbarLinks.evaluateAll((links) =>
+        links.map((link) => ({
+          label: link.textContent!.trim(),
+          href: link.getAttribute("href"),
+          disabled: link.getAttribute("aria-disabled") === "true",
+        })),
+      );
+      if (width < 1024) await nav.getByRole("button", { name: "ปิดเมนู", exact: true }).click();
+      else await page.keyboard.press("Escape");
+      await expect(productColumn).not.toBeVisible();
+
       const chapters = page.locator("#products-chapters > li > button");
       await expect(chapters.locator(":scope > span:last-child")).toHaveText(
         expected.map((link) => link.label),
@@ -144,13 +172,18 @@ for (const width of [320, 390, 834, 1440]) {
       for (const [index, link] of expected.entries()) {
         const button = chapters.nth(index);
         if (link.disabled) {
+          expect(link.href).toBeNull();
           await expect(button).toBeDisabled();
           await expect(button).toHaveCSS("opacity", "1");
           const before = page.url();
           await button.evaluate((element: HTMLButtonElement) => element.click());
           expect(page.url()).toBe(before);
-        } else await expect(button).toBeEnabled();
-        if (!getProductSubcategoryPageByHref(link.href)) {
+        } else {
+          expect(link.href).toBeTruthy();
+          await expect(button).toBeEnabled();
+        }
+        const configuredHref = menu.links.find(({ label }) => label === link.label)?.href;
+        if (configuredHref && !getProductSubcategoryPageByHref(configuredHref)) {
           await expect(button.locator("[data-product-image-placeholder]")).toHaveCount(1);
           await expect(button.locator("img")).toHaveAttribute(
             "src",
@@ -168,12 +201,13 @@ for (const width of [320, 390, 834, 1440]) {
       }
       if (category.id === "accessories")
         await page.screenshot({ path: test.info().outputPath("accessory-chapters.png") });
-      const readyIndex = expected.findIndex(
-        (link) => !link.disabled && (category.id !== "scales" || link.href.endsWith("/benchtop")),
-      );
-      if (readyIndex >= 0) {
-        await chapters.nth(readyIndex).click();
-        await expect(page).toHaveURL((url) => url.pathname === expected[readyIndex].href);
+      for (const [index, { disabled, href }] of expected.entries()) {
+        if (disabled) continue;
+        await chapters.nth(index).click();
+        await expect(page).toHaveURL((url) => url.pathname === href);
+        await expect(page.getByRole("dialog")).toHaveCount(0);
+        await page.goBack();
+        await expect(page).toHaveURL((url) => url.pathname === menu.href);
       }
     }
   });

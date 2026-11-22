@@ -8,7 +8,6 @@ const guide = buyingGuides.find(({ slug }) => slug === "indicators")!;
 const chapters = [
   ["indicator-lcd", "LCD"],
   ["indicator-led", "LED"],
-  ["indicator-waterproof", "กันน้ำ"],
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -33,7 +32,7 @@ for (const width of [390, 1440]) {
           sections.map((section) => section.getAttribute("data-overview-section")),
         ),
     ).toEqual(["chapters", "hero", "lineup", "services", "features", "accordion", "index"]);
-    await expect(main.locator("#products-chapters > li")).toHaveCount(3);
+    await expect(main.locator("#products-chapters > li")).toHaveCount(2);
     await expect(main.locator('[data-overview-section="hero"] li')).toHaveCount(2);
     await expect(main.locator("#products-lineup > li")).toHaveCount(6);
     await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
@@ -85,6 +84,11 @@ for (const width of [390, 1440]) {
       await page.goBack();
       await expect(page).toHaveURL(new RegExp(path + "$"));
     }
+    await page.goto(`${path}/waterproof`);
+    await expect(
+      page.locator('[data-indicator-subcategory-page="indicator-waterproof"]'),
+    ).toBeVisible();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
     await page.goto(`${path}?subcategory=indicator-led&trace=keep`);
     await expect(page).toHaveURL(new RegExp(path + "/led\\?trace=keep$"));
     await page.reload();
@@ -116,7 +120,7 @@ for (const width of [768, 834]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
-    await expect(page.locator("#products-chapters > li")).toHaveCount(3);
+    await expect(page.locator("#products-chapters > li")).toHaveCount(2);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

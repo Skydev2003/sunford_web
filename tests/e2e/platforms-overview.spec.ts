@@ -81,8 +81,12 @@ for (const width of [390, 1440]) {
     const finder = page.getByRole("dialog", { name: title, exact: true });
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     for (const [id, name] of chapters) {
-      await page.locator("#products-chapters").getByRole("button", { name, exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(path + "/" + id.replace("platform-", "") + "$"));
+      const button = page.locator("#products-chapters").getByRole("button", { name, exact: true });
+      const href = `${path}/${id.replace("platform-", "")}`;
+      await expect(button).toBeVisible();
+      if (await button.isEnabled()) await button.click();
+      else await page.goto(href);
+      await expect(page).toHaveURL(new URL(href, page.url()).href);
       await expect(page.locator(`[data-product-subcategory-page="${id}"] h1`)).toHaveText(
         `${label} ${name}`,
       );
