@@ -11,6 +11,7 @@ import { formatPrice } from "../data/price-format";
 import { ProductsIndexRail } from "./products-index-rail";
 import { EquipmentVideoCard } from "./equipment-video-card";
 import { FeaturedCardMedia } from "./featured-card-media";
+import { HomeRetailFeature } from "./home-retail-feature";
 import { ProductsIndexMotion } from "./products-index-motion";
 import { ProductPhotoCard, ProductShowcaseCard, showcasePhotoSizes } from "./scale-showcase-card";
 import photoStyles from "./scale-showcase-card.module.css";
@@ -20,6 +21,20 @@ import { selectScaleShowcase, type PublishedScaleCard } from "../data/scale-show
 import styles from "./products-index-content.module.css";
 
 const categoryFamilies = new Set(["scales", "indicators", "platforms", "pos", "accessories"]);
+const homeRetailTopics = [
+  {
+    id: "scale-kitchen",
+    context: "งานบ้านและคาเฟ่",
+    label: "ครัวและกาแฟ",
+    href: "/products/category/scales/kitchen",
+  },
+  {
+    id: "scale-price",
+    context: "งานขายหน้าร้าน",
+    label: "คำนวณราคา",
+    href: "/products/category/scales/price",
+  },
+];
 const showcaseHeadings: Partial<Record<string, { lead: string; detail: string }>> = {
   scales: { lead: "เครื่องชั่ง", detail: "มาตรฐานที่ไว้วางใจ" },
   indicators: { lead: "เลือกออกแบบ", detail: "ได้ด้วยตัวคุณเอง" },
@@ -43,6 +58,14 @@ export function ProductsIndexContent({
       members.find((product) => product.featured && product.image) ??
       members.find((product) => product.image);
     return { id, label, members, photo };
+  });
+  const scaleGroups = categories.find(({ id }) => id === "scales")?.subcategories;
+  const homeRetail = homeRetailTopics.map(({ id, ...topic }) => {
+    const memberIds = new Set(scaleGroups?.find((group) => group.id === id)?.productIds);
+    const representative = products.find(
+      (product) => memberIds.has(product.id) && product.warehouseSku && product.image,
+    );
+    return { ...topic, image: representative?.image };
   });
 
   return (
@@ -187,6 +210,11 @@ export function ProductsIndexContent({
                     />
                     {id === "indicators" && item.product.warehouseSku === "G107268" && (
                       <EquipmentVideoCard />
+                    )}
+                    {id === "pos" && item.product.warehouseSku === "G106179" && (
+                      <li className={styles.card}>
+                        <HomeRetailFeature topics={homeRetail} />
+                      </li>
                     )}
                   </Fragment>
                 ))

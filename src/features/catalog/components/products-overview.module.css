@@ -1653,18 +1653,106 @@
 .categoryLineup .lineup {
   background: var(--paper);
 }
-.categoryLineup :is(.lineup, .services, .features, .essentials) {
+.categoryLineup :is(.lineup, .applications, .services, .features, .essentials) {
   padding-top: var(--section-space-feature);
 }
-.categoryLineup :is(.lineup, .services, .features) {
+.categoryLineup :is(.lineup, .applications, .services, .features) {
   padding-bottom: 0;
 }
 .categoryLineup .services .gallery {
   margin-bottom: 0;
 }
-.categoryLineup :is(.lineup, .services, .features, .essentials) .sectionHeading {
+.categoryLineup :is(.lineup, .applications, .services, .features, .essentials) .sectionHeading {
   margin-inline: var(--catalog-rail-inset);
   margin-bottom: var(--catalog-rail-heading-space);
+}
+.applicationTile {
+  flex: 0 0 min(78vw, 280px);
+  min-inline-size: 0;
+}
+.categoryLineup .applicationsStatus {
+  margin-inline: var(--catalog-rail-inset);
+  color: var(--muted);
+}
+.categoryLineup .applicationTopics {
+  margin-inline: var(--catalog-rail-inset);
+}
+.applicationTopics h3 {
+  font-size: 1.125rem;
+}
+.applicationTopics ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+.applicationTopics li a {
+  display: inline-flex;
+  min-block-size: 2.75rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding-inline: 0.75rem;
+  border-radius: 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+}
+.applicationTopics a:focus-visible {
+  text-decoration: underline;
+}
+@media (hover: hover) {
+  .applicationTopics a:hover {
+    text-decoration: underline;
+  }
+}
+.applicationTile > a {
+  display: grid;
+  height: 100%;
+  min-block-size: 18rem;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.75rem;
+  padding: 1.375rem;
+  border-radius: 1rem;
+  background: var(--paper);
+  color: var(--ink);
+}
+.applicationTile > a:focus-visible {
+  outline-offset: -3px;
+}
+.applicationTile h3 {
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
+  line-height: 1.4;
+}
+.applicationTile .applicationArt {
+  position: relative;
+  align-self: center;
+  aspect-ratio: 3 / 2;
+}
+.applicationTile .applicationArt:not(:has(img)) {
+  display: none;
+}
+.applicationArt img {
+  object-fit: contain;
+}
+.applicationTile .applicationLink {
+  display: flex;
+  grid-row: 3;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--red);
+}
+.applicationTile > a:focus-visible .applicationLink {
+  text-decoration: underline;
+}
+@media (hover: hover) {
+  .applicationTile > a:hover .applicationLink {
+    text-decoration: underline;
+  }
+}
+@media (min-width: 48rem) {
+  .applicationTile {
+    flex-basis: 22rem;
+  }
 }
 .categoryLineup .lineupFilters {
   padding-inline: var(--catalog-rail-inset);

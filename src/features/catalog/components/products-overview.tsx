@@ -358,6 +358,7 @@ export function ProductsOverview({
   categoryId,
   chapterPhotoIdByHref,
   indexContent,
+  applications,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
@@ -372,6 +373,7 @@ export function ProductsOverview({
   categoryId?: string;
   chapterPhotoIdByHref?: Record<string, string>;
   indexContent?: ReactNode;
+  applications?: ReactNode;
 }) {
   const router = useRouter();
   const activeCategory = categories.find((category) => category.id === categoryId);
@@ -1076,6 +1078,8 @@ export function ProductsOverview({
                 })}
               </Gallery>
             </section>
+
+            {applications}
 
             <section
               className={`${styles.section} ${styles.paper} ${styles.services}`}

@@ -557,7 +557,7 @@ test("the two dedicated scale shelves each have four pictured models per use wit
     },
   ]) {
     const rail = directory.getByRole("list", { name: shelf.title, exact: true });
-    const cards = rail.getByRole("listitem");
+    const cards = rail.locator(":scope > li[data-warehouse-sku]");
     await expect(directory.getByRole("heading", { name: shelf.title, exact: true })).toBeVisible();
     await expect(cards).toHaveCount(8);
     for (const group of shelf.groups)
@@ -1279,7 +1279,7 @@ test("Home & Retail requests two photos before the row enters and leads the firs
   try {
     await page.goto("/products", { waitUntil: "domcontentloaded" });
     const rail = page.locator("#products-rail-pos");
-    const images = rail.locator(":scope > li img");
+    const images = rail.locator(":scope > li[data-warehouse-sku] img");
     await expect(images.nth(3)).toBeVisible();
     expect(await rail.evaluate((track) => track.getBoundingClientRect().top)).toBeGreaterThan(1900);
     expect(requested.size).toBe(0);
@@ -1304,17 +1304,20 @@ test("Home & Retail requests two photos before the row enters and leads the firs
     const record = (index: number) =>
       rail.evaluate((track, index) => {
         const cards = track.querySelectorAll(":scope > li");
-        const image = cards[index].querySelector("img")!;
+        const image = track.querySelectorAll<HTMLImageElement>(
+          ":scope > li[data-warehouse-sku] img",
+        )[index];
+        const card = image.closest("li")!;
+        const previous = card.previousElementSibling!;
         const destination =
-          cards[index - 1].getBoundingClientRect().left - cards[0].getBoundingClientRect().left;
+          previous.getBoundingClientRect().left - cards[0].getBoundingClientRect().left;
         return new Promise<{ left: number; offscreen: boolean; destination: number }>((resolve) => {
           const observer = new MutationObserver(() => {
             if (image.loading !== "eager") return;
             observer.disconnect();
             resolve({
               left: track.scrollLeft,
-              offscreen:
-                cards[index].getBoundingClientRect().left >= track.getBoundingClientRect().right,
+              offscreen: card.getBoundingClientRect().left >= track.getBoundingClientRect().right,
               destination,
             });
           });
@@ -1322,6 +1325,21 @@ test("Home & Retail requests two photos before the row enters and leads the firs
         });
       }, index);
     for (const index of [2, 3]) {
+      if (index === 3) {
+        await next.click();
+        await expect
+          .poll(() =>
+            rail.evaluate((track) => {
+              const left = track
+                .querySelector('[data-warehouse-sku="G106179"]')!
+                .getBoundingClientRect().left;
+              return (
+                left - track.firstElementChild!.getBoundingClientRect().left - track.scrollLeft
+              );
+            }),
+          )
+          .toBeCloseTo(0, 0);
+      }
       const [early] = await Promise.all([record(index), next.click()]);
       expect(early.left).toBeGreaterThan(0);
       expect(early.left).toBeLessThan(early.destination);
