@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { solutions } from "../../src/features/content/data/solutions";
+import { solutionDetails } from "../../src/features/content/data/solution-details";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 
@@ -25,7 +26,9 @@ for (const width of [320, 390, 768, 834, 1440]) {
     await expect(chapters.locator("a")).toHaveText(groups.map(({ label }) => label));
     const cards = main.getByRole("list", { name: "โซลูชันทั้งหมด", exact: true });
     await expect(cards.locator("a")).toHaveCount(14);
-    await expect(cards.locator("h3")).toHaveText(solutions.map(({ title }) => title));
+    await expect(cards.locator("h3")).toHaveText(
+      solutions.map(({ path }) => solutionDetails[path].title),
+    );
     expect(
       await cards
         .locator("a")
@@ -96,14 +99,21 @@ test("business anchors and all14 detail links retain reload and history behavior
   await expect(page).toHaveURL(/\/solutions$/);
   await expect(page.locator("#solutions-title")).toBeInViewport();
   for (const item of solutions) {
+    const title = solutionDetails[item.path].title;
     await page
       .getByRole("list", { name: "โซลูชันทั้งหมด", exact: true })
-      .getByRole("link", { name: item.title, exact: true })
+      .getByRole("link", { name: title, exact: true })
       .click();
     await expect(page).toHaveURL(new RegExp(`${item.path}$`));
+    const detail = page.locator(`main[data-solution-detail="${item.path}"]:visible`);
+    await expect(detail.getByRole("heading", { level: 1, name: title, exact: true })).toBeVisible();
     await expect(
-      page.locator(`main#main-content:visible > article.solution-source--${item.id}`),
+      detail.locator("[data-solution-evidence], [data-solution-evidence-empty]"),
     ).toBeVisible();
+    await expect(detail.getByRole("link", { name: "สอบถามซันฟอร์ด" })).toHaveAttribute(
+      "href",
+      "/contact-us",
+    );
     await page.goBack();
     await expect(page.locator("[data-solutions-overview]:visible")).toBeVisible();
   }
