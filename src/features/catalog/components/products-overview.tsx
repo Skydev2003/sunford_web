@@ -19,6 +19,7 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
+import { CatalogNavigationLink } from "./catalog-navigation-link";
 import Image from "next/image";
 import lcdArt from "../../../../public/images/category-chapters/indicators/lcd.webp";
 import ledArt from "../../../../public/images/category-chapters/indicators/led.webp";
@@ -646,7 +647,7 @@ export function ProductsOverview({
         style={categoryEntrance ? ({ "--chapter-index": index } as CSSProperties) : undefined}
       >
         {categoryLineup && !category.disabled ? (
-          <Link
+          <CatalogNavigationLink
             href={category.href}
             prefetch={false}
             onNavigate={(event) => {
@@ -655,7 +656,7 @@ export function ProductsOverview({
             }}
           >
             {content}
-          </Link>
+          </CatalogNavigationLink>
         ) : (
           <button
             disabled={!hydrated || category.disabled}

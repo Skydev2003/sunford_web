@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { CatalogNavigationLink } from "@/features/catalog/components/catalog-navigation-link";
 import { ChevronRight } from "lucide-react";
 import { getScaleApplications } from "@/features/catalog/server/scale-applications";
 import styles from "./scale-applications.module.css";
@@ -14,7 +14,7 @@ export default async function ScaleApplicationsPage() {
   return (
     <main id="main-content" className={styles.page}>
       <nav className={styles.breadcrumb} aria-label="เส้นทางนำทาง">
-        <Link href="/products/category/scales">เครื่องชั่ง</Link>
+        <CatalogNavigationLink href="/products/category/scales">เครื่องชั่ง</CatalogNavigationLink>
         <ChevronRight size={14} aria-hidden="true" />
         <span aria-current="page">เลือกตามการใช้งาน</span>
       </nav>
@@ -22,13 +22,13 @@ export default async function ScaleApplicationsPage() {
       <ul className={styles.list}>
         {applications.map(({ slug, label }) => (
           <li key={slug}>
-            <Link
+            <CatalogNavigationLink
               className={styles.groupLink}
               href={`/products/category/scales/applications/${slug}`}
             >
               {label}
               <ChevronRight size={18} aria-hidden="true" />
-            </Link>
+            </CatalogNavigationLink>
           </li>
         ))}
       </ul>

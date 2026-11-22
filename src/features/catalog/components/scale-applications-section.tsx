@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { CatalogNavigationLink } from "./catalog-navigation-link";
 import { ChevronRight } from "lucide-react";
 import { Suspense, type ReactNode } from "react";
 import { ProductImage } from "@/components/ui/product-image";
@@ -41,7 +41,10 @@ async function ApplicationsRail() {
               const example = products.find(({ image }) => image);
               return (
                 <li className={styles.applicationTile} key={slug}>
-                  <Link href={`/products/category/scales/applications/${slug}`} prefetch={false}>
+                  <CatalogNavigationLink
+                    href={`/products/category/scales/applications/${slug}`}
+                    prefetch={false}
+                  >
                     <h3>{label}</h3>
                     {example && (
                       <div className={styles.applicationArt}>
@@ -57,7 +60,7 @@ async function ApplicationsRail() {
                       ดูรุ่นที่เกี่ยวข้อง
                       <ChevronRight size={16} aria-hidden="true" />
                     </span>
-                  </Link>
+                  </CatalogNavigationLink>
                 </li>
               );
             })}
@@ -71,9 +74,12 @@ async function ApplicationsRail() {
           <ul>
             {other.map(({ slug, label }) => (
               <li key={slug}>
-                <Link href={`/products/category/scales/applications/${slug}`} prefetch={false}>
+                <CatalogNavigationLink
+                  href={`/products/category/scales/applications/${slug}`}
+                  prefetch={false}
+                >
                   {label} <ChevronRight size={14} aria-hidden="true" />
-                </Link>
+                </CatalogNavigationLink>
               </li>
             ))}
           </ul>
@@ -92,9 +98,12 @@ export function ScaleApplicationsSection() {
     >
       <div className={styles.sectionHeading}>
         <h2 id="products-applications-title">เลือกเครื่องชั่งตามการใช้งาน</h2>
-        <Link href="/products/category/scales/applications" className={styles.textLink}>
+        <CatalogNavigationLink
+          href="/products/category/scales/applications"
+          className={styles.textLink}
+        >
           ดูทุกกลุ่มการใช้งาน <ChevronRight size={16} aria-hidden="true" />
-        </Link>
+        </CatalogNavigationLink>
       </div>
       <Suspense fallback={<ApplicationsStatus>กำลังโหลดกลุ่มการใช้งาน…</ApplicationsStatus>}>
         <ApplicationsRail />
