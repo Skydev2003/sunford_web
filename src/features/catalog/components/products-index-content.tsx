@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CatalogNavigationLink } from "./catalog-navigation-link";
 import { ArrowUpRight } from "lucide-react";
 import { Fragment } from "react";
 import { ProductImage } from "@/components/ui/product-image";
@@ -99,7 +100,10 @@ export function ProductsIndexContent({
               : undefined;
             return (
               <li key={id} className={styles.category}>
-                <Link href={`/products/category/${id}`}>
+                <CatalogNavigationLink
+                  className={styles.categoryLink}
+                  href={`/products/category/${id}`}
+                >
                   <div className={styles.categoryImage}>
                     <ProductImage
                       placeholder="product"
@@ -113,12 +117,15 @@ export function ProductsIndexContent({
                     />
                   </div>
                   <span>{label}</span>
-                </Link>
+                </CatalogNavigationLink>
               </li>
             );
           })}
           <li className={styles.category}>
-            <Link href="/guides/indicator-platform-compatibility">
+            <CatalogNavigationLink
+              className={styles.categoryLink}
+              href="/guides/indicator-platform-compatibility"
+            >
               <div className={`${styles.categoryImage} ${styles.categoryImagePair}`}>
                 <div>
                   <Image
@@ -138,7 +145,7 @@ export function ProductsIndexContent({
                 </div>
               </div>
               <span>จัดสเปค</span>
-            </Link>
+            </CatalogNavigationLink>
           </li>
         </ProductsIndexRail>
       </nav>
