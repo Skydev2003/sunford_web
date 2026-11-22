@@ -1594,6 +1594,7 @@
 
 /* Category landings share the SUNFORD palette and spacing with the product index. */
 .categoryLineup {
+  composes: railSpacing from "./products-index-content.module.css";
   --overview-gutter: max(var(--page-gutter), 6.25vw);
 }
 .categoryLineup .chapters {
@@ -1601,6 +1602,7 @@
 }
 .categoryLineup .categoryHeading {
   align-items: center;
+  margin-inline: var(--catalog-rail-inset);
   margin-bottom: 28px;
   gap: 12px 24px;
 }
@@ -1618,8 +1620,16 @@
   margin-inline: 0;
 }
 .categoryLineup .chapterTrack {
-  gap: 20px;
-  padding-inline: var(--overview-gutter) !important;
+  gap: var(--catalog-rail-fluid-gap);
+  padding: var(--catalog-rail-padding-start) var(--catalog-rail-inset)
+    var(--catalog-rail-padding-end) !important;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--catalog-rail-inset);
+  scroll-snap-type: x mandatory;
+}
+.categoryLineup .chapterTrack > li {
+  scroll-snap-align: start;
+  scroll-margin-inline: 0;
 }
 .categoryLineup .chapterTrack li > a {
   display: flex;
@@ -1641,11 +1651,19 @@
   line-height: 1.3;
 }
 .categoryLineup .lineup {
-  padding: 56px 0 var(--section-space);
+  padding-bottom: var(--section-space);
   background: var(--paper);
 }
-.categoryLineup .lineup .sectionHeading {
-  margin-bottom: 20px;
+.categoryLineup :is(.lineup, .services, .features, .essentials) {
+  padding-top: var(--section-space-feature);
+}
+.categoryLineup :is(.lineup, .services, .features, .essentials) .sectionHeading {
+  margin-inline: var(--catalog-rail-inset);
+  margin-bottom: var(--catalog-rail-heading-space);
+}
+.categoryLineup .lineupFilters {
+  padding-inline: var(--catalog-rail-inset);
+  scroll-padding-inline: var(--catalog-rail-inset);
 }
 .lineupFilters {
   padding: 5px var(--overview-gutter) 7px;
@@ -1697,9 +1715,37 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.categoryLineup .lineup .galleryTrack {
-  gap: 20px;
-  padding-block: 16px 12px !important;
+.categoryLineup .galleryTrack {
+  gap: var(--catalog-rail-gap);
+  padding: var(--catalog-rail-padding-start) var(--catalog-rail-inset)
+    var(--catalog-rail-padding-end) !important;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--catalog-rail-inset);
+}
+.categoryLineup :is(.galleryTrack, .chapterTrack)[data-stepping] {
+  scroll-snap-type: none;
+}
+.categoryLineup .galleryTrack > li {
+  scroll-margin-inline: 0;
+}
+.categoryLineup .galleryControls {
+  gap: var(--catalog-rail-controls-gap);
+  margin: 0 var(--catalog-rail-inset);
+}
+.categoryLineup .galleryControls button {
+  position: relative;
+  isolation: isolate;
+  width: var(--catalog-rail-control-hit);
+  height: var(--catalog-rail-control-hit);
+  background: transparent;
+}
+.categoryLineup .galleryControls button::before {
+  position: absolute;
+  inset: calc((var(--catalog-rail-control-hit) - var(--catalog-rail-control-face)) / 2);
+  z-index: -1;
+  border-radius: inherit;
+  background: #e2e2e5;
+  content: "";
 }
 .categoryLineup .galleryTrack > .productTile {
   flex-basis: 260px;
@@ -1881,9 +1927,6 @@
   }
   .categoryLineup .chapterTrack li {
     font-size: 14px;
-  }
-  .categoryLineup .lineup {
-    padding-top: 120px;
   }
   .lineupFilterTray > button {
     min-height: 44px;
