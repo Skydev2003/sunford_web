@@ -48,7 +48,7 @@ export const platformSubcategoryDefinitions: PlatformMaterial[] = [
   },
   {
     id: "platform-abs",
-    label: "พลาสติก ABS เหนียวพิเศษ",
+    label: "พลาสติก ABS",
     models: [{ model: "พลาสติก ABS เหนียวพิเศษ" }],
   },
 ];

@@ -12,14 +12,17 @@ import {
 import { sunford } from "@/features/home/data/brand";
 import { solutions } from "../data/solutions";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
-import type { SourcePage } from "../types";
+import { getSolutionEvidence, solutionDetails } from "../data/solution-details";
 import overview from "@/features/catalog/components/products-overview.module.css";
 import styles from "./solutions-overview.module.css";
 
 const businessIcons = [Store, Factory, FlaskConical];
 
-export async function SolutionsOverview({ page }: { page: SourcePage }) {
+export async function SolutionsOverview() {
   const products = await getProducts();
+  const heroProduct = getSolutionEvidence(solutionDetails["/solutions/rs232"], products).find(
+    ({ product }) => product.image,
+  )?.product;
   const settings = await getSettings("navigation", {
     items: defaultNavigation,
     ...defaultNavigationExtras,
@@ -80,20 +83,20 @@ export async function SolutionsOverview({ page }: { page: SourcePage }) {
           <h2 id="solutions-hero-title">
             เมื่อทุกอย่างเชื่อมถึงกัน<span>ธุรกิจก็ไปได้ไกลขึ้น</span>
           </h2>
-          <p></p>
           <a className={overview.primaryButton} href="#solutions-all">
             โซลูชันทั้งหมด <ArrowRight size={16} aria-hidden="true" />
           </a>
         </div>
-        <div className={styles.heroArt}>
-          <ProductImage
-            placeholder="product"
-            src={products.find((product) => product.image)?.image ?? ""}
-            alt="ภาพประกอบโซลูชันการชั่งน้ำหนักสำหรับธุรกิจ"
-            fill
-            sizes="(min-width: 80rem) 45vw, 88vw"
-          />
-        </div>
+        {heroProduct?.image && (
+          <div className={styles.heroArt}>
+            <ProductImage
+              src={heroProduct.image}
+              alt={heroProduct.name}
+              fill
+              sizes="(min-width: 80rem) 45vw, 88vw"
+            />
+          </div>
+        )}
       </section>
 
       <section
@@ -105,7 +108,6 @@ export async function SolutionsOverview({ page }: { page: SourcePage }) {
       >
         <div className={overview.sectionHeading}>
           <h2 id="solutions-all-title">โซลูชันทั้งหมด</h2>
-          <p className={styles.introduction}>{page.text}</p>
         </div>
         <ul className={styles.solutionTrack} aria-label="โซลูชันทั้งหมด" tabIndex={0}>
           {solutions.map((item) => (
@@ -113,10 +115,10 @@ export async function SolutionsOverview({ page }: { page: SourcePage }) {
               <Link
                 href={item.path}
                 prefetch={false}
-                aria-label={item.title}
+                aria-label={solutionDetails[item.path].title}
                 className={styles.solutionCard}
               >
-                <h3>{item.title}</h3>
+                <h3>{solutionDetails[item.path].title}</h3>
                 <span aria-hidden="true">
                   ดูรายละเอียด <ArrowRight size={18} />
                 </span>

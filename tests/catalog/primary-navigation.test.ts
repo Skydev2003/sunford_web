@@ -57,7 +57,7 @@ const approvedMenus: MenuContract[] = [
           ["ครัวเรือน", "/products/category/scales/kitchen", false],
           ["การผลิต", "/products/category/scales/industrial", false],
           ["คำนวณราคา", "/products/category/scales/price", false],
-          ["งานวิเคราะห์", "/products/category/scales/analytical", true],
+          ["งานวิเคราะห์", "/products/category/scales/analytical", false],
         ],
       },
       {
@@ -92,7 +92,7 @@ const approvedMenus: MenuContract[] = [
         label: "คุณสมบัติ",
         links: [
           ["เชื่อมต่อ RS232", "/products/category/indicators/rs232", false],
-          ["ตัวเครื่องกันน้ำ IP67", "/products/category/indicators/waterproof", true],
+          ["ตัวเครื่องกันน้ำ IP67", "/products/category/indicators/waterproof", false],
         ],
       },
       {
@@ -112,10 +112,10 @@ const approvedMenus: MenuContract[] = [
       {
         label: "สินค้า",
         links: [
-          ["สแตนเลส SUS304", "/products/category/platforms/sus304", true],
-          ["สแตนเลส SUS201", "/products/category/platforms/sus201", true],
-          ["แท่นเหล็กคาร์บอน", "/products/category/platforms/carbon-steel", true],
-          ["พลาสติก ABS เหนียวพิเศษ", "/products/category/platforms/abs", true],
+          ["สแตนเลส SUS304", "/products/category/platforms/sus304", false],
+          ["สแตนเลส SUS201", "/products/category/platforms/sus201", false],
+          ["แท่นเหล็กคาร์บอน", "/products/category/platforms/carbon-steel", false],
+          ["พลาสติก ABS", "/products/category/platforms/abs", false],
         ],
       },
       {
@@ -144,7 +144,7 @@ const approvedMenus: MenuContract[] = [
       {
         label: "สินค้า",
         links: [
-          ["iOS", "/products/category/pos/ios", true],
+          ["iOS", "/products/category/pos/ios", false],
           ["Android", "/products/category/pos/android", false],
           ["Windows", "/products/category/pos/windows", false],
         ],
@@ -282,7 +282,7 @@ test("every displayed label and column matches the owner-selected specification"
   assert.deepEqual(menuContract(items), approvedMenus);
 });
 
-test("owner-approved Navbar keeps 79 entries in three columns with 72 ready and 7 unavailable", () => {
+test("owner-approved Navbar exposes all 79 entries in three columns", () => {
   const items = getPrimaryNavigationItems(defaultNavigation);
   assert.equal(items.length, 8);
   assert.ok(items.every((item) => item.groups?.length === 2));
@@ -309,8 +309,8 @@ test("owner-approved Navbar keeps 79 entries in three columns with 72 ready and 
     ...item.links,
     ...item.groups!.flatMap((group) => group.links),
   ]);
-  assert.equal(links.filter((link) => !link.disabled).length, 72);
-  assert.equal(links.filter((link) => link.disabled).length, 7);
+  assert.equal(links.filter((link) => !link.disabled).length, 79);
+  assert.equal(links.filter((link) => link.disabled).length, 0);
   assert.deepEqual(
     items.map((item) => columns(item).map((column) => column.links.length)),
     [
@@ -331,13 +331,15 @@ test("owner-approved Navbar keeps 79 entries in three columns with 72 ready and 
   );
   assert.deepEqual(
     items[3].links.map((link) => link.label),
-    ["สแตนเลส SUS304", "สแตนเลส SUS201", "แท่นเหล็กคาร์บอน", "พลาสติก ABS เหนียวพิเศษ"],
+    ["สแตนเลส SUS304", "สแตนเลส SUS201", "แท่นเหล็กคาร์บอน", "พลาสติก ABS"],
   );
   assert.equal(items[3].links.length, 4);
-  assert.ok(items[3].links.every((link) => link.disabled));
+  assert.ok(items[3].links.every((link) => !link.disabled));
   for (const item of items)
     for (const column of [
-      ...(item.href === "/products/category/scales" ? [] : [item.links]),
+      ...(["/products/category/scales", "/products/category/platforms"].includes(item.href)
+        ? []
+        : [item.links]),
       ...item.groups!.map((group) => group.links),
     ])
       assert.ok(
@@ -359,7 +361,7 @@ test("readiness follows the canonical destination across contexts without disabl
   ]);
   const analytical = links.filter((link) => link.href === "/products/category/scales/analytical");
   assert.equal(analytical.length, 1);
-  assert.ok(analytical.every((link) => link.disabled));
+  assert.ok(analytical.every((link) => !link.disabled));
   const expectedLinks = approvedMenus.flatMap((item) =>
     item.columns.flatMap((column) => column.links),
   );
@@ -369,7 +371,7 @@ test("readiness follows the canonical destination across contexts without disabl
     if (readiness.has(href)) assert.equal(readiness.get(href), disabled, href);
     readiness.set(href, disabled);
   }
-  assert.equal([...readiness.values()].filter(Boolean).length, 7);
+  assert.equal([...readiness.values()].filter(Boolean).length, 0);
   assert.equal(links.length, expectedLinks.length);
   for (const link of links) {
     assert.ok(readiness.has(link.href), link.href);
@@ -428,22 +430,15 @@ test("product functions link to dedicated listings separate from machine familie
   assert.ok(scales.groups![0].links.every((link) => !link.disabled));
 });
 
-test("the five chapter rails use the approved Navbar product entries and readiness", () => {
+test("the five chapter rails keep the approved Navbar product links even before catalog data is available", () => {
   const productCategories = approvedMenus.slice(1, 6);
-  const readyHrefs = productCategories.flatMap(({ columns }) =>
-    columns[0].links.filter(([, , disabled]) => disabled).map(([, href]) => href),
-  );
-  for (const ready of [[], readyHrefs]) {
+  for (const ready of [[], ["/products/category/platforms/abs", "/products/category/pos/ios"]]) {
     const chapterMenus = getPrimaryNavigationItems(defaultNavigation, ready, "category-chapters");
     for (const { href, columns } of productCategories) {
       const actual = chapterMenus.find((menu) => menu.href === href)!;
       assert.deepEqual(
         actual.links.map(({ label, href, disabled }) => [label, href, Boolean(disabled)]),
-        columns[0].links.map(([label, href, gated]) => [
-          label,
-          href,
-          gated && !ready.includes(href),
-        ]),
+        columns[0].links,
         href,
       );
     }
@@ -605,12 +600,12 @@ test("the scanner Navbar listing is separate from POS accessories and keeps chap
       accessoriesDisabled,
     );
     const scannerLink = pos.groups![0].links.find((link) => link.label === "สแกนเนอร์และลิ้นชัก");
-    assert.equal(scannerLink?.href, surface === "navbar" ? scanners : href);
-    assert.equal(Boolean(scannerLink?.disabled), surface === "category-chapters");
+    assert.equal(scannerLink?.href, scanners);
+    assert.equal(Boolean(scannerLink?.disabled), false);
   }
 });
 
-test("the seven gated menu entries open individually from readiness while saved disables take precedence", () => {
+test("catalog destinations stay linked for every runtime inventory while an explicit saved disable takes precedence", () => {
   const paths = [
     "/products/category/scales/analytical",
     "/products/category/indicators/waterproof",
@@ -627,11 +622,11 @@ test("the seven gated menu entries open individually from readiness while saved 
   for (const ready of [undefined, [paths[0]], [], paths]) {
     const entries = links(ready);
     assert.equal(entries.length, 79);
-    assert.equal(entries.filter((entry) => !entry.disabled).length, 72 + (ready?.length ?? 0));
+    assert.equal(entries.filter((entry) => !entry.disabled).length, 79);
     for (const path of paths) {
       const matching = entries.filter(({ href }) => href === path);
       assert.equal(matching.length, 1, path);
-      assert.equal(Boolean(matching[0].disabled), !ready?.includes(path), path);
+      assert.equal(Boolean(matching[0].disabled), false, path);
     }
   }
   const navigation = structuredClone(defaultNavigation);

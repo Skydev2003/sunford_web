@@ -17,6 +17,8 @@ import { ContactPage } from "@/features/content/components/contact-page";
 import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { AboutPage } from "@/features/content/components/about-page";
 import { SolutionsPage } from "@/features/content/components/solutions-page";
+import { SolutionsOverview } from "@/features/content/components/solutions-overview";
+import { solutionDetails } from "@/features/content/data/solution-details";
 import { getProductSection } from "@/features/content/data/product-sections";
 import { technicalManualRedirects } from "@/features/content/data/technical-manuals";
 import { softwareSupportPages } from "@/features/content/data/software-support";
@@ -32,6 +34,7 @@ export function generateStaticParams() {
   const explicitPaths = [
     "/contact-us",
     "/service",
+    "/warranty/register",
     "/technical-specification",
     "/software/download",
     ...softwareSupportPages.map(({ slug }) => `/software/download/${slug}`),
@@ -46,7 +49,9 @@ export async function generateMetadata({
   params: Promise<{ path: string[] }>;
 }): Promise<Metadata> {
   const { path } = await params;
-  const page = await getContentPage(resolveContentPath(`/${path.join("/")}`));
+  const pathname = resolveContentPath(`/${path.join("/")}`);
+  if (solutionDetails[pathname]) return { title: solutionDetails[pathname].title };
+  const page = await getContentPage(pathname);
   const section = page && !page.managed ? getProductSection(page.path) : undefined;
   if (page?.path === "/about-us" && !page.managed) {
     return {
@@ -80,11 +85,13 @@ export default async function SourceContentPage({
     const product = await getProduct(path.at(-1)!);
     if (product) redirect(`/products/${product.slug}`);
   }
+  if (pathname === "/solutions") return <SolutionsOverview />;
+  if (solutionDetails[pathname]) return <SolutionsPage path={pathname} />;
   const page = await getContentPage(pathname);
   if (!page) notFound();
   if (!page.managed && getProductSection(page.path)) redirect("/products");
-  if (page.path === "/solutions" || page.path.startsWith("/solutions/"))
-    return <SolutionsPage page={page} />;
+  if (page.path === "/solutions") return <SolutionsOverview />;
+  if (solutionDetails[page.path]) return <SolutionsPage path={page.path} />;
   if (page.path !== pathname && page.managed) redirect(page.path);
   if (page.path === "/contact-us" && !page.managed) return <ContactPage />;
   if (page.path === "/service" && !page.managed) return <AfterSalesPage />;
@@ -146,7 +153,7 @@ export default async function SourceContentPage({
           ? item.path.startsWith("/software/download/")
           : item.path.startsWith(`${page.path}/`)),
   );
-  const formPage = /warranty\/register|service\//.test(pathname);
+  const formPage = /service\//.test(pathname);
   const hasContent =
     (page.text.trim().length > 40 ||
       ((page.warehouseOnly || softwareDetail) && Boolean(page.html.trim()))) &&
