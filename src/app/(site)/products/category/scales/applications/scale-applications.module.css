@@ -29,6 +29,16 @@
   text-wrap: balance;
 }
 
+.heading:has(+ .description) {
+  margin-bottom: var(--catalog-rail-heading-space);
+}
+
+.description {
+  max-inline-size: 60ch;
+  margin: 0 0 var(--section-space);
+  color: var(--muted);
+}
+
 .list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

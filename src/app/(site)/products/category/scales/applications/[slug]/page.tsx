@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { CatalogProductCard } from "@/features/catalog/components/catalog-product-card";
 import { getScaleApplicationListings } from "@/features/catalog/server/scale-applications";
+import { scaleApplicationCopy } from "./application-copy";
 import styles from "../scale-applications.module.css";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -26,6 +27,7 @@ export default async function ScaleApplicationPage({ params }: Props) {
   const { slug } = await params;
   const application = (await getScaleApplicationListings()).find((item) => item.slug === slug);
   if (!application) notFound();
+  const description = scaleApplicationCopy.get(application.slug);
 
   return (
     <main id="main-content" className={styles.page}>
@@ -37,6 +39,7 @@ export default async function ScaleApplicationPage({ params }: Props) {
         <span aria-current="page">{application.label}</span>
       </nav>
       <h1 className={styles.heading}>{application.label}</h1>
+      {description && <p className={styles.description}>{description}</p>}
       {application.products.length ? (
         <ul className={styles.list} aria-label="เครื่องชั่งสำหรับงานนี้">
           {application.products.map(({ card, conditional }) => (
