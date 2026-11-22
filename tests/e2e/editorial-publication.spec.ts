@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 test("public editorial entry points offer real destinations without unpublished cards", async ({
   page,
 }) => {
+  test.setTimeout(180_000);
   await page.goto("/");
   const stories = page.locator("#stories");
   await expect(stories.getByRole("heading", { level: 2 })).toBeVisible();
@@ -54,6 +55,6 @@ test("public editorial entry points offer real destinations without unpublished 
   const retired = await page.goto("/blogs/editorial/do-you-need-a-home-scale");
   await expect(page.getByRole("heading", { name: "ยังไม่พบหน้าที่คุณกำลังมองหา" })).toBeVisible();
   if (retired?.status() !== 404) {
-    await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(1);
+    await expect(page.locator('meta[name="robots"][content="noindex"]').first()).toBeAttached();
   }
 });

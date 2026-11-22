@@ -33,6 +33,20 @@ test("story cards link photographed Warehouse application groups without publica
     await expect
       .poll(() => images.evaluate((e: HTMLImageElement) => e.complete && e.naturalWidth > 0))
       .toBe(true);
+    if (width === 1440) {
+      await expect
+        .poll(
+          () =>
+            cards.locator("img").evaluateAll((images) =>
+              images.every((element) => {
+                const image = element as HTMLImageElement;
+                return image.complete && image.naturalWidth > 0;
+              }),
+            ),
+          { timeout: 30_000 },
+        )
+        .toBe(true);
+    }
     if (width === 1440 || width === 390) {
       await section.screenshot({
         path: test.info().outputPath(`stories-section-${width}.png`),
