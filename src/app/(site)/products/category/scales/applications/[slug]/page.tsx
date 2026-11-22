@@ -4,6 +4,7 @@ import { CatalogNavigationLink } from "@/features/catalog/components/catalog-nav
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { CatalogProductCard } from "@/features/catalog/components/catalog-product-card";
+import { warehouseBlurDataURL } from "@/features/catalog/server/warehouse-image-previews";
 import { getScaleApplicationListings } from "@/features/catalog/server/scale-applications";
 import { scaleApplicationCopy } from "./application-copy";
 import styles from "../scale-applications.module.css";
@@ -45,9 +46,16 @@ export default async function ScaleApplicationPage({ params }: Props) {
       {description && <p className={styles.description}>{description}</p>}
       {application.products.length ? (
         <ul className={styles.list} aria-label="เครื่องชั่งสำหรับงานนี้">
-          {application.products.map(({ card, conditional }) => (
+          {application.products.map(({ card, conditional }, index) => (
             <li key={card.id}>
-              <CatalogProductCard product={card} headingLevel={2} modelOnly categoryLift />
+              <CatalogProductCard
+                product={card}
+                headingLevel={2}
+                modelOnly
+                categoryLift
+                prioritizeImage={index < 6}
+                imageBlurDataURL={index < 6 ? warehouseBlurDataURL(card.image) : undefined}
+              />
               {conditional && (
                 <p className={styles.conditional}>ใช้ได้บางกรณี ควรตรวจสเปกให้ตรงกับงาน</p>
               )}

@@ -52,6 +52,7 @@ export function SectionTwoVideo() {
               }}
             >
               <ProductImage
+                progressive
                 src="https://i.ytimg.com/vi/UF7QJSq4Qw4/maxresdefault.jpg"
                 alt=""
                 fill

@@ -3,6 +3,7 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { FocusDragScroll } from "@/components/ui/focus-drag-scroll";
 import { getScaleApplications } from "@/features/catalog/server/scale-applications";
+import { warehouseBlurDataURL } from "@/features/catalog/server/warehouse-image-previews";
 import { getSettings } from "@/features/site/server/documents";
 import { storiesDefaults } from "@/features/site/data/settings";
 import { VideoGallery } from "@/features/content/components/video-gallery";
@@ -35,7 +36,7 @@ export async function SunfordStories() {
       </div>
       {cards.length > 0 && (
         <FocusDragScroll label={label} className={`stories-track ${storyStyles.track}`}>
-          {cards.map(({ slug, label, photo, count }) => (
+          {cards.map(({ slug, label, photo, count }, index) => (
             <Link
               href={`${href}/${slug}`}
               key={slug}
@@ -45,6 +46,8 @@ export async function SunfordStories() {
             >
               <div className={storyStyles.photo}>
                 <ProductImage
+                  progressive
+                  blurDataURL={index < 3 ? warehouseBlurDataURL(photo.image) : undefined}
                   src={photo.image}
                   alt={photo.name}
                   fill

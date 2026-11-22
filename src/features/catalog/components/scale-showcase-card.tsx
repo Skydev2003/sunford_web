@@ -72,10 +72,12 @@ export function ProductShowcaseCard({
   item,
   shelf,
   first,
+  prioritize = false,
 }: {
   item: ShowcaseItem;
   shelf: string;
   first: boolean;
+  prioritize?: boolean;
 }) {
   const { product, background, label, photo, tagline, imageMode, surface } = item;
   const name = catalogCardName(product);
@@ -116,6 +118,8 @@ export function ProductShowcaseCard({
               fallbackSrc={product.image || product.fallbackImage}
               alt={name}
               placeholder="product"
+              progressive
+              prioritize={prioritize}
               fill
               sizes={photoSizes}
               fallbackSizes={showcasePhotoSizes()}
@@ -190,7 +194,13 @@ export function ProductShowcaseCard({
                     : "sc:scale-105 sc:drop-shadow-[0_4px_5px_rgb(29_29_31/0.13)] sc:motion-safe:group-hover:scale-110"
                 }`}
                 fill
-                preload={first}
+                prioritize={first || prioritize}
+                preloadMedia={
+                  first
+                    ? "(375px <= width <= 480px) and (min-height: 840px), (min-width: 1280px) and (min-height: 900px)"
+                    : undefined
+                }
+                progressive
                 sizes={scaleImageSizes}
                 fallbackSizes={scaleFallbackSizes}
               />

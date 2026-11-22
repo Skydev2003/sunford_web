@@ -49,6 +49,7 @@ export function ProductCategoryMock({
   presentation = "overview",
   categoryId,
   subcategoryId,
+  imagePreviews,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
@@ -56,6 +57,7 @@ export function ProductCategoryMock({
   presentation?: "overview" | "finder" | "category" | "listing";
   categoryId?: string;
   subcategoryId?: string;
+  imagePreviews?: Record<string, string>;
 }) {
   const [category, setCategory] = useReturnState(
     "product-category-mock.category",
@@ -494,7 +496,7 @@ export function ProductCategoryMock({
         </div>
 
         <div id="mock-product-results" className={styles.grid} aria-label="รายการสินค้า">
-          {matching.slice(0, limit).map(({ product, model }) =>
+          {matching.slice(0, limit).map(({ product, model }, index) =>
             product ? (
               <CatalogProductCard
                 returnContext={
@@ -505,6 +507,16 @@ export function ProductCategoryMock({
                 key={`${product.id}:${model}`}
                 modelOnly
                 categoryLift={presentation === "category" || presentation === "listing"}
+                prioritizeImage={presentation === "listing" && index < 6}
+                preloadImageMedia={
+                  presentation === "listing" &&
+                  subcategoryId === "scale-kitchen" &&
+                  index === 0 &&
+                  !normalizedQuery
+                    ? "(min-width: 375px) and (min-height: 800px)"
+                    : undefined
+                }
+                imageBlurDataURL={imagePreviews?.[product.image]}
                 product={{ ...product, name: product.warehouseSku ? product.name : model }}
                 decisionFacts={getCatalogDecisionFacts(
                   product,

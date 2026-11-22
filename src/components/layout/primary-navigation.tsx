@@ -238,7 +238,7 @@ export function PrimaryNavigation({
       >
         <nav className={styles.nav} aria-label="เมนูหลัก SUNFORD" data-products-nav>
           <Link className={styles.logo} href="/" aria-label="SUNFORD หน้าแรก">
-            <Image src={site.logo} alt={site.name} width={106} height={26} />
+            <Image src={site.logo} alt={site.name} width={106} height={26} loading="eager" />
           </Link>
           <div ref={linksRef} className={styles.navLinks}>
             {headerNavigation.map((item, index) => (

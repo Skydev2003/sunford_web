@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -53,7 +53,7 @@ export function SpotlightProductVideo({
   }, [src, failed]);
 
   const media = failed ? (
-    <Image src={poster} alt={`SUNFORD ${name}`} fill unoptimized />
+    <ProductImage progressive src={poster} alt={`SUNFORD ${name}`} fill unoptimized />
   ) : (
     <video
       ref={video}
