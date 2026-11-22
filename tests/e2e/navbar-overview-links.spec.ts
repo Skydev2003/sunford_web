@@ -191,11 +191,13 @@ for (const width of [320, 390, 834, 1440]) {
           const image = button.locator("img");
           await image.scrollIntoViewIfNeeded();
           await image.evaluate((element: HTMLImageElement) => element.decode());
-          expect(
-            await image.evaluate((element: HTMLImageElement) =>
-              new URL(element.currentSrc).searchParams.get("url"),
-            ),
-          ).toBe(artwork);
+          const optimizedSource = await image.evaluate((element: HTMLImageElement) =>
+            new URL(element.currentSrc).searchParams.get("url"),
+          );
+          const slug = artwork.split("/").pop()!.replace(".webp", "");
+          expect(optimizedSource).toMatch(
+            new RegExp(`^/_next/static/media/${slug}\\.[\\w-]+\\.webp$`),
+          );
           await expect(image).toHaveCSS("object-fit", "contain");
         }
         if (configuredHref && !getProductSubcategoryPageByHref(configuredHref)) {
