@@ -14,12 +14,25 @@ function prepareCardImage(card: Element | undefined) {
   if (image && !(image.complete && image.naturalWidth)) image.loading = "eager";
 }
 
+function firstCardIndex(length: number, matches: (index: number) => boolean) {
+  let start = 0;
+  let end = length;
+  while (start < end) {
+    const middle = Math.floor((start + end) / 2);
+    if (matches(middle)) end = middle;
+    else start = middle + 1;
+  }
+  return start;
+}
+
 function prepareRailImages(list: HTMLUListElement) {
   if (typeof IntersectionObserver === "undefined") return;
 
   let nearViewport = false;
   let previousLeft = 0;
   let frame = 0;
+  const cards = list.children;
+  const bounds = (index: number) => cards[index].getBoundingClientRect();
   // Clamp the scroll position so overscroll bounce does not reverse the detected direction.
   const scrollPosition = () =>
     Math.max(0, Math.min(list.scrollLeft, list.scrollWidth - list.clientWidth));
@@ -30,28 +43,28 @@ function prepareRailImages(list: HTMLUListElement) {
     const delta = left - previousLeft;
     if (!nearViewport || Math.abs(delta) < 1) return;
     previousLeft = left;
+    const count = cards.length;
+    if (!count) return;
     const viewport = list.getBoundingClientRect();
-    const cards = Array.from(list.children, (card) => ({
-      card,
-      bounds: card.getBoundingClientRect(),
-    }));
-    if (!cards.length) return;
-    // The track's inline padding and snap inset are equal.
-    const snapStart = cards[0].bounds.left + list.scrollLeft;
-    // Lead the next snap position as soon as scrolling starts, including when the
-    // currently clipped card is one of the two images we already prepared.
+    // Inline padding and snap inset are equal. DOM order is the physical order
+    // on this track, so look up each edge without measuring every card on a scroll frame.
+    const snapStart = bounds(0).left + list.scrollLeft;
     const forward = delta > 0;
     const target = forward
-      ? cards.findIndex(({ bounds }) => bounds.left >= snapStart - 1)
-      : cards.findLastIndex(({ bounds }) => bounds.left <= snapStart + 1);
-    if (target < 0) return;
-    const travel = cards[target].bounds.left - snapStart;
+      ? firstCardIndex(count, (index) => bounds(index).left >= snapStart - 1)
+      : firstCardIndex(count, (index) => bounds(index).left > snapStart + 1) - 1;
+    if (target < 0 || target >= count) return;
+    const travel = bounds(target).left - snapStart;
     const upcoming = forward
-      ? cards.find(({ bounds }, index) => index > target && bounds.right > viewport.right + travel)
-      : cards.findLast(
-          ({ bounds }, index) => index < target && bounds.left < viewport.left + travel,
-        );
-    prepareCardImage(upcoming?.card);
+      ? firstCardIndex(
+          count,
+          (index) => index > target && bounds(index).right > viewport.right + travel,
+        )
+      : firstCardIndex(
+          count,
+          (index) => index >= target || bounds(index).left >= viewport.left + travel,
+        ) - 1;
+    prepareCardImage(cards[upcoming]);
   };
 
   const onScroll = () => {
@@ -64,12 +77,11 @@ function prepareRailImages(list: HTMLUListElement) {
         nearViewport = entry.isIntersecting;
         if (!nearViewport) return;
         previousLeft = scrollPosition();
-        const cards = Array.from(list.children);
         if (!cards.length) return;
-        const snapStart = cards[0].getBoundingClientRect().left + list.scrollLeft;
-        const start = cards.findIndex((card) => card.getBoundingClientRect().right > snapStart + 1);
-        if (start < 0) return;
-        for (const card of cards.slice(start, start + 2)) prepareCardImage(card);
+        const snapStart = bounds(0).left + list.scrollLeft;
+        const start = firstCardIndex(cards.length, (index) => bounds(index).right > snapStart + 1);
+        prepareCardImage(cards[start]);
+        prepareCardImage(cards[start + 1]);
       },
       { rootMargin: `${Math.round(innerHeight * imageLeadViewports)}px 0px` },
     );
@@ -96,17 +108,31 @@ export function ProductsIndexRail({
   label,
   categoryRail = false,
   prepareImages = false,
+  trackClassName = styles.track,
+  controlsClassName = styles.controls,
+  controlClassNames,
+  controlLabels,
+  controlIconSize,
+  hideUnavailableControls = false,
+  returnKey = id,
   children,
 }: {
   id: string;
   label: string;
   categoryRail?: boolean;
   prepareImages?: boolean;
+  trackClassName?: string;
+  controlsClassName?: string;
+  controlClassNames?: { previous: string; next: string };
+  controlLabels?: { previous: string; next: string };
+  controlIconSize?: number;
+  hideUnavailableControls?: boolean;
+  returnKey?: string;
   children: ReactNode;
 }) {
   const track = useRef<HTMLUListElement>(null);
   const motion = useRef<{ frame: number; target: number } | null>(null);
-  const [savedLeft, saveLeft] = useReturnState<number | null>(`storefront.${id}.left`, null);
+  const [savedLeft, saveLeft] = useReturnState<number | null>(`storefront.${returnKey}.left`, null);
   const [edges, setEdges] = useState({ previous: false, next: false });
 
   function stopMotion() {
@@ -219,7 +245,7 @@ export function ProductsIndexRail({
       <ul
         ref={track}
         id={id}
-        className={styles.track}
+        className={trackClassName}
         tabIndex={0}
         aria-label={label}
         onPointerDown={stopMotion}
@@ -234,25 +260,31 @@ export function ProductsIndexRail({
         {children}
       </ul>
       {(edges.previous || edges.next) && (
-        <div className={styles.controls}>
-          <button
-            type="button"
-            aria-controls={id}
-            aria-label={`เลื่อน${label}ก่อนหน้า`}
-            disabled={!edges.previous}
-            onClick={() => advance(-1)}
-          >
-            <ChevronLeft aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            aria-controls={id}
-            aria-label={`เลื่อน${label}ถัดไป`}
-            disabled={!edges.next}
-            onClick={() => advance(1)}
-          >
-            <ChevronRight aria-hidden="true" />
-          </button>
+        <div className={controlsClassName}>
+          {!hideUnavailableControls || edges.previous ? (
+            <button
+              className={controlClassNames?.previous}
+              type="button"
+              aria-controls={id}
+              aria-label={controlLabels?.previous ?? `เลื่อน${label}ก่อนหน้า`}
+              disabled={!edges.previous}
+              onClick={() => advance(-1)}
+            >
+              <ChevronLeft size={controlIconSize} aria-hidden="true" />
+            </button>
+          ) : null}
+          {!hideUnavailableControls || edges.next ? (
+            <button
+              className={controlClassNames?.next}
+              type="button"
+              aria-controls={id}
+              aria-label={controlLabels?.next ?? `เลื่อน${label}ถัดไป`}
+              disabled={!edges.next}
+              onClick={() => advance(1)}
+            >
+              <ChevronRight size={controlIconSize} aria-hidden="true" />
+            </button>
+          ) : null}
         </div>
       )}
     </>
