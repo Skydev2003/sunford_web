@@ -79,7 +79,6 @@ for (const width of [320, 390, 768, 1440]) {
       ["windows", "/solutions/windows"],
       ["driver", "/solutions/driver"],
       ["drv", "/software/download/sunford-drv"],
-      ["article", "/blogs/editorial/before-using-a-price-computing-scale"],
       ["printer", "/products/10732"],
       ["wheel", "/products/10838"],
     ]) {
@@ -98,15 +97,7 @@ for (const width of [320, 390, 768, 1440]) {
   });
 }
 
-test("Biz Talk covers and Driver support render in the current content templates", async ({
-  page,
-}) => {
-  await page.goto("/news-and-activities");
-  await page.getByRole("textbox", { name: "ค้นหาข้อมูล Sunford" }).fill("Passion");
-  const card = page.locator('main a[href="/blogs/editorial/SUNFORD_BIZ_TALK_EP.27"]');
-  await expect(card).toHaveCount(1);
-  await expect(card.locator("img")).toBeVisible();
-  await expect(card).not.toContainText("พื้นที่สำหรับรูปภาพ");
+test("Driver support renders in the current content template", async ({ page }) => {
   await page.goto("/software/download/sunford-drv");
   const main = page.getByRole("main");
   await expect(main.getByRole("heading", { level: 1, name: "SUNFORD DRV" })).toBeVisible();

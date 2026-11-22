@@ -1,111 +1,73 @@
-import Image from "next/image";
-import { storyCardContent } from "../data/story-cards";
-import { homepageYoutubeVideos } from "../data/youtube-video-links";
-import { getSettings } from "@/features/site/server/documents";
-import { storiesDefaults } from "@/features/site/data/settings";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { getHomeContentPages } from "@/features/content/server/content-repository";
-import { VideoGallery } from "@/features/content/components/video-gallery";
-import storyStyles from "./stories-section.module.css";
 import { FocusDragScroll } from "@/components/ui/focus-drag-scroll";
+import { getScaleApplications } from "@/features/catalog/server/scale-applications";
+import { getSettings } from "@/features/site/server/documents";
+import { storiesDefaults } from "@/features/site/data/settings";
+import { VideoGallery } from "@/features/content/components/video-gallery";
+import { homepageYoutubeVideos } from "../data/youtube-video-links";
+import storyStyles from "./stories-section.module.css";
 
 export async function SunfordStories() {
-  const copy = await getSettings("stories", storiesDefaults);
-  const articles = (await getHomeContentPages())
-    .filter((page) => page.kind === "article" && !page.path.startsWith("/business/"))
+  const applications = await getScaleApplications();
+  const cards = applications
+    .flatMap(({ slug, label, products }) => {
+      const photo = products.find(({ image }) => image);
+      return photo ? [{ slug, label, photo, count: products.length }] : [];
+    })
     .slice(0, 8);
-  if (!articles.length) return null;
+  const label = "เลือกเครื่องชั่งให้ตรงกับงาน";
+  const href = "/products/category/scales/applications";
   return (
     <section id="stories" className={storyStyles.section} aria-labelledby="stories-heading">
       <div className={storyStyles.heading}>
         <div>
-          <p className={storyStyles.eyebrow}>{copy.eyebrow}</p>
+          <p className={storyStyles.eyebrow}>SUNFORD</p>
           <h2 id="stories-heading">
-            {copy.title === storiesDefaults.title ? (
-              <>
-                เรื่องราวของ<span>คนทำธุรกิจ.</span>
-              </>
-            ) : (
-              copy.title
-            )}
+            เลือกเครื่องชั่ง<span>ให้ตรงกับงาน</span>
           </h2>
-          <p className={storyStyles.intro}>{copy.description}</p>
+          <p className={storyStyles.intro}>สำรวจรุ่นเครื่องชั่งตามประเภทงานและธุรกิจของคุณ</p>
         </div>
-        <Link className={storyStyles.allStories} href={copy.href}>
-          {copy.linkLabel} <ArrowRight size={15} aria-hidden="true" />
+        <Link className={storyStyles.allStories} href={href}>
+          ดูงานทุกประเภท <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </div>
-      <FocusDragScroll label={copy.title} className={`stories-track ${storyStyles.track}`}>
-        {articles.map((article, index) => {
-          const content = storyCardContent(article);
-          const crop = [
-            { x: 30, y: 180, width: 314, height: 206 },
-            { x: 360, y: 180, width: 304, height: 206 },
-          ][index];
-          return (
+      {cards.length > 0 && (
+        <FocusDragScroll label={label} className={`stories-track ${storyStyles.track}`}>
+          {cards.map(({ slug, label, photo, count }) => (
             <Link
-              href={article.path}
-              key={article.path}
+              href={`${href}/${slug}`}
+              key={slug}
               className={storyStyles.card}
               target="_blank"
               rel="noopener noreferrer"
             >
               <div className={storyStyles.photo}>
-                {crop ? (
-                  <span
-                    className={storyStyles.referenceCrop}
-                    style={{ aspectRatio: `${crop.width}/${crop.height}` }}
-                  >
-                    <Image
-                      src="/images/stories/reference-stories.png"
-                      alt={
-                        index === 0
-                          ? "ภาพประกอบการชั่งส่วนผสมอาหารจากภาพที่แนบ"
-                          : "ภาพประกอบเครื่องชั่งกับผักสดจากภาพที่แนบ"
-                      }
-                      width={1339}
-                      height={568}
-                      sizes="1400px"
-                      style={{
-                        width: `${(1339 / crop.width) * 100}%`,
-                        left: `${(-crop.x / crop.width) * 100}%`,
-                        top: `${(-crop.y / crop.height) * 100}%`,
-                      }}
-                    />
-                  </span>
-                ) : (
-                  <ProductImage
-                    src={article.images[0]}
-                    alt={article.title}
-                    fill
-                    sizes="(width < 48rem) 82vw, 300px"
-                  />
-                )}
-                <span className={storyStyles.badge}>{content.category}</span>
+                <ProductImage
+                  src={photo.image}
+                  alt={photo.name}
+                  fill
+                  sizes="(width < 48rem) 82vw, 300px"
+                />
+                <span className={storyStyles.badge}>เลือกตามการใช้งาน</span>
               </div>
               <div className={storyStyles.body}>
-                {content.date ? (
-                  <time className={storyStyles.date} dateTime={content.date.iso}>
-                    {content.date.label}
-                  </time>
-                ) : (
-                  <span className={storyStyles.date}>Sunford Stories</span>
-                )}
-                <h3>{article.title}</h3>
-                <p className={storyStyles.description}>{content.description}</p>
+                <h3>{label}</h3>
+                <p className={storyStyles.description}>
+                  ดูข้อมูลเครื่องชั่งที่เกี่ยวข้อง {count} รุ่น
+                </p>
                 <span className={storyStyles.readMore}>
-                  {copy.readLabel}{" "}
+                  ดูรุ่นที่เกี่ยวข้อง{" "}
                   <span>
                     <ChevronRight size={14} aria-hidden="true" />
                   </span>
                 </span>
               </div>
             </Link>
-          );
-        })}
-      </FocusDragScroll>
+          ))}
+        </FocusDragScroll>
+      )}
     </section>
   );
 }

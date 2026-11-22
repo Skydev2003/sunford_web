@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
-import sourcePages from "../../src/features/content/data/pages.json";
 
-test("story cards use supplied illustrations, original article facts and source images", async ({
+test("story cards link photographed Warehouse application groups without publication dates", async ({
   page,
 }) => {
   await page.goto("/");
@@ -12,28 +11,18 @@ test("story cards use supplied illustrations, original article facts and source 
   const track = section.locator(".stories-track");
   const cards = track.locator(':scope > a[data-focus-copy="1"]');
   await section.scrollIntoViewIfNeeded();
-  const articles = sourcePages
-    .filter((article) => article.kind === "article" && !article.path.startsWith("/business/"))
-    .slice(0, 8);
-  await expect(cards).toHaveCount(8);
-  for (const [index, article] of articles.entries()) {
-    const card = cards.nth(index);
-    await expect(card).toHaveAttribute("href", article.path);
-    await expect(card.getByRole("heading", { level: 3 })).toHaveText(article.title);
-    const image = card.getByRole("img");
-    await expect(image).toHaveAttribute(
-      "src",
-      new RegExp(
-        encodeURIComponent(index < 2 ? "/images/stories/reference-stories.png" : article.images[0]),
-      ),
+  const count = await cards.count();
+  expect(count).toBeGreaterThan(0);
+  expect(count).toBeLessThanOrEqual(8);
+  for (const card of await cards.all()) {
+    await expect(card).toHaveAttribute(
+      "href",
+      /^\/products\/category\/scales\/applications\/[^/]+$/,
     );
+    await expect(card.getByRole("heading", { level: 3 })).not.toBeEmpty();
+    await expect(card.getByRole("img")).toHaveAttribute("alt", /\S/);
+    await expect(card.locator("time")).toHaveCount(0);
   }
-  // These are the publication dates in the original article records, not the
-  // different sample dates printed in the supplied design reference.
-  await expect(cards.nth(0).locator("time")).toHaveCount(0);
-  await expect(cards.nth(1).locator("time")).toHaveAttribute("datetime", "2025-09-15");
-  await expect(cards.nth(1).locator("time")).toHaveText("15 ก.ย. 2568");
-  await expect(cards.nth(2).locator("time")).toHaveAttribute("datetime", "2025-10-13");
   for (const width of [1440, 1024, 390, 320]) {
     await page.setViewportSize({ width, height: 950 });
     await section.scrollIntoViewIfNeeded();
@@ -71,9 +60,12 @@ test("three centered story cards stay clear while outer cards become progressive
       .toBeGreaterThan(0.995);
   }
   const incomingBlur = () =>
-    cards.nth(3).evaluate((element) => {
-      return parseFloat(getComputedStyle(element).filter.match(/blur\(([\d.]+)px\)/)?.[1] ?? "0");
-    });
+    cards
+      .nth(2)
+      .locator("xpath=following-sibling::*[1]")
+      .evaluate((element) => {
+        return parseFloat(getComputedStyle(element).filter.match(/blur\(([\d.]+)px\)/)?.[1] ?? "0");
+      });
   const originalBlur = await incomingBlur();
   expect(originalBlur).toBeGreaterThan(2.9);
   const layout = await track.evaluate((element) => {

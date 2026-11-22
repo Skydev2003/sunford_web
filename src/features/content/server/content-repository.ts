@@ -8,6 +8,7 @@ import { getDocuments } from "@/features/site/server/documents";
 import { publicPath } from "../data/public-paths.mjs";
 import { solutions, solutionsIndex } from "../data/solutions";
 import { warehouseContentPage } from "../data/warehouse-content";
+import { getEditorialSection } from "../data/editorial-sections";
 import { getProducts } from "@/features/catalog/server/product-repository";
 
 export { getSnapshotProducts } from "../data/catalog-snapshot";
@@ -55,15 +56,18 @@ function mergePages(documents: Awaited<ReturnType<typeof getDocuments>>): Source
     ...originals,
   ];
 }
-export async function getHomeContentPages(): Promise<SourcePage[]> {
-  return mergePages(await getDocuments("page"));
-}
-
 export async function getContentPages(): Promise<SourcePage[]> {
   const products = await getProducts();
-  return mergePages(await getDocuments("page")).map((page) =>
-    warehouseContentPage(page, products, false),
-  );
+  return mergePages(await getDocuments("page")).flatMap((page) => {
+    const editorial = getEditorialSection(page.path);
+    if (editorial) {
+      if (editorial.path !== page.path) return [];
+      return [{ ...page, title: editorial.title, kind: "page", images: [] }];
+    }
+    // Imported articles are route history. Warehouse has no website editorial publication.
+    if (page.kind === "article") return [];
+    return [warehouseContentPage(page, products, false)];
+  });
 }
 export async function getContentPageIndex(): Promise<Record<string, SourcePage>> {
   const documents = await getDocuments("page");
@@ -98,6 +102,7 @@ export async function getContentPageIndex(): Promise<Record<string, SourcePage>>
 }
 export async function getContentPage(path: string) {
   const page = (await getContentPageIndex())[normalize(path)] as SourcePage | undefined;
+  if (page?.kind === "article") return undefined;
   // The built-in service page does not project Warehouse data.
   if (page?.path === "/service" && page.kind === "page" && !page.managed) return page;
   return page ? warehouseContentPage(page, await getProducts()) : undefined;

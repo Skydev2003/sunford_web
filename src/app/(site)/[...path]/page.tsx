@@ -18,6 +18,10 @@ import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { AboutPage } from "@/features/content/components/about-page";
 import { SolutionsPage } from "@/features/content/components/solutions-page";
 import { getProductSection } from "@/features/content/data/product-sections";
+import {
+  editorialUnavailable,
+  getEditorialSection,
+} from "@/features/content/data/editorial-sections";
 import { technicalManualRedirects } from "@/features/content/data/technical-manuals";
 import { softwareSupportPages } from "@/features/content/data/software-support";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
@@ -37,7 +41,12 @@ export function generateStaticParams() {
     ...softwareSupportPages.map(({ slug }) => `/software/download/${slug}`),
     ...technicalManualRedirects.map(({ source }) => source),
   ];
-  return staticContentParams(importedPages.filter(({ path }) => !explicitPaths.includes(path)));
+  return staticContentParams(
+    importedPages.filter(
+      ({ path, kind }) =>
+        !explicitPaths.includes(path) && (kind !== "article" || Boolean(getEditorialSection(path))),
+    ),
+  );
 }
 
 export async function generateMetadata({
@@ -46,7 +55,10 @@ export async function generateMetadata({
   params: Promise<{ path: string[] }>;
 }): Promise<Metadata> {
   const { path } = await params;
-  const page = await getContentPage(resolveContentPath(`/${path.join("/")}`));
+  const pathname = resolveContentPath(`/${path.join("/")}`);
+  const editorial = getEditorialSection(pathname);
+  if (editorial) return { title: editorial.title, description: editorialUnavailable };
+  const page = await getContentPage(pathname);
   const section = page && !page.managed ? getProductSection(page.path) : undefined;
   if (page?.path === "/about-us" && !page.managed) {
     return {
@@ -74,6 +86,22 @@ export default async function SourceContentPage({
 }) {
   const { path } = await params;
   const pathname = resolveContentPath(`/${path.join("/")}`);
+  const editorial = getEditorialSection(pathname);
+  if (editorial) {
+    return (
+      <main id="main-content" className="source-content-page">
+        <header className="content-heading container">
+          <h1>{editorial.title}</h1>
+          <p>{editorialUnavailable}</p>
+        </header>
+        <nav className="container source-section-links" aria-label="ข้อมูลที่เปิดอ่านได้">
+          <Link href="/products">ดูแค็ตตาล็อกสินค้า</Link>
+          <Link href="/technical-specification">ดูข้อมูลทางเทคนิคและคู่มือ</Link>
+          <Link href="/products/category/scales/applications">เลือกเครื่องชั่งตามการใช้งาน</Link>
+        </nav>
+      </main>
+    );
+  }
   const subcategoryDestination = resolveCategoryHref(pathname);
   if (getProductSubcategoryPageByHref(subcategoryDestination)) redirect(subcategoryDestination);
   if (path.includes("products")) {
@@ -123,7 +151,6 @@ export default async function SourceContentPage({
           : page.path === "/software/download"
             ? "ดาวน์โหลดซอฟต์แวร์"
             : page.title.replace(/\s*\|\s*Sunford$/i, ""));
-  const newsIndex = /news-and-activities|\/blogs\/editorial$|^\/business$/.test(page.path);
   const softwareIndex =
     page.path === "/software/download" || page.path === "/applications-and-softwares";
   const softwareDetail = page.path.startsWith("/software/download/");
@@ -140,11 +167,9 @@ export default async function SourceContentPage({
       !(softwareIndex && softwareCatalog) &&
       item.path !== page.path &&
       item.kind !== "product" &&
-      (newsIndex
-        ? item.kind === "article"
-        : softwareIndex
-          ? item.path.startsWith("/software/download/")
-          : item.path.startsWith(`${page.path}/`)),
+      (softwareIndex
+        ? item.path.startsWith("/software/download/")
+        : item.path.startsWith(`${page.path}/`)),
   );
   const formPage = /warranty\/register|service\//.test(pathname);
   const hasContent =
@@ -265,21 +290,11 @@ export default async function SourceContentPage({
               <ProductImage alt={page.title} width={1180} height={340} />
             </div>
           )}
-          {!section && hasContent && (page.managed || (!newsIndex && !softwareIndex)) && (
+          {!section && hasContent && (page.managed || !softwareIndex) && (
             <article
               className={`source-prose container ${page.kind === "article" ? "source-article" : ""}`}
               dangerouslySetInnerHTML={{ __html: proseHtml }}
             />
-          )}
-          {newsIndex && !page.managed && (
-            <div className="container source-prose source-article">
-              <p>
-                {page.text
-                  .split(/\n\s*\n/)
-                  .slice(0, 2)
-                  .join("\n\n")}
-              </p>
-            </div>
           )}
           {!section && !hasContent && (
             <div className="container source-empty">
