@@ -10,9 +10,7 @@ for (const [width, reducedMotion] of [
     await page.emulateMedia({ reducedMotion });
     await page.goto("/products");
     const feature = page.locator("#products-rail-pos [data-home-retail-feature]");
-    await expect(feature.getByRole("heading", { level: 3 })).toHaveText(
-      /พิถีพิถันทุกแก้ว.*แม่นยำทุกยอดขาย/,
-    );
+    await expect(feature.getByRole("heading", { level: 3 })).toHaveText("ชั่งให้พอดี");
     await expect(feature.locator("xpath=../preceding-sibling::li[1]")).toHaveAttribute(
       "data-warehouse-sku",
       "G106179",
@@ -23,17 +21,17 @@ for (const [width, reducedMotion] of [
       scene.evaluate((element) => getComputedStyle(element, "::before").animationPlayState);
     if (reducedMotion === "no-preference") await expect.poll(playState).toBe("paused");
     await trigger.scrollIntoViewIfNeeded();
-    const images = scene.locator("img");
-    await expect(images).toHaveCount(2);
-    for (const image of await images.all()) {
-      const source = await image.getAttribute("src");
-      expect(new URL(source!, page.url()).searchParams.get("url")).toMatch(
-        /^\/api\/products\/[^/]+\/image\?v=/,
-      );
-      await expect
-        .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
-        .toBeGreaterThan(0);
-    }
+    const image = scene.locator("img");
+    await expect(image).toHaveCount(1);
+    const source = await image.getAttribute("src");
+    expect(new URL(source!, page.url()).searchParams.get("url")).toBe(
+      "/images/products/home-retail-editorial.webp",
+    );
+    await expect
+      .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
+      .toBeGreaterThan(0);
+    await expect(image).toHaveCSS("object-fit", "cover");
+    expect(await image.boundingBox()).toEqual(await feature.boundingBox());
     if (reducedMotion === "reduce") {
       expect(
         await scene.evaluate((element) => getComputedStyle(element, "::before").animationName),

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, ChevronRight, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
@@ -8,8 +9,10 @@ import styles from "./home-retail-feature.module.css";
 
 export function HomeRetailFeature({
   topics,
+  sizes,
 }: {
   topics: { context: string; label: string; href: string; image?: string }[];
+  sizes: string;
 }) {
   const card = useRef<HTMLElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -43,20 +46,10 @@ export function HomeRetailFeature({
     <article ref={card} className={styles.card} data-home-retail-feature>
       <div className={styles.copy}>
         <p>ครัวและกาแฟ · คำนวณราคา</p>
-        <h3>
-          พิถีพิถันทุกแก้ว
-          <br />
-          แม่นยำทุกยอดขาย
-        </h3>
+        <h3>ชั่งให้พอดี</h3>
       </div>
       <div className={styles.scene} aria-hidden="true">
-        {topics.map(({ href, image }) =>
-          image ? (
-            <div className={styles.sceneImage} key={href}>
-              <ProductImage src={image} alt="" fill sizes="(max-width: 736px) 155px, 200px" />
-            </div>
-          ) : null,
-        )}
+        <Image src="/images/products/home-retail-editorial.webp" alt="" fill sizes={sizes} />
       </div>
       <button
         ref={trigger}

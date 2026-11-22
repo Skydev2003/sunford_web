@@ -13,7 +13,12 @@ import { EquipmentVideoCard } from "./equipment-video-card";
 import { FeaturedCardMedia } from "./featured-card-media";
 import { HomeRetailFeature } from "./home-retail-feature";
 import { ProductsIndexMotion } from "./products-index-motion";
-import { ProductPhotoCard, ProductShowcaseCard, showcasePhotoSizes } from "./scale-showcase-card";
+import {
+  ProductPhotoCard,
+  ProductShowcaseCard,
+  productRailCardSizes,
+  showcasePhotoSizes,
+} from "./scale-showcase-card";
 import photoStyles from "./scale-showcase-card.module.css";
 import { SmartSystemShowcaseCards } from "./software-showcase";
 import { selectComponentShowcase } from "../data/component-showcase";
@@ -213,7 +218,7 @@ export function ProductsIndexContent({
                     )}
                     {id === "pos" && item.product.warehouseSku === "G106179" && (
                       <li className={styles.card}>
-                        <HomeRetailFeature topics={homeRetail} />
+                        <HomeRetailFeature topics={homeRetail} sizes={productRailCardSizes} />
                       </li>
                     )}
                   </Fragment>
