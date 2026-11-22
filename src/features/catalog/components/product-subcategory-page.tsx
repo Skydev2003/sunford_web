@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { getStorefrontProducts } from "@/features/catalog/server/product-repository";
+import { warehouseBlurDataURL } from "@/features/catalog/server/warehouse-image-previews";
 import { ProductCategoryMock } from "./product-category-mock";
 import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
 import { consumableSubtypeLinks } from "../data/additional-subcategory-pages";
@@ -50,6 +51,20 @@ export async function ProductSubcategoryPage({
   const publishedProducts = products.filter(
     (product) => product.warehouseSku && ids.has(product.id),
   );
+  const initialIds =
+    "entries" in child && child.entries
+      ? child.entries.slice(0, 6).map(({ productId }) => productId)
+      : [...publishedProducts]
+          .sort((a, b) => Number(b.featured) - Number(a.featured))
+          .slice(0, 6)
+          .map(({ id }) => id);
+  const imagePreviews = Object.fromEntries(
+    publishedProducts.flatMap(({ id, image }) => {
+      if (!initialIds.includes(id)) return [];
+      const preview = warehouseBlurDataURL(image);
+      return preview ? [[image, preview]] : [];
+    }),
+  );
   const relatedLinks =
     additional?.relatedLinks ??
     (subcategoryId === "accessory-consumables"
@@ -86,6 +101,7 @@ export async function ProductSubcategoryPage({
             products={publishedProducts}
             categories={[listingCategory]}
             cardNames={cardNames}
+            imagePreviews={imagePreviews}
             categoryId={categoryId}
             subcategoryId={subcategoryId}
             presentation="listing"

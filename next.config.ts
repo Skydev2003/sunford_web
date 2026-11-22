@@ -36,6 +36,7 @@ const nextConfig: NextConfig = {
     cpus: 1,
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     localPatterns: [
       { pathname: "**", search: "" },
       { pathname: "/images/warehouse-cache/**" },

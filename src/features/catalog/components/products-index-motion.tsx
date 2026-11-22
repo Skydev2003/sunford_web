@@ -132,6 +132,7 @@ export function ProductsIndexMotion() {
             alt=""
             unoptimized
             loading="eager"
+            fetchPriority="high"
           />
         </span>
         {letters.map(([letter, left], index) => (

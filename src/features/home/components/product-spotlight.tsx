@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { ProductImage } from "@/components/ui/product-image";
+import { warehouseBlurDataURL } from "@/features/catalog/server/warehouse-image-previews";
 import { catalogModelLabel } from "@/features/catalog/data/catalog-card-names";
 import { getSettings } from "@/features/site/server/documents";
 import { spotlightDefaults } from "@/features/site/data/settings";
@@ -34,7 +35,9 @@ export async function ProductSpotlight({
   const showVideo =
     product && isDefaultSpotlightProduct(product) && (!image || image === defaultSpotlightImage);
   const visual = (
-    <Image
+    <ProductImage
+      progressive
+      blurDataURL={warehouseBlurDataURL(image)}
       src={image ?? defaultSpotlightImage}
       alt={product ? `SUNFORD ${product.name}` : "เครื่องชั่ง Sunford JC21"}
       fill

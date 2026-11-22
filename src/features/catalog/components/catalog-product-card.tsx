@@ -25,6 +25,9 @@ export function CatalogProductCard({
   headingLevel = 3,
   modelOnly = false,
   categoryLift = false,
+  prioritizeImage = false,
+  preloadImageMedia,
+  imageBlurDataURL,
   decisionFacts,
   returnContext,
 }: {
@@ -33,6 +36,9 @@ export function CatalogProductCard({
   headingLevel?: 2 | 3;
   modelOnly?: boolean;
   categoryLift?: boolean;
+  prioritizeImage?: boolean;
+  preloadImageMedia?: string;
+  imageBlurDataURL?: string;
   decisionFacts?: readonly CatalogDecisionFact[];
   returnContext?: import("../data/product-subcategory-pages").ProductReturnContext;
 }) {
@@ -53,6 +59,10 @@ export function CatalogProductCard({
       <Link href={href} className={styles.image}>
         <ProductImage
           placeholder="product"
+          progressive={categoryLift}
+          prioritize={prioritizeImage}
+          preloadMedia={preloadImageMedia}
+          blurDataURL={imageBlurDataURL}
           src={catalogProductPhoto(product)}
           fallbackSrc={product.fallbackImage}
           alt={`SUNFORD ${product.name}`}
