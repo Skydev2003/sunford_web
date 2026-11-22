@@ -296,6 +296,7 @@ export function ProductsOverview({
   services,
   accordion,
   categoryId,
+  chapterPhotoIdByHref,
   indexContent,
 }: {
   products: ClientProduct[];
@@ -309,6 +310,7 @@ export function ProductsOverview({
   services: Service[];
   accordion: AccordionItem[];
   categoryId?: string;
+  chapterPhotoIdByHref?: Record<string, string>;
   indexContent?: ReactNode;
 }) {
   const router = useRouter();
@@ -321,11 +323,12 @@ export function ProductsOverview({
     categoryId === "pos" ||
     categoryId === "accessories";
   const categoryItems = activeCategory?.subcategories ?? categories;
-  const categoryMenu = getPrimaryNavigationItems(
-    navigation,
-    readySubcategoryHrefs,
-    "category-chapters",
-  ).find((item) => item.href === `/products/category/${categoryId}`);
+  const categoryHref = categoryId ? `/products/category/${categoryId}` : undefined;
+  const categoryMenu = categoryHref
+    ? getPrimaryNavigationItems(navigation, readySubcategoryHrefs, "category-chapters").find(
+        (item) => item.href === categoryHref,
+      )
+    : undefined;
   const additionalCategoryLinks = (categoryMenu?.groups?.[0]?.links ?? []).filter((item) => {
     const page = getProductSubcategoryPageByHref(item.href);
     return !item.disabled && page && "matches" in page;
@@ -379,7 +382,12 @@ export function ProductsOverview({
     const members = category.productIds
       .map((id) => productsById.get(id))
       .filter((product) => product?.image);
-    return members.find((product) => product?.featured) ?? members[0];
+    const fallbackId = chapterPhotoIdByHref?.[category.href];
+    return (
+      members.find((product) => product?.featured) ??
+      members[0] ??
+      (fallbackId ? productsById.get(fallbackId) : undefined)
+    );
   });
   const startCompare = useCatalogStore((state) => state.startCompare);
   const compare = () => {

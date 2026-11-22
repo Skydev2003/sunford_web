@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
+import { getStorefrontProducts } from "../server/product-repository";
+import { additionalAccessorySubcategoryPages } from "../data/additional-subcategory-pages";
 import { buyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
@@ -107,17 +109,25 @@ export async function AccessoriesOverview() {
       </>
     ),
   }));
-  const [navigation, site, copyrightYear] = await Promise.all([
+  const [navigation, site, copyrightYear, warehouseProducts] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
     getCopyrightYear(),
+    getStorefrontProducts(),
   ]);
+  const chapterPhotoIdByHref: Record<string, string> = {};
+  for (const page of additionalAccessorySubcategoryPages) {
+    const matches = new Set(warehouseProducts.filter(page.matches).map(({ id }) => id));
+    const photo = images.find(({ id }) => matches.has(id));
+    if (photo) chapterPhotoIdByHref[page.href] = photo.id;
+  }
   return (
     <ProductsOverview
       products={products}
       categories={[category]}
       cardNames={cardNames}
       categoryId="accessories"
+      chapterPhotoIdByHref={chapterPhotoIdByHref}
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       site={site}

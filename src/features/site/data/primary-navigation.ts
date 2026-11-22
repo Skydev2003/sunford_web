@@ -106,23 +106,12 @@ export function getPrimaryNavigationItems(
     menu(
       categoryLabel("scales", "เครื่องชั่ง"),
       "/products/category/scales",
-      surface === "navbar"
-        ? [
-            ["ครัวเรือน", "/products/category/scales/kitchen"],
-            ["การผลิต", "/products/category/scales/industrial"],
-            ["คำนวณราคา", "/products/category/scales/price"],
-            ["งานวิเคราะห์", "/products/category/scales/analytical"],
-          ]
-        : [
-            ["คำนวณราคา", "/products/category/scales/price"],
-            ["อุตสาหกรรม", "/products/category/scales/industrial"],
-            ["งานวิเคราะห์", "/products/category/scales/analytical"],
-            ["ครัวและกาแฟ", "/products/category/scales/kitchen"],
-            ["กันน้ำ–กันฝุ่น", "/products/category/scales/water-dust"],
-            ["ตั้งโต๊ะ", "/products/category/scales/benchtop"],
-            ["ตั้งพื้น", "/products/category/scales/floor"],
-            ["มีเสา", "/products/category/scales/pole"],
-          ],
+      [
+        ["ครัวเรือน", "/products/category/scales/kitchen"],
+        ["การผลิต", "/products/category/scales/industrial"],
+        ["คำนวณราคา", "/products/category/scales/price"],
+        ["งานวิเคราะห์", "/products/category/scales/analytical"],
+      ],
       surface === "navbar"
         ? [
             ["นับจำนวนชิ้น", "/products/category/scales/counting"],
@@ -152,7 +141,7 @@ export function getPrimaryNavigationItems(
           ]),
       "สินค้า",
       "คุณสมบัติ",
-      surface === "navbar" ? "configured" : "length",
+      "configured",
     ),
     menu(
       categoryLabel("indicators", "อินดิเคเตอร์แท่นชั่ง"),
@@ -160,9 +149,6 @@ export function getPrimaryNavigationItems(
       [
         ["LCD", "/products/category/indicators/lcd"],
         ["LED", "/products/category/indicators/led"],
-        ...(surface === "category-chapters"
-          ? [["กันน้ำ", "/products/category/indicators/waterproof"] as [string, string]]
-          : []),
       ],
       surface === "navbar"
         ? [
@@ -245,7 +231,7 @@ export function getPrimaryNavigationItems(
         ["จอและไฟเตือน", "/products/category/accessories/displays"],
         ["สายและหัวต่อ", "/products/category/accessories/cables"],
         ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-        ["อุปกรณ์ POS", "/products/category/accessories/pos", surface === "category-chapters"],
+        ["อุปกรณ์ POS", "/products/category/accessories/pos"],
         ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical"],
         ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics"],
         ["ลูกตุ้มน้ำหนัก", "/products/category/accessories/weights"],
