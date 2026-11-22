@@ -3,13 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowDown,
-  CalendarClock,
+  ChevronDown,
   ChevronRight,
   ExternalLink,
-  Info,
   MapPin,
-  MessageCircle,
   PackageCheck,
   PackageOpen,
   Phone,
@@ -25,43 +22,6 @@ import styles from "./after-sales-page.module.css";
 
 const serviceIcons = [Wrench, PackageOpen, ShieldCheck, RotateCcw, PackageCheck];
 
-const stepHeadings: Record<string, string[]> = {
-  repair: [
-    "เตรียมตัวเครื่อง",
-    "ทำความสะอาดก่อนส่ง",
-    "ห่อหุ้มให้เรียบร้อย",
-    "ระบุข้อมูลผู้ส่ง",
-    "จัดส่งและแจ้งเจ้าหน้าที่",
-    "รับบริการซ่อมบำรุง",
-  ],
-  exchange: [
-    "ตรวจสอบสินค้าและเอกสาร",
-    "ห่อกล่องสินค้าอีกชั้น",
-    "ระบุรายการที่ต้องการ",
-    "จัดส่งสินค้า",
-    "รอเจ้าหน้าที่ติดต่อกลับ",
-  ],
-  claim: [
-    "เตรียมสินค้าสำหรับเคลม",
-    "ระบุข้อมูลให้ชัดเจน",
-    "จัดส่งและแจ้งสลิปค่าส่ง",
-    "รับบริการเคลมสินค้า",
-  ],
-  return: [
-    "ตรวจสอบสินค้าและเอกสาร",
-    "ห่อกล่องสินค้าอีกชั้น",
-    "ระบุรายการที่ต้องการ",
-    "จัดส่งสินค้า",
-    "รอเจ้าหน้าที่ติดต่อกลับ",
-  ],
-  pickup: [
-    "ทำคำสั่งซื้อให้เรียบร้อย",
-    "นัดหมายกับแอดมิน",
-    "แจ้งข้อมูลเมื่อมาถึง",
-    "ชำระเงินและรับสินค้า",
-  ],
-};
-
 const subscribeHydration = () => () => {};
 const readHydration = () => true;
 const serverHydration = () => false;
@@ -74,114 +34,76 @@ function initialServiceTab() {
   return index < 0 ? 0 : index;
 }
 
-function ServiceInstructions({ service, index }: { service: AfterSalesService; index: number }) {
-  const Icon = serviceIcons[index];
-
+function ServiceInstructions({ service }: { service: AfterSalesService }) {
   return (
     <article className={styles.instructions}>
-      <header className={styles.panelHeading}>
-        <span className={styles.panelIcon}>
-          <Icon size={24} aria-hidden="true" />
-        </span>
-        <div>
-          <h2>{service.title}</h2>
-          <p>{service.steps.length} ขั้นตอน</p>
-        </div>
-      </header>
-
+      <h2>{service.title}</h2>
       <ol className={styles.steps} role="list">
-        {service.steps.map((step, stepIndex) => (
+        {service.steps.map((step, index) => (
           <li key={step}>
             <span className={styles.stepNumber} aria-hidden="true">
-              {stepIndex + 1}
+              {index + 1}
             </span>
-            <div>
-              <h3>{stepHeadings[service.id][stepIndex]}</h3>
-              <p>{step}</p>
-            </div>
+            <p>{step}</p>
           </li>
         ))}
       </ol>
-
-      {(service.extra || service.notes) && (
-        <div className={styles.details}>
-          {service.extra && (
-            <section className={styles.extra}>
-              <h3>{service.extra.title}</h3>
-              <ul>
-                {service.extra.steps.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ul>
-            </section>
-          )}
-          {service.notes && (
-            <aside className={styles.note} aria-label="หมายเหตุการรับบริการ">
-              <Info size={18} aria-hidden="true" />
-              <div>
-                <h3>ข้อควรทราบ</h3>
-                {service.notes.map((note) => (
-                  <p key={note}>{note}</p>
-                ))}
-              </div>
-            </aside>
-          )}
-        </div>
+      {service.notes && (
+        <aside className={styles.notes} aria-label="ข้อควรทราบ">
+          {service.notes.map((note) => (
+            <p key={note}>{note}</p>
+          ))}
+        </aside>
+      )}
+      {service.extra && (
+        <details className={styles.details}>
+          <summary>
+            {service.extra.title}
+            <ChevronDown size={17} aria-hidden="true" />
+          </summary>
+          <ul>
+            {service.extra.steps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ul>
+        </details>
       )}
     </article>
   );
 }
 
-function ServiceContact({ pickup = false }: { pickup?: boolean }) {
+function ServiceContact() {
   return (
-    <aside className={styles.sidebar} aria-label="ที่อยู่และช่องทางติดต่อฝ่ายบริการ">
-      <div className={styles.contactCard}>
-        <header className={styles.contactHeading}>
-          <div>
-            <h2>{afterSalesContact.title}</h2>
-            <p>
-              <CalendarClock size={15} aria-hidden="true" />
-              {afterSalesContact.hours}
-            </p>
-          </div>
-          <Image
-            className={styles.contactPhoto}
-            src="/images/contact/support-representative.webp"
-            width={108}
-            height={108}
-            alt=""
-          />
-        </header>
-        <div className={styles.phoneList}>
-          {afterSalesContact.phones.map((phone) => (
-            <a href={phone.href} key={phone.href}>
-              <Phone size={17} aria-hidden="true" />
-              {phone.label}
-            </a>
-          ))}
-        </div>
-        <a className={styles.lineButton} href={sunford.line} target="_blank" rel="noreferrer">
-          <Image src="/images/brands/line-brand-icon.png" width={22} height={22} alt="" />
-          LINE @sunford
-          <ExternalLink size={16} aria-hidden="true" />
-        </a>
+    <aside
+      id="service-contact"
+      className={styles.contact}
+      aria-labelledby="service-contact-heading"
+    >
+      <h2 id="service-contact-heading">{afterSalesContact.title}</h2>
+      <p className={styles.hours}>{afterSalesContact.hours}</p>
+      <a className={styles.lineButton} href={sunford.line} target="_blank" rel="noreferrer">
+        <Image src="/images/brands/line-brand-icon.png" width={20} height={20} alt="" />
+        LINE @sunford
+        <ExternalLink size={16} aria-hidden="true" />
+      </a>
+      <div className={styles.phoneList}>
+        {afterSalesContact.phones.map((phone) => (
+          <a href={phone.href} key={phone.href}>
+            <Phone size={15} aria-hidden="true" />
+            {phone.label}
+          </a>
+        ))}
       </div>
-      <div className={styles.addressCard}>
+      <div className={styles.location}>
         <h3>
-          <MapPin size={18} aria-hidden="true" />
-          {afterSalesContact.factoryTitle}
+          <MapPin size={16} aria-hidden="true" />
+          ที่อยู่โรงงานซันฟอร์ด
         </h3>
         <address>
           {afterSalesContact.address.map((line) => (
             <span key={line}>{line}</span>
           ))}
         </address>
-        {pickup && (
-          <p className={styles.appointment}>
-            กรุณานัดหมายกับแอดมินทาง LINE ก่อนเดินทางมารับสินค้า
-            <span>{afterSalesContact.break}</span>
-          </p>
-        )}
       </div>
     </aside>
   );
@@ -229,17 +151,11 @@ export function AfterSalesPage() {
               <ChevronRight size={13} aria-hidden="true" />
               <span aria-current="page">บริการหลังการขาย</span>
             </nav>
-            <h1>เลือกบริการที่คุณต้องการ</h1>
+            <h1>บริการหลังการขาย</h1>
           </div>
           <div className={styles.quickLinks}>
-            <a href={sunford.line} target="_blank" rel="noreferrer">
-              <MessageCircle size={17} aria-hidden="true" />
-              สอบถามทาง LINE
-            </a>
-            <a href="#service-policies">
-              เงื่อนไขบริการ
-              <ArrowDown size={15} aria-hidden="true" />
-            </a>
+            <a href="#service-contact">ติดต่อฝ่ายบริการ</a>
+            <a href="#service-policies">เงื่อนไขบริการ</a>
           </div>
         </header>
 
@@ -259,7 +175,6 @@ export function AfterSalesPage() {
                   id={`service-tab-${service.id}`}
                   aria-controls={`service-panel-${service.id}`}
                   aria-selected={active}
-                  aria-label={`${index + 1}. ${service.name}`}
                   tabIndex={active ? 0 : -1}
                   onClick={() => setSelected(index)}
                   onKeyDown={(event) => handleTabKey(event, index)}
@@ -284,42 +199,32 @@ export function AfterSalesPage() {
           </nav>
         )}
 
-        <div className={interactive ? styles.workspace : styles.staticWorkspace}>
-          {afterSalesServices.map((service, index) => {
-            const hidden = interactive && selected !== index;
-            return (
-              <div
-                className={styles.panel}
-                ref={interactive && !hidden ? activePanel : undefined}
-                key={service.id}
-                id={`service-panel-${service.id}`}
-                role={interactive ? "tabpanel" : undefined}
-                aria-labelledby={interactive ? `service-tab-${service.id}` : undefined}
-                hidden={hidden}
-                tabIndex={interactive && !hidden ? 0 : undefined}
-              >
-                {!hidden && (
-                  <div className={interactive ? styles.serviceLayout : undefined}>
-                    <ServiceInstructions service={service} index={index} />
-                    {interactive && <ServiceContact pickup={service.id === "pickup"} />}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-          {!interactive && <ServiceContact />}
+        <div className={styles.workspace}>
+          <div className={styles.panels}>
+            {afterSalesServices.map((service, index) => {
+              const hidden = interactive && selected !== index;
+              return (
+                <div
+                  className={styles.panel}
+                  ref={interactive && !hidden ? activePanel : undefined}
+                  key={service.id}
+                  id={`service-panel-${service.id}`}
+                  role={interactive ? "tabpanel" : undefined}
+                  aria-labelledby={interactive ? `service-tab-${service.id}` : undefined}
+                  hidden={hidden}
+                  tabIndex={interactive && !hidden ? 0 : undefined}
+                >
+                  {!hidden && <ServiceInstructions service={service} />}
+                </div>
+              );
+            })}
+          </div>
+          <ServiceContact />
         </div>
 
         <nav id="service-policies" className={styles.policies} aria-label="ข้อมูลที่เกี่ยวข้อง">
-          <span>
-            <ShieldCheck size={18} aria-hidden="true" />
-            ข้อมูลที่เกี่ยวข้อง
-          </span>
           <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link>
           <Link href="/cancel-and-return/policy">เงื่อนไขการเปลี่ยนและคืนสินค้า</Link>
-          <a href={afterSalesContact.sourceUrl} target="_blank" rel="noreferrer">
-            ข้อมูลต้นฉบับจากซันฟอร์ด <ExternalLink size={14} aria-hidden="true" />
-          </a>
         </nav>
       </div>
     </main>
