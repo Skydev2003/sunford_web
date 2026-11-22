@@ -130,7 +130,14 @@ test("shelf arrows show press, cancellation, keyboard focus and both endpoints",
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(href!);
   await page.goBack();
-  await track.evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: "instant" }));
+  await expect(track).toBeVisible();
+  await expect(next).toBeEnabled();
+  const cards = await track.locator(":scope > li").count();
+  for (let i = 0; i < cards && (await next.isEnabled()); i++) {
+    const before = await track.evaluate((el) => el.scrollLeft);
+    await next.click();
+    await expect.poll(() => track.evaluate((el) => el.scrollLeft)).toBeGreaterThan(before);
+  }
   await expect(next).toBeDisabled();
   await expect(previous).toBeEnabled();
 });
@@ -210,16 +217,20 @@ for (const reducedMotion of ["reduce", "no-preference"] as const) {
   });
 }
 
-for (const width of [390, 1521]) {
-  test(`product shelf buttons follow the specified duration at ${width}px`, async ({ page }) => {
+for (const [route, trackId, width] of [
+  ["/products", "products-rail-scales", 390],
+  ["/products", "products-rail-scales", 1521],
+  ["/products/category/indicators", "products-lineup", 390],
+  ["/products/category/indicators", "products-lineup", 1440],
+] as const) {
+  test(`product shelf buttons follow the specified duration on ${route} at ${width}px`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 940 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.goto("/products");
-    const track = page.locator("#products-rail-scales");
-    const next = page.getByRole("button", {
-      name: "เลื่อนเครื่องชั่งถัดไป",
-      exact: true,
-    });
+    await page.goto(route);
+    const track = page.locator(`#${trackId}`);
+    const next = page.locator(`button[aria-controls="${trackId}"][aria-label$="ถัดไป"]`);
     await expect(next).toBeEnabled();
     const run = await next.evaluate(async (button) => {
       const list = document.getElementById(button.getAttribute("aria-controls")!)!;
@@ -240,7 +251,7 @@ for (const width of [390, 1521]) {
       };
     });
     expect(run.intermediate).toBe(true);
-    expect(Math.abs(run.duration - (width === 1521 ? 465 : 478))).toBeLessThan(65);
+    expect(Math.abs(run.duration - (width >= 1024 ? 465 : 478))).toBeLessThan(65);
     expect(run.error).toBeLessThan(1);
     await next.evaluate((button) => {
       (button as HTMLButtonElement).click();
