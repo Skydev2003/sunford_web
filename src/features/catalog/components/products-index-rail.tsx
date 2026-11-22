@@ -177,16 +177,19 @@ export function ProductsIndexRail({
         if (!isClipped()) return;
         stopMotion();
         focused.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" });
-        if (!isClipped()) return;
-        // A short nearest adjustment can snap back to the current card.
-        const card = focused.closest("li");
-        const first = list.firstElementChild;
-        if (card?.parentElement === list && first) {
-          list.scrollTo({
-            left: card.getBoundingClientRect().left - first.getBoundingClientRect().left,
-            behavior: "instant",
-          });
+        if (isClipped()) {
+          // A short nearest adjustment can snap back to the current card.
+          const card = focused.closest("li");
+          const first = list.firstElementChild;
+          if (card?.parentElement === list && first) {
+            list.scrollTo({
+              left: card.getBoundingClientRect().left - first.getBoundingClientRect().left,
+              behavior: "instant",
+            });
+          }
         }
+        // A pending scrollend update can still hold the previous card during rapid Tab presses.
+        saveLeft(list.scrollLeft);
       });
     };
     document.addEventListener("keydown", onTab, true);
@@ -194,7 +197,7 @@ export function ProductsIndexRail({
       document.removeEventListener("keydown", onTab, true);
       cancelAnimationFrame(frame);
     };
-  }, [revealTabFocus, stopMotion]);
+  }, [revealTabFocus, saveLeft, stopMotion]);
 
   useLayoutEffect(() => {
     const list = track.current;
