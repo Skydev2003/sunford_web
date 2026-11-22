@@ -81,6 +81,71 @@ for (const width of [320, 390, 768, 834, 1440]) {
   });
 }
 
+for (const width of [390, 1440]) {
+  test(
+    "the solutions rail reveals keyboard focus and restores scroll at " + width + "px",
+    async ({ page }) => {
+      test.slow();
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/solutions");
+      const track = page.getByRole("list", { name: "โซลูชันทั้งหมด", exact: true });
+      const cards = track.getByRole("link");
+      await expect(cards).toHaveCount(solutions.length);
+      await page.evaluate(() => document.fonts.ready);
+      await track.evaluate((list) => {
+        list.scrollIntoView({ block: "center", behavior: "instant" });
+        list.focus({ preventScroll: true });
+      });
+      const readScroll = () => track.evaluate((list) => ({ x: list.scrollLeft, y: scrollY }));
+      const initial = await readScroll();
+      const cardInRail = async (index: number) => {
+        const card = cards.nth(index);
+        await expect(card).toBeFocused();
+        await expect
+          .poll(() =>
+            card.evaluate((link) => {
+              const list = link.closest("ul")!;
+              const left = list.getBoundingClientRect().left + list.clientLeft;
+              const bounds = link.getBoundingClientRect();
+              return Math.max(left - bounds.left, bounds.right - (left + list.clientWidth));
+            }),
+          )
+          .toBeLessThanOrEqual(1);
+      };
+      for (let index = 0; index < solutions.length; index++) {
+        await page.keyboard.press("Tab");
+        await cardInRail(index);
+      }
+      for (let index = solutions.length - 2; index >= 0; index--) {
+        await page.keyboard.press("Shift+Tab");
+        await cardInRail(index);
+      }
+      expect(Math.abs((await readScroll()).y - initial.y)).toBeLessThanOrEqual(1);
+
+      const destination = solutions[solutions.length - 1];
+      for (let index = 1; index < solutions.length; index++) {
+        await page.keyboard.press("Tab");
+        await cardInRail(index);
+      }
+      const saved = await readScroll();
+      expect(saved.x).toBeGreaterThan(0);
+      await page.keyboard.press("Enter");
+      await expect(page).toHaveURL(destination.path);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+        solutionDetails[destination.path].title,
+      );
+      await page.goBack();
+      await expect(page).toHaveURL("/solutions");
+      await expect
+        .poll(async () => {
+          const restored = await readScroll();
+          return Math.max(Math.abs(restored.x - saved.x), Math.abs(restored.y - saved.y));
+        })
+        .toBeLessThanOrEqual(1);
+    },
+  );
+}
+
 test("business anchors and all14 detail links retain reload and history behavior", async ({
   page,
 }) => {
