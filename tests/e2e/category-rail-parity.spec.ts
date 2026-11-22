@@ -91,6 +91,7 @@ test("the directory keeps its card caption spacing when the category rails share
     const label = card.locator("p").first();
     const heading = card.locator("h3").first();
     await expect(heading).toBeVisible();
+    await expect(card.locator(":scope > a")).toHaveCSS("display", "flex");
     const [labelBox, headingBox] = await Promise.all([label.boundingBox(), heading.boundingBox()]);
     expect(headingBox!.y - labelBox!.y - labelBox!.height).toBeCloseTo(gap, 0);
   }
@@ -195,9 +196,12 @@ for (const width of [390, 834, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/products");
+    const firstShelf = page.locator("#products-rail-scales");
+    await expect(firstShelf).toHaveCSS("display", "flex");
+    await expect.poll(() => gapAfterShelf(firstShelf)).toBeGreaterThan(0);
     const chapters = await spacing(page.locator("#products-categories"));
-    const shelf = await spacing(page.locator("#products-rail-scales"));
-    const sectionGap = await gapAfterShelf(page.locator("#products-rail-scales"));
+    const shelf = await spacing(firstShelf);
+    const sectionGap = await gapAfterShelf(firstShelf);
     const reference = page.locator(
       '#products-rail-indicators > li[data-warehouse-sku="G107770"] > a',
     );

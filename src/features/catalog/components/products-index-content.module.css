@@ -231,7 +231,7 @@
     mask: url("/images/products/precision-weights-outline.webp") center top / cover no-repeat;
   }
 }
-.aboutCard > p {
+.card > .aboutCard > p {
   margin-bottom: 0.25rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -282,7 +282,7 @@
   background: white;
   color: var(--ink);
 }
-.editorialCard > p {
+.card > .editorialCard > p {
   margin-block-end: 0.5rem;
   color: #58585e;
   font-size: 0.75rem;

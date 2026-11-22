@@ -25,7 +25,7 @@ async function installProbe(page: Page) {
         Array.isArray(frames)
       ) {
         records.push({
-          target: this.id || this.closest("section")?.id || "",
+          target: this.id || this.querySelector("h2")?.id || this.closest("section")?.id || "",
           index: this.parentElement ? Array.from(this.parentElement.children).indexOf(this) : -1,
           duration: Number(options.duration),
           delay: Number(options.delay),
@@ -88,6 +88,34 @@ test("homepage heading reveals once when scrolled into view", async ({ page }) =
   await expect(heading).toBeInViewport();
   expect((await reveals(page)).filter(({ target }) => target === "story")).toHaveLength(previous);
 });
+
+for (const [path, heading] of [
+  ["/products", "products-category-indicators"],
+  ["/products/category/scales", "products-services-title"],
+] as const) {
+  test(`below-fold heading at ${path} reveals once without staging the page title`, async ({
+    page,
+  }) => {
+    await installProbe(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(path);
+    const main = page.locator("main#main-content:visible");
+    await expect(main).toHaveAttribute("data-scroll-reveal-mode", "enabled");
+    await expect(main.locator("[data-scroll-reveal] h1")).toHaveCount(0);
+    const target = main.locator(`[data-scroll-reveal]:has(#${heading})`);
+    await expect(target).toHaveCSS("opacity", "0");
+    await target.scrollIntoViewIfNeeded();
+    const matching = async () => (await reveals(page)).filter((item) => item.target === heading);
+    await expect
+      .poll(matching)
+      .toContainEqual(expect.objectContaining({ duration: 700, delay: 0, translate: "0 24px" }));
+    await expect(target).toHaveCSS("translate", "none");
+    await approach(target);
+    await target.scrollIntoViewIfNeeded();
+    await expect(target).toBeInViewport();
+    expect(await matching()).toHaveLength(1);
+  });
+}
 
 test("product listing reveals grid cards with only four repeating delays", async ({ page }) => {
   await installProbe(page);

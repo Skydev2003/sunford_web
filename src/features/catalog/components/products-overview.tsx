@@ -56,6 +56,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import type { ClientProduct } from "../types";
 import type { ProductCategory } from "../data/mock-categories";
@@ -880,6 +881,7 @@ export function ProductsOverview({
                           ) : (
                             <ProductImage
                               placeholder="product"
+                              progressive
                               src={catalogProductPhoto(product)}
                               fallbackSrc={product.fallbackImage}
                               alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
@@ -1030,7 +1032,7 @@ export function ProductsOverview({
                 {lineupProducts.length === 0 && categoryLineup && (
                   <li className={styles.lineupEmpty}>ยังไม่มีรุ่นสินค้าในกลุ่มนี้</li>
                 )}
-                {lineupProducts.map((product) => {
+                {lineupProducts.map((product, index) => {
                   const componentPhoto = componentPhotos.get(product.id);
                   const photo = catalogProductPhoto(product) || componentPhoto;
                   const fallbackPhoto = componentPhoto || product.fallbackImage;
@@ -1051,6 +1053,8 @@ export function ProductsOverview({
                           <>
                             <ProductImage
                               placeholder="product"
+                              progressive
+                              prioritize={lineupRevision === 0 && index < 6}
                               src={photo}
                               fallbackSrc={fallbackPhoto}
                               alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
@@ -1102,7 +1106,7 @@ export function ProductsOverview({
               aria-labelledby="products-services-title"
               data-overview-section="services"
             >
-              <div className={styles.sectionHeading}>
+              <div className={styles.sectionHeading} data-scroll-reveal="">
                 <h2 id="products-services-title">เลือก SUNFORD พร้อมเคียงข้างทุกธุรกิจ</h2>
                 <Link className={styles.textLink} href={sunford.contact}>
                   ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={16} aria-hidden="true" />
@@ -1137,7 +1141,7 @@ export function ProductsOverview({
               aria-labelledby="products-features-title"
               data-overview-section="features"
             >
-              <div className={styles.sectionHeading}>
+              <div className={styles.sectionHeading} data-scroll-reveal="">
                 <h2 id="products-features-title">
                   {activeCategory
                     ? `รู้จัก${activeCategory.label} SUNFORD`
@@ -1178,7 +1182,7 @@ export function ProductsOverview({
                 aria-labelledby="products-essentials-title"
                 data-overview-section="essentials"
               >
-                <div className={styles.sectionHeading}>
+                <div className={styles.sectionHeading} data-scroll-reveal="">
                   <h2 id="products-essentials-title">สิ่งที่เติมเต็มการทำงาน</h2>
                   <Link href={sunford.accessories} className={styles.textLink}>
                     ดูอุปกรณ์เสริมทั้งหมด <ChevronRight size={16} aria-hidden="true" />
@@ -1232,7 +1236,7 @@ export function ProductsOverview({
               aria-labelledby="products-accordion-title"
               data-overview-section="accordion"
             >
-              <div className={styles.sectionHeading}>
+              <div className={styles.sectionHeading} data-scroll-reveal="">
                 <h2 id="products-accordion-title">
                   {activeCategory
                     ? `เลือก${activeCategory.label}ให้เหมาะกับงาน`
@@ -1330,7 +1334,9 @@ export function ProductsOverview({
               data-overview-section="index"
             >
               <div className={styles.sectionInner}>
-                <h2 id="products-index-title">{activeCategory?.label ?? "ผลิตภัณฑ์"}</h2>
+                <h2 id="products-index-title" data-scroll-reveal="">
+                  {activeCategory?.label ?? "ผลิตภัณฑ์"}
+                </h2>
                 <div className={styles.indexColumns}>
                   <div className={styles.indexPrimary}>
                     <p>{activeCategory ? `สำรวจ${activeCategory.label}` : "สำรวจผลิตภัณฑ์"}</p>
@@ -1419,6 +1425,7 @@ export function ProductsOverview({
             {additionalCategoryLinks.map(({ href, label }) => link(href, label))}
           </nav>
         )}
+        <ScrollReveal rootId="main-content" />
       </main>
 
       <footer id="contact" className="site-footer" data-products-footer inert={mobileMenu}>

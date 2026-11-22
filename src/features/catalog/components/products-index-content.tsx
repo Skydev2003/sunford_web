@@ -126,7 +126,7 @@ export function ProductsIndexContent({
           </li>
         </ProductsIndexRail>
       </nav>
-      {sections.map(({ id, label, members }) => {
+      {sections.map(({ id, label, members }, sectionIndex) => {
         const heading = showcaseHeadings[id];
         const title = heading ? heading.lead + heading.detail : label;
         const showcase =
@@ -143,7 +143,10 @@ export function ProductsIndexContent({
             data-products-category-section
             aria-labelledby={`products-category-${id}`}
           >
-            <div className={styles.sectionHeading}>
+            <div
+              className={styles.sectionHeading}
+              data-scroll-reveal={sectionIndex ? "" : undefined}
+            >
               <h2 id={`products-category-${id}`} aria-label={heading ? title : undefined}>
                 {heading ? (
                   <>
@@ -202,6 +205,7 @@ export function ProductsIndexContent({
                       item={item}
                       shelf={id}
                       first={id === "scales" && index === 0}
+                      prioritize={sectionIndex === 0 && index < 6}
                     />
                     {id === "indicators" && item.product.warehouseSku === "G107268" && (
                       <EquipmentVideoCard />
@@ -214,7 +218,7 @@ export function ProductsIndexContent({
                   </Fragment>
                 ))
               ) : (
-                members.map((product) => {
+                members.map((product, index) => {
                   const name = catalogCardName(product);
                   return (
                     <li
@@ -229,6 +233,8 @@ export function ProductsIndexContent({
                         image={
                           <ProductImage
                             placeholder="product"
+                            progressive
+                            prioritize={sectionIndex === 0 && index < 6}
                             src={product.image}
                             fallbackSrc={product.fallbackImage}
                             alt={name}
@@ -268,7 +274,7 @@ export function ProductsIndexContent({
         );
       })}
       <section className={styles.section} aria-labelledby="products-calibration">
-        <div className={styles.sectionHeading}>
+        <div className={styles.sectionHeading} data-scroll-reveal="">
           <h2 id="products-calibration">
             <span className={styles.headingLead}>มาตรฐานการสอบเทียบ</span>{" "}
             <span className={styles.headingDetail}>ตัวอย่างเอกสารจาก SUNFORD</span>

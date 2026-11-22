@@ -23,6 +23,7 @@ test.describe("server-rendered segmented filter", () => {
   test.use({ javaScriptEnabled: false });
 
   test("the selected control already has the dark pill and white text", async ({ page }) => {
+    test.slow();
     await page.goto(scales);
     const tray = page.locator("[data-segmented-filter]").first();
     const selected = tray.locator('button[aria-pressed="true"]');

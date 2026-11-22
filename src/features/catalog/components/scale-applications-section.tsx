@@ -96,7 +96,7 @@ export function ScaleApplicationsSection() {
       aria-labelledby="products-applications-title"
       data-overview-section="applications"
     >
-      <div className={styles.sectionHeading}>
+      <div className={styles.sectionHeading} data-scroll-reveal="">
         <h2 id="products-applications-title">เลือกเครื่องชั่งตามการใช้งาน</h2>
         <CatalogNavigationLink
           href="/products/category/scales/applications"
