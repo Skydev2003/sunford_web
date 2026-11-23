@@ -1,0 +1,12 @@
+.highlight[data-product-highlight] {
+  display: -webkit-box;
+  min-height: 0;
+  margin: 0.25rem 0 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  color: var(--product-highlight-color, var(--muted));
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

@@ -3,6 +3,8 @@ import type { CSSProperties, ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { catalogCardName } from "../data/catalog-card-names";
+import { formatCatalogCardPrice } from "../data/price-format";
+import { ProductCardHighlight } from "./product-card-highlight";
 import type { ClientProduct } from "../types";
 import type { ScaleShowcaseItem } from "../data/scale-showcase";
 import "./scale-showcase.css";
@@ -12,12 +14,12 @@ type ShowcaseItem = {
   product: ClientProduct;
   group: string;
   label: string;
+  tagline?: string;
   background: string;
   surface?: string;
   lightText?: boolean;
   photo: string;
   photoAspect?: number;
-  tagline?: string;
   imageMode?: ScaleShowcaseItem["imageMode"];
   lettering?: ScaleShowcaseItem["lettering"];
 };
@@ -32,18 +34,16 @@ export function ProductPhotoCard({
   href,
   heading,
   name,
-  label,
-  descriptionId,
+  highlight,
+  price,
   image,
-  children,
 }: {
   href: string;
   heading: string;
   name: string;
-  label?: string;
-  descriptionId?: string;
+  highlight: string;
+  price: number | null | undefined;
   image: ReactNode;
-  children?: ReactNode;
 }) {
   return (
     <Link
@@ -51,18 +51,14 @@ export function ProductPhotoCard({
       className={styles.photoFirst}
       data-product-card-photo-first
       aria-labelledby={heading}
-      aria-describedby={descriptionId}
     >
       <div className={styles.photoPanel}>
         <div className={styles.photoFrame}>{image}</div>
       </div>
-      <div className={styles.photoCardFooter}>
-        <div className={styles.photoCardCopy}>
-          {label && <p className={styles.photoCardCategory}>{label}</p>}
-          <h3 id={heading}>{name}</h3>
-          {children}
-        </div>
-        <ChevronRight className={styles.photoCardArrow} aria-hidden="true" strokeWidth={2.5} />
+      <div className={styles.photoCardCopy}>
+        <h3 id={heading}>{name}</h3>
+        <ProductCardHighlight text={highlight} />
+        <p className={styles.photoCardPrice}>{formatCatalogCardPrice(price)}</p>
       </div>
     </Link>
   );
@@ -110,8 +106,8 @@ export function ProductShowcaseCard({
           href={`/products/${product.slug}`}
           heading={heading}
           name={name}
-          label={label}
-          descriptionId={tagline ? `${heading}-tagline` : undefined}
+          highlight={product.highlight}
+          price={product.price}
           image={
             <ProductImage
               src={photo}
@@ -125,9 +121,7 @@ export function ProductShowcaseCard({
               fallbackSizes={showcasePhotoSizes()}
             />
           }
-        >
-          {tagline && <p id={`${heading}-tagline`}>{tagline}</p>}
-        </ProductPhotoCard>
+        />
       ) : (
         <Link
           href={`/products/${product.slug}`}

@@ -22,7 +22,8 @@ import {
 import { getSettings } from "@/features/site/server/documents";
 import { defaultSite } from "@/features/site/data/settings";
 import { catalogCardName } from "@/features/catalog/data/catalog-card-names";
-import { formatBaht } from "@/features/catalog/data/price-format";
+import { formatBaht, formatCatalogCardPrice } from "@/features/catalog/data/price-format";
+import { ProductCardHighlight } from "@/features/catalog/components/product-card-highlight";
 import { getSourceProduct } from "@/features/content/server/content-repository";
 import { ProductGallery } from "@/features/catalog/components/product-gallery";
 import { getSnapshotProducts } from "@/features/content/data/catalog-snapshot";
@@ -298,7 +299,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         <span>ยังไม่มีรูปสินค้า</span>
                       )}
                     </span>
-                    <h3>{name}</h3>
+                    <div className={styles.cardCopy}>
+                      <h3>{name}</h3>
+                      <ProductCardHighlight text={card.highlight} />
+                      <p>{formatCatalogCardPrice(card.price)}</p>
+                    </div>
                   </Link>
                   {comparable && (
                     <ProductDetailCompare currentId={product.id} candidates={[comparable]} direct />

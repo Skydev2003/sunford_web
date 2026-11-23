@@ -68,7 +68,8 @@ import {
   defaultSpotlightPoster,
 } from "@/features/home/data/image-slots";
 import { selectComponentShowcase } from "../data/component-showcase";
-import { lineupSalesCopy } from "../data/lineup-sales-copy";
+import { formatCatalogCardPrice } from "../data/price-format";
+import { ProductCardHighlight } from "./product-card-highlight";
 import { categoryApplicationsLink, hasCategoryApplications } from "../data/category-applications";
 import { catalogProductPhoto } from "./catalog-product-card";
 import { ProductCategoryMock } from "./product-category-mock";
@@ -1035,63 +1036,45 @@ export function ProductsOverview({
                   const componentPhoto = componentPhotos.get(product.id);
                   const photo = catalogProductPhoto(product) || componentPhoto;
                   const fallbackPhoto = componentPhoto || product.fallbackImage;
+                  const name = cardNames[product.id] ?? product.name;
                   return (
                     <li key={product.id} className={styles.productTile}>
                       <Link
                         href={`/products/${product.slug}`}
-                        className={styles.lineupArt}
-                        aria-label={
-                          categoryLineup
-                            ? `ดูรายละเอียด ${cardNames[product.id] ?? product.name}`
-                            : undefined
-                        }
+                        className={styles.lineupLink}
+                        aria-label={`ดูรายละเอียด ${name}`}
                       >
-                        {categoryLineup && !photo && !fallbackPhoto ? (
-                          <span className={styles.lineupPlaceholder}>ยังไม่มีภาพสินค้า</span>
-                        ) : (
-                          <>
-                            <ProductImage
-                              placeholder="product"
-                              progressive
-                              prioritize={lineupRevision === 0 && index < 6}
-                              src={photo}
-                              fallbackSrc={fallbackPhoto}
-                              alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
-                              fill
-                              sizes="(max-width: 736px) min(calc(100vw - 60px), 309px), 313px"
-                            />
-                            {categoryLineup && (
-                              <span className={`${styles.lineupPlaceholder} ${styles.lineupError}`}>
-                                ยังไม่มีภาพสินค้า
-                              </span>
-                            )}
-                          </>
-                        )}
-                      </Link>
-                      <div className={styles.lineupCopy}>
-                        {product.badge && <p className={styles.productBadge}>{product.badge}</p>}
-                        <h3>{cardNames[product.id] ?? product.name}</h3>
-                        <p className={styles.lineupDescription}>{lineupSalesCopy(product)}</p>
-                        {typeof product.price === "number" && product.price > 0 ? (
-                          <p className={styles.price}>
-                            {product.price.toLocaleString("th-TH")} บาท
-                          </p>
-                        ) : product.warehouseSku ? (
-                          <p className={styles.price}>สอบถามราคา</p>
-                        ) : null}
-                        <div className={styles.tileActions}>
-                          <Link href={`/products/${product.slug}`} className={styles.primaryButton}>
-                            ดูรายละเอียดรุ่น
-                          </Link>
-                          <Link
-                            href={sunford.contact}
-                            className={styles.textLink}
-                            aria-label={`สอบถามสินค้า ${cardNames[product.id] ?? product.name}`}
-                          >
-                            สอบถาม <ChevronRight size={15} aria-hidden="true" />
-                          </Link>
+                        <div className={styles.lineupArt}>
+                          {categoryLineup && !photo && !fallbackPhoto ? (
+                            <span className={styles.lineupPlaceholder}>ยังไม่มีภาพสินค้า</span>
+                          ) : (
+                            <>
+                              <ProductImage
+                                placeholder="product"
+                                progressive
+                                prioritize={lineupRevision === 0 && index < 6}
+                                src={photo}
+                                fallbackSrc={fallbackPhoto}
+                                alt={`SUNFORD ${name}`}
+                                fill
+                                sizes="(max-width: 736px) min(calc(100vw - 60px), 309px), 313px"
+                              />
+                              {categoryLineup && (
+                                <span
+                                  className={`${styles.lineupPlaceholder} ${styles.lineupError}`}
+                                >
+                                  ยังไม่มีภาพสินค้า
+                                </span>
+                              )}
+                            </>
+                          )}
                         </div>
-                      </div>
+                        <div className={styles.lineupCopy}>
+                          <h3>{name}</h3>
+                          <ProductCardHighlight text={product.highlight} />
+                          <p>{formatCatalogCardPrice(product.price)}</p>
+                        </div>
+                      </Link>
                     </li>
                   );
                 })}

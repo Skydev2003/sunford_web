@@ -11,3 +11,7 @@ export function formatPrice(value: number): string {
 export function formatBaht(value: number): string {
   return baht.format(value);
 }
+
+export function formatCatalogCardPrice(value?: number | null): string {
+  return value != null && value > 0 ? formatBaht(value) : "สอบถามราคา";
+}

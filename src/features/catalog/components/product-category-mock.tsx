@@ -9,7 +9,8 @@ import { ProductImage } from "@/components/ui/product-image";
 import { useScrollReveal } from "@/components/ui/scroll-reveal";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { ClientProduct } from "../types";
-import { getCatalogDecisionFacts } from "../data/catalog-decision-facts";
+import { formatCatalogCardPrice } from "../data/price-format";
+import { ProductCardHighlight } from "./product-card-highlight";
 import type { ProductCategory } from "../data/mock-categories";
 import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
 import { catalogModelLabel } from "../data/catalog-card-names";
@@ -351,7 +352,8 @@ export function ProductCategoryMock({
                 >
                   <div className={styles.showcaseCopy}>
                     <p className={styles.showcaseName}>{cardNames[product.id] ?? product.name}</p>
-                    <span className={styles.showcaseCta}>ดูรายละเอียด</span>
+                    <ProductCardHighlight text={product.highlight} />
+                    <p>{formatCatalogCardPrice(product.price)}</p>
                   </div>
                   <div className={styles.showcaseArt}>
                     <ProductImage
@@ -495,7 +497,11 @@ export function ProductCategoryMock({
           )}
         </div>
 
-        <div id="mock-product-results" className={styles.grid} aria-label="รายการสินค้า">
+        <div
+          id="mock-product-results"
+          className={gridReveal ? styles.directoryGrid : styles.grid}
+          aria-label="รายการสินค้า"
+        >
           {matching.slice(0, limit).map(({ product, model }, index) =>
             product ? (
               <CatalogProductCard
@@ -505,8 +511,8 @@ export function ProductCategoryMock({
                     : undefined
                 }
                 key={`${product.id}:${model}`}
-                modelOnly
-                categoryLift={presentation === "category" || presentation === "listing"}
+                categoryLift={gridReveal}
+                directory={gridReveal}
                 prioritizeImage={presentation === "listing" && index < 6}
                 preloadImageMedia={
                   presentation === "listing" &&
@@ -518,14 +524,6 @@ export function ProductCategoryMock({
                 }
                 imageBlurDataURL={imagePreviews?.[product.image]}
                 product={{ ...product, name: product.warehouseSku ? product.name : model }}
-                decisionFacts={getCatalogDecisionFacts(
-                  product,
-                  activeCategory ?? categories.find((item) => item.productIds.includes(product.id)),
-                )}
-                categoryLabel={
-                  activeCategory?.label ??
-                  categories.find((item) => item.productIds.includes(product.id))?.label
-                }
               />
             ) : (
               <article

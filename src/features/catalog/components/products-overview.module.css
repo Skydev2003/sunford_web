@@ -374,8 +374,7 @@
   max-width: 440px;
   margin-top: 2px;
 }
-.heroActions,
-.tileActions {
+.heroActions {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -574,9 +573,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 1.75rem;
+  border-block: 1px solid var(--line);
+  border-inline-end: 1px solid var(--line);
   background: var(--background);
-  box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
   text-align: center;
 }
 .lineup .galleryTrack {
@@ -586,38 +585,35 @@
   .chapterTrack button:enabled:hover .chapterArt {
     transform: translateY(-2px) scale(1.01);
   }
-  .productTile {
-    transition:
-      transform 300ms cubic-bezier(0, 0, 0.5, 1),
-      box-shadow 300ms cubic-bezier(0, 0, 0.5, 1);
-  }
-  .productTile:hover {
-    z-index: var(--z-local-raised);
-    transform: scale(1.01);
-    box-shadow: 2px 4px 16px rgb(0 0 0 / 16%);
-  }
 }
 .lineupArt {
   flex: 1 0 10rem;
   display: block;
   position: relative;
-  border-radius: 1.75rem 1.75rem 0 0;
+}
+.lineupLink {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.lineupLink:is(:hover, :focus-visible) h3 {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 .lineupArt img {
   max-block-size: 15rem;
   margin-block: auto;
   object-fit: contain;
-  padding: 20px;
+  padding: var(--card-padding-compact);
   mix-blend-mode: multiply;
 }
 .lineupCopy {
   display: flex;
   flex: 0 0 auto;
+  align-items: center;
   flex-direction: column;
-  padding: var(--card-padding-compact) var(--card-padding-compact) 12px;
-}
-.lineupCopy .tileActions {
-  margin-top: 1rem;
+  padding: var(--card-padding-compact) var(--card-padding-compact) var(--card-padding-content);
 }
 .lineupCopy h3 {
   font-size: 1.125rem;
@@ -626,29 +622,10 @@
   letter-spacing: -0.025em;
   overflow-wrap: anywhere;
 }
-.lineupCopy > p:not(.productBadge) {
-  margin: 12px auto 0;
-  font-size: 14px;
-  max-width: 300px;
-}
-.lineupCopy .price {
-  font-weight: 600;
-  min-height: auto !important;
-}
-.productBadge {
-  color: var(--red);
-  font-size: 12px;
-  margin-bottom: 6px !important;
-}
-.tileActions {
-  gap: 14px;
-  margin-top: 24px;
-}
-.tileActions .primaryButton {
-  min-height: 40px;
-}
-.tileActions .textLink {
-  font-size: 14px;
+.lineupCopy > p {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
 }
 .serviceCard {
   position: relative;
@@ -1720,13 +1697,7 @@
     min-block-size: 31.25rem;
   }
 }
-.categoryLineup .galleryTrack > .productTile {
-  text-align: left;
-}
-.categoryLineup .productTile:hover {
-  transform: none;
-}
-.categoryLineup .lineupArt:focus-visible {
+.lineupLink:focus-visible {
   outline-offset: -4px;
 }
 .lineupPlaceholder {
@@ -1745,21 +1716,6 @@
 }
 .categoryLineup .lineupArt img {
   padding: 10px;
-}
-.categoryLineup .lineupCopy > p:not(.productBadge) {
-  margin: 8px 0 0;
-}
-.lineupCopy .lineupDescription {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--muted);
-  line-height: 1.5;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-.categoryLineup .lineupCopy .tileActions {
-  justify-content: flex-start;
-  gap: 10px;
 }
 .categoryLineup .galleryTrack > .lineupEmpty {
   flex-basis: auto;
@@ -1892,12 +1848,7 @@
     --segment-font-size: 16px;
   }
   .categoryLineup .lineupCopy {
-    align-items: center;
     padding-inline: 22px;
-    text-align: center;
-  }
-  .categoryLineup .lineupCopy .tileActions {
-    justify-content: center;
   }
   .categoryLineup .serviceCard {
     min-height: 352px;

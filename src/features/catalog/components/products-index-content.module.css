@@ -410,15 +410,6 @@
   outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
-.cardSpecs:not(:empty) {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.75rem;
-  margin-top: 0.5rem;
-  color: #424245;
-  font-size: 0.875rem;
-  overflow-wrap: anywhere;
-}
 .controls {
   display: flex;
   justify-content: flex-end;

@@ -171,8 +171,8 @@ for (const width of [320, 390, 736, 737, 768, 834, 1024, 1068, 1440, 1521, 1920,
       expect(eligible).toContainEqual(expect.objectContaining({ warehouseSku: card.sku }));
     await expect(directory.locator("[data-warehouse-sku]")).toHaveCount(34);
     await expect(
-      directory.locator('[data-warehouse-sku] > a svg.lucide-chevron-right[aria-hidden="true"]'),
-    ).toHaveCount(34);
+      directory.locator("[data-warehouse-sku] > a h3 + [data-product-highlight] + p"),
+    ).toHaveCount(24);
     await expect(directory).not.toContainText("Mock");
     await expect(
       directory.getByRole("link", { name: "ดูรุ่นสินค้าทั้งหมด", exact: true }),
@@ -193,13 +193,8 @@ for (const width of [320, 390, 736, 737, 768, 834, 1024, 1068, 1440, 1521, 1920,
       const rail = section.querySelector("ul")!;
       const card = rail.querySelector("li > a")!;
       const box = card.getBoundingClientRect();
-      const chevron = card.querySelector("svg")!.getBoundingClientRect();
       return {
-        chevron: [
-          chevron.width,
-          Math.round(box.right - chevron.right),
-          Math.round(box.bottom - chevron.bottom),
-        ],
+        prices: card.querySelectorAll("[data-product-highlight] + p").length,
         gap: getComputedStyle(rail).columnGap,
         padding: getComputedStyle(card.querySelector("h3")!.parentElement!).padding,
         width: box.width,
@@ -211,7 +206,7 @@ for (const width of [320, 390, 736, 737, 768, 834, 1024, 1068, 1440, 1521, 1920,
       };
     });
     expect(geometry.gap).toBe("20px");
-    expect(geometry.chevron).toEqual(width >= 1024 ? [36, 20, 20] : [36, 16, 16]);
+    expect(geometry.prices).toBe(0);
     expect(geometry.padding).toBe(width >= 768 ? "28px" : "24px");
     expect(geometry.width).toBeCloseTo(width > 736 ? 400 : Math.min(width - 60, 309), 0);
     expect(geometry.height).toBeCloseTo(width >= 737 ? 500 : 450, 0);
@@ -263,27 +258,10 @@ test("the featured scales keep their lineup on reload and in a fresh session", a
   const scales = page.locator("#products-rail-scales");
   await expect(scales.locator('[data-image-mode="full-bottom"]')).toHaveCount(9);
   await expect(scales.locator('[data-image-mode="bleed"] h3')).toHaveText("WPK5000");
-  await expect(scales.locator("h3 + p")).toHaveCount(10);
-  await expect(scales.locator("h3 + p").first()).toHaveText("จอสู้แดด ชั่งได้ถึง 30 กก.");
-  await expect(scales.locator("h3 + p + *")).toHaveCount(0);
-  await expect(scales.locator("p:has(+ h3)")).toHaveText([
-    "คำนวณราคา",
-    "คำนวณราคา",
-    "คำนวณราคา",
-    "ครัวและเบเกอรี่",
-    "อุตสาหกรรม",
-    "ครัวและเบเกอรี่",
-    "อุตสาหกรรม",
-    "อุตสาหกรรม",
-    "อุตสาหกรรม",
-    "งานวิเคราะห์ / ห้องแล็บ",
-  ]);
-  await expect(
-    scales.getByRole("link", { name: "AVS-25-K1", exact: true }),
-  ).toHaveAccessibleDescription("ถาดกว้าง จอแยก พิกัด 30 กก.");
-  await expect(
-    scales.getByRole("link", { name: "FEH5KS", exact: true }),
-  ).toHaveAccessibleDescription("ต่อเครื่องพิมพ์ผ่านพอร์ต RS232");
+  await expect(scales.locator("h3 + [data-product-highlight]")).toHaveCount(10);
+  await expect(scales.locator("[data-product-highlight] + p")).toHaveCount(0);
+  await expect(scales.locator("p:has(+ h3)")).toHaveCount(0);
+  await expect(scales.locator("a[aria-describedby]")).toHaveCount(0);
   expect(original.map(([sku]) => sku)).toEqual([
     "G106094",
     "G106315",
@@ -314,14 +292,16 @@ test("the featured scales keep their lineup on reload and in a fresh session", a
   }
 });
 
-test("scale card copy fits the card at mobile, tablet and desktop sizes", async ({ page }) => {
+test("scale card model and highlight fit at mobile, tablet and desktop sizes", async ({ page }) => {
   await page.goto("/products");
-  const taglines = page.locator("#products-rail-scales [data-warehouse-sku] h3 + p");
-  await expect(taglines).toHaveCount(10);
+  const highlights = page.locator(
+    "#products-rail-scales [data-warehouse-sku] [data-product-highlight]",
+  );
+  await expect(highlights).toHaveText(Array(10).fill(/\S/));
   for (const width of [320, 390, 736, 737, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => document.fonts.ready);
-    const overflowing = await taglines.evaluateAll((lines) =>
+    const overflowing = await highlights.evaluateAll((lines) =>
       lines
         .filter(
           (line) =>
@@ -330,8 +310,8 @@ test("scale card copy fits the card at mobile, tablet and desktop sizes", async 
         )
         .map((line) => line.textContent),
     );
-    expect(overflowing, `Clipped or longer than two lines at ${width}px`).toEqual([]);
-    const layout = await taglines.evaluateAll((lines) =>
+    expect(overflowing, `Clipped highlight at ${width}px`).toEqual([]);
+    const layout = await highlights.evaluateAll((lines) =>
       lines.map((line) => {
         const card = line.closest("a")!;
         const artwork = card.querySelector("[data-scale-artwork]")!;
@@ -345,20 +325,13 @@ test("scale card copy fits the card at mobile, tablet and desktop sizes", async 
         const name = document.createRange();
         name.selectNodeContents(heading);
         const nameBounds = name.getBoundingClientRect();
-        const label = card.querySelector("p")!;
-        const labelBounds = label.getBoundingClientRect();
-        const style = getComputedStyle(line);
-        const size = parseFloat(style.fontSize);
         return {
           height: bounds.height,
-          weight: style.fontWeight,
-          labelWeight: getComputedStyle(label).fontWeight,
+          prices: card.querySelectorAll("[data-product-highlight] + p").length,
           container: getComputedStyle(card).containerType,
           titleTop: title.top - bounds.top,
-          captionGap: line.getBoundingClientRect().top - title.bottom,
-          fitsTitle: title.left === labelBounds.left && nameBounds.right <= labelBounds.right + 0.5,
-          copyScale: Math.abs(size - Math.min(17.6, Math.max(15.2, bounds.width * 0.05))) < 0.01,
-          leading: Math.abs(parseFloat(style.lineHeight) - size * 1.45) < 0.01,
+          highlightGap: line.getBoundingClientRect().top - title.bottom,
+          fitsTitle: nameBounds.left >= bounds.left && nameBounds.right <= bounds.right + 0.5,
           readable:
             content.width > 0 && content.left >= bounds.left && content.right <= bounds.right,
           clearOfPhoto: line.getBoundingClientRect().bottom <= photoBounds.top,
@@ -368,26 +341,21 @@ test("scale card copy fits the card at mobile, tablet and desktop sizes", async 
           copyInFront:
             Number(getComputedStyle(heading.parentElement!).zIndex) >
             Number(getComputedStyle(artwork).zIndex),
-          described: card.getAttribute("aria-describedby") === line.id,
         };
       }),
     );
     expect(layout).toEqual(
       Array(10).fill({
         height: width >= 737 ? 500 : 450,
-        weight: "500",
-        labelWeight: "600",
+        prices: 0,
         container: "inline-size",
-        titleTop: width >= 768 ? 52 : 48,
-        captionGap: 10,
+        titleTop: width >= 768 ? 28 : 24,
+        highlightGap: 4,
         fitsTitle: true,
-        copyScale: true,
-        leading: true,
         readable: true,
         clearOfPhoto: true,
         photoFits: true,
         copyInFront: true,
-        described: true,
       }),
     );
   }
@@ -488,10 +456,7 @@ test("each scale keeps its solid or split background and matching text color", a
         );
       });
     });
-    expect(
-      Math.min(...contrast),
-      `Category and tagline contrast for ${sku}`,
-    ).toBeGreaterThanOrEqual(4.5);
+    expect(Math.min(...contrast), `Highlight contrast for ${sku}`).toBeGreaterThanOrEqual(4.5);
     const surface = card.locator("[data-scale-surface]");
     if (!bottom || height === undefined) {
       await expect(surface).toHaveCount(0);
@@ -597,19 +562,12 @@ test("smart system showcase opens seven featured systems in order and keeps plat
     ["LP50", "/products/warehouse-G107282"],
   ];
   await expect(rail.getByRole("heading")).toHaveText(destinations.map(([name]) => name));
-  const posSellingPoints = [
-    ["P1W", "Windows 10 Pro พร้อมจอคู่ 15.6 นิ้ว"],
-    ["P1", "Android พร้อมจอสัมผัส 15.6 นิ้ว"],
-    ["P4", "POS ขนาดกะทัดรัด จอสัมผัส 12.5 นิ้ว"],
-    ["P3", "จอสัมผัส 14 นิ้ว พิมพ์สลิป 80 มม."],
-  ];
   for (const width of [390, 768, 1440]) {
     await page.setViewportSize({ width, height: 844 });
-    for (const [name, sellingPoint] of posSellingPoints) {
+    for (const [name] of destinations.filter(([name]) => name !== "WeWeigh2")) {
       const link = rail.getByRole("link", { name, exact: true });
-      await expect(link).toHaveAccessibleDescription(sellingPoint);
-      await expect(link).not.toContainText(/ก่อน VAT|สอบถามราคา/);
-      const caption = link.getByText(sellingPoint, { exact: true });
+      const caption = link.locator("[data-product-highlight] + p");
+      await expect(caption).toHaveText([/^(?:฿[\d,.]+|สอบถามราคา)$/]);
       await link.scrollIntoViewIfNeeded();
       await expect(caption).toBeInViewport();
       expect(
@@ -628,7 +586,7 @@ test("smart system showcase opens seven featured systems in order and keeps plat
   for (const [name, href] of destinations) {
     const link = rail.getByRole("link", { name, exact: true });
     await expect(link).toHaveAttribute("href", href);
-    await expect(link).toHaveAccessibleDescription(/\S/);
+    if (name === "WeWeigh2") await expect(link).toHaveAccessibleDescription(/\S/);
     expect(decodeURIComponent((await link.locator("img").getAttribute("src"))!)).toContain(
       name === "WeWeigh2" ? "/weweigh-card-mark-4k.webp" : "-front-4k.webp",
     );
@@ -986,8 +944,9 @@ test("product photos lead later shelves while the first shelf and non-product ca
         const image = link.querySelector("img")!;
         const imageBounds = image.getBoundingClientRect();
         const title = link.querySelector("h3")!.getBoundingClientRect();
-        const caption = link.querySelector("h3 + p")?.getBoundingClientRect();
-        const arrow = link.querySelector("svg.lucide-chevron-right")!.getBoundingClientRect();
+        const highlight = link.querySelector("h3 + [data-product-highlight]");
+        const price = highlight?.nextElementSibling;
+        const caption = price?.getBoundingClientRect();
         const card = link.getBoundingClientRect();
         const photo = image.closest("[data-product-image-placeholder]") ?? image;
         const correctLayout =
@@ -998,14 +957,16 @@ test("product photos lead later shelves while the first shelf and non-product ca
           imageBounds.left >= card.left &&
           imageBounds.right <= card.right &&
           getComputedStyle(image).objectFit === "contain" &&
-          title.bottom <= arrow.top &&
-          (!caption || caption.top - title.bottom === 4) &&
+          caption &&
+          highlight?.getBoundingClientRect().top === title.bottom + 4 &&
+          caption.top - highlight.getBoundingClientRect().bottom === 8 &&
+          /^(?:฿[\d,.]+|สอบถามราคา)$/.test(price?.textContent ?? "") &&
+          link.querySelectorAll("p").length === 2 &&
           card.width === (innerWidth >= 737 ? 313 : Math.min(innerWidth - 60, 309)) &&
           card.height === (innerWidth >= 737 ? 500 : 450) &&
           getComputedStyle(link.firstElementChild!).backgroundColor === "rgba(0, 0, 0, 0)" &&
           link.querySelectorAll("button, [role='radio']").length === 0 &&
-          arrow.right <= card.right &&
-          arrow.bottom <= card.bottom &&
+          caption.bottom <= card.bottom &&
           photo.getBoundingClientRect().bottom <= title.top &&
           getComputedStyle(link).backgroundColor === "rgb(255, 255, 255)";
         return correctLayout ? [] : [link.getAttribute("href")];
@@ -1043,7 +1004,7 @@ test("product photos lead later shelves while the first shelf and non-product ca
   const destination = await card.getAttribute("href");
   await card.scrollIntoViewIfNeeded();
   const hitTargets = await card.evaluate((link) =>
-    ["img", "h3", "svg"].map((selector) => {
+    ["img", "h3", "p"].map((selector) => {
       const { x, y, width, height } = link.querySelector(selector)!.getBoundingClientRect();
       const hit = document.elementFromPoint(x + width / 2, y + height / 2);
       return hit?.closest("a") === link && getComputedStyle(hit).cursor === "pointer";
@@ -1051,9 +1012,8 @@ test("product photos lead later shelves while the first shelf and non-product ca
   );
   expect(hitTargets).toEqual([true, true, true]);
   await card.hover();
-  await expect(card.locator("svg")).toHaveCSS("color", "rgb(29, 29, 31)");
-  const arrow = (await card.locator("svg").boundingBox())!;
-  await page.mouse.click(arrow.x + arrow.width / 2, arrow.y + arrow.height / 2);
+  await expect(card.locator("h3")).toHaveCSS("color", "rgb(215, 25, 45)");
+  await card.locator("[data-product-highlight] + p").click();
   await expect(page).toHaveURL((url) => url.pathname === destination);
   await page.goBack();
   await card.focus();
@@ -1061,14 +1021,14 @@ test("product photos lead later shelves while the first shelf and non-product ca
   await expect(page).toHaveURL((url) => url.pathname === destination);
 });
 
-test("whole product card and corner chevron open the same SKU", async ({ page }) => {
+test("the whole featured product card opens its SKU", async ({ page }) => {
   await page.goto("/products");
   const card = page.locator("#products-rail-scales [data-warehouse-sku='G106315'] > a");
   const href = await card.getAttribute("href");
   await card.scrollIntoViewIfNeeded();
   const hits = await card.evaluate((link) => {
     const box = link.getBoundingClientRect();
-    const samples = ["h3", "img", "svg"].map((selector) => {
+    const samples = ["h3", "img", "p"].map((selector) => {
       const rect = link.querySelector(selector)!.getBoundingClientRect();
       return [
         (Math.max(rect.left, box.left) + Math.min(rect.right, box.right)) / 2,
@@ -1088,13 +1048,11 @@ test("whole product card and corner chevron open the same SKU", async ({ page })
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(card).toHaveCSS("translate", "0px -4px");
   await expect(card.locator("img")).toHaveCSS("scale", "1.05");
-  await expect(card.locator("svg")).toHaveCSS("scale", "1.1");
   const box = (await card.boundingBox())!;
   await expect
     .poll(async () => (await card.locator("[data-scale-surface]").boundingBox())?.height)
     .toBeCloseTo(box.height * 0.48, 1);
-  const arrow = (await card.locator("svg").boundingBox())!;
-  await page.mouse.click(arrow.x + arrow.width / 2, arrow.y + arrow.height / 2);
+  await card.locator("[data-product-highlight]").click();
   await expect(page).toHaveURL((url) => url.pathname === href);
   await page.goBack();
   await card.focus();

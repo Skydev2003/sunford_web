@@ -382,9 +382,11 @@
 .cardPhoto img {
   object-fit: contain;
 }
-.cardLink h3 {
-  font-size: 19px;
+.cardCopy {
   grid-column: 2;
+}
+.cardCopy h3 {
+  font-size: 19px;
 }
 .cards .compare {
   grid-column: 2;
@@ -438,7 +440,7 @@
     display: grid;
     gap: 14px;
   }
-  .cardLink h3 {
+  .cardCopy {
     grid-column: auto;
   }
   .cardPhoto {

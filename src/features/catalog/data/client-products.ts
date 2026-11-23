@@ -1,21 +1,35 @@
 import type { ClientProduct, Product, ProductCardData } from "../types";
 import { warehouseModelName } from "./catalog-card-names";
+import { lineupSalesCopy } from "./lineup-sales-copy";
 
 export function productCardData(product: Product): ProductCardData {
   if (product.warehouseSku) {
+    const name =
+      product.storefrontName ??
+      warehouseModelName(product.warehouseSku, product.warehouseName ?? product.warehouseSku);
+    const subtitle = product.warehouseCard?.subtitle ?? "";
+    const capacity = product.warehouseCard?.capacity ?? "";
     return {
       id: product.id,
       slug: product.slug,
-      name:
-        product.storefrontName ??
-        warehouseModelName(product.warehouseSku, product.warehouseName ?? product.warehouseSku),
+      name,
       category: product.category,
       warehouseSku: product.warehouseSku,
       price: product.price,
-      subtitle: product.warehouseCard?.subtitle ?? "",
-      capacity: product.warehouseCard?.capacity ?? "",
+      subtitle,
+      capacity,
       image: product.warehouseCard?.image ?? "",
       badge: null,
+      highlight: lineupSalesCopy({
+        ...product,
+        name,
+        subtitle,
+        capacity,
+        warehouseCategoryId: product.warehouseCategoryId ?? product.category,
+        description: product.warehouseCard?.description ?? "",
+        readability: product.warehouseCard?.readability ?? "",
+        connection: product.warehouseCard?.connection ?? "",
+      }),
     };
   }
   const {
@@ -31,6 +45,7 @@ export function productCardData(product: Product): ProductCardData {
     capacity,
     badge,
   } = product;
+  const summary = subtitle.replace(/\s+/g, " ").trim();
   return {
     price,
     id,
@@ -43,6 +58,7 @@ export function productCardData(product: Product): ProductCardData {
     warehouseSku,
     capacity,
     badge,
+    highlight: summary.length <= 34 && summary !== name && !/^[-–—]+$/.test(summary) ? summary : "",
   };
 }
 

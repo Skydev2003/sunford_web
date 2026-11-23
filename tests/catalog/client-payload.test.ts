@@ -18,6 +18,33 @@ test("client catalogue retains source-derived topics without rich product data",
   assert.equal(Object.hasOwn(client, "sortOrder"), false);
 });
 
+test("card projections use verified short highlights for each Warehouse model", () => {
+  const product = {
+    ...products[0],
+    subtitle: "ข้ออ้างจากแค็ตตาล็อกเก่า",
+    warehouseSku: "G106698",
+    warehouseCategoryId: "scales",
+  };
+  assert.equal(productCardData(product).highlight, "ชาร์จได้ ไม่ต้องซื้อถ่าน");
+  assert.equal(clientProductData(product).highlight, productCardData(product).highlight);
+  assert.equal(
+    productCardData({ ...product, warehouseSku: "UNKNOWN", warehouseCategoryId: "uncategorized" })
+      .highlight,
+    "",
+  );
+  assert.equal(
+    productCardData({
+      ...product,
+      category: "uncategorized",
+      warehouseCategoryId: undefined,
+      warehouseGroup: "วัตถุดิบ",
+      warehouseSku: "M00009",
+      warehouseName: "M00009 ถุงใส",
+    }).highlight,
+    "ถุงใสสำหรับบรรจุ",
+  );
+});
+
 test("client projections retain full search matches, catalogue order and comparison values", () => {
   const search = (p: { name: string; subtitle: string; description: string }, q: string) =>
     `${p.name} ${p.subtitle} ${p.description}`.toLowerCase().includes(q.toLowerCase().trim());

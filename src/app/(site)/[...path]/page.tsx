@@ -272,14 +272,7 @@ export default async function SourceContentPage({
       {page.kind === "collection" ? (
         <>
           {products.length ? (
-            <ProductCatalog
-              key={page.path}
-              products={products}
-              full
-              heading={title}
-              scoped
-              categoryLabel={section?.title}
-            />
+            <ProductCatalog key={page.path} products={products} full heading={title} scoped />
           ) : (
             <div className="container source-empty">
               <p>ยังไม่มีสินค้าในหมวดหมู่นี้</p>
@@ -315,14 +308,7 @@ export default async function SourceContentPage({
       {section &&
         page.kind !== "collection" &&
         (products.length > 0 ? (
-          <ProductCatalog
-            key={page.path}
-            products={products}
-            full
-            heading={title}
-            scoped
-            categoryLabel={title}
-          />
+          <ProductCatalog key={page.path} products={products} full heading={title} scoped />
         ) : (
           <div className="container source-empty">
             <p>ยังไม่มีสินค้าในหมวดหมู่นี้</p>

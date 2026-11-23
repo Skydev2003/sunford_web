@@ -18,7 +18,6 @@ export function ProductCatalog({
   heading,
   scoped = false,
   headingLevel,
-  categoryLabel,
   copy = catalogDefaults,
 }: {
   products: CatalogProduct[];
@@ -26,7 +25,6 @@ export function ProductCatalog({
   heading?: string;
   scoped?: boolean;
   headingLevel?: "h1" | "h2";
-  categoryLabel?: string;
   copy?: typeof catalogDefaults;
 }) {
   const categories = useCategories();
@@ -116,7 +114,7 @@ export function ProductCatalog({
       )}
       <div ref={grid} className="product-grid" aria-live="polite" data-scroll-reveal-grid="">
         {visible.map((product) => (
-          <ProductCard key={product.id} product={product} categoryLabel={categoryLabel} />
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
       {matching.length > visible.length && (

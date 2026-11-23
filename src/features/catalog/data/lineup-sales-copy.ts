@@ -175,6 +175,14 @@ const accessoryNames: readonly Rule[] = [
   [/^เสาแสตนเลส$/, "เสาทำจากสเตนเลส"],
 ];
 
+const materialNames: readonly Rule[] = [
+  [/\bM\d+\s+ถุงใส/u, "ถุงใสสำหรับบรรจุ"],
+  [/\bM\d+\s+ถุงพิมพ์สี/u, "ถุงบรรจุแบบพิมพ์สี"],
+  [/\bM\d+\s+ยางหุ้ม/u, "ยางสำหรับหุ้มชิ้นส่วน"],
+  [/\bM\d+\s+ยางวง/u, "ยางรัดแบบวง"],
+  [/\bM\d+\s+กล่องกระดาษ/u, "กล่องกระดาษสำหรับบรรจุ"],
+];
+
 function matchingCopy(rules: readonly Rule[], evidence: readonly string[]) {
   return rules.find(([pattern]) => evidence.some((line) => pattern.test(line)))?.[1];
 }
@@ -316,6 +324,10 @@ function warehouseHighlight(product: LineupProduct) {
       return posCopy(product, name, lines);
     case "accessories":
       return accessoryCopy(name, lines);
+    case "uncategorized":
+      return product.warehouseGroup === "วัตถุดิบ"
+        ? matchingCopy(materialNames, [name])
+        : accessoryCopy(name, lines);
   }
 }
 

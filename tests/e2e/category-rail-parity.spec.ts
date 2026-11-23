@@ -18,7 +18,7 @@ test("keyboard navigation reveals an offscreen product and restores its filtered
 
   const cards = track.locator(":scope > li");
   const third = cards.nth(2);
-  const details = third.getByRole("link", { name: "ดูรายละเอียดรุ่น", exact: true });
+  const details = third.getByRole("link");
   await expect(details).not.toBeInViewport();
   await cards.first().getByRole("link").first().focus();
   for (
@@ -31,7 +31,7 @@ test("keyboard navigation reveals an offscreen product and restores its filtered
   await expect(details).toBeFocused();
   await expect(details).toBeInViewport({ ratio: 1 });
   await page.keyboard.press("Tab");
-  await expect(third.getByRole("link", { name: /สอบถาม/ })).toBeFocused();
+  await expect(cards.nth(3).getByRole("link")).toBeFocused();
   await page.keyboard.press("Shift+Tab");
   await expect(details).toBeFocused();
   const href = await details.getAttribute("href");
@@ -126,16 +126,21 @@ test("the scale lineup prepares two pending images and the next image on advance
   }
 });
 
-test("the lineup shows the WPS10KS selling point with its price and product link", async ({
+test("the lineup shows the WPS10KS model, photo, highlight and price in one product link", async ({
   page,
 }) => {
   await page.goto("/products/category/scales");
   const product = page.locator("#products-lineup > li").filter({
     has: page.getByRole("heading", { name: "WPS10KS", exact: true }),
   });
-  await expect(product.getByText("ชาร์จได้ ไม่ต้องซื้อถ่าน", { exact: true })).toBeVisible();
-  await expect(product.getByText(/^(?:[\d,.]+ บาท|สอบถามราคา)$/)).toBeVisible();
-  await expect(product.getByRole("link", { name: "ดูรายละเอียดรุ่น" })).toHaveAttribute(
+  await expect(product.getByRole("img", { name: "SUNFORD WPS10KS" })).toBeVisible();
+  await expect(product.locator("h3 + [data-product-highlight]")).toHaveText(
+    "ชาร์จได้ ไม่ต้องซื้อถ่าน",
+  );
+  await expect(product.locator("[data-product-highlight] + p")).toHaveText(
+    /^(?:฿[\d,.]+|สอบถามราคา)$/,
+  );
+  await expect(product.getByRole("link", { name: "ดูรายละเอียด WPS10KS" })).toHaveAttribute(
     "href",
     /^\/products\/[^/?#]+$/,
   );
@@ -150,25 +155,22 @@ async function expectProductCardLayout(cards: Locator, reference: CardLayout, sc
       const card = item.getBoundingClientRect();
       const style = getComputedStyle(item);
       const links = [...item.querySelectorAll<HTMLAnchorElement>("a[href]")];
-      const [photo, details, inquiry] = links;
-      const image = photo?.querySelector("img");
-      const actions = details?.parentElement;
-      const caption = actions?.previousElementSibling;
-      const actionGap =
-        actions && caption
-          ? actions.getBoundingClientRect().top - caption.getBoundingClientRect().bottom
-          : 0;
+      const [link] = links;
+      const image = link?.querySelector("img");
+      const name = link?.querySelector("h3");
+      const highlight = link?.querySelector("h3 + [data-product-highlight]");
+      const price = highlight?.nextElementSibling;
       const invalid =
         Math.round(card.width) !== width ||
         Math.round(card.height) !== height ||
         style.backgroundColor !== background ||
         style.borderRadius !== radius ||
         (image && getComputedStyle(image).objectFit !== "contain") ||
-        !photo?.getAttribute("href")?.startsWith("/products/") ||
-        details?.href !== photo.href ||
-        !inquiry?.getAttribute("href")?.startsWith("/contact-us") ||
-        actionGap < 15 ||
-        actionGap > 25 ||
+        links.length !== 1 ||
+        !link?.getAttribute("href")?.startsWith("/products/") ||
+        !name ||
+        !highlight?.textContent?.trim() ||
+        !/^(?:฿[\d,.]+|สอบถามราคา)$/.test(price?.textContent ?? "") ||
         links.some((link) => {
           const box = link.getBoundingClientRect();
           return box.right > card.right + 1 || box.bottom > card.bottom + 1;
@@ -179,7 +181,6 @@ async function expectProductCardLayout(cards: Locator, reference: CardLayout, sc
               model: item.querySelector("h3")?.textContent,
               width: card.width,
               height: card.height,
-              actionGap,
             },
           ]
         : [];

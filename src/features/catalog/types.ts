@@ -72,7 +72,7 @@ export type ProductCardData = Pick<
   | "warehouseSku"
   | "capacity"
   | "badge"
->;
+> & { highlight: string };
 export type CatalogProduct = ProductCardData &
   Pick<Product, "description" | "featured" | "topics" | "warehouseSku" | "warehouseName">;
 export type StorefrontProduct = CatalogProduct &

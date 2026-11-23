@@ -51,7 +51,6 @@ export default async function ScaleApplicationPage({ params }: Props) {
               <CatalogProductCard
                 product={card}
                 headingLevel={2}
-                modelOnly
                 categoryLift
                 prioritizeImage={index < 6}
                 imageBlurDataURL={index < 6 ? warehouseBlurDataURL(card.image) : undefined}

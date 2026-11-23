@@ -57,7 +57,7 @@ export function MarketRetailFeature({ sizes }: { sizes: string }) {
   return (
     <RetailEditorialCard
       kind="market"
-      heading="ชั่งขายที่แผง"
+      heading="ชั่งขายหน้าร้าน"
       label="ค้าส่งและตลาดสด"
       image="/images/products/market-retail-editorial.webp"
       href="/products/category/scales/applications/wholesale-markets"

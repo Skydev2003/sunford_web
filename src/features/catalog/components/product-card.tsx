@@ -1,34 +1,23 @@
 "use client";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useCategories } from "@/features/site/components/categories-provider";
 import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { Check, Plus } from "lucide-react";
 import type { ProductCardData } from "../types";
+import { formatCatalogCardPrice } from "../data/price-format";
+import { ProductCardHighlight } from "./product-card-highlight";
 
 import { useCatalogStore } from "@/stores/catalog-store";
 
-export function ProductCard({
-  product,
-  categoryLabel,
-}: {
-  product: ProductCardData;
-  categoryLabel?: string;
-}) {
-  const categories = useCategories();
+export function ProductCard({ product }: { product: ProductCardData }) {
   const ids = useCatalogStore((s) => s.compareIds);
   const compareMode = useCatalogStore((s) => s.compareMode);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
   const selected = ids.includes(product.id);
   return (
     <article className="product-card">
-      <div className="product-card-top">
-        <span className={product.badge ? "product-badge" : "category-tag"}>
-          {product.badge ??
-            categoryLabel ??
-            categories.find((c) => c.id === product.category)?.english}
-        </span>
-        {compareMode && (
+      {compareMode && (
+        <div className="product-card-top">
           <Tooltip>
             <button
               className={`compare-button ${selected ? "selected" : ""}`}
@@ -40,8 +29,8 @@ export function ProductCard({
               {selected ? <Check size={16} /> : <Plus size={16} />}
             </button>
           </Tooltip>
-        )}
-      </div>
+        </div>
+      )}
       <Link href={`/products/${product.slug}`} className="product-card-image">
         <ProductImage
           placeholder="product"
@@ -53,17 +42,11 @@ export function ProductCard({
         />
       </Link>
       <div className="product-card-copy">
-        <span className="product-category">
-          {categoryLabel ?? categories.find((c) => c.id === product.category)?.label}
-        </span>
         <Link href={`/products/${product.slug}`}>
           <h3>{product.name}</h3>
         </Link>
-        {product.warehouseSku && product.price === null && <p>สอบถามราคา</p>}
-        <div className="product-card-bottom">
-          <span>{product.capacity}</span>
-          <Link href={`/products/${product.slug}`}>ดูรายละเอียด</Link>
-        </div>
+        <ProductCardHighlight text={product.highlight} />
+        <p>{formatCatalogCardPrice(product.price)}</p>
       </div>
     </article>
   );

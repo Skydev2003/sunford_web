@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Check, Plus } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
-import { useCategories } from "@/features/site/components/categories-provider";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { ProductCardData } from "../types";
-import type { CatalogDecisionFact } from "../data/catalog-decision-facts";
+import { formatCatalogCardPrice } from "../data/price-format";
+import { ProductCardHighlight } from "./product-card-highlight";
 import styles from "./product-browser.module.css";
 
 const productPhotos: Record<string, string> = {
@@ -21,28 +21,23 @@ export const catalogProductPhoto = (
 
 export function CatalogProductCard({
   product,
-  categoryLabel,
   headingLevel = 3,
-  modelOnly = false,
   categoryLift = false,
+  directory = false,
   prioritizeImage = false,
   preloadImageMedia,
   imageBlurDataURL,
-  decisionFacts,
   returnContext,
 }: {
   product: ProductCardData;
-  categoryLabel?: string;
   headingLevel?: 2 | 3;
-  modelOnly?: boolean;
   categoryLift?: boolean;
+  directory?: boolean;
   prioritizeImage?: boolean;
   preloadImageMedia?: string;
   imageBlurDataURL?: string;
-  decisionFacts?: readonly CatalogDecisionFact[];
   returnContext?: import("../data/product-subcategory-pages").ProductReturnContext;
 }) {
-  const categories = useCategories();
   const compareIds = useCatalogStore((s) => s.compareIds);
   const compareMode = useCatalogStore((s) => s.compareMode);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
@@ -52,9 +47,9 @@ export function CatalogProductCard({
   return (
     <article
       className={styles.card}
-      data-model-only={modelOnly || undefined}
+      data-model-only
       data-category-lift={categoryLift || undefined}
-      data-decision-facts={decisionFacts ? true : undefined}
+      data-directory-card={directory || undefined}
     >
       <Link href={href} className={styles.image}>
         <ProductImage
@@ -67,7 +62,11 @@ export function CatalogProductCard({
           fallbackSrc={product.fallbackImage}
           alt={`SUNFORD ${product.name}`}
           fill
-          sizes="(width < 40rem) 45vw, (width < 80rem) 30vw, 22vw"
+          sizes={
+            directory
+              ? "(width < 24rem) 90vw, (width < 64rem) 46vw, 22vw"
+              : "(width < 40rem) 45vw, (width < 80rem) 30vw, 22vw"
+          }
         />
       </Link>
       {compareMode && (
@@ -82,37 +81,11 @@ export function CatalogProductCard({
         </button>
       )}
       <div className={styles.copy}>
-        {!modelOnly && <span className={styles.brand}>SUNFORD</span>}
         <Link href={href}>
           <Heading>{product.name}</Heading>
         </Link>
-        {product.warehouseSku && product.price === null && <p>สอบถามราคา</p>}
-        {decisionFacts && decisionFacts.length > 0 && (
-          <dl
-            className={styles.decisionFacts}
-            aria-label={`ข้อมูลช่วยเลือก ${product.name}`}
-            data-product-facts
-          >
-            {decisionFacts.map((fact) => (
-              <div key={fact.label}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-        {!modelOnly && (
-          <>
-            <div className={styles.tags}>
-              {product.badge && <span>{product.badge}</span>}
-              {product.capacity && product.capacity !== "—" && <span>{product.capacity}</span>}
-              <span>
-                {categoryLabel ??
-                  categories.find((category) => category.id === product.category)?.label}
-              </span>
-            </div>
-          </>
-        )}
+        <ProductCardHighlight text={product.highlight} />
+        <p className={styles.cardPrice}>{formatCatalogCardPrice(product.price)}</p>
       </div>
     </article>
   );

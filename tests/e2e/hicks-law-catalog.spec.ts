@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test";
 
 const catalogName = "แคตตาล็อกสินค้า Sunford";
+const cardPrice = /^(?:฿[\d,.]+|สอบถามราคา)$/;
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
 for (const width of [320, 390, 834, 1440]) {
-  test(`search, browsing and verified facts remain clear at ${width}px`, async ({
+  test(`search, browsing and product prices remain clear at ${width}px`, async ({
     page,
     request,
   }) => {
@@ -39,17 +40,16 @@ for (const width of [320, 390, 834, 1440]) {
     await search.fill("WPS10KS");
     const card = catalog.locator("#mock-product-results article");
     await expect(card.getByRole("heading", { level: 3 })).toHaveText("WPS10KS");
-    const facts = card.locator("[data-product-facts]");
-    await expect(facts).toContainText(source.capacity.trim());
-    await expect(facts).toContainText(source.readability.trim());
-    await expect(facts).toContainText(source.connection.trim());
-    await expect(facts).toContainText("ค่าละเอียด");
+    await expect(card.locator("[data-product-highlight]")).toHaveText("ชาร์จได้ ไม่ต้องซื้อถ่าน");
+    const price = card.locator("[data-product-highlight] + p");
+    await expect(price).toHaveText([cardPrice]);
+    await expect(card.locator("dl")).toHaveCount(0);
     const tools = catalog.getByRole("group", { name: "เครื่องมือรายการสินค้า", exact: true });
     await expect(
       tools.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }),
     ).toBeVisible();
-    await expect(facts).toBeVisible();
-    expect(await facts.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(
+    await expect(price).toBeVisible();
+    expect(await price.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(
       true,
     );
     const withoutFacts = products.find(
@@ -70,7 +70,7 @@ for (const width of [320, 390, 834, 1440]) {
       has: page.locator(`a[href^="/products/${withoutFacts.slug}"]`),
     });
     await expect(withoutFactsCard.getByRole("heading", { level: 3 })).toHaveText(withoutFacts.name);
-    await expect(withoutFactsCard.locator("[data-product-facts]")).toHaveCount(0);
+    await expect(withoutFactsCard.locator("[data-product-highlight] + p")).toHaveText([cardPrice]);
     await search.fill("no-such-model-hicks");
     await expect(
       catalog.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),
@@ -96,12 +96,12 @@ for (const width of [320, 390, 834, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    await page.screenshot({ path: test.info().outputPath(`decision-facts-${width}.png`) });
+    await page.screenshot({ path: test.info().outputPath(`catalog-card-${width}.png`) });
     expect(errors).toEqual([]);
   });
 }
 
-test("indicator facts use verified display membership and accessories omit unavailable facts", async ({
+test("indicator and accessory cards show a short highlight and price with the model and photo", async ({
   page,
   request,
 }) => {
@@ -124,31 +124,29 @@ test("indicator facts use verified display membership and accessories omit unava
     .locator("article")
     .filter({ has: page.getByRole("heading", { name: "SW31", exact: true }) });
   await expect(card).toBeVisible();
-  await expect(card.locator("[data-product-facts]")).toContainText(
-    source.warehouseCard!.connection!.trim(),
-  );
-  await expect(card.locator("[data-product-facts]")).not.toContainText("พิกัดน้ำหนัก");
-  await expect(card.locator("[data-product-facts]")).not.toContainText("ค่าละเอียด");
-  await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("");
+  await expect(card.locator("[data-product-highlight]")).toHaveText(/\S/);
+  await expect(card.locator("[data-product-highlight] + p")).toHaveText([cardPrice]);
+  await expect(card.locator("dl")).toHaveCount(0);
   const waterproof = products.filter((product) =>
     product.warehouseSubcategoryIds?.includes("indicator-waterproof"),
   );
-  const waterproofFilter = catalog.getByRole("button", { name: "กันน้ำ", exact: true });
+  await page.goto("/products/category/indicators/waterproof");
+  const realCards = page.locator("#mock-product-results article[data-model-only]");
   if (waterproof.length) {
-    await waterproofFilter.click();
-    const realCards = catalog.locator("article[data-decision-facts]");
     await expect(realCards).toHaveCount(waterproof.length);
     expect((await realCards.getByRole("heading", { level: 3 }).allTextContents()).sort()).toEqual(
       waterproof.map((product) => product.name).sort(),
     );
-  } else await expect(waterproofFilter).toHaveCount(0);
+  } else await expect(realCards).toHaveCount(0);
   await page.goto("/products?category=accessories");
   await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("LED-R5");
   const display = catalog
     .locator("article")
     .filter({ has: page.getByRole("heading", { name: "LED-R5", exact: true }) });
   await expect(display).toBeVisible();
-  await expect(display.locator("[data-product-facts]")).toHaveCount(0);
+  await expect(display.locator("[data-product-highlight]")).toHaveText("จอแสดงผลชนิด LED");
+  await expect(display.locator("[data-product-highlight] + p")).toHaveText([cardPrice]);
+  await expect(display.locator("dl")).toHaveCount(0);
 });
 
 for (const width of [390, 1440]) {
@@ -209,7 +207,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-test("decision facts and controls remain readable at200percent CSS zoom", async ({ page }) => {
+test("product cards and controls remain readable at 200 percent CSS zoom", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/products?category=scales");
   const catalog = page.getByRole("region", { name: catalogName });
@@ -220,9 +218,11 @@ test("decision facts and controls remain readable at200percent CSS zoom", async 
   await expect(
     catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }),
   ).toBeVisible();
-  await expect(catalog.locator("[data-product-facts]").first()).toBeVisible();
+  await expect(
+    catalog.locator("article[data-model-only] [data-product-highlight]").first(),
+  ).toBeVisible();
   expect(await catalog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(
     true,
   );
-  await page.screenshot({ path: test.info().outputPath("decision-facts-zoom200.png") });
+  await page.screenshot({ path: test.info().outputPath("catalog-card-zoom200.png") });
 });

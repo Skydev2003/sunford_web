@@ -8,7 +8,6 @@ import { sunford } from "@/features/home/data/brand";
 import type { ClientProduct } from "../types";
 import type { ProductCategory } from "../data/mock-categories";
 import { catalogCardName } from "../data/catalog-card-names";
-import { formatPrice } from "../data/price-format";
 import { ProductsIndexRail } from "./products-index-rail";
 import { EquipmentVideoCard } from "./equipment-video-card";
 import { FeaturedCardMedia } from "./featured-card-media";
@@ -230,6 +229,8 @@ export function ProductsIndexContent({
                         href={`/products/${product.slug}`}
                         heading={`products-model-${product.id}`}
                         name={name}
+                        highlight={product.highlight}
+                        price={product.price}
                         image={
                           <ProductImage
                             placeholder="product"
@@ -242,29 +243,7 @@ export function ProductsIndexContent({
                             sizes={showcasePhotoSizes()}
                           />
                         }
-                      >
-                        {product.warehouseSku && (
-                          <div className={styles.cardSpecs}>
-                            {[
-                              ["พิกัดชั่ง", product.capacity],
-                              ["ความละเอียด", product.readability],
-                              ["การเชื่อมต่อ", product.connection],
-                            ]
-                              .filter(([, value]) => value.trim() && value.trim() !== "—")
-                              .slice(0, 2)
-                              .map(([label, value]) => (
-                                <span key={label} data-product-spec>
-                                  {label} {value.trim()}
-                                </span>
-                              ))}
-                          </div>
-                        )}
-                        {product.price != null ? (
-                          <p>{formatPrice(product.price)} บาท (ก่อน VAT)</p>
-                        ) : product.warehouseSku ? (
-                          <p>สอบถามราคา</p>
-                        ) : null}
-                      </ProductPhotoCard>
+                      />
                     </li>
                   );
                 })
