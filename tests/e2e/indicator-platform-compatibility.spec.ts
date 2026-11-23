@@ -79,7 +79,7 @@ for (const [width, entry] of [
     await page.setViewportSize({ width, height: 900 });
     for (const [label, href] of [
       ["โซลูชันตามธุรกิจ", "/solutions"],
-      ["ซอฟต์แวร์", "/applications-and-softwares"],
+      ["ซอฟต์แวร์", "/software/download"],
     ]) {
       await page.goto(entry);
       if (entry === "/") {

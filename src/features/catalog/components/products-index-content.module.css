@@ -192,7 +192,7 @@
   display: flex;
   flex-direction: column;
   padding: 1.75rem;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: white;
   transition: background-color 100ms linear;
 }
@@ -200,7 +200,7 @@
 .featuredVideoCard {
   overflow: hidden;
   isolation: isolate;
-  border-radius: 1.5rem;
+  border-radius: var(--card-radius);
 }
 .card > .aboutCard {
   background: var(--red);
@@ -340,7 +340,7 @@
   gap: 0.5rem;
   overflow: hidden;
   isolation: isolate;
-  border-radius: 1.5rem;
+  border-radius: var(--card-radius);
   background: #d91e25;
   color: white;
 }

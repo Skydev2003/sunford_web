@@ -18,7 +18,6 @@ export const footerNavigation = [
       { label: "โซลูชัน", href: "/solutions" },
       { label: "ERP", href: sunford.erp },
       { label: "MES", href: sunford.mes },
-      { label: "แอปพลิเคชันและซอฟต์แวร์", href: sunford.software },
     ],
   },
   {

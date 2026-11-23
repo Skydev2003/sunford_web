@@ -24,7 +24,6 @@ const templates = [
   "/contact-us",
   "/service",
   "/about-us",
-  "/applications-and-softwares",
   "/solutions",
   "/guides/indicator-platform-compatibility",
   "/service/quotation",

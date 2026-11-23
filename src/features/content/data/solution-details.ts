@@ -10,7 +10,7 @@ type Solution = {
 
 const catalog = "/products/category";
 const details = { href: "/technical-specification", label: "ค้นหาคู่มือและสเปกสินค้า" };
-const software = { href: "/applications-and-softwares", label: "สำรวจซอฟต์แวร์ที่เผยแพร่" };
+const software = { href: "/software/download", label: "ดาวน์โหลดซอฟต์แวร์" };
 const industrial = { href: catalog + "/scales/industrial", label: "สำรวจเครื่องชั่งอุตสาหกรรม" };
 const indicators = { href: catalog + "/indicators", label: "สำรวจอินดิเคเตอร์แท่นชั่ง" };
 const printers = { href: catalog + "/accessories/printers", label: "สำรวจเครื่องพิมพ์" };

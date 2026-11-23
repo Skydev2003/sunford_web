@@ -97,7 +97,7 @@
   position: relative;
   overflow: hidden;
   background: var(--paper);
-  border-radius: 20px;
+  border-radius: var(--card-radius);
   transition:
     transform 0.3s,
     box-shadow 0.3s;

@@ -4,9 +4,6 @@ import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { verifyCategoryOverview } from "./helpers/category-overview";
 
 const scalePath = "/products/category/scales";
-const applicationsPath = `${scalePath}/applications`;
-const applicationsName = "เลือกเครื่องชั่งตามการใช้งาน";
-const applicationsFilterName = "เลือกตามการใช้งาน";
 const chapterNames: Record<string, string> = {
   "scale-kitchen": "ครัวเรือน",
   "scale-industrial": "การผลิต",
@@ -50,90 +47,35 @@ for (const width of [390, 1440]) {
 }
 
 for (const width of [390, 1440]) {
-  test.describe(`scale applications links at ${width}px`, () => {
-    test.use({ viewport: { width, height: 900 }, hasTouch: width === 390 });
+  test(`scale filters and navigation search work without the applications links at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${scalePath}?catalog=all&subcategory=unknown-child#catalog-search`);
+    const overview = page.locator('[data-overview-category="scales"]:visible');
+    await expect(overview).toHaveAttribute("data-controls-ready", "true");
+    const finder = overview.locator('[data-return-scope="catalog-finder"]');
+    await expect(finder).toHaveCount(0);
+    const filters = overview.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+    await expect(filters.getByRole("button")).toHaveText([
+      "ทุกผลิตภัณฑ์",
+      "ครัวเรือน",
+      "การผลิต",
+      "คำนวณราคา",
+      "งานวิเคราะห์",
+    ]);
+    await expect(filters.getByRole("link")).toHaveCount(0);
+    const analysis = filters.getByRole("button", { name: "งานวิเคราะห์", exact: true });
+    await analysis.press("Enter");
+    await expect(analysis).toBeInViewport({ ratio: 1 });
+    await expect(analysis).toHaveAttribute("aria-pressed", "true");
+    await expect(overview.locator('a[href$="/applications"]')).toHaveCount(0);
 
-    test("old entry points link to applications and Back leaves the finder closed", async ({
-      page,
-    }) => {
-      await page.goto(`${scalePath}?catalog=all&subcategory=unknown-child#catalog-search`);
-      const overview = page.locator('[data-overview-category="scales"]:visible');
-      await expect(overview).toHaveAttribute("data-controls-ready", "true");
-      const finder = overview.locator('[data-return-scope="catalog-finder"]');
-      await expect(finder).toHaveCount(0);
-      await expect(overview.getByRole("button", { name: "ดูเครื่องชั่งทั้งหมด" })).toHaveCount(0);
-      await expect(
-        overview.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ" }),
-      ).toHaveCount(0);
-      const lineup = overview.locator('[data-overview-section="lineup"]');
-      await expect(lineup.getByRole("link", { name: applicationsName, exact: true })).toHaveCount(
-        0,
-      );
-      const filters = lineup.getByRole("group", { name: "กรองผลิตภัณฑ์" });
-      await expect(filters.locator("button, a")).toHaveText([
-        "ทุกผลิตภัณฑ์",
-        "ครัวเรือน",
-        "การผลิต",
-        "คำนวณราคา",
-        "งานวิเคราะห์",
-        applicationsFilterName,
-      ]);
-      const applicationFilter = filters.getByRole("link", { name: applicationsFilterName });
-      await expect(applicationFilter).not.toHaveAttribute("aria-pressed", /.+/);
-      await expect(applicationFilter).not.toHaveAttribute("aria-selected", /.+/);
-      await expect(applicationFilter).not.toHaveAttribute("aria-current", /.+/);
-      await expect(filters.getByRole("button", { name: "ทุกผลิตภัณฑ์" })).toBeEnabled();
-      await filters.locator("button:enabled").last().focus();
-      await page.keyboard.press("Tab");
-      await expect(applicationFilter).toBeFocused();
-      await expect(applicationFilter).toBeInViewport({ ratio: 1 });
-      if (width === 390)
-        await expect.poll(() => filters.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
-      for (const section of ["lineup", "index"]) {
-        const link =
-          section === "lineup"
-            ? applicationFilter
-            : overview
-                .locator('[data-overview-section="index"]')
-                .getByRole("link", { name: applicationsName, exact: true });
-        await expect(link).toHaveAttribute("href", applicationsPath);
-        if (width === 390) await link.tap();
-        else {
-          await link.focus();
-          await expect(link).toBeFocused();
-          await page.keyboard.press("Enter");
-        }
-        await expect(page).toHaveURL(new URL(applicationsPath, page.url()).href);
-        await expect(page.getByRole("heading", { level: 1, name: applicationsName })).toBeVisible();
-        await page.goBack();
-        await expect(overview.locator("#products-title")).toHaveText("เครื่องชั่ง");
-        await expect(finder).toHaveCount(0);
-      }
-      await page.reload();
-      await expect(overview).toHaveAttribute("data-controls-ready", "true");
-      await expect(finder).toHaveCount(0);
-
-      const capacity = overview.locator("#products-features > li").first().getByRole("button");
-      await capacity.click();
-      const capacityGuide = page.getByRole("dialog", { name: "วิธีเลือกพิกัดน้ำหนัก" });
-      await expect(capacityGuide).toBeVisible();
-      const guideLink = capacityGuide.getByRole("link", { name: applicationsName, exact: true });
-      await expect(guideLink).toHaveAttribute("href", applicationsPath);
-      if (width === 390) await guideLink.tap();
-      else await guideLink.press("Enter");
-      await expect(page).toHaveURL(new URL(applicationsPath, page.url()).href);
-      await expect(page.getByRole("heading", { level: 1, name: applicationsName })).toBeVisible();
-      await page.goBack();
-      await expect(overview.locator("#products-title")).toHaveText("เครื่องชั่ง");
-      await expect(finder).toHaveCount(0);
-      if (await capacityGuide.isVisible()) await page.keyboard.press("Escape");
-
-      await overview.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล" }).click();
-      const search = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
-      await expect(search).toBeVisible();
-      await page.keyboard.press("Escape");
-      await expect(search).toBeHidden();
-    });
+    await overview.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล" }).click();
+    const search = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
+    await expect(search).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(search).toBeHidden();
   });
 }
 
@@ -177,16 +119,15 @@ for (const width of [320, 390, 768, 834, 1024, 1440, 1920, 844]) {
     await expect(main.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่ง");
     await expect(main.getByRole("link", { name: "สินค้าทั้งหมด", exact: true })).toHaveCount(0);
     await expect(main.locator("#products-chapters > li > :is(a, button)")).toHaveCount(4);
-    const applications = main
-      .locator('[data-overview-section="lineup"]')
-      .getByRole("link", { name: applicationsFilterName, exact: true });
-    await applications.scrollIntoViewIfNeeded();
-    await expect(applications).toBeInViewport();
+    const filters = main.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+    await filters.scrollIntoViewIfNeeded();
+    await expect(filters).toBeInViewport();
+    await expect(filters.getByRole("link")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
     await page.screenshot({
-      path: test.info().outputPath(`scales-applications-link-${width}.png`),
+      path: test.info().outputPath(`scales-filters-${width}.png`),
     });
   });
 }
@@ -225,11 +166,13 @@ test("scales and full catalog keep the right overlay host across cached navigati
   await expect(page.locator("footer:visible")).toHaveCount(1);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   const indicatorFinder = page.getByRole("dialog", { name: "ดูอินดิเคเตอร์แท่นชั่งทั้งหมด" });
-  await page
-    .locator('[data-overview-section="lineup"]:visible')
-    .getByRole("link", { name: "เลือกตามคุณสมบัติ", exact: true })
-    .click();
-  await expect(page).toHaveURL(/\/products\/category\/indicators\/applications$/);
+  const indicatorChapters = page.locator(
+    '[data-overview-category="indicators"]:visible #products-chapters',
+  );
+  const child = indicatorChapters.getByRole("link").first();
+  const childHref = await child.getAttribute("href");
+  await child.click();
+  await expect(page).toHaveURL(childHref!);
   await page.goBack();
   await expect(indicatorFinder).toBeHidden();
   await page

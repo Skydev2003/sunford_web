@@ -44,7 +44,7 @@ async function probe(page: Page) {
     const response = await request.fetch();
     const body = await response.text();
     if (
-      /function (ProductsOverview|SoftwareCatalog|AfterSalesPage|ProductCategoryMock|ProductGallery)\(/.test(
+      /function (ProductsOverview|AfterSalesPage|ProductCategoryMock|ProductGallery)\(/.test(
         body,
       ) &&
       !body.includes("function CatalogRouteFrame(")
@@ -87,19 +87,15 @@ for (const route of ["/products/category/scales", "/software/download", "/servic
           { timeout: 45000 },
         );
         await expectStaggerMotion(page.locator("#products-title"));
-        await page
-          .locator('[data-overview-section="lineup"]')
-          .getByRole("link", { name: "เลือกตามการใช้งาน", exact: true })
-          .click();
-        await expect(
-          page.getByRole("heading", { level: 1, name: "เลือกเครื่องชั่งตามการใช้งาน" }),
-        ).toBeVisible();
+        const kitchen = page.locator("#products-chapters").getByRole("link", { name: "ครัวเรือน" });
+        await kitchen.click();
+        await expect(page.locator('[data-product-subcategory-page="scale-kitchen"]')).toBeVisible();
         await page.goBack();
         await expect(page.locator("#products-title")).toBeVisible();
       } else if (route.includes("software")) {
-        const filter = page.locator(".software-filters a").nth(1);
-        await filter.click();
-        await expect(filter).toHaveAttribute("aria-current", "true");
+        await page.goto("/software/download#retail-software");
+        await expect(page).toHaveURL("/software/download#retail-software");
+        await expect(page.locator("#retail-software h2")).toBeInViewport();
       } else {
         const tab = page.getByRole("tab").nth(1);
         await tab.click();

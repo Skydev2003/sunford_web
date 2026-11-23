@@ -14,6 +14,7 @@
 
 .intro {
   padding-block: var(--section-space) var(--section-space-compact);
+  text-align: center;
 }
 
 .intro h1 {
@@ -30,31 +31,6 @@
   line-height: 1.55;
 }
 
-.directory {
-  display: grid;
-  gap: var(--section-space);
-}
-
-.navigation {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-content: start;
-}
-
-.navigation a {
-  display: flex;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.625rem;
-  border: 1px solid var(--line);
-  border-radius: 0.625rem;
-  background: #fff;
-  font-weight: 600;
-}
-
-.navigation svg,
 .arrow {
   flex-shrink: 0;
   color: var(--download-accent);
@@ -99,8 +75,7 @@
 .product {
   min-width: 0;
   padding: var(--card-padding-compact);
-  border: 1px solid var(--line);
-  border-radius: 1rem;
+  border-radius: var(--card-radius);
   background: #fff;
 }
 
@@ -149,8 +124,7 @@
   color: var(--download-accent);
 }
 
-.download:hover strong,
-.navigation a:hover {
+.download:hover strong {
   color: var(--download-accent);
   text-decoration: underline;
   text-underline-offset: 0.18em;
@@ -162,7 +136,6 @@
 }
 
 @media (min-width: 40rem) {
-  .directory,
   .groups {
     gap: var(--section-space-feature);
   }
@@ -183,22 +156,5 @@
 @media (min-width: 64rem) {
   .intro {
     padding-block: var(--section-space-feature) var(--section-space);
-  }
-
-  .directory {
-    grid-template-columns: 13rem minmax(0, 1fr);
-    gap: var(--section-space);
-    align-items: start;
-  }
-
-  .navigation {
-    position: sticky;
-    top: 4.5rem;
-    display: grid;
-  }
-
-  .navigation a {
-    justify-content: space-between;
-    padding-inline: 0.875rem;
   }
 }

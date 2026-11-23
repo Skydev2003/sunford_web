@@ -3,11 +3,14 @@
   align-items: start;
 }
 .sidebar,
-.toolbar,
-.cards article {
+.toolbar {
   background: white;
   border-radius: 18px;
   border: 1px solid #e4e4e8;
+}
+.cards article {
+  background: white;
+  border-radius: var(--card-radius);
 }
 .sidebar {
   top: 68px;

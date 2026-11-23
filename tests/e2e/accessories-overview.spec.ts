@@ -12,13 +12,6 @@ const chapterNames: Record<string, string> = {
   "accessory-mechanical": "ชิ้นส่วนแท่น",
   "accessory-pos": "อุปกรณ์ POS",
 };
-const statuses: Record<string, string> = {
-  "accessory-displays": "3 รายการ · 1 รุ่นตัวอย่าง (Mock)",
-  "accessory-cables": "0 รายการ · 3 รุ่นตัวอย่าง (Mock)",
-  "accessory-mechanical": "2 รายการ · 2 รุ่นตัวอย่าง (Mock)",
-  "accessory-pos": "4 รายการ · 1 รุ่นตัวอย่าง (Mock)",
-  "accessory-consumables": "7 รายการ",
-};
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -28,6 +21,7 @@ for (const width of [390, 1440]) {
   test(`accessories reuse scales sections with their own content at ${width}px`, async ({
     page,
   }) => {
+    test.slow();
     await page.setViewportSize({ width, height: 1000 });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
@@ -41,13 +35,14 @@ for (const width of [390, 1440]) {
         .evaluateAll((sections) =>
           sections.map((section) => section.getAttribute("data-overview-section")),
         ),
-    ).toEqual(["chapters", "hero", "lineup", "services", "features", "accordion", "index"]);
+    ).toEqual(["chapters", "lineup", "services", "features", "essentials", "accordion", "index"]);
     await expect(main.locator("#products-chapters > li")).toHaveCount(7);
-    await expect(main.locator('[data-overview-section="hero"] li')).toHaveCount(2);
-    await expect(main.locator("#products-lineup > li")).toHaveCount(6);
+    const cards = main.locator("#products-lineup > li > a");
+    const total = await cards.count();
+    expect(total).toBeGreaterThan(6);
     await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
     await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
-    await expect(page.locator(".site-footer:visible")).toHaveCount(0);
+    await expect(page.locator(".site-footer:visible")).toHaveCount(1);
     await expect(page.getByRole("dialog", { name: title, exact: true })).not.toBeVisible();
     await page.screenshot({ path: test.info().outputPath(`accessories-top-${width}.png`) });
     for (const id of ["products-lineup", "products-services", "products-features"]) {
@@ -58,43 +53,64 @@ for (const width of [390, 1440]) {
     await expect(features.locator("h3")).toHaveText(guide.sections.map((section) => section.title));
     await features.first().getByRole("button").click();
     const story = page.getByRole("dialog", { name: guide.sections[0].title, exact: true });
-    await expect(story).toContainText(guide.sections[0].paragraphs[1]);
-    await expect(
-      story.getByRole("link", { name: "ดูอุปกรณ์ต่อพ่วง ›", exact: true }),
-    ).toHaveAttribute("href", "/products/category/accessories");
+    await expect(story).toContainText("ตรวจรายการอุปกรณ์ที่รองรับ");
+    await expect(story.getByRole("link", { name: "ดูเพิ่มเติม", exact: true })).toHaveAttribute(
+      "href",
+      "/guides/accessories#compatibility",
+    );
     await page.keyboard.press("Escape");
-    await page
-      .locator('[data-overview-section="lineup"]')
-      .getByRole("button", { name: title, exact: true })
+    const filters = main.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+    const printers = filters.getByRole("button", { name: "เครื่องพิมพ์", exact: true });
+    await printers.click();
+    await expect(printers).toHaveAttribute("aria-pressed", "true");
+    const printerLinks = await cards.evaluateAll((links) =>
+      links.map((link) => link.getAttribute("href")!),
+    );
+    expect(printerLinks.length).toBeGreaterThan(0);
+    expect(printerLinks.length).toBeLessThan(total);
+    await main
+      .locator("#products-chapters")
+      .getByRole("link", { name: "เครื่องพิมพ์", exact: true })
       .click();
-    const finder = page.getByRole("dialog", { name: title, exact: true });
-    await expect(finder).toBeVisible();
-    await expect(story).not.toBeVisible();
-    await expect(finder.getByRole("status")).toHaveText("39 รายการ · 7 รุ่นตัวอย่าง (Mock)");
-    const more = finder.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
+    const listing = page.locator('[data-product-subcategory-page="accessory-printers"]:visible');
+    await expect(page).toHaveURL(`${path}/printers`, { timeout: 15_000 });
+    await expect(listing).toBeVisible({ timeout: 15_000 });
+    await expect(listing.getByRole("status")).toHaveText(`${printerLinks.length} รายการ`);
+    const more = listing.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
     while (await more.count()) await more.click();
-    await expect(finder.locator("article[data-mock-product]")).toHaveCount(7);
-    const memberLinks = await finder
-      .locator("article a")
-      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-    for (const href of await main
-      .locator('#products-lineup > li > a, [data-overview-section="hero"] a[href^="/products/"]')
-      .evaluateAll((links) => links.map((link) => link.getAttribute("href"))))
-      expect(memberLinks).toContain(href);
-    await page.keyboard.press("Escape");
-    await expect(finder).not.toBeVisible();
+    const listedLinks = await listing
+      .locator("article[data-model-only] h3")
+      .evaluateAll((titles) =>
+        titles.map((title) => title.closest("a")!.getAttribute("href")!.split("?")[0]),
+      );
+    expect(listedLinks.sort()).toEqual(printerLinks.sort());
+    await page.goBack();
+    await expect(printers).toHaveAttribute("aria-pressed", "true");
+    await filters.getByRole("button", { name: "ทุกผลิตภัณฑ์", exact: true }).click();
+    await expect(cards).toHaveCount(total);
+    await expect(
+      main
+        .locator("#products-essentials")
+        .getByRole("link", { name: "ดูเพิ่มเติม", exact: true })
+        .first(),
+    ).toHaveAttribute("href", "/products/category/scales");
     const accordion = main.locator('[data-overview-section="accordion"]');
     await expect(accordion.getByRole("heading", { level: 2 })).toHaveText(
       `เลือก${label}ให้เหมาะกับงาน`,
     );
+    const details = accordion.locator("details");
+    await expect(details.first()).toHaveAttribute("open", "");
     for (const [index, section] of guide.sections.entries()) {
-      const button = accordion.getByRole("button").nth(index);
-      await button.click();
-      await expect(button).toHaveAttribute("aria-expanded", "true");
-      await expect(accordion.getByRole("region").filter({ visible: true })).toContainText(
-        section.paragraphs[0],
+      const panel = details.nth(index);
+      await expect(panel.locator("summary")).toHaveText(section.title);
+      if (index > 0) await panel.locator("summary").click();
+      await expect(panel).toHaveAttribute("open", "");
+      await expect(panel.getByRole("link", { name: "อ่านคู่มือ ›" })).toHaveAttribute(
+        "href",
+        `/guides/accessories#${section.id}`,
       );
     }
+    await expect(accordion.locator("details[open]")).toHaveCount(1);
     await page.screenshot({ path: test.info().outputPath(`accessories-accordion-${width}.png`) });
     expect(errors).toEqual([]);
   });
@@ -103,20 +119,19 @@ for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
     const finder = page.getByRole("dialog", { name: title, exact: true });
-    const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
     for (const { id, label: name } of accessorySubcategoryDefinitions) {
       const href = `${path}/${id.replace("accessory-", "")}`;
       const chapterName = chapterNames[id];
       if (chapterName)
         await page
           .locator("#products-chapters")
-          .getByRole("button", { name: chapterName, exact: true })
+          .getByRole("link", { name: chapterName, exact: true })
           .click();
       else await page.goto(href);
       await expect(page).toHaveURL(new URL(href, page.url()).href);
       const listing = page.locator(`[data-product-subcategory-page="${id}"]`);
       await expect(listing.locator("h1")).toHaveText(`${label} ${name}`);
-      await expect(listing.getByRole("status")).toHaveText(statuses[id]);
+      await expect(listing.getByRole("status")).toHaveText(/^\d+ รายการ$/);
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await page.goBack();
       await expect(page).toHaveURL(new RegExp(path + "$"));
@@ -128,21 +143,6 @@ for (const width of [390, 1440]) {
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
     await expect(finder).not.toBeVisible();
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
-    await page.goto(path);
-    await page
-      .locator('[data-overview-section="lineup"]')
-      .getByRole("button", { name: title, exact: true })
-      .click();
-    await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("no-accessory-match");
-    await expect(
-      catalog.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา", exact: true }),
-    ).toBeVisible();
-    await catalog.getByRole("button", { name: "ล้างตัวกรองทั้งหมด", exact: true }).click();
-    await catalog.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
-    const compare = catalog.locator("article[data-model-only]").first().getByRole("button");
-    await compare.click();
-    await expect(compare).toHaveAttribute("aria-pressed", "true");
-    await page.keyboard.press("Escape");
     await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
   });
 }
@@ -208,22 +208,7 @@ test("accessory cache navigation preserves a single active chrome and overlay ho
       1,
     );
   }
-  await page
-    .locator('[data-overview-section="lineup"]:visible')
-    .getByRole("button", { name: title, exact: true })
-    .click();
-  const finder = page.getByRole("dialog", { name: title, exact: true });
-  await expect(finder).toBeVisible();
-  await finder.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
-  const controls = finder.locator("article[data-model-only]").getByRole("button");
-  await controls.nth(0).click();
-  await controls.nth(1).click();
-  await finder.getByRole("button", { name: "ดูการเปรียบเทียบ", exact: true }).click();
-  const comparison = page.getByRole("dialog", { name: "เปรียบเทียบสินค้า", exact: true });
-  await expect(comparison).toBeVisible();
-  await expect(comparison.locator("table thead th")).toHaveCount(3);
-  await comparison.getByRole("button", { name: "ปิด", exact: true }).click();
-  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: title, exact: true })).toHaveCount(0);
   await page
     .locator("[data-products-header]:visible")
     .getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true })

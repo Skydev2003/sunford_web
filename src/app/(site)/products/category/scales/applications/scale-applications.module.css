@@ -39,17 +39,6 @@
   color: var(--muted);
 }
 
-.applicationGroups {
-  display: grid;
-  gap: var(--section-space);
-}
-
-.applicationGroupHeading {
-  margin-bottom: var(--catalog-rail-heading-space);
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
 .list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -59,25 +48,9 @@
   list-style: none;
 }
 
-.groupLink {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--catalog-rail-heading-space);
-  min-height: var(--catalog-rail-control-hit);
-  padding: var(--card-padding-compact);
-  border: 1px solid var(--line);
-  border-radius: 0.875rem;
-}
-
-.groupLink:hover,
 .breadcrumb a:hover,
 .contact {
   color: var(--red);
-}
-
-.groupLink svg {
-  flex-shrink: 0;
 }
 
 .conditional {

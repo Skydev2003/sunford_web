@@ -1,19 +1,20 @@
 import { expect, type Page } from "@playwright/test";
-import {
-  categoryApplicationsLink,
-  type CategoryApplicationId,
-} from "../../../src/features/catalog/data/category-applications";
 import { productCategoryDefinitions } from "../../../src/features/catalog/data/mock-categories";
 import { buyingGuides } from "../../../src/features/content/data/buying-guides";
 
-export async function verifyCategoryOverview(page: Page, id: CategoryApplicationId, width: number) {
+export async function verifyCategoryOverview(
+  page: Page,
+  id: (typeof productCategoryDefinitions)[number]["id"],
+  width: number,
+) {
   await page.setViewportSize({ width, height: 1000 });
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(`/products/category/${id}`);
   const main = page.locator(`[data-overview-category="${id}"]:visible main`);
   const category = productCategoryDefinitions.find((item) => item.id === id)!;
-  const applications = categoryApplicationsLink(id);
+  const hasSpecLink = id === "indicators" || id === "platforms";
+  const usesEditorialLayout = id === "scales" || hasSpecLink;
   await expect(main.getByRole("heading", { level: 1 })).toHaveText(category.label);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
@@ -23,7 +24,17 @@ export async function verifyCategoryOverview(page: Page, id: CategoryApplication
     await sections.evaluateAll((nodes) =>
       nodes.map((n) => n.getAttribute("data-overview-section")),
     ),
-  ).toEqual(["chapters", "lineup", "services", "features", "essentials", "accordion", "index"]);
+  ).toEqual([
+    "chapters",
+    ...(id === "scales" ? ["hero"] : []),
+    "lineup",
+    ...(usesEditorialLayout ? ["accordion"] : []),
+    "services",
+    ...(usesEditorialLayout ? [] : ["features"]),
+    "essentials",
+    ...(usesEditorialLayout ? [] : ["accordion"]),
+    "index",
+  ]);
   const lineup = main.locator('[data-overview-section="lineup"]');
   const products = lineup.locator("#products-lineup > li > a");
   const destinations = () =>
@@ -86,8 +97,11 @@ export async function verifyCategoryOverview(page: Page, id: CategoryApplication
   }
   const guide = buyingGuides.find((g) => g.slug === id)!;
   const features = main.locator("#products-features > li");
-  await expect(features.locator("h3")).toHaveText(guide.sections.map((s) => s.title));
-  for (const trackId of ["products-services", "products-features"]) {
+  if (usesEditorialLayout)
+    await expect(main.locator('[data-overview-section="features"]')).toHaveCount(0);
+  else await expect(features.locator("h3")).toHaveText(guide.sections.map((s) => s.title));
+  const detailTracks = usesEditorialLayout ? [] : ["products-services", "products-features"];
+  for (const trackId of detailTracks) {
     const track = main.locator(`#${trackId}`);
     const trigger = track.getByRole("button").first();
     await trigger.press("Enter");
@@ -99,8 +113,9 @@ export async function verifyCategoryOverview(page: Page, id: CategoryApplication
     const detail = dialog.getByRole("link", { name: "ดูเพิ่มเติม", exact: true });
     if (trackId === "products-features") {
       await expect(detail).toHaveAttribute("href", `/guides/${id}#${guide.sections[0].id}`);
-      for (const link of guide.sections[0].links) {
-        const href = link.href === guide.productHref ? applications.href : link.href;
+      for (const { href } of guide.sections[0].links.filter(
+        ({ href }) => href !== guide.productHref,
+      )) {
         await expect(dialog.locator(`a[href="${href}"]`).first()).toBeVisible();
       }
     } else {
@@ -110,23 +125,133 @@ export async function verifyCategoryOverview(page: Page, id: CategoryApplication
     await expect(dialog).toBeHidden();
     await expect(trigger).toBeFocused();
   }
-  await expect(
-    filters.getByRole("link", { name: applications.shortLabel, exact: true }),
-  ).toHaveAttribute("href", applications.href);
+  await expect(filters.getByRole("link")).toHaveCount(0);
   await expect(lineup.getByRole("button", { name: /^ดู.*ทั้งหมด$/ })).toHaveCount(0);
-  const disclosures = main.locator('[data-overview-section="accordion"] details');
+  await expect(
+    main.locator('[data-overview-section="services"]').getByRole("link", {
+      name: "ปรึกษาผู้เชี่ยวชาญ",
+      exact: true,
+    }),
+  ).toHaveCount(usesEditorialLayout ? 0 : 1);
+  await expect(
+    main.locator('[data-overview-section="essentials"]').getByRole("link", {
+      name: id === "accessories" ? "ดูเครื่องชั่งทั้งหมด" : "ดูอุปกรณ์เสริมทั้งหมด",
+      exact: true,
+    }),
+  ).toHaveCount(usesEditorialLayout ? 0 : 1);
+  if (usesEditorialLayout) {
+    const cards = main.locator("#products-services > li");
+    await expect(cards).toHaveCount(4);
+    await expect(cards.locator("img")).toHaveCount(0);
+    await expect(cards.locator(":scope > svg")).toHaveCount(4);
+    await expect(cards.locator("button, a")).toHaveCount(0);
+    await expect(cards.locator(":scope > p")).toHaveText(
+      id === "scales"
+        ? [
+            /ACS-30-JC21.*ACS-30-JE81.*OIML/,
+            /บางเลน.*อะไหล่/,
+            /ภาษาไทย.*IP67.*SUS304/,
+            /พิมพ์ฉลาก.*Cloud POS/,
+          ]
+        : id === "indicators"
+          ? [
+              /รุ่นแท่น.*หัวอ่านเดิม/,
+              /รุ่นและจำนวน.*ฝ่ายขาย/,
+              /ชื่อรุ่น.*ซ่อม.*เคลม/,
+              /หลักฐานการซื้อ.*ลงทะเบียน/,
+            ]
+          : [
+              /ขนาดภาชนะ.*น้ำหนักรวม.*สภาพพื้น/,
+              /ขนาดแท่น.*วัสดุ.*ฝ่ายขาย/,
+              /รุ่นแท่น.*ซ่อม.*เคลม/,
+              /หลักฐานการซื้อ.*ลงทะเบียน/,
+            ],
+    );
+    await cards.first().getByRole("heading").click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect
+      .poll(() =>
+        cards.evaluateAll((items) => {
+          const product = document.querySelector("#products-lineup > li")!.getBoundingClientRect();
+          return Math.max(
+            ...items.flatMap((item) => {
+              const card = item.getBoundingClientRect();
+              return [Math.abs(card.width - product.width), Math.abs(card.height - product.height)];
+            }),
+          );
+        }),
+      )
+      .toBeLessThan(1);
+  }
+  if (hasSpecLink) {
+    await expect(main.locator("#products-services h3")).toHaveText([
+      id === "indicators" ? "จัดชุดให้เข้ากับแท่นชั่ง" : "เลือกแท่นให้ตรงกับหน้างาน",
+      "ขอใบเสนอราคา",
+      "บริการหลังการขาย",
+      "ลงทะเบียนรับประกัน",
+    ]);
+    const companion =
+      id === "indicators"
+        ? { title: "โครงสร้างแท่นชั่ง", href: "/products/category/platforms" }
+        : { title: "อินดิเคเตอร์แท่นชั่ง", href: "/products/category/indicators" };
+    const card = main.locator("#products-essentials > li").first();
+    await expect(card.getByRole("heading", { level: 3 })).toHaveText(companion.title);
+    await expect(card.getByRole("link", { name: `ดู${companion.title}` })).toHaveAttribute(
+      "href",
+      companion.href,
+    );
+    await expect(card.getByRole("img", { name: companion.title })).toBeVisible();
+  }
+  const accordion = main.locator('[data-overview-section="accordion"]');
+  if (usesEditorialLayout) {
+    await expect(accordion.getByRole("heading", { level: 2 })).toHaveText(
+      `เลือก${id === "indicators" ? "อินดิเคเตอร์" : category.label}ให้เหมาะกับงาน`,
+    );
+    if (id === "scales") await expect(accordion.locator("a[href]")).toHaveCount(0);
+  }
+  const disclosures = accordion.locator("details");
+  const specLinkName = "ไปหน้าจัดสเปคเครื่องชั่ง";
+  const specPath = "/guides/indicator-platform-compatibility";
   await expect(disclosures.locator("summary")).toHaveText(guide.sections.map((s) => s.title));
+  const keyPoints =
+    id === "scales"
+      ? [/น้ำหนักสูงสุด.*รวมภาชนะ/, /1 กรัม.*ความคลาดเคลื่อน/, /ขนาดจานชั่ง.*คำนวณราคา.*พิมพ์ฉลาก/]
+      : id === "indicators"
+        ? [/พิกัด.*โหลดเซลล์/, /พอร์ต.*รูปแบบข้อมูล/, /LCD.*LED.*ระดับการป้องกัน/]
+        : [
+            /ป้องกันน้ำ.*โหลดเซลล์/,
+            /ภาชนะ.*พื้นที่.*รถเข็น/,
+            /น้ำหนักสูงสุด.*พิกัด/,
+            /โหลดเซลล์.*ความละเอียด/,
+          ];
   for (const [i, section] of guide.sections.entries()) {
     const entry = disclosures.nth(i);
     if ((await entry.getAttribute("open")) === null) await entry.locator("summary").press("Enter");
     await expect(entry).toHaveJSProperty("open", true);
-    await expect(entry.getByRole("link", { name: /อ่านคู่มือ/ })).toHaveAttribute(
-      "href",
-      `/guides/${id}#${section.id}`,
-    );
+    if (usesEditorialLayout) {
+      await expect(accordion.locator("details[open]")).toHaveCount(1);
+      await expect(entry.locator("p")).toHaveText(keyPoints[i]);
+      await expect(entry.locator("img")).toBeVisible();
+      if (hasSpecLink) {
+        const specLink = entry.getByRole("link", { name: specLinkName, exact: true });
+        await expect(entry.getByRole("link")).toHaveCount(1);
+        await expect(specLink).toHaveAttribute("href", specPath);
+        await expect(specLink).toBeVisible();
+      }
+    } else {
+      await expect(entry.getByRole("link", { name: /อ่านคู่มือ/ })).toHaveAttribute(
+        "href",
+        `/guides/${id}#${section.id}`,
+      );
+    }
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
     true,
   );
+  if (hasSpecLink) {
+    await accordion.getByRole("link", { name: specLinkName, exact: true }).click();
+    await expect(page).toHaveURL(specPath, { timeout: 15_000 });
+    await expect(page.getByRole("heading", { level: 1, name: "จัดสเปคเครื่องชั่ง" })).toBeVisible();
+  }
   expect(errors).toEqual([]);
 }

@@ -55,6 +55,7 @@ export function ProductImage({
   preload = false,
   preloadMedia,
   prioritize = false,
+  eager = false,
   progressive = false,
   blurDataURL,
   unoptimized = false,
@@ -72,6 +73,7 @@ export function ProductImage({
   preload?: boolean;
   preloadMedia?: string;
   prioritize?: boolean;
+  eager?: boolean;
   progressive?: boolean;
   blurDataURL?: string;
   unoptimized?: boolean;
@@ -166,6 +168,8 @@ export function ProductImage({
       {...source}
       alt={alt}
       preload={preload}
+      loading={eager && !preload ? "eager" : undefined}
+      fetchPriority={eager && !preload ? "high" : undefined}
       className={fade ? [className, styles.fadeIn].filter(Boolean).join(" ") : className}
       placeholder={preview ? "blur" : undefined}
       blurDataURL={preview}

@@ -66,6 +66,8 @@ function observeReveal(root: HTMLElement | null, { selector, grid = false }: Opt
         if (preference.matches || element.contains(document.activeElement) || selected(element))
           continue;
 
+        const shelf = element.getAttribute("data-scroll-reveal") === "shelf";
+        const order = Number(element.getAttribute("data-scroll-reveal-order"));
         const animation = element.animate(
           [
             { opacity: 0, translate: "0 24px" },
@@ -73,9 +75,9 @@ function observeReveal(root: HTMLElement | null, { selector, grid = false }: Opt
           ],
           {
             id: "sunford-scroll-reveal",
-            duration: 950,
-            easing: "cubic-bezier(0.25, 0.35, 0.25, 1)",
-            delay: grid ? (target.index % 4) * 100 : 0,
+            duration: shelf ? 700 : 950,
+            easing: shelf ? "cubic-bezier(0.22, 1, 0.36, 1)" : "cubic-bezier(0.25, 0.35, 0.25, 1)",
+            delay: shelf ? order * 80 : grid ? (target.index % 4) * 100 : 0,
             fill: "backwards",
           },
         );

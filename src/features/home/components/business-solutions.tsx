@@ -83,7 +83,7 @@ export function BusinessSolutionsTemplate() {
               />
             </div>
           </Link>
-          <Link href={sunford.software} className={`${styles.card} ${styles.software}`}>
+          <Link href={sunford.downloads} className={`${styles.card} ${styles.software}`}>
             <div className={styles.cardCopy}>
               <span className={styles.cardIcon}>
                 <Monitor size={23} strokeWidth={1.5} aria-hidden="true" />

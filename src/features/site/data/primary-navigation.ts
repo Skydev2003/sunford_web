@@ -79,7 +79,7 @@ export function getPrimaryNavigationItems(
         ["คำนวณราคาและงานขาย", "/products/category/scales/price"],
         ["งานผลิตและอุตสาหกรรม", "/products/category/scales/industrial"],
         ["ครัวและกาแฟ", "/products/category/scales/kitchen"],
-        ["ซอฟต์แวร์ POS", "/applications-and-softwares"],
+        ["ซอฟต์แวร์ POS", "/software/download#retail-software"],
       ],
       help,
       "สินค้า",
@@ -256,7 +256,6 @@ export function getPrimaryNavigationItems(
         ["ขอใบเสนอราคา", "/service/quotation"],
       ],
       [
-        ["ซอฟต์แวร์และสิทธิ์ใช้งาน", "/applications-and-softwares"],
         ["ดาวน์โหลดซอฟต์แวร์", "/software/download"],
         ["คู่มือและสเปก", "/technical-specification"],
       ],

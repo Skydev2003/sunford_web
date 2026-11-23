@@ -103,7 +103,7 @@ test("CMS legacy and corrected links project identically with all related column
     [2, 2, 3, 2, 3],
   );
   const services = legacy.find((item) => item.href === "/service")!;
-  assert.ok(services.groups![0].links.some((link) => link.href === "/applications-and-softwares"));
+  assert.ok(services.groups![0].links.some((link) => link.href === "/software/download"));
   assert.ok(
     !services.groups!.flatMap((group) => group.links).some((link) => link.href === "/solutions"),
   );
@@ -120,9 +120,6 @@ test("each guide returns to its own current Navbar category and has no legacy ca
   for (const guide of buyingGuides) {
     assert.equal(guide.productHref, `/products/category/${guide.slug}`);
     for (const { href } of guide.sections.flatMap((section) => section.links))
-      assert.ok(
-        href.startsWith("/products/category/") || href === "/applications-and-softwares",
-        href,
-      );
+      assert.ok(href.startsWith("/products/category/") || href === "/software/download", href);
   }
 });

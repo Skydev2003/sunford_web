@@ -12,7 +12,7 @@ import { getClientProducts } from "@/features/catalog/server/client-products";
 import { ContentDirectory } from "@/features/content/components/content-directory";
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
-import { SoftwareCatalog } from "@/features/content/components/software-catalog";
+import { legacySoftwareCatalogPath, sunford } from "@/features/home/data/brand";
 import { ContactPage } from "@/features/content/components/contact-page";
 import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { AboutPage } from "@/features/content/components/about-page";
@@ -41,6 +41,7 @@ export function generateStaticParams() {
     "/warranty/register",
     "/technical-specification",
     "/software/download",
+    legacySoftwareCatalogPath,
     ...softwareSupportPages.map(({ slug }) => `/software/download/${slug}`),
     ...technicalManualRedirects.map(({ source }) => source),
   ];
@@ -101,7 +102,7 @@ export default async function SourceContentPage({
         <nav className="container source-section-links" aria-label="ข้อมูลที่เปิดอ่านได้">
           <Link href="/products">ดูแค็ตตาล็อกสินค้า</Link>
           <Link href="/technical-specification">ดูข้อมูลทางเทคนิคและคู่มือ</Link>
-          <Link href="/products/category/scales/applications">เลือกเครื่องชั่งตามการใช้งาน</Link>
+          <Link href="/products/category/scales">ดูเครื่องชั่งทั้งหมด</Link>
         </nav>
       </main>
     );
@@ -116,6 +117,7 @@ export default async function SourceContentPage({
   if (solutionDetails[pathname]) return <SolutionsPage path={pathname} />;
   const page = await getContentPage(pathname);
   if (!page) notFound();
+  if (page.path === legacySoftwareCatalogPath) redirect(sunford.downloads);
   if (!page.managed && getProductSection(page.path)) redirect("/products");
   if (page.path === "/solutions") return <SolutionsOverview />;
   if (solutionDetails[page.path]) return <SolutionsPage path={page.path} />;
@@ -152,30 +154,15 @@ export default async function SourceContentPage({
       ? page.title
       : page.path === "/about-us"
         ? "รู้จัก Sunford"
-        : page.path === "/applications-and-softwares"
-          ? "แอปพลิเคชันและซอฟต์แวร์"
-          : page.path === "/software/download"
-            ? "ดาวน์โหลดซอฟต์แวร์"
-            : page.title.replace(/\s*\|\s*Sunford$/i, ""));
-  const softwareIndex =
-    page.path === "/software/download" || page.path === "/applications-and-softwares";
+        : page.title.replace(/\s*\|\s*Sunford$/i, ""));
   const softwareDetail = page.path.startsWith("/software/download/");
-  const softwarePage =
-    softwareIndex || softwareDetail
-      ? page.path === "/software/download"
-        ? page
-        : await getContentPage("/software/download")
-      : undefined;
-  const softwareCatalog = softwarePage?.softwareCatalog;
-  const softwareEntry = softwareCatalog?.items.find((item) => item.path === page.path);
+  const softwareEntry = softwareDetail
+    ? (await getContentPage(sunford.downloads))?.softwareCatalog?.items.find(
+        (item) => item.path === page.path,
+      )
+    : undefined;
   const linkedPages = (await getContentPages()).filter(
-    (item) =>
-      !(softwareIndex && softwareCatalog) &&
-      item.path !== page.path &&
-      item.kind !== "product" &&
-      (softwareIndex
-        ? item.path.startsWith("/software/download/")
-        : item.path.startsWith(`${page.path}/`)),
+    (item) => item.kind !== "product" && item.path.startsWith(`${page.path}/`),
   );
   const formPage = /service\//.test(pathname);
   const hasContent =
@@ -211,12 +198,6 @@ export default async function SourceContentPage({
           </a>
         )}
       </header>
-      {softwareIndex && softwareCatalog && (
-        <SoftwareCatalog
-          catalog={softwareCatalog}
-          showDownloadLinks={page.path === "/applications-and-softwares"}
-        />
-      )}
       {/^\/software\/download\/sunford-rls(1100|1800)$/.test(page.path) && (
         <nav
           className="container source-section-links"
@@ -284,12 +265,12 @@ export default async function SourceContentPage({
         </>
       ) : (
         <>
-          {!section && !softwareIndex && !softwareDetail && !page.images.length && (
+          {!section && !softwareDetail && !page.images.length && (
             <div className="container source-image-slot">
               <ProductImage alt={page.title} width={1180} height={340} />
             </div>
           )}
-          {!section && hasContent && (page.managed || !softwareIndex) && (
+          {!section && hasContent && (
             <article
               className={`source-prose container ${page.kind === "article" ? "source-article" : ""}`}
               dangerouslySetInnerHTML={{ __html: proseHtml }}

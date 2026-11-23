@@ -30,8 +30,8 @@ export async function SunfordStories() {
           </h2>
           <p className={storyStyles.intro}>สำรวจรุ่นเครื่องชั่งตามประเภทงานและธุรกิจของคุณ</p>
         </div>
-        <Link className={storyStyles.allStories} href={href}>
-          ดูงานทุกประเภท <ArrowRight size={15} aria-hidden="true" />
+        <Link className={storyStyles.allStories} href="/products/category/scales">
+          ดูเครื่องชั่งทั้งหมด <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </div>
       {cards.length > 0 && (

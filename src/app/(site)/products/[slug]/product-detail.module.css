@@ -356,8 +356,7 @@
   align-content: center;
   align-items: center;
   padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--card-radius);
 }
 .cardLink {
   display: contents;
@@ -384,9 +383,6 @@
 }
 .cardCopy {
   grid-column: 2;
-}
-.cardCopy h3 {
-  font-size: 19px;
 }
 .cards .compare {
   grid-column: 2;

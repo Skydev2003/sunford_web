@@ -3,8 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { catalogCardName } from "../data/catalog-card-names";
-import { formatCatalogCardPrice } from "../data/price-format";
-import { ProductCardHighlight } from "./product-card-highlight";
+import { ProductCardCaption } from "./product-card-caption";
 import type { ClientProduct } from "../types";
 import type { ScaleShowcaseItem } from "../data/scale-showcase";
 import "./scale-showcase.css";
@@ -56,11 +55,13 @@ export function ProductPhotoCard({
       <div className={styles.photoPanel}>
         <div className={styles.photoFrame}>{image}</div>
       </div>
-      <div className={styles.photoCardCopy}>
-        <h3 id={heading}>{name}</h3>
-        <ProductCardHighlight text={highlight} />
-        <p className={styles.photoCardPrice}>{formatCatalogCardPrice(price)}</p>
-      </div>
+      <ProductCardCaption
+        className={styles.photoCardCopy}
+        headingId={heading}
+        name={name}
+        highlight={highlight}
+        price={price}
+      />
     </Link>
   );
 }

@@ -113,8 +113,7 @@
 }
 
 .workspace {
-  border: 1px solid var(--line);
-  border-radius: 1rem;
+  border-radius: var(--card-radius);
   background: var(--background);
 }
 

@@ -18,6 +18,9 @@ import { useHistoryRestoration } from "@/features/site/history/return-state";
 const OverlayHostContext = createContext<(host: HTMLDivElement | null) => void>(() => {});
 export const useCatalogOverlayHost = () => useContext(OverlayHostContext);
 
+const subcategoryPath =
+  /^(\/products\/category\/(?:scales|indicators|platforms|pos|accessories)\/)(?!applications\/?$)[^/]+\/?$/;
+
 export function CatalogRouteFrame({
   className,
   header,
@@ -34,7 +37,8 @@ export function CatalogRouteFrame({
   const pathname = usePathname();
   const root = useRef<HTMLDivElement>(null);
   useHistoryRestoration(root);
-  useStaggerBounce(root, pathname);
+  // Sibling listings are filter changes within the same opening animation.
+  useStaggerBounce(root, pathname.match(subcategoryPath)?.[1] ?? pathname);
   const homePage = pathname === "/";
   const servicePage = pathname === "/service";
   const streamSiteChrome = homePage || pathname === "/contact-us" || servicePage;

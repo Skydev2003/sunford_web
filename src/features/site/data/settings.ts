@@ -77,5 +77,5 @@ export const catalogDefaults = {
   navSoftware: "แอปพลิเคชันและซอฟต์แวร์",
   navSoftwareEnglish: "Applications & software",
   accessoriesHref: sunford.accessories,
-  softwareHref: sunford.software,
+  softwareHref: sunford.downloads,
 };

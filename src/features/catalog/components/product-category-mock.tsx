@@ -1,7 +1,7 @@
 "use client";
 import { useReturnState } from "@/features/site/history/return-state";
 
-import { Suspense, useCallback, useEffect, useRef } from "react";
+import { type ReactNode, Suspense, useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, GitCompareArrows, Package, Search } from "lucide-react";
@@ -52,6 +52,7 @@ export function ProductCategoryMock({
   categoryId,
   subcategoryId,
   imagePreviews,
+  listingNavigation,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
@@ -60,6 +61,7 @@ export function ProductCategoryMock({
   categoryId?: string;
   subcategoryId?: string;
   imagePreviews?: Record<string, string>;
+  listingNavigation?: ReactNode;
 }) {
   const [category, setCategory] = useReturnState(
     "product-category-mock.category",
@@ -289,6 +291,8 @@ export function ProductCategoryMock({
           </span>
         </label>
       </div>
+
+      {listingNavigation}
 
       {presentation !== "category" && presentation !== "listing" && (
         <div className={styles.categoryRail}>

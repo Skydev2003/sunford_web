@@ -4,8 +4,20 @@ import { notFound } from "next/navigation";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { getStorefrontProducts } from "@/features/catalog/server/product-repository";
 import { warehouseBlurDataURL } from "@/features/catalog/server/warehouse-image-previews";
+import {
+  defaultNavigation,
+  defaultNavigationExtras,
+  resolveNavigationItems,
+} from "@/features/site/data/navigation";
+import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
+import { getSettings } from "@/features/site/server/documents";
 import { ProductCategoryMock } from "./product-category-mock";
-import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
+import { ProductSubcategoryNavigation } from "./product-subcategory-navigation";
+import { chapterArtwork } from "../data/category-chapter-artwork";
+import {
+  getProductSubcategoryPage,
+  getProductSubcategoryPageByHref,
+} from "../data/product-subcategory-pages";
 import { consumableSubtypeLinks } from "../data/additional-subcategory-pages";
 import { sunford } from "@/features/home/data/brand";
 import overview from "./products-overview.module.css";
@@ -35,9 +47,14 @@ export async function ProductSubcategoryPage({
   const definition = getProductSubcategoryPage(subcategoryId, categoryId);
   if (!definition) notFound();
   const additional = "matches" in definition ? definition : undefined;
-  const [{ products, categories, cardNames }, warehouseProducts] = await Promise.all([
+  const [
+    { products, categories, cardNames, readySubcategoryHrefs },
+    warehouseProducts,
+    navigation,
+  ] = await Promise.all([
     getProductCategories(),
     additional ? getStorefrontProducts() : [],
+    getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
   ]);
   const category = categories.find((item) => item.id === categoryId);
   if (!category) notFound();
@@ -49,6 +66,41 @@ export async function ProductSubcategoryPage({
       }
     : category.subcategories.find((item) => item.id === subcategoryId);
   if (!child) notFound();
+  const categoryHref = `/products/category/${categoryId}`;
+  const childLabel = child.label.replace(/^เครื่องชั่ง/, "");
+  const categoryMenu = getPrimaryNavigationItems(
+    resolveNavigationItems(navigation.items),
+    readySubcategoryHrefs,
+    "category-chapters",
+  ).find(({ href }) => href === categoryHref);
+  const chapterLinks = (categoryMenu?.links ?? []).filter(
+    ({ href, disabled }) => !disabled || href === definition.href,
+  );
+  if (!chapterLinks.some(({ href }) => href === definition.href)) {
+    chapterLinks.push({ href: definition.href, label: childLabel });
+  }
+  const productsById = new Map(products.map((product) => [product.id, product]));
+  const navigationItems = chapterLinks.map(({ href, label }) => {
+    const destination = getProductSubcategoryPageByHref(href);
+    const group =
+      href === definition.href
+        ? child
+        : category.subcategories.find(({ id }) => id === destination?.id);
+    const members = (group?.productIds ?? [])
+      .map((id) => productsById.get(id))
+      .filter((product) => product?.image || product?.fallbackImage);
+    const photo = members.find((product) => product?.featured) ?? members[0];
+    const artwork = chapterArtwork.get(href);
+    return {
+      href,
+      label,
+      image: artwork ?? (photo?.image || photo?.fallbackImage),
+      fallbackImage: (artwork && photo?.image) || photo?.fallbackImage,
+    };
+  });
+  const listingNavigation = (
+    <ProductSubcategoryNavigation items={navigationItems} currentHref={definition.href} />
+  );
   const ids = new Set(child.productIds);
   const listingCategory = additional ? { ...category, subcategories: [child] } : category;
   const publishedProducts = products.filter(
@@ -74,6 +126,7 @@ export async function ProductSubcategoryPage({
       ? consumableSubtypeLinks
       : (alternatives[subcategoryId] ?? []));
   const titleId = `${categoryId === "scales" ? "" : `${categoryId}-`}${definition.slug}-title`;
+  const hasCategoryPrefix = definition.title === `${category.label} ${definition.label}`;
   return (
     <main
       id="main-content"
@@ -89,14 +142,20 @@ export async function ProductSubcategoryPage({
       </div>
       <nav className={`${overview.sectionInner} ${styles.breadcrumb}`} aria-label="เส้นทางนำทาง">
         <Link href="/products">ผลิตภัณฑ์ทั้งหมด</Link>
-        <Link href={`/products/category/${categoryId}`}>{category.label}</Link>
-        <span aria-current="page">{child.label.replace(/^เครื่องชั่ง/, "")}</span>
+        <Link href={categoryHref}>{category.label}</Link>
+        <span aria-current="page">{childLabel}</span>
       </nav>
-      <section className={overview.chapters} aria-labelledby={titleId}>
-        <div className={`${overview.sectionInner} ${overview.categoryHeading}`}>
-          <h1 id={titleId}>{definition.title}</h1>
-        </div>
-      </section>
+      <header className={`${overview.sectionInner} ${styles.listingHeader}`}>
+        <h1 id={titleId}>
+          {hasCategoryPrefix ? (
+            <>
+              <span>{category.label}</span> <span>{definition.label}</span>
+            </>
+          ) : (
+            definition.title
+          )}
+        </h1>
+      </header>
       <div className={`${overview.sectionInner} ${styles.listing}`}>
         {publishedProducts.length ? (
           <ProductCategoryMock
@@ -108,19 +167,25 @@ export async function ProductSubcategoryPage({
             categoryId={categoryId}
             subcategoryId={subcategoryId}
             presentation="listing"
+            listingNavigation={listingNavigation}
           />
         ) : (
-          <section aria-labelledby="subcategory-status-title" data-subcategory-empty>
-            <h2 id="subcategory-status-title">ยังไม่มีรายการสินค้าที่เผยแพร่ในหมวดนี้</h2>
-            <p>สำรวจรุ่นในหมวดที่เกี่ยวข้องด้านล่าง หรือติดต่อซันฟอร์ดเพื่อสอบถามข้อมูลเพิ่มเติม</p>
-          </section>
+          <>
+            {listingNavigation}
+            <section aria-labelledby="subcategory-status-title" data-subcategory-empty>
+              <h2 id="subcategory-status-title">ยังไม่มีรายการสินค้าที่เผยแพร่ในหมวดนี้</h2>
+              <p>
+                สำรวจรุ่นในหมวดที่เกี่ยวข้องด้านล่าง หรือติดต่อซันฟอร์ดเพื่อสอบถามข้อมูลเพิ่มเติม
+              </p>
+            </section>
+          </>
         )}
       </div>
       <nav
         className={`${overview.sectionInner} ${styles.related}`}
         aria-label="ข้อมูลที่เกี่ยวข้อง"
       >
-        <Link href={`/products/category/${categoryId}`}>ดู{category.label}ทุกกลุ่ม ›</Link>
+        <Link href={categoryHref}>ดู{category.label}ทุกกลุ่ม ›</Link>
         <Link href={`/guides/${categoryId}`}>คู่มือเลือก{category.label} ›</Link>
         {relatedLinks
           .filter(({ href }) => href !== `/guides/${categoryId}`)

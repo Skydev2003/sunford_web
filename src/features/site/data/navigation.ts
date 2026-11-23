@@ -1,5 +1,6 @@
 import type { NavigationGroup, NavigationItem } from "../types";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
+import { legacySoftwareCatalogPath, sunford } from "@/features/home/data/brand";
 
 const productSubmenuLabel = "ผลิตภัณฑ์ทั้งหมด";
 const productLinks = [
@@ -114,11 +115,8 @@ export const defaultNavigation: NavigationItem[] = [
   },
   {
     label: "ซอฟต์แวร์",
-    href: "/applications-and-softwares",
-    links: [
-      { label: "แอปพลิเคชันและซอฟต์แวร์", href: "/applications-and-softwares" },
-      { label: "ดาวน์โหลดซอฟต์แวร์", href: "/software/download" },
-    ],
+    href: sunford.downloads,
+    links: [{ label: "ดาวน์โหลดซอฟต์แวร์", href: sunford.downloads }],
     groups: [
       {
         label: "ค้าปลีกและระบบ POS",
@@ -192,6 +190,18 @@ export const defaultNavigationGroups: Record<string, NavigationGroup[]> = Object
 );
 
 export function resolveNavigationItems(items: NavigationItem[]): NavigationItem[] {
+  const legacySoftware = items.find((item) => item.href === legacySoftwareCatalogPath);
+  if (legacySoftware) {
+    items = items.map((item) =>
+      item === legacySoftware
+        ? {
+            ...item,
+            href: sunford.downloads,
+            links: item.links.filter(({ href }) => href !== legacySoftwareCatalogPath),
+          }
+        : item,
+    );
+  }
   if (
     items.length !== defaultNavigation.length ||
     !items.every((item, index) => item.href === defaultNavigation[index].href)

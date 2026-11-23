@@ -85,19 +85,17 @@
 .category-feature-panel {
   min-width: 0;
   padding: 12px;
-  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
   background: linear-gradient(#1b1b1b 40%, #171717);
   transition:
-    border-color 0.3s,
     box-shadow 0.3s,
     transform 0.3s;
 }
 .category-feature-panel.is-active {
-  border: 2px solid var(--red);
+  background: linear-gradient(#2c1d20 40%, #1b1617);
 }
 .category-feature-panel:hover {
   transform: translateY(-4px);
-  border-color: var(--red);
   box-shadow: 0 4px 12px #d7192d4d;
 }
 .category-feature-trigger {

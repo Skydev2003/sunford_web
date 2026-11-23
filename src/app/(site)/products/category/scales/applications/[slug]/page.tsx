@@ -36,10 +36,6 @@ export default async function ScaleApplicationPage({ params }: Props) {
       <nav className={styles.breadcrumb} aria-label="เส้นทางนำทาง">
         <CatalogNavigationLink href="/products/category/scales">เครื่องชั่ง</CatalogNavigationLink>
         <ChevronRight size={14} aria-hidden="true" />
-        <CatalogNavigationLink href="/products/category/scales/applications">
-          เลือกตามการใช้งาน
-        </CatalogNavigationLink>
-        <ChevronRight size={14} aria-hidden="true" />
         <span aria-current="page">{application.label}</span>
       </nav>
       <h1 className={styles.heading}>{application.label}</h1>

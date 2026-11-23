@@ -343,7 +343,7 @@
   position: relative;
   flex: 0 0 100%;
   height: 480px;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: #f5f5f7;
   overflow: hidden;
   scroll-snap-align: center;
@@ -573,10 +573,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border-block: 1px solid var(--line);
-  border-inline-end: 1px solid var(--line);
   background: var(--background);
   text-align: center;
+  border-radius: var(--card-radius);
 }
 .lineup .galleryTrack {
   padding-block: 16px 24px !important;
@@ -615,22 +614,10 @@
   flex-direction: column;
   padding: var(--card-padding-compact) var(--card-padding-compact) var(--card-padding-content);
 }
-.lineupCopy h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: -0.025em;
-  overflow-wrap: anywhere;
-}
-.lineupCopy > p {
-  margin: 0.5rem 0 0;
-  font-size: 1rem;
-  font-variant-numeric: tabular-nums;
-}
 .serviceCard {
   position: relative;
   min-height: 407px;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   padding: var(--card-padding-content) var(--card-padding-content) 80px;
   background: #fff;
 }
@@ -674,7 +661,7 @@
 .storyCard {
   position: relative;
   height: 480px;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: #f5f5f7;
   overflow: hidden;
 }
@@ -706,7 +693,7 @@
   position: relative;
   min-height: 544px;
   overflow: hidden;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: #f5f5f7;
 }
 .essentialCopy {
@@ -735,7 +722,7 @@
 }
 .accordionCard {
   margin-inline: var(--overview-gutter);
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: #f5f5f7;
   overflow: hidden;
 }
@@ -1018,7 +1005,7 @@
 }
 .storyBlocks section {
   padding: 28px 24px;
-  border-radius: 20px;
+  border-radius: var(--card-radius);
   background: #f5f5f7;
 }
 .storyBlocks h3 {
@@ -1556,18 +1543,38 @@
   }
 }
 
-/* Category landings share the SUNFORD palette and spacing with the product index. */
-.categoryLineup {
+.categoryOverview {
   composes: railSpacing from "./catalog-rail-spacing.module.css";
-  --overview-gutter: max(var(--page-gutter), 6.25vw);
+  --category-edge: 1.5rem;
+  --category-inset: max(var(--category-edge), calc((100% - 67.5rem) / 2 + var(--category-edge)));
+  --category-section-space: 2rem;
+  --category-heading-space: 0.75rem;
 }
-.categoryLineup .chapters {
-  padding: 76px 0 0;
+.categoryOverview :is(.sectionInner, .sectionHeading, .ecosystem, .accordionCard) {
+  margin-inline: var(--category-inset);
+}
+.categoryOverview :is(.chapterTrack, .galleryTrack) {
+  padding-inline: var(--category-inset) var(--category-edge) !important;
+  scroll-padding-inline: var(--category-inset) var(--category-edge);
+}
+.categoryOverview .lineupFilters {
+  padding-inline: var(--category-inset) var(--category-edge);
+  scroll-padding-inline: var(--category-inset) var(--category-edge);
+}
+.categoryOverview .galleryControls {
+  margin-inline: var(--category-inset) var(--category-edge);
+}
+.categoryOverview .heroTrack {
+  padding-inline: var(--category-inset) !important;
+  scroll-padding-inline: var(--category-inset);
+}
+.categoryOverview .chapters {
+  padding-block: 2.5rem 0;
+}
+.categoryOverview .categoryHeading {
+  margin-block-end: 1.5rem;
 }
 .categoryLineup .categoryHeading {
-  align-items: center;
-  margin-inline: var(--catalog-rail-inset);
-  margin-bottom: 28px;
   gap: 12px 24px;
 }
 .categoryLineup .chapters h1 {
@@ -1579,16 +1586,13 @@
   min-height: 40px;
   padding: 8px 14px;
 }
-.categoryLineup .chapterRail {
-  min-height: 145px;
+.categoryOverview .chapterRail {
   margin-inline: 0;
 }
 .categoryLineup .chapterTrack {
   gap: var(--catalog-rail-fluid-gap);
-  padding: var(--catalog-rail-padding-start) var(--catalog-rail-inset)
-    var(--catalog-rail-padding-end) !important;
+  padding-block: var(--catalog-rail-padding-start) var(--catalog-rail-padding-end) !important;
   overscroll-behavior-x: contain;
-  scroll-padding-inline: var(--catalog-rail-inset);
   scroll-snap-type: x mandatory;
 }
 .categoryLineup .chapterTrack > li {
@@ -1597,7 +1601,6 @@
 }
 .categoryLineup .chapterTrack li > a {
   display: flex;
-  min-height: 110px;
   padding: 0;
   flex-direction: column;
   align-items: center;
@@ -1609,9 +1612,18 @@
 .categoryLineup .chapterTrack li {
   font-size: 12px;
 }
-.categoryLineup .index {
+.categoryOverview :is(.chapterRail, .chapterTrack) {
   min-height: 0;
-  padding-block-end: var(--section-space-compact);
+}
+.categoryOverview .chapterTrack li > :is(a, button) {
+  min-height: var(--catalog-rail-control-hit);
+}
+.categoryOverview :is(.priority, .section) {
+  padding-block: var(--category-section-space) 0;
+}
+.categoryOverview .index {
+  min-height: 0;
+  padding-block-end: var(--category-section-space);
 }
 .categoryLineup .section h2 {
   max-inline-size: 28ch;
@@ -1621,22 +1633,18 @@
 .categoryLineup .lineup {
   background: var(--paper);
 }
-.categoryLineup :is(.lineup, .services, .features, .essentials) {
-  padding-top: var(--section-space-feature);
-}
-.categoryLineup :is(.lineup, .services, .features) {
-  padding-bottom: 0;
-}
-.categoryLineup .services .gallery {
+.categoryOverview .services .gallery {
   margin-bottom: 0;
 }
-.categoryLineup :is(.lineup, .services, .features, .essentials) .sectionHeading {
-  margin-inline: var(--catalog-rail-inset);
-  margin-bottom: var(--catalog-rail-heading-space);
+.categoryOverview :is(.sectionHeading, .index h2) {
+  margin-block-end: var(--category-heading-space);
 }
-.categoryLineup .lineupFilters {
-  padding-inline: var(--catalog-rail-inset);
-  scroll-padding-inline: var(--catalog-rail-inset);
+.categoryOverview .sectionHeading > .textLink {
+  min-height: var(--catalog-rail-control-hit);
+  margin-top: 0;
+}
+.categoryOverview .indexColumns {
+  gap: clamp(1.5rem, 2.5vw, 2rem);
 }
 .lineupFilters {
   --segment-height: 36px;
@@ -1656,20 +1664,18 @@
 }
 .categoryLineup .galleryTrack {
   gap: var(--catalog-rail-gap);
-  padding: var(--catalog-rail-padding-start) var(--catalog-rail-inset)
-    var(--catalog-rail-padding-end) !important;
+  padding-block: var(--catalog-rail-padding-start) var(--catalog-rail-padding-end) !important;
   overscroll-behavior-x: contain;
-  scroll-padding-inline: var(--catalog-rail-inset);
 }
 .categoryLineup :is(.galleryTrack, .chapterTrack)[data-stepping] {
   scroll-snap-type: none;
 }
-.categoryLineup .galleryTrack > li {
+.categoryOverview .galleryTrack > li {
   scroll-margin-inline: 0;
 }
 .categoryLineup .galleryControls {
   gap: var(--catalog-rail-controls-gap);
-  margin: 0 var(--catalog-rail-inset);
+  margin-block: 0;
 }
 .categoryLineup .galleryControls button {
   position: relative;
@@ -1724,11 +1730,26 @@
 }
 .categoryLineup .serviceCard {
   min-height: 300px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
 }
 .categoryLineup .serviceCard > svg {
   color: var(--red);
+}
+.editorialOverview.categoryLineup .galleryTrack > .serviceSummary {
+  flex-basis: var(--overview-card-width);
+  min-block-size: var(--overview-product-card-height, 24.5rem);
+}
+.editorialOverview.categoryLineup .services .sectionHeading {
+  max-inline-size: calc(4 * 30rem + 3 * var(--catalog-rail-gap));
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+}
+.categoryOverview .services h2 {
+  max-inline-size: none;
+  text-wrap: balance;
+}
+.serviceCard.serviceSummary {
+  border: 1px solid var(--line);
+  padding-block-end: var(--card-padding-content);
 }
 .categoryLineup .storyCard,
 .categoryLineup .essentialCard {
@@ -1736,7 +1757,6 @@
   min-height: 0;
   height: auto;
   flex-direction: column;
-  border-radius: 16px;
 }
 .categoryLineup .storyCard {
   padding-bottom: 52px;
@@ -1764,10 +1784,9 @@
   margin-top: auto;
 }
 .ecosystem {
-  margin-inline: var(--overview-gutter);
   padding-block: 8px;
   padding-inline: clamp(16px, 3vw, 48px);
-  border-radius: 16px;
+  border-radius: var(--card-radius);
   background: var(--paper);
 }
 .ecosystem details + details {
@@ -1800,8 +1819,8 @@
 }
 .ecosystemContent {
   display: grid;
-  gap: 18px;
-  padding: 4px 0 20px;
+  gap: 1rem;
+  padding: 4px 0 1rem;
   font-size: 16px;
 }
 .ecosystemContent p + * {
@@ -1813,11 +1832,30 @@
 }
 .ecosystemArt {
   position: relative;
+  inline-size: min(100%, 32rem);
+  justify-self: center;
   aspect-ratio: 5 / 3;
 }
 .ecosystemArt img {
   object-fit: contain;
   mix-blend-mode: multiply;
+}
+.ecosystemArt .ecosystemSpecLink {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  z-index: var(--z-local-raised);
+  display: grid;
+  place-items: center;
+  inline-size: var(--catalog-rail-control-hit);
+  block-size: var(--catalog-rail-control-hit);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+}
+.ecosystemArt .ecosystemSpecLink:hover {
+  background: var(--line);
 }
 .categoryLineup .indexPrimary > :is(a, [aria-disabled]) {
   display: block;
@@ -1830,14 +1868,15 @@
 }
 
 @media (min-width: 48rem) {
-  .categoryLineup .chapters {
-    padding-top: 120px;
+  .categoryOverview {
+    --category-section-space: 2.5rem;
+    --category-heading-space: 1rem;
   }
-  .categoryLineup .categoryHeading {
-    margin-bottom: 40px;
+  .categoryOverview .chapters {
+    padding-block-start: 4rem;
   }
-  .categoryLineup .chapterRail {
-    min-height: 169px;
+  .categoryOverview .categoryHeading {
+    margin-block-end: 2rem;
   }
   .categoryLineup .chapterTrack li {
     font-size: 14px;
@@ -1856,13 +1895,16 @@
 }
 
 @media (min-width: 64rem) {
+  .categoryOverview {
+    --category-section-space: 3rem;
+  }
   .ecosystem {
     position: relative;
     display: flex;
-    min-height: clamp(460px, 49vw, 660px);
+    min-height: clamp(24rem, 32vw, 32rem);
     flex-direction: column;
     justify-content: center;
-    padding: 44px clamp(28px, 5.5vw, 80px);
+    padding: 2rem clamp(28px, 5.5vw, 80px);
   }
   .ecosystem details {
     width: 37%;
@@ -1873,6 +1915,63 @@
   .ecosystemArt {
     position: absolute;
     inset: 36px clamp(26px, 4.2vw, 60px) 36px 43%;
+    inline-size: auto;
+    justify-self: auto;
     aspect-ratio: auto;
+  }
+}
+
+.editorialOverview {
+  --overview-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --overview-card-width: min(76vw, 18rem);
+}
+.editorialOverview .accordionSection {
+  padding-block-end: var(--category-section-space);
+}
+.editorialOverview .lineupFilters {
+  --segment-height: 44px;
+  --segment-inset: 6px;
+  --segment-padding: 1.25rem;
+  --segment-padding-block: 0.625rem;
+  --segment-font-size: 0.9375rem;
+  --segment-duration: 300ms;
+  --segment-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+.editorialOverview .lineup .galleryTrack > .productTile {
+  flex-basis: var(--overview-card-width);
+  min-block-size: 0;
+  background: transparent;
+}
+.editorialOverview .lineupLink {
+  border-radius: inherit;
+  background: #fff;
+}
+.editorialOverview .lineupArt {
+  flex: none;
+  aspect-ratio: 1;
+}
+.editorialOverview .lineupArt img {
+  max-block-size: none;
+  padding: clamp(0.5rem, 3%, 1rem);
+}
+.editorialOverview .lineupCopy {
+  padding: 0 var(--card-padding-content) var(--card-padding-content);
+}
+@media (min-width: 48rem) {
+  .editorialOverview {
+    --overview-card-width: clamp(16rem, 34vw, 21rem);
+  }
+}
+@media (min-width: 64rem) {
+  .editorialOverview {
+    --overview-card-width: max(16rem, calc((100% - 3 * var(--catalog-rail-gap)) / 3.75));
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .editorialOverview .lineupLink {
+    transition: transform 500ms var(--overview-motion-ease);
+  }
+  .editorialOverview .lineupLink:hover {
+    transform: scale(1.015);
   }
 }

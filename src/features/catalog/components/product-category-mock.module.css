@@ -222,7 +222,7 @@
   align-items: center;
   height: 500px;
   padding: 28px 20px 20px;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: var(--paper);
   text-align: center;
 }
@@ -374,7 +374,6 @@
 }
 .grid > article {
   min-width: 0;
-  border: 1px solid var(--line);
 }
 .grid article[data-model-only] > div {
   padding: 0;
@@ -385,9 +384,6 @@
   display: block;
   min-height: 0;
   overflow: visible;
-}
-.mockCard {
-  border: 1px dashed var(--line);
 }
 .mockArt {
   position: relative;
@@ -466,7 +462,7 @@
   align-items: flex-start;
   height: 100%;
   padding: 28px;
-  border-radius: 24px;
+  border-radius: var(--card-radius);
   background: white;
 }
 .guideCard h3 {
@@ -513,7 +509,6 @@
   .showcaseCard {
     height: 620px;
     padding: 36px 40px 28px;
-    border-radius: 36px;
   }
   .showcaseSubtitle {
     font-size: 18px;
@@ -591,23 +586,36 @@
   gap: 0;
   border-block-start: 1px solid var(--line);
 }
-.directoryGrid > article {
+.directoryGrid > article::before,
+.directoryGrid > article::after {
+  position: absolute;
+  pointer-events: none;
+}
+.directoryGrid > article::before {
+  inset-block: 0;
+  inset-inline-end: 0;
+  border-inline-end: 1px solid var(--line);
+}
+.directoryGrid > article::after {
+  inset-block-end: 0;
+  inset-inline: 0;
   border-block-end: 1px solid var(--line);
+  content: "";
 }
 @media (min-width: 24rem) and (width < 64rem) {
   .directoryGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .directoryGrid > article:nth-child(odd):not(:last-child) {
-    border-inline-end: 1px solid var(--line);
+  .directoryGrid > article:nth-child(odd):not(:last-child)::before {
+    content: "";
   }
 }
 @media (min-width: 64rem) {
   .directoryGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .directoryGrid > article:not(:nth-child(4n), :last-child) {
-    border-inline-end: 1px solid var(--line);
+  .directoryGrid > article:not(:nth-child(4n), :last-child)::before {
+    content: "";
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -56,7 +56,6 @@ const desktopRoutes = [
   "/about-us",
   "/contact-us",
   "/software/download",
-  "/applications-and-softwares",
   "/warranty/policy",
   "/explore",
   "/business/blogs/editorial",

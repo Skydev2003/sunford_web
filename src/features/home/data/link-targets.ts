@@ -13,7 +13,7 @@ export const defaultHomePagePaths = {
   digital: "/Product/Digital-weighing",
   smart: "/Product/MES",
   accessories: "/product/scale-accessories",
-  software: "/applications-and-softwares",
+  software: "/software/download",
 } as const;
 
 export function resolveHomeLink(

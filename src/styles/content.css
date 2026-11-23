@@ -112,7 +112,7 @@
 .software-card {
   min-width: 0;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: var(--card-radius);
   background: var(--paper);
 }
 .software-card-image {
@@ -207,7 +207,7 @@
 .directory-card {
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
+  border-radius: var(--card-radius);
   background: var(--paper);
   overflow: hidden;
   min-width: 0;
@@ -889,7 +889,7 @@
   position: relative;
   flex: 0 0 min(400px, 85vw);
   aspect-ratio: 16/9;
-  border-radius: 18px;
+  border-radius: var(--card-radius);
   overflow: hidden;
   background: var(--paper);
   scroll-snap-align: start;

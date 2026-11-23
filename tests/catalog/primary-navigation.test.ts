@@ -31,7 +31,7 @@ const approvedMenus: MenuContract[] = [
         label: "การใช้งาน",
         links: [
           ["ครัวและกาแฟ", "/products/category/scales/kitchen", false],
-          ["ซอฟต์แวร์ POS", "/applications-and-softwares", false],
+          ["ซอฟต์แวร์ POS", "/software/download#retail-software", false],
           ["คำนวณราคาและงานขาย", "/products/category/scales/price", false],
           ["งานผลิตและอุตสาหกรรม", "/products/category/scales/industrial", false],
         ],
@@ -245,7 +245,6 @@ const approvedMenus: MenuContract[] = [
         links: [
           ["คู่มือและสเปก", "/technical-specification", false],
           ["ดาวน์โหลดซอฟต์แวร์", "/software/download", false],
-          ["ซอฟต์แวร์และสิทธิ์ใช้งาน", "/applications-and-softwares", false],
         ],
       },
       {
@@ -282,7 +281,7 @@ test("every displayed label and column matches the owner-selected specification"
   assert.deepEqual(menuContract(items), approvedMenus);
 });
 
-test("owner-approved Navbar exposes all 79 entries in three columns", () => {
+test("owner-approved Navbar exposes all 78 entries in three columns", () => {
   const items = getPrimaryNavigationItems(defaultNavigation);
   assert.equal(items.length, 8);
   assert.ok(items.every((item) => item.groups?.length === 2));
@@ -303,13 +302,13 @@ test("owner-approved Navbar exposes all 79 entries in three columns", () => {
   assert.equal(
     items.flatMap((item) => [...item.links, ...item.groups!.flatMap((group) => group.links)])
       .length,
-    79,
+    78,
   );
   const links = items.flatMap((item) => [
     ...item.links,
     ...item.groups!.flatMap((group) => group.links),
   ]);
-  assert.equal(links.filter((link) => !link.disabled).length, 79);
+  assert.equal(links.filter((link) => !link.disabled).length, 78);
   assert.equal(links.filter((link) => link.disabled).length, 0);
   assert.deepEqual(
     items.map((item) => columns(item).map((column) => column.links.length)),
@@ -321,7 +320,7 @@ test("owner-approved Navbar exposes all 79 entries in three columns", () => {
       [3, 2, 4],
       [7, 3, 4],
       [3, 1, 3],
-      [2, 3, 4],
+      [2, 2, 4],
     ],
   );
   const pos = items.find((item) => item.href === "/products/category/pos")!;
@@ -365,7 +364,7 @@ test("readiness follows the canonical destination across contexts without disabl
   const expectedLinks = approvedMenus.flatMap((item) =>
     item.columns.flatMap((column) => column.links),
   );
-  assert.equal(expectedLinks.length, 79);
+  assert.equal(expectedLinks.length, 78);
   const readiness = new Map<string, boolean>();
   for (const [, href, disabled] of expectedLinks) {
     if (readiness.has(href)) assert.equal(readiness.get(href), disabled, href);
@@ -380,7 +379,7 @@ test("readiness follows the canonical destination across contexts without disabl
   assert.ok(!links.some((link) => link.href.startsWith("/solutions/")));
   for (const href of [
     "/products/category/platforms",
-    "/applications-and-softwares",
+    "/software/download",
     "/warranty/register",
     "/contact-us",
   ]) {
@@ -480,7 +479,7 @@ test("product menus keep approved short names and direct parent links without ch
     [
       [
         "/products/category/scales/kitchen",
-        "/applications-and-softwares",
+        "/software/download#retail-software",
         "/products/category/scales/price",
         "/products/category/scales/industrial",
       ],
@@ -621,8 +620,8 @@ test("catalog destinations stay linked for every runtime inventory while an expl
     );
   for (const ready of [undefined, [paths[0]], [], paths]) {
     const entries = links(ready);
-    assert.equal(entries.length, 79);
-    assert.equal(entries.filter((entry) => !entry.disabled).length, 79);
+    assert.equal(entries.length, 78);
+    assert.equal(entries.filter((entry) => !entry.disabled).length, 78);
     for (const path of paths) {
       const matching = entries.filter(({ href }) => href === path);
       assert.equal(matching.length, 1, path);

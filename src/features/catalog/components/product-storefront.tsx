@@ -319,10 +319,7 @@ export function ProductStorefront({
             title="ประสบการณ์แบบ Sunford."
             subtitle="มากกว่าการชั่งน้ำหนัก"
           >
-            <Link
-              href="/applications-and-softwares"
-              className="store-editorial-card store-solution-card"
-            >
+            <Link href="/software/download" className="store-editorial-card store-solution-card">
               <p className="store-card-eyebrow">แอปพลิเคชันและซอฟต์แวร์</p>
               <h3>
                 เชื่อมต่อข้อมูล.

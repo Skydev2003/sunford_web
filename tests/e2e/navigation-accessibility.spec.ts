@@ -55,26 +55,20 @@ test("touch navigation expands scales and follows the household destination", as
   }
 });
 
-test("software menu category links select the real filter on first entry and same-page navigation", async ({
-  page,
-}) => {
+test("software menu opens the downloads directory and its category anchors", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
   await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
   await page
     .locator(".submenu-panel.is-active")
-    .getByRole("link", { name: "ซอฟต์แวร์และสิทธิ์ใช้งาน", exact: true })
+    .getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true })
     .click();
+  const directory = page.getByRole("main");
+  await expect(directory.getByRole("heading", { level: 1 })).toHaveText("ดาวน์โหลดซอฟต์แวร์");
   for (const hash of ["retail-software", "industrial-software", "household-software"]) {
-    await page.locator(`.software-filters a[href="#${hash}"]`).click();
-    await expect(page).toHaveURL(new RegExp(`/applications-and-softwares#${hash}$`));
-    await expect(page.locator(`.software-filters a[href="#${hash}"]`)).toHaveAttribute(
-      "aria-current",
-      "true",
-    );
-    await expect(page.locator(".software-catalog .empty-state")).toBeVisible();
+    await page.goto(`/software/download#${hash}`);
+    await expect(page).toHaveURL(`/software/download#${hash}`);
+    await expect(directory.locator(`#${hash}`).getByRole("heading", { level: 2 })).toBeInViewport();
   }
-  await page.goBack();
-  await expect(page).toHaveURL(/\/$/);
 });

@@ -164,12 +164,12 @@ for (const width of [390, 1440]) {
     }
     const header = page.locator("[data-products-header]:visible");
     if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-    await openCategoryMenu(header, "ระบบ POS", width);
+    await openCategoryMenu(header, "บริการ", width);
     await header
       .locator("#products-navigation-panel")
-      .getByRole("link", { name: "ซอฟต์แวร์และสิทธิ์ใช้งาน", exact: true })
+      .getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/applications-and-softwares$/);
+    await expect(page).toHaveURL(/\/software\/download$/);
     await expect(header.locator("#products-navigation-panel")).toHaveCount(0);
     if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     await openCategoryMenu(header, "เครื่องชั่ง", width);

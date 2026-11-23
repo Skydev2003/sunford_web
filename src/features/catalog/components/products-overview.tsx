@@ -21,34 +21,26 @@ import {
 import Link from "next/link";
 import { CatalogNavigationLink } from "./catalog-navigation-link";
 import Image from "next/image";
-import lcdArt from "../../../../public/images/category-chapters/indicators/lcd.webp";
-import ledArt from "../../../../public/images/category-chapters/indicators/led.webp";
-import carbonSteelArt from "../../../../public/images/category-chapters/platforms/carbon-steel.webp";
-import sus201Art from "../../../../public/images/category-chapters/platforms/sus201.webp";
-import sus304Art from "../../../../public/images/category-chapters/platforms/sus304.webp";
-import androidArt from "../../../../public/images/category-chapters/pos/android.webp";
-import windowsArt from "../../../../public/images/category-chapters/pos/windows.webp";
-import analyticalArt from "../../../../public/images/category-chapters/scales/analytical.webp";
-import industrialArt from "../../../../public/images/category-chapters/scales/industrial.webp";
-import kitchenArt from "../../../../public/images/category-chapters/scales/kitchen.webp";
-import priceArt from "../../../../public/images/category-chapters/scales/price.webp";
+import { chapterArtwork } from "../data/category-chapter-artwork";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resolveCategoryHref } from "../data/category-destinations";
-import directoryStyles from "./product-directory.module.css";
 import {
   getProductSubcategoryPage,
   getProductSubcategoryPageByHref,
 } from "../data/product-subcategory-pages";
 import {
+  ArrowUpRight,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   GitCompareArrows,
   FileText,
+  FileCheck,
   Headphones,
   Pause,
   Play,
   Plus,
+  Settings2,
   ShieldCheck,
   Truck,
   X,
@@ -63,14 +55,13 @@ import type { ProductCategory } from "../data/mock-categories";
 import { sunford } from "@/features/home/data/brand";
 import { solutionImages } from "@/features/home/data/business-solutions";
 import {
+  defaultSpotlightImage,
   defaultSpotlightProductId,
   defaultSpotlightVideo,
   defaultSpotlightPoster,
 } from "@/features/home/data/image-slots";
 import { selectComponentShowcase } from "../data/component-showcase";
-import { formatCatalogCardPrice } from "../data/price-format";
-import { ProductCardHighlight } from "./product-card-highlight";
-import { categoryApplicationsLink, hasCategoryApplications } from "../data/category-applications";
+import { ProductCardCaption } from "./product-card-caption";
 import { catalogProductPhoto } from "./catalog-product-card";
 import { ProductCategoryMock } from "./product-category-mock";
 import { SegmentedFilter } from "./segmented-filter";
@@ -87,7 +78,12 @@ type Story = {
   content: ReactNode;
 };
 type AccordionItem = { title: string; image: string; content: ReactNode };
-type Service = { title: string; detail: string; href: string; content: ReactNode };
+type Service = {
+  title: string;
+  detail: string;
+  href: string;
+  content?: ReactNode;
+};
 
 function subscribeMotion(callback: () => void) {
   const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -108,23 +104,14 @@ const categoryServiceIcons = new Map([
   [sunford.service, ShieldCheck],
   [sunford.warrantyPolicy, ShieldCheck],
   [sunford.warranty, ClipboardCheck],
-  [sunford.software, Download],
   [sunford.downloads, Download],
+  ["/products/category/scales/price", FileCheck],
+  ["/products/category/scales/industrial", Settings2],
 ]);
-const chapterArtwork = new Map([
-  ["/products/category/indicators/lcd", lcdArt.src],
-  ["/products/category/indicators/led", ledArt.src],
-  ["/products/category/platforms/carbon-steel", carbonSteelArt.src],
-  ["/products/category/platforms/sus201", sus201Art.src],
-  ["/products/category/platforms/sus304", sus304Art.src],
-  ["/products/category/pos/android", androidArt.src],
-  ["/products/category/pos/windows", windowsArt.src],
-  ["/products/category/scales/analytical", analyticalArt.src],
-  ["/products/category/scales/industrial", industrialArt.src],
-  ["/products/category/scales/kitchen", kitchenArt.src],
-  ["/products/category/scales/price", priceArt.src],
+const categoryFeatureHeadings = new Map([
+  ["pos", "โซลูชันขายหน้าร้าน (POS)"],
+  ["accessories", "อุปกรณ์เสริมครบวงจร"],
 ]);
-
 type GalleryProps = {
   id: string;
   label: string;
@@ -364,7 +351,6 @@ export function ProductsOverview({
   services,
   accordion,
   categoryId,
-  chapterPhotoIdByHref,
   indexContent,
 }: {
   products: ClientProduct[];
@@ -378,17 +364,16 @@ export function ProductsOverview({
   services: Service[];
   accordion: AccordionItem[];
   categoryId?: string;
-  chapterPhotoIdByHref?: Record<string, string>;
   indexContent?: ReactNode;
 }) {
   const router = useRouter();
   const activeCategory = categories.find((category) => category.id === categoryId);
-  const applicationsLink =
-    categoryId && hasCategoryApplications(categoryId)
-      ? categoryApplicationsLink(categoryId)
-      : undefined;
-  const categoryLineup = Boolean(applicationsLink);
-  const categoryEntrance = Boolean(indexContent) || categoryLineup || categoryId === "accessories";
+  const categoryLineup = Boolean(activeCategory);
+  const scales = categoryId === "scales";
+  const indicators = categoryId === "indicators";
+  const platforms = categoryId === "platforms";
+  const usesEditorialLayout = scales || indicators || platforms;
+  const categoryEntrance = Boolean(indexContent) || categoryLineup;
   const categoryItems = activeCategory?.subcategories ?? categories;
   const categoryHref = categoryId ? `/products/category/${categoryId}` : undefined;
   const categoryMenu = categoryHref
@@ -396,10 +381,41 @@ export function ProductsOverview({
         (item) => item.href === categoryHref,
       )
     : undefined;
-  const additionalCategoryLinks = (categoryMenu?.groups?.[0]?.links ?? []).filter((item) => {
-    const page = getProductSubcategoryPageByHref(item.href);
-    return !item.disabled && page && "matches" in page;
-  });
+  const companionEquipment = indicators
+    ? {
+        title: "โครงสร้างแท่นชั่ง",
+        detail: "เลือกขนาดแท่น พิกัดน้ำหนัก และวัสดุให้เหมาะกับหน้างานและอินดิเคเตอร์ที่ใช้",
+        image: "/images/products/category-families/platforms.webp",
+        href: "/products/category/platforms",
+        linkLabel: "ดูโครงสร้างแท่นชั่ง",
+      }
+    : platforms
+      ? {
+          title: "อินดิเคเตอร์แท่นชั่ง",
+          detail: "เลือกหัวอ่านที่รองรับโหลดเซลล์ของแท่น พร้อมจอและพอร์ตเชื่อมต่อที่เหมาะกับงาน",
+          image: "/images/products/category-families/indicators.webp",
+          href: "/products/category/indicators",
+          linkLabel: "ดูอินดิเคเตอร์แท่นชั่ง",
+        }
+      : categoryId === "accessories"
+        ? {
+            title: "เครื่องชั่ง",
+            detail: "ดูเครื่องชั่งสำหรับครัวเรือน การผลิต คำนวณราคา และงานวิเคราะห์",
+            image: defaultSpotlightImage,
+            href: "/products/category/scales",
+            linkLabel: "ดูเพิ่มเติม",
+          }
+        : {
+            title: "อุปกรณ์เสริม",
+            detail: "เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS เพื่อขยายการใช้งานให้เหมาะกับธุรกิจ",
+            image: solutionImages.accessories,
+            href: "/products/category/accessories",
+            linkLabel: "ดูอุปกรณ์เสริม",
+          };
+  const softwareLink =
+    categoryId === "pos"
+      ? { href: sunford.downloads, linkLabel: "ดาวน์โหลดซอฟต์แวร์" }
+      : { href: "/products/category/pos", linkLabel: "ดูระบบ POS" };
   const chapterItems = categoryMenu
     ? categoryMenu.links.map((link) => {
         const category = activeCategory?.subcategories.find(
@@ -427,10 +443,14 @@ export function ProductsOverview({
   };
   const railScope = categoryLineup ? `products-overview.${categoryId}` : undefined;
   const [restoredFinderOpen, setFinderOpen] = useReturnState("products-overview.finderOpen", false);
-  const finderOpen = !applicationsLink && restoredFinderOpen;
+  const finderOpen = !categoryLineup && restoredFinderOpen;
   const hydrated = useHydratedControls();
   const [story, setStory] = useReturnState<Story | null>("products-overview.story", null);
-  const [service, setService] = useReturnState<Service | null>("products-overview.service", null);
+  const [restoredService, setService] = useReturnState<Service | null>(
+    "products-overview.service",
+    null,
+  );
+  const service = usesEditorialLayout ? null : restoredService;
   const [mobileMenu, setMobileMenu] = useState(false);
   const [accordionIndex, setAccordionIndex] = useReturnState("products-overview.accordionIndex", 0);
   const [heroIndex, setHeroIndex] = useReturnState("products-overview.heroIndex", 0);
@@ -441,6 +461,19 @@ export function ProductsOverview({
   const [chapterEdges, setChapterEdges] = useState({ start: true, end: true });
   const heroTrack = useRef<HTMLUListElement>(null);
   const chapterTrack = useRef<HTMLUListElement>(null);
+  const matchServiceCardHeight = useCallback((card: HTMLLIElement | null) => {
+    const overview = card?.closest<HTMLElement>("[data-products-overview]");
+    if (!card || !overview) return;
+
+    const updateHeight = () => {
+      const height = card.getBoundingClientRect().height;
+      if (height > 0) overview.style.setProperty("--overview-product-card-height", `${height}px`);
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
   const reducedMotion = useSyncExternalStore(subscribeMotion, readMotion, serverMotion);
   const overlayHost = useCatalogOverlayHost();
   const componentPhotos = new Map(
@@ -467,7 +500,8 @@ export function ProductsOverview({
   const lineupProducts = groupProducts
     ? lineup.filter((product) => groupProducts.has(product.id))
     : lineup;
-  const heroes = categoryLineup ? [] : featuredFirst.slice(0, 2);
+  const hasFeaturedGallery = scales && featuredFirst.length > 0;
+  const heroes = hasFeaturedGallery ? featuredFirst.slice(0, 2) : [];
   const playing =
     !indexContent &&
     !paused &&
@@ -484,11 +518,7 @@ export function ProductsOverview({
     const members = category.productIds
       .map((id) => productsById.get(id))
       .filter((product) => product?.image);
-    const fallbackId = chapterPhotoIdByHref?.[category.href];
-    const photo =
-      members.find((product) => product?.featured) ??
-      members[0] ??
-      (fallbackId ? productsById.get(fallbackId) : undefined);
+    const photo = members.find((product) => product?.featured) ?? members[0];
     const memberPhoto = photo && catalogProductPhoto(photo);
     const artwork = chapterArtwork.get(category.href);
     return {
@@ -529,7 +559,7 @@ export function ProductsOverview({
       router.push(destination);
       return;
     }
-    if (applicationsLink) return;
+    if (categoryLineup) return;
     const url = new URL(window.location.href);
     if (activeCategory) {
       url.searchParams.delete("category");
@@ -544,7 +574,7 @@ export function ProductsOverview({
   };
   const activateLink = (event: MouseEvent<HTMLElement>, href: string) => {
     if (
-      applicationsLink ||
+      categoryLineup ||
       event.button ||
       event.metaKey ||
       event.ctrlKey ||
@@ -600,7 +630,7 @@ export function ProductsOverview({
       observer.disconnect();
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [categoryLineup, indexContent]);
+  }, [hasFeaturedGallery, indexContent]);
   useEffect(() => {
     if (!playing) return;
     const timer = window.setInterval(() => showHero((heroIndex + 1) % heroes.length, false), 8000);
@@ -613,13 +643,18 @@ export function ProductsOverview({
       else video.pause();
     });
   }, [heroIndex, playing]);
-  const openDetails = (title: string, href: string, action: () => void) => {
+  const openDetails = (
+    title: string,
+    href: string,
+    action: () => void,
+    className = styles.cardOpen,
+  ) => {
     const label = `ดูเพิ่มเติม ${title}`;
     const icon = <Plus size={21} aria-hidden="true" />;
     if (categoryLineup && !hydrated) {
       return (
         <Link
-          className={styles.cardOpen}
+          className={className}
           href={href === categoryHref ? "#products-lineup" : href}
           aria-label={label}
           prefetch={false}
@@ -632,7 +667,7 @@ export function ProductsOverview({
       <button
         disabled={!hydrated}
         type="button"
-        className={styles.cardOpen}
+        className={className}
         aria-label={label}
         onClick={action}
       >
@@ -655,7 +690,14 @@ export function ProductsOverview({
     const content = (
       <>
         <span className={styles.chapterArt}>
-          <ProductImage placeholder="product" {...chapterImages[index]} alt="" fill />
+          <ProductImage
+            placeholder="product"
+            {...chapterImages[index]}
+            alt=""
+            fill
+            eager={usesEditorialLayout}
+            progressive={usesEditorialLayout}
+          />
         </span>
         <span>{category.label}</span>
       </>
@@ -689,16 +731,119 @@ export function ProductsOverview({
     );
   });
 
+  const accordionSection = (
+    <section
+      className={`${styles.section} ${styles.accordionSection}`}
+      aria-labelledby="products-accordion-title"
+      data-overview-section="accordion"
+    >
+      <div className={styles.sectionHeading} data-scroll-reveal="">
+        <h2 id="products-accordion-title">
+          {activeCategory
+            ? `เลือก${indicators ? "อินดิเคเตอร์" : activeCategory.label}ให้เหมาะกับงาน`
+            : "เมื่อทุกอย่างเชื่อมถึงกัน ธุรกิจก็ไปได้ไกลขึ้น"}
+        </h2>
+      </div>
+      {categoryLineup ? (
+        <div className={styles.ecosystem}>
+          {accordion.map((item, index) => (
+            <details
+              key={item.title}
+              name={`products-ecosystem-${categoryId}`}
+              open={index === 0}
+              data-return-scope={`products-ecosystem-${index}`}
+            >
+              <summary>
+                {item.title}
+                <ChevronDown size={22} aria-hidden="true" />
+              </summary>
+              <div className={styles.ecosystemContent}>
+                <div>{item.content}</div>
+                {item.image && (
+                  <div className={styles.ecosystemArt}>
+                    <ProductImage src={item.image} alt="" fill sizes="(width < 48rem) 80vw, 38vw" />
+                    {(indicators || platforms) && (
+                      <Link
+                        href="/guides/indicator-platform-compatibility"
+                        className={styles.ecosystemSpecLink}
+                        aria-label="ไปหน้าจัดสเปคเครื่องชั่ง"
+                      >
+                        <ArrowUpRight size={20} aria-hidden="true" />
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            </details>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.accordionCard}>
+          <div className={styles.accordionRows}>
+            {accordion.map((item, index) => (
+              <div className={styles.accordionRow} key={item.title}>
+                <h3>
+                  <button
+                    disabled={!hydrated}
+                    id={`products-accordion-button-${index}`}
+                    type="button"
+                    aria-expanded={accordionIndex === index}
+                    aria-controls={`products-accordion-panel-${index}`}
+                    onClick={() => setAccordionIndex(index)}
+                  >
+                    {item.title}
+                    <ChevronDown
+                      className={accordionIndex === index ? styles.chevronOpen : ""}
+                      size={22}
+                      aria-hidden="true"
+                    />
+                  </button>
+                </h3>
+                <div
+                  id={`products-accordion-panel-${index}`}
+                  role="region"
+                  aria-labelledby={`products-accordion-button-${index}`}
+                  hidden={accordionIndex !== index}
+                >
+                  {item.content}
+                  <div className={styles.mobileAccordionArt}>
+                    <ProductImage
+                      placeholder={categoryId ? "product" : "media"}
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="80vw"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className={styles.accordionArt}>
+            <ProductImage
+              key={accordionIndex}
+              placeholder={categoryId ? "product" : "media"}
+              src={accordion[accordionIndex].image}
+              alt={accordion[accordionIndex].title}
+              fill
+              sizes="60vw"
+            />
+          </div>
+        </div>
+      )}
+    </section>
+  );
+
   return (
     <div
-      className={`${styles.overview} ${categoryEntrance ? styles.categoryEntrance : ""} ${categoryLineup ? styles.categoryLineup : ""}`}
+      className={`${styles.overview} ${categoryEntrance ? styles.categoryEntrance : ""} ${categoryId ? styles.categoryOverview : ""} ${categoryLineup ? styles.categoryLineup : ""} ${usesEditorialLayout ? styles.editorialOverview : ""}`}
       data-products-overview
       data-overview-category={categoryId}
       data-controls-ready={hydrated}
     >
       <Suspense fallback={null}>
         <FinderQuerySync
-          onOpen={applicationsLink ? undefined : openFinder}
+          onOpen={categoryLineup ? undefined : openFinder}
           onClose={indexContent ? closeFinder : undefined}
           categoryId={activeCategory?.id}
         />
@@ -707,7 +852,7 @@ export function ProductsOverview({
         navigation={navigation}
         readySubcategoryHrefs={readySubcategoryHrefs}
         site={site}
-        onOpenFinder={applicationsLink ? undefined : openFinder}
+        onOpenFinder={categoryLineup ? undefined : openFinder}
         onMenuChange={setMobileMenu}
       />
       <main
@@ -812,7 +957,7 @@ export function ProductsOverview({
               </div>
             </section>
 
-            {!categoryLineup && (
+            {hasFeaturedGallery && (
               <section
                 className={styles.priority}
                 aria-label="สินค้าเด่น SUNFORD"
@@ -890,7 +1035,11 @@ export function ProductsOverview({
                               alt={`SUNFORD ${cardNames[product.id] ?? product.name}`}
                               fill
                               preload={index === 0}
-                              sizes="(width < 48rem) 82vw, 87.5vw"
+                              sizes={
+                                categoryId
+                                  ? "(min-width: 67.5rem) 64.5rem, calc(100vw - 3rem)"
+                                  : "(width < 48rem) 82vw, 87.5vw"
+                              }
                             />
                           )}
                         </div>
@@ -972,7 +1121,7 @@ export function ProductsOverview({
                     ? `ดูข้อมูล${activeCategory.label}`
                     : "ดูข้อมูลผลิตภัณฑ์ตระกูลนี้"}
                 </h2>
-                {!applicationsLink && (
+                {!categoryLineup && (
                   <button
                     disabled={!hydrated}
                     type="button"
@@ -1010,11 +1159,6 @@ export function ProductsOverview({
                         {item.label}
                       </button>
                     ))}
-                    {applicationsLink && (
-                      <Link href={applicationsLink.href} prefetch={false}>
-                        {applicationsLink.shortLabel}
-                      </Link>
-                    )}
                   </SegmentedFilter>
                 </div>
               )}
@@ -1041,7 +1185,13 @@ export function ProductsOverview({
                   const fallbackPhoto = componentPhoto || product.fallbackImage;
                   const name = cardNames[product.id] ?? product.name;
                   return (
-                    <li key={product.id} className={styles.productTile}>
+                    <li
+                      key={product.id}
+                      ref={usesEditorialLayout && index === 0 ? matchServiceCardHeight : undefined}
+                      className={styles.productTile}
+                      data-scroll-reveal={usesEditorialLayout ? "shelf" : undefined}
+                      data-scroll-reveal-order={usesEditorialLayout ? index % 4 : undefined}
+                    >
                       <Link
                         href={`/products/${product.slug}`}
                         prefetch
@@ -1056,12 +1206,19 @@ export function ProductsOverview({
                               <ProductImage
                                 placeholder="product"
                                 progressive
-                                prioritize={lineupRevision === 0 && index < 6}
+                                eager={usesEditorialLayout && lineupRevision === 0 && index < 4}
+                                prioritize={
+                                  !usesEditorialLayout && lineupRevision === 0 && index < 6
+                                }
                                 src={photo}
                                 fallbackSrc={fallbackPhoto}
                                 alt={`SUNFORD ${name}`}
                                 fill
-                                sizes="(max-width: 736px) min(calc(100vw - 60px), 309px), 313px"
+                                sizes={
+                                  usesEditorialLayout
+                                    ? "(min-width: 67.5rem) calc((50vw + 27rem) / 3.75), (min-width: 64rem) max(16rem, calc((100vw - 6.75rem) / 3.75)), (min-width: 48rem) clamp(16rem, 34vw, 21rem), min(76vw, 18rem)"
+                                    : "(max-width: 736px) min(calc(100vw - 60px), 309px), 313px"
+                                }
                               />
                               {categoryLineup && (
                                 <span
@@ -1073,11 +1230,12 @@ export function ProductsOverview({
                             </>
                           )}
                         </div>
-                        <div className={styles.lineupCopy}>
-                          <h3>{name}</h3>
-                          <ProductCardHighlight text={product.highlight} />
-                          <p>{formatCatalogCardPrice(product.price)}</p>
-                        </div>
+                        <ProductCardCaption
+                          className={styles.lineupCopy}
+                          name={name}
+                          highlight={product.highlight}
+                          price={product.price}
+                        />
                       </Link>
                     </li>
                   );
@@ -1085,16 +1243,23 @@ export function ProductsOverview({
               </Gallery>
             </section>
 
+            {usesEditorialLayout && accordionSection}
+
             <section
               className={`${styles.section} ${styles.paper} ${styles.services}`}
               aria-labelledby="products-services-title"
               data-overview-section="services"
             >
-              <div className={styles.sectionHeading} data-scroll-reveal="">
+              <div
+                className={styles.sectionHeading}
+                data-scroll-reveal={usesEditorialLayout ? "shelf" : ""}
+              >
                 <h2 id="products-services-title">เลือก SUNFORD พร้อมเคียงข้างทุกธุรกิจ</h2>
-                <Link className={styles.textLink} href={sunford.contact}>
-                  ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={16} aria-hidden="true" />
-                </Link>
+                {!usesEditorialLayout && (
+                  <Link className={styles.textLink} href={sunford.contact}>
+                    ปรึกษาผู้เชี่ยวชาญ <ChevronRight size={16} aria-hidden="true" />
+                  </Link>
+                )}
               </div>
               <Gallery
                 id="products-services"
@@ -1109,56 +1274,65 @@ export function ProductsOverview({
                       : (categoryServiceIcons.get(href) ?? Headphones)
                     : (serviceIcons[index] ?? Headphones);
                   return (
-                    <li key={item.title} className={styles.serviceCard}>
+                    <li
+                      key={item.title}
+                      className={`${styles.serviceCard} ${usesEditorialLayout ? styles.serviceSummary : ""}`}
+                      data-scroll-reveal={usesEditorialLayout ? "shelf" : undefined}
+                      data-scroll-reveal-order={usesEditorialLayout ? index + 1 : undefined}
+                    >
                       <Icon size={42} strokeWidth={1.5} aria-hidden="true" />
                       <h3>{item.title}</h3>
                       <p>{item.detail}</p>
-                      {openDetails(item.title, item.href, () => setService(item))}
+                      {!usesEditorialLayout &&
+                        openDetails(item.title, item.href, () => setService(item))}
                     </li>
                   );
                 })}
               </Gallery>
             </section>
 
-            <section
-              className={`${styles.section} ${styles.features}`}
-              aria-labelledby="products-features-title"
-              data-overview-section="features"
-            >
-              <div className={styles.sectionHeading} data-scroll-reveal="">
-                <h2 id="products-features-title">
-                  {activeCategory
-                    ? `รู้จัก${activeCategory.label} SUNFORD`
-                    : "รู้จักผลิตภัณฑ์ SUNFORD"}
-                </h2>
-              </div>
-              <Gallery
-                id="products-features"
-                label="เลื่อนเรื่องราวผลิตภัณฑ์"
-                returnKey={railScope && `${railScope}.features`}
-                prepareImages={categoryLineup}
+            {!usesEditorialLayout && (
+              <section
+                className={`${styles.section} ${styles.features}`}
+                aria-labelledby="products-features-title"
+                data-overview-section="features"
               >
-                {stories.map((item) => (
-                  <li className={styles.storyCard} key={item.id}>
-                    <div className={styles.storyCopy}>
-                      {!categoryLineup && <p>SUNFORD</p>}
-                      <h3>{item.title}</h3>
-                      {categoryLineup && <p>{item.introduction}</p>}
-                    </div>
-                    <div className={styles.storyArt}>
-                      <ProductImage
-                        placeholder={categoryId ? "product" : "media"}
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        sizes="(width < 48rem) 260px, 372px"
-                      />
-                    </div>
-                    {openDetails(item.title, item.href, () => setStory(item))}
-                  </li>
-                ))}
-              </Gallery>
-            </section>
+                <div className={styles.sectionHeading} data-scroll-reveal="">
+                  <h2 id="products-features-title">
+                    {activeCategory
+                      ? (categoryFeatureHeadings.get(activeCategory.id) ??
+                        `รู้จัก${activeCategory.label} SUNFORD`)
+                      : "รู้จักผลิตภัณฑ์ SUNFORD"}
+                  </h2>
+                </div>
+                <Gallery
+                  id="products-features"
+                  label="เลื่อนเรื่องราวผลิตภัณฑ์"
+                  returnKey={railScope && `${railScope}.features`}
+                  prepareImages={categoryLineup}
+                >
+                  {stories.map((item) => (
+                    <li className={styles.storyCard} key={item.id}>
+                      <div className={styles.storyCopy}>
+                        {!categoryLineup && <p>SUNFORD</p>}
+                        <h3>{item.title}</h3>
+                        {categoryLineup && <p>{item.introduction}</p>}
+                      </div>
+                      <div className={styles.storyArt}>
+                        <ProductImage
+                          placeholder={categoryId ? "product" : "media"}
+                          src={item.image}
+                          alt={item.title}
+                          fill
+                          sizes="(width < 48rem) 260px, 372px"
+                        />
+                      </div>
+                      {openDetails(item.title, item.href, () => setStory(item))}
+                    </li>
+                  ))}
+                </Gallery>
+              </section>
+            )}
 
             {(!activeCategory || categoryLineup) && (
               <section
@@ -1168,9 +1342,12 @@ export function ProductsOverview({
               >
                 <div className={styles.sectionHeading} data-scroll-reveal="">
                   <h2 id="products-essentials-title">สิ่งที่เติมเต็มการทำงาน</h2>
-                  <Link href={sunford.accessories} className={styles.textLink}>
-                    ดูอุปกรณ์เสริมทั้งหมด <ChevronRight size={16} aria-hidden="true" />
-                  </Link>
+                  {!usesEditorialLayout && (
+                    <Link href={companionEquipment.href} className={styles.textLink}>
+                      ดู{companionEquipment.title}ทั้งหมด{" "}
+                      <ChevronRight size={16} aria-hidden="true" />
+                    </Link>
+                  )}
                 </div>
                 <Gallery
                   id="products-essentials"
@@ -1179,18 +1356,12 @@ export function ProductsOverview({
                   prepareImages={categoryLineup}
                 >
                   {[
-                    {
-                      title: "อุปกรณ์เสริม",
-                      detail:
-                        "เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS เพื่อขยายการใช้งานให้เหมาะกับธุรกิจ",
-                      image: solutionImages.accessories,
-                      href: sunford.accessories,
-                    },
+                    companionEquipment,
                     {
                       title: "แอปพลิเคชันและซอฟต์แวร์",
                       detail: "สำหรับงานค้าปลีก การผลิตอุตสาหกรรม และการดูแลครัวเรือนกับสุขภาพ",
                       image: solutionImages.software,
-                      href: sunford.software,
+                      ...softwareLink,
                     },
                   ].map((item) => (
                     <li key={item.title} className={styles.essentialCard}>
@@ -1198,7 +1369,7 @@ export function ProductsOverview({
                         <h3>{item.title}</h3>
                         <p>{item.detail}</p>
                         <Link href={item.href} className={styles.textLink}>
-                          ดูเพิ่มเติม <ChevronRight size={16} aria-hidden="true" />
+                          {item.linkLabel} <ChevronRight size={16} aria-hidden="true" />
                         </Link>
                       </div>
                       <div className={styles.essentialArt}>
@@ -1215,102 +1386,7 @@ export function ProductsOverview({
               </section>
             )}
 
-            <section
-              className={`${styles.section} ${styles.accordionSection}`}
-              aria-labelledby="products-accordion-title"
-              data-overview-section="accordion"
-            >
-              <div className={styles.sectionHeading} data-scroll-reveal="">
-                <h2 id="products-accordion-title">
-                  {activeCategory
-                    ? `เลือก${activeCategory.label}ให้เหมาะกับงาน`
-                    : "เมื่อทุกอย่างเชื่อมถึงกัน ธุรกิจก็ไปได้ไกลขึ้น"}
-                </h2>
-              </div>
-              {categoryLineup ? (
-                <div className={styles.ecosystem}>
-                  {accordion.map((item, index) => (
-                    <details
-                      key={item.title}
-                      name={`products-ecosystem-${categoryId}`}
-                      open={index === 0}
-                      data-return-scope={`products-ecosystem-${index}`}
-                    >
-                      <summary>
-                        {item.title}
-                        <ChevronDown size={22} aria-hidden="true" />
-                      </summary>
-                      <div className={styles.ecosystemContent}>
-                        <div>{item.content}</div>
-                        {item.image && (
-                          <div className={styles.ecosystemArt}>
-                            <ProductImage
-                              src={item.image}
-                              alt=""
-                              fill
-                              sizes="(width < 48rem) 80vw, 38vw"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.accordionCard}>
-                  <div className={styles.accordionRows}>
-                    {accordion.map((item, index) => (
-                      <div className={styles.accordionRow} key={item.title}>
-                        <h3>
-                          <button
-                            disabled={!hydrated}
-                            id={`products-accordion-button-${index}`}
-                            type="button"
-                            aria-expanded={accordionIndex === index}
-                            aria-controls={`products-accordion-panel-${index}`}
-                            onClick={() => setAccordionIndex(index)}
-                          >
-                            {item.title}
-                            <ChevronDown
-                              className={accordionIndex === index ? styles.chevronOpen : ""}
-                              size={22}
-                              aria-hidden="true"
-                            />
-                          </button>
-                        </h3>
-                        <div
-                          id={`products-accordion-panel-${index}`}
-                          role="region"
-                          aria-labelledby={`products-accordion-button-${index}`}
-                          hidden={accordionIndex !== index}
-                        >
-                          {item.content}
-                          <div className={styles.mobileAccordionArt}>
-                            <ProductImage
-                              placeholder={categoryId ? "product" : "media"}
-                              src={item.image}
-                              alt={item.title}
-                              fill
-                              sizes="80vw"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className={styles.accordionArt}>
-                    <ProductImage
-                      key={accordionIndex}
-                      placeholder={categoryId ? "product" : "media"}
-                      src={accordion[accordionIndex].image}
-                      alt={accordion[accordionIndex].title}
-                      fill
-                      sizes="60vw"
-                    />
-                  </div>
-                </div>
-              )}
-            </section>
+            {!usesEditorialLayout && accordionSection}
 
             <section
               className={`${styles.section} ${styles.index}`}
@@ -1324,11 +1400,7 @@ export function ProductsOverview({
                 <div className={styles.indexColumns}>
                   <div className={styles.indexPrimary}>
                     <p>{activeCategory ? `สำรวจ${activeCategory.label}` : "สำรวจผลิตภัณฑ์"}</p>
-                    {applicationsLink ? (
-                      <CatalogNavigationLink href={applicationsLink.href}>
-                        {applicationsLink.label}
-                      </CatalogNavigationLink>
-                    ) : (
+                    {!categoryLineup && (
                       <button
                         disabled={!hydrated}
                         type="button"
@@ -1369,7 +1441,7 @@ export function ProductsOverview({
                             {category.label}
                           </button>
                         ))}
-                    {!applicationsLink && (
+                    {!categoryLineup && (
                       <button
                         disabled={!hydrated}
                         type="button"
@@ -1386,7 +1458,6 @@ export function ProductsOverview({
                       <div key={item.id}>{link(item.href, item.title)}</div>
                     ))}
                     {!activeCategory && link(sunford.accessories, "อุปกรณ์เสริม")}
-                    {!activeCategory && link(sunford.software, "แอปพลิเคชันและซอฟต์แวร์")}
                   </div>
                   <div>
                     <p>พร้อมดูแลคุณ</p>
@@ -1400,14 +1471,6 @@ export function ProductsOverview({
               </div>
             </section>
           </>
-        )}
-        {!categoryLineup && additionalCategoryLinks.length > 0 && (
-          <nav
-            className={`${styles.sectionInner} ${directoryStyles.related}`}
-            aria-label="หมวดสินค้าที่เกี่ยวข้อง"
-          >
-            {additionalCategoryLinks.map(({ href, label }) => link(href, label))}
-          </nav>
         )}
         <ScrollReveal rootId="main-content" />
       </main>
@@ -1547,33 +1610,35 @@ export function ProductsOverview({
         </div>
       </footer>
 
-      <ReferenceModal
-        open={Boolean(service)}
-        onClose={() => setService(null)}
-        title={service?.title ?? "บริการ SUNFORD"}
-      >
-        {service && (
-          <>
-            <p className={styles.serviceDetail}>{service.detail}</p>
-            {service.content}
-            <Link
-              className={styles.textLink}
-              href={service.href}
-              onClick={(event) => {
-                if (
-                  service.href === "/products" ||
-                  (activeCategory && service.href === `/products/category/${activeCategory.id}`)
-                ) {
-                  activateLink(event, service.href);
-                  setService(null);
-                }
-              }}
-            >
-              ดูเพิ่มเติม <ChevronRight size={16} aria-hidden="true" />
-            </Link>
-          </>
-        )}
-      </ReferenceModal>
+      {!usesEditorialLayout && (
+        <ReferenceModal
+          open={Boolean(service)}
+          onClose={() => setService(null)}
+          title={service?.title ?? "บริการ SUNFORD"}
+        >
+          {service && (
+            <>
+              <p className={styles.serviceDetail}>{service.detail}</p>
+              {service.content}
+              <Link
+                className={styles.textLink}
+                href={service.href}
+                onClick={(event) => {
+                  if (
+                    service.href === "/products" ||
+                    (activeCategory && service.href === `/products/category/${activeCategory.id}`)
+                  ) {
+                    activateLink(event, service.href);
+                    setService(null);
+                  }
+                }}
+              >
+                ดูเพิ่มเติม <ChevronRight size={16} aria-hidden="true" />
+              </Link>
+            </>
+          )}
+        </ReferenceModal>
+      )}
       <ReferenceModal
         open={Boolean(story)}
         onClose={() => setStory(null)}
@@ -1613,7 +1678,7 @@ export function ProductsOverview({
           </>
         )}
       </ReferenceModal>
-      {!applicationsLink && (
+      {!categoryLineup && (
         <ReferenceModal
           open={finderOpen}
           onClose={closeFinder}

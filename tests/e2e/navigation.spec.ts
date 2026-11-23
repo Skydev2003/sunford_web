@@ -279,23 +279,15 @@ test("mobile software and warranty links remain reachable in a short viewport", 
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
   const mobile = page.locator("#mobile-navigation");
-  await mobile
-    .locator("summary")
-    .filter({ hasText: /^บริการ$/ })
-    .click();
-  await mobile.getByRole("link", { name: "ซอฟต์แวร์และสิทธิ์ใช้งาน", exact: true }).click();
-  const software = page.locator(".software-catalog .software-card").first();
-  const softwareHref = (await software.getAttribute("href"))!;
-  await software.click();
-  await expect(page).toHaveURL(new URL(softwareHref, page.url()).href);
-  await expect(page.locator("main:visible").getByRole("heading", { level: 1 })).not.toBeEmpty();
+  const serviceMenu = mobile.locator('summary[aria-label="เปิดเมนูย่อยบริการ"]');
+  await serviceMenu.click();
+  await mobile.getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true }).click();
+  await expect(page).toHaveURL("/software/download");
+  await expect(page.getByRole("main").locator("#retail-software")).toBeVisible();
   await expect(mobile).toHaveCount(0);
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-  await mobile
-    .locator("summary")
-    .filter({ hasText: /^บริการ$/ })
-    .click();
+  await serviceMenu.click();
   await mobile.getByRole("link", { name: "ลงทะเบียนรับประกัน", exact: true }).click();
   await expect(page).toHaveURL(/\/warranty\/register$/);
   await expect(mobile).toHaveCount(0);

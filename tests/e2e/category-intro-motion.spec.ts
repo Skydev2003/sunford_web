@@ -1,8 +1,4 @@
 import { expect, test, type Page } from "@playwright/test";
-import {
-  categoryApplicationsLink,
-  hasCategoryApplications,
-} from "../../src/features/catalog/data/category-applications";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 
 type IntroWindow = Window & { introAnimations: Animation[]; pauseIntro: boolean };
@@ -80,7 +76,6 @@ for (const [id, count, label] of [
       const overview = page.locator(`[data-overview-category="${id}"]:visible`);
       const title = overview.locator("#products-title");
       const chapters = overview.locator("#products-chapters > li");
-      const ribbon = overview.locator("main > div").first();
       try {
         await page.goto(`/products/category/${id}`, { waitUntil: "domcontentloaded" });
         await expect(chapters).toHaveCount(count);
@@ -91,7 +86,6 @@ for (const [id, count, label] of [
       }
       await expect(title).toHaveCSS("opacity", "0.65");
       await expect(title).toHaveCSS("scale", "none");
-      if (id === "accessories") await expect(ribbon).toHaveCSS("animation-duration", "3s");
       const delays = await chapters.evaluateAll((items) =>
         items.flatMap((item) =>
           item
@@ -130,11 +124,6 @@ for (const [id, count, label] of [
       }
       await seekIntro(page, 3500);
       await expect(title).toHaveCSS("opacity", "1");
-      if (id === "accessories") {
-        await expect(ribbon).toHaveCSS("color", "rgb(29, 29, 31)");
-        await expect(ribbon.getByRole("link")).toHaveCSS("color", "rgb(215, 25, 45)");
-        expect(await ribbon.evaluate((el) => getComputedStyle(el, "::before").opacity)).toBe("0");
-      }
       await page.screenshot({ path: test.info().outputPath(`${id}-bounce-${width}.png`) });
       const before = await page.evaluate(
         () =>
@@ -143,22 +132,9 @@ for (const [id, count, label] of [
           ).length,
       );
       const finder = page.getByRole("dialog", { name: `ดู${label}ทั้งหมด`, exact: true });
-      if (hasCategoryApplications(id)) {
-        const applications = categoryApplicationsLink(id);
-        await expect(
-          overview.locator('[data-overview-section="lineup"]').getByRole("link", {
-            name: applications.shortLabel,
-            exact: true,
-          }),
-        ).toHaveAttribute("href", applications.href);
-      } else {
-        await overview
-          .getByRole("button", { name: `ดู${label}ทั้งหมด`, exact: true })
-          .first()
-          .click();
-        await expect(finder).toBeVisible();
-        await page.keyboard.press("Escape");
-      }
+      await expect(
+        overview.locator('[data-overview-section="lineup"] a[href$="/applications"]'),
+      ).toHaveCount(0);
       await expect(finder).not.toBeVisible();
       expect(
         await page.evaluate(
@@ -207,21 +183,29 @@ for (const [id, count, label] of [
     await expect(page.locator("#products-title")).toHaveCSS("opacity", "1");
     for (const chapter of await page.locator("#products-chapters > li").all())
       await expect(chapter).toHaveCSS("opacity", "1");
-    if (id !== "accessories") {
-      const lineup = page.locator("#products-lineup");
-      await expect(lineup.locator("li > a").first()).toHaveAttribute("href", /^\/products\/[^/]+$/);
-      await expect(page.locator('#products-services a[href="/service/quotation"]')).toBeAttached();
-      const details = page.locator('[data-overview-section="accordion"] details').nth(1);
-      await expect(details.locator("summary")).toBeAttached();
+    const lineup = page.locator("#products-lineup");
+    await expect(lineup.locator("li > a").first()).toHaveAttribute("href", /^\/products\/[^/]+$/);
+    const services = page.locator("#products-services");
+    if (id === "scales" || id === "indicators" || id === "platforms") {
+      await expect(services.locator("li > p")).toHaveCount(4);
+      await expect(services.locator("li :is(a, button)")).toHaveCount(0);
+    } else {
+      await expect(services.locator('a[href="/service/quotation"]')).toBeAttached();
+    }
+    const details = page.locator('[data-overview-section="accordion"] details').nth(1);
+    await expect(details.locator("summary")).toBeAttached();
+    if (id === "scales") await expect(details.locator("a")).toHaveCount(0);
+    else
       await expect(details.locator("a").first()).toHaveAttribute(
         "href",
-        new RegExp(`^/guides/${id}#`),
+        id === "indicators" || id === "platforms"
+          ? "/guides/indicator-platform-compatibility"
+          : new RegExp(`^/guides/${id}#`),
       );
-      await expect(page.locator("#products-chapters a").first()).toHaveAttribute(
-        "href",
-        new RegExp(`^/products/category/${id}/`),
-      );
-    }
+    await expect(page.locator("#products-chapters a").first()).toHaveAttribute(
+      "href",
+      new RegExp(`^/products/category/${id}/`),
+    );
     await context.close();
   });
 }
@@ -269,10 +253,7 @@ test("normal-motion client entry and cached history keep controls usable", async
     await expect(overview.locator("#products-title")).toBeVisible();
     await page.mouse.move(1400, 700);
     await expect(overview.locator("#products-title")).toHaveCSS("scale", "none");
-    const applications = categoryApplicationsLink(id);
-    await expect(
-      overview.getByRole("link", { name: applications.shortLabel, exact: true }),
-    ).toHaveAttribute("href", applications.href);
+    await expect(overview.getByRole("group", { name: "กรองผลิตภัณฑ์" })).toBeVisible();
   }
   await page.goBack();
   await expect(page.locator('[data-overview-category="scales"]:visible #products-title')).toHaveCSS(
@@ -288,10 +269,8 @@ test("normal-motion client entry and cached history keep controls usable", async
     await expect(menuScrim).toBeHidden();
   }
   await expect(
-    page
-      .locator('[data-overview-category="scales"]:visible [data-overview-section="lineup"]')
-      .getByRole("link", { name: "เลือกตามการใช้งาน", exact: true }),
-  ).toHaveAttribute("href", "/products/category/scales/applications");
+    page.locator('[data-overview-category="scales"]:visible [data-segmented-filter]'),
+  ).toBeVisible();
   await page.goForward();
   await expect(
     page.locator('[data-overview-category="indicators"]:visible #products-title'),
@@ -299,11 +278,13 @@ test("normal-motion client entry and cached history keep controls usable", async
   await expect(
     page.getByRole("dialog", { name: "ดูอินดิเคเตอร์แท่นชั่งทั้งหมด", exact: true }),
   ).not.toBeVisible();
-  await page
-    .locator('[data-overview-category="indicators"]:visible')
-    .getByRole("link", { name: "เลือกตามคุณสมบัติ", exact: true })
-    .press("Enter");
-  await expect(page).toHaveURL(/\/products\/category\/indicators\/applications$/);
+  const indicatorChapters = page.locator(
+    '[data-overview-category="indicators"]:visible #products-chapters',
+  );
+  const destination = indicatorChapters.getByRole("link").first();
+  const href = await destination.getAttribute("href");
+  await destination.press("Enter");
+  await expect(page).toHaveURL(href!);
   await page.goBack();
   await expect(
     page.getByRole("dialog", { name: "ดูอินดิเคเตอร์แท่นชั่งทั้งหมด", exact: true }),

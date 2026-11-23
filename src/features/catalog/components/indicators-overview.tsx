@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { overviewGuideLinks } from "../data/category-applications";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuides } from "@/features/content/data/buying-guides";
@@ -11,7 +9,6 @@ import {
 } from "@/features/site/data/navigation";
 import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
-import styles from "./products-overview.module.css";
 
 // Catalogue photographs are used only for the matching Warehouse model.
 const modelPhotos: Readonly<Record<string, string>> = {
@@ -24,24 +21,21 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G107763: "/images/imported/a8e894090dd0add2792d.png",
 };
 
-const topics: Readonly<Record<string, { introduction: string; image: string; detail: string }>> = {
+const topics: Readonly<Record<string, { image: string; detail: string }>> = {
   platforms: {
-    introduction: "เช็กรุ่นแท่น พิกัด และข้อมูลโหลดเซลล์ก่อนเลือกหัวอ่าน",
     image: "/images/category-chapters/platforms/sus304.webp",
     detail:
-      "ก่อนเปลี่ยนหัวอ่าน ให้ผู้ติดตั้งตรวจขั้วต่อ สายสัญญาณ และข้อมูลโหลดเซลล์ของแท่นเดิม ยืนยันความเข้ากันได้และวิธีตั้งค่าก่อนใช้งาน",
+      "เช็กรุ่นแท่น พิกัด และข้อมูลโหลดเซลล์ก่อนเลือกหัวอ่าน หากเปลี่ยนหัวอ่านเดิม ให้ผู้ติดตั้งตรวจขั้วต่อและสายสัญญาณด้วย",
   },
   connections: {
-    introduction: "ตรวจพอร์ตและรูปแบบข้อมูลที่อุปกรณ์ทั้งสองฝั่งรองรับ",
     image: "/images/products/component-showcase/g107770-front-4k.webp",
     detail:
-      "AW31 มีพอร์ต RS232 ตรวจรูปแบบข้อมูลและการตั้งค่าที่อุปกรณ์ปลายทางรองรับก่อนใช้ สายที่เสียบกันได้อาจส่งข้อมูลคนละรูปแบบ",
+      "ก่อนต่อกับคอมพิวเตอร์หรือเครื่องพิมพ์ ให้ตรวจพอร์ต รูปแบบข้อมูล และการตั้งค่าของอุปกรณ์ทั้งสองฝั่ง แม้สายจะเสียบเข้ากันได้",
   },
   compare: {
-    introduction: "เทียบชนิดจอ ฟังก์ชัน ระดับการป้องกัน และพอร์ตของแต่ละรุ่น",
     image: "/images/category-chapters/indicators/led.webp",
     detail:
-      "ใช้จอ LCD หรือ LED ตามสภาพแสงและระยะมอง อ่านสเปกของแต่ละรุ่นแยกกัน โดยเฉพาะพอร์ตและระดับการป้องกันน้ำและฝุ่น",
+      "เลือกจอ LCD หรือ LED ตามแสงและระยะมอง แล้วเทียบฟังก์ชัน พอร์ต และระดับการป้องกันน้ำและฝุ่นจากสเปกแต่ละรุ่น",
   },
 };
 
@@ -74,74 +68,36 @@ export async function IndicatorsOverview() {
   const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].introduction,
+    introduction: topics[section.id].detail,
     image: topics[section.id].image,
     href: `${guideHref}#${section.id}`,
-    content: (
-      <div className={styles.storyBlocks}>
-        <section>
-          <p>{topics[section.id].detail}</p>
-          {overviewGuideLinks("indicators", section.links).map((link) => (
-            <Link key={link.href} href={link.href}>
-              {link.label} ›
-            </Link>
-          ))}
-        </section>
-      </div>
-    ),
+    content: <p>{topics[section.id].detail}</p>,
   }));
   const services = [
     {
-      title: "ขอใบเสนอราคา",
-      detail: "เลือกรุ่นและจำนวนที่ต้องการ",
-      href: "/service/quotation",
-      content: <p>เลือกรุ่นที่มีราคาในแบบฟอร์ม หรือติดต่อฝ่ายขายหากรุ่นที่ต้องการไม่แสดงราคา</p>,
+      title: "จัดชุดให้เข้ากับแท่นชั่ง",
+      detail:
+        "แจ้งรุ่นแท่น รุ่นหัวอ่านเดิม และอุปกรณ์ที่จะเชื่อมต่อ เพื่อให้ทีมช่วยเลือกชุดก่อนสั่งซื้อ",
+      href: sunford.contact,
     },
     {
-      title: "เลือกหัวอ่านให้ตรงกับแท่น",
-      detail: "แจ้งรุ่นแท่น โหลดเซลล์ และอุปกรณ์ปลายทาง",
-      href: sunford.contact,
-      content: <p>เตรียมรูปป้ายรุ่น ขั้วต่อ และข้อมูลโหลดเซลล์ของแท่นเดิมก่อนติดต่อฝ่ายขาย</p>,
+      title: "ขอใบเสนอราคา",
+      detail: "ระบุรุ่นและจำนวนในแบบฟอร์ม หากไม่พบราคาของรุ่นที่ต้องการ สอบถามฝ่ายขายได้",
+      href: "/service/quotation",
     },
     {
       title: "บริการหลังการขาย",
-      detail: "ดูขั้นตอนซ่อม เปลี่ยน เคลม และคืนสินค้า",
+      detail:
+        "เตรียมชื่อรุ่น อาการที่พบ และข้อมูลการซื้อ ก่อนติดต่อฝ่ายบริการเพื่อส่งตรวจ ซ่อม เปลี่ยน หรือเคลมตามเงื่อนไข",
       href: sunford.service,
-      content: (
-        <p>
-          <Link href={sunford.service}>บริการหลังการขาย</Link> ·{" "}
-          <Link href={sunford.warranty}>ลงทะเบียนรับประกัน</Link>
-        </p>
-      ),
-    },
-    {
-      title: "เปิดคู่มือจับคู่หัวอ่าน",
-      detail: "ตรวจพิกัดและการเชื่อมต่อ",
-      href: "/guides/indicator-platform-compatibility",
-      content: <p>ใช้คู่มือเทียบข้อมูลหัวอ่านและแท่น แล้วตรวจรายละเอียดของชุดจริงก่อนประกอบ</p>,
     },
     {
       title: "ลงทะเบียนรับประกัน",
-      detail: "ลงทะเบียนและอ่านเงื่อนไข",
+      detail:
+        "เตรียมหลักฐานการซื้อและข้อมูลรุ่นเพื่อลงทะเบียน แล้วตรวจเงื่อนไขความคุ้มครองของรุ่นที่ซื้อ",
       href: sunford.warranty,
-      content: (
-        <p>
-          <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link> ·{" "}
-          <Link href={sunford.contact}>ติดต่อฝ่ายบริการ</Link>
-        </p>
-      ),
     },
   ];
-  const accordion = stories.map((story) => ({
-    title: story.title,
-    image: story.image,
-    content: (
-      <>
-        <p>{story.introduction}</p>
-        <Link href={story.href}>อ่านคู่มือ ›</Link>
-      </>
-    ),
-  }));
   const [navigation, site, copyrightYear] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
@@ -159,7 +115,7 @@ export async function IndicatorsOverview() {
       copyrightYear={copyrightYear}
       stories={stories}
       services={services}
-      accordion={accordion}
+      accordion={stories}
     />
   );
 }

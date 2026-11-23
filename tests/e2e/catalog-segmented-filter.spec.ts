@@ -66,10 +66,10 @@ test("lineup selection moves the dark pill, realigns on resize, and keeps keyboa
   });
   await kitchen.press("Enter");
   await expect(industrial).toHaveAttribute("aria-pressed", "true");
-  await expect(pill).toHaveCSS("transition-duration", "0.48s, 0.48s");
+  await expect(pill).toHaveCSS("transition-duration", "0.3s, 0.3s");
   await expect(pill).toHaveCSS(
     "transition-timing-function",
-    "cubic-bezier(0.33, 0, 0.2, 1), cubic-bezier(0.33, 0, 0.2, 1)",
+    "cubic-bezier(0.32, 0.72, 0, 1), cubic-bezier(0.32, 0.72, 0, 1)",
   );
   await expect(industrial).toHaveCSS("outline-color", "rgb(0, 113, 227)");
   await expectIndicatorAtSelection(tray);
@@ -84,11 +84,10 @@ test("lineup selection moves the dark pill, realigns on resize, and keeps keyboa
   await kitchen.press("Enter");
   await expect(kitchen).toHaveAttribute("aria-pressed", "true");
   await expectIndicatorAtSelection(tray);
-  const application = filters.getByRole("link", { name: "เลือกตามการใช้งาน" });
-  await application.focus();
-  await expect(application).toBeInViewport({ ratio: 1 });
-  await expect(application).toHaveAttribute("href", `${scales}/applications`);
-  await expect(application).not.toHaveAttribute("aria-pressed", /.+/);
+  const lastFilter = filters.getByRole("button").last();
+  await lastFilter.focus();
+  await expect(lastFilter).toBeInViewport({ ratio: 1 });
+  await expect(filters.getByRole("link")).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });
 

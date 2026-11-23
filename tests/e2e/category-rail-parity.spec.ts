@@ -54,18 +54,61 @@ test("keyboard navigation reveals an offscreen product and restores its filtered
   await page.keyboard.press("Shift+Tab");
   await expect(essentials.first()).toBeFocused();
   await expect(essentials.first()).toBeInViewport({ ratio: 1 });
+  await expect(essentials.first()).toHaveAccessibleName("ดูอุปกรณ์เสริม");
+  await expect(essentials.first()).toHaveAttribute("href", "/products/category/accessories");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL("/products/category/accessories");
+  await expect(page.getByRole("heading", { level: 1, name: "อุปกรณ์เสริม" })).toBeVisible();
 });
 
-function spacing(track: Locator) {
-  return track.evaluate((list) => {
-    const css = getComputedStyle(list);
-    return [
-      css.paddingInlineStart,
-      css.paddingInlineEnd,
-      css.columnGap,
-      css.scrollPaddingInlineStart,
+function railGap(track: Locator) {
+  return track.evaluate((list) => getComputedStyle(list).columnGap);
+}
+
+async function expectCategoryAlignment(track: Locator, category: string, width: number) {
+  const layout = await track.evaluate((list, categoryId) => {
+    const hero = '[data-overview-section="hero"] > ul > li';
+    const selectors = [
+      "#products-title",
+      "#products-chapters > li",
+      "#products-lineup-title",
+      "#products-lineup > li",
+      "#products-services-title",
+      "#products-services > li",
+      ...(["scales", "indicators", "platforms"].includes(categoryId)
+        ? []
+        : ["#products-features-title", "#products-features > li"]),
+      "#products-accordion-title",
+      '[data-overview-section="accordion"] > :last-child',
+      "#products-index-title",
+      "[data-segmented-filter]",
+      "#products-essentials-title",
+      "#products-essentials > li",
     ];
-  });
+    if (categoryId === "scales") selectors.push(hero);
+    const viewportRight = list.getBoundingClientRect().right;
+    const cardsVisible = [...list.children].reduce((count, card) => {
+      const rect = card.getBoundingClientRect();
+      return count + Math.max(0, Math.min(rect.width, viewportRight - rect.left)) / rect.width;
+    }, 0);
+    return {
+      viewportRight,
+      starts: selectors.map(
+        (selector) =>
+          [selector, document.querySelector(selector)!.getBoundingClientRect().left] as const,
+      ),
+      cardsVisible,
+    };
+  }, category);
+  const inset = Math.max(24, (width - 1080) / 2 + 24);
+  for (const [selector, left] of layout.starts) {
+    expect(left, `${category}/${selector}`).toBeCloseTo(inset, 0);
+  }
+  expect(layout.viewportRight).toBeCloseTo(width, 0);
+  if (["scales", "indicators", "platforms"].includes(category) && width >= 1024) {
+    expect(layout.cardsVisible).toBeGreaterThanOrEqual(3.5);
+    expect(layout.cardsVisible).toBeLessThanOrEqual(4);
+  }
 }
 
 function gapAfterShelf(track: Locator) {
@@ -114,10 +157,15 @@ test("the scale lineup prepares offscreen images before advancing and keeps dist
     await page.goto("/products/category/scales", { waitUntil: "domcontentloaded" });
     const track = page.locator("#products-lineup");
     const images = track.locator(":scope > li > a img");
+    for (const icon of await page.locator("#products-chapters img").all()) {
+      await expect(icon).toHaveAttribute("loading", "eager");
+      await expect(icon).toHaveAttribute("fetchpriority", "high");
+    }
     await expect(images.nth(0)).toHaveAttribute("loading", "eager");
     await expect(images.nth(1)).toHaveAttribute("loading", "eager");
     await expect(images.nth(2)).toHaveAttribute("loading", "eager");
     await expect(images.nth(3)).toHaveAttribute("loading", "eager");
+    await expect(images.nth(3)).toHaveAttribute("fetchpriority", "high");
     await expect(images.nth(4)).toHaveAttribute("loading", "lazy");
     await page.getByRole("button", { name: "เลื่อนผลิตภัณฑ์ถัดไป", exact: true }).click();
     await expect(images.nth(4)).toHaveAttribute("loading", "eager");
@@ -150,24 +198,43 @@ test("the lineup shows the WPS10KS model, photo, highlight and price in one prod
 
 type CardLayout = { width: number; height: number; background: string; radius: string };
 
-async function expectProductCardLayout(cards: Locator, reference: CardLayout, scope: string) {
+async function expectProductCardLayout(
+  cards: Locator,
+  reference: CardLayout | null,
+  scope: string,
+) {
   await expect(cards.first()).toBeVisible();
-  const issues = await cards.evaluateAll((items, { width, height, background, radius }) => {
+  const issues = await cards.evaluateAll((items, referenceLayout) => {
+    const usesEditorialLayout = referenceLayout === null;
+    const dimensions = items[0].getBoundingClientRect();
+    const { width, height, background, radius } = referenceLayout ?? {
+      width: Math.round(dimensions.width),
+      height: Math.round(dimensions.height),
+      background: "rgb(255, 255, 255)",
+      radius: "24px",
+    };
     return items.flatMap((item) => {
       const card = item.getBoundingClientRect();
-      const style = getComputedStyle(item);
       const links = [...item.querySelectorAll<HTMLAnchorElement>("a[href]")];
       const [link] = links;
+      const style = getComputedStyle(usesEditorialLayout && link ? link : item);
       const image = link?.querySelector("img");
+      const imageBox = image?.parentElement?.getBoundingClientRect();
       const name = link?.querySelector("h3");
       const highlight = link?.querySelector("h3 + [data-product-highlight]");
       const price = highlight?.nextElementSibling;
+      const caption = name?.parentElement;
       const invalid =
         Math.round(card.width) !== width ||
         Math.round(card.height) !== height ||
         style.backgroundColor !== background ||
         style.borderRadius !== radius ||
         (image && getComputedStyle(image).objectFit !== "contain") ||
+        (usesEditorialLayout && imageBox && Math.abs(imageBox.width - imageBox.height) > 1) ||
+        (caption && getComputedStyle(caption).textAlign !== "center") ||
+        (name && getComputedStyle(name).fontSize !== "18px") ||
+        (highlight && getComputedStyle(highlight).fontSize !== "14px") ||
+        (price && getComputedStyle(price).fontSize !== "16px") ||
         links.length !== 1 ||
         !link?.getAttribute("href")?.startsWith("/products/") ||
         !name ||
@@ -191,8 +258,12 @@ async function expectProductCardLayout(cards: Locator, reference: CardLayout, sc
   expect(issues, scope).toEqual([]);
 }
 
-for (const width of [390, 834, 1440]) {
-  test(`category rails match the product directory spacing and paging at ${width}px`, async ({
+for (const [width, categorySectionGap] of [
+  [390, 32],
+  [834, 40],
+  [1440, 48],
+] as const) {
+  test(`category rails keep alignment, section spacing and paging at ${width}px`, async ({
     page,
   }) => {
     test.slow();
@@ -202,9 +273,8 @@ for (const width of [390, 834, 1440]) {
     const firstShelf = page.locator("#products-rail-scales");
     await expect(firstShelf).toHaveCSS("display", "flex");
     await expect.poll(() => gapAfterShelf(firstShelf)).toBeGreaterThan(0);
-    const chapters = await spacing(page.locator("#products-categories"));
-    const shelf = await spacing(firstShelf);
-    const sectionGap = await gapAfterShelf(firstShelf);
+    const chapterGap = await railGap(page.locator("#products-categories"));
+    const shelfGap = await railGap(firstShelf);
     const reference = page.locator(
       '#products-rail-indicators > li[data-warehouse-sku="G107770"] > a',
     );
@@ -220,16 +290,28 @@ for (const width of [390, 834, 1440]) {
       };
     });
 
-    for (const category of ["scales", "indicators", "platforms", "pos"]) {
+    for (const category of ["scales", "indicators", "platforms", "pos", "accessories"]) {
       await page.goto(`/products/category/${category}`);
+      await expect(page.locator(`[data-overview-category="${category}"]:visible`)).toHaveAttribute(
+        "data-controls-ready",
+        "true",
+        { timeout: 15_000 },
+      );
       await expect(page.locator("#products-title")).toBeVisible();
-      expect(await spacing(page.locator("#products-chapters"))).toEqual(chapters);
-      for (const id of ["lineup", "services", "features", "essentials"]) {
+      const scales = category === "scales";
+      const usesEditorialLayout = ["scales", "indicators", "platforms"].includes(category);
+      await expect(page.locator('[data-overview-section="hero"]')).toHaveCount(scales ? 1 : 0);
+      await expectCategoryAlignment(page.locator("#products-lineup"), category, width);
+      expect(await railGap(page.locator("#products-chapters"))).toEqual(chapterGap);
+      const rails = usesEditorialLayout
+        ? ["lineup", "services", "essentials"]
+        : ["lineup", "services", "features", "essentials"];
+      for (const id of rails) {
         const rail = page.locator(`#products-${id}`);
-        expect(await spacing(rail), `${category}/${id}`).toEqual(shelf);
+        expect(await railGap(rail), `${category}/${id}`).toEqual(shelfGap);
         if (id !== "essentials") {
           expect(await gapAfterShelf(rail), `${category}/${id} to next shelf`).toBeCloseTo(
-            sectionGap,
+            categorySectionGap,
             0,
           );
         }
@@ -268,7 +350,7 @@ for (const width of [390, 834, 1440]) {
         (list) =>
           list.getBoundingClientRect().right - list.lastElementChild!.getBoundingClientRect().right,
       );
-      expect(trailingSpace).toBeCloseTo(parseFloat(shelf[1]), 0);
+      expect(trailingSpace).toBeCloseTo(24, 0);
       await previous.press("Enter");
       await expect(next).toBeEnabled();
 
@@ -287,17 +369,48 @@ for (const width of [390, 834, 1440]) {
         }
         await expectProductCardLayout(
           cards,
-          referenceLayout,
+          usesEditorialLayout ? null : referenceLayout,
           [category, await filter.innerText()].join(" / "),
         );
       }
     }
-    await page.goto("/products/category/accessories");
-    await expect(page.locator('[data-overview-section="hero"]')).toBeVisible();
-    await expectProductCardLayout(
-      page.locator("#products-lineup > li:has(h3)"),
-      referenceLayout,
-      "accessories",
-    );
   });
 }
+
+test("the scales overview restores the featured carousel between the chapters and the lineup", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/products/category/scales");
+
+  const gallery = page.getByRole("region", { name: "สินค้าเด่น SUNFORD" });
+  await expect(gallery.locator("xpath=preceding-sibling::*[1]")).toHaveAttribute(
+    "data-overview-section",
+    "chapters",
+  );
+  await expect(gallery.locator("xpath=following-sibling::*[1]")).toHaveAttribute(
+    "data-overview-section",
+    "lineup",
+  );
+  const slides = gallery.locator("li[data-slide]");
+  await expect(slides).toHaveCount(2);
+  const titles = await slides.getByRole("heading").allTextContents();
+  for (const [index, slide] of (await slides.all()).entries()) {
+    const details = slide.getByRole("link", { name: "ดูรายละเอียดรุ่น" });
+    const href = await details.getAttribute("href");
+    expect(href).toMatch(/^\/products\/[^/]+$/);
+    const lineupDetails = page.locator("#products-lineup > li > a").nth(index);
+    await expect(lineupDetails).toHaveAttribute("href", href!);
+    await expect(lineupDetails).toHaveAccessibleName(`ดูรายละเอียด ${titles[index]}`);
+  }
+  const tabs = gallery.getByRole("tablist").getByRole("tab");
+  await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+  await expect(tabs.first()).toBeEnabled();
+  await expect(gallery.getByRole("button", { name: "เล่นแกลเลอรีสินค้าเด่น" })).toBeVisible();
+  await tabs.first().press("ArrowRight");
+  await expect(tabs.last()).toHaveAttribute("aria-selected", "true");
+  await expect
+    .poll(() => slides.last().evaluate((slide) => Math.round(slide.getBoundingClientRect().left)))
+    .toBe(24);
+});

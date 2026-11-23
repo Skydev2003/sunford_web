@@ -30,6 +30,22 @@ test("saved content using the current six menu destinations remains authoritativ
   assert.equal(resolveNavigationItems(current), current);
 });
 
+test("saved software navigation drops the retired catalog link without resetting CMS edits", () => {
+  const saved = structuredClone(defaultNavigation);
+  saved[0].links[1].disabled = true;
+  const software = saved.find(({ href }) => href === "/software/download")!;
+  software.href = "/applications-and-softwares";
+  software.links.unshift({ label: "แอปพลิเคชันและซอฟต์แวร์", href: software.href });
+  const original = structuredClone(saved);
+
+  const resolved = resolveNavigationItems(saved);
+  assert.equal(resolved[0].links[1].disabled, true);
+  assert.deepEqual(resolved.find(({ href }) => href === "/software/download")?.links, [
+    { label: "ดาวน์โหลดซอฟต์แวร์", href: "/software/download" },
+  ]);
+  assert.deepEqual(saved, original);
+});
+
 test("primary product navigation uses the actual catalog names and category IDs", () => {
   assert.deepEqual(defaultNavigation[0].links, [
     { label: "ผลิตภัณฑ์ทั้งหมด", href: "/products" },

@@ -1,4 +1,5 @@
 import { getProductSubcategoryPage } from "./product-subcategory-pages";
+import { legacySoftwareCatalogPath, sunford } from "@/features/home/data/brand";
 
 const categoryDestinations: Record<string, string> = {
   "/product/digital-weighing": "/products/category/scales",
@@ -20,6 +21,7 @@ const categoryDestinations: Record<string, string> = {
   "/product/scale-peripherals": "/products/category/accessories",
   "/collections/printers": "/products/category/accessories",
   "/product/consumables": "/products/category/accessories/consumables",
+  [legacySoftwareCatalogPath]: sunford.downloads,
 };
 
 export function resolveCategoryHref(href: string): string {

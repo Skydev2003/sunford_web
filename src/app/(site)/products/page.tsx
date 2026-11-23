@@ -84,7 +84,7 @@ async function ProductsContent() {
         clientProducts.find(
           (product) => product.warehouseGroup === "โปรแกรมและสิทธิ์ใช้งาน" && product.image,
         )?.image ?? "",
-      href: sunford.software,
+      href: sunford.downloads,
       content: (
         <div className={styles.storyBlocks}>
           <section>

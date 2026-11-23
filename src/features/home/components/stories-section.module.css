@@ -59,8 +59,7 @@
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #2a2a2a;
-  border-radius: 16px;
+  border-radius: var(--card-radius);
   background: #111;
   box-shadow: 0 8px 25px #0004;
   filter: blur(var(--focus-blur, 0px));

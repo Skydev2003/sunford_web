@@ -11,13 +11,14 @@ export const companyIntro = {
     { title: "บริการหลังการขาย", description: "ดูแลอย่างต่อเนื่อง" },
   ],
 };
+export const legacySoftwareCatalogPath = "/applications-and-softwares";
+
 export const sunford = {
   website: "/",
   about: "/about-us",
   contact: "/contact-us",
   service: "/service",
   accessories: "/product/scale-accessories",
-  software: "/applications-and-softwares",
   downloads: "/software/download",
   warranty: "/warranty/register",
   warrantyPolicy: "/warranty/policy",

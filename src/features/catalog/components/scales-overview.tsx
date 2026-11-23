@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuides } from "@/features/content/data/buying-guides";
@@ -10,7 +9,6 @@ import {
 } from "@/features/site/data/navigation";
 import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
-import styles from "./products-overview.module.css";
 
 // Catalogue photographs are used only for the matching Warehouse model.
 const modelPhotos: Readonly<Record<string, string>> = {
@@ -20,24 +18,21 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G106193: "/images/products/scale-showcase/g106193-front-4k.webp",
 };
 
-const topics: Readonly<Record<string, { introduction: string; image: string; detail: string }>> = {
+const topics: Readonly<Record<string, { image: string; detail: string }>> = {
   capacity: {
-    introduction: "ชั่งสินค้ารวมภาชนะ แล้วเลือกพิกัดและขนาดจานให้พอกับงาน",
     image: "/images/products/scale-showcase/g106131-front-4k.webp",
     detail:
-      "ชั่งวัตถุดิบเล็กน้อยกับชั่งสินค้าทั้งลังต้องใช้คนละช่วงน้ำหนัก วัดขนาดภาชนะที่ใช้จริงก่อนตรวจพิกัดและจานชั่งของรุ่นที่สนใจ",
+      "เลือกพิกัดจากน้ำหนักสูงสุดที่ต้องชั่งจริง รวมภาชนะด้วย แล้วตรวจว่าจานชั่งมีขนาดพอสำหรับภาชนะที่ใช้",
   },
   resolution: {
-    introduction: "เทียบค่าละเอียดกับหน่วยที่ต้องใช้ และอ่านค่าความคลาดเคลื่อนในสเปก",
     image: "/images/products/scale-showcase/g106643-front-4k.webp",
     detail:
-      "ค่าละเอียดคือขั้นเล็กสุดที่จอแสดง อ่านค่าความคลาดเคลื่อนและเงื่อนไขในคู่มือแยกต่างหาก โดยเฉพาะเมื่อชั่งปริมาณน้อย",
+      "เลือกค่าละเอียดตามขั้นเล็กสุดที่ต้องอ่านบนจอ เช่น 1 กรัม และตรวจค่าความคลาดเคลื่อนในสเปกด้วย โดยเฉพาะเมื่อต้องชั่งปริมาณน้อย",
   },
   compare: {
-    introduction: "เทียบพิกัด จานชั่ง และฟังก์ชัน เช่น คำนวณราคาหรือพิมพ์ฉลาก",
     image: "/images/category-chapters/scales/price.webp",
     detail:
-      "เลือกเปรียบเทียบจากการ์ดสินค้า แล้วเช็กว่าฟังก์ชันที่ต้องใช้มีในรุ่นนั้น เช่น นับชิ้น คำนวณราคา หรือพิมพ์ฉลาก",
+      "เทียบพิกัด ความละเอียด ขนาดจานชั่ง และฟังก์ชันที่ใช้จริง เช่น นับชิ้น คำนวณราคา หรือพิมพ์ฉลาก จากข้อมูลของแต่ละรุ่น",
   },
 };
 
@@ -70,80 +65,37 @@ export async function ScalesOverview() {
   const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].introduction,
+    introduction: topics[section.id].detail,
     image: topics[section.id].image,
     href: `${guideHref}#${section.id}`,
-    content: (
-      <div className={styles.storyBlocks}>
-        <section>
-          <p>{topics[section.id].detail}</p>
-          {section.links.map(({ href, label }) =>
-            href === guide.productHref ? (
-              <Link key={href} href="/products/category/scales/applications">
-                เลือกเครื่องชั่งตามการใช้งาน <span aria-hidden="true">›</span>
-              </Link>
-            ) : (
-              <Link key={href} href={href}>
-                {label} ›
-              </Link>
-            ),
-          )}
-        </section>
-      </div>
-    ),
+    content: <p>{topics[section.id].detail}</p>,
   }));
   const services = [
     {
-      title: "ขอใบเสนอราคา",
-      detail: "เลือกรุ่นและจำนวนที่ต้องการ",
-      href: "/service/quotation",
-      content: <p>เลือกรุ่นที่มีราคาในแบบฟอร์ม หรือติดต่อฝ่ายขายหากรุ่นที่ต้องการไม่แสดงราคา</p>,
+      title: "ชั่งซื้อขายได้อย่างมั่นใจ",
+      detail:
+        "มีใบรับรองการสอบเทียบเครื่องมือวัด ที่แสดงผลการสอบเทียบพร้อมค่าวความไม่แน่นอนในการวัดตามมาตรฐาน ISO/IEC 17025 ที่ช่วยสร้างความเชื่อมั่นให้ผู้ประกอบการ ในการควบคุมต้นทุน และการปรับปรุงประสิทธิภาพการผลิต",
+      href: "/products/category/scales/price",
     },
     {
-      title: "เลือกเครื่องชั่ง",
-      detail: "แจ้งน้ำหนัก ภาชนะ และพื้นที่วางเครื่อง",
-      href: sunford.contact,
-      content: <p>เตรียมน้ำหนักต่ำสุดและสูงสุด รวมภาชนะ และขนาดจานที่ต้องใช้ก่อนคุยกับฝ่ายขาย</p>,
+      title: "รับประกันสูงสุดถึง 3 ปี",
+      detail:
+        "ศูนย์บริการบางเลน จ.นครปฐม รับตรวจและซ่อมทั้งในและหลังประกัน พร้อมอะไหล่ในประเทศ ความคุ้มครองขึ้นอยู่กับรุ่น",
+      href: sunford.warrantyPolicy,
     },
     {
-      title: "บริการหลังการขาย",
-      detail: "ดูขั้นตอนซ่อม เปลี่ยน เคลม และคืนสินค้า",
-      href: sunford.service,
-      content: (
-        <p>
-          <Link href={sunford.service}>บริการหลังการขาย</Link> ·{" "}
-          <Link href={sunford.warranty}>ลงทะเบียนรับประกัน</Link>
-        </p>
-      ),
+      title: "การใช้งานหลากหลาย",
+      detail:
+        "มีรุ่นปุ่มภาษาไทยและไทย–อังกฤษ รุ่นจอสองด้าน และรุ่นคำนวณเงินทอน สำหรับพื้นที่เปียกมีรุ่น IP67 และแท่นสเตนเลส SUS304",
+      href: "/products/category/scales/industrial",
     },
     {
-      title: "ดูคู่มือและสเปก",
-      detail: "ตรวจพิกัดและความละเอียดตามรุ่น",
-      href: "/technical-specification",
-      content: <p>ค้นด้วยรุ่นหรือ SKU เพื่ออ่านสเปกและคู่มือที่มีข้อมูลยืนยัน</p>,
-    },
-    {
-      title: "ลงทะเบียนรับประกัน",
-      detail: "ลงทะเบียนและอ่านเงื่อนไข",
-      href: sunford.warranty,
-      content: (
-        <p>
-          <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link> ·{" "}
-          <Link href={sunford.contact}>ติดต่อฝ่ายบริการ</Link>
-        </p>
-      ),
+      title: "จากหน้าร้านถึงโรงงาน",
+      detail:
+        "มีทั้งเครื่องชั่งคิดราคา เครื่องชั่งพิมพ์ฉลาก และแท่นชั่งอุตสาหกรรม รุ่นที่รองรับเชื่อมข้อมูลการชั่งกับ SUNFORD POS และ Cloud POS ได้",
+      href: sunford.downloads,
     },
   ];
-  const accordion = stories.map((story) => ({
-    title: story.title,
-    image: story.image,
-    content: (
-      <>
-        <p>{story.introduction}</p>
-        <Link href={story.href}>อ่านคู่มือ ›</Link>
-      </>
-    ),
-  }));
   const [navigation, site, copyrightYear] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
@@ -161,7 +113,7 @@ export async function ScalesOverview() {
       copyrightYear={copyrightYear}
       stories={stories}
       services={services}
-      accordion={accordion}
+      accordion={stories}
     />
   );
 }

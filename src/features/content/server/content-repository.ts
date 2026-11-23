@@ -10,6 +10,7 @@ import { solutions, solutionsIndex } from "../data/solutions";
 import { warehouseContentPage } from "../data/warehouse-content";
 import { getEditorialSection } from "../data/editorial-sections";
 import { getProducts } from "@/features/catalog/server/product-repository";
+import { legacySoftwareCatalogPath } from "@/features/home/data/brand";
 
 export { getSnapshotProducts } from "../data/catalog-snapshot";
 
@@ -59,6 +60,7 @@ function mergePages(documents: Awaited<ReturnType<typeof getDocuments>>): Source
 export async function getContentPages(): Promise<SourcePage[]> {
   const products = await getProducts();
   return mergePages(await getDocuments("page")).flatMap((page) => {
+    if (normalize(page.path) === legacySoftwareCatalogPath) return [];
     const editorial = getEditorialSection(page.path);
     if (editorial) {
       if (editorial.path !== page.path) return [];

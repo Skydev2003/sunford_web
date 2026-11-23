@@ -5,8 +5,7 @@ import { Check, Plus } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import { useCatalogStore } from "@/stores/catalog-store";
 import type { ProductCardData } from "../types";
-import { formatCatalogCardPrice } from "../data/price-format";
-import { ProductCardHighlight } from "./product-card-highlight";
+import { ProductCardCaption } from "./product-card-caption";
 import styles from "./product-browser.module.css";
 
 const productPhotos: Record<string, string> = {
@@ -42,7 +41,6 @@ export function CatalogProductCard({
   const compareMode = useCatalogStore((s) => s.compareMode);
   const toggleCompare = useCatalogStore((s) => s.toggleCompare);
   const selected = compareIds.includes(product.id);
-  const Heading = headingLevel === 2 ? "h2" : "h3";
   const href = `/products/${product.slug}${returnContext ? `?from=${returnContext}` : ""}`;
   return (
     <article
@@ -80,13 +78,14 @@ export function CatalogProductCard({
           {selected ? <Check size={15} /> : <Plus size={15} />}
         </button>
       )}
-      <div className={styles.copy}>
-        <Link href={href}>
-          <Heading>{product.name}</Heading>
-        </Link>
-        <ProductCardHighlight text={product.highlight} />
-        <p className={styles.cardPrice}>{formatCatalogCardPrice(product.price)}</p>
-      </div>
+      <ProductCardCaption
+        className={styles.copy}
+        headingLevel={headingLevel}
+        href={href}
+        name={product.name}
+        highlight={product.highlight}
+        price={product.price}
+      />
     </article>
   );
 }

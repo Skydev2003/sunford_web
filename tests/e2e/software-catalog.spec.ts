@@ -19,10 +19,14 @@ for (const width of [390, 1440]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 844 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/software/download");
     const main = page.getByRole("main");
-    await expect(main.getByRole("heading", { level: 1 })).toHaveText("ดาวน์โหลดซอฟต์แวร์");
-    const nav = main.getByRole("navigation", { name: "ไปยังหมวดซอฟต์แวร์" });
+    const heading = main.getByRole("heading", { level: 1 });
+    await expect(heading).toHaveText("ดาวน์โหลดซอฟต์แวร์");
+    await expect(heading).toHaveCSS("text-align", "center");
+    await expect(main.locator("header p")).toHaveCSS("text-align", "center");
+    await expect(main.getByRole("navigation")).toHaveCount(0);
     for (const [id, models] of [
       ["retail-software", ["SUNFORD RLS1100", "SUNFORD RLS1800", "SUNFORD SmartRetail POS"]],
       [
@@ -31,8 +35,9 @@ for (const width of [390, 1440]) {
       ],
       ["household-software", ["Fitdays"]],
     ] as const) {
-      await nav.locator(`a[href="#${id}"]`).click();
+      await page.goto(`/software/download#${id}`);
       await expect(page).toHaveURL(`/software/download#${id}`);
+      await expect(main.locator(`#${id}`).getByRole("heading", { level: 2 })).toBeInViewport();
       await expect(main.locator(`#${id}`).getByRole("heading", { level: 4 })).toHaveText([
         ...models,
       ]);
@@ -68,37 +73,48 @@ test("download deep links work without JavaScript", async ({ browser }) => {
 });
 
 for (const width of [390, 1440]) {
-  test(`Warehouse software filter offers verified industrial downloads at ${width}px`, async ({
+  test(`software cards lead to the download directory through POS at ${width}px`, async ({
     page,
     request,
   }) => {
-    const response = await request.get("/api/products");
-    expect(response.ok()).toBe(true);
-    const { products } = (await response.json()) as {
-      products: { warehouseGroup?: string; slug: string }[];
-    };
-    const expected = products
-      .filter(({ warehouseGroup }) => warehouseGroup === "โปรแกรมและสิทธิ์ใช้งาน")
-      .map(({ slug }) => "/products/" + slug)
-      .sort();
-    expect(expected.length).toBeGreaterThan(0);
-
+    test.slow();
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/applications-and-softwares#all");
-    const cards = page.locator(".software-card");
-    await expect(cards).toHaveCount(expected.length);
-    expect(
-      (await cards.evaluateAll((links) => links.map((link) => link.getAttribute("href")))).sort(),
-    ).toEqual(expected);
-    await page.locator('.software-filters a[href="#industrial-software"]').click();
-    await expect(page).toHaveURL("/applications-and-softwares#industrial-software");
-    await expect(cards).toHaveCount(0);
-    await expect(page.getByText(/ยังไม่มี SKU ใน Warehouse ที่จัดอยู่ในหมวดนี้/)).toBeVisible();
-    await page.getByRole("link", { name: "ดูไฟล์ดาวน์โหลดในหมวดนี้" }).click();
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const redirect = await request.get("/applications-and-softwares", { maxRedirects: 0 });
+    expect(redirect.status()).toBe(307);
+    expect(redirect.headers().location).toBe("/software/download");
+    await page.goto("/applications-and-softwares#industrial-software");
     await expect(page).toHaveURL("/software/download#industrial-software");
-    await expect(
-      page.locator("#industrial-software").getByRole("heading", { level: 4 }),
-    ).toHaveText(["SUNFORD Connect INDUS 1.10", "LP Label Editor สำหรับ LP50", "WeWeigh"]);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("ดาวน์โหลดซอฟต์แวร์");
+    await expect(page.locator(".software-catalog")).toHaveCount(0);
+    const posPath = "/products/category/pos";
+    const card = page.locator("main:visible #products-essentials > li").filter({
+      has: page.getByRole("heading", { name: "แอปพลิเคชันและซอฟต์แวร์", exact: true }),
+    });
+    const posLink = card.getByRole("link", { name: "ดูระบบ POS", exact: true });
+    const downloadLink = card.getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true });
+    for (const id of ["indicators", "platforms", "accessories", "scales"]) {
+      await page.goto(`/products/category/${id}`);
+      await expect(posLink).toHaveAttribute("href", posPath);
+      await expect(downloadLink).toHaveCount(0);
+    }
+    for (const [category, link, path] of [
+      ["scales", posLink, posPath],
+      ["pos", downloadLink, "/software/download"],
+    ] as const) {
+      await expect(page.locator(`[data-overview-category="${category}"]:visible`)).toHaveAttribute(
+        "data-controls-ready",
+        "true",
+      );
+      await expect(link).toHaveAttribute("href", path);
+      if (width === 390) {
+        await page.getByRole("button", { name: "เลื่อนอุปกรณ์และซอฟต์แวร์ถัดไป" }).click();
+        await expect(link).toBeInViewport({ ratio: 1 });
+      }
+      await link.click();
+      await expect(page).toHaveURL(path);
+    }
+    await expect(page.getByRole("main").locator("#retail-software")).toBeVisible();
   });
 
   test(`POS Android and both RLS editions have usable support pages at ${width}px`, async ({

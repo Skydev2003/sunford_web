@@ -15,7 +15,6 @@ for (const width of [320, 390, 768, 1440]) {
       ["/solutions", moduleClass("solutionCard"), "24px"],
       ["/solutions", moduleClass("businessCard"), "24px"],
       ["/products/category/scales/price", `article${moduleClass("card")}`, "16px"],
-      ["/applications-and-softwares", ".software-card-copy", "24px"],
       ["/explore", ".directory-card-copy", "24px"],
       ["/service/quotation", moduleClass("seller"), "24px"],
     ]) {

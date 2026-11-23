@@ -9,9 +9,9 @@ test("public editorial entry points offer real destinations without unpublished 
   await expect(stories.getByRole("heading", { level: 2 })).toBeVisible();
   await expect(stories.locator(".stories-track")).toBeVisible();
   await expect(stories.locator('a[href^="/blogs/editorial/"]')).toHaveCount(0);
-  await expect(stories.getByRole("link", { name: "ดูงานทุกประเภท" })).toHaveAttribute(
+  await expect(stories.getByRole("link", { name: "ดูเครื่องชั่งทั้งหมด" })).toHaveAttribute(
     "href",
-    "/products/category/scales/applications",
+    "/products/category/scales",
   );
 
   const card = stories.locator(':scope .stories-track > a[data-focus-copy="1"]').first();

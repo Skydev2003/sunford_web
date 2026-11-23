@@ -14,6 +14,21 @@ import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 import styles from "./products-overview.module.css";
 
+const topics: Readonly<Record<string, { introduction: string; detail: string }>> = {
+  compatibility: {
+    introduction: "เทียบรุ่นเครื่องหลัก พอร์ต และขั้วต่อก่อนเลือกอุปกรณ์",
+    detail: "จดชื่อรุ่นเครื่องชั่งหรือระบบ POS แล้วตรวจรายการอุปกรณ์ที่รองรับจากคู่มือของรุ่นนั้น",
+  },
+  printers: {
+    introduction: "เลือกให้ตรงกับงานพิมพ์สลิปหรือฉลากสินค้า",
+    detail: "ตรวจขนาดสลิปหรือฉลาก ช่องทางเชื่อมต่อ และซอฟต์แวร์ที่เครื่องพิมพ์รองรับ",
+  },
+  consumables: {
+    introduction: "ตรวจขนาดม้วนและวิธีพิมพ์ให้ตรงกับเครื่อง",
+    detail: "เทียบความกว้างม้วน ขนาดแกน และชนิดกระดาษหรือฉลากกับคู่มือเครื่องพิมพ์",
+  },
+};
+
 async function getCopyrightYear() {
   "use cache";
   return new Date().getFullYear();
@@ -34,46 +49,45 @@ export async function AccessoriesOverview() {
     ...products.filter((product) => !product.featured && product.image),
   ];
   const guide = buyingGuides.find(({ slug }) => slug === "accessories")!;
-  const categoryHref = "/products/category/accessories";
-  const localHref = (href: string) => (href === "/product/scale-accessories" ? categoryHref : href);
+  const guideHref = "/guides/accessories";
   const stories = guide.sections.map((section, index) => ({
     id: section.id,
     title: section.title,
-    introduction: section.paragraphs[0],
+    introduction: topics[section.id].introduction,
     image: images[index]?.image ?? "",
-    href: "/guides/accessories",
+    href: `${guideHref}#${section.id}`,
     content: (
       <div className={styles.storyBlocks}>
         <section>
-          {section.paragraphs.slice(1).map((paragraph, paragraphIndex) => (
-            <p key={paragraphIndex}>{paragraph}</p>
-          ))}
-          {section.links.map((link) => (
-            <Link key={link.href} href={localHref(link.href)}>
-              {link.label} ›
-            </Link>
-          ))}
+          <p>{topics[section.id].detail}</p>
+          {section.links
+            .filter(({ href }) => href !== guide.productHref)
+            .map(({ href, label }) => (
+              <Link key={href} href={href}>
+                {label} ›
+              </Link>
+            ))}
         </section>
       </div>
     ),
   }));
   const services = [
     {
-      title: "จัดส่งถึงคุณ.",
-      detail: "ครอบคลุมทั่วประเทศไทย",
-      href: sunford.contact,
-      content: <p>จัดส่งทั่วประเทศไทย พร้อมทีมดูแล และให้คำปรึกษา</p>,
+      title: "ขอใบเสนอราคา",
+      detail: "เลือกรุ่นและจำนวนที่ต้องการ",
+      href: "/service/quotation",
+      content: <p>เลือกรุ่นที่มีราคาในแบบฟอร์ม หรือติดต่อฝ่ายขายเพื่อสอบถามราคา</p>,
     },
     {
-      title: "ปรึกษาผู้เชี่ยวชาญ.",
-      detail: "เลือกให้ตรงกับงานของคุณ",
+      title: "เลือกอุปกรณ์ที่ใช้ร่วมกัน",
+      detail: "แจ้งรุ่นเครื่องชั่งหรือระบบ POS ที่ใช้อยู่",
       href: sunford.contact,
-      content: <p>{guide.introduction}</p>,
+      content: <p>เตรียมชื่อรุ่นและรูปพอร์ตหรือขั้วต่อของเครื่องเดิมเพื่อสอบถามอุปกรณ์ที่รองรับ</p>,
     },
     {
-      title: "ดูแลหลังการขาย.",
-      detail: "พร้อมข้อมูลการรับประกัน",
-      href: sunford.warrantyPolicy,
+      title: "บริการหลังการขาย",
+      detail: "ดูขั้นตอนซ่อม เปลี่ยน เคลม และคืนสินค้า",
+      href: sunford.service,
       content: (
         <p>
           <Link href={sunford.service}>บริการหลังการขาย</Link> ·{" "}
@@ -82,10 +96,10 @@ export async function AccessoriesOverview() {
       ),
     },
     {
-      title: "เปรียบเทียบก่อนเลือก.",
-      detail: "ดูรายละเอียดได้สูงสุด 3 รุ่น",
-      href: categoryHref,
-      content: <p>{guide.sections[2].paragraphs[1]}</p>,
+      title: "ดูคู่มือและสเปก",
+      detail: "ตรวจข้อมูลของอุปกรณ์ก่อนเลือก",
+      href: "/technical-specification",
+      content: <p>ตรวจคู่มือและข้อมูลการเชื่อมต่อของอุปกรณ์ตามรุ่นที่สนใจ</p>,
     },
     {
       title: "ลงทะเบียนรับประกัน",
@@ -99,13 +113,13 @@ export async function AccessoriesOverview() {
       ),
     },
   ];
-  const accordion = guide.sections.map((section, index) => ({
-    title: section.title,
-    image: stories[index].image,
+  const accordion = stories.map((story) => ({
+    title: story.title,
+    image: story.image,
     content: (
       <>
-        <p>{section.paragraphs[0]}</p>
-        <Link href="/guides/accessories">ดูเพิ่มเติม ›</Link>
+        <p>{story.introduction}</p>
+        <Link href={story.href}>อ่านคู่มือ ›</Link>
       </>
     ),
   }));
@@ -115,19 +129,22 @@ export async function AccessoriesOverview() {
     getCopyrightYear(),
     getStorefrontProducts(),
   ]);
-  const chapterPhotoIdByHref: Record<string, string> = {};
-  for (const page of additionalAccessorySubcategoryPages) {
-    const matches = new Set(warehouseProducts.filter(page.matches).map(({ id }) => id));
-    const photo = images.find(({ id }) => matches.has(id));
-    if (photo) chapterPhotoIdByHref[page.href] = photo.id;
-  }
+  const subcategories = [
+    ...category.subcategories,
+    ...additionalAccessorySubcategoryPages.map(({ id, label, matches }) => ({
+      id,
+      label,
+      productIds: warehouseProducts
+        .filter((product) => ids.has(product.id) && matches(product))
+        .map((product) => product.id),
+    })),
+  ];
   return (
     <ProductsOverview
       products={products}
-      categories={[category]}
+      categories={[{ ...category, subcategories }]}
       cardNames={cardNames}
       categoryId="accessories"
-      chapterPhotoIdByHref={chapterPhotoIdByHref}
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       site={site}

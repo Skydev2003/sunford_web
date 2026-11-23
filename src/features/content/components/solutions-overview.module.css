@@ -30,7 +30,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   background: var(--paper);
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   overflow: hidden;
   margin-top: 32px;
 }
@@ -97,7 +97,7 @@
   padding: var(--card-padding-content);
   min-height: 340px;
   height: 100%;
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: var(--paper);
 }
 .page .solutionCard h3 {
@@ -125,7 +125,7 @@
 .businessCard {
   min-width: 0;
   padding: var(--card-padding-content);
-  border-radius: 28px;
+  border-radius: var(--card-radius);
   background: var(--paper);
   scroll-margin-top: 80px;
 }

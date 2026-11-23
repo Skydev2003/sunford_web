@@ -4,8 +4,7 @@ import { ProductImage } from "@/components/ui/product-image";
 import Link from "next/link";
 import { Check, Plus } from "lucide-react";
 import type { ProductCardData } from "../types";
-import { formatCatalogCardPrice } from "../data/price-format";
-import { ProductCardHighlight } from "./product-card-highlight";
+import { ProductCardCaption } from "./product-card-caption";
 
 import { useCatalogStore } from "@/stores/catalog-store";
 
@@ -41,13 +40,13 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           sizes="(width < 40rem) 90vw, (width < 64rem) 45vw, 30vw"
         />
       </Link>
-      <div className="product-card-copy">
-        <Link href={`/products/${product.slug}`}>
-          <h3>{product.name}</h3>
-        </Link>
-        <ProductCardHighlight text={product.highlight} />
-        <p>{formatCatalogCardPrice(product.price)}</p>
-      </div>
+      <ProductCardCaption
+        className="product-card-copy"
+        href={`/products/${product.slug}`}
+        name={product.name}
+        highlight={product.highlight}
+        price={product.price}
+      />
     </article>
   );
 }
