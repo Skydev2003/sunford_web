@@ -51,7 +51,7 @@ export function CatalogProductCard({
       data-category-lift={categoryLift || undefined}
       data-directory-card={directory || undefined}
     >
-      <Link href={href} className={styles.image}>
+      <Link href={href} className={styles.image} prefetch>
         <ProductImage
           placeholder="product"
           progressive={categoryLift}

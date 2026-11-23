@@ -74,7 +74,7 @@ import { categoryApplicationsLink, hasCategoryApplications } from "../data/categ
 import { catalogProductPhoto } from "./catalog-product-card";
 import { ProductCategoryMock } from "./product-category-mock";
 import { SegmentedFilter } from "./segmented-filter";
-import { ProductsIndexRail } from "./products-index-rail";
+import { prepareRailImages, ProductsIndexRail } from "./products-index-rail";
 import { useCatalogOverlayHost } from "./catalog-route-frame";
 import styles from "./products-overview.module.css";
 
@@ -150,7 +150,7 @@ function Gallery({ id, label, children, returnKey, prepareImages }: GalleryProps
           {children}
         </ProductsIndexRail>
       ) : (
-        <LegacyGallery id={id} label={label}>
+        <LegacyGallery id={id} label={label} prepareImages={prepareImages}>
           {children}
         </LegacyGallery>
       )}
@@ -158,7 +158,7 @@ function Gallery({ id, label, children, returnKey, prepareImages }: GalleryProps
   );
 }
 
-function LegacyGallery({ id, label, children }: GalleryProps) {
+function LegacyGallery({ id, label, children, prepareImages }: GalleryProps) {
   const track = useRef<HTMLUListElement>(null);
   const hydrated = useHydratedControls();
   const [edges, setEdges] = useState({ start: true, end: false });
@@ -175,6 +175,9 @@ function LegacyGallery({ id, label, children }: GalleryProps) {
     if (track.current) observer.observe(track.current);
     return () => observer.disconnect();
   }, [updateEdges]);
+  useEffect(() => {
+    if (prepareImages && track.current) return prepareRailImages(track.current);
+  }, [children, prepareImages]);
   const move = (direction: number) => {
     const element = track.current;
     if (!element) return;
@@ -1027,7 +1030,7 @@ export function ProductsOverview({
                 id="products-lineup"
                 label="เลื่อนผลิตภัณฑ์"
                 returnKey={railScope && `${railScope}.lineup.${lineupRevision}`}
-                prepareImages={categoryLineup}
+                prepareImages
               >
                 {lineupProducts.length === 0 && categoryLineup && (
                   <li className={styles.lineupEmpty}>ยังไม่มีรุ่นสินค้าในกลุ่มนี้</li>
@@ -1041,6 +1044,7 @@ export function ProductsOverview({
                     <li key={product.id} className={styles.productTile}>
                       <Link
                         href={`/products/${product.slug}`}
+                        prefetch
                         className={styles.lineupLink}
                         aria-label={`ดูรายละเอียด ${name}`}
                       >

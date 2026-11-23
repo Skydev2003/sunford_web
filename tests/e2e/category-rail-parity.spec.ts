@@ -97,7 +97,7 @@ test("the directory keeps its card caption spacing when the category rails share
   }
 });
 
-test("the scale lineup prepares two pending images and the next image on advance", async ({
+test("the scale lineup prepares offscreen images before advancing and keeps distant images lazy", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -116,9 +116,11 @@ test("the scale lineup prepares two pending images and the next image on advance
     const images = track.locator(":scope > li > a img");
     await expect(images.nth(0)).toHaveAttribute("loading", "eager");
     await expect(images.nth(1)).toHaveAttribute("loading", "eager");
-    await expect(images.nth(2)).toHaveAttribute("loading", "lazy");
-    await page.getByRole("button", { name: "เลื่อนผลิตภัณฑ์ถัดไป", exact: true }).click();
     await expect(images.nth(2)).toHaveAttribute("loading", "eager");
+    await expect(images.nth(3)).toHaveAttribute("loading", "eager");
+    await expect(images.nth(4)).toHaveAttribute("loading", "lazy");
+    await page.getByRole("button", { name: "เลื่อนผลิตภัณฑ์ถัดไป", exact: true }).click();
+    await expect(images.nth(4)).toHaveAttribute("loading", "eager");
     await expect(images.last()).toHaveAttribute("loading", "lazy");
   } finally {
     release.resolve();

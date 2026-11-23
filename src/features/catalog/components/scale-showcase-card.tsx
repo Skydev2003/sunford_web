@@ -48,6 +48,7 @@ export function ProductPhotoCard({
   return (
     <Link
       href={href}
+      prefetch
       className={styles.photoFirst}
       data-product-card-photo-first
       aria-labelledby={heading}
@@ -126,6 +127,7 @@ export function ProductShowcaseCard({
         <Link
           href={`/products/${product.slug}`}
           aria-labelledby={heading}
+          prefetch
           aria-describedby={tagline ? `${heading}-tagline` : undefined}
           style={
             lettering &&

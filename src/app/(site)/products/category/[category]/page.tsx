@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { SiteLoading } from "@/features/site/components/site-loading";
@@ -37,6 +38,12 @@ export default function ProductCategoryPage({ params }: Props) {
 async function ProductCategoryContent({ params }: Props) {
   const { category: categoryId } = await params;
   if (!productCategoryDefinitions.some(({ id }) => id === categoryId)) notFound();
+  return <CachedCategoryContent categoryId={categoryId} />;
+}
+
+async function CachedCategoryContent({ categoryId }: { categoryId: string }) {
+  "use cache";
+  cacheLife({ stale: 30, revalidate: 60, expire: 300 });
   if (categoryId === "scales") return <ScalesOverview />;
   if (categoryId === "indicators") return <IndicatorsOverview />;
   if (categoryId === "platforms") return <PlatformsOverview />;

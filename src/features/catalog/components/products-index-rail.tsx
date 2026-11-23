@@ -4,15 +4,11 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cubicBezier } from "motion";
 import { useReturnState } from "@/features/site/history/return-state";
+import { catalogImageLeadMargin, prepareCardImage } from "./catalog-image-preparation";
 import styles from "./products-index-content.module.css";
 
 const shelfEase = cubicBezier(0.25, 0.1, 0.25, 0.9);
-const imageLeadViewports = 1.25;
-
-function prepareCardImage(card: Element | undefined) {
-  const image = card?.querySelector<HTMLImageElement>('img[loading="lazy"]');
-  if (image && !(image.complete && image.naturalWidth)) image.loading = "eager";
-}
+const imageLeadCards = 2;
 
 function firstCardIndex(length: number, matches: (index: number) => boolean) {
   let start = 0;
@@ -25,7 +21,7 @@ function firstCardIndex(length: number, matches: (index: number) => boolean) {
   return start;
 }
 
-function prepareRailImages(list: HTMLUListElement) {
+export function prepareRailImages(list: HTMLUListElement) {
   if (typeof IntersectionObserver === "undefined") return;
 
   let nearViewport = false;
@@ -37,34 +33,27 @@ function prepareRailImages(list: HTMLUListElement) {
   const scrollPosition = () =>
     Math.max(0, Math.min(list.scrollLeft, list.scrollWidth - list.clientWidth));
 
+  const prepareWindow = (direction: number) => {
+    const count = cards.length;
+    if (!count) return;
+    const { left, right } = list.getBoundingClientRect();
+    const first = firstCardIndex(count, (index) => bounds(index).right > left + 1);
+    const end = firstCardIndex(count, (index) => bounds(index).left >= right - 1);
+    // Keep a bounded lead in the direction of travel, with room to scroll back.
+    const before = direction > 0 ? 1 : imageLeadCards;
+    const after = direction < 0 ? 1 : imageLeadCards;
+    for (let index = Math.max(0, first - before); index < Math.min(count, end + after); index++) {
+      prepareCardImage(cards[index]);
+    }
+  };
+
   const prepareNext = () => {
     frame = 0;
     const left = scrollPosition();
     const delta = left - previousLeft;
     if (!nearViewport || Math.abs(delta) < 1) return;
     previousLeft = left;
-    const count = cards.length;
-    if (!count) return;
-    const viewport = list.getBoundingClientRect();
-    // Inline padding and snap inset are equal. DOM order is the physical order
-    // on this track, so look up each edge without measuring every card on a scroll frame.
-    const snapStart = bounds(0).left + list.scrollLeft;
-    const forward = delta > 0;
-    const target = forward
-      ? firstCardIndex(count, (index) => bounds(index).left >= snapStart - 1)
-      : firstCardIndex(count, (index) => bounds(index).left > snapStart + 1) - 1;
-    if (target < 0 || target >= count) return;
-    const travel = bounds(target).left - snapStart;
-    const upcoming = forward
-      ? firstCardIndex(
-          count,
-          (index) => index > target && bounds(index).right > viewport.right + travel,
-        )
-      : firstCardIndex(
-          count,
-          (index) => index >= target || bounds(index).left >= viewport.left + travel,
-        ) - 1;
-    prepareCardImage(cards[upcoming]);
+    prepareWindow(delta);
   };
 
   const onScroll = () => {
@@ -77,13 +66,9 @@ function prepareRailImages(list: HTMLUListElement) {
         nearViewport = entry.isIntersecting;
         if (!nearViewport) return;
         previousLeft = scrollPosition();
-        if (!cards.length) return;
-        const snapStart = bounds(0).left + list.scrollLeft;
-        const start = firstCardIndex(cards.length, (index) => bounds(index).right > snapStart + 1);
-        prepareCardImage(cards[start]);
-        prepareCardImage(cards[start + 1]);
+        prepareWindow(0);
       },
-      { rootMargin: `${Math.round(innerHeight * imageLeadViewports)}px 0px` },
+      { rootMargin: catalogImageLeadMargin() },
     );
     observer.observe(list);
     return observer;

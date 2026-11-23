@@ -100,6 +100,34 @@ for (const reducedMotion of ["no-preference", "reduce"] as const) {
   );
 }
 
+test("a product grid starts a lower row before it scrolls into view", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 700 });
+  const release = Promise.withResolvers<void>();
+  await page.route("**/_next/image?**", async (route) => {
+    await release.promise;
+    await route.fulfill({
+      contentType: "image/svg+xml",
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"/>',
+    });
+  });
+  try {
+    await page.goto("/products/category/scales/industrial", { waitUntil: "domcontentloaded" });
+    const photo = page.locator("#mock-product-results article a img").last();
+    await expect(photo).toHaveAttribute("loading", "lazy");
+    await photo.evaluate((image) => {
+      window.scrollBy({
+        top: image.getBoundingClientRect().top - innerHeight - 450,
+        behavior: "instant",
+      });
+    });
+    await expect(photo).not.toBeInViewport();
+    await expect(photo).toHaveAttribute("loading", "eager");
+  } finally {
+    release.resolve();
+    await page.unrouteAll({ behavior: "wait" });
+  }
+});
+
 test("a failed primary and fallback image leave the reserved placeholder visible", async ({
   page,
 }) => {

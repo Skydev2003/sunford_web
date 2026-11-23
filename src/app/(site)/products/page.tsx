@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SiteLoading } from "@/features/site/components/site-loading";
 import Link from "next/link";
+import { cacheLife } from "next/cache";
 import { ProductsOverview } from "@/features/catalog/components/products-overview";
 import { ProductsIndexContent } from "@/features/catalog/components/products-index-content";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
@@ -30,18 +31,16 @@ export default function ProductsPage() {
 }
 
 async function ProductsContent() {
-  const {
-    products: clientProducts,
-    categories,
-    cardNames,
-    readySubcategoryHrefs,
-  } = await getProductCategories();
-  const [navigation, site, copyrightYear, publishedScales] = await Promise.all([
+  "use cache";
+  cacheLife({ stale: 30, revalidate: 60, expire: 300 });
+  const [catalog, navigation, site, copyrightYear, publishedScales] = await Promise.all([
+    getProductCategories(),
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
     getCopyrightYear(),
     getPublishedScaleShelf(),
   ]);
+  const { products: clientProducts, categories, cardNames, readySubcategoryHrefs } = catalog;
   const photos = new Map<string, string>(
     categories.map((category) => {
       const members = category.productIds

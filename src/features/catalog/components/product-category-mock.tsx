@@ -11,6 +11,7 @@ import { useCatalogStore } from "@/stores/catalog-store";
 import type { ClientProduct } from "../types";
 import { formatCatalogCardPrice } from "../data/price-format";
 import { ProductCardHighlight } from "./product-card-highlight";
+import { catalogImageLeadMargin, prepareCardImage } from "./catalog-image-preparation";
 import type { ProductCategory } from "../data/mock-categories";
 import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
 import { catalogModelLabel } from "../data/catalog-card-names";
@@ -77,6 +78,7 @@ export function ProductCategoryMock({
   const showcaseTrack = useRef<HTMLUListElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
   const listing = useRef<HTMLElement>(null);
+  const results = useRef<HTMLDivElement>(null);
   const gridReveal = presentation === "listing" || presentation === "category";
   useScrollReveal(listing, { grid: true, selector: "#mock-product-results > article" });
   const subcategoryScrollTarget = useRef<{ track: HTMLDivElement; left: number } | null>(null);
@@ -138,6 +140,22 @@ export function ProductCategoryMock({
   const mockCount = matching.length - realCount;
   const filterKey = `${category}:${subcategory}:${normalizedQuery}`;
   const limit = pagination.key === filterKey ? pagination.limit : 24;
+  useEffect(() => {
+    const grid = results.current;
+    if (!gridReveal || !grid || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const { target, isIntersecting } of entries) {
+          if (!isIntersecting) continue;
+          prepareCardImage(target);
+          observer.unobserve(target);
+        }
+      },
+      { rootMargin: catalogImageLeadMargin() },
+    );
+    for (const card of grid.children) observer.observe(card);
+    return () => observer.disconnect();
+  }, [gridReveal, filterKey, limit, products]);
   const applyCategory = useCallback(
     (id: string, childId = "all") => {
       subcategoryScrollTarget.current = null;
@@ -498,6 +516,7 @@ export function ProductCategoryMock({
         </div>
 
         <div
+          ref={results}
           id="mock-product-results"
           className={gridReveal ? styles.directoryGrid : styles.grid}
           aria-label="รายการสินค้า"

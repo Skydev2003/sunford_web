@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { getStorefrontProducts } from "@/features/catalog/server/product-repository";
@@ -29,6 +30,8 @@ export async function ProductSubcategoryPage({
   categoryId: string;
   subcategoryId: string;
 }) {
+  "use cache";
+  cacheLife({ stale: 30, revalidate: 60, expire: 300 });
   const definition = getProductSubcategoryPage(subcategoryId, categoryId);
   if (!definition) notFound();
   const additional = "matches" in definition ? definition : undefined;

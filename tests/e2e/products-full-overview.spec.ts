@@ -1213,7 +1213,7 @@ function imageAssetPath(url: URL) {
   return new URL(url.searchParams.get("url") ?? url.href, url.origin).pathname;
 }
 
-test("Home & Retail prepares the first two images and leads product and market images on advance", async ({
+test("Home & Retail prepares offscreen products before scrolling and warms the next cards on advance", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -1262,37 +1262,47 @@ test("Home & Retail prepares the first two images and leads product and market i
     ).toBeGreaterThan(100);
     await expect(images.nth(0)).toHaveAttribute("loading", "eager");
     await expect(images.nth(1)).toHaveAttribute("loading", "eager");
-    await expect.poll(() => photoPaths.slice(0, 2).every((path) => requested.has(path))).toBe(true);
-    await expect(images.nth(2)).toHaveAttribute("loading", "lazy");
+    await expect.poll(() => photoPaths.slice(0, 4).every((path) => requested.has(path))).toBe(true);
+    await expect(images.nth(2)).toHaveAttribute("loading", "eager");
+    await expect(images.nth(3)).toHaveAttribute("loading", "eager");
     await expect(images.nth(4)).toHaveAttribute("loading", "lazy");
 
     const next = page.getByRole("button", { name: /เลื่อนงานบ้าน.*ถัดไป/ });
     await next.scrollIntoViewIfNeeded();
-    const record = (index: number) =>
-      rail.evaluate((track, index) => {
-        const cards = track.querySelectorAll(":scope > li");
-        const card = cards[index];
-        const image = card.querySelector("img")!;
-        const previous = cards[index - 1];
-        const destination =
-          previous.getBoundingClientRect().left - cards[0].getBoundingClientRect().left;
-        return new Promise<{ left: number; offscreen: boolean; destination: number }>((resolve) => {
-          const observer = new MutationObserver(() => {
-            if (image.loading !== "eager") return;
-            observer.disconnect();
-            resolve({
-              left: track.scrollLeft,
-              offscreen: card.getBoundingClientRect().left >= track.getBoundingClientRect().right,
-              destination,
-            });
-          });
-          observer.observe(image, { attributes: true, attributeFilter: ["loading"] });
-        });
-      }, index);
-    for (const index of [2, 3, 4, 5]) {
-      const [early] = await Promise.all([record(index), next.click()]);
+    const record = (index: number, nextStart: number) =>
+      rail.evaluate(
+        (track, { index, nextStart }) => {
+          const cards = track.querySelectorAll(":scope > li");
+          const card = cards[index];
+          const image = card.querySelector("img")!;
+          const destinationCard = cards[nextStart];
+          const destination =
+            destinationCard.getBoundingClientRect().left - cards[0].getBoundingClientRect().left;
+          return new Promise<{ left: number; offscreen: boolean; destination: number }>(
+            (resolve) => {
+              const observer = new MutationObserver(() => {
+                if (image.loading !== "eager") return;
+                observer.disconnect();
+                resolve({
+                  left: track.scrollLeft,
+                  offscreen:
+                    card.getBoundingClientRect().left >= track.getBoundingClientRect().right,
+                  destination,
+                });
+              });
+              observer.observe(image, { attributes: true, attributeFilter: ["loading"] });
+            },
+          );
+        },
+        { index, nextStart },
+      );
+    for (const [index, nextStart] of [
+      [4, 1],
+      [5, 2],
+    ]) {
+      const [early] = await Promise.all([record(index, nextStart), next.click()]);
       expect(early.left).toBeGreaterThan(0);
-      expect(early.left).toBeLessThan(early.destination);
+      expect(early.left).toBeLessThanOrEqual(early.destination);
       expect(early.offscreen).toBe(true);
       await expect.poll(() => requested.has(photoPaths[index])).toBe(true);
       await expect

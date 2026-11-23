@@ -63,8 +63,10 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const product = await getProduct((await params).slug);
   if (!product) notFound();
-  const site = await getSettings("site", defaultSite);
-  const storefront = await getStorefrontProducts();
+  const [site, storefront] = await Promise.all([
+    getSettings("site", defaultSite),
+    getStorefrontProducts(),
+  ]);
   const related = relatedProducts(product, storefront);
   const family = catalogProductGroup(product);
   const category = productCategoryDefinitions.find((item) => item.path === family);
