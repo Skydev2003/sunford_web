@@ -2,23 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import sanitizeHtml from "sanitize-html";
-import usageManuals from "@/features/content/data/usage-manuals.json";
-import installationManuals from "@/features/content/data/installation-manuals.json";
+import {
+  sanitizeTechnicalManual,
+  technicalManuals,
+} from "@/features/content/server/technical-manuals";
 import { technicalManualIndex } from "@/features/content/data/technical-manuals";
 import styles from "./manual.module.css";
 
 type Props = { params: Promise<{ slug: string }> };
-const manuals = [...usageManuals, ...installationManuals];
-
 function readManual(slug: string) {
-  const manual = manuals.find((entry) => entry.slug === slug);
+  const manual = technicalManuals.find((entry) => entry.slug === slug);
   if (!manual) notFound();
   return manual;
 }
 
 export function generateStaticParams() {
-  return manuals.map(({ slug }) => ({ slug }));
+  return technicalManuals.map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,20 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ManualPage({ params }: Props) {
   const { slug } = await params;
   const manual = readManual(slug);
-  const html = sanitizeHtml(manual.html, {
-    allowedTags: [...sanitizeHtml.defaults.allowedTags, "img", "details", "summary"],
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      "*": ["id", "class"],
-      img: ["src", "alt", "width", "height", "loading", "decoding"],
-      details: ["open"],
-      th: ["scope", "colspan", "rowspan"],
-      td: ["colspan", "rowspan"],
-      ol: ["start"],
-      li: ["value"],
-    },
-    transformTags: { h1: "h2" },
-  });
+  const html = sanitizeTechnicalManual(manual.html);
 
   return (
     <main id="main-content" className="source-content-page">

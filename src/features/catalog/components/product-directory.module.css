@@ -92,7 +92,15 @@
   max-width: 100%;
 }
 .listing {
+  padding-block-end: var(--section-space);
+}
+.listingControls {
+  padding-block-start: 1rem;
+}
+.listingLoading {
+  min-height: 14rem;
   padding-block: 1rem var(--section-space);
+  color: var(--muted);
 }
 .listing > section {
   padding: 0;

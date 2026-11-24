@@ -36,10 +36,6 @@
   border-top: 1px solid #2a2a2a;
 }
 
-:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-scene) {
-  display: none;
-}
-
 :global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-contact-row),
 :global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-address) strong {
   color: #f5f5f7;

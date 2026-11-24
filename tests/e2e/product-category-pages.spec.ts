@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { getProductSubcategoryPage } from "../../src/features/catalog/data/product-subcategory-pages";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
+import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 
@@ -109,33 +110,51 @@ for (const width of [390, 834, 1440]) {
   });
 }
 
-test("picture navigation reaches sibling listings in each remaining product family", async ({
+test("picture navigation keeps the product groups on feature and sibling listings", async ({
   page,
 }) => {
   test.slow();
   const menu = page.getByRole("navigation", { name: "หมวดย่อยสินค้า" });
+  const productMenus = getPrimaryNavigationItems(defaultNavigation);
   for (const [family, first, next] of [
     ["scales", "kitchen", "price"],
+    ["scales", "counting", "industrial"],
     ["indicators", "lcd", "led"],
+    ["indicators", "rs232", "led"],
+    ["indicators", "waterproof", "lcd"],
+    ["platforms", "sus304", "sus201"],
     ["pos", "android", "windows"],
     ["accessories", "displays", "cables"],
     ["accessories", "thermal-paper", "printers"],
   ]) {
     const prefix = `/products/category/${family}`;
-    await page.goto(`${prefix}/${first}`);
-    await expect(menu.locator('a[aria-current="page"]')).toHaveAttribute(
-      "href",
-      `${prefix}/${first}`,
-    );
-    await menu.locator(`a[href="${prefix}/${next}"]`).click();
-    await expect(menu.locator('a[aria-current="page"]')).toHaveAttribute(
-      "href",
-      `${prefix}/${next}`,
-    );
+    const source = `${prefix}/${first}`;
+    const destination = `${prefix}/${next}`;
+    const productLinks = productMenus.find(({ href }) => href === prefix)!.links;
+    const active = menu.locator('a[aria-current="page"]');
+    await page.goto(source);
+    await expect(menu.getByRole("link")).toHaveText(productLinks.map(({ label }) => label));
+    expect(
+      await menu
+        .getByRole("link")
+        .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+    ).toEqual(productLinks.map(({ href }) => href));
+    if (productLinks.some(({ href }) => href === source)) {
+      await expect(active).toHaveAttribute("href", source);
+    } else {
+      await expect(active).toHaveCount(0);
+      await expect(
+        page.getByRole("navigation", { name: "เส้นทางนำทาง" }).locator('[aria-current="page"]'),
+      ).toBeVisible();
+    }
+    await menu.locator(`a[href="${destination}"]`).click();
+    await expect(page).toHaveURL((url) => url.pathname === destination);
+    await expect(active).toHaveAttribute("href", destination);
+    await expect(menu.getByRole("link")).toHaveText(productLinks.map(({ label }) => label));
   }
 });
 
-test("switching picture filters keeps the document and skips the opening animation", async ({
+test("switching picture filters keeps the listing controls and skips the opening animation", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -160,6 +179,13 @@ test("switching picture filters keeps the document and skips the opening animati
     )
     .toBe(false);
   const menu = page.getByRole("navigation", { name: "หมวดย่อยสินค้า" });
+  const search = page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
+  const footer = page.getByRole("contentinfo");
+  const heading = page.getByRole("heading", { level: 1 });
+  const originalMenu = await menu.elementHandle();
+  const originalSearch = await search.elementHandle();
+  const originalFooter = await footer.elementHandle();
+  const originalHeading = await heading.elementHandle();
   await page.evaluate(() => window.scrollTo({ top: 120, behavior: "instant" }));
   const sus201 = menu.getByRole("link", { name: "สแตนเลส SUS201" });
   await expect(sus201).toBeInViewport({ ratio: 1 });
@@ -171,6 +197,14 @@ test("switching picture filters keeps the document and skips the opening animati
   const listing = page.locator('[data-product-subcategory-page="platform-sus201"]');
   await expect(listing).toBeVisible();
   await expect(sus201).toHaveAttribute("aria-current", "page");
+  await expect(listing.locator("#mock-product-results:visible")).toBeVisible();
+  expect(await menu.evaluate((element, original) => element === original, originalMenu)).toBe(true);
+  expect(await search.evaluate((element, original) => element === original, originalSearch)).toBe(
+    true,
+  );
+  expect(await footer.evaluate((element, original) => element === original, originalFooter)).toBe(
+    true,
+  );
   const scrollY = await page.evaluate(
     () =>
       new Promise<number>((resolve) => {
@@ -180,7 +214,10 @@ test("switching picture filters keeps the document and skips the opening animati
       }),
   );
   expect(scrollY).toBe(120);
-  await expectStaggerMotion(listing.getByRole("heading", { level: 1 }), 0);
+  expect(await heading.evaluate((element, original) => element === original, originalHeading)).toBe(
+    true,
+  );
+  await expectStaggerMotion(heading);
 
   await page.goBack();
   await expect(page).toHaveURL(new RegExp(`${source}$`));

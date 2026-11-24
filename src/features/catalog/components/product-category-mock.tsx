@@ -1,7 +1,7 @@
 "use client";
 import { useReturnState } from "@/features/site/history/return-state";
 
-import { type ReactNode, Suspense, useCallback, useEffect, useRef } from "react";
+import { Suspense, useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, GitCompareArrows, Package, Search } from "lucide-react";
@@ -15,7 +15,10 @@ import { catalogImageLeadMargin, prepareCardImage } from "./catalog-image-prepar
 import type { ProductCategory } from "../data/mock-categories";
 import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
 import { catalogModelLabel } from "../data/catalog-card-names";
+import type { ProductListingFeature } from "../data/product-listing-features";
 import { CatalogProductCard, catalogProductPhoto } from "./catalog-product-card";
+import { CatalogSearchField } from "./catalog-search-field";
+import { useListingSearch } from "./product-subcategory-shell";
 import cardStyles from "./product-browser.module.css";
 import styles from "./product-category-mock.module.css";
 import { SegmentedFilter } from "./segmented-filter";
@@ -52,7 +55,8 @@ export function ProductCategoryMock({
   categoryId,
   subcategoryId,
   imagePreviews,
-  listingNavigation,
+  listingFeatures,
+  initialFeature,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
@@ -61,16 +65,19 @@ export function ProductCategoryMock({
   categoryId?: string;
   subcategoryId?: string;
   imagePreviews?: Record<string, string>;
-  listingNavigation?: ReactNode;
+  listingFeatures?: ProductListingFeature[];
+  initialFeature?: string;
 }) {
-  const [category, setCategory] = useReturnState(
+  const [savedCategory, setCategory] = useReturnState(
     "product-category-mock.category",
     categoryId ?? "all",
   );
-  const [subcategory, setSubcategory] = useReturnState(
+  const [savedSubcategory, setSubcategory] = useReturnState(
     "product-category-mock.subcategory",
     subcategoryId ?? "all",
   );
+  const category = categoryId ?? savedCategory;
+  const subcategory = subcategoryId ?? savedSubcategory;
   const [pagination, setPagination] = useReturnState("product-category-mock.pagination", {
     key: "",
     limit: 24,
@@ -86,9 +93,32 @@ export function ProductCategoryMock({
   const subcategoryScrollTarget = useRef<{ track: HTMLDivElement; left: number } | null>(null);
   const catalogQuery = useCatalogStore((state) => state.query);
   const setCatalogQuery = useCatalogStore((state) => state.setQuery);
-  const [listingQuery, setListingQuery] = useReturnState("product-category-mock.listingQuery", "");
-  const query = presentation === "listing" ? listingQuery : catalogQuery;
-  const setQuery = presentation === "listing" ? setListingQuery : setCatalogQuery;
+  const listingSearch = useListingSearch();
+  const [selectedFeatures, setSelectedFeatures] = useReturnState<string[]>(
+    "product-category-mock.listingFeatures",
+    initialFeature ? [initialFeature] : [],
+  );
+  const activeFeatures = listingFeatures?.filter(({ id }) => selectedFeatures.includes(id)) ?? [];
+  const clearLinkedFeature = () => {
+    if (!initialFeature) return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("feature") !== initialFeature) return;
+    url.searchParams.delete("feature");
+    window.history.replaceState(null, "", url);
+  };
+  const toggleListingFeature = ({ id, exclusive }: ProductListingFeature) => {
+    if (selectedFeatures.includes(id)) {
+      setSelectedFeatures(selectedFeatures.filter((feature) => feature !== id));
+      if (id === initialFeature) clearLinkedFeature();
+      return;
+    }
+    const retained = exclusive
+      ? activeFeatures.filter((feature) => !feature.exclusive).map((feature) => feature.id)
+      : selectedFeatures;
+    setSelectedFeatures([...retained, id]);
+  };
+  const query = listingSearch?.query ?? catalogQuery;
+  const setQuery = listingSearch?.setQuery ?? setCatalogQuery;
   const compareMode = useCatalogStore((state) => state.compareMode);
   const startCompare = useCatalogStore((state) => state.startCompare);
   const activeCategory = categories.find((item) => item.id === category);
@@ -128,6 +158,9 @@ export function ProductCategoryMock({
         ...missingModels.map((entry) => ({ model: entry.model })),
       ];
   const matching = entries
+    .filter(({ product }) =>
+      activeFeatures.every(({ productIds }) => Boolean(product && productIds.includes(product.id))),
+    )
     .filter(({ model, product }) =>
       `${model} ${product?.warehouseSku ?? ""} ${product?.name ?? ""} ${product?.warehouseName ?? ""} ${product?.subtitle ?? ""} ${product?.description ?? ""}`
         .toLowerCase()
@@ -140,7 +173,7 @@ export function ProductCategoryMock({
     );
   const realCount = matching.filter((entry) => entry.product).length;
   const mockCount = matching.length - realCount;
-  const filterKey = `${category}:${subcategory}:${normalizedQuery}`;
+  const filterKey = `${category}:${subcategory}:${activeFeatures.map(({ id }) => id).join(",")}:${normalizedQuery}:${listingSearch?.revision ?? 0}`;
   const limit = pagination.key === filterKey ? pagination.limit : 24;
   useEffect(() => {
     const grid = results.current;
@@ -272,27 +305,16 @@ export function ProductCategoryMock({
         </header>
       )}
 
-      <div className={styles.entrySearch}>
-        <label className={styles.searchField}>
-          <span className={styles.selectionLabel}>ค้นหารุ่นสินค้า</span>
-          <span className={styles.search}>
-            <Search size={21} aria-hidden="true" />
-            <input
-              ref={searchInput}
-              id="catalog-search"
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setPagination({ key: "", limit: 24 });
-              }}
-              placeholder="พิมพ์ชื่อรุ่นที่ต้องการ"
-              aria-label="ค้นหารุ่นสินค้า"
-            />
-          </span>
-        </label>
-      </div>
-
-      {listingNavigation}
+      {presentation !== "listing" && (
+        <CatalogSearchField
+          inputRef={searchInput}
+          value={query}
+          onChange={(value) => {
+            setQuery(value);
+            setPagination({ key: "", limit: 24 });
+          }}
+        />
+      )}
 
       {presentation !== "category" && presentation !== "listing" && (
         <div className={styles.categoryRail}>
@@ -504,8 +526,22 @@ export function ProductCategoryMock({
             </div>
           </>
         )}
-        <div className={styles.toolbar}>
-          <p role="status" className={styles.count}>
+        <div className={`${styles.toolbar} ${listingFeatures ? styles.toolbarWithFeatures : ""}`}>
+          {!!listingFeatures?.length && (
+            <div className={styles.featureFilters} role="group" aria-label="กรองตามคุณสมบัติ">
+              {listingFeatures.map((feature) => (
+                <button
+                  key={feature.id}
+                  type="button"
+                  aria-pressed={selectedFeatures.includes(feature.id)}
+                  onClick={() => toggleListingFeature(feature)}
+                >
+                  {feature.label}
+                </button>
+              ))}
+            </div>
+          )}
+          <p role="status" className={listingFeatures ? styles.visuallyHiddenCount : styles.count}>
             {realCount} รายการ{mockCount > 0 && ` · ${mockCount} รุ่นตัวอย่าง (Mock)`}
           </p>
           <div className={styles.tools} role="group" aria-label="เครื่องมือรายการสินค้า">
@@ -572,6 +608,10 @@ export function ProductCategoryMock({
               type="button"
               onClick={() => {
                 selectCategory("all");
+                if (activeFeatures.length) {
+                  setSelectedFeatures([]);
+                  clearLinkedFeature();
+                }
                 setQuery("");
               }}
             >

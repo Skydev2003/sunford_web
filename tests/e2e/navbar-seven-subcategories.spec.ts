@@ -2,6 +2,7 @@ import { expect, test, type APIRequestContext, type Page } from "@playwright/tes
 import type { Product } from "../../src/features/catalog/types";
 import type { NavigationItem } from "../../src/features/site/types";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 import siteContent from "../../data/site/content.json";
 
 const root = "/products/category";
@@ -108,7 +109,7 @@ async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard"
           : panel.getByRole("link", { name: label, exact: true });
       await expect(link).toBeVisible();
       if (!savedDisabled.has(href)) {
-        await expect(link).toHaveAttribute("href", href);
+        await expect(link).toHaveAttribute("href", catalogSubmenuDestination(href));
         await expect(link).toBeEnabled();
       } else {
         await expect(link).toBeDisabled();
@@ -122,7 +123,7 @@ async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard"
       ]) {
         await expect(panel.getByRole("link", { name: label, exact: true })).toHaveAttribute(
           "href",
-          `${parentHref}/${slug}`,
+          catalogSubmenuDestination(`${parentHref}/${slug}`),
         );
       }
     }

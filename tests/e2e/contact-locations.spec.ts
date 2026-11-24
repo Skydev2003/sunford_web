@@ -1,69 +1,59 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { contactLocations } from "../../src/features/content/data/contact-locations";
 
-test("contact locations retain real company details, map links and responsive cards", async ({
-  page,
-  context,
-}) => {
+const bangLen = contactLocations.find((location) => location.id === "service")!;
+const facebookHref = "https://www.facebook.com/sunfordthai";
+
+test("contact cards link to email, the Bang Len office and Facebook", async ({ page, context }) => {
+  await context.route(bangLen.satelliteMap, (route) => route.fulfill({ body: "Satellite map" }));
   await page.goto("/contact-us");
-  const locations = page.getByRole("region", { name: "พบกับซันฟอร์ด", exact: true });
-  const cards = locations.getByRole("article");
-  await expect(cards).toHaveCount(3);
-  await context.route("https://maps.app.goo.gl/**", (route) =>
-    route.fulfill({ contentType: "text/html", body: "Map destination verified" }),
+  const channels = page.getByRole("region", { name: "ช่องทางติดต่อซันฟอร์ด" });
+  const cards = channels.getByRole("link");
+  await expect(cards).toHaveCount(5);
+  await expect(page.getByRole("heading", { name: "พบกับซันฟอร์ด", exact: true })).toHaveCount(0);
+  await expect(channels.getByText("เวลาทำการ", { exact: true })).toHaveCount(0);
+  await expect(channels.getByRole("link", { name: /โทรศัพท์/ })).toHaveAttribute(
+    "href",
+    "tel:034276999",
   );
-  for (const [index, location] of contactLocations.entries()) {
-    const card = cards.nth(index);
-    await expect(card.getByRole("heading", { level: 3 })).toHaveText(location.title);
-    await expect(card).toContainText(location.company);
-    await expect(card.locator("address")).toHaveText(location.address);
-    const map = card.getByRole("link", { name: `ดูแผนที่ ${location.title}`, exact: true });
-    await expect(map).toHaveAttribute("href", location.map);
-    await expect(map).toHaveAttribute("target", "_blank");
-    await expect(map.getByRole("heading")).toHaveText(location.title);
-    await expect(map.locator("address")).toHaveText(location.address);
+  await expect(channels.getByRole("link", { name: /อีเมลสอบถาม/ })).toHaveAttribute(
+    "href",
+    "mailto:info@sunford.co.th",
+  );
+  const map = channels.getByRole("link", { name: /Google Maps.*สำนักงานบางเลน/ });
+  await expect(map).toContainText("ต.บางระกำ จ.นครปฐม");
+  const facebook = channels.getByRole("link", { name: /Facebook.*@sunfordthai/ });
+  await expect(cards.nth(0)).toHaveAttribute("href", facebookHref);
+  await expect(cards.nth(1)).toContainText("LINE OFFICIAL");
+  const preview = channels.locator('iframe[title*="แผนที่ดาวเทียม"]');
+  await expect(preview).toHaveAttribute("src", bangLen.satelliteMap);
+  await expect(preview).toHaveAttribute("loading", "lazy");
+  for (const [link, href] of [
+    [map, bangLen.map],
+    [facebook, facebookHref],
+  ] as const) {
+    await expect(link).toHaveAttribute("href", href);
+    await context.route(href, (route) => route.fulfill({ body: "Contact destination" }));
     const popup = page.waitForEvent("popup");
-    await map.getByRole("heading").click();
-    const mapTab = await popup;
-    await expect(mapTab).toHaveURL(location.map);
-    await mapTab.close();
+    await link.click();
+    const tab = await popup;
+    await expect(tab).toHaveURL(href);
+    await tab.close();
   }
-  await expect(locations.getByRole("button")).toHaveCount(0);
-  await expect(locations.getByText("ดูแผนที่และการเดินทาง", { exact: true })).toHaveCount(0);
-  await expect(page.locator(".contact-banner")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "ดูแลกันต่อ ในทุกวันของการใช้งาน" })).toHaveCount(
-    0,
-  );
-  for (const width of [1440, 1024, 768, 390, 320]) {
+  for (const [width, columns] of [
+    [320, 1],
+    [390, 1],
+    [768, 2],
+    [1024, 4],
+    [1440, 4],
+  ]) {
     await page.setViewportSize({ width, height: 950 });
-    await locations.scrollIntoViewIfNeeded();
-    await page.mouse.move(0, 0);
-    await expect(cards.first()).toHaveCSS("transform", "none");
-    await expect(cards.last()).toHaveCSS("transform", "none");
-    const boxes = await cards.evaluateAll((elements) =>
-      elements.map((e) => {
-        const { x, y, width, height } = e.getBoundingClientRect();
-        return { x, y, width, height };
-      }),
+    const top = await cards.evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().top),
     );
+    expect(top.filter((value) => value === top[0])).toHaveLength(columns);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    if (width >= 1024) {
-      expect(Math.max(...boxes.map((b) => b.y)) - Math.min(...boxes.map((b) => b.y))).toBeLessThan(
-        1,
-      );
-      expect(
-        Math.max(...boxes.map((b) => b.height)) - Math.min(...boxes.map((b) => b.height)),
-      ).toBeLessThan(1);
-    } else {
-      expect(boxes[1].y).toBeGreaterThanOrEqual(boxes[0].y + boxes[0].height);
-    }
-    if (width === 1440 || width === 390) {
-      await locations.screenshot({
-        path: test.info().outputPath(`contact-locations-${width}.png`),
-        animations: "disabled",
-      });
-    }
   }
 });

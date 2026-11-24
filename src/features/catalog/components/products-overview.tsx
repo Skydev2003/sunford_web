@@ -20,10 +20,12 @@ import {
 } from "react";
 import Link from "next/link";
 import { CatalogNavigationLink } from "./catalog-navigation-link";
+import { useCatalogAnchor } from "./use-catalog-anchor";
 import Image from "next/image";
 import { chapterArtwork } from "../data/category-chapter-artwork";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resolveCategoryHref } from "../data/category-destinations";
+import { productLineupAnchor } from "../data/catalog-submenu-destinations";
 import {
   getProductSubcategoryPage,
   getProductSubcategoryPageByHref,
@@ -107,10 +109,6 @@ const categoryServiceIcons = new Map([
   [sunford.downloads, Download],
   ["/products/category/scales/price", FileCheck],
   ["/products/category/scales/industrial", Settings2],
-]);
-const categoryFeatureHeadings = new Map([
-  ["pos", "โซลูชันขายหน้าร้าน (POS)"],
-  ["accessories", "อุปกรณ์เสริมครบวงจร"],
 ]);
 type GalleryProps = {
   id: string;
@@ -372,7 +370,10 @@ export function ProductsOverview({
   const scales = categoryId === "scales";
   const indicators = categoryId === "indicators";
   const platforms = categoryId === "platforms";
-  const usesEditorialLayout = scales || indicators || platforms;
+  const pos = categoryId === "pos";
+  const usesEditorialLayout = categoryLineup;
+  const lineupAnchor = categoryLineup && categoryId ? productLineupAnchor(categoryId) : undefined;
+  useCatalogAnchor(lineupAnchor);
   const categoryEntrance = Boolean(indexContent) || categoryLineup;
   const categoryItems = activeCategory?.subcategories ?? categories;
   const categoryHref = categoryId ? `/products/category/${categoryId}` : undefined;
@@ -403,7 +404,7 @@ export function ProductsOverview({
             detail: "ดูเครื่องชั่งสำหรับครัวเรือน การผลิต คำนวณราคา และงานวิเคราะห์",
             image: defaultSpotlightImage,
             href: "/products/category/scales",
-            linkLabel: "ดูเพิ่มเติม",
+            linkLabel: "ดูเครื่องชั่ง",
           }
         : {
             title: "อุปกรณ์เสริม",
@@ -412,10 +413,9 @@ export function ProductsOverview({
             href: "/products/category/accessories",
             linkLabel: "ดูอุปกรณ์เสริม",
           };
-  const softwareLink =
-    categoryId === "pos"
-      ? { href: sunford.downloads, linkLabel: "ดาวน์โหลดซอฟต์แวร์" }
-      : { href: "/products/category/pos", linkLabel: "ดูระบบ POS" };
+  const softwareLink = pos
+    ? { href: sunford.downloads, linkLabel: "ดาวน์โหลดซอฟต์แวร์" }
+    : { href: "/products/category/pos", linkLabel: "ดูระบบ POS" };
   const chapterItems = categoryMenu
     ? categoryMenu.links.map((link) => {
         const category = activeCategory?.subcategories.find(
@@ -739,9 +739,11 @@ export function ProductsOverview({
     >
       <div className={styles.sectionHeading} data-scroll-reveal="">
         <h2 id="products-accordion-title">
-          {activeCategory
-            ? `เลือก${indicators ? "อินดิเคเตอร์" : activeCategory.label}ให้เหมาะกับงาน`
-            : "เมื่อทุกอย่างเชื่อมถึงกัน ธุรกิจก็ไปได้ไกลขึ้น"}
+          {pos
+            ? "เลือกระบบ POS ให้เหมาะกับร้าน"
+            : activeCategory
+              ? `เลือก${indicators ? "อินดิเคเตอร์" : activeCategory.label}ให้เหมาะกับงาน`
+              : "เมื่อทุกอย่างเชื่อมถึงกัน ธุรกิจก็ไปได้ไกลขึ้น"}
         </h2>
       </div>
       {categoryLineup ? (
@@ -1112,6 +1114,7 @@ export function ProductsOverview({
 
             <section
               className={`${styles.section} ${styles.paper} ${styles.lineup}`}
+              id={lineupAnchor}
               aria-labelledby="products-lineup-title"
               data-overview-section="lineup"
             >
@@ -1298,12 +1301,7 @@ export function ProductsOverview({
                 data-overview-section="features"
               >
                 <div className={styles.sectionHeading} data-scroll-reveal="">
-                  <h2 id="products-features-title">
-                    {activeCategory
-                      ? (categoryFeatureHeadings.get(activeCategory.id) ??
-                        `รู้จัก${activeCategory.label} SUNFORD`)
-                      : "รู้จักผลิตภัณฑ์ SUNFORD"}
-                  </h2>
+                  <h2 id="products-features-title">รู้จักผลิตภัณฑ์ SUNFORD</h2>
                 </div>
                 <Gallery
                   id="products-features"

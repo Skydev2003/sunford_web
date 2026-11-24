@@ -8,6 +8,42 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
+test("switching from price to industrial keeps the listing in its route's group", async ({
+  page,
+}) => {
+  const duplicateKeys: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error" && message.text().includes("Encountered two children")) {
+      duplicateKeys.push(message.text());
+    }
+  });
+
+  const pricePath = "/products/category/scales/price";
+  await page.goto(pricePath);
+  const price = page.locator('[data-scale-subcategory-page="scale-price"]');
+  const priceSearch = price.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
+  await priceSearch.fill("JE11");
+  await expect(price.locator("#mock-product-results")).toBeVisible();
+  await priceSearch.fill("");
+  await price
+    .getByRole("navigation", { name: "หมวดย่อยสินค้า" })
+    .locator(`a[href="${path}"]`)
+    .click();
+
+  const industrial = page.locator("[data-industrial-scales-page]");
+  const industrialSearch = industrial.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
+  await expect(industrialSearch).toBeVisible();
+  await industrialSearch.fill("JE11");
+  await expect(
+    industrial.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(priceSearch).toHaveValue("");
+  await page.goForward();
+  await expect(industrialSearch).toHaveValue("JE11");
+  expect(duplicateKeys).toEqual([]);
+});
+
 for (const width of [320, 390, 768, 834, 1440]) {
   test(`industrial listing retains exact membership and contained layout at ${width}px`, async ({
     page,

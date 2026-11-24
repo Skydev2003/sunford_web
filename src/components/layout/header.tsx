@@ -24,6 +24,7 @@ import {
 } from "@/features/site/data/navigation";
 import { defaultSite } from "@/features/site/data/settings";
 import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
+import { catalogSubmenuDestination } from "@/features/catalog/data/catalog-submenu-destinations";
 import type { NavigationItem, SiteSettings } from "@/features/site/types";
 
 function navigateSamePageHash(event: { preventDefault: () => void }, href: string) {
@@ -199,6 +200,7 @@ export function Header({
     };
   }, [clearTimers, closeDesktopMenu]);
   const submenuLink = (link: NavigationItem["links"][number], mobile = false, order?: number) => {
+    const href = catalogSubmenuDestination(link.href);
     const motion =
       order === undefined
         ? {}
@@ -217,10 +219,10 @@ export function Header({
       <Link
         {...motion}
         key={`${link.href}:${link.label}`}
-        href={link.href}
+        href={href}
         prefetch={false}
         onClick={mobile ? () => setMenuOpen(false) : closeDesktopMenu}
-        onNavigate={(event) => navigateSamePageHash(event, link.href)}
+        onNavigate={(event) => navigateSamePageHash(event, href)}
       >
         <span>{link.label}</span>
       </Link>

@@ -9,24 +9,16 @@ export const usageGuide = {
 };
 
 export const productAdvice = [
-  { label: "ห้องปฏิบัติการ", slug: "laboratory" },
-  { label: "อุตสาหกรรม", slug: "industry" },
-  { label: "พาณิชยกรรมและบริการ", slug: "retail" },
-  { label: "ไลฟ์สไตล์", slug: "lifestyle" },
+  { label: "ครัวเรือน", slug: "lifestyle" },
+  { label: "การผลิต", slug: "industry" },
+  { label: "คำนวณราคา", slug: "retail" },
+  { label: "งานวิเคราะห์", slug: "laboratory" },
 ].map(({ label, slug }) => ({ label, href: technicalManualPath(slug) }));
 
 export const installationGuides = [
   {
     label: "วิธีติดตั้งเครื่องชั่งพิมพ์ฉลากบาร์โค้ด RLS1100",
     href: technicalManualPath("rls1100"),
-  },
-  {
-    label: "ตารางเตรียมข้อมูลสินค้า RLS1100 (XLSX)",
-    href: "/downloads/manuals/rls1100-products.xlsx",
-  },
-  {
-    label: "แม่แบบฉลาก RLS1100 (PDF)",
-    href: "/downloads/manuals/rls1100-label.pdf",
   },
   {
     label: "คู่มือออกแบบฉลากและสลิป LP50",

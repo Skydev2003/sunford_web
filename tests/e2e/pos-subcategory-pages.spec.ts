@@ -135,12 +135,11 @@ test("old POS queries, exact legacy aliases and guide links reach own pages", as
   }
 });
 
-test("POS overview story opens Android directly", async ({ page }) => {
+test("POS overview chapter opens Android directly", async ({ page }) => {
   await page.goto("/products/category/pos");
-  await page.locator("#products-features > li").first().getByRole("button").click();
   await page
-    .getByRole("dialog")
-    .getByRole("link", { name: "POS ระบบ Android ›", exact: true })
+    .locator("#products-chapters")
+    .getByRole("link", { name: "Android", exact: true })
     .click();
   await expect(page).toHaveURL(/\/products\/category\/pos\/android$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);

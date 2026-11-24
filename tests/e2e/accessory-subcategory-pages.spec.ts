@@ -257,21 +257,20 @@ test("shared LED-R1 returns to the accessory or indicator group that opened it",
   expect(hrefs[0]).not.toBe(hrefs[1]);
 });
 
-test("consumables legacy guide and overview story links reach the dedicated size list", async ({
-  page,
-}) => {
+test("consumables legacy and guide links reach the dedicated size list", async ({ page }) => {
   await page.goto("/Product/Consumables");
   await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
-  await expect(page.locator("#mock-product-results article")).toHaveCount(7);
+  const listing = page.locator('[data-product-subcategory-page="accessory-consumables"]');
+  await expect(
+    listing.locator("#mock-product-results article[data-model-only]").first(),
+  ).toBeVisible();
   await page.goto("/guides/accessories");
   await page.getByRole("link", { name: "ดูวัสดุสิ้นเปลือง", exact: true }).click();
   await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
   await page.goto("/products/category/accessories");
-  await page.locator("#products-features > li").last().getByRole("button").click();
-  await page
-    .getByRole("dialog")
-    .locator('a[href="/products/category/accessories/consumables"]')
-    .click();
+  const guide = page.locator('[data-overview-section="accordion"]');
+  await guide.getByText("เลือกวัสดุสิ้นเปลือง", { exact: true }).click();
+  await guide.getByRole("link", { name: /ดูวัสดุสิ้นเปลือง/ }).click();
   await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });

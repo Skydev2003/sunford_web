@@ -4,31 +4,43 @@ const index = "/technical-specification";
 const guideRoot = `${index}/guides`;
 const slugs = [
   "basic-usage",
-  "laboratory",
+  "lifestyle",
   "industry",
   "retail",
-  "lifestyle",
+  "laboratory",
   "rls1100",
   "lp50",
   "sql-server",
 ];
 
 for (const width of [390, 1440]) {
-  test(`technical manuals open locally and fit at ${width}px`, async ({ page }) => {
+  test(`technical manuals switch in the same reading pane at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(index);
     const main = page.getByRole("main");
-    const links = main.locator(`a[href^="${guideRoot}/"]`);
+    const article = main.locator("#guide-content");
+    const heading = article.getByRole("heading", { level: 1 });
+    await expect(heading).toHaveText("การใช้งานและการดูแลรักษาเครื่องชั่ง");
+    if (width === 390) await main.getByText("สารบัญคู่มือ", { exact: true }).click();
+    const sidebar = main.getByRole("navigation", { name: "บทและคู่มือ" });
+    const links = sidebar.getByRole("link");
     await expect(links).toHaveCount(slugs.length);
+    await expect(sidebar.locator("details").first().getByRole("link")).toHaveText([
+      "การใช้งานและการดูแลรักษาเครื่องชั่ง",
+      "ครัวเรือน",
+      "การผลิต",
+      "คำนวณราคา",
+      "งานวิเคราะห์",
+    ]);
     expect(
       await links.evaluateAll((items) => items.map((item) => item.getAttribute("href"))),
-    ).toEqual(slugs.map((slug) => `${guideRoot}/${slug}`));
+    ).toEqual(slugs.map((slug) => `${index}?guide=${slug}#guide-content`));
+    await page.evaluate(() => (document.documentElement.dataset.guidebookDocument = "original"));
     await links.filter({ hasText: "RLS1100" }).click();
-    await expect(page).toHaveURL(`${guideRoot}/rls1100`);
-    await expect(main.getByRole("heading", { level: 1 })).toContainText(/RLS\s*1100/i);
-    await expect(page).toHaveTitle(/RLS\s*1100/i);
-    const article = main.getByRole("article").first();
-    await expect(article).toBeVisible();
+    await expect(page).toHaveURL(`${index}?guide=rls1100#guide-content`);
+    await expect(heading).toContainText(/RLS\s*1100/i);
+    await expect(page.locator("html")).toHaveAttribute("data-guidebook-document", "original");
+    expect(page.context().pages()).toEqual([page]);
     await expect(article.locator("ol").first()).toBeVisible();
     const image = article.locator("figure img").first();
     await image.scrollIntoViewIfNeeded();
@@ -36,16 +48,31 @@ for (const width of [390, 1440]) {
     await expect
       .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
       .toBeGreaterThan(0);
-    for (const file of ["rls1100-products.xlsx", "rls1100-label.pdf"])
-      await expect(article.locator(`a[href="/downloads/manuals/${file}"]`).first()).toBeVisible();
+    for (const file of ["rls1100-products.xlsx", "rls1100-label.pdf"]) {
+      const link = article.locator(`a[href="/downloads/manuals/${file}"]`).first();
+      const [download] = await Promise.all([page.waitForEvent("download"), link.click()]);
+      expect(download.suggestedFilename()).toBe(file);
+      await expect(page).toHaveURL(`${index}?guide=rls1100#guide-content`);
+    }
+    if (width === 1440) {
+      const outline = main.getByRole("navigation", { name: "ในหน้านี้" });
+      await outline.getByRole("link", { name: "ใส่ม้วนฉลากและทดลองพิมพ์" }).click();
+      await expect(
+        article.getByRole("heading", { name: "ใส่ม้วนฉลากและทดลองพิมพ์" }),
+      ).toBeFocused();
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );
-    await main.getByRole("link", { name: "กลับไปหน้าคู่มือและสเปก" }).click();
-    await expect(page).toHaveURL(index);
-    await page.goto(`${guideRoot}/industry`);
-    await expect(main.getByRole("heading", { level: 1 })).toContainText("อุตสาหกรรม");
-    await expect(main.getByRole("table").first()).toBeVisible();
+    const industrial = sidebar.getByRole("link", { name: "การผลิต", exact: true });
+    await industrial.click();
+    await expect(heading).toContainText("อุตสาหกรรม");
+    await expect(industrial).toHaveAttribute("aria-current", "page");
+    await expect(article.getByRole("table").first()).toBeVisible();
+    await page.goBack();
+    await expect(heading).toContainText(/RLS\s*1100/i);
+    await page.reload();
+    await expect(heading).toContainText(/RLS\s*1100/i);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );

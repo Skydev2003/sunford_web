@@ -29,23 +29,10 @@ footer {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  background: var(--background);
+}
+[data-products-footer] .footer-surface {
   background: radial-gradient(ellipse at 80% 15%, #fff, #f3f5f7);
-}
-.footer-scene {
-  position: absolute;
-  inset: 0 auto 0 0;
-  z-index: var(--z-decoration);
-  pointer-events: none;
-}
-.footer-scene img {
-  object-fit: cover;
-  filter: grayscale(1);
-}
-.footer-scene::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #f4f6f80a, #f4f6f820 50%, #f4f6f8ee);
 }
 .site-footer .footer-main {
   position: relative;
@@ -307,15 +294,6 @@ footer {
 .footer-care {
   grid-column: auto;
 }
-.footer-scene {
-  width: 100%;
-  height: 230px;
-  clip-path: none;
-}
-.footer-scene img {
-  opacity: 0.075;
-  object-position: right center;
-}
 .site-footer .footer-bottom {
   width: calc(100% - 40px);
   flex-direction: column;
@@ -562,15 +540,6 @@ footer {
   .footer-care {
     grid-column: revert;
   }
-  .footer-scene {
-    width: clamp(150px, 14vw, 280px);
-    height: revert;
-    clip-path: polygon(0px 0px, 100% 0px, 65% 35%, 95% 72%, 78% 100%, 0px 100%);
-  }
-  .footer-scene img {
-    opacity: 0.16;
-    object-position: 85% center;
-  }
   .site-footer .footer-bottom {
     width: calc(100% - 96px);
     flex-direction: revert;
@@ -619,9 +588,6 @@ footer {
 @media (min-width: 80rem) {
   .site-footer .footer-main {
     padding-left: 0px;
-  }
-  .footer-scene img {
-    opacity: 0.28;
   }
   .footer-main {
     gap: revert;

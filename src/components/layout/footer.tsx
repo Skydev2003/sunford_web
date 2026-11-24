@@ -33,14 +33,6 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
         </div>
       </ContactBannerVisibility>
       <div className="footer-surface">
-        <div className="footer-scene" aria-hidden="true">
-          <Image
-            src="/images/home-categories/digital.webp"
-            alt=""
-            fill
-            sizes="(width < 48rem) 100vw, 25vw"
-          />
-        </div>
         <div className="container footer-main">
           <div className="footer-brand">
             <Link href="/" className="footer-logo">

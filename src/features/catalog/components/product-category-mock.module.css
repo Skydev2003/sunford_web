@@ -356,6 +356,47 @@
   border-color: #edc5cb;
   background: #fff0f3;
 }
+.featureFilters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.toolbar .featureFilters button {
+  border-color: var(--line);
+  border-radius: 999px;
+  background: var(--background);
+}
+.toolbar .featureFilters button:hover {
+  border-color: var(--red);
+}
+.toolbar .featureFilters button[aria-pressed="true"] {
+  border-color: var(--red);
+  background: var(--red);
+  color: var(--background);
+}
+.visuallyHiddenCount {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.toolbarWithFeatures .featureFilters,
+.toolbarWithFeatures .tools {
+  flex-basis: 100%;
+}
+@media (min-width: 48rem) {
+  .toolbarWithFeatures .featureFilters,
+  .toolbarWithFeatures .tools {
+    flex-basis: auto;
+  }
+  .toolbarWithFeatures .tools {
+    margin-inline-start: auto;
+  }
+}
 .toolbar select {
   min-width: 0;
   max-width: 100%;

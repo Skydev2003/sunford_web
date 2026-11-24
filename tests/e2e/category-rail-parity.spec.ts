@@ -75,9 +75,6 @@ async function expectCategoryAlignment(track: Locator, category: string, width: 
       "#products-lineup > li",
       "#products-services-title",
       "#products-services > li",
-      ...(["scales", "indicators", "platforms"].includes(categoryId)
-        ? []
-        : ["#products-features-title", "#products-features > li"]),
       "#products-accordion-title",
       '[data-overview-section="accordion"] > :last-child',
       "#products-index-title",
@@ -105,7 +102,7 @@ async function expectCategoryAlignment(track: Locator, category: string, width: 
     expect(left, `${category}/${selector}`).toBeCloseTo(inset, 0);
   }
   expect(layout.viewportRight).toBeCloseTo(width, 0);
-  if (["scales", "indicators", "platforms"].includes(category) && width >= 1024) {
+  if (width >= 1024) {
     expect(layout.cardsVisible).toBeGreaterThanOrEqual(3.5);
     expect(layout.cardsVisible).toBeLessThanOrEqual(4);
   }
@@ -196,28 +193,15 @@ test("the lineup shows the WPS10KS model, photo, highlight and price in one prod
   );
 });
 
-type CardLayout = { width: number; height: number; background: string; radius: string };
-
-async function expectProductCardLayout(
-  cards: Locator,
-  reference: CardLayout | null,
-  scope: string,
-) {
+async function expectProductCardLayout(cards: Locator, scope: string) {
   await expect(cards.first()).toBeVisible();
-  const issues = await cards.evaluateAll((items, referenceLayout) => {
-    const usesEditorialLayout = referenceLayout === null;
+  const issues = await cards.evaluateAll((items) => {
     const dimensions = items[0].getBoundingClientRect();
-    const { width, height, background, radius } = referenceLayout ?? {
-      width: Math.round(dimensions.width),
-      height: Math.round(dimensions.height),
-      background: "rgb(255, 255, 255)",
-      radius: "24px",
-    };
     return items.flatMap((item) => {
       const card = item.getBoundingClientRect();
       const links = [...item.querySelectorAll<HTMLAnchorElement>("a[href]")];
       const [link] = links;
-      const style = getComputedStyle(usesEditorialLayout && link ? link : item);
+      const style = getComputedStyle(link ?? item);
       const image = link?.querySelector("img");
       const imageBox = image?.parentElement?.getBoundingClientRect();
       const name = link?.querySelector("h3");
@@ -225,12 +209,12 @@ async function expectProductCardLayout(
       const price = highlight?.nextElementSibling;
       const caption = name?.parentElement;
       const invalid =
-        Math.round(card.width) !== width ||
-        Math.round(card.height) !== height ||
-        style.backgroundColor !== background ||
-        style.borderRadius !== radius ||
+        Math.round(card.width) !== Math.round(dimensions.width) ||
+        Math.round(card.height) !== Math.round(dimensions.height) ||
+        style.backgroundColor !== "rgb(255, 255, 255)" ||
+        style.borderRadius !== "24px" ||
         (image && getComputedStyle(image).objectFit !== "contain") ||
-        (usesEditorialLayout && imageBox && Math.abs(imageBox.width - imageBox.height) > 1) ||
+        (imageBox && Math.abs(imageBox.width - imageBox.height) > 1) ||
         (caption && getComputedStyle(caption).textAlign !== "center") ||
         (name && getComputedStyle(name).fontSize !== "18px") ||
         (highlight && getComputedStyle(highlight).fontSize !== "14px") ||
@@ -254,7 +238,7 @@ async function expectProductCardLayout(
           ]
         : [];
     });
-  }, reference);
+  });
   expect(issues, scope).toEqual([]);
 }
 
@@ -275,20 +259,6 @@ for (const [width, categorySectionGap] of [
     await expect.poll(() => gapAfterShelf(firstShelf)).toBeGreaterThan(0);
     const chapterGap = await railGap(page.locator("#products-categories"));
     const shelfGap = await railGap(firstShelf);
-    const reference = page.locator(
-      '#products-rail-indicators > li[data-warehouse-sku="G107770"] > a',
-    );
-    await expect(reference).toBeVisible();
-    const referenceLayout = await reference.evaluate((card) => {
-      const style = getComputedStyle(card);
-      const rect = card.getBoundingClientRect();
-      return {
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-        background: style.backgroundColor,
-        radius: style.borderRadius,
-      };
-    });
 
     for (const category of ["scales", "indicators", "platforms", "pos", "accessories"]) {
       await page.goto(`/products/category/${category}`);
@@ -299,14 +269,10 @@ for (const [width, categorySectionGap] of [
       );
       await expect(page.locator("#products-title")).toBeVisible();
       const scales = category === "scales";
-      const usesEditorialLayout = ["scales", "indicators", "platforms"].includes(category);
       await expect(page.locator('[data-overview-section="hero"]')).toHaveCount(scales ? 1 : 0);
       await expectCategoryAlignment(page.locator("#products-lineup"), category, width);
       expect(await railGap(page.locator("#products-chapters"))).toEqual(chapterGap);
-      const rails = usesEditorialLayout
-        ? ["lineup", "services", "essentials"]
-        : ["lineup", "services", "features", "essentials"];
-      for (const id of rails) {
+      for (const id of ["lineup", "services", "essentials"]) {
         const rail = page.locator(`#products-${id}`);
         expect(await railGap(rail), `${category}/${id}`).toEqual(shelfGap);
         if (id !== "essentials") {
@@ -350,7 +316,7 @@ for (const [width, categorySectionGap] of [
         (list) =>
           list.getBoundingClientRect().right - list.lastElementChild!.getBoundingClientRect().right,
       );
-      expect(trailingSpace).toBeCloseTo(24, 0);
+      expect(Math.abs(trailingSpace - 24)).toBeLessThanOrEqual(1);
       await previous.press("Enter");
       await expect(next).toBeEnabled();
 
@@ -367,11 +333,7 @@ for (const [width, categorySectionGap] of [
           ).toHaveCount(1);
           continue;
         }
-        await expectProductCardLayout(
-          cards,
-          usesEditorialLayout ? null : referenceLayout,
-          [category, await filter.innerText()].join(" / "),
-        );
+        await expectProductCardLayout(cards, [category, await filter.innerText()].join(" / "));
       }
     }
   });

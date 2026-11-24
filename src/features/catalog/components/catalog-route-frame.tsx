@@ -38,7 +38,8 @@ export function CatalogRouteFrame({
   const root = useRef<HTMLDivElement>(null);
   useHistoryRestoration(root);
   // Sibling listings are filter changes within the same opening animation.
-  useStaggerBounce(root, pathname.match(subcategoryPath)?.[1] ?? pathname);
+  const listingFamily = pathname.match(subcategoryPath)?.[1];
+  useStaggerBounce(root, listingFamily ?? pathname);
   const homePage = pathname === "/";
   const servicePage = pathname === "/service";
   const streamSiteChrome = homePage || pathname === "/contact-us" || servicePage;
@@ -72,7 +73,7 @@ export function CatalogRouteFrame({
         )}
         {children}
         {!productsPage && (
-          <Fragment key={pathname}>
+          <Fragment key={listingFamily ?? pathname}>
             {streamSiteChrome ? <Suspense fallback={null}>{footer}</Suspense> : footer}
           </Fragment>
         )}

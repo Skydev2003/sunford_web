@@ -4,7 +4,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { createElement, useEffect, useRef, useState } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
 import { Box, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
-import { LoadingClouds } from "@/features/site/components/site-loading";
 import { ProductImage } from "@/components/ui/product-image";
 
 const initialOrbit = "25deg 65deg auto";
@@ -81,8 +80,7 @@ export function ProductModelViewer({
       </span>
       {status === "loading" && (
         <div className="model-loading" role="status">
-          <LoadingClouds size={48} />
-          <span>กำลังโหลดโมเดล…</span>
+          กำลังโหลดโมเดล…
         </div>
       )}
       {status === "error" && (

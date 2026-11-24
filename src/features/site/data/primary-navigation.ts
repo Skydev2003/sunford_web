@@ -59,7 +59,7 @@ export function getPrimaryNavigationItems(
     submenuLabel,
     links: links(children, childOrder),
     groups: [
-      { label: secondaryLabel, links: links(uses) },
+      { label: secondaryLabel, links: links(uses, href === "/products" ? "configured" : "length") },
       { label: "ช่วยเหลือ", links: assistance },
     ],
   });
@@ -76,10 +76,10 @@ export function getPrimaryNavigationItems(
         ["อุปกรณ์เสริม", "/products/category/accessories"],
       ],
       [
-        ["คำนวณราคาและงานขาย", "/products/category/scales/price"],
-        ["งานผลิตและอุตสาหกรรม", "/products/category/scales/industrial"],
-        ["ครัวและกาแฟ", "/products/category/scales/kitchen"],
-        ["ซอฟต์แวร์ POS", "/software/download#retail-software"],
+        ["เครื่องชั่งคำนวณราคา", "/products/category/scales/price"],
+        ["เครื่องชั่งครัวและกาแฟ", "/products/category/scales/kitchen"],
+        ["เครื่องชั่งสำหรับโรงงาน", "/products/category/scales/industrial"],
+        ["ดาวน์โหลดซอฟต์แวร์ POS", "/software/download#retail-software"],
       ],
       help,
       "สินค้า",
@@ -181,7 +181,7 @@ export function getPrimaryNavigationItems(
         ["ติดต่อฝ่ายบริการ", "/contact-us"],
       ]),
       "สินค้า",
-      "เลือกอุปกรณ์ร่วม",
+      "อุปกรณ์ที่ใช้ร่วมกัน",
       "configured",
     ),
     menu(
@@ -203,7 +203,7 @@ export function getPrimaryNavigationItems(
         ["ติดต่อฝ่ายบริการ", "/contact-us"],
       ]),
       "สินค้า",
-      "ระบบและอุปกรณ์",
+      "อุปกรณ์ที่ใช้ร่วมกัน",
     ),
     menu(
       categoryLabel("accessories", "อุปกรณ์เสริม"),

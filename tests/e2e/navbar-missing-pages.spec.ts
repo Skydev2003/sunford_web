@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 import { formatBaht } from "../../src/features/catalog/data/price-format";
 import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
 import type { Product } from "../../src/features/catalog/types";
@@ -81,11 +82,14 @@ for (const width of [390, 1440]) {
           const target = header
             .locator("#products-navigation-panel")
             .getByRole("link", { name: label, exact: true });
-          await expect(target).toHaveAttribute("href", href);
+          const destination = catalogSubmenuDestination(href);
+          await expect(target).toHaveAttribute("href", destination);
           if (touch) await target.tap();
           else await target.click();
-          await expect(page).toHaveURL(new URL(href, page.url()).href, { timeout: 20_000 });
+          await expect(page).toHaveURL(new URL(destination, page.url()).href, { timeout: 20_000 });
           await expect(page.getByRole("heading", { level: 1, name: label })).toBeVisible();
+          const anchor = new URL(page.url()).hash;
+          await expect(page.locator(`${anchor}:visible`)).toBeInViewport();
           expect(
             await page.evaluate(() => document.documentElement.scrollWidth),
           ).toBeLessThanOrEqual(width);
@@ -108,9 +112,18 @@ test("the home Navbar supports keyboard activation of the new links", async ({ p
   await expect(link).toBeVisible();
   await link.focus();
   await link.press("Enter");
+  await expect(page).toHaveURL(
+    /\/scales\/counting\?feature=scale-counting#product-listing-scales$/,
+  );
   await expect(page.getByRole("heading", { level: 1, name: "นับจำนวนชิ้น" })).toBeVisible({
     timeout: 20_000,
   });
+  const listing = page.locator("#product-listing-scales:visible");
+  await expect(listing).toBeInViewport();
+  await expect(listing.getByRole("button", { name: "นับจำนวนชิ้น", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 test("the POS scanner and cash drawer listing shows only the selected SKUs and has a return link", async ({

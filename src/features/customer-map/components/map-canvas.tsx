@@ -1,6 +1,5 @@
 import { useId, useMemo, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
-import { LoadingClouds } from "@/features/site/components/site-loading";
 import {
   areaCustomerCount,
   customerShare,
@@ -272,10 +271,7 @@ export function MapCanvas({
                 </button>
               </>
             ) : (
-              <>
-                <LoadingClouds size={48} />
-                <p>กำลังโหลดแผนที่…</p>
-              </>
+              <p>กำลังโหลดแผนที่…</p>
             )}
           </div>
         )}
@@ -289,7 +285,7 @@ export function MapCanvas({
         )}
         {!error && detail.loading && (
           <div className="customer-map-detail-loading" role="status">
-            <LoadingClouds size={24} /> กำลังโหลดขอบเขต{areaWordByLevel[detail.level]}…
+            กำลังโหลดขอบเขต{areaWordByLevel[detail.level]}…
           </div>
         )}
         {detail.error && (

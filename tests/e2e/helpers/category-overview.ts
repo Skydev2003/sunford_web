@@ -14,7 +14,8 @@ export async function verifyCategoryOverview(
   const main = page.locator(`[data-overview-category="${id}"]:visible main`);
   const category = productCategoryDefinitions.find((item) => item.id === id)!;
   const hasSpecLink = id === "indicators" || id === "platforms";
-  const usesEditorialLayout = id === "scales" || hasSpecLink;
+  const pos = id === "pos";
+  const usesEditorialLayout = id === "scales" || hasSpecLink || pos;
   await expect(main.getByRole("heading", { level: 1 })).toHaveText(category.label);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
@@ -160,12 +161,19 @@ export async function verifyCategoryOverview(
               /ชื่อรุ่น.*ซ่อม.*เคลม/,
               /หลักฐานการซื้อ.*ลงทะเบียน/,
             ]
-          : [
-              /ขนาดภาชนะ.*น้ำหนักรวม.*สภาพพื้น/,
-              /ขนาดแท่น.*วัสดุ.*ฝ่ายขาย/,
-              /รุ่นแท่น.*ซ่อม.*เคลม/,
-              /หลักฐานการซื้อ.*ลงทะเบียน/,
-            ],
+          : pos
+            ? [
+                /ซอฟต์แวร์.*เครื่องชั่ง.*เครื่องพิมพ์/,
+                /รุ่นและจำนวน.*ฝ่ายขาย/,
+                /ชื่อรุ่น.*ซ่อม.*เคลม/,
+                /หลักฐานการซื้อ.*ลงทะเบียน/,
+              ]
+            : [
+                /ขนาดภาชนะ.*น้ำหนักรวม.*สภาพพื้น/,
+                /ขนาดแท่น.*วัสดุ.*ฝ่ายขาย/,
+                /รุ่นแท่น.*ซ่อม.*เคลม/,
+                /หลักฐานการซื้อ.*ลงทะเบียน/,
+              ],
     );
     await cards.first().getByRole("heading").click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -202,12 +210,32 @@ export async function verifyCategoryOverview(
     );
     await expect(card.getByRole("img", { name: companion.title })).toBeVisible();
   }
+  if (pos) {
+    await expect(main.locator("#products-services h3")).toHaveText([
+      "เลือกชุด POS สำหรับร้าน",
+      "ขอใบเสนอราคา",
+      "บริการหลังการขาย",
+      "ลงทะเบียนรับประกัน",
+    ]);
+    const essentials = main.locator("#products-essentials");
+    await expect(essentials.locator(":scope > li")).toHaveCount(2);
+    await expect(essentials.getByRole("link", { name: "ดูอุปกรณ์เสริม" })).toHaveAttribute(
+      "href",
+      "/products/category/accessories",
+    );
+    await expect(essentials.getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์" })).toHaveAttribute(
+      "href",
+      "/software/download",
+    );
+  }
   const accordion = main.locator('[data-overview-section="accordion"]');
   if (usesEditorialLayout) {
     await expect(accordion.getByRole("heading", { level: 2 })).toHaveText(
-      `เลือก${id === "indicators" ? "อินดิเคเตอร์" : category.label}ให้เหมาะกับงาน`,
+      pos
+        ? "เลือกระบบ POS ให้เหมาะกับร้าน"
+        : `เลือก${id === "indicators" ? "อินดิเคเตอร์" : category.label}ให้เหมาะกับงาน`,
     );
-    if (id === "scales") await expect(accordion.locator("a[href]")).toHaveCount(0);
+    if (!hasSpecLink) await expect(accordion.locator("a[href]")).toHaveCount(0);
   }
   const disclosures = accordion.locator("details");
   const specLinkName = "ไปหน้าจัดสเปคเครื่องชั่ง";
@@ -218,12 +246,18 @@ export async function verifyCategoryOverview(
       ? [/น้ำหนักสูงสุด.*รวมภาชนะ/, /1 กรัม.*ความคลาดเคลื่อน/, /ขนาดจานชั่ง.*คำนวณราคา.*พิมพ์ฉลาก/]
       : id === "indicators"
         ? [/พิกัด.*โหลดเซลล์/, /พอร์ต.*รูปแบบข้อมูล/, /LCD.*LED.*ระดับการป้องกัน/]
-        : [
-            /ป้องกันน้ำ.*โหลดเซลล์/,
-            /ภาชนะ.*พื้นที่.*รถเข็น/,
-            /น้ำหนักสูงสุด.*พิกัด/,
-            /โหลดเซลล์.*ความละเอียด/,
-          ];
+        : pos
+          ? [
+              /P1.*Android.*P1W.*Windows/,
+              /รับน้ำหนัก.*คำนวณราคา.*พิมพ์/,
+              /สาย.*พอร์ต.*หน่วยน้ำหนัก/,
+            ]
+          : [
+              /ป้องกันน้ำ.*โหลดเซลล์/,
+              /ภาชนะ.*พื้นที่.*รถเข็น/,
+              /น้ำหนักสูงสุด.*พิกัด/,
+              /โหลดเซลล์.*ความละเอียด/,
+            ];
   for (const [i, section] of guide.sections.entries()) {
     const entry = disclosures.nth(i);
     if ((await entry.getAttribute("open")) === null) await entry.locator("summary").press("Enter");

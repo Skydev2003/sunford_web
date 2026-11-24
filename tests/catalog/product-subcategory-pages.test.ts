@@ -11,7 +11,116 @@ import {
 } from "../../src/features/catalog/data/product-subcategory-pages";
 import { scaleSubcategoryPages } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
+import { getProductListingFeatures } from "../../src/features/catalog/data/product-listing-features";
 import type { Product } from "../../src/features/catalog/types";
+
+test("listing filters use verified scale features and keep indicator water ratings exact", () => {
+  const products = [
+    {
+      id: "scale-a",
+      warehouseSku: "scale-a",
+      warehouseCategoryId: "scales",
+      warehouseSpecifications: [
+        { label: "นับจำนวนชิ้น", value: "รองรับ" },
+        { label: "หักน้ำหนักภาชนะ", value: "รองรับ" },
+      ],
+    },
+    {
+      id: "scale-b",
+      warehouseSku: "scale-b",
+      warehouseCategoryId: "scales",
+      warehouseName: "เครื่องชั่งนับจำนวนชิ้น",
+      warehouseSpecifications: [{ label: "นับจำนวนชิ้น", value: "ไม่รองรับ" }],
+    },
+  ] as Product[];
+  assert.deepEqual(
+    getProductListingFeatures("scales", "scale-industrial", products).map(
+      ({ label, productIds, exclusive }) => [label, productIds, exclusive],
+    ),
+    [
+      ["นับจำนวนชิ้น", ["scale-a"], undefined],
+      ["หักน้ำหนักภาชนะ", ["scale-a"], undefined],
+    ],
+  );
+
+  const indicators = ["IP67", "IP68"].map((rating) => ({
+    id: rating,
+    warehouseSubcategoryIds: ["indicator-waterproof"],
+    warehouseSpecifications: [{ label: "ระดับการป้องกัน IP", value: rating }],
+  })) as Product[];
+  assert.deepEqual(
+    getProductListingFeatures("indicators", "indicator-lcd", indicators).map(
+      ({ productIds }) => productIds,
+    ),
+    [["IP67"]],
+  );
+});
+
+test("platform series, POS groups and accessory filters reflect only the current listing's products", () => {
+  const expectOptions = (
+    category: string,
+    subcategory: string,
+    products: Partial<Product>[],
+    expected: [string, string[]][],
+  ) => {
+    const features = getProductListingFeatures(category, subcategory, products as Product[]);
+    assert.deepEqual(
+      features.map(({ label, productIds }) => [label, productIds]),
+      expected,
+    );
+    assert.ok(features.every(({ exclusive }) => exclusive));
+  };
+  expectOptions(
+    "platforms",
+    "platform-sus304",
+    [
+      { id: "tss", warehouseName: "SUNFORD ชิ้นส่วน - Platform TSS 4050" },
+      { id: "fss", warehouseName: "SUNFORD ชิ้นส่วน - Platform FSS100100" },
+      { id: "unknown", warehouseName: "Platform 4050" },
+    ],
+    [
+      ["ซีรีส์ FSS", ["fss"]],
+      ["ซีรีส์ TSS", ["tss"]],
+    ],
+  );
+  expectOptions(
+    "pos",
+    "pos-android",
+    [
+      { id: "kit", warehouseGroup: "สินค้าจำหน่ายแบบแพ็ก" },
+      { id: "license", warehouseGroup: "โปรแกรมและสิทธิ์ใช้งาน" },
+    ],
+    [
+      ["ชุด POS", ["kit"]],
+      ["ซอฟต์แวร์ POS", ["license"]],
+    ],
+  );
+  expectOptions(
+    "accessories",
+    "accessory-displays",
+    [
+      { id: "display", warehouseName: "SUNFORD จอแสดงผล LED-R5" },
+      { id: "light", warehouseName: "SUNFORD ไฟเตือน RYG-POLE" },
+    ],
+    [
+      ["จอแสดงผล", ["display"]],
+      ["ไฟเตือน", ["light"]],
+    ],
+  );
+  expectOptions(
+    "accessories",
+    "accessory-thermal-paper",
+    [
+      { id: "paper-a", warehouseName: "กระดาษความร้อน 57x50 บรรจุ 10 ม้วน" },
+      { id: "paper-b", warehouseName: "กระดาษความร้อน 80x80 บรรจุ 20 ม้วน" },
+      { id: "unknown", warehouseName: "Thermalpaper20" },
+    ],
+    [
+      ["57 × 50", ["paper-a"]],
+      ["80 × 80", ["paper-b"]],
+    ],
+  );
+});
 
 test("Navbar readiness follows the actual listing's Warehouse cards as members appear and disappear", () => {
   const cards = [

@@ -16,12 +16,14 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-for (const width of [390, 1440]) {
+for (const width of [390, 834, 1440]) {
   test(`pos overview presents its catalog and guides at ${width}px`, async ({ page }) => {
     test.slow();
     await verifyCategoryOverview(page, "pos", width);
   });
+}
 
+for (const width of [390, 1440]) {
   test(`POS chapters and reload keep category ownership at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);

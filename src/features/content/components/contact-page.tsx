@@ -1,19 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock3, Mail, Phone, Printer } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Mail, Phone } from "lucide-react";
 import { defaultSite } from "@/features/site/data/settings";
 import { getSettings } from "@/features/site/server/documents";
-import { sunford } from "@/features/home/data/brand";
-import { defaultContactLocationImages } from "../data/contact-locations";
-import { ContactLocations } from "./contact-locations";
+import { contactLocations } from "../data/contact-locations";
 import styles from "./contact-page.module.css";
 import { NavigationBackground } from "@/components/layout/navigation-background";
 
+const bangLen = contactLocations.find((location) => location.id === "service")!;
+const facebookHref = "https://www.facebook.com/sunfordthai";
+
 export async function ContactPage() {
-  const [site, locationImages] = await Promise.all([
-    getSettings("site", defaultSite),
-    getSettings("contact-locations", defaultContactLocationImages),
-  ]);
+  const site = await getSettings("site", defaultSite);
 
   return (
     <NavigationBackground as="main" id="main-content" className={styles.page}>
@@ -26,40 +24,31 @@ export async function ContactPage() {
           </nav>
 
           <header className={styles.hero}>
-            <div className={styles.introduction}>
-              <p className={`eyebrow ${styles.eyebrow}`}>CONTACT US</p>
-              <h1>
-                ติดต่อเรา<span>พร้อมดูแลคุณในทุกการใช้งาน</span>
-              </h1>
-              <p className={styles.description}>
-                สอบถามข้อมูลสินค้า รับคำปรึกษา หรือต้องการความช่วยเหลือ
-                <br className={styles.desktopBreak} /> ทีมงานของเราพร้อมให้บริการอย่างรวดเร็ว
-              </p>
-            </div>
-            <div className={styles.heroVisual}>
-              <Image
-                className={styles.representative}
-                src="/images/contact/support-representative.webp"
-                alt=""
-                fill
-                sizes="(width < 40rem) 210px, 300px"
-                preload
-              />
-            </div>
+            <h1>ติดต่อเรา</h1>
           </header>
 
           <section className={styles.channels} aria-label="ช่องทางติดต่อซันฟอร์ด">
-            <a className={styles.channel} href={site.phoneHref}>
+            <a
+              className={`${styles.channel} ${styles.facebookChannel}`}
+              href={facebookHref}
+              target="_blank"
+              rel="noreferrer"
+            >
               <span className={styles.icon}>
-                <Phone size={24} strokeWidth={1.7} aria-hidden="true" />
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M14 22v-9h3l.5-3.5H14V7.3c0-1 .3-1.8 1.8-1.8h1.9V2.4a25 25 0 0 0-2.8-.2c-2.8 0-4.7 1.7-4.7 4.8v2.5H7V13h3.2v9Z"
+                  />
+                </svg>
               </span>
               <span className={styles.channelCopy}>
-                <span className={styles.channelLabel}>โทรศัพท์</span>
-                <strong>{site.phone}</strong>
-                <span className={styles.channelNote}>สอบถามข้อมูล / บริการหลังการขาย</span>
+                <span className={styles.channelLabel}>Facebook</span>
+                <strong>@sunfordthai</strong>
+                <span className={styles.channelNote}>ติดตามข่าวสารจากซันฟอร์ด</span>
               </span>
               <span className={styles.channelArrow}>
-                <ArrowRight size={18} aria-hidden="true" />
+                <ArrowUpRight size={18} aria-hidden="true" />
               </span>
             </a>
             <a
@@ -80,37 +69,64 @@ export async function ContactPage() {
                 <ArrowRight size={18} aria-hidden="true" />
               </span>
             </a>
-            <a className={styles.channel} href={`mailto:${site.email}`}>
+            <a className={`${styles.channel} ${styles.phoneChannel}`} href={site.phoneHref}>
+              <span className={styles.icon}>
+                <Phone size={24} strokeWidth={1.7} aria-hidden="true" />
+              </span>
+              <span className={styles.channelCopy}>
+                <span className={styles.channelLabel}>โทรศัพท์</span>
+                <strong>{site.phone}</strong>
+                <span className={styles.channelNote}>สอบถามข้อมูล / บริการหลังการขาย</span>
+              </span>
+              <span className={styles.channelArrow}>
+                <ArrowRight size={18} aria-hidden="true" />
+              </span>
+            </a>
+            <a className={`${styles.channel} ${styles.emailChannel}`} href={`mailto:${site.email}`}>
               <span className={styles.icon}>
                 <Mail size={24} strokeWidth={1.7} aria-hidden="true" />
               </span>
               <span className={styles.channelCopy}>
                 <span className={styles.channelLabel}>อีเมลสอบถาม</span>
                 <strong className={styles.email}>{site.email}</strong>
-                <span className={styles.channelNote}>ส่งรายละเอียดมาได้ตลอด 24 ชั่วโมง</span>
+                <span className={styles.channelNote}>เขียนอีเมลถึงทีมงาน</span>
               </span>
               <span className={styles.channelArrow}>
                 <ArrowRight size={18} aria-hidden="true" />
               </span>
             </a>
-            <div className={`${styles.channel} ${styles.hours}`}>
-              <span className={styles.icon}>
-                <Clock3 size={24} strokeWidth={1.8} aria-hidden="true" />
-              </span>
-              <div className={styles.channelCopy}>
-                <h2>เวลาทำการ</h2>
-                <p className={styles.schedule}>{sunford.hours}</p>
-                <p className={styles.holiday}>หยุดวันอาทิตย์และวันหยุดราชการ</p>
-              </div>
+            <div className={styles.mapChannel}>
+              <a
+                className={`${styles.channel} ${styles.mapDetails}`}
+                href={bangLen.map}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className={styles.icon}>
+                  <Image src="/images/brands/google-maps-icon.png" alt="" width={32} height={32} />
+                </span>
+                <span className={styles.channelCopy}>
+                  <span className={styles.channelLabel} translate="no">
+                    Google Maps
+                  </span>
+                  <strong>สำนักงานบางเลน</strong>
+                  <span className={styles.channelNote}>ต.บางระกำ จ.นครปฐม</span>
+                </span>
+                <span className={styles.channelArrow}>
+                  <ArrowUpRight size={18} aria-hidden="true" />
+                </span>
+              </a>
+              <iframe
+                className={styles.mapFrame}
+                src={bangLen.satelliteMap}
+                title="แผนที่ดาวเทียมสำนักงานซันฟอร์ด บางเลน"
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
             </div>
           </section>
-          <p className={styles.fax}>
-            <Printer size={15} aria-hidden="true" /> โทรสาร 03-427-6998
-          </p>
         </div>
       </div>
-
-      <ContactLocations images={locationImages} />
     </NavigationBackground>
   );
 }

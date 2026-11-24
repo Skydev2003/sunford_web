@@ -16,6 +16,7 @@ import { ChevronLeft, ChevronRight, Search, Menu, X } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
 import { ShopIcon } from "./shop-icon";
 import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
+import { catalogSubmenuDestination } from "@/features/catalog/data/catalog-submenu-destinations";
 import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import styles from "@/features/catalog/components/products-overview.module.css";
@@ -199,21 +200,42 @@ export function PrimaryNavigation({
     }
     closeMenu();
   };
-  const link = (href: string, label: string, disabled = false) =>
-    disabled ? (
-      <span
+  const link = (href: string, label: string, disabled = false) => {
+    if (disabled) {
+      return (
+        <span
+          key={`${href}:${label}`}
+          className={styles.menuUnavailable}
+          role="link"
+          aria-disabled="true"
+        >
+          {label}
+        </span>
+      );
+    }
+    const destination = catalogSubmenuDestination(href);
+    const sameCatalogPage = destination !== href && href.split(/[?#]/)[0] === pathname;
+    return (
+      <Link
         key={`${href}:${label}`}
-        className={styles.menuUnavailable}
-        role="link"
-        aria-disabled="true"
+        href={destination}
+        scroll={sameCatalogPage ? false : undefined}
+        onClick={(e) => activateLink(e, href)}
+        onNavigate={
+          sameCatalogPage
+            ? () => {
+                const anchor = destination.split("#")[1];
+                requestAnimationFrame(() => {
+                  document.getElementById(anchor)?.scrollIntoView({ block: "start" });
+                });
+              }
+            : undefined
+        }
       >
-        {label}
-      </span>
-    ) : (
-      <Link key={`${href}:${label}`} href={href} onClick={(e) => activateLink(e, href)}>
         {label}
       </Link>
     );
+  };
   const activeMenu = menuIndex === null ? null : headerNavigation[menuIndex];
   return (
     <div className={styles.overview} style={{ display: "contents" }}>

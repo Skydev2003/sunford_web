@@ -10,7 +10,6 @@ import type { ProductCategory } from "../data/mock-categories";
 import { catalogCardName } from "../data/catalog-card-names";
 import { ProductsIndexRail } from "./products-index-rail";
 import { EquipmentVideoCard } from "./equipment-video-card";
-import { FeaturedCardMedia } from "./featured-card-media";
 import { HomeRetailFeature, MarketRetailFeature } from "./home-retail-feature";
 import { ProductsIndexMotion } from "./products-index-motion";
 import {
@@ -162,6 +161,9 @@ export function ProductsIndexContent({
               label={id === "scales" ? label : title}
               prepareImages={categoryFamilies.has(id)}
               revealTabFocus={id === "pos"}
+              trackClassName={
+                id === "indicators" ? `${styles.track} ${styles.aboutTrack}` : undefined
+              }
             >
               {id === "pos" && (
                 <li className={styles.card}>
@@ -171,27 +173,27 @@ export function ProductsIndexContent({
               {id === "indicators" && (
                 <li className={styles.card}>
                   <Link href={sunford.about} className={styles.aboutCard}>
-                    <p>เกี่ยวกับ SUNFORD</p>
+                    <p className={styles.aboutEyebrow} lang="en">
+                      SUNFORD PRECISION
+                    </p>
                     <h3>
                       แม่นยำ
-                      <wbr />
                       <span>ในทุกน้ำหนัก</span>
                     </h3>
                     <div className={styles.aboutArt}>
-                      <FeaturedCardMedia
-                        src="/videos/precision-weights.mp4"
-                        restorePosterOnEnd
-                        replayOnHover
-                      >
-                        <Image
-                          src="/images/products/precision-weights.webp"
-                          alt=""
-                          fill
-                          sizes="(max-width: 736px) min(calc((100vw - 60px) * 1.12), 346px), 448px"
-                        />
-                      </FeaturedCardMedia>
+                      <Image
+                        src="/images/hero/acs30-jc21-front.webp"
+                        alt="เครื่องชั่งดิจิทัล SUNFORD รุ่น ACS-30-JC21"
+                        fill
+                        sizes="(max-width: 736px) min(92vw, 285px), 368px"
+                      />
                     </div>
-                    <ArrowUpRight className={styles.aboutArrow} aria-hidden="true" />
+                    <span className={styles.aboutAction}>
+                      เกี่ยวกับ SUNFORD
+                      <span className={styles.aboutArrow}>
+                        <ArrowUpRight size={18} aria-hidden="true" />
+                      </span>
+                    </span>
                   </Link>
                 </li>
               )}

@@ -2,6 +2,7 @@ import { expect, test, type Locator } from "@playwright/test";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 
 const navigation = getPrimaryNavigationItems(defaultNavigation);
 const categories = navigation.slice(1, 6);
@@ -83,7 +84,11 @@ for (const width of [390, 1440]) {
             .nth(column)
             .locator("a")
             .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href"))),
-        ).toEqual(expected[column].filter((link) => !link.disabled).map((link) => link.href));
+        ).toEqual(
+          expected[column]
+            .filter((link) => !link.disabled)
+            .map((link) => catalogSubmenuDestination(link.href)),
+        );
         await expect(sections.nth(column).locator('[aria-disabled="true"]')).toHaveCount(
           expected[column].filter((link) => link.disabled).length,
         );
@@ -149,7 +154,9 @@ for (const width of [390, 1440]) {
         .locator("#products-navigation-panel")
         .getByRole("link", { name: target.label, exact: true })
         .click();
-      await expect(page).toHaveURL(new URL(target.href, page.url()).href);
+      await expect(page).toHaveURL(
+        new URL(catalogSubmenuDestination(target.href), page.url()).href,
+      );
       const subcategory = getProductSubcategoryPageByHref(target.href);
       if (subcategory) {
         await expect(

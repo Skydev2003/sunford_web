@@ -9,6 +9,7 @@ export const contactLocations = [
     company: "สอบถามข้อมูลผลิตภัณฑ์และบริการหลังการขาย",
     address: "เลขที่ 99 หมู่ 9 ตำบลบางระกำ อำเภอบางเลน จังหวัดนครปฐม 73130",
     map: "https://maps.app.goo.gl/oo6XjvRCyU6Xp4Kv5",
+    satelliteMap: "https://www.google.com/maps?cid=12863046171087068568&t=k&z=17&output=embed",
   },
   {
     id: "office",
@@ -29,12 +30,3 @@ export const contactLocations = [
     map: "https://maps.app.goo.gl/uBffjvcbcDk9Sbjd6",
   },
 ] as const;
-
-export type ContactLocationKind = (typeof contactLocations)[number]["id"];
-export type ContactLocationImages = Record<(typeof contactLocations)[number]["imageKey"], string>;
-
-export const defaultContactLocationImages: ContactLocationImages = {
-  serviceImage: "",
-  officeImage: "",
-  warehouseImage: "",
-};

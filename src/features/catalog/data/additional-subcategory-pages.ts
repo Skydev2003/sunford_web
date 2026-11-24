@@ -86,16 +86,16 @@ export const additionalScaleSubcategoryPages = [
   ),
 ];
 
-export const additionalIndicatorSubcategoryPages = [
-  definePage(
-    "indicators",
-    "indicator-rs232",
-    "rs232",
-    "เชื่อมต่อ RS232",
-    [{ href: "/solutions/rs232", label: "โซลูชัน RS232" }, cables],
-    hasRs232,
-  ),
-];
+export const indicatorRs232SubcategoryPage = definePage(
+  "indicators",
+  "indicator-rs232",
+  "rs232",
+  "เชื่อมต่อ RS232",
+  [{ href: "/solutions/rs232", label: "โซลูชัน RS232" }, cables],
+  hasRs232,
+);
+
+export const additionalIndicatorSubcategoryPages = [indicatorRs232SubcategoryPage];
 
 export const additionalAccessorySubcategoryPages = [
   definePage(

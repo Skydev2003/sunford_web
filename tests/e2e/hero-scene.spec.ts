@@ -28,17 +28,11 @@ async function expectContactDetails(page: Page) {
     await expect(link).toBeInViewport();
   }
 
-  const office = contactLocations.find((location) => location.id === "office")!;
-  const map = main.getByRole("link", { name: `ดูแผนที่ ${office.title}`, exact: true });
-  const company = map.getByText(office.company, { exact: true });
-  const address = map.locator("address");
-  await expect(map).toHaveAttribute("href", office.map);
-  await expect(address).toHaveText(office.address);
-  await address.scrollIntoViewIfNeeded();
-  await expect(company).toBeVisible();
-  await expect(address).toBeVisible();
-  await expect(company).toBeInViewport();
-  await expect(address).toBeInViewport();
+  const bangLen = contactLocations.find((location) => location.id === "service")!;
+  const map = channels.getByRole("link", { name: /Google Maps.*สำนักงานบางเลน/ });
+  await expect(map).toHaveAttribute("href", bangLen.map);
+  await map.scrollIntoViewIfNeeded();
+  await expect(map).toBeInViewport();
 }
 
 for (const [width, height] of [

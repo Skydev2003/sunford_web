@@ -12,19 +12,20 @@ import {
 } from "@/features/site/data/navigation";
 import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
-import styles from "./products-overview.module.css";
 
-const topics: Readonly<Record<string, { introduction: string; detail: string }>> = {
+const topics: Readonly<Record<string, { image: string; detail: string }>> = {
   compatibility: {
-    introduction: "เทียบรุ่นเครื่องหลัก พอร์ต และขั้วต่อก่อนเลือกอุปกรณ์",
-    detail: "จดชื่อรุ่นเครื่องชั่งหรือระบบ POS แล้วตรวจรายการอุปกรณ์ที่รองรับจากคู่มือของรุ่นนั้น",
+    image: "/images/products/category-families/accessories.webp",
+    detail:
+      "จดรุ่นเครื่องชั่งหรือระบบ POS ที่ใช้อยู่ แล้วเทียบพอร์ตและขั้วต่อกับรายการอุปกรณ์ที่คู่มือระบุว่ารองรับ",
   },
   printers: {
-    introduction: "เลือกให้ตรงกับงานพิมพ์สลิปหรือฉลากสินค้า",
-    detail: "ตรวจขนาดสลิปหรือฉลาก ช่องทางเชื่อมต่อ และซอฟต์แวร์ที่เครื่องพิมพ์รองรับ",
+    image: "/images/products/category-cutouts/thermal-receipt-printer.webp",
+    detail:
+      "เลือกตามงานพิมพ์สลิปหรือฉลาก แล้วตรวจขนาดที่พิมพ์ได้ พอร์ตเชื่อมต่อ และซอฟต์แวร์ที่เครื่องพิมพ์รองรับ",
   },
   consumables: {
-    introduction: "ตรวจขนาดม้วนและวิธีพิมพ์ให้ตรงกับเครื่อง",
+    image: "/images/imported/b75fc9d2b3417192cc3c.png",
     detail: "เทียบความกว้างม้วน ขนาดแกน และชนิดกระดาษหรือฉลากกับคู่มือเครื่องพิมพ์",
   },
 };
@@ -44,85 +45,51 @@ export async function AccessoriesOverview() {
   const category = categories.find(({ id }) => id === "accessories")!;
   const ids = new Set(category.productIds);
   const products = catalogProducts.filter(({ id }) => ids.has(id));
-  const images = [
-    ...products.filter((product) => product.featured && product.image),
-    ...products.filter((product) => !product.featured && product.image),
-  ];
   const guide = buyingGuides.find(({ slug }) => slug === "accessories")!;
   const guideHref = "/guides/accessories";
-  const stories = guide.sections.map((section, index) => ({
+  const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].introduction,
-    image: images[index]?.image ?? "",
+    introduction: topics[section.id].detail,
+    image: topics[section.id].image,
     href: `${guideHref}#${section.id}`,
     content: (
-      <div className={styles.storyBlocks}>
-        <section>
-          <p>{topics[section.id].detail}</p>
-          {section.links
-            .filter(({ href }) => href !== guide.productHref)
-            .map(({ href, label }) => (
-              <Link key={href} href={href}>
-                {label} ›
-              </Link>
-            ))}
-        </section>
-      </div>
+      <>
+        <p>{topics[section.id].detail}</p>
+        {section.id === "consumables" &&
+          section.links.map(({ href, label }) => (
+            <Link key={href} href={href}>
+              {label} ›
+            </Link>
+          ))}
+      </>
     ),
   }));
   const services = [
     {
-      title: "ขอใบเสนอราคา",
-      detail: "เลือกรุ่นและจำนวนที่ต้องการ",
-      href: "/service/quotation",
-      content: <p>เลือกรุ่นที่มีราคาในแบบฟอร์ม หรือติดต่อฝ่ายขายเพื่อสอบถามราคา</p>,
+      title: "เลือกอุปกรณ์ที่ใช้ร่วมกัน",
+      detail:
+        "แจ้งรุ่นเครื่องชั่งหรือระบบ POS พร้อมรูปพอร์ตหรือขั้วต่อ เพื่อให้ทีมช่วยเลือกอุปกรณ์ที่รองรับ",
+      href: sunford.contact,
     },
     {
-      title: "เลือกอุปกรณ์ที่ใช้ร่วมกัน",
-      detail: "แจ้งรุ่นเครื่องชั่งหรือระบบ POS ที่ใช้อยู่",
-      href: sunford.contact,
-      content: <p>เตรียมชื่อรุ่นและรูปพอร์ตหรือขั้วต่อของเครื่องเดิมเพื่อสอบถามอุปกรณ์ที่รองรับ</p>,
+      title: "ขอใบเสนอราคา",
+      detail: "ระบุรุ่นและจำนวนในแบบฟอร์ม หากไม่พบราคาของรุ่นที่ต้องการ สอบถามฝ่ายขายได้",
+      href: "/service/quotation",
     },
     {
       title: "บริการหลังการขาย",
-      detail: "ดูขั้นตอนซ่อม เปลี่ยน เคลม และคืนสินค้า",
+      detail:
+        "เตรียมชื่อรุ่น อาการที่พบ และข้อมูลการซื้อ ก่อนติดต่อฝ่ายบริการเพื่อส่งตรวจ ซ่อม เปลี่ยน หรือเคลมตามเงื่อนไข",
       href: sunford.service,
-      content: (
-        <p>
-          <Link href={sunford.service}>บริการหลังการขาย</Link> ·{" "}
-          <Link href={sunford.warranty}>ลงทะเบียนรับประกัน</Link>
-        </p>
-      ),
-    },
-    {
-      title: "ดูคู่มือและสเปก",
-      detail: "ตรวจข้อมูลของอุปกรณ์ก่อนเลือก",
-      href: "/technical-specification",
-      content: <p>ตรวจคู่มือและข้อมูลการเชื่อมต่อของอุปกรณ์ตามรุ่นที่สนใจ</p>,
     },
     {
       title: "ลงทะเบียนรับประกัน",
-      detail: "พร้อมข้อมูลการรับประกัน",
+      detail:
+        "เตรียมหลักฐานการซื้อและข้อมูลรุ่นเพื่อลงทะเบียน แล้วตรวจเงื่อนไขความคุ้มครองของรุ่นที่ซื้อ",
       href: sunford.warranty,
-      content: (
-        <p>
-          <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link> ·{" "}
-          <Link href={sunford.contact}>ติดต่อฝ่ายบริการ</Link>
-        </p>
-      ),
     },
   ];
-  const accordion = stories.map((story) => ({
-    title: story.title,
-    image: story.image,
-    content: (
-      <>
-        <p>{story.introduction}</p>
-        <Link href={story.href}>อ่านคู่มือ ›</Link>
-      </>
-    ),
-  }));
   const [navigation, site, copyrightYear, warehouseProducts] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
@@ -151,7 +118,7 @@ export async function AccessoriesOverview() {
       copyrightYear={copyrightYear}
       stories={stories}
       services={services}
-      accordion={accordion}
+      accordion={stories}
     />
   );
 }

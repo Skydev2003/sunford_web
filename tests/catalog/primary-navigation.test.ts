@@ -3,6 +3,36 @@ import test from "node:test";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
+
+test("Navbar submenu links add a catalogue section and only seed the matching feature", () => {
+  const targets = [
+    ["/products/category/scales", "/products/category/scales#product-lineup-scales"],
+    [
+      "/products/category/indicators/lcd",
+      "/products/category/indicators/lcd#product-listing-indicators",
+    ],
+    [
+      "/products/category/indicators/rs232",
+      "/products/category/indicators/rs232?feature=indicator-rs232#product-listing-indicators",
+    ],
+    [
+      "/products/category/indicators/waterproof",
+      "/products/category/indicators/waterproof?feature=ip67#product-listing-indicators",
+    ],
+    [
+      "/products/category/scales/counting?trace=keep",
+      "/products/category/scales/counting?trace=keep&feature=scale-counting#product-listing-scales",
+    ],
+    [
+      "/products/category/accessories/thermal-paper",
+      "/products/category/accessories/thermal-paper#product-listing-accessories",
+    ],
+    ["/software/download#retail-software", "/software/download#retail-software"],
+    ["/warranty/policy", "/warranty/policy"],
+  ];
+  for (const [source, target] of targets) assert.equal(catalogSubmenuDestination(source), target);
+});
 
 type Navigation = ReturnType<typeof getPrimaryNavigationItems>[number];
 type MenuContract = {
@@ -30,10 +60,10 @@ const approvedMenus: MenuContract[] = [
       {
         label: "การใช้งาน",
         links: [
-          ["ครัวและกาแฟ", "/products/category/scales/kitchen", false],
-          ["ซอฟต์แวร์ POS", "/software/download#retail-software", false],
-          ["คำนวณราคาและงานขาย", "/products/category/scales/price", false],
-          ["งานผลิตและอุตสาหกรรม", "/products/category/scales/industrial", false],
+          ["เครื่องชั่งคำนวณราคา", "/products/category/scales/price", false],
+          ["เครื่องชั่งครัวและกาแฟ", "/products/category/scales/kitchen", false],
+          ["เครื่องชั่งสำหรับโรงงาน", "/products/category/scales/industrial", false],
+          ["ดาวน์โหลดซอฟต์แวร์ POS", "/software/download#retail-software", false],
         ],
       },
       {
@@ -119,7 +149,7 @@ const approvedMenus: MenuContract[] = [
         ],
       },
       {
-        label: "เลือกอุปกรณ์ร่วม",
+        label: "อุปกรณ์ที่ใช้ร่วมกัน",
         links: [
           ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical", false],
           ["อินดิเคเตอร์แท่นชั่ง", "/products/category/indicators", false],
@@ -150,7 +180,7 @@ const approvedMenus: MenuContract[] = [
         ],
       },
       {
-        label: "ระบบและอุปกรณ์",
+        label: "อุปกรณ์ที่ใช้ร่วมกัน",
         links: [
           ["เครื่องพิมพ์", "/products/category/accessories/printers", false],
           [
@@ -291,8 +321,8 @@ test("owner-approved Navbar exposes all 78 entries in three columns", () => {
       "การใช้งาน",
       "คุณสมบัติ",
       "คุณสมบัติ",
-      "เลือกอุปกรณ์ร่วม",
-      "ระบบและอุปกรณ์",
+      "อุปกรณ์ที่ใช้ร่วมกัน",
+      "อุปกรณ์ที่ใช้ร่วมกัน",
       "วัสดุสิ้นเปลือง",
       "ตรวจสอบก่อนเลือก",
       "ซอฟต์แวร์และเอกสาร",
@@ -339,7 +369,7 @@ test("owner-approved Navbar exposes all 78 entries in three columns", () => {
       ...(["/products/category/scales", "/products/category/platforms"].includes(item.href)
         ? []
         : [item.links]),
-      ...item.groups!.map((group) => group.links),
+      ...item.groups!.slice(item.href === "/products" ? 1 : 0).map((group) => group.links),
     ])
       assert.ok(
         column.every((link, index) => {
@@ -478,10 +508,10 @@ test("product menus keep approved short names and direct parent links without ch
     allProducts[0].groups?.map((group) => group.links.map((link) => link.href)),
     [
       [
-        "/products/category/scales/kitchen",
-        "/software/download#retail-software",
         "/products/category/scales/price",
+        "/products/category/scales/kitchen",
         "/products/category/scales/industrial",
+        "/software/download#retail-software",
       ],
       ["/technical-specification", "/contact-us", "/warranty/policy", "/warranty/register"],
     ],

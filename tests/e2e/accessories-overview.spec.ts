@@ -17,10 +17,52 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-for (const width of [390, 1440]) {
-  test(`accessories reuse scales sections with their own content at ${width}px`, async ({
+for (const width of [390, 834, 1440]) {
+  test(`accessory chapters show distinct artwork and share it with listings at ${width}px`, async ({
     page,
   }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(path);
+    const chapters = page.locator("#products-chapters > li > a");
+    await expect(chapters).toHaveCount(7);
+    const artwork = new Map<string, string>();
+    for (const link of await chapters.all()) {
+      const href = (await link.getAttribute("href"))!;
+      const image = link.locator("img");
+      await image.scrollIntoViewIfNeeded();
+      const source = await image.evaluate(async (node: HTMLImageElement) => {
+        await node.decode();
+        const url = new URL(node.currentSrc);
+        return url.searchParams.get("url") ?? url.pathname;
+      });
+      expect(source).toMatch(/^\/_next\/static\/media\//);
+      expect(await image.getAttribute("alt")).toBe("");
+      artwork.set(href, source);
+    }
+    expect(new Set(artwork.values()).size).toBe(7);
+
+    const electronics = chapters.getByText("โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", { exact: true });
+    await electronics.click();
+    await expect(page).toHaveURL(`${path}/electronics`);
+    const filters = page.getByRole("navigation", { name: "หมวดย่อยสินค้า" });
+    const selected = filters.locator('a[aria-current="page"]');
+    await expect(selected).toHaveAttribute("href", `${path}/electronics`);
+    const image = selected.locator("img");
+    await image.scrollIntoViewIfNeeded();
+    const source = await image.evaluate(async (node: HTMLImageElement) => {
+      await node.decode();
+      const url = new URL(node.currentSrc);
+      return url.searchParams.get("url") ?? url.pathname;
+    });
+    expect(source).toBe(artwork.get(`${path}/electronics`));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+}
+
+for (const width of [390, 834, 1440]) {
+  test(`accessories follow the shared category layout at ${width}px`, async ({ page }) => {
     test.slow();
     await page.setViewportSize({ width, height: 1000 });
     const errors: string[] = [];
@@ -35,7 +77,7 @@ for (const width of [390, 1440]) {
         .evaluateAll((sections) =>
           sections.map((section) => section.getAttribute("data-overview-section")),
         ),
-    ).toEqual(["chapters", "lineup", "services", "features", "essentials", "accordion", "index"]);
+    ).toEqual(["chapters", "lineup", "accordion", "services", "essentials", "index"]);
     await expect(main.locator("#products-chapters > li")).toHaveCount(7);
     const cards = main.locator("#products-lineup > li > a");
     const total = await cards.count();
@@ -45,20 +87,37 @@ for (const width of [390, 1440]) {
     await expect(page.locator(".site-footer:visible")).toHaveCount(1);
     await expect(page.getByRole("dialog", { name: title, exact: true })).not.toBeVisible();
     await page.screenshot({ path: test.info().outputPath(`accessories-top-${width}.png`) });
-    for (const id of ["products-lineup", "products-services", "products-features"]) {
+    for (const id of ["products-lineup", "products-services"]) {
       await main.locator(`#${id}`).scrollIntoViewIfNeeded();
       await page.screenshot({ path: test.info().outputPath(`${id}-${width}.png`) });
     }
-    const features = main.locator("#products-features > li");
-    await expect(features.locator("h3")).toHaveText(guide.sections.map((section) => section.title));
-    await features.first().getByRole("button").click();
-    const story = page.getByRole("dialog", { name: guide.sections[0].title, exact: true });
-    await expect(story).toContainText("ตรวจรายการอุปกรณ์ที่รองรับ");
-    await expect(story.getByRole("link", { name: "ดูเพิ่มเติม", exact: true })).toHaveAttribute(
-      "href",
-      "/guides/accessories#compatibility",
-    );
-    await page.keyboard.press("Escape");
+    const services = main.locator("#products-services > li");
+    await expect(services.locator("h3")).toHaveText([
+      "เลือกอุปกรณ์ที่ใช้ร่วมกัน",
+      "ขอใบเสนอราคา",
+      "บริการหลังการขาย",
+      "ลงทะเบียนรับประกัน",
+    ]);
+    await expect(services.locator(":scope > p")).toHaveText([
+      /รุ่นเครื่องชั่ง.*พอร์ต.*ขั้วต่อ/,
+      /รุ่นและจำนวน.*ฝ่ายขาย/,
+      /ชื่อรุ่น.*ซ่อม.*เคลม/,
+      /หลักฐานการซื้อ.*ลงทะเบียน/,
+    ]);
+    await expect(services.locator("button, a")).toHaveCount(0);
+    await expect
+      .poll(() =>
+        services.evaluateAll((items) => {
+          const product = document.querySelector("#products-lineup > li")!.getBoundingClientRect();
+          return Math.max(
+            ...items.flatMap((item) => {
+              const card = item.getBoundingClientRect();
+              return [Math.abs(card.width - product.width), Math.abs(card.height - product.height)];
+            }),
+          );
+        }),
+      )
+      .toBeLessThan(1);
     const filters = main.getByRole("group", { name: "กรองผลิตภัณฑ์" });
     const printers = filters.getByRole("button", { name: "เครื่องพิมพ์", exact: true });
     await printers.click();
@@ -88,12 +147,15 @@ for (const width of [390, 1440]) {
     await expect(printers).toHaveAttribute("aria-pressed", "true");
     await filters.getByRole("button", { name: "ทุกผลิตภัณฑ์", exact: true }).click();
     await expect(cards).toHaveCount(total);
+    const essentials = main.locator("#products-essentials");
+    await expect(essentials.locator(":scope > li")).toHaveCount(2);
     await expect(
-      main
-        .locator("#products-essentials")
-        .getByRole("link", { name: "ดูเพิ่มเติม", exact: true })
-        .first(),
+      essentials.getByRole("link", { name: "ดูเครื่องชั่ง", exact: true }),
     ).toHaveAttribute("href", "/products/category/scales");
+    await expect(essentials.getByRole("link", { name: "ดูระบบ POS", exact: true })).toHaveAttribute(
+      "href",
+      "/products/category/pos",
+    );
     const accordion = main.locator('[data-overview-section="accordion"]');
     await expect(accordion.getByRole("heading", { level: 2 })).toHaveText(
       `เลือก${label}ให้เหมาะกับงาน`,
@@ -105,16 +167,16 @@ for (const width of [390, 1440]) {
       await expect(panel.locator("summary")).toHaveText(section.title);
       if (index > 0) await panel.locator("summary").click();
       await expect(panel).toHaveAttribute("open", "");
-      await expect(panel.getByRole("link", { name: "อ่านคู่มือ ›" })).toHaveAttribute(
-        "href",
-        `/guides/accessories#${section.id}`,
-      );
+      await expect(panel.locator("p")).not.toBeEmpty();
+      await expect(panel.locator("img")).toBeVisible();
     }
     await expect(accordion.locator("details[open]")).toHaveCount(1);
     await page.screenshot({ path: test.info().outputPath(`accessories-accordion-${width}.png`) });
     expect(errors).toEqual([]);
   });
+}
 
+for (const width of [390, 1440]) {
   test(`accessory chapters and reload keep category ownership at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
