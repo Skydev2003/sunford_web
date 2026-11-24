@@ -41,7 +41,7 @@ test("homepage introduces Sunford through the brand video and consultation", asy
   await expect(
     hero.locator("[data-hero-product], img:visible:not([data-hero-poster] img)"),
   ).toHaveCount(0);
-  await expect(hero.locator('a[href="/contact-us"]')).toBeVisible();
+  await expect(hero.locator('a[href="/service?section=contact"]')).toBeVisible();
   await expect(page.locator(".hero-model-stage, model-viewer")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
   await loadPageImages(page);
@@ -114,11 +114,8 @@ test("mobile navigation works and page does not overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู" }).click();
-  await expect(page.getByRole("navigation", { name: "เมนูมือถือ" })).toBeVisible();
-  await page
-    .locator("#mobile-navigation summary")
-    .filter({ hasText: /^สินค้า$/ })
-    .click();
+  await expect(page.locator("#products-navigation-panel")).toBeVisible();
+  await page.getByRole("button", { name: "เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", exact: true }).click();
   await page
     .getByRole("navigation", { name: "เมนูมือถือ" })
     .getByRole("link", { name: "ระบบ POS", exact: true })

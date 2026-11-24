@@ -55,8 +55,8 @@ for (const width of [1440, 390]) {
     await page.evaluate(() => {
       (window as unknown as { openingProbe: OpeningProbe }).openingProbe.watch = true;
     });
-    await page.locator('[data-hero-scene] a[href="/contact-us"]').click();
-    await expect(page).toHaveURL(/\/contact-us$/);
+    await page.locator('[data-hero-scene] a[href="/service?section=contact"]').click();
+    await expect(page).toHaveURL(/\/service\?section=contact$/);
     expect((await probe(page)).documentId).toBe(initial.documentId);
     await page.goBack();
     await homeReady(page);
@@ -64,7 +64,7 @@ for (const width of [1440, 390]) {
     expect((await probe(page)).covered).toBe(false);
     expect(await page.evaluate(() => scrollY)).toBe(0);
     await page.goForward();
-    await expect(page).toHaveURL(/\/contact-us$/);
+    await expect(page).toHaveURL(/\/service\?section=contact$/);
     await page
       .locator(
         '.site-header .brand:visible, [data-products-header]:visible a[aria-label="SUNFORD หน้าแรก"]',
@@ -127,7 +127,12 @@ test("reloads an anchored homepage at the Hero while preserving query parameters
   expect(await page.evaluate(() => scrollY)).toBe(0);
 });
 
-for (const route of ["/products", "/products/warehouse-G106094", "/contact-us", "/service"]) {
+for (const route of [
+  "/products",
+  "/products/warehouse-G106094",
+  "/service?section=contact",
+  "/service",
+]) {
   test(`refresh starts ${route} at its own top`, async ({ page }) => {
     await page.goto(`${route}?source=reload-test#contact`);
     const current = new URL(page.url());
@@ -154,7 +159,7 @@ test("document history traversal does not restart the opening", async ({ page })
   await page.goto("/");
   await homeReady(page);
   const initialDocument = (await probe(page)).documentId;
-  await page.goto("/contact-us");
+  await page.goto("/service?section=contact");
   await page.goBack();
   await homeReady(page);
   const restored = await probe(page);

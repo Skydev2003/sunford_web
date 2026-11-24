@@ -1,4 +1,5 @@
 "use client";
+import { contactPath } from "@/features/content/data/contact-route";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCategories } from "@/features/site/components/categories-provider";
 import Link from "next/link";
@@ -168,7 +169,7 @@ export function ProductStorefront({
           <a href="https://line.me/R/ti/p/@sunford" target="_blank" rel="noreferrer">
             ให้ผู้เชี่ยวชาญช่วยเลือก
           </a>
-          <Link href="/contact-us">ติดต่อศูนย์บริการ Sunford</Link>
+          <Link href={contactPath}>ติดต่อศูนย์บริการ Sunford</Link>
         </div>
       </header>
       <StoreShelf id="store-categories" className="store-category-shelf">
@@ -267,7 +268,7 @@ export function ProductStorefront({
               title="ความช่วยเหลืออยู่ที่นี่."
               subtitle="ให้เราช่วยคุณเลือกสิ่งที่ใช่"
             >
-              <Link href="/contact-us" className="store-editorial-card store-support-photo">
+              <Link href={contactPath} className="store-editorial-card store-support-photo">
                 <ProductImage
                   src={contactImage}
                   alt="บริการและคำปรึกษาจาก Sunford"
@@ -373,7 +374,7 @@ export function ProductStorefront({
             <h2>ลิงก์ด่วน</h2>
             <div>
               <button onClick={() => openCatalogue()}>ผลิตภัณฑ์ทั้งหมด</button>
-              <Link href="/contact-us">ติดต่อเรา</Link>
+              <Link href={contactPath}>ติดต่อเรา</Link>
               <Link href="/software/download">ดาวน์โหลดซอฟต์แวร์</Link>
               <Link href="/warranty/register">ลงทะเบียนรับประกัน</Link>
               <Link href="/cancel-and-return/policy">การคืนสินค้า</Link>

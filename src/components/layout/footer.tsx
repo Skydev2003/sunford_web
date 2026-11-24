@@ -6,36 +6,42 @@ import { patchSection } from "@/features/site/server/section-tree";
 import { ContactBannerVisibility } from "@/components/contact/contact-banner-visibility";
 import { NavigationBackground } from "./navigation-background";
 import { footerNavigation, footerLegalLinks } from "@/features/site/data/footer-navigation";
+import { siteMenuLabel } from "@/features/site/data/site-menu-labels";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUp, Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { sunford } from "@/features/home/data/brand";
 
-export function FooterTemplate(site: SiteSettings = defaultSite) {
+function ContactBanner({ site }: { site: SiteSettings }) {
+  return (
+    <ContactBannerVisibility>
+      <NavigationBackground as="section" className="contact-banner" aria-label="คุยกับผู้เชี่ยวชาญ">
+        <div className="container contact-inner">
+          <div>
+            <p className="eyebrow">LET’S MOVE YOUR BUSINESS FORWARD</p>
+            <h2>
+              ความสำเร็จครั้งต่อไป
+              <br />
+              เริ่มต้นด้วยการเลือกที่ใช่
+            </h2>
+          </div>
+          <a href={site.line} className="button button-white" target="_blank" rel="noreferrer">
+            คุยกับผู้เชี่ยวชาญ
+          </a>
+        </div>
+      </NavigationBackground>
+    </ContactBannerVisibility>
+  );
+}
+
+function FooterTemplate(site: SiteSettings) {
   return (
     <NavigationBackground as="footer" id="contact" className="site-footer">
-      <ContactBannerVisibility>
-        <div className="contact-banner">
-          <div className="container contact-inner">
-            <div>
-              <p className="eyebrow">LET’S MOVE YOUR BUSINESS FORWARD</p>
-              <h2>
-                ความสำเร็จครั้งต่อไป
-                <br />
-                เริ่มต้นด้วยการเลือกที่ใช่
-              </h2>
-            </div>
-            <a href={site.line} className="button button-white" target="_blank" rel="noreferrer">
-              คุยกับผู้เชี่ยวชาญ
-            </a>
-          </div>
-        </div>
-      </ContactBannerVisibility>
       <div className="footer-surface">
         <div className="container footer-main">
           <div className="footer-brand">
-            <Link href="/" className="footer-logo">
+            <Link href="/" className="footer-logo" aria-label="SUNFORD หน้าแรก">
               <Image src={site.logo} alt={site.name} width={210} height={43} />
             </Link>
             <p className="footer-tagline">
@@ -70,8 +76,8 @@ export function FooterTemplate(site: SiteSettings = defaultSite) {
               </Link>
             </div>
             <nav className="footer-company" aria-label="SUNFORD">
-              <Link href={sunford.about}>รู้จัก SUNFORD</Link>
-              <Link href={sunford.contact}>ติดต่อเรา</Link>
+              <Link href={sunford.about}>{siteMenuLabel(sunford.about, "เกี่ยวกับ SUNFORD")}</Link>
+              <Link href={sunford.contact}>{siteMenuLabel(sunford.contact, "ติดต่อเรา")}</Link>
             </nav>
             <div className="footer-socials" aria-label="ติดตาม Sunford">
               {site.messenger && (
@@ -174,5 +180,11 @@ export async function Footer() {
   cacheTag("cms");
   const site = await getSettings("site", defaultSite);
   const edits = await getSettings("section:footer", { customerMapEnabled: true });
-  return patchSection(FooterTemplate(site), edits);
+  return patchSection(
+    <>
+      {ContactBanner({ site })}
+      {FooterTemplate(site)}
+    </>,
+    edits,
+  );
 }

@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
 for (const width of [390, 1440]) {
   test(`primary product labels navigate directly at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    await page.goto("/contact-us");
+    await page.goto("/service?section=contact");
     for (const category of categories) {
       const header = page.locator("[data-products-header]:visible");
       await expect(
@@ -45,7 +45,7 @@ for (const width of [390, 1440]) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.setViewportSize({ width, height: 1000 });
-    for (const path of ["/", "/contact-us", "/products/acs30-jc21", "/products"]) {
+    for (const path of ["/", "/service?section=contact", "/products/acs30-jc21", "/products"]) {
       await page.goto(path);
       await expect(page.locator("[data-products-header]:visible")).toHaveCount(
         path === "/" ? 0 : 1,
@@ -59,7 +59,7 @@ for (const width of [390, 1440]) {
         true,
       );
     }
-    await page.goto("/contact-us");
+    await page.goto("/service?section=contact");
     const header = page.locator("[data-products-header]:visible");
     await expect(
       header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
@@ -76,6 +76,12 @@ for (const width of [390, 1440]) {
       ]);
       const expected = [category.links, ...category.groups!.map((group) => group.links)];
       for (let column = 0; column < 3; column++) {
+        if (column === 1 && category.groups![0].label === "คุณสมบัติ") {
+          const features = sections.nth(column).getByRole("link");
+          await expect(features.first()).toBeVisible();
+          expect(await features.count()).toBeLessThanOrEqual(6);
+          continue;
+        }
         await expect(sections.nth(column).getByRole("link")).toHaveText(
           expected[column].map((link) => link.label),
         );
@@ -124,7 +130,7 @@ for (const width of [390, 1440]) {
     ).toHaveAttribute("href", "/about-us");
     await expect(panel.getByRole("link", { name: "ติดต่อเรา", exact: true })).toHaveAttribute(
       "href",
-      "/contact-us",
+      "/service?section=contact",
     );
     await page.keyboard.press("Escape");
     await expect(panel).toHaveCount(0);
@@ -138,7 +144,7 @@ for (const width of [390, 1440]) {
   }) => {
     test.slow();
     await page.setViewportSize({ width, height: 1000 });
-    await page.goto("/contact-us");
+    await page.goto("/service?section=contact");
     for (const category of categories) {
       const header = page.locator("[data-products-header]:visible");
       await expect(
@@ -192,7 +198,7 @@ for (const width of [390, 1440]) {
 for (const width of [320, 768, 834, 844, 1024, 1920]) {
   test(`product mega menu remains reachable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: width === 768 || width === 844 ? 390 : 900 });
-    await page.goto("/contact-us");
+    await page.goto("/service?section=contact");
     const header = page.locator("[data-products-header]:visible");
     await expect(
       header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
@@ -211,7 +217,7 @@ for (const width of [320, 768, 834, 844, 1024, 1920]) {
       "คุณสมบัติ",
       "ช่วยเหลือ",
     ]);
-    const last = panel.getByRole("link", { name: "ติดต่อฝ่ายบริการ", exact: true });
+    const last = panel.getByRole("link", { name: "ติดต่อเรา", exact: true });
     await last.focus();
     await expect(last).toBeInViewport();
     await expect(last).toBeFocused();

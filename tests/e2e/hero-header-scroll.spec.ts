@@ -27,7 +27,7 @@ for (const viewport of [
     await expect(header).not.toHaveAttribute("data-hero-backdrop");
     await expect(glass).toHaveCSS("background-color", "rgba(17, 17, 17, 0.5)");
     await expect(glass).toHaveCSS("backdrop-filter", "blur(12px)");
-    const search = header.getByRole("button", { name: "ค้นหาสินค้า", exact: true });
+    const search = header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true });
     expect(
       await search.evaluate((element) => {
         const r = element.getBoundingClientRect();
@@ -39,14 +39,14 @@ for (const viewport of [
       .locator(".desktop-nav")
       .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true });
     const mobileToggle = header.getByRole("button", { name: "เปิดเมนู", exact: true });
-    const panel = header.locator(desktop ? "#desktop-submenu" : "#mobile-navigation");
+    const panel = header.locator("#products-navigation-panel");
     const openMenu = async () => {
       if (desktop) {
-        await desktopMenu.focus();
+        await desktopMenu.press("ArrowDown");
         await expect(desktopMenu).toHaveAttribute("aria-expanded", "true");
       } else {
         await mobileToggle.click();
-        await expect(panel.locator("summary")).toHaveCount(8);
+        await expect(panel.locator("[data-nav-category-row]")).toHaveCount(8);
         await panel.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).click();
       }
       await expect(panel).toBeVisible();
@@ -60,7 +60,7 @@ for (const viewport of [
       await page.keyboard.press("Escape");
       await expect(panel).toBeHidden();
     } else {
-      await expect(panel).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      await expect(panel).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await header.getByRole("button", { name: "ปิดเมนู", exact: true }).click();
       await expect(panel).toHaveCount(0);
     }
@@ -86,8 +86,8 @@ for (const viewport of [
     const pos = panel
       .locator('[data-nav-menu="/products"] [data-nav-column="primary"]')
       .getByRole("link", { name: "ระบบ POS", exact: true });
-    await expect(pos).toHaveAttribute("href", "/products/category/pos");
+    await expect(pos).toHaveAttribute("href", "/products/category/pos#product-lineup-pos");
     await pos.click();
-    await expect(page).toHaveURL(/\/products\/category\/pos$/);
+    await expect(page).toHaveURL(/\/products\/category\/pos#product-lineup-pos$/);
   });
 }

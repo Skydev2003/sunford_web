@@ -1,3 +1,4 @@
+import { contactPath } from "@/features/content/data/contact-route";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CatalogNavigationLink } from "@/features/catalog/components/catalog-navigation-link";
@@ -60,7 +61,7 @@ export default async function ScaleApplicationPage({ params }: Props) {
       ) : (
         <p>ยังไม่มีรุ่นที่ยืนยันสำหรับงานนี้</p>
       )}
-      <Link href="/contact-us" className={styles.contact}>
+      <Link href={contactPath} className={styles.contact}>
         ปรึกษาการเลือกเครื่องชั่ง
       </Link>
     </main>

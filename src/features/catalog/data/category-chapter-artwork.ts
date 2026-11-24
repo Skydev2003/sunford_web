@@ -1,4 +1,5 @@
 import accessoryCablesArt from "../../../../public/images/imported/5f9fb0ba57870f1027e0.png";
+import accessoryConsumablesArt from "../../../../public/images/imported/b75fc9d2b3417192cc3c.png";
 import accessoryDisplaysArt from "../../../../public/images/warehouse-cache/4c172be89857466d1696b0c5dd2132ec097616429090c509bb8eadf16d6721db.webp";
 import accessoryElectronicsArt from "../../../../public/images/category-chapters/accessories/electronics.webp";
 import accessoryMechanicalArt from "../../../../public/images/imported/1e5f0488fd49ae368b6e.jpeg";
@@ -19,6 +20,7 @@ import priceArt from "../../../../public/images/category-chapters/scales/price.w
 
 export const chapterArtwork = new Map([
   ["/products/category/accessories/cables", accessoryCablesArt.src],
+  ["/products/category/accessories/consumables", accessoryConsumablesArt.src],
   ["/products/category/accessories/displays", accessoryDisplaysArt.src],
   ["/products/category/accessories/electronics", accessoryElectronicsArt.src],
   ["/products/category/accessories/mechanical", accessoryMechanicalArt.src],

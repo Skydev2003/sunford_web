@@ -7,21 +7,16 @@ import { ProductsOverview } from "@/features/catalog/components/products-overvie
 import { ProductsIndexContent } from "@/features/catalog/components/products-index-content";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { getPublishedScaleShelf } from "@/features/catalog/server/featured-scale-shelf";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { buyingGuideHref, buyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
-import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 import styles from "@/features/catalog/components/products-overview.module.css";
 export const metadata: Metadata = { title: "ผลิตภัณฑ์ทั้งหมด" };
-async function getCopyrightYear() {
-  "use cache";
-  return new Date().getFullYear();
-}
 export default function ProductsPage() {
   return (
     <Suspense fallback={<SiteLoading />}>
@@ -33,11 +28,9 @@ export default function ProductsPage() {
 async function ProductsContent() {
   "use cache";
   cacheLife({ stale: 30, revalidate: 60, expire: 300 });
-  const [catalog, navigation, site, copyrightYear, publishedScales] = await Promise.all([
+  const [catalog, navigation, publishedScales] = await Promise.all([
     getProductCategories(),
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
-    getSettings("site", defaultSite),
-    getCopyrightYear(),
     getPublishedScaleShelf(),
   ]);
   const { products: clientProducts, categories, cardNames, readySubcategoryHrefs } = catalog;
@@ -73,7 +66,7 @@ async function ProductsContent() {
       title: guide.title,
       introduction: guide.introduction,
       image: photos.get(guide.slug) ?? "",
-      href: `/guides/${guide.slug}`,
+      href: buyingGuideHref(guide.slug),
       content: guideBody(guide),
     })),
     {
@@ -156,7 +149,7 @@ async function ProductsContent() {
       content: (
         <>
           <p>{buyingGuides[1].sections[0].paragraphs[0]}</p>
-          <Link href="/guides/indicators">ดูเพิ่มเติม ›</Link>
+          <Link href={buyingGuideHref("indicators", "platforms")}>ดูเพิ่มเติม ›</Link>
         </>
       ),
     },
@@ -166,7 +159,7 @@ async function ProductsContent() {
       content: (
         <>
           <p>{buyingGuides[3].sections[2].paragraphs[0]}</p>
-          <Link href="/guides/pos">ดูเพิ่มเติม ›</Link>
+          <Link href={buyingGuideHref("pos")}>ดูเพิ่มเติม ›</Link>
         </>
       ),
     },
@@ -179,7 +172,7 @@ async function ProductsContent() {
       content: (
         <>
           <p>{buyingGuides[4].sections[0].paragraphs[0]}</p>
-          <Link href="/guides/accessories">ดูเพิ่มเติม ›</Link>
+          <Link href={buyingGuideHref("accessories")}>ดูเพิ่มเติม ›</Link>
         </>
       ),
     },
@@ -196,8 +189,6 @@ async function ProductsContent() {
       products={clientProducts}
       categories={categories}
       cardNames={cardNames}
-      site={site}
-      copyrightYear={copyrightYear}
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       stories={stories}

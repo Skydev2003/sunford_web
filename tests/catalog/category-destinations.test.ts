@@ -86,7 +86,7 @@ test("Home default and CMS category targets normalize while custom and disabled 
   );
 });
 
-test("CMS legacy and corrected links project identically with all related columns retained", () => {
+test("CMS legacy and corrected links project identically with live feature columns", () => {
   const before = structuredClone(defaultNavigation);
   const corrected = defaultNavigation.map((item) => ({
     ...item,
@@ -99,8 +99,8 @@ test("CMS legacy and corrected links project identically with all related column
   assert.deepEqual(getPrimaryNavigationItems(corrected), legacy);
   assert.deepEqual(defaultNavigation, before);
   assert.deepEqual(
-    legacy.slice(1, 6).map((item) => item.groups![0].links.length),
-    [2, 2, 3, 2, 3],
+    legacy.slice(1, 6).map((item) => item.groups![0]),
+    Array.from({ length: 5 }, () => ({ label: "คุณสมบัติ", links: [] })),
   );
   const services = legacy.find((item) => item.href === "/service")!;
   assert.ok(services.groups![0].links.some((link) => link.href === "/software/download"));

@@ -1,7 +1,3 @@
-.routeSurface {
-  min-height: 100vh;
-  background: #fff;
-}
 .overview {
   --overview-gutter: max(var(--page-gutter), 6.25vw);
   color: #1d1d1f;
@@ -27,178 +23,6 @@
 }
 .sectionInner {
   margin-inline: var(--overview-gutter);
-}
-.header {
-  position: relative;
-  z-index: var(--z-header);
-  height: 48px;
-  background: #fafafccc;
-  backdrop-filter: blur(20px);
-}
-.headerOpen {
-  z-index: var(--z-nav-open);
-  background: #fafafc;
-}
-.nav {
-  height: 100%;
-  max-width: 1024px;
-  padding: 0 16px;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  width: 82px;
-}
-.logo img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-.navLinks {
-  display: none;
-}
-.navLinks > a {
-  display: flex;
-  align-items: center;
-}
-.mobileCategoryRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.mobileCategoryRow > a {
-  flex: 1;
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1.45;
-  min-height: 44px;
-  align-content: center;
-}
-.mobileCategoryRow > button {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-}
-.navTools {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.navTools :is(button, a) {
-  position: relative;
-  min-width: 42px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  padding: 8px;
-}
-.navTools svg {
-  width: 20px;
-  height: 20px;
-  stroke-width: 1.5;
-}
-.compareCount {
-  position: absolute;
-  right: 1px;
-  bottom: 1px;
-  background: #1d1d1f;
-  color: white;
-  border-radius: 50%;
-  font-size: 9px;
-  width: 15px;
-  height: 15px;
-  display: grid;
-  place-items: center;
-}
-.navMenu {
-  position: absolute;
-  top: 48px;
-  left: 0;
-  width: 100%;
-  height: calc(100dvh - 48px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  background: #fafafc;
-  padding: 0 0 60px;
-}
-.mobileMenuItems {
-  padding: 2px 48px;
-  display: grid;
-  gap: 8px;
-}
-.mobileMenuItems > :is(a, button) {
-  font-size: 28px;
-  line-height: 1.45;
-  font-weight: 600;
-  min-height: 44px;
-  text-align: left;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-}
-.mobileMenuItems svg {
-  width: 18px;
-}
-.menuContent {
-  padding: 12px 48px 48px;
-  display: grid;
-  gap: 32px;
-}
-.menuContent p {
-  color: #6e6e73;
-  font-size: 12px;
-  margin-bottom: 12px;
-}
-.menuContent :is(a, .menuUnavailable) {
-  display: inline-block;
-  padding-block: 5px;
-  font-size: 14px;
-  font-weight: 600;
-}
-.menuPrimary :is(a, .menuUnavailable) {
-  font-size: 24px;
-  line-height: 1.4;
-}
-.productMenuContent > div {
-  min-width: 0;
-}
-.productMenuContent .menuGroup :is(a, .menuUnavailable) {
-  min-height: 44px;
-  align-content: center;
-}
-.menuContent[data-all-products] :is(a, .menuUnavailable) {
-  min-height: 44px;
-  align-content: center;
-}
-.menuContent .menuUnavailable {
-  color: var(--muted);
-  cursor: default;
-  text-decoration: none;
-}
-.menuBack {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  justify-self: start;
-  font-size: 14px;
-  padding: 4px 0;
-}
-.navScrim {
-  position: fixed;
-  inset: 44px 0 0;
-  z-index: var(--z-nav-backdrop);
-  backdrop-filter: blur(20px);
-  background: #0003 !important;
 }
 .ribbon {
   min-height: 68px;
@@ -316,10 +140,6 @@
   left: -2px;
   right: auto;
   box-shadow: 12px 0 14px #ffffffed;
-}
-.headerOpen .logo,
-.headerOpen .navTools > :is(button, a):not(.menuTrigger) {
-  visibility: hidden;
 }
 .priority {
   position: relative;
@@ -1311,91 +1131,6 @@
     padding-inline: 32px;
   }
 }
-@media (min-width: 64rem) {
-  .menuContent[data-all-products] :is(a, .menuUnavailable) {
-    min-height: revert;
-    align-content: revert;
-  }
-  .headerOpen .logo {
-    visibility: revert;
-  }
-  .headerOpen .navTools > :is(button, a):not(.menuTrigger) {
-    visibility: revert;
-  }
-  .header {
-    height: 44px;
-  }
-  .nav {
-    gap: 24px;
-  }
-  .navLinks {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .navLinks > :is(button, a) {
-    min-height: 44px;
-    padding: 0;
-    font-size: 12px;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-  }
-  .navTools {
-    gap: 0;
-  }
-  .navTools :is(button, a) {
-    min-width: 38px;
-  }
-  .navTools .menuTrigger {
-    display: none;
-  }
-  .navMenu {
-    top: 44px;
-    height: auto;
-    max-height: calc(100dvh - 44px);
-    padding: 0;
-  }
-  .menuContent {
-    max-width: 1024px;
-    margin: auto;
-    padding: 40px 16px 56px;
-    grid-template-columns: fit-content(360px) max-content max-content;
-    gap: 32px;
-  }
-  .menuPrimary :is(a, .menuUnavailable) {
-    font-size: 22px;
-  }
-  .menuGroup :is(a, .menuUnavailable) {
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  .menuContent[data-all-products] {
-    grid-template-columns: fit-content(360px) max-content max-content;
-    align-items: start;
-    gap: 32px;
-    padding-bottom: 74px;
-  }
-  .menuContent[data-all-products] .menuPrimary :is(a, .menuUnavailable) {
-    font-size: clamp(24px, 2vw, 30px);
-  }
-  .menuContent[data-all-products] .menuGroup :is(a, .menuUnavailable) {
-    font-size: 14px;
-  }
-  .productMenuContent {
-    grid-template-columns: fit-content(360px) max-content max-content;
-    align-items: start;
-  }
-  .productMenuContent .menuPrimary :is(a, .menuUnavailable) {
-    font-size: 24px;
-  }
-  .productMenuContent .menuGroup :is(a, .menuUnavailable) {
-    min-height: 0;
-    font-size: 14px;
-  }
-}
 @media (min-width: 80rem) {
   .chapters {
     padding: var(--section-space) 0 var(--section-space-compact);
@@ -1546,7 +1281,7 @@
 .categoryOverview {
   composes: railSpacing from "./catalog-rail-spacing.module.css";
   --category-edge: 1.5rem;
-  --category-inset: max(var(--category-edge), calc((100% - 67.5rem) / 2 + var(--category-edge)));
+  --category-inset: var(--category-edge);
   --category-section-space: 2rem;
   --category-heading-space: 0.75rem;
 }
@@ -1869,6 +1604,7 @@
 
 @media (min-width: 48rem) {
   .categoryOverview {
+    --category-inset: var(--overview-gutter);
     --category-section-space: 2.5rem;
     --category-heading-space: 1rem;
   }
@@ -1973,5 +1709,88 @@
   }
   .editorialOverview .lineupLink:hover {
     transform: scale(1.015);
+  }
+}
+
+.overview:is(
+  [data-overview-category="accessories"],
+  [data-product-subcategory-page^="accessory-"]
+) {
+  --accessory-section-space: 1.5rem;
+  --accessory-group-space: 1rem;
+  --accessory-item-space: 0.5rem;
+}
+
+.categoryOverview[data-overview-category="accessories"] {
+  --category-inset: var(--overview-gutter);
+  --category-edge: var(--overview-gutter);
+  --category-section-space: var(--accessory-section-space);
+}
+
+.categoryOverview[data-overview-category="accessories"] .chapters {
+  padding-block-start: var(--accessory-section-space);
+}
+
+.categoryOverview[data-overview-category="accessories"] .categoryHeading {
+  margin-block-end: var(--accessory-group-space);
+}
+
+.categoryOverview[data-overview-category="accessories"] .lineupFilters {
+  padding-block: 0;
+}
+
+.categoryOverview[data-overview-category="accessories"] .accordionSection {
+  padding-block-end: 0;
+}
+
+.categoryOverview[data-overview-category="accessories"] .ecosystem {
+  padding-inline: var(--accessory-group-space);
+}
+
+.overview[data-product-subcategory-page^="accessory-"] .ribbon {
+  min-height: 44px;
+  padding: var(--accessory-item-space) var(--overview-gutter);
+}
+
+@media (min-width: 48rem) {
+  .overview:is(
+    [data-overview-category="accessories"],
+    [data-product-subcategory-page^="accessory-"]
+  ) {
+    --accessory-section-space: 2rem;
+  }
+
+  .categoryOverview[data-overview-category="scales"] .heroSlide {
+    height: 36rem;
+  }
+
+  .categoryOverview[data-overview-category="scales"] .heroArt {
+    inset-block: 4rem 2.25rem;
+  }
+
+  .categoryOverview[data-overview-category="scales"] .heroArt img {
+    padding: 0;
+  }
+
+  .categoryOverview[data-overview-category="scales"] .heroPlayback {
+    bottom: 2.375rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .categoryOverview[data-overview-category="accessories"] .ecosystem {
+    min-height: 24rem;
+    padding: var(--accessory-section-space);
+  }
+
+  .categoryOverview[data-overview-category="accessories"] .ecosystemArt {
+    inset: var(--accessory-section-space) var(--accessory-section-space)
+      var(--accessory-section-space) 43%;
+  }
+}
+
+@media (min-width: 80rem) {
+  .categoryOverview[data-overview-category="scales"] .heroSlide {
+    height: 38.25rem;
   }
 }

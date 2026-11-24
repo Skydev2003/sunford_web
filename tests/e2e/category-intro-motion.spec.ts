@@ -194,14 +194,18 @@ for (const [id, count, label] of [
     }
     const details = page.locator('[data-overview-section="accordion"] details').nth(1);
     await expect(details.locator("summary")).toBeAttached();
-    if (id === "scales") await expect(details.locator("a")).toHaveCount(0);
-    else
+    if (id === "indicators" || id === "platforms") {
       await expect(details.locator("a").first()).toHaveAttribute(
         "href",
-        id === "indicators" || id === "platforms"
-          ? "/guides/indicator-platform-compatibility"
-          : new RegExp(`^/guides/${id}#`),
+        "/guides/indicator-platform-compatibility",
       );
+    } else {
+      await expect(details.locator("a")).toHaveCount(0);
+    }
+    const guideLinks = page.locator(
+      `[data-overview-section="index"] a[href^="/technical-specification?guide=${id}-"]`,
+    );
+    await expect(guideLinks.first()).toBeAttached();
     await expect(page.locator("#products-chapters a").first()).toHaveAttribute(
       "href",
       new RegExp(`^/products/category/${id}/`),
@@ -239,7 +243,7 @@ test("normal-motion client entry and cached history keep controls usable", async
   await page.emulateMedia({ reducedMotion: "no-preference" });
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/contact-us");
+  await page.goto("/service?section=contact");
   for (const [id, label] of [
     ["scales", "เครื่องชั่ง"],
     ["indicators", "อินดิเคเตอร์แท่นชั่ง"],

@@ -55,35 +55,35 @@ export function ProductSubcategoryShell({
       data-indicator-subcategory-page={categoryId === "indicators" ? definition.id : undefined}
       data-industrial-scales-page={definition.id === "scale-industrial" || undefined}
     >
-      <div className={overview.ribbon}>
-        ปรึกษาผู้เชี่ยวชาญ เลือกให้ตรงกับงานของคุณ{" "}
-        <Link href={sunford.contact}>ให้เราช่วยเลือก ›</Link>
-      </div>
-      <nav className={`${overview.sectionInner} ${styles.breadcrumb}`} aria-label="เส้นทางนำทาง">
-        <Link href="/products">ผลิตภัณฑ์ทั้งหมด</Link>
-        <Link href={`/products/category/${categoryId}`}>{categoryLabel}</Link>
-        <span aria-current="page">{definition.label.replace(/^เครื่องชั่ง/, "")}</span>
-      </nav>
-      <header className={`${overview.sectionInner} ${styles.listingHeader}`}>
-        <h1 id={titleId}>
-          {hasCategoryPrefix ? (
-            <>
-              <span>{categoryLabel}</span> <span>{definition.label}</span>
-            </>
-          ) : (
-            definition.title
-          )}
-        </h1>
-      </header>
-      <div className={`${overview.sectionInner} ${styles.listingControls}`}>
-        <CatalogSearchField value={search.query} onChange={setQuery} />
-        <ProductSubcategoryNavigation items={navigationItems} currentHref={definition.href} />
-      </div>
-      <ListingSearchContext.Provider value={{ ...search, setQuery }}>
-        <div id={anchor} tabIndex={-1}>
-          {children}
+      <div id={anchor} tabIndex={-1}>
+        <div className={overview.ribbon}>
+          ปรึกษาผู้เชี่ยวชาญ เลือกให้ตรงกับงานของคุณ{" "}
+          <Link href={sunford.contact}>ให้เราช่วยเลือก ›</Link>
         </div>
-      </ListingSearchContext.Provider>
+        <nav className={`${overview.sectionInner} ${styles.breadcrumb}`} aria-label="เส้นทางนำทาง">
+          <Link href="/products">ผลิตภัณฑ์ทั้งหมด</Link>
+          <Link href={`/products/category/${categoryId}`}>{categoryLabel}</Link>
+          <span aria-current="page">{definition.label.replace(/^เครื่องชั่ง/, "")}</span>
+        </nav>
+        <header className={`${overview.sectionInner} ${styles.listingHeader}`}>
+          <h1 id={titleId}>
+            {hasCategoryPrefix ? (
+              <>
+                <span>{categoryLabel}</span> <span>{definition.label}</span>
+              </>
+            ) : (
+              definition.title
+            )}
+          </h1>
+        </header>
+        <div className={`${overview.sectionInner} ${styles.listingControls}`}>
+          <CatalogSearchField value={search.query} onChange={setQuery} />
+          <ProductSubcategoryNavigation items={navigationItems} currentHref={definition.href} />
+        </div>
+        <ListingSearchContext.Provider value={{ ...search, setQuery }}>
+          {children}
+        </ListingSearchContext.Provider>
+      </div>
     </main>
   );
 }

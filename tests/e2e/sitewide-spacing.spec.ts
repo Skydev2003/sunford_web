@@ -46,7 +46,7 @@ for (const width of [390, 768, 1440]) {
     const feature = width >= 1280 ? 80 : width >= 768 ? 64 : 48;
     for (const [route, selector] of [
       ["/solutions", "#solutions-all"],
-      ["/contact-us", `section${moduleClass("locations")}`],
+      ["/service?section=contact", `section${moduleClass("locations")}`],
       ["/about-us", `section${moduleClass("story")}`],
       ["/products/category/scales", '[data-overview-section="lineup"]'],
     ]) {

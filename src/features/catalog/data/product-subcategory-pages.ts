@@ -1,6 +1,6 @@
 import { productCategoryDefinitions } from "./mock-categories";
 import type { ProductCategory } from "./mock-categories";
-import type { ProductCardData } from "../types";
+import type { Product, ProductCardData } from "../types";
 import { getIndicatorSubcategories } from "./indicator-subcategories";
 import { platformSubcategoryDefinitions } from "./platform-subcategory-definitions";
 import { getPosSubcategories } from "./pos-subcategories";
@@ -168,6 +168,20 @@ export const getProductSubcategoryPage = (id: string | null | undefined, categor
 
 export const getProductSubcategoryPageByHref = (href: string) =>
   productSubcategoryPages.find((page) => page.href === href.split(/[?#]/)[0]);
+
+export function resolveListingSubcategory(
+  definition: (typeof productSubcategoryPages)[number],
+  category: Pick<ProductCategory, "subcategories">,
+  products: readonly Product[],
+): ProductCategory["subcategories"][number] | undefined {
+  return "matches" in definition
+    ? {
+        id: definition.id,
+        label: definition.label,
+        productIds: products.filter(definition.matches).map(({ id }) => id),
+      }
+    : category.subcategories.find(({ id }) => id === definition.id);
+}
 
 export const getProductReturnPage = (context: string | null) =>
   productSubcategoryPages.find((page) => page.returnContext === context || page.id === context);

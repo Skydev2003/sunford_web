@@ -2,6 +2,15 @@ import { legacyPathCandidates } from "./public-paths.mjs";
 
 export const technicalManualIndex = "/technical-specification";
 export const technicalManualPath = (slug: string) => `${technicalManualIndex}/guides/${slug}`;
+export const guidebookChapterPath = (slug: string) =>
+  `${technicalManualIndex}?guide=${encodeURIComponent(slug)}`;
+export const guidebookBuyingGuideSlugs = [
+  "scales",
+  "indicators",
+  "platforms",
+  "pos",
+  "accessories",
+] as const;
 
 export const usageGuide = {
   label: "การใช้งานและการดูแลรักษาเครื่องชั่ง",
@@ -30,7 +39,7 @@ export const installationGuides = [
   },
 ];
 
-export const technicalManualRedirects = [
+const legacyManualRedirects = [
   ["/support/Usage", "basic-usage"],
   ["/support/Technical-assistance/laboratory", "laboratory"],
   ["/support/Technical-assistance/industrial", "industry"],
@@ -45,3 +54,12 @@ export const technicalManualRedirects = [
     permanent: true,
   })),
 );
+
+export const technicalManualRedirects = [
+  ...legacyManualRedirects,
+  ...guidebookBuyingGuideSlugs.map((slug) => ({
+    source: `/guides/${slug}`,
+    destination: guidebookChapterPath(slug),
+    permanent: true,
+  })),
+];

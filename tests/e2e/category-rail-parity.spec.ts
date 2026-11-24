@@ -65,6 +65,11 @@ function railGap(track: Locator) {
   return track.evaluate((list) => getComputedStyle(list).columnGap);
 }
 
+function overviewGutter(width: number) {
+  const pageGutter = width >= 1280 ? 48 : width >= 768 ? 32 : 20;
+  return Math.max(pageGutter, width / 16);
+}
+
 async function expectCategoryAlignment(track: Locator, category: string, width: number) {
   const layout = await track.evaluate((list, categoryId) => {
     const hero = '[data-overview-section="hero"] > ul > li';
@@ -97,7 +102,7 @@ async function expectCategoryAlignment(track: Locator, category: string, width: 
       cardsVisible,
     };
   }, category);
-  const inset = Math.max(24, (width - 1080) / 2 + 24);
+  const inset = category === "accessories" || width >= 768 ? overviewGutter(width) : 24;
   for (const [selector, left] of layout.starts) {
     expect(left, `${category}/${selector}`).toBeCloseTo(inset, 0);
   }
@@ -272,12 +277,13 @@ for (const [width, categorySectionGap] of [
       await expect(page.locator('[data-overview-section="hero"]')).toHaveCount(scales ? 1 : 0);
       await expectCategoryAlignment(page.locator("#products-lineup"), category, width);
       expect(await railGap(page.locator("#products-chapters"))).toEqual(chapterGap);
+      const sectionGap = category === "accessories" ? (width >= 768 ? 32 : 24) : categorySectionGap;
       for (const id of ["lineup", "services", "essentials"]) {
         const rail = page.locator(`#products-${id}`);
         expect(await railGap(rail), `${category}/${id}`).toEqual(shelfGap);
         if (id !== "essentials") {
           expect(await gapAfterShelf(rail), `${category}/${id} to next shelf`).toBeCloseTo(
-            categorySectionGap,
+            sectionGap,
             0,
           );
         }
@@ -316,7 +322,8 @@ for (const [width, categorySectionGap] of [
         (list) =>
           list.getBoundingClientRect().right - list.lastElementChild!.getBoundingClientRect().right,
       );
-      expect(Math.abs(trailingSpace - 24)).toBeLessThanOrEqual(1);
+      const trailingGutter = category === "accessories" ? overviewGutter(width) : 24;
+      expect(Math.abs(trailingSpace - trailingGutter)).toBeLessThanOrEqual(1);
       await previous.press("Enter");
       await expect(next).toBeEnabled();
 

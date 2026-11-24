@@ -1,6 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { productCategoryDefinitions } from "../../../src/features/catalog/data/mock-categories";
-import { buyingGuides } from "../../../src/features/content/data/buying-guides";
+import { buyingGuideHref, buyingGuides } from "../../../src/features/content/data/buying-guides";
 
 export async function verifyCategoryOverview(
   page: Page,
@@ -113,7 +113,7 @@ export async function verifyCategoryOverview(
     await expect(dialog).toBeVisible();
     const detail = dialog.getByRole("link", { name: "ดูเพิ่มเติม", exact: true });
     if (trackId === "products-features") {
-      await expect(detail).toHaveAttribute("href", `/guides/${id}#${guide.sections[0].id}`);
+      await expect(detail).toHaveAttribute("href", buyingGuideHref(id, guide.sections[0].id));
       for (const { href } of guide.sections[0].links.filter(
         ({ href }) => href !== guide.productHref,
       )) {
@@ -275,7 +275,7 @@ export async function verifyCategoryOverview(
     } else {
       await expect(entry.getByRole("link", { name: /อ่านคู่มือ/ })).toHaveAttribute(
         "href",
-        `/guides/${id}#${section.id}`,
+        buyingGuideHref(id, section.id),
       );
     }
   }

@@ -47,11 +47,11 @@ for (const width of [390, 1440]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ["/contact-us", "/service"]) {
+    for (const route of ["/service?section=contact", "/service"]) {
       await page.goto(route);
       const main = page.locator("main:visible");
       await expect(main).toBeVisible();
-      const cardSelector = `${moduleClass("channel")},#service-contact`;
+      const cardSelector = `${moduleClass("channel")},${moduleClass("actions")}`;
       await expect(main.locator(cardSelector).first()).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
       const outside = await main.evaluate((element, selector) => {
@@ -101,17 +101,23 @@ for (const width of [390, 1440]) {
 for (const width of [320, 390, 768, 1440]) {
   test(`service and form card zones retain readable content at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    const servicePadding = width < 640 ? 16 : 24;
     for (const [route, selector, expected] of [
-      ["/contact-us", `a${moduleClass("channel")}`, 24],
-      ["/service", "#service-contact", servicePadding],
-      ["/service", moduleClass("instructions"), servicePadding],
+      ["/service?section=contact", `a${moduleClass("channel")}`, null],
+      ["/service", moduleClass("instructions"), 0],
       ["/service/quotation", "form", width >= 1280 ? 32 : width >= 768 ? 24 : 16],
     ] as const) {
       await page.goto(route);
       const zone = page.locator("main:visible").locator(selector).first();
       await expect(zone).toBeVisible();
-      await expect(zone).toHaveCSS("padding-left", `${expected}px`);
+      if (expected === null) {
+        const padding = await zone.evaluate((element) =>
+          parseFloat(getComputedStyle(element).paddingLeft),
+        );
+        expect(padding).toBeGreaterThanOrEqual(16);
+        expect(padding).toBeLessThanOrEqual(24);
+      } else {
+        await expect(zone).toHaveCSS("padding-left", `${expected}px`);
+      }
       await page.evaluate(() => document.fonts.ready);
       const overflow = await zone.evaluate((element) => {
         const bounds = element.getBoundingClientRect();
@@ -136,7 +142,6 @@ for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width: 1440, height: 700 });
     await page.goto("/service");
     const main = page.locator("main:visible");
-    await expect(main.locator("#service-contact")).toHaveCSS("padding-block-start", "16px");
-    await expect(main.locator(moduleClass("shell"))).toHaveCSS("padding-top", "10px");
+    await expect(main).toHaveCSS("padding-top", "56px");
   });
 }

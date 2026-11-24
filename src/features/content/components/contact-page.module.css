@@ -1,53 +1,6 @@
-.page {
-  --contact-content-width: 1180px;
-  background: transparent;
-}
-
-.contactIntro {
-  background: var(--background);
-}
-
-.heroContainer {
-  width: calc(100% - var(--page-gutter) * 2);
-  max-width: var(--contact-content-width);
-  margin-inline: auto;
-  padding-block: var(--section-space-compact) var(--section-space);
-}
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  color: var(--muted);
-  font-size: 0.8125rem;
-}
-
-.breadcrumb a:hover {
-  color: var(--red);
-}
-
-.breadcrumb [aria-current] {
-  color: var(--ink);
-}
-
-.hero {
-  display: grid;
-  gap: 0.75rem;
-  padding-block: clamp(1.5rem, 4vw, 3rem) var(--section-space-compact);
-}
-
-.hero h1 {
-  color: var(--ink);
-  font-size: clamp(2.25rem, 5vw, 4rem);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.hero p {
-  color: var(--muted);
-  font-size: clamp(0.9375rem, 1.4vw, 1.125rem);
-  line-height: 1.65;
-  text-wrap: pretty;
+.contactPanel {
+  container-type: inline-size;
+  padding-block-start: var(--section-space);
 }
 
 .channels {
@@ -63,7 +16,8 @@
   gap: 0.875rem;
   min-width: 0;
   min-height: 9.875rem;
-  padding: clamp(1rem, 2vw, 1.5rem);
+  --channel-inset: clamp(1rem, 2cqi, 1.5rem);
+  padding: var(--channel-inset);
   border-radius: var(--card-radius);
   background: var(--channel-color);
   color: white;
@@ -168,8 +122,8 @@
 
 .channelArrow {
   position: absolute;
-  inset-block-start: clamp(1rem, 2vw, 1.5rem);
-  inset-inline-end: clamp(1rem, 2vw, 1.5rem);
+  inset-block-start: var(--channel-inset);
+  inset-inline-end: var(--channel-inset);
   display: grid;
   place-items: center;
   width: 2rem;
@@ -194,24 +148,32 @@ a.channel:is(:hover, :focus-visible) .channelArrow {
   color: var(--channel-color);
 }
 
-@media (min-width: 40rem) {
+@container (min-width: 26rem) {
   .channels {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 48rem) {
-  .mapChannel {
+@container (min-width: 42rem) {
+  .mapChannel:has(.mapFrame) {
     grid-template-columns: minmax(14rem, 1fr) minmax(0, 3fr);
   }
 }
 
-@media (min-width: 64rem) {
+@container (min-width: 49rem) {
   .channels {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .channel {
     min-height: 11.625rem;
+  }
+
+  .channelCopy strong {
+    font-size: clamp(1.1875rem, 2.5cqi, 1.5rem);
+  }
+
+  .channelCopy .email {
+    font-size: clamp(0.9375rem, 1.925cqi, 1.125rem);
   }
 }

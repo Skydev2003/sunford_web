@@ -169,7 +169,7 @@ for (const width of [320, 768, 1440]) {
   });
 }
 
-for (const route of ["/", "/contact-us"]) {
+for (const route of ["/", "/service?section=contact"]) {
   test(`Services opens the quotation from ${route}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(route);

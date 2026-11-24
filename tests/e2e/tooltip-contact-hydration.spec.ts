@@ -58,7 +58,7 @@ for (const width of [320, 390]) {
       await route.fulfill({ response, body });
     });
     try {
-      await page.goto("/contact-us", { waitUntil: "commit" });
+      await page.goto("/service?section=contact", { waitUntil: "commit" });
       const header = page.locator("[data-products-header]:visible");
       const open = header.getByRole("button", { name: "เปิดเมนู", exact: true });
       await expect(open).toBeVisible({ timeout: 15_000 });
@@ -97,7 +97,7 @@ for (const width of [320, 390]) {
       await expect(page).toHaveURL(/\/products\/category\/scales$/);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
       await page.goBack();
-      await expect(page).toHaveURL(/\/contact-us$/);
+      await expect(page).toHaveURL(/\/service\?section=contact$/);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
       expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
       expect(errors).toEqual([]);

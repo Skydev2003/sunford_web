@@ -23,9 +23,10 @@ for (const width of [390, 1440]) {
     await expect(heading).toHaveText("การใช้งานและการดูแลรักษาเครื่องชั่ง");
     if (width === 390) await main.getByText("สารบัญคู่มือ", { exact: true }).click();
     const sidebar = main.getByRole("navigation", { name: "บทและคู่มือ" });
-    const links = sidebar.getByRole("link");
-    await expect(links).toHaveCount(slugs.length);
-    await expect(sidebar.locator("details").first().getByRole("link")).toHaveText([
+    const usage = sidebar.getByText("คู่มือการใช้งาน", { exact: true });
+    const installation = sidebar.getByText("คู่มือติดตั้งและไฟล์ประกอบ", { exact: true });
+    const usageLinks = sidebar.getByRole("link");
+    await expect(usageLinks).toHaveText([
       "การใช้งานและการดูแลรักษาเครื่องชั่ง",
       "ครัวเรือน",
       "การผลิต",
@@ -33,10 +34,16 @@ for (const width of [390, 1440]) {
       "งานวิเคราะห์",
     ]);
     expect(
-      await links.evaluateAll((items) => items.map((item) => item.getAttribute("href"))),
-    ).toEqual(slugs.map((slug) => `${index}?guide=${slug}#guide-content`));
+      await usageLinks.evaluateAll((items) => items.map((item) => item.getAttribute("href"))),
+    ).toEqual(slugs.slice(0, 5).map((slug) => `${index}?guide=${slug}#guide-content`));
     await page.evaluate(() => (document.documentElement.dataset.guidebookDocument = "original"));
-    await links.filter({ hasText: "RLS1100" }).click();
+    await installation.click();
+    expect(
+      await sidebar
+        .getByRole("link")
+        .evaluateAll((items) => items.map((item) => item.getAttribute("href"))),
+    ).toEqual(slugs.map((slug) => `${index}?guide=${slug}#guide-content`));
+    await sidebar.getByRole("link", { name: /RLS1100/ }).click();
     await expect(page).toHaveURL(`${index}?guide=rls1100#guide-content`);
     await expect(heading).toContainText(/RLS\s*1100/i);
     await expect(page.locator("html")).toHaveAttribute("data-guidebook-document", "original");
@@ -65,6 +72,8 @@ for (const width of [390, 1440]) {
       width,
     );
     const industrial = sidebar.getByRole("link", { name: "การผลิต", exact: true });
+    if (!(await sidebar.isVisible())) await main.getByText("สารบัญคู่มือ", { exact: true }).click();
+    if (!(await industrial.isVisible())) await usage.click();
     await industrial.click();
     await expect(heading).toContainText("อุตสาหกรรม");
     await expect(industrial).toHaveAttribute("aria-current", "page");

@@ -1,3 +1,4 @@
+import { contactPath } from "@/features/content/data/contact-route";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -93,7 +94,7 @@ export default async function SoftwareSupportPage({ params }: Props) {
         ))}
         {page.guide && <Link href={page.guide.href}>{page.guide.label}</Link>}
         <Link href="/software/download">ดูรายการดาวน์โหลดทั้งหมด</Link>
-        {needsSupport && <Link href="/contact-us">ติดต่อฝ่ายบริการ</Link>}
+        {needsSupport && <Link href={contactPath}>ติดต่อฝ่ายบริการ</Link>}
       </nav>
     </main>
   );

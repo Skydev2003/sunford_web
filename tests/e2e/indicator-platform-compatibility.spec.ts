@@ -73,7 +73,7 @@ for (const width of [390, 834, 1440]) {
 }
 for (const [width, entry] of [
   [390, "/"],
-  [1440, "/contact-us"],
+  [1440, "/service?section=contact"],
 ] as const) {
   test(`Services links to both hubs at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -88,13 +88,13 @@ for (const [width, entry] of [
           "complete",
         );
         await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-        await page.locator("#mobile-navigation summary").filter({ hasText: "บริการ" }).click();
+        await page.getByRole("button", { name: "เปิดเมนูย่อยบริการ", exact: true }).click();
       } else
         await page
           .locator("[data-products-header]:visible")
-          .getByRole("button", { name: "บริการ", exact: true })
-          .click();
-      const menu = page.locator("#mobile-navigation:visible, #products-navigation-panel:visible");
+          .getByRole("link", { name: "บริการ", exact: true })
+          .press("ArrowDown");
+      const menu = page.locator("#products-navigation-panel:visible");
       await menu.getByRole("link", { name: label, exact: true }).click();
       await expect(page).toHaveURL(new RegExp(href + "$"));
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -131,7 +131,7 @@ for (const width of [320, 390, 600, 768, 834, 1024, 1440, 1920]) {
     );
   });
 }
-for (const route of ["/", "/contact-us"]) {
+for (const route of ["/", "/service?section=contact"]) {
   test(`mobile main menu opens the guide directly from ${route}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route);

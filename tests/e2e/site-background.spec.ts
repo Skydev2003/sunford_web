@@ -8,7 +8,7 @@ test("public pages have no decorative particle background or its motion control"
     { width: 390, height: 844 },
   ]) {
     await page.setViewportSize(viewport);
-    for (const route of ["/", "/products", "/contact-us", "/service"]) {
+    for (const route of ["/", "/products", "/service?section=contact", "/service"]) {
       await page.goto(route);
       await expect(page.locator("main").first()).toBeVisible();
       await expect(page.locator("[data-site-background]")).toHaveCount(0);

@@ -1,13 +1,12 @@
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
-import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 
 // Legacy stand-alone platform photos verified against their Warehouse SKU and size.
@@ -37,33 +36,12 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G107756: "/images/imported/612b35e7737a02b05731.png",
 };
 
-const topics: Readonly<Record<string, { image: string; detail: string }>> = {
-  environment: {
-    image: "/images/category-chapters/platforms/sus304.webp",
-    detail:
-      "ตรวจการป้องกันน้ำของทั้งแท่น โหลดเซลล์ สาย และหัวอ่าน แล้วเลือกวิธีทำความสะอาดตามคู่มือของแต่ละรุ่น",
-  },
-  size: {
-    image: "/images/category-chapters/platforms/sus201.webp",
-    detail:
-      "วัดสินค้าหรือภาชนะที่ใหญ่ที่สุด เผื่อทางเดินและพื้นที่ยกของขึ้นแท่น หากใช้รถเข็นให้ตรวจความสูงของแท่นด้วย",
-  },
-  capacity: {
-    image: "/images/category-chapters/platforms/carbon-steel.webp",
-    detail:
-      "รวมน้ำหนักสูงสุดของสินค้า ภาชนะ และอุปกรณ์บนแท่น แล้วตรวจพิกัดและข้อจำกัดของชุดแท่นกับหัวอ่านก่อนเลือก",
-  },
-  indicators: {
-    image: "/images/products/component-showcase/g107770-front-4k.webp",
-    detail:
-      "เตรียมข้อมูลโหลดเซลล์และพิกัดแท่น แล้วตรวจขั้วต่อ ความละเอียด และฟังก์ชันของหัวอ่าน เช่น การส่งข้อมูลหรือแสดงผลระยะไกล",
-  },
+const topicImages: Readonly<Record<string, string>> = {
+  environment: "/images/category-chapters/platforms/sus304.webp",
+  size: "/images/category-chapters/platforms/sus201.webp",
+  capacity: "/images/category-chapters/platforms/carbon-steel.webp",
+  indicators: "/images/products/component-showcase/g107770-front-4k.webp",
 };
-
-async function getCopyrightYear() {
-  "use cache";
-  return new Date().getFullYear();
-}
 
 export async function PlatformsOverview() {
   const {
@@ -84,15 +62,14 @@ export async function PlatformsOverview() {
         return { ...product, fallbackImage: localPhoto };
       return product;
     });
-  const guide = buyingGuides.find(({ slug }) => slug === "platforms")!;
-  const guideHref = "/guides/platforms";
+  const guide = guidebookBuyingGuides.find(({ slug }) => slug === "platforms")!;
   const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].detail,
-    image: topics[section.id].image,
-    href: `${guideHref}#${section.id}`,
-    content: <p>{topics[section.id].detail}</p>,
+    introduction: section.advice,
+    image: topicImages[section.id],
+    href: buyingGuideHref(guide.slug, section.id),
+    content: <p>{section.advice}</p>,
   }));
   const services = [
     {
@@ -120,11 +97,10 @@ export async function PlatformsOverview() {
       href: sunford.warranty,
     },
   ];
-  const [navigation, site, copyrightYear] = await Promise.all([
-    getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
-    getSettings("site", defaultSite),
-    getCopyrightYear(),
-  ]);
+  const navigation = await getSettings("navigation", {
+    items: defaultNavigation,
+    ...defaultNavigationExtras,
+  });
   return (
     <ProductsOverview
       products={products}
@@ -133,8 +109,6 @@ export async function PlatformsOverview() {
       categoryId="platforms"
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
-      site={site}
-      copyrightYear={copyrightYear}
       stories={stories}
       services={services}
       accordion={stories}

@@ -4,7 +4,7 @@ import { ProductReturnLink } from "@/features/catalog/components/product-return-
 import { relatedProducts } from "@/features/catalog/data/related-products";
 import { catalogProductGroup } from "@/features/catalog/data/catalog-supplements";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { buyingGuideHref, buyingGuides } from "@/features/content/data/buying-guides";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -40,6 +40,9 @@ import {
 } from "@/features/catalog/data/product-usage-videos";
 import { ProductUsageVideos } from "@/features/catalog/components/product-usage-videos";
 import { ProductSpecifications } from "./product-specifications";
+import { ScaleProductDetail } from "./scale-product-detail";
+import { scaleDetailSpecifications } from "./scale-detail-specifications";
+import scaleStyles from "./scale-product-detail.module.css";
 
 // Resolve the product before streaming so unknown URLs retain an HTTP 404.
 // Catalogue reads remain cached; this route deliberately allows URL resolution.
@@ -54,7 +57,14 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const product = await getProduct((await params).slug);
+  const { slug } = await params;
+  return getProductMetadata(slug);
+}
+
+async function getProductMetadata(slug: string): Promise<Metadata> {
+  "use cache";
+
+  const product = await getProduct(slug);
   return {
     title: product ? [product.name, product.subtitle].filter(Boolean).join(" — ") : "ไม่พบสินค้า",
     description: product?.description || undefined,
@@ -70,6 +80,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const related = relatedProducts(product, storefront);
   const family = catalogProductGroup(product);
   const category = productCategoryDefinitions.find((item) => item.path === family);
+  const isScale = category?.id === "scales";
   const guide = buyingGuides.find((item) => item.productHref === family);
   const source = product.warehouseSku
     ? undefined
@@ -102,7 +113,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       (product.warehouseSku || row.label !== "รายละเอียดสินค้า") &&
       !(row.label === "รายละเอียดสินค้า" && product.description.trim() === product.name.trim()),
   );
-  const groups = groupProductDetails(rows);
   const fact = (label: string) =>
     catalogFieldValue(presentation.specifications.find((row) => row.label === label)?.value);
   const brand = fact("แบรนด์");
@@ -138,7 +148,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     (text) => text !== product.name,
   );
   const categoryName =
-    product.category === "scales" && keyFeatures.includes("คำนวณราคาสินค้า")
+    (isScale || product.category === "scales") && keyFeatures.includes("คำนวณราคาสินค้า")
       ? "เครื่องชั่งคำนวณราคา"
       : category?.label;
   const facts = [
@@ -146,103 +156,156 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     { label: "ค่าอ่านละเอียด", value: readability },
     { label: "ชนิดหน้าจอ", value: display },
   ].filter((row) => row.value);
+  const scaleDescription = [product.subtitle, fact("จุดเด่นสินค้า")].filter(Boolean).join("\n");
+  const shortSubtitle = product.subtitle?.replace(/\s+/g, " ").trim();
+  const scaleSubtitle = /ร้านค้าปลีก[^\n]*ตลาดสด/.test(scaleDescription)
+    ? "สำหรับร้านค้าปลีกและตลาดสด"
+    : shortSubtitle && shortSubtitle.length <= 140 && shortSubtitle !== product.name
+      ? shortSubtitle
+      : undefined;
+  const groups = isScale ? [] : groupProductDetails(rows);
+  const approvedPhoto =
+    isScale && product.warehouseSku === "G106094" && presentation.images.length > 0
+      ? "/images/products/acs30-jc21-pdp.webp"
+      : undefined;
+  const gallery = (
+    <ProductGallery
+      key={`${product.id}:${product.image}`}
+      images={approvedPhoto ? [approvedPhoto] : presentation.images}
+      primaryImage={approvedPhoto ?? product.image}
+      fallbackImage={approvedPhoto ? product.image : product.fallbackImage}
+      preferFirst={isScale || Boolean(product.media)}
+      name={product.name}
+      model={
+        !isScale &&
+        !product.warehouseSku &&
+        (product.id === "acs30-jc21" || product.sourceId === "10609")
+          ? {
+              src: "/models/acs30-jc21.glb",
+              poster: "/images/products/acs30-jc21-cutout.png",
+            }
+          : undefined
+      }
+    />
+  );
+  const actions = (canQuote || candidates.length > 0) && (
+    <div className={styles.actions}>
+      {candidates.length > 0 && (
+        <ProductDetailCompare
+          currentId={product.id}
+          candidates={candidates}
+          waitForHydration={isScale}
+        />
+      )}
+      {canQuote && (
+        <Link href="/service/quotation">
+          ขอใบเสนอราคา <ChevronRight size={14} />
+        </Link>
+      )}
+    </div>
+  );
+  const guideCard = guide && (
+    <aside className={styles.extra} aria-label="คู่มือเลือกสินค้าทั่วไป">
+      <p>คู่มือเลือกสินค้าทั่วไป</p>
+      <h2>{guide.title}</h2>
+      <Link href={buyingGuideHref(guide.slug)}>อ่านคู่มือ</Link>
+    </aside>
+  );
 
   return (
-    <main id="main-content" className={`product-detail ${styles.page}`}>
-      <section id="product-overview" className={styles.overview} aria-label="ภาพรวมสินค้า">
-        <Suspense
-          fallback={
-            <Link href="/products" className="text-link back-link">
-              <ArrowLeft size={16} /> ผลิตภัณฑ์ทั้งหมด
-            </Link>
-          }
-        >
-          <ProductReturnLink />
-        </Suspense>
-        <div className={styles.identity}>
-          {brand && <p className={styles.brand}>{brand}</p>}
-          <h1>{product.name}</h1>
-        </div>
-        <div className={styles.hero}>
-          <ProductGallery
-            key={`${product.id}:${product.image}`}
-            images={presentation.images}
-            primaryImage={product.image}
-            fallbackImage={product.fallbackImage}
-            preferFirst={Boolean(product.media)}
-            name={product.name}
-            model={
-              !product.warehouseSku && (product.id === "acs30-jc21" || product.sourceId === "10609")
-                ? {
-                    src: "/models/acs30-jc21.glb",
-                    poster: "/images/products/acs30-jc21-cutout.png",
-                  }
-                : undefined
-            }
-          />
-          <div className={`detail-copy ${styles.copy}`}>
-            {categoryName && family && (
-              <Link href={family} className={styles.category}>
-                {categoryName}
+    <main
+      id="main-content"
+      className={`product-detail ${styles.page}${isScale ? ` ${scaleStyles.page}` : ""}`}
+      data-scroll-reveal={isScale ? "static" : undefined}
+    >
+      {isScale ? (
+        <ScaleProductDetail
+          name={fact("รุ่นสินค้า") ?? product.name}
+          category={categoryName}
+          subtitle={scaleSubtitle}
+          capacity={displayCapacity}
+          sku={product.warehouseSku}
+          price={product.price}
+          inquiryHref={site.line}
+          gallery={gallery}
+          actions={actions}
+          groups={scaleDetailSpecifications(
+            rows,
+            presentation.specifications,
+            scaleDescription,
+            displayCapacity,
+          )}
+        />
+      ) : (
+        <section id="product-overview" className={styles.overview} aria-label="ภาพรวมสินค้า">
+          <Suspense
+            fallback={
+              <Link href="/products" className="text-link back-link">
+                <ArrowLeft size={16} /> ผลิตภัณฑ์ทั้งหมด
               </Link>
-            )}
-            {product.warehouseSku && (
-              <p className={styles.sku}>รหัสสินค้า {product.warehouseSku}</p>
-            )}
-            <p className="detail-price">
-              {product.price != null && product.price > 0
-                ? formatBaht(product.price)
-                : "สอบถามราคา"}
-            </p>
-            <a
-              href={site.line}
-              target="_blank"
-              rel="noreferrer"
-              className={`button button-red detail-inquiry ${styles.inquiry}`}
-            >
-              สอบถามราคาและรายละเอียด
-            </a>
-            {(canQuote || candidates.length > 0) && (
-              <div className={styles.actions}>
-                {candidates.length > 0 && (
-                  <ProductDetailCompare currentId={product.id} candidates={candidates} />
-                )}
-                {canQuote && (
-                  <Link href="/service/quotation">
-                    ขอใบเสนอราคา <ChevronRight size={14} />
-                  </Link>
-                )}
-              </div>
-            )}
+            }
+          >
+            <ProductReturnLink />
+          </Suspense>
+          <div className={styles.identity}>
+            {brand && <p className={styles.brand}>{brand}</p>}
+            <h1>{product.name}</h1>
           </div>
-        </div>
-        {facts.length > 0 && (
-          <dl className={styles.facts} aria-label="ข้อมูลผลิตภัณฑ์">
-            {facts.map(({ label, value }) => (
-              <div key={label}>
-                <dt>
-                  {label}
-                  {label === "ค่าอ่านละเอียด" && <ReadabilityHelp />}
-                </dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-        {lead && (
-          <div className={styles.highlights}>
-            <p>จุดเด่นสินค้า</p>
-            <h2>{lead}</h2>
-            {highlights.length > 0 && (
-              <ul>
-                {highlights.map((text) => (
-                  <li key={text}>{text}</li>
-                ))}
-              </ul>
-            )}
+          <div className={styles.hero}>
+            {gallery}
+            <div className={`detail-copy ${styles.copy}`}>
+              {categoryName && family && (
+                <Link href={family} className={styles.category}>
+                  {categoryName}
+                </Link>
+              )}
+              {product.warehouseSku && (
+                <p className={styles.sku}>รหัสสินค้า {product.warehouseSku}</p>
+              )}
+              <p className="detail-price">
+                {product.price != null && product.price > 0
+                  ? formatBaht(product.price)
+                  : "สอบถามราคา"}
+              </p>
+              <a
+                href={site.line}
+                target="_blank"
+                rel="noreferrer"
+                className={`button button-red detail-inquiry ${styles.inquiry}`}
+              >
+                สอบถามราคาและรายละเอียด
+              </a>
+              {actions}
+            </div>
           </div>
-        )}
-      </section>
+          {facts.length > 0 && (
+            <dl className={styles.facts} aria-label="ข้อมูลผลิตภัณฑ์">
+              {facts.map(({ label, value }) => (
+                <div key={label}>
+                  <dt>
+                    {label}
+                    {label === "ค่าอ่านละเอียด" && <ReadabilityHelp />}
+                  </dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {lead && (
+            <div className={styles.highlights}>
+              <p>จุดเด่นสินค้า</p>
+              <h2>{lead}</h2>
+              {highlights.length > 0 && (
+                <ul>
+                  {highlights.map((text) => (
+                    <li key={text}>{text}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </section>
+      )}
       {groups.length > 0 && (
         <section
           id="product-specifications"
@@ -265,13 +328,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           />
         </section>
       )}
-      {guide && (
-        <aside className={styles.extra} aria-label="คู่มือเลือกสินค้าทั่วไป">
-          <p>คู่มือเลือกสินค้าทั่วไป</p>
-          <h2>{guide.title}</h2>
-          <Link href={`/guides/${guide.slug}`}>อ่านคู่มือ</Link>
-        </aside>
-      )}
+      {!isScale && guideCard}
       {related.length > 0 && family && (
         <section className={`related-products ${styles.related}`} aria-label="สินค้าในหมวดเดียวกัน">
           <div className={styles.sectionTitle}>
@@ -284,7 +341,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {related.map((item) => {
               const card = productCardData(item);
               const name = catalogCardName(item);
-              const comparable = candidates.find((c) => c.id === item.id);
               return (
                 <article key={item.id}>
                   <Link className={styles.cardLink} href={`/products/${item.slug}`}>
@@ -308,15 +364,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                       price={card.price}
                     />
                   </Link>
-                  {comparable && (
-                    <ProductDetailCompare currentId={product.id} candidates={[comparable]} direct />
-                  )}
                 </article>
               );
             })}
           </div>
         </section>
       )}
+      {isScale && guideCard}
     </main>
   );
 }

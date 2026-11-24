@@ -51,47 +51,43 @@ const services = [
   },
 ];
 
-const serviceHeading = "บริการหลังการขาย";
-const lineUrl = "https://line.me/R/ti/p/@sunford";
-
 test.use({ reducedMotion: "reduce" });
 
 function serviceMain(page: Page) {
-  return page.getByRole("main").filter({
-    has: page.getByRole("heading", { level: 1, name: serviceHeading }),
-  });
+  return page.locator("main#main-content:visible");
 }
+
+const mobileServiceMenu = (main: Locator) => main.locator("details:visible > summary");
 
 function serviceTab(main: Locator, name: string) {
   return main.getByRole("tab", { name: new RegExp(`^(?:[1-5]\\. )?${name}$`) });
 }
 
 async function expectInstructions(area: Locator, service: (typeof services)[number]) {
-  await expect(area.getByRole("heading", { name: service.title, exact: true })).toBeVisible();
+  const heading = area.getByRole("heading", { name: service.title, exact: true });
+  await expect(heading.locator("..")).toHaveCSS("clip-path", "inset(50%)");
   await expect(area.locator("ol").getByRole("listitem")).toHaveCount(service.steps);
   if (service.name === "รับสินค้าที่โรงงาน") {
-    const details = area.locator("details");
-    const summary = details.locator("summary");
-    await summary.focus();
-    await summary.press("Enter");
-    await expect(details.getByRole("listitem")).toHaveCount(4);
+    await expect(area.getByRole("heading", { name: "เมื่อมารับสินค้าที่โรงงาน" })).toBeVisible();
+    await expect(area.locator("ul").getByRole("listitem")).toHaveCount(4);
   }
   for (const text of service.conditions) await expect(area.getByText(text).first()).toBeVisible();
 }
 
-async function expectContactAndPolicies(main: Locator) {
+async function expectContactAndPolicies(main: Locator, contactHref = "/service?section=contact") {
+  const contact = main.locator("#service-contact");
+  await expect(contact).toHaveAccessibleName("ติดต่อเรา");
+  await expect(contact).toHaveAttribute("href", contactHref);
   for (const [label, href] of [
-    ["034-276999", "tel:034276999"],
-    ["089-8152652", "tel:0898152652"],
-    ["LINE @sunford", lineUrl],
     ["นโยบายการรับประกัน", "/warranty/policy"],
     ["เงื่อนไขการเปลี่ยนและคืนสินค้า", "/cancel-and-return/policy"],
   ]) {
-    const link = main.getByRole("link", { name: label, exact: true }).first();
+    const link = main.getByRole("link", { name: label, exact: true });
     await expect(link).toBeVisible();
     await expect(link).toHaveAttribute("href", href);
   }
-  await expect(main.locator("address").getByText(/อำเภอบางเลน จังหวัดนครปฐม 73130/)).toBeVisible();
+  await expect(main.getByRole("heading", { name: "ที่อยู่โรงงานซันฟอร์ด" })).toHaveCount(0);
+  await expect(main.getByRole("link", { name: /^(034-276999|089-8152652)$/ })).toHaveCount(0);
 }
 
 async function expectHorizontalFit(main: Locator) {
@@ -115,7 +111,9 @@ async function openServiceFromHome(page: Page, width: number) {
   const mobile = width < 1024;
   if (mobile) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
   const service = page
-    .getByRole("navigation", { name: mobile ? "เมนูมือถือ" : "เมนูหลัก", exact: true })
+    .locator(
+      mobile ? "header:visible #products-navigation-panel" : "header:visible [data-products-nav]",
+    )
     .getByRole("link", { name: "บริการ", exact: true });
   await expect(service).toHaveAttribute("href", "/service");
   await service.click();
@@ -134,9 +132,17 @@ for (const viewport of viewports) {
     await page.setViewportSize(viewport);
     await openServiceFromHome(page, viewport.width);
     const main = serviceMain(page);
-    await expect(main.getByRole("tablist").getByRole("tab")).toHaveCount(services.length);
+    if (viewport.width < 768) await mobileServiceMenu(main).click();
+    const menu = main.getByRole("tablist");
+    await expect(menu).toHaveAttribute("aria-orientation", "vertical");
+    await expect(main.getByRole("heading", { level: 1 })).toHaveText(services[0].title);
+    await expect(menu.getByRole("tab")).toHaveCount(services.length + 1);
     await expect(serviceTab(main, services[0].name)).toHaveAttribute("aria-selected", "true");
     await page.evaluate(() => document.fonts.ready);
+    const menuBox = (await menu.boundingBox())!;
+    const panelBox = (await main.getByRole("tabpanel").boundingBox())!;
+    if (viewport.width >= 768) expect(menuBox.x + menuBox.width).toBeLessThan(panelBox.x);
+    else expect(menuBox.y + menuBox.height).toBeLessThan(panelBox.y);
 
     for (const service of services) {
       await test.step(service.name, async () => {
@@ -150,6 +156,7 @@ for (const viewport of viewports) {
           (await tab.getAttribute("aria-label")) ?? service.name,
         );
         await expect(panel).toHaveAttribute("id", (await tab.getAttribute("aria-controls")) ?? "");
+        await expect(panel.getByRole("heading", { level: 1 })).toHaveText(service.title);
         await expectInstructions(panel, service);
         await expectContactAndPolicies(main);
         await expectHorizontalFit(main);
@@ -171,20 +178,21 @@ test("keyboard moves focus, selects the matching service, and enters the active 
   const main = serviceMain(page);
   const repair = serviceTab(main, services[0].name);
   await repair.focus();
+  const tabs = [...services, { name: "ติดต่อเรา", title: "ติดต่อเรา" }];
   for (const [key, index] of [
-    ["ArrowRight", 1],
-    ["End", 4],
-    ["ArrowRight", 0],
-    ["ArrowLeft", 4],
+    ["ArrowDown", 1],
+    ["End", 5],
+    ["ArrowDown", 0],
+    ["ArrowUp", 5],
     ["Home", 0],
   ] as const) {
     await page.keyboard.press(key);
-    const tab = serviceTab(main, services[index].name);
+    const tab = serviceTab(main, tabs[index].name);
     await expect(tab).toBeFocused();
     await expect(tab).toHaveAttribute("aria-selected", "true");
     await expect(tab).toHaveAttribute("tabindex", "0");
     await expect(
-      main.getByRole("tabpanel").getByRole("heading", { name: services[index].title }),
+      main.getByRole("tabpanel").getByRole("heading", { name: tabs[index].title }),
     ).toBeVisible();
   }
   await page.keyboard.press("Tab");
@@ -200,26 +208,48 @@ test("a direct service hash opens the matching panel after hydration", async ({ 
   await expectInstructions(panel, services[2]);
 });
 
-test("service shortcuts reach LINE and the policy links", async ({ page }) => {
-  await page.goto("/service");
+test("the mobile service disclosure reveals the active tab and supports arrow keys", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/service?section=contact");
   const main = serviceMain(page);
-  const contact = main.getByRole("link", { name: "ติดต่อฝ่ายบริการ", exact: true });
-  await contact.click();
-  await expect(page).toHaveURL("/service#service-contact");
-  const line = main
-    .locator("#service-contact")
-    .getByRole("link", { name: "LINE @sunford", exact: true });
-  await expect(line).toBeInViewport();
-  await expect(line).toHaveAttribute("href", lineUrl);
-  await expect(line).toHaveAttribute("target", "_blank");
+  const summary = mobileServiceMenu(main);
+  await expect(summary).toHaveText("เมนูบริการหลังการขาย");
+  await expect(summary.locator("..")).not.toHaveAttribute("open", "");
+  await expect(main.getByRole("heading", { level: 1, name: "ติดต่อเรา" })).toBeVisible();
+  await summary.click();
+  const menu = main.getByRole("tablist");
+  const contact = serviceTab(main, "ติดต่อเรา");
+  await expect(menu).toHaveAttribute("aria-orientation", "vertical");
+  await expect(contact).toHaveAttribute("aria-selected", "true");
+  await expect(contact).toBeInViewport({ ratio: 1 });
+  await contact.focus();
+  await page.keyboard.press("ArrowDown");
+  const repair = serviceTab(main, services[0].name);
+  await expect(repair).toBeInViewport({ ratio: 1 });
+  await expect(repair).toBeFocused();
+  await expectInstructions(main.getByRole("tabpanel"), services[0]);
+  await expectHorizontalFit(main);
+});
 
-  const shortcut = main.getByRole("link", { name: "เงื่อนไขบริการ", exact: true });
-  await expect(shortcut).toHaveAttribute("href", /^#.+/);
-  const href = (await shortcut.getAttribute("href"))!;
-  await shortcut.focus();
-  await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(`/service${href}`);
-  const policies = main.locator(href);
+test("service contact and policy anchors still open directly", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/service#service-contact");
+  const main = serviceMain(page);
+  await expect(page).toHaveURL("/service#service-contact");
+  const contact = main.locator("#service-contact");
+  await expect(contact).toHaveAttribute("href", "/service?section=contact");
+  await expect(contact).toBeInViewport();
+  await contact.click();
+  await expect(page).toHaveURL("/service?section=contact");
+  const heading = main
+    .getByRole("tabpanel", { name: "ติดต่อเรา" })
+    .getByRole("heading", { name: "ติดต่อเรา" });
+  await expect(heading).toBeInViewport();
+
+  await page.goto("/service#service-policies");
+  const policies = main.locator("#service-policies");
   await expect(policies.getByRole("link", { name: "นโยบายการรับประกัน" })).toBeInViewport();
   await expect(
     policies.getByRole("link", { name: "เงื่อนไขการเปลี่ยนและคืนสินค้า" }),
@@ -238,6 +268,7 @@ test.describe("with JavaScript disabled", () => {
       expect(response?.status()).toBe(200);
       const main = serviceMain(page);
       await expect(main).toBeVisible();
+      if (viewport.width < 768) await mobileServiceMenu(main).click();
       await expect(main.getByRole("tab")).toHaveCount(0);
       const navigation = main.getByRole("navigation", { name: "ประเภทบริการหลังการขาย" });
       for (const service of services) {
@@ -248,11 +279,18 @@ test.describe("with JavaScript disabled", () => {
         await page.keyboard.press("Enter");
         await expect(page).toHaveURL(`/service${href}`);
         const section = main.locator(href);
-        await expect(section.getByRole("heading", { name: service.title })).toBeInViewport();
+        await expect(section.locator("ol > li").first()).toBeInViewport();
         await expectInstructions(section, service);
         await expectHorizontalFit(main);
       }
-      await expectContactAndPolicies(main);
+      await expectContactAndPolicies(main, "#service-panel-contact");
+      if (viewport.width === 390) {
+        await main.locator("#service-contact").click();
+        await expect(page).toHaveURL("/service#service-panel-contact");
+        await expect(
+          main.getByRole("heading", { name: "ติดต่อเรา", exact: true }),
+        ).toBeInViewport();
+      }
     });
   }
 });

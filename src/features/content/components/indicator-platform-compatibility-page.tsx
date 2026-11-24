@@ -1,3 +1,4 @@
+import { contactPath } from "@/features/content/data/contact-route";
 import Link from "next/link";
 import styles from "./indicator-platform-compatibility-page.module.css";
 import { getProducts } from "@/features/catalog/server/product-repository";
@@ -63,7 +64,7 @@ export async function IndicatorPlatformCompatibilityPage() {
             ))}
         </dl>
       </details>
-      <Link className={styles.contact} href="/contact-us">
+      <Link className={styles.contact} href={contactPath}>
         ปรึกษาเรื่องชุดชั่งกับ SUNFORD ›
       </Link>
     </main>

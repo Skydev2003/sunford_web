@@ -1,15 +1,16 @@
 import { sunford } from "@/features/home/data/brand";
+import { siteMenuLink } from "./site-menu-labels";
 
 export const footerNavigation = [
   {
     label: "ผลิตภัณฑ์",
     links: [
-      { label: "ผลิตภัณฑ์ทั้งหมด", href: "/products" },
-      { label: "เครื่องชั่งดิจิทัล", href: "/products/category/scales" },
-      { label: "หัวอ่านน้ำหนัก", href: "/products/category/indicators" },
-      { label: "แท่นชั่ง", href: "/products/category/platforms" },
-      { label: "ระบบ POS และอุปกรณ์", href: "/products/category/pos" },
-      { label: "อุปกรณ์เสริม", href: "/products/category/accessories" },
+      siteMenuLink("/products"),
+      siteMenuLink("/products/category/scales"),
+      siteMenuLink("/products/category/indicators"),
+      siteMenuLink("/products/category/platforms"),
+      siteMenuLink("/products/category/pos"),
+      siteMenuLink("/products/category/accessories"),
     ],
   },
   {
@@ -23,17 +24,17 @@ export const footerNavigation = [
   {
     label: "บริการและช่วยเหลือ",
     links: [
-      { label: "บริการหลังการขาย", href: sunford.service },
-      { label: "ขอใบเสนอราคา", href: "/service/quotation" },
-      { label: "คู่มือเลือกหัวอ่านและแท่นชั่ง", href: "/guides/indicator-platform-compatibility" },
-      { label: "ดาวน์โหลดซอฟต์แวร์", href: sunford.downloads },
-      { label: "ลงทะเบียนรับประกัน", href: sunford.warranty },
+      siteMenuLink(sunford.service),
+      siteMenuLink("/service/quotation"),
+      siteMenuLink("/guides/indicator-platform-compatibility"),
+      siteMenuLink(sunford.downloads),
+      siteMenuLink(sunford.warranty),
     ],
   },
 ] as const;
 
 export const footerLegalLinks = [
   { label: "ความเป็นส่วนตัวและคุกกี้", href: "/privacy-policy-and-cookie-policy" },
-  { label: "นโยบายการรับประกัน", href: sunford.warrantyPolicy },
-  { label: "การยกเลิกและคืนสินค้า", href: "/cancel-and-return/policy" },
+  siteMenuLink(sunford.warrantyPolicy),
+  siteMenuLink("/cancel-and-return/policy"),
 ] as const;

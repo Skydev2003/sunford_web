@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import { networkInterfaces } from "node:os";
 import { lanUatAddresses, nipHost } from "./scripts/lib/lan-uat.mjs";
 import { contentRewrites } from "./src/features/content/data/static-content-params";
+import { contactPath, legacyContactPath } from "./src/features/content/data/contact-route";
 import { technicalManualRedirects } from "./src/features/content/data/technical-manuals";
 
 const lanOrigins = lanUatAddresses(networkInterfaces()).flatMap((address) => [
@@ -11,10 +12,13 @@ const lanOrigins = lanUatAddresses(networkInterfaces()).flatMap((address) => [
 
 const nextConfig: NextConfig = {
   async redirects() {
-    return technicalManualRedirects.map(({ source, ...redirect }) => ({
-      ...redirect,
-      source: encodeURI(source),
-    }));
+    return [
+      { source: legacyContactPath, destination: contactPath, permanent: false },
+      ...technicalManualRedirects.map(({ source, ...redirect }) => ({
+        ...redirect,
+        source: encodeURI(source),
+      })),
+    ];
   },
   async rewrites() {
     return contentRewrites.map(({ source, destination }) => ({

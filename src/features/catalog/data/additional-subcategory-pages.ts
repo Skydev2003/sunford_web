@@ -1,3 +1,4 @@
+import { buyingGuideHref } from "@/features/content/data/buying-guides";
 import type { Product } from "../types";
 
 const categoryRoot = "/products/category";
@@ -8,7 +9,7 @@ const thermalPaper = { href: `${accessories}/thermal-paper`, label: "กระ�
 const labels = { href: `${accessories}/labels`, label: "ฉลากและสติ๊กเกอร์" };
 const cables = { href: `${accessories}/cables`, label: "สายและหัวต่อ" };
 const consumables = { href: `${accessories}/consumables`, label: "วัสดุสิ้นเปลือง" };
-const scaleGuide = { href: "/guides/scales", label: "คู่มือเลือกเครื่องชั่ง" };
+const scaleGuide = { href: buyingGuideHref("scales"), label: "คู่มือเลือกเครื่องชั่ง" };
 const labelPrinting = { href: "/solutions/label-printing", label: "โซลูชันงานพิมพ์ฉลาก" };
 const pos = { href: `${categoryRoot}/pos`, label: "ระบบ POS" };
 const scannerAndCashDrawerSkus = new Set([
@@ -23,7 +24,7 @@ export const consumableSubtypeLinks = [thermalPaper, labels];
 
 const counting = /นับจำนวน(?:ชิ้น)?|นับชิ้น|\bcounting scales?\b/i;
 const checkweighing = /เตือน(?:ช่วงน้ำหนัก|น้ำหนักขาด\s*[-–—/]?\s*เกิน)/i;
-const labelMaterial = /สติ[๊้]?กเกอร์|ฉลาก|เลเบล|\blabels?\b/i;
+const labelMaterial = /สติ[๊้]?กเกอร์|ฉลาก|เลเบล|\blabels?(?=\b|\d{2,3}\s*[x×*]\s*\d{2,3})/i;
 const option =
   /ออปชั[่น]+|ตัวเลือก|เพิ่มเติม|เสริม|ไม่รองรับ|ไม่มี|\boptional\b|\boption\b|\bnot supported\b/i;
 
@@ -153,7 +154,7 @@ export const additionalAccessorySubcategoryPages = [
     [consumables, printers],
     ({ warehouseGroup, warehouseName }) =>
       warehouseGroup === "วัสดุสิ้นเปลือง" &&
-      /กระดาษความร้อน|\bthermal\s*paper\b/i.test(warehouseName ?? "") &&
+      /กระดาษความร้อน|\bthermal\s*paper(?=\b|\d+\b)/i.test(warehouseName ?? "") &&
       !labelMaterial.test(warehouseName ?? ""),
   ),
   definePage(

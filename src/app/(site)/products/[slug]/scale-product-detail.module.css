@@ -1,0 +1,384 @@
+@font-face {
+  font-family: "Anuphan Detail";
+  src: url("../../../fonts/anuphan-variable.ttf") format("truetype");
+  font-weight: 100 700;
+  font-display: swap;
+}
+
+main.page {
+  width: min(calc(100% - 2 * clamp(20px, 4.444vw, 64px)), 1312px);
+  padding-top: 24px;
+}
+
+.page > :is(aside, section:not(.overview)) {
+  margin-top: 48px;
+}
+
+.overview {
+  color: var(--ink);
+}
+
+.back {
+  margin-bottom: 24px;
+}
+
+.back a,
+.warranty {
+  font:
+    400 14px/22px "Anuphan Detail",
+    var(--font-sunford),
+    sans-serif;
+  color: #535358;
+}
+
+.back a:global(.back-link) {
+  margin: 0;
+}
+
+.back a:hover,
+.warranty:hover {
+  text-decoration: underline;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.media {
+  grid-row: 2;
+  min-width: 0;
+  margin-top: 24px;
+}
+
+.media :global(.detail-image) {
+  width: 100%;
+  aspect-ratio: 688 / 558;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  background: linear-gradient(180deg, #f7f7fa, #f0f0f3 60%, #e7e7ed);
+}
+
+.media :global(.detail-image img) {
+  object-fit: contain;
+  object-position: center 46%;
+  padding: 4.5% 3.78% 7.27%;
+}
+
+.media :global(.detail-image:has([data-product-image-placeholder])) {
+  height: 96px;
+  aspect-ratio: auto;
+}
+
+.media :global(.gallery-zoom) {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.media :global(.detail-image:has([data-product-image-placeholder]) .gallery-zoom) {
+  display: none;
+}
+
+.purchase {
+  width: fit-content;
+  max-width: 100%;
+  margin: 26px auto 0;
+  font-family: "Anuphan Detail", var(--font-sunford), sans-serif;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.buttons :global(.detail-price) {
+  margin: 0 20px 0 0;
+  color: var(--ink);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 600;
+  line-height: 50px;
+}
+
+.page .inquiry,
+.specLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font:
+    400 16px/24px "Anuphan Detail",
+    var(--font-sunford),
+    sans-serif;
+}
+
+.page .inquiry {
+  padding-inline: 26px;
+}
+
+.specLink {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+}
+
+.specLink:hover {
+  background: var(--paper);
+}
+
+.warranty {
+  display: inline-block;
+  margin-top: 22px;
+}
+
+.details {
+  display: contents;
+}
+
+.compactHeading {
+  display: none;
+}
+
+.intro {
+  grid-row: 1;
+  min-width: 0;
+}
+
+.category {
+  margin: 0 0 9px;
+  color: var(--muted);
+  font:
+    400 15px/22px "Anuphan Detail",
+    var(--font-sunford),
+    sans-serif;
+}
+
+.page .intro h1 {
+  margin: 0;
+  font-size: clamp(36px, 4.52vw, 65px);
+  font-weight: 600;
+  line-height: 1.26;
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: #535358;
+  font-size: 19px;
+  line-height: 30px;
+}
+
+.capacity {
+  display: flex;
+  flex-direction: column;
+  margin: 26px 0 0;
+}
+
+.capacity dt {
+  color: #535358;
+  font-size: 15px;
+  line-height: 23px;
+}
+
+.capacity dd {
+  order: -1;
+  margin: 0;
+  font-size: clamp(36px, 3.61vw, 52px);
+  font-weight: 600;
+  line-height: 1.1923;
+}
+
+.capacity span {
+  font-size: clamp(20px, 1.74vw, 25px);
+}
+
+.groups {
+  margin-top: 32px;
+  scroll-margin-top: 16px;
+}
+
+.group + .group {
+  margin-top: 46px;
+}
+
+.page .group h2 {
+  margin: 0 0 13px;
+  font-size: clamp(21px, 1.667vw, 24px);
+  font-weight: 600;
+  line-height: 36px;
+}
+
+.group dl {
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.group dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  min-height: 50px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.group dt {
+  color: #535358;
+}
+
+.group dd {
+  min-width: 0;
+  margin: 0;
+  font-weight: 600;
+}
+
+.group dd :global(.product-plain-value) {
+  white-space: pre-line;
+  font: inherit;
+}
+
+.group dd img {
+  max-width: 100%;
+  height: auto;
+}
+
+.more {
+  align-self: start;
+  margin-top: 40px;
+}
+
+.sku {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+@media (width < 40rem) {
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+  }
+
+  .buttons :global(.detail-price) {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+}
+
+@media (min-width: 64rem) {
+  main.page {
+    padding-top: 50px;
+  }
+
+  .back {
+    margin-bottom: 28px;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 688fr) minmax(0, 596fr);
+    align-items: start;
+    gap: 28px;
+  }
+
+  .media {
+    grid-row: auto;
+    margin-top: 0;
+  }
+
+  .purchase {
+    margin-top: 34px;
+  }
+
+  .details {
+    display: block;
+    min-width: 0;
+    padding-inline: 24px;
+  }
+
+  .groups {
+    margin-top: 27px;
+    scroll-margin-top: 24px;
+  }
+}
+
+@media (min-width: 64rem) and (min-height: 32rem) {
+  .layout {
+    --detail-sticky-top: clamp(24px, 10svh, 96px);
+  }
+
+  .media {
+    position: sticky;
+    top: var(--detail-sticky-top);
+  }
+
+  .compactHeading {
+    position: sticky;
+    top: var(--detail-sticky-top);
+    z-index: var(--z-local-raised);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: 56px;
+    margin: 0 -24px -56px;
+    padding-inline: 24px;
+    background: var(--background);
+    visibility: hidden;
+  }
+
+  .compactHeading[data-visible="true"] {
+    visibility: visible;
+  }
+
+  .compactHeading::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 100%;
+    height: var(--detail-sticky-top);
+    background: inherit;
+  }
+
+  .compactHeading::after {
+    content: "";
+    position: absolute;
+    inset: auto 24px 0;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .compactHeading span:first-child {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 27px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .compactHeading span:last-child {
+    color: #535358;
+    font-size: 14px;
+    line-height: 22px;
+    white-space: nowrap;
+  }
+
+  .groups {
+    scroll-margin-top: 66px;
+  }
+
+  .media :global(.detail-image) {
+    max-height: calc(100svh - var(--detail-sticky-top) - 10rem);
+  }
+}

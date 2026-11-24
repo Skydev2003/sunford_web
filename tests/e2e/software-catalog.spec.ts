@@ -129,7 +129,7 @@ for (const width of [390, 1440]) {
     ).toBeVisible();
     await expect(main.getByRole("link", { name: "ติดต่อฝ่ายบริการ" })).toHaveAttribute(
       "href",
-      "/contact-us",
+      "/service?section=contact",
     );
     await expect(main.locator(".video-card, iframe")).toHaveCount(0);
     await page.goto("/software/download/sunford-rls1100");
@@ -230,7 +230,7 @@ test("software detail routes expose only verified downloads or current support o
     expect(links, path).toContain("/software/download");
     if (guides[slug])
       expect(links, path).toContain("/technical-specification/guides/" + guides[slug]);
-    if (!indexes.length) expect(links, path).toContain("/contact-us");
+    if (!indexes.length) expect(links, path).toContain("/service?section=contact");
     expect(
       $("main.source-content-page .video-card, main.source-content-page iframe").length,
       path,

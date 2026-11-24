@@ -12,6 +12,11 @@ export const getSubmenuFeature = (subcategoryId: string) => submenuFeatures[subc
 export const productListingAnchor = (categoryId: string) => `product-listing-${categoryId}`;
 export const productLineupAnchor = (categoryId: string) => `product-lineup-${categoryId}`;
 
+export function productListingFeatureHref(href: string, categoryId: string, featureId: string) {
+  const query = new URLSearchParams({ feature: featureId });
+  return `${href}?${query}#${productListingAnchor(categoryId)}`;
+}
+
 export function catalogSubmenuDestination(href: string): string {
   if (href.includes("#")) return href;
   const subcategory = getProductSubcategoryPageByHref(href);
@@ -19,8 +24,10 @@ export function catalogSubmenuDestination(href: string): string {
     const feature = getSubmenuFeature(subcategory.id);
     const anchor = productListingAnchor(subcategory.categoryId);
     if (!feature) return `${href}#${anchor}`;
+    if (!href.includes("?"))
+      return productListingFeatureHref(href, subcategory.categoryId, feature);
     const target = new URL(href, "https://sunford.local");
-    target.searchParams.set("feature", feature);
+    if (!target.searchParams.has("feature")) target.searchParams.set("feature", feature);
     return `${target.pathname}${target.search}#${anchor}`;
   }
   const category = productCategoryDefinitions.find(({ id }) => href === `/products/category/${id}`);

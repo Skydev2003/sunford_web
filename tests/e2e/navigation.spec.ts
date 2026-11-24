@@ -28,7 +28,7 @@ for (const width of [1440, 390]) {
     for (const { id, label } of productCategoryDefinitions) {
       await page.goto("/");
       if (width < 1024) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-      const nav = page.locator(width < 1024 ? "#mobile-navigation" : ".desktop-nav");
+      const nav = page.locator(width < 1024 ? "#products-navigation-panel" : ".desktop-nav");
       const parent = nav.getByRole("link", { name: label, exact: true });
       await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
       await parent.click();
@@ -152,18 +152,18 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-test("navigation changes mode at 834px and closes menus when the layout changes", async ({
+test("navigation changes mode at 1024px and closes menus when the layout changes", async ({
   page,
 }) => {
-  for (const route of ["/", "/products", "/contact-us"]) {
+  for (const route of ["/", "/products", "/service?section=contact"]) {
     const home = route === "/";
-    const breakpoint = 834;
+    const breakpoint = 1024;
     await page.setViewportSize({ width: breakpoint - 1, height: 540 });
     await page.goto(route);
     const header = page.locator(home ? ".site-header:visible" : "[data-products-header]:visible");
     const toggle = header.getByRole("button", { name: "เปิดเมนู", exact: true });
     await toggle.click();
-    const mobile = header.locator(home ? "#mobile-navigation" : "#products-navigation-panel");
+    const mobile = header.locator("#products-navigation-panel");
     await expect(mobile).toBeVisible();
     expect(await mobile.evaluate((n) => n.clientHeight <= innerHeight - 43)).toBe(true);
     await page.setViewportSize({ width: breakpoint, height: 900 });
@@ -171,7 +171,7 @@ test("navigation changes mode at 834px and closes menus when the layout changes"
     const desktop = header.getByRole("link", { name: "เครื่องชั่ง", exact: true });
     await expect(desktop).toBeVisible();
     await page.keyboard.press("Tab");
-    await desktop.focus();
+    await desktop.press("ArrowDown");
     await expect(desktop).toHaveAttribute("aria-expanded", "true");
     await page.setViewportSize({ width: breakpoint - 1, height: 900 });
     await expect(mobile).toHaveCount(0);
@@ -179,7 +179,7 @@ test("navigation changes mode at 834px and closes menus when the layout changes"
   }
 });
 
-test("nine company menus expose real destinations without calibration or a top bar", async ({
+test("eight company menus expose real destinations without calibration or a top bar", async ({
   page,
   request,
 }) => {
@@ -195,8 +195,10 @@ test("nine company menus expose real destinations without calibration or a top b
   const destinations = new Map<string, string>();
   for (const menu of menus) {
     await page.locator(".desktop-nav").getByRole("link", { name: menu.label, exact: true }).hover();
-    const panel = page.locator(".desktop-submenu.is-open .submenu-panel.is-active");
-    await expect(panel.locator(".submenu-group-secondary > p")).toHaveText(menu.groups);
+    const panel = page.locator("[data-nav-menu]");
+    await expect(
+      panel.locator('[data-nav-column]:not([data-nav-column="primary"]) > p'),
+    ).toHaveText(menu.groups);
     const links = await panel
       .locator("a")
       .evaluateAll((elements) => elements.map((el) => el.getAttribute("href")!));
@@ -209,22 +211,22 @@ test("nine company menus expose real destinations without calibration or a top b
         destinations.set(target.pathname, await response.text());
       }
       if (target.hash) {
-        const fragment =
-          target.pathname === "/software/download"
-            ? `href="${target.hash}"`
-            : `id="${target.hash.slice(1)}"`;
+        const fragment = `id="${target.hash.slice(1)}"`;
         expect(destinations.get(target.pathname)?.includes(fragment), href).toBe(true);
       }
     }
   }
-  await page.locator(".brand").focus();
-  await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
-  await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).focus();
+  await page.locator('[data-products-nav] > a[href="/"]').focus();
+  await expect(page.locator("#products-navigation-panel")).toBeHidden();
   await page
-    .locator(".submenu-panel.is-active")
+    .locator(".desktop-nav")
+    .getByRole("link", { name: "บริการ", exact: true })
+    .press("ArrowDown");
+  await page
+    .locator("[data-nav-menu]")
     .getByRole("link", { name: "ติดต่อเรา", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/contact-us$/);
+  await expect(page).toHaveURL(/\/service\?section=contact$/);
   await test.info().attach("verified-destinations.json", {
     body: JSON.stringify([...destinations.keys()], null, 2),
     contentType: "application/json",
@@ -242,34 +244,29 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   await page.goto("/");
   const toggle = page.getByRole("button", { name: "เปิดเมนู", exact: true });
   await toggle.click();
-  const mobile = page.locator("#mobile-navigation");
-  await expect(mobile.locator("summary")).toHaveCount(8);
-  await expect(mobile.locator(".mobile-nav-category-link")).toHaveText([
-    "ผลิตภัณฑ์ทั้งหมด",
-    ...productCategoryDefinitions.map(({ label }) => label),
-    "จัดสเปค",
-  ]);
-  const products = mobile
-    .locator("details")
-    .filter({ has: page.getByLabel("เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง") });
-  await expect(products).not.toHaveAttribute("open");
-  await products.locator("summary").focus();
-  await page.keyboard.press("Enter");
-  await expect(products).toHaveAttribute("open", "");
-  await expect(products.getByRole("link", { name: "หน้าจอ LCD", exact: true })).toBeVisible();
+  const mobile = page.locator("#products-navigation-panel");
+  await expect(mobile.locator("[data-nav-category-row]")).toHaveCount(8);
+  await expect(mobile.locator("[data-nav-category-row] > a")).toHaveText(labels);
+  const indicators = mobile.getByRole("button", {
+    name: "เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง",
+    exact: true,
+  });
+  await indicators.press("Enter");
+  await expect(mobile.getByRole("button", { name: "เมนูหลัก", exact: true })).toBeFocused();
+  await expect(mobile.getByRole("link", { name: "LCD", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(mobile).toHaveCount(0);
   await expect(toggle).toBeFocused();
   await toggle.click();
   await page
-    .locator('#mobile-navigation summary[aria-label="เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง"]')
+    .locator('#products-navigation-panel button[aria-label="เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง"]')
     .click();
   await page
-    .locator("#mobile-navigation")
-    .getByRole("link", { name: "หน้าจอ LCD", exact: true })
+    .locator("#products-navigation-panel")
+    .getByRole("link", { name: "LCD", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/products\/category\/indicators\/lcd$/);
-  await expect(page.locator("#mobile-navigation")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/products\/category\/indicators\/lcd#product-listing-indicators$/);
+  await expect(page.locator("#products-navigation-panel")).toHaveCount(0);
 });
 
 test("mobile software and warranty links remain reachable in a short viewport", async ({
@@ -278,8 +275,8 @@ test("mobile software and warranty links remain reachable in a short viewport", 
   await page.setViewportSize({ width: 390, height: 540 });
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-  const mobile = page.locator("#mobile-navigation");
-  const serviceMenu = mobile.locator('summary[aria-label="เปิดเมนูย่อยบริการ"]');
+  const mobile = page.locator("#products-navigation-panel");
+  const serviceMenu = mobile.locator('button[aria-label="เปิดเมนูย่อยบริการ"]');
   await serviceMenu.click();
   await mobile.getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true }).click();
   await expect(page).toHaveURL("/software/download");
@@ -293,7 +290,7 @@ test("mobile software and warranty links remain reachable in a short viewport", 
   await expect(mobile).toHaveCount(0);
 });
 
-for (const route of ["/", "/contact-us"]) {
+for (const route of ["/", "/service?section=contact"]) {
   test(`all flyout headings and first links align with the logo on ${route}`, async ({ page }) => {
     const home = route === "/";
     await page.goto(route);
@@ -301,7 +298,7 @@ for (const route of ["/", "/contact-us"]) {
       await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
     const nav = page.locator(home ? ".desktop-nav" : "[data-products-nav]");
     const logo = page.locator(home ? ".brand" : '[data-products-nav] a[href="/"]');
-    const panel = page.locator(home ? ".submenu-panel.is-active" : "#products-navigation-panel");
+    const panel = page.locator(home ? "[data-nav-menu]" : "#products-navigation-panel");
     for (const width of [834, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       for (const { label } of menus) {
@@ -337,15 +334,15 @@ test("wide menus fit the viewport and preserve the logo-aligned origin and hover
       const trigger = page.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
       await trigger.hover();
       await expect(trigger).toHaveAttribute("aria-expanded", "true");
-      const panel = page.locator(".desktop-submenu.is-open .submenu-panel.is-active");
+      const panel = page.locator("[data-nav-menu]");
       await expect(panel).toBeVisible();
       const bounds = (await panel.boundingBox())!;
       expect(bounds.x).toBeGreaterThanOrEqual(23);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(width - 23);
-      const primary = (await panel.locator(".submenu-group-primary").boundingBox())!;
-      const logo = (await page.locator(".brand").boundingBox())!;
+      const primary = (await panel.locator('[data-nav-column="primary"]').boundingBox())!;
+      const logo = (await page.locator('[data-products-nav] > a[href="/"]').boundingBox())!;
       expect(Math.abs(primary.x - logo.x)).toBeLessThan(1);
-      const link = panel.locator(".submenu-group a").first();
+      const link = panel.locator("[data-nav-column] a").first();
       const before = (await link.boundingBox())!;
       await link.hover();
       await expect(link.locator("span")).toHaveCSS("transform", "matrix(1.06, 0, 0, 1.06, 0, 0)");
@@ -354,16 +351,16 @@ test("wide menus fit the viewport and preserve the logo-aligned origin and hover
   }
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(
-    page.locator(".submenu-panel.is-active .submenu-links a").first().locator("span"),
+    page.locator('[data-nav-menu] [data-nav-column="primary"] a').first().locator("span"),
   ).toHaveCSS("transform", "none");
   await page.keyboard.press("Escape");
-  await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
+  await expect(page.locator("#products-navigation-panel")).toBeHidden();
 });
 
 test("product buying guides and responsive layouts remain available", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/guides/pos#systems");
-  await expect(page).toHaveURL(/\/guides\/pos#systems$/);
+  await expect(page).toHaveURL("/technical-specification?guide=pos#systems");
   await expect(page.locator("#systems h2")).toHaveText("เปรียบเทียบ Android / Windows");
   for (const width of [320, 390, 768, 1100, 1399, 1400, 1440]) {
     await page.setViewportSize({ width, height: 900 });

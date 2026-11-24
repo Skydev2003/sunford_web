@@ -10,19 +10,6 @@ export type AfterSalesService = {
   extra?: { title: string; steps: string[] };
 };
 
-export const afterSalesContact = {
-  title: "ฝ่ายบริการลูกค้าซันฟอร์ด",
-  factoryTitle: "โรงงาน/ศูนย์กระจายสินค้า/คลังสินค้า ซันฟอร์ด",
-  address: ["เลขที่ 99 หมู่ 9 ตำบลบางระกำ", "อำเภอบางเลน จังหวัดนครปฐม 73130"],
-  phones: [
-    { label: "034-276999", href: "tel:034276999" },
-    { label: "089-8152652", href: "tel:0898152652" },
-  ],
-  hours: "จันทร์–เสาร์ 08.00–17.00 น.",
-  break: "โปรดหลีกเลี่ยงเวลาพัก 12.00–13.00 น.",
-  sourceUrl: "https://www.sunford.co/service",
-};
-
 const damageNote = "สินค้าที่เสียหายอาจมีค่าใช้จ่ายตามจริง";
 
 export const afterSalesServices: AfterSalesService[] = [

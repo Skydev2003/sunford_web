@@ -100,24 +100,27 @@ for (const viewport of [
     await page.goto("/");
     const header = page.locator(".site-header");
     await expectLayer(header, 10, 50);
-    await expectHitTarget(header.locator(".brand"));
+    await expectHitTarget(header.getByRole("link", { name: "SUNFORD หน้าแรก", exact: true }));
     const desktop = viewport.width >= 1400;
     if (desktop) {
-      await page.locator(".desktop-nav").getByRole("link", { name: "สินค้า", exact: true }).focus();
+      await page
+        .locator(".desktop-nav")
+        .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
+        .focus();
       await page.keyboard.press("ArrowDown");
-      const panel = page.locator(".desktop-submenu");
+      const panel = page.locator("#products-navigation-panel");
       await expect(panel).toBeVisible();
       await expectLayer(panel, 100, 500);
       await expectLayer(page.locator(".nav-backdrop"), 100, 500);
       await expectHitTarget(panel.getByRole("link", { name: "สินค้าทั้งหมด", exact: true }));
-      await expectHitTarget(header.locator(".brand"));
+      await expectHitTarget(header.getByRole("link", { name: "SUNFORD หน้าแรก", exact: true }));
       await expectLayer(header, 100, 500);
       await page.locator(".nav-backdrop").click({ position: { x: 10, y: viewport.height - 10 } });
-      await expect(panel).toHaveAttribute("aria-hidden", "true");
+      await expect(panel).toBeHidden();
     } else {
       const toggle = page.getByRole("button", { name: "เปิดเมนู", exact: true });
       await toggle.click();
-      const menu = page.getByRole("navigation", { name: "เมนูมือถือ" });
+      const menu = page.locator("#products-navigation-panel");
       await expect(menu).toBeVisible();
       await expectLayer(menu, 100, 500);
       await expectHitTarget(page.getByRole("button", { name: "ปิดเมนู", exact: true }));
@@ -125,11 +128,11 @@ for (const viewport of [
       await expect(menu).toHaveCount(0);
     }
     await expectLayer(header, 10, 50);
-    const search = page.getByRole("button", { name: "ค้นหาสินค้า", exact: true });
+    const search = page.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true });
     await expectHitTarget(search);
     await search.hover();
     const tooltip = page.getByRole("tooltip");
-    await expect(tooltip).toHaveText("ค้นหาสินค้า");
+    await expect(tooltip).toHaveText("ค้นหาสินค้าและข้อมูล");
     await expectLayer(tooltip, 100, 500);
     await expectHitTarget(tooltip);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -147,7 +150,7 @@ for (const width of [1440, 390]) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/");
-    await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
+    await page.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
     await expect(dialog).toBeVisible();
     await expectLayer(dialog, 1000, 5000);
@@ -184,7 +187,7 @@ for (const width of [1440, 390]) {
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
     await fixture.evaluate((element) => element.remove());
-    await expectHitTarget(page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }));
+    await expectHitTarget(page.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }));
     expect(errors).toEqual([]);
   });
 }

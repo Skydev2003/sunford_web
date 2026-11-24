@@ -11,6 +11,7 @@ const chapterNames: Record<string, string> = {
   "accessory-cables": "สายและหัวต่อ",
   "accessory-mechanical": "ชิ้นส่วนแท่น",
   "accessory-pos": "อุปกรณ์ POS",
+  "accessory-consumables": "อื่น ๆ",
 };
 
 test.beforeEach(async ({ page }) => {
@@ -24,7 +25,7 @@ for (const width of [390, 834, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(path);
     const chapters = page.locator("#products-chapters > li > a");
-    await expect(chapters).toHaveCount(7);
+    await expect(chapters).toHaveCount(8);
     const artwork = new Map<string, string>();
     for (const link of await chapters.all()) {
       const href = (await link.getAttribute("href"))!;
@@ -39,14 +40,20 @@ for (const width of [390, 834, 1440]) {
       expect(await image.getAttribute("alt")).toBe("");
       artwork.set(href, source);
     }
-    expect(new Set(artwork.values()).size).toBe(7);
+    expect(new Set(artwork.values()).size).toBe(8);
 
-    const electronics = chapters.getByText("โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", { exact: true });
-    await electronics.click();
-    await expect(page).toHaveURL(`${path}/electronics`);
+    const overviewFilter = page
+      .getByRole("group", { name: "กรองผลิตภัณฑ์" })
+      .getByRole("button", { name: "อื่น ๆ", exact: true });
+    await overviewFilter.click();
+    await expect(overviewFilter).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#products-lineup").getByRole("link").first()).toBeAttached();
+    await expect(chapters.last()).toHaveText("อื่น ๆ");
+    await chapters.last().click();
+    await expect(page).toHaveURL(`${path}/consumables`);
     const filters = page.getByRole("navigation", { name: "หมวดย่อยสินค้า" });
     const selected = filters.locator('a[aria-current="page"]');
-    await expect(selected).toHaveAttribute("href", `${path}/electronics`);
+    await expect(selected).toHaveAttribute("href", `${path}/consumables`);
     const image = selected.locator("img");
     await image.scrollIntoViewIfNeeded();
     const source = await image.evaluate(async (node: HTMLImageElement) => {
@@ -54,7 +61,16 @@ for (const width of [390, 834, 1440]) {
       const url = new URL(node.currentSrc);
       return url.searchParams.get("url") ?? url.pathname;
     });
-    expect(source).toBe(artwork.get(`${path}/electronics`));
+    expect(source).toBe(artwork.get(`${path}/consumables`));
+    const products = page.locator("article[data-model-only]");
+    const total = await products.count();
+    for (const type of ["กระดาษความร้อน", "ฉลากและสติ๊กเกอร์"]) {
+      const filter = page.getByRole("button", { name: type, exact: true });
+      await filter.click();
+      await expect(filter).toHaveAttribute("aria-pressed", "true");
+      expect(await products.count()).toBeGreaterThan(0);
+      expect(await products.count()).toBeLessThan(total);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
@@ -78,7 +94,7 @@ for (const width of [390, 834, 1440]) {
           sections.map((section) => section.getAttribute("data-overview-section")),
         ),
     ).toEqual(["chapters", "lineup", "accordion", "services", "essentials", "index"]);
-    await expect(main.locator("#products-chapters > li")).toHaveCount(7);
+    await expect(main.locator("#products-chapters > li")).toHaveCount(8);
     const cards = main.locator("#products-lineup > li > a");
     const total = await cards.count();
     expect(total).toBeGreaterThan(6);
@@ -214,7 +230,7 @@ for (const width of [768, 834]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
-    await expect(page.locator("#products-chapters > li")).toHaveCount(7);
+    await expect(page.locator("#products-chapters > li")).toHaveCount(8);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

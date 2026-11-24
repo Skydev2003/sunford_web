@@ -1,3 +1,4 @@
+import { contactPath } from "@/features/content/data/contact-route";
 // Public information checked against sunford.co on 26 October 2026.
 // Short introduction follows the company's existing About page.
 export const companyIntro = {
@@ -16,7 +17,7 @@ export const legacySoftwareCatalogPath = "/applications-and-softwares";
 export const sunford = {
   website: "/",
   about: "/about-us",
-  contact: "/contact-us",
+  contact: contactPath,
   service: "/service",
   accessories: "/product/scale-accessories",
   downloads: "/software/download",
@@ -32,4 +33,4 @@ export const sunford = {
   phoneHref: "tel:034276999",
   email: "info@sunford.co.th",
   hours: "จันทร์–เสาร์ 08.00–17.00 น.",
-};
+} as const;

@@ -13,7 +13,8 @@ import { ContentDirectory } from "@/features/content/components/content-director
 import { ProductImage } from "@/components/ui/product-image";
 import { VideoGallery } from "@/features/content/components/video-gallery";
 import { legacySoftwareCatalogPath, sunford } from "@/features/home/data/brand";
-import { ContactPage } from "@/features/content/components/contact-page";
+import { ContactChannels } from "@/features/content/components/contact-page";
+import { legacyContactPath } from "@/features/content/data/contact-route";
 import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { AboutPage } from "@/features/content/components/about-page";
 import { SolutionsPage } from "@/features/content/components/solutions-page";
@@ -36,9 +37,10 @@ import {
 export const instant = false;
 export function generateStaticParams() {
   const explicitPaths = [
-    "/contact-us",
+    legacyContactPath,
     "/service",
     "/warranty/register",
+    "/cancel-and-return/policy",
     "/technical-specification",
     "/software/download",
     legacySoftwareCatalogPath,
@@ -122,8 +124,9 @@ export default async function SourceContentPage({
   if (page.path === "/solutions") return <SolutionsOverview />;
   if (solutionDetails[page.path]) return <SolutionsPage path={page.path} />;
   if (page.path !== pathname && page.managed) redirect(page.path);
-  if (page.path === "/contact-us" && !page.managed) return <ContactPage />;
-  if (page.path === "/service" && !page.managed) return <AfterSalesPage />;
+  if (page.path === legacyContactPath) redirect(sunford.contact);
+  if (page.path === "/service" && !page.managed)
+    return <AfterSalesPage contact={<ContactChannels />} />;
   if (page.path === "/about-us" && !page.managed) return <AboutPage />;
   const section = !page.managed ? getProductSection(page.path) : undefined;
   const collections = section ? await Promise.all(section.collectionPaths.map(getContentPage)) : [];
@@ -279,7 +282,7 @@ export default async function SourceContentPage({
           {!section && !hasContent && (
             <div className="container source-empty">
               <p>สอบถามรายละเอียดเพิ่มเติมจากทีม Sunford</p>
-              <Link className="button button-red" href="/contact-us">
+              <Link className="button button-red" href={sunford.contact}>
                 ติดต่อเรา
               </Link>
             </div>

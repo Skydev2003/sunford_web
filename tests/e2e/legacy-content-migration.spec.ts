@@ -103,7 +103,7 @@ test("Driver support renders in the current content template", async ({ page }) 
   await expect(main.getByRole("heading", { level: 1, name: "SUNFORD DRV" })).toBeVisible();
   await expect(main.getByRole("link", { name: "ติดต่อฝ่ายบริการ" })).toHaveAttribute(
     "href",
-    "/contact-us",
+    "/service?section=contact",
   );
   await expect(main.locator("iframe")).toHaveCount(0);
 });

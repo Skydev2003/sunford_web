@@ -169,6 +169,30 @@
   display: inline-flex;
   align-items: center;
 }
+
+[data-product-subcategory-page^="accessory-"] .breadcrumb {
+  padding-block-start: var(--accessory-group-space);
+}
+
+[data-product-subcategory-page^="accessory-"] .listingHeader {
+  padding-block-start: var(--accessory-item-space);
+}
+
+[data-product-subcategory-page^="accessory-"] .listingControls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--accessory-group-space);
+  padding-block-start: var(--accessory-group-space);
+}
+
+[data-product-subcategory-page^="accessory-"] .listingNavigation {
+  margin-block-end: 0;
+}
+
+[data-product-subcategory-page^="accessory-"] :is(.listing, .related) {
+  padding-block-end: var(--accessory-section-space);
+}
+
 @media (min-width: 40rem) {
   .categoryRow {
     grid-template-columns: 180px minmax(0, 1fr);

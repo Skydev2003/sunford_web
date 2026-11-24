@@ -1,30 +1,38 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { ChevronDown, List } from "lucide-react";
 import {
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  MapPin,
-  PackageCheck,
-  PackageOpen,
-  Phone,
-  RotateCcw,
-  ShieldCheck,
-  Wrench,
-} from "lucide-react";
-import { useLayoutEffect, useRef, useSyncExternalStore, type KeyboardEvent } from "react";
+  useLayoutEffect,
+  useRef,
+  useSyncExternalStore,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { sunford } from "@/features/home/data/brand";
-import { useReturnState } from "@/features/site/history/return-state";
-import { afterSalesContact, afterSalesServices, type AfterSalesService } from "../data/after-sales";
+import { subscribeReturnOrigin, useReturnState } from "@/features/site/history/return-state";
+import { afterSalesServices, type AfterSalesService } from "../data/after-sales";
+import { contactPath, isContactSection } from "../data/contact-route";
 import styles from "./after-sales-page.module.css";
-
-const serviceIcons = [Wrench, PackageOpen, ShieldCheck, RotateCcw, PackageCheck];
 
 const subscribeHydration = () => () => {};
 const readHydration = () => true;
 const serverHydration = () => false;
+const contactIndex = afterSalesServices.length;
+const sections = [...afterSalesServices, { id: "contact", name: "ติดต่อเรา" }];
+const sidebarBreakpoint = "(min-width: 48rem)";
+
+function subscribeMenuLayout(notify: () => void) {
+  const query = window.matchMedia(sidebarBreakpoint);
+  query.addEventListener("change", notify);
+  return () => query.removeEventListener("change", notify);
+}
+
+const readVerticalMenu = () => window.matchMedia(sidebarBreakpoint).matches;
+
+function readContactSection() {
+  return isContactSection(window.location);
+}
 
 function initialServiceTab() {
   if (typeof window === "undefined") return 0;
@@ -36,82 +44,47 @@ function initialServiceTab() {
 
 function ServiceInstructions({ service }: { service: AfterSalesService }) {
   return (
-    <article className={styles.instructions}>
-      <h2>{service.title}</h2>
-      <ol className={styles.steps} role="list">
-        {service.steps.map((step, index) => (
-          <li key={step}>
-            <span className={styles.stepNumber} aria-hidden="true">
-              {index + 1}
-            </span>
-            <p>{step}</p>
-          </li>
+    <div className={`source-prose ${styles.instructions}`}>
+      <ol className={styles.steps}>
+        {service.steps.map((step) => (
+          <li key={step}>{step}</li>
         ))}
       </ol>
-      {service.notes && (
-        <aside className={styles.notes} aria-label="ข้อควรทราบ">
-          {service.notes.map((note) => (
-            <p key={note}>{note}</p>
-          ))}
-        </aside>
-      )}
       {service.extra && (
-        <details className={styles.details}>
-          <summary>
-            {service.extra.title}
-            <ChevronDown size={17} aria-hidden="true" />
-          </summary>
+        <section className={styles.details}>
+          <h2>{service.extra.title}</h2>
           <ul>
             {service.extra.steps.map((step) => (
               <li key={step}>{step}</li>
             ))}
           </ul>
-        </details>
+        </section>
       )}
-    </article>
-  );
-}
-
-function ServiceContact() {
-  return (
-    <aside
-      id="service-contact"
-      className={styles.contact}
-      aria-labelledby="service-contact-heading"
-    >
-      <h2 id="service-contact-heading">{afterSalesContact.title}</h2>
-      <p className={styles.hours}>{afterSalesContact.hours}</p>
-      <a className={styles.lineButton} href={sunford.line} target="_blank" rel="noreferrer">
-        <Image src="/images/brands/line-brand-icon.png" width={20} height={20} alt="" />
-        LINE @sunford
-        <ExternalLink size={16} aria-hidden="true" />
-      </a>
-      <div className={styles.phoneList}>
-        {afterSalesContact.phones.map((phone) => (
-          <a href={phone.href} key={phone.href}>
-            <Phone size={15} aria-hidden="true" />
-            {phone.label}
-          </a>
-        ))}
-      </div>
-      <div className={styles.location}>
-        <h3>
-          <MapPin size={16} aria-hidden="true" />
-          ที่อยู่โรงงานซันฟอร์ด
-        </h3>
-        <address>
-          {afterSalesContact.address.map((line) => (
-            <span key={line}>{line}</span>
+      {service.notes && (
+        <aside className={styles.notes} aria-label="ข้อควรทราบ">
+          <h2>ข้อควรทราบ</h2>
+          {service.notes.map((note) => (
+            <p key={note}>{note}</p>
           ))}
-        </address>
-      </div>
-    </aside>
+        </aside>
+      )}
+    </div>
   );
 }
 
-export function AfterSalesPage() {
-  const [selected, setSelected] = useReturnState("after-sales-page.selected", initialServiceTab);
+export function AfterSalesPage({ contact }: { contact: ReactNode }) {
+  const [selectedService, setSelectedService] = useReturnState(
+    "after-sales-page.selected",
+    initialServiceTab,
+  );
   const interactive = useSyncExternalStore(subscribeHydration, readHydration, serverHydration);
+  const verticalMenu = useSyncExternalStore(subscribeMenuLayout, readVerticalMenu, serverHydration);
+  const contactSelected = useSyncExternalStore(
+    subscribeReturnOrigin,
+    readContactSection,
+    serverHydration,
+  );
+  const selected = contactSelected ? contactIndex : selectedService;
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const activePanel = useRef<HTMLDivElement>(null);
   const needsAnchorHandoff = useRef(!interactive);
@@ -119,113 +92,147 @@ export function AfterSalesPage() {
   useLayoutEffect(() => {
     if (!interactive || !needsAnchorHandoff.current) return;
     needsAnchorHandoff.current = false;
-    const panel = activePanel.current;
-    if (!panel || window.location.hash !== `#${panel.id}`) return;
+    const hash = window.location.hash;
+    const actionAnchor = hash === "#service-contact" || hash === "#service-policies";
+    const target = actionAnchor ? document.getElementById(hash.slice(1)) : activePanel.current;
+    if (!target || hash !== `#${target.id}`) return;
 
     // The anchor can move above the viewport when the other server-rendered panels collapse.
-    const { top } = panel.getBoundingClientRect();
+    const { top } = target.getBoundingClientRect();
     if (top < 0 || top >= window.innerHeight)
-      panel.scrollIntoView({ block: "start", behavior: "instant" });
+      target.scrollIntoView({ block: "start", behavior: "instant" });
   }, [interactive, selected]);
+
+  function selectSection(index: number) {
+    if (index === selected) return;
+    if (index === contactIndex) {
+      window.history.pushState(null, "", contactPath);
+    } else if (contactSelected) {
+      window.history.pushState(null, "", `/service#service-panel-${afterSalesServices[index].id}`);
+    } else {
+      setSelectedService(index);
+    }
+  }
 
   function handleTabKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     let next = index;
-    if (event.key === "ArrowRight") next = (index + 1) % afterSalesServices.length;
-    else if (event.key === "ArrowLeft")
-      next = (index - 1 + afterSalesServices.length) % afterSalesServices.length;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown")
+      next = (index + 1) % sections.length;
+    else if (event.key === "ArrowLeft" || event.key === "ArrowUp")
+      next = (index - 1 + sections.length) % sections.length;
     else if (event.key === "Home") next = 0;
-    else if (event.key === "End") next = afterSalesServices.length - 1;
+    else if (event.key === "End") next = sections.length - 1;
     else return;
     event.preventDefault();
-    setSelected(next);
+    selectSection(next);
     tabs.current[next]?.focus();
   }
 
+  const navigation = interactive ? (
+    <div
+      className={styles.menu}
+      role="tablist"
+      aria-orientation="vertical"
+      aria-label="ประเภทบริการหลังการขาย"
+    >
+      {sections.map((service, index) => {
+        const active = selected === index;
+        return (
+          <button
+            key={service.id}
+            ref={(element) => {
+              tabs.current[index] = element;
+            }}
+            type="button"
+            role="tab"
+            id={`service-tab-${service.id}`}
+            aria-controls={`service-panel-${service.id}`}
+            aria-selected={active}
+            tabIndex={active ? 0 : -1}
+            onClick={() => selectSection(index)}
+            onKeyDown={(event) => handleTabKey(event, index)}
+          >
+            {service.name}
+          </button>
+        );
+      })}
+    </div>
+  ) : (
+    <nav className={styles.menu} aria-label="ประเภทบริการหลังการขาย">
+      {sections.map((service) => (
+        <a key={service.id} href={`#service-panel-${service.id}`}>
+          {service.name}
+        </a>
+      ))}
+    </nav>
+  );
+
   return (
-    <main id="main-content" className={styles.page} data-page-surface="paper">
-      <div className={styles.shell}>
-        <header className={styles.hero}>
-          <div>
-            <nav className={styles.breadcrumb} aria-label="เส้นทางนำทาง">
-              <Link href="/">หน้าแรก</Link>
-              <ChevronRight size={13} aria-hidden="true" />
-              <span aria-current="page">บริการหลังการขาย</span>
-            </nav>
-            <h1>บริการหลังการขาย</h1>
-          </div>
-          <div className={styles.quickLinks}>
-            <a href="#service-contact">ติดต่อฝ่ายบริการ</a>
-            <a href="#service-policies">เงื่อนไขบริการ</a>
-          </div>
-        </header>
-
-        {interactive ? (
-          <div className={styles.tabs} role="tablist" aria-label="ประเภทบริการหลังการขาย">
-            {afterSalesServices.map((service, index) => {
-              const Icon = serviceIcons[index];
-              const active = selected === index;
-              return (
-                <button
-                  key={service.id}
-                  ref={(element) => {
-                    tabs.current[index] = element;
-                  }}
-                  type="button"
-                  role="tab"
-                  id={`service-tab-${service.id}`}
-                  aria-controls={`service-panel-${service.id}`}
-                  aria-selected={active}
-                  tabIndex={active ? 0 : -1}
-                  onClick={() => setSelected(index)}
-                  onKeyDown={(event) => handleTabKey(event, index)}
-                >
-                  <Icon size={19} aria-hidden="true" />
-                  {service.name}
-                </button>
-              );
-            })}
-          </div>
-        ) : (
-          <nav className={styles.tabs} aria-label="ประเภทบริการหลังการขาย">
-            {afterSalesServices.map((service, index) => {
-              const Icon = serviceIcons[index];
-              return (
-                <a key={service.id} href={`#service-panel-${service.id}`}>
-                  <Icon size={19} aria-hidden="true" />
-                  {service.name}
-                </a>
-              );
-            })}
-          </nav>
+    <main id="main-content" className={`source-content-page ${styles.page}`}>
+      <div className={`container ${styles.shell}`}>
+        {(!interactive || verticalMenu) && (
+          <aside className={styles.sidebar}>
+            <p className={styles.navigationTitle}>บริการหลังการขาย</p>
+            {navigation}
+          </aside>
         )}
-
-        <div className={styles.workspace}>
-          <div className={styles.panels}>
-            {afterSalesServices.map((service, index) => {
-              const hidden = interactive && selected !== index;
-              return (
-                <div
-                  className={styles.panel}
-                  ref={interactive && !hidden ? activePanel : undefined}
-                  key={service.id}
-                  id={`service-panel-${service.id}`}
-                  role={interactive ? "tabpanel" : undefined}
-                  aria-labelledby={interactive ? `service-tab-${service.id}` : undefined}
-                  hidden={hidden}
-                  tabIndex={interactive && !hidden ? 0 : undefined}
-                >
-                  {!hidden && <ServiceInstructions service={service} />}
-                </div>
-              );
-            })}
-          </div>
-          <ServiceContact />
+        {(!interactive || !verticalMenu) && (
+          <details className={styles.mobileNavigation}>
+            <summary>
+              <List size={18} aria-hidden="true" />
+              เมนูบริการหลังการขาย
+              <ChevronDown className={styles.chevron} size={18} aria-hidden="true" />
+            </summary>
+            {navigation}
+          </details>
+        )}
+        <div className={styles.reader}>
+          {sections.map((service, index) => {
+            const hidden = interactive && selected !== index;
+            const Heading = interactive || index === 0 ? "h1" : "h2";
+            const instruction = afterSalesServices[index];
+            return (
+              <div
+                className={styles.panel}
+                ref={interactive && !hidden ? activePanel : undefined}
+                key={service.id}
+                id={`service-panel-${service.id}`}
+                role={interactive ? "tabpanel" : undefined}
+                aria-labelledby={interactive ? `service-tab-${service.id}` : undefined}
+                hidden={hidden}
+                tabIndex={interactive && !hidden ? 0 : undefined}
+              >
+                {!hidden && (
+                  <>
+                    <header className={instruction ? styles.visuallyHidden : styles.heading}>
+                      <Heading>{instruction?.title ?? service.name}</Heading>
+                    </header>
+                    {instruction ? <ServiceInstructions service={instruction} /> : contact}
+                  </>
+                )}
+              </div>
+            );
+          })}
+          {!contactSelected && (
+            <div className={styles.actions}>
+              <Link
+                id="service-contact"
+                className={`button button-red ${styles.contactButton}`}
+                href={interactive ? contactPath : "#service-panel-contact"}
+              >
+                ติดต่อเรา
+              </Link>
+              <nav
+                id="service-policies"
+                className={styles.policies}
+                aria-label="ข้อมูลที่เกี่ยวข้อง"
+              >
+                <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link>
+                <Link href="/cancel-and-return/policy">เงื่อนไขการเปลี่ยนและคืนสินค้า</Link>
+              </nav>
+            </div>
+          )}
         </div>
-
-        <nav id="service-policies" className={styles.policies} aria-label="ข้อมูลที่เกี่ยวข้อง">
-          <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link>
-          <Link href="/cancel-and-return/policy">เงื่อนไขการเปลี่ยนและคืนสินค้า</Link>
-        </nav>
       </div>
     </main>
   );

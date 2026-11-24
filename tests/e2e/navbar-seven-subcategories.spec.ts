@@ -81,31 +81,20 @@ async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard"
       await header.locator(`[aria-label="เปิดเมนูย่อย${parent}"]`).tap();
     } else {
       const trigger = header
-        .getByRole("navigation", { name: home ? "เมนูหลัก" : "เมนูหลัก SUNFORD", exact: true })
+        .getByRole("navigation", { name: "เมนูหลัก SUNFORD", exact: true })
         .getByRole("link", { name: parent, exact: true });
       if (input === "mouse") await trigger.hover();
       else await trigger.press("ArrowDown");
     }
-    const panelId = home
-      ? touch
-        ? "#mobile-navigation"
-        : "#desktop-submenu"
-      : "#products-navigation-panel";
+    const panelId = "#products-navigation-panel";
     const panel = header.locator(`${panelId} [data-nav-menu="${parentHref}"]`);
     const features = panel.locator('[data-nav-column="uses"]');
-    if (category === "scales" || category === "indicators") {
-      await expect(features.locator("p").first()).toHaveText("คุณสมบัติ");
-      await expect(features.getByRole("link")).toHaveText(
-        category === "scales"
-          ? ["นับจำนวนชิ้น", "เตือนน้ำหนักขาด–เกิน"]
-          : ["เชื่อมต่อ RS232", "ตัวเครื่องกันน้ำ IP67"],
-      );
-    }
+    await expect(features.locator("p").first()).toHaveText("คุณสมบัติ");
     for (const [slug, label] of children) {
       const href = `${parentHref}/${slug}`;
       const link =
         category === "indicators" && slug === "waterproof"
-          ? features.getByRole("link", { name: "ตัวเครื่องกันน้ำ IP67", exact: true })
+          ? features.getByRole("link", { name: "กันน้ำ IP67", exact: true })
           : panel.getByRole("link", { name: label, exact: true });
       await expect(link).toBeVisible();
       if (!savedDisabled.has(href)) {
@@ -164,7 +153,7 @@ test.describe("390px touch", () => {
     await page.goto("/");
     await homeReady(page);
     await verifyMenu(page, true, "touch");
-    await page.goto("/contact-us");
+    await page.goto("/service?section=contact");
     await verifyMenu(page, false, "touch");
   });
 });
@@ -237,7 +226,7 @@ test("tablet category entrances and direct listings agree with Warehouse members
           main
             .getByRole("navigation", { name: "ข้อมูลที่เกี่ยวข้อง" })
             .getByRole("link", { name: /ปรึกษาผู้เชี่ยวชาญ/ }),
-        ).toHaveAttribute("href", "/contact-us");
+        ).toHaveAttribute("href", "/service?section=contact");
       }
     }
   }

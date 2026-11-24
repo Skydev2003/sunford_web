@@ -1,13 +1,12 @@
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
-import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 
 // Catalogue photographs are used only for the matching Warehouse model.
@@ -21,28 +20,11 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G107763: "/images/imported/a8e894090dd0add2792d.png",
 };
 
-const topics: Readonly<Record<string, { image: string; detail: string }>> = {
-  platforms: {
-    image: "/images/category-chapters/platforms/sus304.webp",
-    detail:
-      "เช็กรุ่นแท่น พิกัด และข้อมูลโหลดเซลล์ก่อนเลือกหัวอ่าน หากเปลี่ยนหัวอ่านเดิม ให้ผู้ติดตั้งตรวจขั้วต่อและสายสัญญาณด้วย",
-  },
-  connections: {
-    image: "/images/products/component-showcase/g107770-front-4k.webp",
-    detail:
-      "ก่อนต่อกับคอมพิวเตอร์หรือเครื่องพิมพ์ ให้ตรวจพอร์ต รูปแบบข้อมูล และการตั้งค่าของอุปกรณ์ทั้งสองฝั่ง แม้สายจะเสียบเข้ากันได้",
-  },
-  compare: {
-    image: "/images/category-chapters/indicators/led.webp",
-    detail:
-      "เลือกจอ LCD หรือ LED ตามแสงและระยะมอง แล้วเทียบฟังก์ชัน พอร์ต และระดับการป้องกันน้ำและฝุ่นจากสเปกแต่ละรุ่น",
-  },
+const topicImages: Readonly<Record<string, string>> = {
+  platforms: "/images/category-chapters/platforms/sus304.webp",
+  connections: "/images/products/component-showcase/g107770-front-4k.webp",
+  compare: "/images/category-chapters/indicators/led.webp",
 };
-
-async function getCopyrightYear() {
-  "use cache";
-  return new Date().getFullYear();
-}
 
 export async function IndicatorsOverview() {
   const {
@@ -63,15 +45,14 @@ export async function IndicatorsOverview() {
         return { ...product, fallbackImage: localPhoto };
       return product;
     });
-  const guide = buyingGuides.find(({ slug }) => slug === "indicators")!;
-  const guideHref = "/guides/indicators";
+  const guide = guidebookBuyingGuides.find(({ slug }) => slug === "indicators")!;
   const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].detail,
-    image: topics[section.id].image,
-    href: `${guideHref}#${section.id}`,
-    content: <p>{topics[section.id].detail}</p>,
+    introduction: section.advice,
+    image: topicImages[section.id],
+    href: buyingGuideHref(guide.slug, section.id),
+    content: <p>{section.advice}</p>,
   }));
   const services = [
     {
@@ -98,11 +79,10 @@ export async function IndicatorsOverview() {
       href: sunford.warranty,
     },
   ];
-  const [navigation, site, copyrightYear] = await Promise.all([
-    getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
-    getSettings("site", defaultSite),
-    getCopyrightYear(),
-  ]);
+  const navigation = await getSettings("navigation", {
+    items: defaultNavigation,
+    ...defaultNavigationExtras,
+  });
   return (
     <ProductsOverview
       products={products}
@@ -111,8 +91,6 @@ export async function IndicatorsOverview() {
       categoryId="indicators"
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
-      site={site}
-      copyrightYear={copyrightYear}
       stories={stories}
       services={services}
       accordion={stories}

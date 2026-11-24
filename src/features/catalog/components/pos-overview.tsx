@@ -1,13 +1,12 @@
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
-import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 
 // Catalogue photographs are used only for the matching Warehouse model.
@@ -17,28 +16,11 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G108050: "/images/products/software-showcase/p4-front-4k.webp",
 };
 
-const topics: Readonly<Record<string, { image: string; detail: string }>> = {
-  systems: {
-    image: "/images/category-chapters/pos/windows.webp",
-    detail:
-      "ชุด P1 เป็นตัวเลือก Android และชุด P1W เป็นตัวเลือก Windows ให้ตรวจระบบที่ซอฟต์แวร์ เครื่องพิมพ์ และอุปกรณ์ของร้านรองรับก่อนเลือก",
-  },
-  workflows: {
-    image: "/images/products/software-showcase/pos-android.webp",
-    detail:
-      "เริ่มจากงานขายจริงของร้าน ทดลองรับน้ำหนัก คำนวณราคา และพิมพ์ตัวอย่าง ตรวจว่าชนิดเอกสารและฉลากตรงกับที่ใช้",
-  },
-  scales: {
-    image: "/images/category-chapters/pos/android.webp",
-    detail:
-      "ชุด P1 พร้อม RLS1100 เป็นตัวอย่างชุด Android ที่มีอยู่ หากนำเครื่องเดิมมาใช้ร่วมกัน ให้ยืนยันสาย พอร์ต หน่วยน้ำหนัก และรูปแบบข้อมูลของทั้งสองฝั่ง",
-  },
+const topicImages: Readonly<Record<string, string>> = {
+  systems: "/images/category-chapters/pos/windows.webp",
+  workflows: "/images/products/software-showcase/pos-android.webp",
+  scales: "/images/category-chapters/pos/android.webp",
 };
-
-async function getCopyrightYear() {
-  "use cache";
-  return new Date().getFullYear();
-}
 
 export async function POSOverview() {
   const {
@@ -59,15 +41,14 @@ export async function POSOverview() {
         return { ...product, fallbackImage: localPhoto };
       return product;
     });
-  const guide = buyingGuides.find(({ slug }) => slug === "pos")!;
-  const guideHref = "/guides/pos";
+  const guide = guidebookBuyingGuides.find(({ slug }) => slug === "pos")!;
   const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].detail,
-    image: topics[section.id].image,
-    href: `${guideHref}#${section.id}`,
-    content: <p>{topics[section.id].detail}</p>,
+    introduction: section.advice,
+    image: topicImages[section.id],
+    href: buyingGuideHref(guide.slug, section.id),
+    content: <p>{section.advice}</p>,
   }));
   const services = [
     {
@@ -94,11 +75,10 @@ export async function POSOverview() {
       href: sunford.warranty,
     },
   ];
-  const [navigation, site, copyrightYear] = await Promise.all([
-    getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
-    getSettings("site", defaultSite),
-    getCopyrightYear(),
-  ]);
+  const navigation = await getSettings("navigation", {
+    items: defaultNavigation,
+    ...defaultNavigationExtras,
+  });
   return (
     <ProductsOverview
       products={products}
@@ -107,8 +87,6 @@ export async function POSOverview() {
       categoryId="pos"
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
-      site={site}
-      copyrightYear={copyrightYear}
       stories={stories}
       services={services}
       accordion={stories}

@@ -95,10 +95,11 @@ export function ProductCategoryMock({
   const setCatalogQuery = useCatalogStore((state) => state.setQuery);
   const listingSearch = useListingSearch();
   const [selectedFeatures, setSelectedFeatures] = useReturnState<string[]>(
-    "product-category-mock.listingFeatures",
+    `product-category-mock.listingFeatures:${initialFeature ?? ""}`,
     initialFeature ? [initialFeature] : [],
   );
   const activeFeatures = listingFeatures?.filter(({ id }) => selectedFeatures.includes(id)) ?? [];
+  const hasActiveFeatures = activeFeatures.length > 0;
   const clearLinkedFeature = () => {
     if (!initialFeature) return;
     const url = new URL(window.location.href);
@@ -115,6 +116,7 @@ export function ProductCategoryMock({
     const retained = exclusive
       ? activeFeatures.filter((feature) => !feature.exclusive).map((feature) => feature.id)
       : selectedFeatures;
+    if (initialFeature && !retained.includes(initialFeature)) clearLinkedFeature();
     setSelectedFeatures([...retained, id]);
   };
   const query = listingSearch?.query ?? catalogQuery;
@@ -602,13 +604,19 @@ export function ProductCategoryMock({
         {!matching.length && (
           <div className={styles.empty}>
             <Search size={30} aria-hidden="true" />
-            <h3>ยังไม่พบสินค้าที่คุณค้นหา</h3>
-            <p>ลองค้นหาชื่อรุ่นอื่น หรือเลือกดูสินค้าทั้งหมด</p>
+            <h3>
+              {hasActiveFeatures ? "ไม่พบสินค้าที่ตรงกับตัวกรอง" : "ยังไม่พบสินค้าที่คุณค้นหา"}
+            </h3>
+            <p>
+              {hasActiveFeatures
+                ? "ลองยกเลิกบางตัวเลือก หรือกดล้างตัวกรองทั้งหมด"
+                : "ลองค้นหาชื่อรุ่นอื่น หรือเลือกดูสินค้าทั้งหมด"}
+            </p>
             <button
               type="button"
               onClick={() => {
                 selectCategory("all");
-                if (activeFeatures.length) {
+                if (hasActiveFeatures) {
                   setSelectedFeatures([]);
                   clearLinkedFeature();
                 }

@@ -384,6 +384,17 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+[data-product-subcategory-page^="accessory-"] .entrySearch {
+  margin-block-end: 0;
+}
+
+[data-product-subcategory-page^="accessory-"] .toolbarWithFeatures {
+  gap: var(--accessory-item-space) var(--accessory-group-space);
+  margin-block-start: var(--accessory-group-space);
+  padding-block: var(--accessory-item-space);
+}
+
 .toolbarWithFeatures .featureFilters,
 .toolbarWithFeatures .tools {
   flex-basis: 100%;

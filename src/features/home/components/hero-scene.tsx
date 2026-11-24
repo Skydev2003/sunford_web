@@ -1,5 +1,6 @@
 "use client";
 
+import { contactPath } from "@/features/content/data/contact-route";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { companyIntro } from "../data/brand";
@@ -161,7 +162,7 @@ export function HeroScene({
           {logo}
         </div>
         <div className={styles.actions}>
-          <Link className={styles.cta} href="/contact-us" prefetch={false}>
+          <Link className={styles.cta} href={contactPath} prefetch={false}>
             ปรึกษาผู้เชี่ยวชาญ
           </Link>
           <p className={styles.description}>{description || companyIntro.description}</p>

@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { SiteHeader } from "@/features/site/components/site-header";
-import { Footer } from "@/components/layout/footer";
+import { SiteFrame } from "@/features/site/components/site-frame";
 export default function NotFound() {
   return (
-    <>
-      <SiteHeader />
+    <SiteFrame>
       <main id="main-content" className="container empty-state not-found">
         <p className="eyebrow">404 — NOT FOUND</p>
         <h1>ยังไม่พบหน้าที่คุณกำลังมองหา</h1>
@@ -13,7 +11,6 @@ export default function NotFound() {
           สำรวจผลิตภัณฑ์
         </Link>
       </main>
-      <Footer />
-    </>
+    </SiteFrame>
   );
 }

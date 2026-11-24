@@ -58,7 +58,7 @@ const templates = [
   "/blogs/editorial",
   "/guides/scales",
   "/about-us",
-  "/contact-us",
+  "/service?section=contact",
   "/service",
   "/explore",
 ];

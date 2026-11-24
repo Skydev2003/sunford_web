@@ -384,13 +384,6 @@
 .cardCopy {
   grid-column: 2;
 }
-.cards .compare {
-  grid-column: 2;
-  justify-self: start;
-  min-height: 30px;
-  font-weight: 400;
-  font-size: 13px;
-}
 @media (min-width: 48rem) {
   .page {
     width: min(calc(100% - 72px), 1180px);
@@ -442,9 +435,6 @@
   .cardPhoto {
     grid-row: auto;
     height: clamp(120px, 14vw, 176px);
-  }
-  .cards .compare {
-    align-self: flex-start;
   }
 }
 @media (min-width: 64rem) {

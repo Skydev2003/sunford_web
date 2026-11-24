@@ -2,6 +2,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
+  Suspense,
+  use,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -10,31 +12,43 @@ import {
   useSyncExternalStore,
   type CSSProperties,
   type MouseEvent,
+  type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, Search, Menu, X } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
 import { ShopIcon } from "./shop-icon";
+import { useHeaderSurface } from "./use-header-surface";
 import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
 import { catalogSubmenuDestination } from "@/features/catalog/data/catalog-submenu-destinations";
+import type { NavbarListingFeatures } from "@/features/catalog/data/navbar-listing-features";
 import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
-import styles from "@/features/catalog/components/products-overview.module.css";
+import styles from "./primary-navigation.module.css";
 const subscribe = () => () => {};
+
+function ListingFeatureLinks({
+  categoryHref,
+  features,
+  render,
+}: {
+  categoryHref: string;
+  features: Promise<NavbarListingFeatures>;
+  render: (links: NavigationItem["links"]) => ReactNode;
+}) {
+  return render(use(features)[categoryHref] ?? []);
+}
+
 export function PrimaryNavigation({
   navigation,
-  readySubcategoryHrefs,
   site,
-  onOpenFinder,
-  onMenuChange,
+  listingFeatures,
 }: {
   navigation: NavigationItem[];
-  readySubcategoryHrefs?: readonly string[];
   site: SiteSettings;
-  onOpenFinder?: () => void;
-  onMenuChange?: (open: boolean) => void;
+  listingFeatures: Promise<NavbarListingFeatures>;
 }) {
-  const headerNavigation = getPrimaryNavigationItems(navigation, readySubcategoryHrefs);
+  const headerNavigation = getPrimaryNavigationItems(navigation);
 
   const hydrated = useSyncExternalStore(
     subscribe,
@@ -45,6 +59,8 @@ export function PrimaryNavigation({
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
   const [openedByHover, setOpenedByHover] = useState(false);
   const pathname = usePathname();
+  const homePage = pathname === "/";
+  const menuOpen = mobileMenu || menuIndex !== null;
   const [menuPathname, setMenuPathname] = useState(pathname);
   if (menuPathname !== pathname) {
     setMenuPathname(pathname);
@@ -53,6 +69,7 @@ export function PrimaryNavigation({
     setOpenedByHover(false);
   }
   const navRef = useRef<HTMLElement>(null);
+  useHeaderSurface(navRef, homePage);
   const linksRef = useRef<HTMLDivElement>(null);
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -117,19 +134,31 @@ export function PrimaryNavigation({
       navRef.current?.querySelector<HTMLAnchorElement>("#products-navigation-panel a")?.focus();
     });
   };
-  useEffect(() => {
-    onMenuChange?.(mobileMenu || menuIndex !== null);
-  }, [mobileMenu, menuIndex, onMenuChange]);
-  useEffect(() => {
-    setNavigationOpen(mobileMenu);
-    if (!mobileMenu) return;
-    const elements = onMenuChange
-      ? []
-      : [
-          ...document.querySelectorAll<HTMLElement>(
-            "main:not([data-navigation-background]),footer:not([data-navigation-background])",
-          ),
-        ];
+  const openMobileSubmenu = (index: number) => {
+    setMenuIndex(index);
+    requestAnimationFrame(() => {
+      const panel = navRef.current?.querySelector<HTMLElement>("#products-navigation-panel");
+      if (!panel) return;
+      panel.scrollTop = 0;
+      panel.querySelector("button")?.focus({ preventScroll: true });
+    });
+  };
+  const returnToMobileMenu = () => {
+    const index = menuIndex;
+    setMenuIndex(null);
+    requestAnimationFrame(() => {
+      if (index === null) return;
+      navRef.current
+        ?.querySelectorAll<HTMLButtonElement>("[data-nav-category-row] button")
+        [index]?.focus();
+    });
+  };
+  useLayoutEffect(() => {
+    if (!menuOpen) return;
+    setNavigationOpen(true);
+    const elements = [
+      ...document.querySelectorAll<HTMLElement>("main:not([data-navigation-background])"),
+    ];
     const previous = elements.map((e) => e.inert);
     elements.forEach((e) => {
       e.inert = true;
@@ -140,7 +169,7 @@ export function PrimaryNavigation({
         e.inert = previous[i];
       });
     };
-  }, [mobileMenu, onMenuChange, setNavigationOpen]);
+  }, [menuOpen, pathname, setNavigationOpen]);
   useEffect(() => {
     if (!mobileMenu) return;
     const previous = document.body.style.overflow;
@@ -189,15 +218,8 @@ export function PrimaryNavigation({
     };
   }, [closeMenu]);
 
-  const activateLink = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+  const activateLink = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    const url = new URL(href, window.location.origin);
-    if (onOpenFinder && url.pathname === "/products" && url.search) {
-      event.preventDefault();
-      if (url.search && url.search !== window.location.search)
-        window.history.pushState(null, "", url.pathname + url.search + url.hash);
-      onOpenFinder();
-    }
     closeMenu();
   };
   const link = (href: string, label: string, disabled = false) => {
@@ -214,55 +236,90 @@ export function PrimaryNavigation({
       );
     }
     const destination = catalogSubmenuDestination(href);
-    const sameCatalogPage = destination !== href && href.split(/[?#]/)[0] === pathname;
+    const [path, anchor] = destination.split("#");
+    const sameCatalogPage =
+      (anchor?.startsWith("product-listing-") || anchor?.startsWith("product-lineup-")) &&
+      path.split("?")[0] === pathname;
     return (
       <Link
         key={`${href}:${label}`}
         href={destination}
         scroll={sameCatalogPage ? false : undefined}
-        onClick={(e) => activateLink(e, href)}
+        onClick={activateLink}
         onNavigate={
           sameCatalogPage
             ? () => {
-                const anchor = destination.split("#")[1];
                 requestAnimationFrame(() => {
-                  document.getElementById(anchor)?.scrollIntoView({ block: "start" });
+                  document
+                    .getElementById(anchor)
+                    ?.scrollIntoView({ block: "start", behavior: "instant" });
                 });
               }
             : undefined
         }
       >
-        {label}
+        <span>{label}</span>
       </Link>
     );
   };
+  const renderGroupLinks = (items: NavigationItem["links"]) =>
+    items.map((item, order) => (
+      <div
+        key={`${item.href}:${item.label}`}
+        data-nav-hover-item
+        style={{ "--nav-item-order": order } as CSSProperties}
+      >
+        {link(item.href, item.label, item.disabled)}
+      </div>
+    ));
   const activeMenu = menuIndex === null ? null : headerNavigation[menuIndex];
   return (
-    <div className={styles.overview} style={{ display: "contents" }}>
+    <>
       <header
         ref={navRef}
         role={mobileMenu ? "dialog" : undefined}
         aria-modal={mobileMenu || undefined}
         aria-label={mobileMenu ? "เมนูนำทาง SUNFORD" : undefined}
-        className={`${styles.header} ${mobileMenu || activeMenu ? styles.headerOpen : ""}`}
+        className={`site-header ${styles.header} ${menuOpen ? styles.headerOpen : ""}`}
         data-products-header
+        data-nav-home={homePage || undefined}
+        data-nav-open={menuOpen || undefined}
         onMouseLeave={() => {
-          if (window.matchMedia("(min-width: 64rem)").matches) closeMenu();
+          if (openedByHover) closeMenu();
+        }}
+        onBlur={(event) => {
+          if (
+            !mobileMenu &&
+            event.relatedTarget &&
+            !event.currentTarget.contains(event.relatedTarget)
+          )
+            closeMenu();
         }}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
-            if (mobileMenu) menuTrigger.current?.focus();
-            else if (menuIndex !== null)
+            if (!mobileMenu && menuIndex !== null) {
               (linksRef.current?.children[menuIndex] as HTMLElement | undefined)?.focus();
-            closeMenu();
+              closeMenu();
+            }
           }
         }}
       >
-        <nav className={styles.nav} aria-label="เมนูหลัก SUNFORD" data-products-nav>
-          <Link className={styles.logo} href="/" aria-label="SUNFORD หน้าแรก">
+        {homePage && <span className={`nav-glass ${styles.glass}`} aria-hidden="true" />}
+        <nav
+          className={`header-inner ${styles.nav}`}
+          aria-label="เมนูหลัก SUNFORD"
+          data-products-nav
+        >
+          <Link
+            className={styles.logo}
+            href="/"
+            aria-label="SUNFORD หน้าแรก"
+            onClick={activateLink}
+            onFocus={closeMenu}
+          >
             <Image src={site.logo} alt={site.name} width={106} height={26} loading="eager" />
           </Link>
-          <div ref={linksRef} className={styles.navLinks}>
+          <div ref={linksRef} className={`desktop-nav ${styles.navLinks}`}>
             {headerNavigation.map((item, index) => (
               <Link
                 key={item.href}
@@ -285,24 +342,26 @@ export function PrimaryNavigation({
                     openWithKeyboard(index);
                   }
                 }}
-                onClick={(event) => activateLink(event, item.href)}
+                onClick={activateLink}
               >
                 {item.label}
               </Link>
             ))}
           </div>
           <div className={styles.navTools}>
-            <button
-              disabled={!hydrated}
-              type="button"
-              aria-label="ค้นหาสินค้าและข้อมูล"
-              onClick={() => {
-                closeMenu();
-                setSearchOpen(true);
-              }}
-            >
-              <Search aria-hidden="true" />
-            </button>
+            <Tooltip>
+              <button
+                disabled={!hydrated}
+                type="button"
+                aria-label="ค้นหาสินค้าและข้อมูล"
+                onClick={() => {
+                  closeMenu();
+                  setSearchOpen(true);
+                }}
+              >
+                <Search aria-hidden="true" />
+              </button>
+            </Tooltip>
             <Tooltip>
               <a href="https://sunfordshop.com/" aria-label="ร้านค้า SUNFORD" onClick={closeMenu}>
                 <ShopIcon />
@@ -330,15 +389,17 @@ export function PrimaryNavigation({
             {mobileMenu && !activeMenu ? (
               <div className={styles.mobileMenuItems}>
                 {headerNavigation.map((item, index) => (
-                  <div key={item.href} className={styles.mobileCategoryRow}>
-                    {link(item.href, item.label)}
+                  <div key={item.href} className={styles.mobileCategoryRow} data-nav-category-row>
+                    <Link href={item.href} onClick={activateLink}>
+                      {item.label}
+                    </Link>
                     <button
                       disabled={!hydrated}
                       type="button"
                       aria-label={`เปิดเมนูย่อย${item.label}`}
                       aria-expanded={menuIndex === index}
                       aria-controls="products-navigation-panel"
-                      onClick={() => setMenuIndex(index)}
+                      onClick={() => openMobileSubmenu(index)}
                     >
                       <ChevronRight aria-hidden="true" />
                     </button>
@@ -360,7 +421,7 @@ export function PrimaryNavigation({
                       disabled={!hydrated}
                       type="button"
                       className={styles.menuBack}
-                      onClick={() => setMenuIndex(null)}
+                      onClick={returnToMobileMenu}
                     >
                       <ChevronLeft size={18} aria-hidden="true" />
                       เมนูหลัก
@@ -368,15 +429,7 @@ export function PrimaryNavigation({
                   )}
                   <div className={styles.menuPrimary} data-nav-column="primary">
                     <p>{activeMenu.submenuLabel ?? activeMenu.label}</p>
-                    {activeMenu.links.map((item, order) => (
-                      <div
-                        key={`${item.href}:${item.label}`}
-                        data-nav-hover-item
-                        style={{ "--nav-item-order": order } as CSSProperties}
-                      >
-                        {link(item.href, item.label, item.disabled)}
-                      </div>
-                    ))}
+                    {renderGroupLinks(activeMenu.links)}
                   </div>
                   {activeMenu.groups?.map((group, groupIndex) => (
                     <div
@@ -385,15 +438,17 @@ export function PrimaryNavigation({
                       data-nav-column={groupIndex === 0 ? "uses" : "help"}
                     >
                       <p>{group.label}</p>
-                      {group.links.map((item, order) => (
-                        <div
-                          key={`${item.href}:${item.label}`}
-                          data-nav-hover-item
-                          style={{ "--nav-item-order": order } as CSSProperties}
-                        >
-                          {link(item.href, item.label, item.disabled)}
-                        </div>
-                      ))}
+                      {group.label === "คุณสมบัติ" ? (
+                        <Suspense fallback={null}>
+                          <ListingFeatureLinks
+                            categoryHref={activeMenu.href}
+                            features={listingFeatures}
+                            render={renderGroupLinks}
+                          />
+                        </Suspense>
+                      ) : (
+                        renderGroupLinks(group.links)
+                      )}
                     </div>
                   ))}
                 </div>
@@ -406,11 +461,11 @@ export function PrimaryNavigation({
         <button
           disabled={!hydrated}
           type="button"
-          className={styles.navScrim}
+          className={`nav-backdrop is-open ${styles.navScrim}`}
           aria-label="ปิดเมนูนำทาง"
           onClick={closeMenu}
         />
       )}
-    </div>
+    </>
   );
 }

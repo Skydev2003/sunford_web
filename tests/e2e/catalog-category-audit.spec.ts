@@ -66,7 +66,13 @@ test("legacy categories also redirect without JavaScript", async ({ browser, bas
 });
 
 test("noncatalog pages and unknown routes keep their own behavior", async ({ page }) => {
-  for (const path of ["/about-us", "/contact-us", "/service", "/software/download", "/solutions"]) {
+  for (const path of [
+    "/about-us",
+    "/service?section=contact",
+    "/service",
+    "/software/download",
+    "/solutions",
+  ]) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
     await expect(page).toHaveURL(new URL(path, page.url()).href);

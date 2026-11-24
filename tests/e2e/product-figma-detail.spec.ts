@@ -3,6 +3,8 @@ import { load } from "cheerio";
 import type { Product } from "@/features/catalog/types";
 import { formatBaht } from "@/features/catalog/data/price-format";
 import { pricedProducts } from "@/features/catalog/data/quotation";
+import { catalogProductGroup } from "@/features/catalog/data/catalog-supplements";
+import { catalogFieldValue } from "@/features/catalog/data/catalog-decision-facts";
 
 test("every catalog SKU resolves to its own official product main", async ({ request }) => {
   test.setTimeout(12 * 60_000);
@@ -17,7 +19,14 @@ test("every catalog SKU resolves to its own official product main", async ({ req
           const $ = load(await response.text());
           const main = $("main#main-content.product-detail");
           expect(main.length, product.slug).toBe(1);
-          expect(main.find("h1").text(), product.slug).toBe(product.name);
+          const scale = catalogProductGroup(product) === "/products";
+          const model = scale
+            ? catalogFieldValue(
+                product.warehouseSpecifications?.find((row) => row.label === "รุ่นสินค้า")?.value,
+              )
+            : undefined;
+          expect(main.find("h1").text(), product.slug).toBe(model ?? product.name);
+          expect(main.find("#scale-detail-scroll").length, product.slug).toBe(scale ? 1 : 0);
           expect(main.find(".detail-copy").text()).toContain(product.warehouseSku);
           expect(main.find(".detail-price").text()).toBe(
             product.price && product.price > 0 ? formatBaht(product.price) : "สอบถามราคา",
@@ -52,7 +61,7 @@ test("compare the current SKU with a related SKU and keep the existing quotation
   await page.goto("/products/10643");
   const main = page.locator("main.product-detail");
   const current = await main.locator("h1").innerText();
-  await main.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).first().click();
+  await main.getByRole("button", { name: "เปรียบเทียบสินค้า", exact: true }).click();
   const chooser = page.getByRole("dialog", { name: "เลือกรุ่นเพื่อเปรียบเทียบ" });
   const entry = chooser.getByRole("button").nth(1);
   const candidate = (await entry.innerText()).split("\n")[0];

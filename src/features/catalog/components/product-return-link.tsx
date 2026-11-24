@@ -11,9 +11,14 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { getProductReturnPage } from "../data/product-subcategory-pages";
 
-export function ProductReturnLink() {
+export function ProductReturnLink({ label }: { label?: string }) {
   const page = getProductReturnPage(useSearchParams().get("from"));
   const origin = useSyncExternalStore(subscribeReturnOrigin, getReturnOrigin, () => undefined);
+  const text = origin
+    ? "กลับหน้าก่อนหน้า"
+    : page
+      ? `กลับรายการ${page.title}`
+      : (label ?? "ผลิตภัณฑ์ทั้งหมด");
   return (
     <Link
       href={origin ?? page?.href ?? "/products"}
@@ -32,8 +37,7 @@ export function ProductReturnLink() {
         returnToOrigin();
       }}
     >
-      <ArrowLeft size={16} />{" "}
-      {origin ? "กลับหน้าก่อนหน้า" : page ? `กลับรายการ${page.title}` : "ผลิตภัณฑ์ทั้งหมด"}
+      {!label && <ArrowLeft size={16} />} {text}
     </Link>
   );
 }

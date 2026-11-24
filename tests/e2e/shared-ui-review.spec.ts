@@ -78,7 +78,7 @@ for (const width of [320, 390, 834, 1440]) {
         "/guides/indicator-platform-compatibility",
         "/software/download",
         "/service",
-        "/contact-us",
+        "/service?section=contact",
         "/about-us",
         "/solutions",
       ]),

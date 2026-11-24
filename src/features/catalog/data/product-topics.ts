@@ -1,4 +1,7 @@
+import { buyingGuideHref } from "@/features/content/data/buying-guides";
 import type { Product } from "../types";
+
+const platformEnvironmentGuide = buyingGuideHref("platforms", "environment");
 
 export const topicGroups = [
   {
@@ -14,7 +17,7 @@ export const topicGroups = [
     label: "เลือกตามคุณสมบัติ",
     topics: [
       { id: "waterproof", label: "กันน้ำ", href: "/collections/waterproof-weighing-scales" },
-      { id: "non-waterproof", label: "ไม่กันน้ำ", href: "/guides/platforms#environment" },
+      { id: "non-waterproof", label: "ไม่กันน้ำ", href: platformEnvironmentGuide },
       { id: "connected", label: "เชื่อมต่อข้อมูล", href: "/product/data-interfaces" },
     ],
   },
@@ -22,7 +25,7 @@ export const topicGroups = [
     label: "เลือกตามลักษณะงาน",
     topics: [
       { id: "general", label: "งานทั่วไป", href: "/product/scale-platforms" },
-      { id: "wet", label: "งานเปียก", href: "/guides/platforms#environment" },
+      { id: "wet", label: "งานเปียก", href: platformEnvironmentGuide },
       { id: "heavy", label: "งานน้ำหนักมาก", href: "/collections/large-floor-platforms" },
     ],
   },

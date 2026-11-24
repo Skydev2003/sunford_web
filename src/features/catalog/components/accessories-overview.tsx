@@ -3,37 +3,20 @@ import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { getStorefrontProducts } from "../server/product-repository";
 import { additionalAccessorySubcategoryPages } from "../data/additional-subcategory-pages";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
-import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 
-const topics: Readonly<Record<string, { image: string; detail: string }>> = {
-  compatibility: {
-    image: "/images/products/category-families/accessories.webp",
-    detail:
-      "จดรุ่นเครื่องชั่งหรือระบบ POS ที่ใช้อยู่ แล้วเทียบพอร์ตและขั้วต่อกับรายการอุปกรณ์ที่คู่มือระบุว่ารองรับ",
-  },
-  printers: {
-    image: "/images/products/category-cutouts/thermal-receipt-printer.webp",
-    detail:
-      "เลือกตามงานพิมพ์สลิปหรือฉลาก แล้วตรวจขนาดที่พิมพ์ได้ พอร์ตเชื่อมต่อ และซอฟต์แวร์ที่เครื่องพิมพ์รองรับ",
-  },
-  consumables: {
-    image: "/images/imported/b75fc9d2b3417192cc3c.png",
-    detail: "เทียบความกว้างม้วน ขนาดแกน และชนิดกระดาษหรือฉลากกับคู่มือเครื่องพิมพ์",
-  },
+const topicImages: Readonly<Record<string, string>> = {
+  compatibility: "/images/products/category-families/accessories.webp",
+  printers: "/images/products/category-cutouts/thermal-receipt-printer.webp",
+  consumables: "/images/imported/b75fc9d2b3417192cc3c.png",
 };
-
-async function getCopyrightYear() {
-  "use cache";
-  return new Date().getFullYear();
-}
 
 export async function AccessoriesOverview() {
   const {
@@ -45,17 +28,16 @@ export async function AccessoriesOverview() {
   const category = categories.find(({ id }) => id === "accessories")!;
   const ids = new Set(category.productIds);
   const products = catalogProducts.filter(({ id }) => ids.has(id));
-  const guide = buyingGuides.find(({ slug }) => slug === "accessories")!;
-  const guideHref = "/guides/accessories";
+  const guide = guidebookBuyingGuides.find(({ slug }) => slug === "accessories")!;
   const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].detail,
-    image: topics[section.id].image,
-    href: `${guideHref}#${section.id}`,
+    introduction: section.advice,
+    image: topicImages[section.id],
+    href: buyingGuideHref(guide.slug, section.id),
     content: (
       <>
-        <p>{topics[section.id].detail}</p>
+        <p>{section.advice}</p>
         {section.id === "consumables" &&
           section.links.map(({ href, label }) => (
             <Link key={href} href={href}>
@@ -90,10 +72,8 @@ export async function AccessoriesOverview() {
       href: sunford.warranty,
     },
   ];
-  const [navigation, site, copyrightYear, warehouseProducts] = await Promise.all([
+  const [navigation, warehouseProducts] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
-    getSettings("site", defaultSite),
-    getCopyrightYear(),
     getStorefrontProducts(),
   ]);
   const subcategories = [
@@ -114,8 +94,6 @@ export async function AccessoriesOverview() {
       categoryId="accessories"
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
-      site={site}
-      copyrightYear={copyrightYear}
       stories={stories}
       services={services}
       accordion={stories}

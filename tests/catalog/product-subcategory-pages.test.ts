@@ -12,7 +12,91 @@ import {
 import { scaleSubcategoryPages } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 import { getProductListingFeatures } from "../../src/features/catalog/data/product-listing-features";
+import { buildNavbarListingFeatures } from "../../src/features/catalog/data/navbar-listing-features";
 import type { Product } from "../../src/features/catalog/types";
+
+test("Navbar selects real listing features, caps popular series at six, and keeps preferred supported pages", () => {
+  const scales = [
+    {
+      id: "a",
+      warehouseSku: "A",
+      warehouseCategoryId: "scales",
+      warehouseSpecifications: [{ label: "หักน้ำหนักภาชนะ", value: "รองรับ" }],
+    },
+    {
+      id: "b",
+      warehouseSku: "B",
+      warehouseCategoryId: "scales",
+      warehouseSpecifications: [
+        { label: "นับจำนวนชิ้น", value: "รองรับ" },
+        { label: "หักน้ำหนักภาชนะ", value: "รองรับ" },
+      ],
+    },
+    {
+      id: "mock",
+      warehouseCategoryId: "scales",
+      warehouseSpecifications: [{ label: "เตือนน้ำหนักขาด–เกิน", value: "รองรับ" }],
+    },
+  ];
+  const platforms = ["FCS", "TCS", "FSS", "TSS", "BCS", "BSS", "XS"].flatMap((series, index) =>
+    Array.from({ length: 7 - index }, (_, model) => ({
+      id: `${series}${model}`,
+      warehouseSku: `${series}${model}`,
+      warehouseName: `Platform ${series} 4050`,
+    })),
+  );
+  const categories = [
+    {
+      id: "scales",
+      subcategories: [
+        { id: "scale-kitchen", label: "ครัวเรือน", productIds: ["a"] },
+        { id: "scale-industrial", label: "การผลิต", productIds: ["a", "b", "mock"] },
+      ],
+    },
+    {
+      id: "platforms",
+      subcategories: [
+        {
+          id: "platform-carbon-steel",
+          label: "แท่นเหล็กคาร์บอน",
+          productIds: platforms.map(({ id }) => id),
+        },
+      ],
+    },
+  ];
+  const products = [...scales, ...platforms] as Product[];
+  const features = buildNavbarListingFeatures(categories, products);
+  assert.deepEqual(features["/products/category/scales"], [
+    {
+      label: "นับจำนวนชิ้น",
+      href: "/products/category/scales/counting?feature=scale-counting#product-listing-scales",
+    },
+    {
+      label: "หักน้ำหนักภาชนะ",
+      href: "/products/category/scales/kitchen?feature=tare#product-listing-scales",
+    },
+  ]);
+  const series = features["/products/category/platforms"];
+  assert.deepEqual(
+    series.map(({ label }) => label),
+    ["ซีรีส์ FCS", "ซีรีส์ TCS", "ซีรีส์ FSS", "ซีรีส์ TSS", "ซีรีส์ BCS", "ซีรีส์ BSS"],
+  );
+  assert.ok(
+    series.every(
+      ({ href, label }) =>
+        new URL(href, "https://example.test").searchParams.get("feature") === label,
+    ),
+  );
+  const fallback = buildNavbarListingFeatures(categories, products, [
+    "/products/category/scales/kitchen",
+  ]);
+  assert.ok(
+    fallback["/products/category/scales"]
+      .find(({ label }) => label === "หักน้ำหนักภาชนะ")
+      ?.href.startsWith("/products/category/scales/industrial?"),
+  );
+  assert.deepEqual(buildNavbarListingFeatures(categories, [])["/products/category/scales"], []);
+});
 
 test("listing filters use verified scale features and keep indicator water ratings exact", () => {
   const products = [
@@ -101,10 +185,24 @@ test("platform series, POS groups and accessory filters reflect only the current
     [
       { id: "display", warehouseName: "SUNFORD จอแสดงผล LED-R5" },
       { id: "light", warehouseName: "SUNFORD ไฟเตือน RYG-POLE" },
+      { id: "display-code", warehouseName: "LCDC1C5" },
+      { id: "light-code", warehouseName: "RPole_Buzzer" },
     ],
     [
-      ["จอแสดงผล", ["display"]],
-      ["ไฟเตือน", ["light"]],
+      ["จอแสดงผล", ["display", "display-code"]],
+      ["ไฟเตือน", ["light", "light-code"]],
+    ],
+  );
+  expectOptions(
+    "accessories",
+    "accessory-mechanical",
+    [
+      { id: "wheel", warehouseName: "PUC20M10" },
+      { id: "pan", warehouseName: "PCS60FC11STL" },
+    ],
+    [
+      ["ล้อ", ["wheel"]],
+      ["จานชั่ง", ["pan"]],
     ],
   );
   expectOptions(
@@ -113,10 +211,15 @@ test("platform series, POS groups and accessory filters reflect only the current
     [
       { id: "paper-a", warehouseName: "กระดาษความร้อน 57x50 บรรจุ 10 ม้วน" },
       { id: "paper-b", warehouseName: "กระดาษความร้อน 80x80 บรรจุ 20 ม้วน" },
-      { id: "unknown", warehouseName: "Thermalpaper20" },
+      {
+        id: "paper-code",
+        warehouseName: "Thermalpaper20",
+        description: "กระดาษความร้อน 57x50 บรรจุ 20 ม้วน",
+      },
+      { id: "unknown", warehouseName: "Thermalpaper8020" },
     ],
     [
-      ["57 × 50", ["paper-a"]],
+      ["57 × 50", ["paper-a", "paper-code"]],
       ["80 × 80", ["paper-b"]],
     ],
   );
@@ -457,4 +560,10 @@ test("new listings require matching Warehouse identity, group or specification",
   check("accessory-thermal-paper", "accessories", sticker, false);
   check("accessory-labels", "accessories", sticker, true);
   check("accessory-labels", "accessories", paper, false);
+  const paperCode = { ...paper, warehouseName: "Thermalpaper8020" };
+  const labelCode = { ...sticker, warehouseName: "Label40x60WP-2u" };
+  check("accessory-thermal-paper", "accessories", paperCode, true);
+  check("accessory-thermal-paper", "accessories", labelCode, false);
+  check("accessory-labels", "accessories", labelCode, true);
+  check("accessory-labels", "accessories", paperCode, false);
 });

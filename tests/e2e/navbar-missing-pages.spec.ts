@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 import { formatBaht } from "../../src/features/catalog/data/price-format";
+import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
 import type { Product } from "../../src/features/catalog/types";
 
@@ -10,8 +10,9 @@ const printers = `${accessories}/printers`;
 const paper = `${accessories}/thermal-paper`;
 const labels = `${accessories}/labels`;
 const consumables = `${accessories}/consumables`;
+const scaleGuide = "/technical-specification?guide=scales";
 const entries = [
-  ["เครื่องชั่ง", "นับจำนวนชิ้น", `${root}/scales/counting`, ["/guides/scales"]],
+  ["เครื่องชั่ง", "นับจำนวนชิ้น", `${root}/scales/counting`, [scaleGuide]],
   [
     "เครื่องชั่ง",
     "เตือนน้ำหนักขาด–เกิน",
@@ -36,12 +37,7 @@ const entries = [
     printers,
     [`${root}/pos`, "/solutions/label-printing", paper, labels],
   ],
-  [
-    "อุปกรณ์เสริม",
-    "ลูกตุ้มน้ำหนัก",
-    `${accessories}/weights`,
-    [`${root}/scales`, "/guides/scales"],
-  ],
+  ["อุปกรณ์เสริม", "ลูกตุ้มน้ำหนัก", `${accessories}/weights`, [`${root}/scales`, scaleGuide]],
   ["อุปกรณ์เสริม", "กระดาษความร้อน", paper, [consumables, printers]],
   [
     "อุปกรณ์เสริม",
@@ -64,36 +60,57 @@ for (const width of [390, 1440]) {
   test.describe(`Navbar at ${width}px`, () => {
     const touch = width === 390;
     test.use({ viewport: { width, height: 900 }, hasTouch: touch });
-    test("all ten submenu entries navigate to their listings", async ({ page }) => {
+    test("every feature link opens a real listing with the matching filter and products", async ({
+      page,
+    }) => {
       test.setTimeout(180_000);
-      for (const [parent, label, href] of menuEntries) {
-        await test.step(`${parent} → ${label}`, async () => {
-          await page.goto("/contact-us");
-          const header = page.locator("[data-products-header]:visible");
-          await expect(
-            header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
-          ).toBeEnabled();
-          if (touch) {
-            await header.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
-            await header.getByRole("button", { name: `เปิดเมนูย่อย${parent}`, exact: true }).tap();
-          } else {
-            await header.getByRole("link", { name: parent, exact: true }).hover();
-          }
-          const target = header
-            .locator("#products-navigation-panel")
-            .getByRole("link", { name: label, exact: true });
-          const destination = catalogSubmenuDestination(href);
-          await expect(target).toHaveAttribute("href", destination);
-          if (touch) await target.tap();
-          else await target.click();
-          await expect(page).toHaveURL(new URL(destination, page.url()).href, { timeout: 20_000 });
-          await expect(page.getByRole("heading", { level: 1, name: label })).toBeVisible();
-          const anchor = new URL(page.url()).hash;
-          await expect(page.locator(`${anchor}:visible`)).toBeInViewport();
-          expect(
-            await page.evaluate(() => document.documentElement.scrollWidth),
-          ).toBeLessThanOrEqual(width);
-        });
+      await page.goto("/service");
+      const header = page.locator("[data-products-header]:visible");
+      const column = header.locator('#products-navigation-panel [data-nav-column="uses"]');
+      async function openFeatures(parent: string) {
+        await expect(
+          header.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),
+        ).toBeEnabled();
+        if (touch) {
+          await header.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+          await header.getByRole("button", { name: `เปิดเมนูย่อย${parent}`, exact: true }).tap();
+        } else {
+          await header.getByRole("link", { name: parent, exact: true }).hover();
+        }
+        await expect(column.getByText("คุณสมบัติ", { exact: true })).toBeVisible();
+      }
+      for (const { id, label: parent } of productCategoryDefinitions) {
+        await openFeatures(parent);
+        await expect(column.getByRole("link").first()).toBeVisible();
+        const links = await column.getByRole("link").evaluateAll((nodes) =>
+          nodes.map((node) => ({
+            label: node.textContent!.trim(),
+            href: node.getAttribute("href")!,
+          })),
+        );
+        expect(links.length).toBeLessThanOrEqual(6);
+        expect(new Set(links.map(({ label }) => label)).size).toBe(links.length);
+        for (const [index, { label, href }] of links.entries()) {
+          await test.step(`${parent} → ${label}`, async () => {
+            if (index > 0) await openFeatures(parent);
+            const url = new URL(href, page.url());
+            const definition = getProductSubcategoryPageByHref(url.pathname);
+            expect(definition?.categoryId).toBe(id);
+            expect(url.searchParams.get("feature")).toBeTruthy();
+            expect(url.hash).toBe(`#product-listing-${id}`);
+            const link = column.getByRole("link", { name: label, exact: true });
+            if (touch) await link.tap();
+            else await link.click();
+            await expect(page).toHaveURL(url.href);
+            const listing = page.locator(url.hash);
+            const filter = listing.getByRole("button", { name: label, exact: true });
+            await expect(filter).toHaveAttribute("aria-pressed", "true");
+            await expect(filter).toBeInViewport();
+            await expect(page.getByRole("heading", { level: 1 })).toBeInViewport();
+            await expect(listing.locator("#mock-product-results article").first()).toBeVisible();
+            await expect(listing.locator("[data-mock-product]")).toHaveCount(0);
+          });
+        }
       }
     });
   });
@@ -108,7 +125,9 @@ test("the home Navbar supports keyboard activation of the new links", async ({ p
     .getByRole("link", { name: "เครื่องชั่ง", exact: true });
   await trigger.focus();
   await trigger.press("ArrowDown");
-  const link = page.locator("#desktop-submenu").getByRole("link", { name: "นับจำนวนชิ้น" });
+  const link = page
+    .locator("#products-navigation-panel")
+    .getByRole("link", { name: "นับจำนวนชิ้น" });
   await expect(link).toBeVisible();
   await link.focus();
   await link.press("Enter");
@@ -124,6 +143,57 @@ test("the home Navbar supports keyboard activation of the new links", async ({ p
     "aria-pressed",
     "true",
   );
+});
+
+test("catalog bookmarks and submenu navigation keep the heading and search reachable", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/products/category/scales/analytical#product-listing-scales");
+  const main = page.locator("main:visible");
+  await expect(main.getByRole("heading", { level: 1 })).toBeInViewport();
+  await expect(main.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })).toBeInViewport();
+  const start = await page.evaluate(() => performance.timeOrigin);
+  await main
+    .getByRole("navigation", { name: "หมวดย่อยสินค้า" })
+    .getByRole("link", { name: "ครัวเรือน" })
+    .click();
+  await expect(page).toHaveURL("/products/category/scales/kitchen");
+  await expect(main.getByRole("heading", { level: 1 })).toBeInViewport();
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(start);
+
+  await page.evaluate(() =>
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }),
+  );
+  const header = page.locator("header[data-products-header]:visible");
+  await header.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).hover();
+  await header
+    .locator('#products-navigation-panel [data-nav-column="primary"]')
+    .getByRole("link", { name: "ระบบ POS", exact: true })
+    .click();
+  await expect(page).toHaveURL("/products/category/pos#product-lineup-pos");
+  await expect(main.getByRole("heading", { name: "ระบบ POS", level: 1 })).toBeInViewport();
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(start);
+});
+
+test.describe("catalog touch navigation", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
+
+  test("a bookmarked listing can switch category in the same document", async ({ page }) => {
+    await page.goto("/products/category/scales/analytical#product-listing-scales");
+    const main = page.locator("main:visible");
+    await expect(main.locator("#mock-product-results article").first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "เปิดเมนู", exact: true })).toBeEnabled();
+    const before = await page.evaluate(() => performance.timeOrigin);
+    await main
+      .getByRole("navigation", { name: "หมวดย่อยสินค้า" })
+      .getByRole("link", { name: "ครัวเรือน", exact: true })
+      .tap();
+    await expect(page).toHaveURL("/products/category/scales/kitchen");
+    await expect(main.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่งงานครัวและกาแฟ");
+    await expect(main.getByRole("heading", { level: 1 })).toBeInViewport();
+    expect(await page.evaluate(() => performance.timeOrigin)).toBe(before);
+  });
 });
 
 test("the POS scanner and cash drawer listing shows only the selected SKUs and has a return link", async ({
@@ -186,7 +256,7 @@ test("all eight direct URLs show Warehouse listings and related pages at tablet 
       await expect(links.locator(`a[href="${path}"]`)).toBeVisible();
       relatedPaths.add(path);
     }
-    await expect(links.locator('a[href="/contact-us"]')).toBeVisible();
+    await expect(links.locator('a[href="/service?section=contact"]')).toBeVisible();
     const definition = getProductSubcategoryPageByHref(href);
     if (!definition || !("matches" in definition)) throw new Error(`Missing listing for ${href}`);
     const expected = products.filter(definition.matches);

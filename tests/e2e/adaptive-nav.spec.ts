@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 async function expectTone(page: Page, tone: "light" | "dark") {
-  const header = page.locator(".site-header");
+  const header = page.locator(".site-header:visible");
   await expect(header).toHaveAttribute("data-nav-tone", tone);
   await expect(header.locator(".nav-glass")).toHaveCSS("backdrop-filter", "blur(12px)");
   await expect(header.locator(".nav-glass")).toHaveCSS(
@@ -26,7 +26,7 @@ async function expectInteriorNavigation(page: Page) {
   const header = page.locator("[data-products-header]:visible");
   await expect(header).toHaveCount(1);
   await expect(header).toHaveCSS("background-color", "rgba(250, 250, 252, 0.8)");
-  await expect(page.locator(".site-header:visible")).toHaveCount(0);
+  await expect(header).not.toHaveAttribute("data-nav-home");
 }
 
 for (const width of [1440, 390]) {
@@ -56,21 +56,23 @@ for (const width of [1440, 390]) {
     await expectTone(page, "dark");
     const header = page.locator(".site-header");
     if (width >= 1400) {
-      await header.locator(".desktop-nav a").first().focus();
-      await expect(header.locator("#desktop-submenu")).toBeVisible();
-      await expect(header.locator("#desktop-submenu")).toHaveCSS(
+      await header.locator(".desktop-nav a").first().press("ArrowDown");
+      await expect(header.locator("#products-navigation-panel")).toBeVisible();
+      await expect(header.locator("#products-navigation-panel")).toHaveCSS(
         "background-color",
         "rgb(0, 0, 0)",
       );
-      await expect(header.locator(".submenu-group").first()).toHaveCSS(
+      await expect(header.locator("[data-nav-column]").first()).toHaveCSS(
         "color",
         "rgb(207, 207, 207)",
       );
     } else {
       await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-      await expect(header.locator("#mobile-navigation")).toBeVisible();
-      await header.locator("#mobile-navigation summary").first().click();
-      await expect(header.locator(".mobile-nav-panel a").first()).toBeVisible();
+      await expect(header.locator("#products-navigation-panel")).toBeVisible();
+      await header
+        .getByRole("button", { name: "เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", exact: true })
+        .click();
+      await expect(header.locator("[data-nav-menu] a").first()).toBeVisible();
     }
     await expect(header).toHaveAttribute("data-nav-tone", "dark");
     await expect(header.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
@@ -102,7 +104,7 @@ for (const width of [1440, 390]) {
       .locator("[data-hero-scene]")
       .getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" })
       .click();
-    await expect(page).toHaveURL(/\/contact-us$/);
+    await expect(page).toHaveURL(/\/service\?section=contact$/);
     await expectInteriorNavigation(page);
     await page.goBack();
     await expect(page).toHaveURL(/\/$/);
@@ -119,15 +121,12 @@ test("server-rendered navigation preserves the existing base palettes without Ja
     baseURL,
     viewport: { width: 1440, height: 900 },
   });
-  await page.goto("/contact-us");
+  await page.goto("/service?section=contact");
   await expect(page.locator("[data-products-header]")).toHaveCSS(
     "background-color",
     "rgba(250, 250, 252, 0.8)",
   );
   await page.goto("/");
-  await expect(page.locator(".nav-glass")).toHaveCSS(
-    "background-color",
-    "rgba(255, 255, 255, 0.72)",
-  );
+  await expect(page.locator(".nav-glass")).toHaveCSS("background-color", "rgba(17, 17, 17, 0.5)");
   await page.close();
 });

@@ -12,7 +12,7 @@ import {
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useStaggerBounce } from "@/components/ui/use-stagger-bounce";
-import styles from "./products-overview.module.css";
+import { isCatalogOverviewPath } from "@/features/site/data/catalog-overview-path";
 import { useHistoryRestoration } from "@/features/site/history/return-state";
 
 const OverlayHostContext = createContext<(host: HTMLDivElement | null) => void>(() => {});
@@ -42,20 +42,14 @@ export function CatalogRouteFrame({
   useStaggerBounce(root, listingFamily ?? pathname);
   const homePage = pathname === "/";
   const servicePage = pathname === "/service";
-  const streamSiteChrome = homePage || pathname === "/contact-us" || servicePage;
-  const productsPage =
-    pathname === "/products" ||
-    pathname === "/products/category/scales" ||
-    pathname === "/products/category/indicators" ||
-    pathname === "/products/category/platforms" ||
-    pathname === "/products/category/pos" ||
-    pathname === "/products/category/accessories";
+  const streamSiteChrome = homePage || servicePage;
+  const productsPage = isCatalogOverviewPath(pathname);
   const [overlayHost, setOverlayHost] = useState<HTMLDivElement | null>(null);
   return (
     <OverlayHostContext.Provider value={setOverlayHost}>
       <div
         ref={root}
-        className={productsPage ? styles.routeSurface : className}
+        className={className}
         data-home-route={homePage || undefined}
         data-page-surface={servicePage ? "paper" : undefined}
       >
@@ -64,19 +58,21 @@ export function CatalogRouteFrame({
         </a>
         {streamSiteChrome ? (
           <Suspense
-            fallback={<div aria-hidden="true" style={{ height: "var(--site-header-height)" }} />}
+            fallback={
+              homePage ? null : (
+                <div aria-hidden="true" style={{ height: "var(--site-header-height)" }} />
+              )
+            }
           >
             {header}
           </Suspense>
         ) : (
-          !productsPage && header
+          header
         )}
         {children}
-        {!productsPage && (
-          <Fragment key={listingFamily ?? pathname}>
-            {streamSiteChrome ? <Suspense fallback={null}>{footer}</Suspense> : footer}
-          </Fragment>
-        )}
+        <Fragment key={listingFamily ?? pathname}>
+          {streamSiteChrome ? <Suspense fallback={null}>{footer}</Suspense> : footer}
+        </Fragment>
         {productsPage && overlayHost ? createPortal(overlays, overlayHost) : overlays}
       </div>
     </OverlayHostContext.Provider>

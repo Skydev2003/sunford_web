@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const routes = ["/", "/contact-us"] as const;
+const routes = ["/", "/service?section=contact"] as const;
 
 function header(page: Page, route: string) {
   return page.locator(route === "/" ? ".site-header:visible" : "[data-products-header]:visible");
@@ -33,11 +33,14 @@ for (const route of routes) {
     await expect(allProducts).toHaveAttribute("aria-expanded", "true");
     const panel = nav.locator("[data-all-products]:visible");
     if (route === "/") {
-      await expect(nav.locator("#desktop-submenu")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+      await expect(nav.locator("#products-navigation-panel")).toHaveCSS(
+        "background-color",
+        "rgb(0, 0, 0)",
+      );
       await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
     }
-    await expect(panel.locator("a")).toHaveCount(12);
+    await expect(panel.locator("a")).toHaveCount(13);
     await expect(panel.locator("p")).toHaveText(["สินค้า", "การใช้งาน", "ช่วยเหลือ"]);
     const first = await panel.locator("a").first().boundingBox();
     const logo = await nav.locator('a[href="/"]:visible').first().boundingBox();
@@ -93,11 +96,9 @@ for (const route of routes) {
       await expect(link).toBeVisible();
       await nav.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).tap();
       const panel = nav.locator("[data-all-products]:visible");
-      await expect(panel.locator("a")).toHaveCount(12);
+      await expect(panel.locator("a")).toHaveCount(13);
       await page.screenshot({ path: test.info().outputPath("mobile-menu.png") });
-      if (route === "/")
-        await nav.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).tap();
-      else await nav.getByRole("button", { name: "เมนูหลัก", exact: true }).tap();
+      await nav.getByRole("button", { name: "เมนูหลัก", exact: true }).tap();
       await link.tap();
       await expect(page).toHaveURL(/\/products$/);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
@@ -108,14 +109,14 @@ for (const route of routes) {
   });
 }
 
-for (const width of [834, 1440, 1900]) {
+for (const width of [1024, 1440, 1900]) {
   test(`all homepage submenus stay black over Hero and story content at ${width}px`, async ({
     page,
   }) => {
     test.setTimeout(90_000);
     await visit(page, "/", width);
     const nav = header(page, "/");
-    const links = nav.locator('.desktop-nav a[aria-controls="desktop-submenu"]');
+    const links = nav.locator('.desktop-nav a[aria-controls="products-navigation-panel"]');
     const count = await links.count();
     expect(count).toBeGreaterThan(1);
     for (const selector of ["[data-hero-scene]", "#story"]) {
@@ -128,7 +129,10 @@ for (const width of [834, 1440, 1900]) {
       for (let index = 0; index < count; index++) {
         await links.nth(index).hover();
         await expect(links.nth(index)).toHaveAttribute("aria-expanded", "true");
-        await expect(nav.locator("#desktop-submenu")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+        await expect(nav.locator("#products-navigation-panel")).toHaveCSS(
+          "background-color",
+          "rgb(0, 0, 0)",
+        );
         await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
         await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
       }
@@ -138,11 +142,12 @@ for (const width of [834, 1440, 1900]) {
           .outputPath(`${selector === "#story" ? "story" : "hero"}-black-${width}.png`),
       });
       await page.keyboard.press("Escape");
-      await expect(nav.locator("#desktop-submenu")).not.toBeVisible();
+      await expect(nav.locator("#products-navigation-panel")).not.toBeVisible();
       await links.first().hover();
       await expect(links.first()).toHaveAttribute("aria-expanded", "true");
-      await page.locator(".nav-backdrop").click({ position: { x: width - 10, y: 990 } });
-      await expect(nav.locator("#desktop-submenu")).not.toBeVisible();
+      await expect(page.locator(".nav-backdrop")).toBeVisible();
+      await page.mouse.click(width - 10, 990);
+      await expect(nav.locator("#products-navigation-panel")).not.toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
@@ -166,10 +171,18 @@ for (const width of [834, 930, 1023, 1024, 1440]) {
             .filter((rect) => rect.bottom <= 50 && rect.right > rect.x),
         )
       ).sort((left, right) => left.x - right.x);
-      expect(boxes.length).toBeGreaterThanOrEqual(11);
+      expect(boxes).toHaveLength(width < 1024 ? 4 : 11);
       expect(boxes.every((box) => box.x >= 0 && box.right <= width)).toBe(true);
       for (let index = 1; index < boxes.length; index++)
         expect(boxes[index].x).toBeGreaterThanOrEqual(boxes[index - 1].right - 0.5);
+      if (width < 1024) {
+        await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+        await nav
+          .getByRole("button", { name: "เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", exact: true })
+          .click();
+        await expect(nav.locator("[data-all-products]:visible")).toBeVisible();
+        return;
+      }
       await nav.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).press("ArrowDown");
       const menu = nav.locator("[data-all-products]:visible");
       await expect(menu.locator("a").first()).toBeFocused();

@@ -60,8 +60,8 @@ const pos = [
 
 const accessoryTypes: Record<string, readonly [string, RegExp][]> = {
   "accessory-displays": [
-    ["จอแสดงผล", /จอแสดงผล/],
-    ["ไฟเตือน", /ไฟเตือน|ไฟสัญญาณ/],
+    ["จอแสดงผล", /จอแสดงผล|\bLCDC1C5\b/i],
+    ["ไฟเตือน", /ไฟเตือน|ไฟสัญญาณ|\bR(?:YG)?Pole_Buzzer\b/i],
   ],
   "accessory-cables": [
     ["สาย RS232", /\bRS[-\s]?232/iu],
@@ -80,11 +80,11 @@ const accessoryTypes: Record<string, readonly [string, RegExp][]> = {
     ["ลิ้นชักไฟฟ้า", /ลิ้นชักไฟฟ้า|\bCash Drawer\b/i],
   ],
   "accessory-mechanical": [
-    ["ล้อ", /(?:^|[\s-])ล้อ\s/],
+    ["ล้อ", /(?:^|[\s-])ล้อ\s|\bPUC20M10\b/i],
     ["ทางลาด", /ทางลาด|\bRAMP\b/i],
     ["เสาแท่นชั่ง", /\bFloor pole\b|เสาแท่นชั่ง/i],
     ["ขาปรับระดับ", /ขา(?:เกลียว)?ปรับระดับ/],
-    ["จานชั่ง", /จานชั่ง/],
+    ["จานชั่ง", /จานชั่ง|\bPCS60FC11STL\b/i],
   ],
   "accessory-electronics": [
     ["โหลดเซลล์", /Load\s*cell|โหลดเซลล์/i],
@@ -106,11 +106,11 @@ function matchingFeatures(products: readonly Product[], rules: readonly FeatureR
 
 function nameFeatures(
   products: readonly Product[],
-  valueFromName: (name: string) => string | undefined,
+  valueFromName: (name: string, product: Product) => string | undefined,
 ): ProductListingFeature[] {
   const memberships = new Map<string, string[]>();
   for (const product of products) {
-    const label = valueFromName(product.warehouseName ?? "");
+    const label = valueFromName(product.warehouseName ?? "", product);
     if (!label) continue;
     const ids = memberships.get(label) ?? [];
     ids.push(product.id);
@@ -148,8 +148,9 @@ export function getProductListingFeatures(
         );
       }
       if (subcategoryId === "accessory-thermal-paper" || subcategoryId === "accessory-labels") {
-        return nameFeatures(products, (name) => {
-          const size = name.match(/(?:\s|Label)(\d{2,3})\s*[x×*]\s*(\d{2,3})(?=\b|WP)/i);
+        const dimensions = /(?:^|\s|Label)(\d{2,3})\s*[x×*]\s*(\d{2,3})(?=\b|WP)/i;
+        return nameFeatures(products, (name, { description }) => {
+          const size = name.match(dimensions) ?? description?.match(dimensions);
           return size ? `${size[1]} × ${size[2]}` : undefined;
         });
       }

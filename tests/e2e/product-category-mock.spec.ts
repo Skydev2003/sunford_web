@@ -5,7 +5,7 @@ import manifest from "../../src/features/catalog/data/scale-category-models.json
 import { platformSubcategoryDefinitions } from "../../src/features/catalog/data/platform-subcategories";
 import { deduplicateConsumableSizes } from "../../src/features/catalog/data/consumable-sizes";
 import { accessorySubcategoryDefinitions } from "../../src/features/catalog/data/accessory-subcategories";
-import { buyingGuides } from "../../src/features/content/data/buying-guides";
+import { buyingGuideHref, buyingGuides } from "../../src/features/content/data/buying-guides";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { productSubcategoryPages } from "../../src/features/catalog/data/product-subcategory-pages";
 
@@ -1064,7 +1064,7 @@ test("all five server-rendered buying guides retain complete content in feature 
   await expect(gallery.locator("li")).toHaveCount(6);
   for (const [index, guide] of buyingGuides.entries()) {
     expect(html).toContain(guide.introduction);
-    expect(html).toContain(`href="/guides/${guide.slug}"`);
+    expect(html).toContain(`href="${buyingGuideHref(guide.slug)}"`);
     const card = gallery.locator("li").nth(index);
     await expect(card.getByRole("heading", { level: 3 })).toHaveText(guide.title);
     await card.getByRole("button").click();
@@ -1078,7 +1078,7 @@ test("all five server-rendered buying guides retain complete content in feature 
     }
     if (index === buyingGuides.length - 1) {
       await modal.getByRole("link", { name: "ดูเพิ่มเติม", exact: true }).click();
-      await expect(page).toHaveURL(/\/guides\/accessories$/);
+      await expect(page).toHaveURL("/technical-specification?guide=accessories");
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(guide.title);
     } else await page.keyboard.press("Escape");
   }

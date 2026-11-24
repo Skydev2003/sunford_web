@@ -142,8 +142,8 @@ for (const route of ["/", "/products/wps10ks"]) {
         await expectDialogFits(page, dialog);
       }
 
-      await input.fill("/contact-us");
-      const contentRow = dialog.locator('.search-results > a[href="/contact-us"]');
+      await input.fill("/service?section=contact");
+      const contentRow = dialog.locator('.search-results > a[href="/service?section=contact"]');
       await expect(contentRow).toBeVisible();
       await expect(
         contentRow.locator(":scope > img, :scope > [data-product-image-placeholder]"),
@@ -197,8 +197,8 @@ for (const route of ["/", "/products/wps10ks"]) {
       await expect.poll(() => dialog.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
       await rows.last().scrollIntoViewIfNeeded();
       await expect(rows.last()).toBeInViewport();
-      await input.fill("/contact-us");
-      const content = dialog.locator('.search-results > a[href="/contact-us"]');
+      await input.fill("/service?section=contact");
+      const content = dialog.locator('.search-results > a[href="/service?section=contact"]');
       await expect(content.locator(":scope > svg")).toHaveClass(/lucide-chevron-right/);
       await page.keyboard.press("Escape");
       await expect(dialog).not.toBeVisible();

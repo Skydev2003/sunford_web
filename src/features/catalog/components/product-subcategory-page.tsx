@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
 import { getProductCategories } from "@/features/catalog/server/product-categories";
 import { getStorefrontProducts } from "@/features/catalog/server/product-repository";
@@ -12,12 +11,14 @@ import {
 } from "@/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
 import { getSettings } from "@/features/site/server/documents";
+import { buyingGuideHref } from "@/features/content/data/buying-guides";
 import { ProductCategoryMock } from "./product-category-mock";
 import { ProductSubcategoryShell } from "./product-subcategory-shell";
 import { chapterArtwork } from "../data/category-chapter-artwork";
 import {
   getProductSubcategoryPage,
   getProductSubcategoryPageByHref,
+  resolveListingSubcategory,
 } from "../data/product-subcategory-pages";
 import { consumableSubtypeLinks } from "../data/additional-subcategory-pages";
 import { getProductListingFeatures } from "../data/product-listing-features";
@@ -93,8 +94,6 @@ export async function ProductSubcategoryPage({
   subcategoryId: string;
   initialFeature?: string;
 }) {
-  "use cache";
-  cacheLife({ stale: 30, revalidate: 60, expire: 300 });
   const definition = getProductSubcategoryPage(subcategoryId, categoryId);
   if (!definition) notFound();
   const additional = "matches" in definition ? definition : undefined;
@@ -104,13 +103,7 @@ export async function ProductSubcategoryPage({
   ]);
   const category = categories.find((item) => item.id === categoryId);
   if (!category) notFound();
-  const child = additional
-    ? {
-        id: additional.id,
-        label: additional.label,
-        productIds: warehouseProducts.filter(additional.matches).map(({ id }) => id),
-      }
-    : category.subcategories.find((item) => item.id === subcategoryId);
+  const child = resolveListingSubcategory(definition, category, warehouseProducts);
   if (!child) notFound();
   const ids = new Set(child.productIds);
   const listingCategory = additional ? { ...category, subcategories: [child] } : category;
@@ -120,8 +113,9 @@ export async function ProductSubcategoryPage({
   const listingFeatures = getProductListingFeatures(
     categoryId,
     subcategoryId,
-    warehouseProducts.filter(({ id }) => ids.has(id)),
+    warehouseProducts.filter(({ id, warehouseSku }) => warehouseSku && ids.has(id)),
   );
+  const linkedFeature = listingFeatures.find(({ id }) => id === initialFeature)?.id;
   const initialIds =
     "entries" in child && child.entries
       ? child.entries.slice(0, 6).map(({ productId }) => productId)
@@ -142,12 +136,13 @@ export async function ProductSubcategoryPage({
       ? consumableSubtypeLinks
       : (alternatives[subcategoryId] ?? []));
   const categoryHref = `/products/category/${categoryId}`;
+  const guideHref = buyingGuideHref(categoryId);
   return (
     <>
       <div className={`${overview.sectionInner} ${styles.listing}`}>
         {publishedProducts.length ? (
           <ProductCategoryMock
-            key={subcategoryId}
+            key={`${subcategoryId}:${linkedFeature ?? ""}`}
             products={publishedProducts}
             categories={[listingCategory]}
             cardNames={cardNames}
@@ -156,7 +151,7 @@ export async function ProductSubcategoryPage({
             subcategoryId={subcategoryId}
             presentation="listing"
             listingFeatures={listingFeatures}
-            initialFeature={listingFeatures.find(({ id }) => id === initialFeature)?.id}
+            initialFeature={linkedFeature}
           />
         ) : (
           <section aria-labelledby="subcategory-status-title" data-subcategory-empty>
@@ -170,9 +165,9 @@ export async function ProductSubcategoryPage({
         aria-label="ข้อมูลที่เกี่ยวข้อง"
       >
         <Link href={categoryHref}>ดู{category.label}ทุกกลุ่ม ›</Link>
-        <Link href={`/guides/${categoryId}`}>คู่มือเลือก{category.label} ›</Link>
+        <Link href={guideHref}>คู่มือเลือก{category.label} ›</Link>
         {relatedLinks
-          .filter(({ href }) => href !== `/guides/${categoryId}`)
+          .filter(({ href }) => href !== guideHref)
           .map(({ href, label }) => (
             <Link key={href} href={href}>
               {label} ›

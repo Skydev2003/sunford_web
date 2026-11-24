@@ -16,7 +16,7 @@ async function ready(page: Page) {
 
 async function expectContactDetails(page: Page) {
   const main = page.getByRole("main");
-  await expect(main.getByRole("heading", { level: 1, name: /ติดต่อเรา/ })).toBeVisible();
+  await expect(main.getByRole("heading", { name: "ติดต่อเรา", exact: true })).toBeVisible();
   const channels = main.getByRole("region", { name: "ช่องทางติดต่อซันฟอร์ด" });
   const phone = channels.getByRole("link", { name: /03-427-6999/ });
   const email = channels.getByRole("link", { name: /info@sunford\.co\.th/ });
@@ -85,7 +85,7 @@ for (const [width, height] of [
     expect(button.y).toBeGreaterThanOrEqual(space.y + space.height);
     expect(button.y + button.height).toBeLessThanOrEqual(bounds.y + bounds.height);
     expect(Math.abs(space.x + space.width / 2 - width / 2)).toBeLessThan(1);
-    await expect(cta).toHaveAttribute("href", "/contact-us");
+    await expect(cta).toHaveAttribute("href", "/service?section=contact");
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(
       false,
     );
@@ -210,13 +210,15 @@ for (const width of [1440, 390]) {
       expect((await space.boundingBox())!.height).toBeGreaterThan(0);
       await expect(space.locator("[data-brand-opening]")).toBeHidden();
       await expect(page.locator("[data-brand-opening]")).toBeHidden();
-      const contact = page.waitForResponse(
-        (response) =>
+      const contact = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return (
           response.request().isNavigationRequest() &&
-          new URL(response.url()).pathname === "/contact-us",
-      );
+          url.pathname + url.search === "/service?section=contact"
+        );
+      });
       await scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" }).click();
-      await expect(page).toHaveURL(/\/contact-us$/);
+      await expect(page).toHaveURL(/\/service\?section=contact$/);
       expect((await contact).ok()).toBe(true);
       await expectContactDetails(page);
       expect(videoRequests).toEqual([]);
@@ -234,7 +236,7 @@ test("unavailable video leaves text, poster and consultation usable", async ({ p
   await expect(scene(page).locator("video")).toBeHidden();
   await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
   await scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" }).click();
-  await expect(page).toHaveURL(/\/contact-us$/);
+  await expect(page).toHaveURL(/\/service\?section=contact$/);
 });
 
 test("consultation is keyboard reachable and internal pages release the Hero header", async ({
@@ -248,8 +250,8 @@ test("consultation is keyboard reachable and internal pages release the Hero hea
   await expect(cta).toBeFocused();
   expect(await cta.evaluate((n) => getComputedStyle(n).outlineWidth)).toBe("3px");
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/contact-us$/);
-  await expect(page.locator(".site-header:visible")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/service\?section=contact$/);
+  await expect(page.locator("[data-nav-home]:visible")).toHaveCount(0);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   await expectContactDetails(page);
 });

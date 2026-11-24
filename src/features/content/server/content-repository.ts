@@ -11,6 +11,7 @@ import { warehouseContentPage } from "../data/warehouse-content";
 import { getEditorialSection } from "../data/editorial-sections";
 import { getProducts } from "@/features/catalog/server/product-repository";
 import { legacySoftwareCatalogPath } from "@/features/home/data/brand";
+import { contactPath, legacyContactPath } from "../data/contact-route";
 
 export { getSnapshotProducts } from "../data/catalog-snapshot";
 
@@ -121,5 +122,8 @@ export function getSourceProduct(slug: string) {
 export async function getPageSearchIndex() {
   return (await getContentPages())
     .filter((page) => page.kind !== "product" && page.path !== "/")
-    .map(({ path, title }) => ({ path, title }));
+    .map(({ path, title }) => ({
+      path: normalize(path) === legacyContactPath ? contactPath : path,
+      title,
+    }));
 }

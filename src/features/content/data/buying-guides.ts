@@ -1,3 +1,5 @@
+import { guidebookBuyingGuideSlugs, guidebookChapterPath } from "./technical-manuals";
+
 export type BuyingGuide = {
   slug: string;
   title: string;
@@ -231,3 +233,70 @@ export const buyingGuides = guideLayouts.map((guide) => ({
     links: section.links,
   })),
 }));
+
+const guidebookAdvice: Record<
+  (typeof guidebookBuyingGuideSlugs)[number],
+  Record<string, string>
+> = {
+  scales: {
+    capacity:
+      "เลือกพิกัดจากน้ำหนักสูงสุดที่ต้องชั่งจริง รวมภาชนะด้วย แล้วตรวจว่าจานชั่งมีขนาดพอสำหรับภาชนะที่ใช้",
+    resolution:
+      "เลือกค่าละเอียดตามขั้นเล็กสุดที่ต้องอ่านบนจอ เช่น 1 กรัม และตรวจค่าความคลาดเคลื่อนในสเปกด้วย โดยเฉพาะเมื่อต้องชั่งปริมาณน้อย",
+    compare:
+      "เทียบพิกัด ความละเอียด ขนาดจานชั่ง และฟังก์ชันที่ใช้จริง เช่น นับชิ้น คำนวณราคา หรือพิมพ์ฉลาก จากข้อมูลของแต่ละรุ่น",
+  },
+  indicators: {
+    platforms:
+      "เช็กรุ่นแท่น พิกัด และข้อมูลโหลดเซลล์ก่อนเลือกหัวอ่าน หากเปลี่ยนหัวอ่านเดิม ให้ผู้ติดตั้งตรวจขั้วต่อและสายสัญญาณด้วย",
+    connections:
+      "ก่อนต่อกับคอมพิวเตอร์หรือเครื่องพิมพ์ ให้ตรวจพอร์ต รูปแบบข้อมูล และการตั้งค่าของอุปกรณ์ทั้งสองฝั่ง แม้สายจะเสียบเข้ากันได้",
+    compare:
+      "เลือกจอ LCD หรือ LED ตามแสงและระยะมอง แล้วเทียบฟังก์ชัน พอร์ต และระดับการป้องกันน้ำและฝุ่นจากสเปกแต่ละรุ่น",
+  },
+  platforms: {
+    environment:
+      "ตรวจการป้องกันน้ำของทั้งแท่น โหลดเซลล์ สาย และหัวอ่าน แล้วเลือกวิธีทำความสะอาดตามคู่มือของแต่ละรุ่น",
+    size: "วัดสินค้าหรือภาชนะที่ใหญ่ที่สุด เผื่อทางเดินและพื้นที่ยกของขึ้นแท่น หากใช้รถเข็นให้ตรวจความสูงของแท่นด้วย",
+    capacity:
+      "รวมน้ำหนักสูงสุดของสินค้า ภาชนะ และอุปกรณ์บนแท่น แล้วตรวจพิกัดและข้อจำกัดของชุดแท่นกับหัวอ่านก่อนเลือก",
+    indicators:
+      "เตรียมข้อมูลโหลดเซลล์และพิกัดแท่น แล้วตรวจขั้วต่อ ความละเอียด และฟังก์ชันของหัวอ่าน เช่น การส่งข้อมูลหรือแสดงผลระยะไกล",
+  },
+  pos: {
+    systems:
+      "ชุด P1 เป็นตัวเลือก Android และชุด P1W เป็นตัวเลือก Windows ให้ตรวจระบบที่ซอฟต์แวร์ เครื่องพิมพ์ และอุปกรณ์ของร้านรองรับก่อนเลือก",
+    workflows:
+      "เริ่มจากงานขายจริงของร้าน ทดลองรับน้ำหนัก คำนวณราคา และพิมพ์ตัวอย่าง ตรวจว่าชนิดเอกสารและฉลากตรงกับที่ใช้",
+    scales:
+      "ชุด P1 พร้อม RLS1100 เป็นตัวอย่างชุด Android ที่มีอยู่ หากนำเครื่องเดิมมาใช้ร่วมกัน ให้ยืนยันสาย พอร์ต หน่วยน้ำหนัก และรูปแบบข้อมูลของทั้งสองฝั่ง",
+  },
+  accessories: {
+    compatibility:
+      "จดรุ่นเครื่องชั่งหรือระบบ POS ที่ใช้อยู่ แล้วเทียบพอร์ตและขั้วต่อกับรายการอุปกรณ์ที่คู่มือระบุว่ารองรับ",
+    printers:
+      "เลือกตามงานพิมพ์สลิปหรือฉลาก แล้วตรวจขนาดที่พิมพ์ได้ พอร์ตเชื่อมต่อ และซอฟต์แวร์ที่เครื่องพิมพ์รองรับ",
+    consumables: "เทียบความกว้างม้วน ขนาดแกน และชนิดกระดาษหรือฉลากกับคู่มือเครื่องพิมพ์",
+  },
+};
+
+export const guidebookBuyingGuides = guidebookBuyingGuideSlugs.map((slug) => {
+  const guide = buyingGuides.find((entry) => entry.slug === slug)!;
+  return {
+    ...guide,
+    sections: guide.sections.map((section) => ({
+      ...section,
+      slug: `${slug}-${section.id}`,
+      advice: guidebookAdvice[slug][section.id],
+      links: section.links.filter(({ href }) => href !== guide.productHref),
+    })),
+  };
+});
+
+export function buyingGuideHref(slug: string, sectionId?: string) {
+  const guide = guidebookBuyingGuides.find((entry) => entry.slug === slug);
+  const section = guide?.sections.find(({ id }) => id === sectionId);
+  return section
+    ? `${guidebookChapterPath(section.slug)}#guide-content`
+    : guidebookChapterPath(slug);
+}

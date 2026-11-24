@@ -1,6 +1,12 @@
 footer {
   background: #f5f5f7;
 }
+.site-footer {
+  --footer-width: 1280px;
+  --footer-block-space: var(--section-space);
+  --footer-policy-block-space: 14px;
+  line-height: 1.5;
+}
 .contact-banner {
   background: var(--red);
   color: white;
@@ -36,20 +42,23 @@ footer {
 }
 .site-footer .footer-main {
   position: relative;
-  max-width: 1280px;
+  max-width: var(--footer-width);
   display: grid;
-  padding: var(--section-space) 0;
+  padding: var(--footer-block-space) 0;
 }
 .site-footer .footer-main > * {
   min-width: 0;
 }
 .footer-logo {
-  display: inline-block;
+  display: block;
+  width: fit-content;
 }
 .footer-logo img {
   display: block;
   max-width: 100%;
   height: auto;
+  aspect-ratio: 210 / 43;
+  object-fit: contain;
 }
 .footer-tagline {
   line-height: 1.6;
@@ -234,6 +243,7 @@ footer {
   line-height: 1.8;
 }
 .footer-bottom-bar {
+  border-top: 1px solid transparent;
   background: linear-gradient(110deg, #b70e25, var(--red) 55%, var(--red));
   color: #fff;
 }
@@ -241,7 +251,7 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1280px;
+  max-width: var(--footer-width);
   line-height: 1.7;
   color: #fffffff0;
   border: 0;
@@ -298,7 +308,7 @@ footer {
   width: calc(100% - 40px);
   flex-direction: column;
   text-align: center;
-  padding-block: 14px;
+  padding-block: var(--footer-policy-block-space);
   font-size: 11px;
 }
 .footer-bottom a {
@@ -390,7 +400,6 @@ footer {
   width: calc(100% - var(--page-gutter) * 2);
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
-  padding-block: var(--section-space);
 }
 .site-footer .footer-brand {
   margin-bottom: 24px;
@@ -446,7 +455,6 @@ footer {
 .footer-main {
   grid-template-columns: 1fr 1fr;
   gap: 32px 24px;
-  padding-block: var(--section-space);
 }
 .footer-brand {
   grid-column: 1 / -1;
@@ -473,7 +481,6 @@ footer {
     width: calc(100% - var(--page-gutter) * 2);
     grid-template-columns: repeat(2, minmax(0px, 1fr));
     gap: 32px;
-    padding-block: var(--section-space);
   }
   .site-footer .footer-brand {
     margin-bottom: revert;
@@ -544,7 +551,7 @@ footer {
     width: calc(100% - 96px);
     flex-direction: revert;
     text-align: revert;
-    padding-block: 16px;
+    --footer-policy-block-space: 16px;
     font-size: 11px;
   }
   .footer-bottom a {
@@ -562,7 +569,6 @@ footer {
   .footer-main {
     grid-template-columns: revert;
     gap: 25px;
-    padding-block: var(--section-space);
   }
   .footer-brand {
     grid-column: revert;

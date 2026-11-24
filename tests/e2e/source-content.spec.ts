@@ -1,51 +1,28 @@
 import { test, expect } from "@playwright/test";
 
 test("desktop menu expands over a uniform curtain and closes with Escape", async ({ page }) => {
-  await page.goto("/");
-  await page.locator("#story").scrollIntoViewIfNeeded();
-  const links = page.getByRole("navigation", { name: "เมนูหลัก", exact: true }).getByRole("link");
-  const firstLabel = (await links.nth(0).innerText()).trim();
-  const secondLabel = (await links.nth(1).innerText()).trim();
-  await links.nth(0).hover();
-  await expect(
-    page.getByRole("navigation", { name: `สำรวจ${firstLabel}`, exact: true }),
-  ).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/service?section=contact");
+  const links = page.locator(".desktop-nav > a");
   const backdrop = page.locator(".nav-backdrop");
-  await expect(backdrop).toHaveCSS("opacity", "1");
-  await expect(backdrop).toHaveCSS("backdrop-filter", "blur(20px)");
-  await expect(backdrop).toHaveCSS("background-color", "rgba(232, 232, 237, 0.4)");
-  const menu = page.locator("#desktop-submenu");
-  await expect(menu).toHaveCSS("background-color", "rgb(250, 250, 252)");
-  await expect(menu).toHaveCSS("box-shadow", "none");
-  const menuFitsContent = () =>
-    menu.evaluate((element) => {
-      const panel = element.querySelector(".submenu-panel.is-active")!;
-      return (
-        Math.abs(element.getBoundingClientRect().height - panel.getBoundingClientRect().height) <
-          1 && element.scrollHeight <= element.clientHeight + 1
-      );
-    });
-  await expect.poll(menuFitsContent).toBe(true);
-  await links.nth(1).hover();
-  await expect(
-    page.getByRole("navigation", { name: `สำรวจ${secondLabel}`, exact: true }),
-  ).toBeVisible();
-  await expect(backdrop).toHaveCSS("opacity", "1");
-  await expect.poll(menuFitsContent).toBe(true);
-  // A brief excursion beyond the menu should not flash the backdrop off and on.
-  await page.mouse.move(20, 450);
-  await links.nth(0).hover();
-  await expect(
-    page.getByRole("navigation", { name: `สำรวจ${firstLabel}`, exact: true }),
-  ).toBeVisible();
-  await expect(backdrop).toHaveCSS("opacity", "1");
-  await page.screenshot({ path: "C:/tmp/sunford-menu-blur.png", animations: "disabled" });
+  const menu = page.locator("#products-navigation-panel");
+  for (const index of [0, 1, 0]) {
+    const link = links.nth(index);
+    await link.hover();
+    await expect(link).toHaveAttribute("aria-expanded", "true");
+    await expect(backdrop).toHaveCSS("backdrop-filter", "blur(20px)");
+    await expect(backdrop).toHaveCSS("background-color", "rgba(0, 0, 0, 0.2)");
+    await expect(menu).toHaveCSS("background-color", "rgb(250, 250, 252)");
+    await expect(menu).toHaveCSS("box-shadow", "none");
+    await expect
+      .poll(() => menu.evaluate((element) => element.scrollHeight - element.clientHeight))
+      .toBeLessThanOrEqual(1);
+  }
+  await links.first().press("ArrowDown");
   await page.keyboard.press("Escape");
-  // Escape closes keyboard-opened menus as well as pointer-opened menus.
-  await links.nth(0).focus();
-  await page.keyboard.press("Escape");
-  await expect(page.locator("#desktop-submenu")).toBeHidden();
-  await expect(backdrop).toHaveCSS("opacity", "0");
+  await expect(menu).toBeHidden();
+  await expect(backdrop).toBeHidden();
 });
 
 test("imported company, collection, software and warranty pages are available", async ({
@@ -63,7 +40,7 @@ test("imported company, collection, software and warranty pages are available", 
   await expect(page.getByRole("heading", { level: 1, name: "SUNFORD POS ANDROID" })).toBeVisible();
   await expect(
     page.getByRole("main").getByRole("link", { name: "ติดต่อฝ่ายบริการ" }),
-  ).toHaveAttribute("href", "/contact-us");
+  ).toHaveAttribute("href", "/service?section=contact");
   await page.goto("/warranty/register");
   await expect(page.getByRole("link", { name: "เปิดแบบฟอร์ม Sunford" })).toHaveAttribute(
     "href",
@@ -87,7 +64,12 @@ test("directory searches public content and mobile content pages do not overflow
   await page.goto("/explore");
   await page.getByRole("textbox", { name: "ค้นหาข้อมูล Sunford" }).fill("รับประกัน");
   await expect(page.locator(".directory-card").first()).toContainText("รับประกัน");
-  for (const path of ["/about-us", "/software/download", "/products/10639", "/contact-us"]) {
+  for (const path of [
+    "/about-us",
+    "/software/download",
+    "/products/10639",
+    "/service?section=contact",
+  ]) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(path);
     expect(

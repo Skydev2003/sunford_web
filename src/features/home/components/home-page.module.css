@@ -25,15 +25,13 @@
   color: #f5f5f7;
 }
 
-:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.contact-banner),
 :global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-surface),
 :global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-bottom-bar) {
   background: #000;
 }
 
-:global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.contact-banner),
 :global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-bottom-bar) {
-  border-top: 1px solid #2a2a2a;
+  border-top-color: #2a2a2a;
 }
 
 :global([data-home-route="true"]) > .page ~ :global(.site-footer) :global(.footer-contact-row),

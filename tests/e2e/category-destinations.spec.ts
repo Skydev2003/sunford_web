@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-subcategory-pages";
-import { buyingGuides } from "../../src/features/content/data/buying-guides";
+import { guidebookBuyingGuides } from "../../src/features/content/data/buying-guides";
 
 const categories = [
   ["scales", "เครื่องชั่ง"],
@@ -47,7 +47,7 @@ for (const width of [390, 1440]) {
       await expect(page).toHaveURL(new RegExp(`/products/category/${id}$`));
       await expect(page.locator("main#main-content:visible h1")).toHaveText(label);
       await expect(page.getByRole("dialog")).toHaveCount(0);
-      const guide = buyingGuides.find((item) => item.slug === id)!;
+      const guide = guidebookBuyingGuides.find((item) => item.slug === id)!;
       for (const link of guide.sections
         .flatMap((section) => section.links)
         .filter((link) => link.href.startsWith("/products/category/"))) {
@@ -73,9 +73,9 @@ for (const width of [390, 1440]) {
     await page.goto("/");
     const footer = page.locator(".site-footer:visible");
     for (const [label, id] of [
-      ["เครื่องชั่งดิจิทัล", "scales"],
+      ["เครื่องชั่ง", "scales"],
       ["อุปกรณ์เสริม", "accessories"],
-      ["ระบบ POS และอุปกรณ์", "pos"],
+      ["ระบบ POS", "pos"],
     ])
       await expect(footer.getByRole("link", { name: label, exact: true })).toHaveAttribute(
         "href",

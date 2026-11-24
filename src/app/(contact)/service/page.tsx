@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { ContactChannels } from "@/features/content/components/contact-page";
 import { AfterSalesPage } from "@/features/content/components/after-sales-page";
 import { getContentPageIndex } from "@/features/content/server/content-repository";
 import { SiteLoading } from "@/features/site/components/site-loading";
@@ -16,7 +17,8 @@ export function generateMetadata(): Promise<Metadata> {
 
 export default async function ServiceRoute() {
   const page = (await getContentPageIndex())[pathname];
-  if (page?.path === pathname && page.kind === "page" && !page.managed) return <AfterSalesPage />;
+  if (page?.path === pathname && page.kind === "page" && !page.managed)
+    return <AfterSalesPage contact={<ContactChannels />} />;
   return (
     <Suspense fallback={<SiteLoading />}>
       <SourceContentPage {...props} />

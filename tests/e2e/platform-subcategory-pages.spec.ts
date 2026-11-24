@@ -1,3 +1,5 @@
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
+import { siteMenuLabel } from "../../src/features/site/data/site-menu-labels";
 import { expect, test, type Page, type APIRequestContext } from "@playwright/test";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 import { getPlatformSubcategories } from "../../src/features/catalog/data/platform-subcategories";
@@ -194,10 +196,17 @@ test("native Home mobile submenu reaches every material with valid detail or par
       .locator(".site-header:visible")
       .getByRole("button", { name: "เปิดเมนู", exact: true })
       .tap();
-    const group = page.locator("#mobile-navigation .mobile-nav-category").nth(2);
-    await group.locator("summary").tap();
-    await group.getByRole("link", { name: definition.label, exact: true }).tap();
-    await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
+    const group = page.locator("#products-navigation-panel");
+    await group.getByRole("button", { name: "เปิดเมนูย่อยโครงสร้างแท่นชั่ง", exact: true }).tap();
+    await group
+      .getByRole("link", {
+        name: siteMenuLabel(definition.href, definition.label.replace(/^เครื่องชั่ง/, "")),
+        exact: true,
+      })
+      .tap();
+    await expect(page).toHaveURL(
+      new URL(catalogSubmenuDestination(definition.href), page.url()).href,
+    );
     await expect(page.getByRole("dialog")).toHaveCount(0);
     if (definition.id === "platform-abs") {
       await expect(page.locator("article[data-mock-product]")).toHaveCount(1);

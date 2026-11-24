@@ -178,7 +178,7 @@ test("business anchors and all14 detail links retain reload and history behavior
     ).toBeVisible();
     await expect(detail.getByRole("link", { name: "สอบถามซันฟอร์ด" })).toHaveAttribute(
       "href",
-      "/contact-us",
+      "/service?section=contact",
     );
     await page.goBack();
     await expect(page.locator("[data-solutions-overview]:visible")).toBeVisible();

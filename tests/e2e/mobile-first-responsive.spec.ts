@@ -21,7 +21,7 @@ const templates = [
   "/products/category/accessories",
   "/products/wps10ks",
   "/products/warehouse-G107404",
-  "/contact-us",
+  "/service?section=contact",
   "/service",
   "/about-us",
   "/solutions",
@@ -51,7 +51,7 @@ async function geometry(page: Page) {
       .filter(
         (element) =>
           element.checkVisibility({ checkOpacity: true }) &&
-          !element.closest(".desktop-submenu,.mobile-nav,[data-nav-panel]"),
+          !element.closest("#products-navigation-panel,.mobile-nav,[data-nav-panel]"),
       )
       .map((element) => {
         const bounds = element.getBoundingClientRect();
@@ -101,7 +101,7 @@ test.describe("mobile-first responsive", () => {
     });
   }
 
-  for (const route of ["/", "/contact-us"]) {
+  for (const route of ["/", "/service?section=contact"]) {
     test(`${route} desktop keyboard follows current visible menu order`, async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await settled(page, route);
@@ -112,7 +112,7 @@ test.describe("mobile-first responsive", () => {
       const href = await trigger.getAttribute("href");
       const panel =
         route === "/"
-          ? page.locator(".submenu-panel.is-active")
+          ? page.locator("[data-nav-menu]")
           : header.locator(`[data-nav-menu="${href}"]`);
       const links = panel.getByRole("link");
       await expect(links.first()).toBeFocused();
@@ -235,9 +235,7 @@ test("Service tabs keep policies reachable on short desktops and reflow through 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1280, height: 720 });
   await settled(page, "/service");
-  const policy = page
-    .locator("main")
-    .getByRole("link", { name: "นโยบายการรับประกัน", exact: true });
+  const policy = page.locator("main").getByRole("link", { name: "เงื่อนไขรับประกัน", exact: true });
   await expect(page.getByRole("tab")).toHaveCount(5);
   for (const tab of await page.getByRole("tab").all()) {
     await tab.click();
@@ -269,7 +267,7 @@ for (const motion of ["reduce", "no-preference"] as const) {
       "/products",
       "/products/category/scales",
       "/products/wps10ks",
-      "/contact-us",
+      "/service?section=contact",
       "/service",
       "/guides/indicator-platform-compatibility",
       "/service/quotation",

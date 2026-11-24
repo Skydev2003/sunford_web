@@ -19,15 +19,16 @@ function isLightSurface(element: Element | undefined) {
   return red * 0.2126 + green * 0.7152 + blue * 0.0722 > 160;
 }
 
-export function useHeaderSurface(ref: RefObject<HTMLElement | null>) {
+export function useHeaderSurface(ref: RefObject<HTMLElement | null>, enabled: boolean) {
   useEffect(() => {
     const header = ref.current;
     const surface = header?.parentElement;
-    if (!header || !surface) return;
+    if (!enabled || !header || !surface) return;
     let frame = 0;
     let active = true;
     const update = () => {
       frame = 0;
+      if (header.hasAttribute("data-nav-open")) return;
       const opening = surface.querySelector<HTMLElement>("[data-brand-opening]");
       const hero = surface.querySelector("[data-hero-scene]");
       if (
@@ -59,13 +60,18 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>) {
     };
     // Route changes replace content beneath the persistent Header, even at scrollY 0.
     const content = new MutationObserver((records) => {
-      if (records.some((record) => !header.contains(record.target))) schedule();
+      if (
+        records.some(
+          (record) => !header.contains(record.target) || record.attributeName === "data-nav-open",
+        )
+      )
+        schedule();
     });
     content.observe(surface, {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["data-phase"],
+      attributeFilter: ["data-phase", "data-nav-open"],
     });
     const resize = new ResizeObserver(schedule);
     resize.observe(surface);
@@ -82,6 +88,7 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>) {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       window.removeEventListener("pageshow", schedule);
+      delete header.dataset.navTone;
     };
-  }, [ref]);
+  }, [ref, enabled]);
 }

@@ -112,8 +112,10 @@ test("consultation works during the logo and the contact page gets its own Heade
   const cta = page.getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ", exact: true });
   await expect(cta).toBeVisible({ timeout: 500 });
   await cta.click();
-  await expect(page).toHaveURL(/\/contact-us$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("ติดต่อเรา");
-  await expect(page.locator(".site-header:visible")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/service\?section=contact$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "ติดต่อเรา", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator("[data-nav-home]:visible")).toHaveCount(0);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
 });

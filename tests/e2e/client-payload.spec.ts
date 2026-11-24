@@ -45,7 +45,7 @@ test("full description search and comparison survive client navigation", async (
   const matches = products.filter((p) =>
     `${p.name} ${p.subtitle} ${p.description}`.toLowerCase().includes(query.toLowerCase()),
   );
-  await page.goto("/contact-us");
+  await page.goto("/service?section=contact");
   await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
   const search = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
   await search.getByRole("textbox").fill(query);

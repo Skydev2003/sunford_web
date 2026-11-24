@@ -482,7 +482,7 @@
                 },
                 {
                   "label": "ติดต่อฝ่ายบริการ",
-                  "href": "/contact-us"
+                  "href": "/service?section=contact"
                 }
               ]
             }
@@ -512,7 +512,7 @@
         },
         {
           "label": "ติดต่อเรา",
-          "href": "/contact-us",
+          "href": "/service?section=contact",
           "links": []
         }
       ],
@@ -535,7 +535,7 @@
       "helpLinks": [
         {
           "label": "ติดต่อเรา",
-          "href": "/contact-us"
+          "href": "/service?section=contact"
         },
         {
           "label": "ลงทะเบียนรับประกัน",

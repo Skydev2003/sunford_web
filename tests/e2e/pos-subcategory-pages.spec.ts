@@ -1,3 +1,5 @@
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
+import { siteMenuLabel } from "../../src/features/site/data/site-menu-labels";
 import { expect, test, type Page, type APIRequestContext } from "@playwright/test";
 import { getPosSubcategories } from "../../src/features/catalog/data/pos-subcategories";
 import { posSubcategoryPages } from "../../src/features/catalog/data/product-subcategory-pages";
@@ -210,10 +212,17 @@ test("native Home POS menu reaches all platforms and valid detail or parent retu
       .locator(".site-header:visible")
       .getByRole("button", { name: "เปิดเมนู", exact: true })
       .tap();
-    const group = page.locator("#mobile-navigation .mobile-nav-category").nth(3);
-    await group.locator("summary").tap();
-    await group.getByRole("link", { name: definition.label, exact: true }).tap();
-    await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
+    const group = page.locator("#products-navigation-panel");
+    await group.getByRole("button", { name: "เปิดเมนูย่อยระบบ POS", exact: true }).tap();
+    await group
+      .getByRole("link", {
+        name: siteMenuLabel(definition.href, definition.label.replace(/^เครื่องชั่ง/, "")),
+        exact: true,
+      })
+      .tap();
+    await expect(page).toHaveURL(
+      new URL(catalogSubmenuDestination(definition.href), page.url()).href,
+    );
     await expect(page.getByRole("dialog")).toHaveCount(0);
     if (definition.id === "pos-ios") {
       await expect(page.locator("#mock-product-results article")).toHaveCount(0);

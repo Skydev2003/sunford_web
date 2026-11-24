@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductSubcategoryPage } from "@/features/catalog/components/product-subcategory-page";
 import { productSubcategoryPages } from "@/features/catalog/data/product-subcategory-pages";
-import { getSubmenuFeature } from "@/features/catalog/data/catalog-submenu-destinations";
 import styles from "@/features/catalog/components/product-directory.module.css";
 import overview from "@/features/catalog/components/products-overview.module.css";
 
@@ -38,13 +37,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 async function ListingContent({ params, searchParams }: Props) {
   const definition = await getDefinition(params);
   if (!definition) notFound();
-  const feature = getSubmenuFeature(definition.id);
-  const initialFeature = feature && (await searchParams).feature === feature ? feature : undefined;
+  const { feature } = await searchParams;
   return (
     <ProductSubcategoryPage
       categoryId={definition.categoryId}
       subcategoryId={definition.id}
-      initialFeature={initialFeature}
+      initialFeature={typeof feature === "string" ? feature : undefined}
     />
   );
 }

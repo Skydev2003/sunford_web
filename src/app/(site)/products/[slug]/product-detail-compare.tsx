@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { CircleHelp, GitCompareArrows, X } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCatalogStore } from "@/stores/catalog-store";
@@ -37,17 +37,23 @@ export function ReadabilityHelp() {
 }
 
 type Candidate = { id: string; name: string; sku?: string };
+const subscribe = () => () => {};
 
 export function ProductDetailCompare({
   currentId,
   candidates,
-  direct = false,
+  waitForHydration = false,
 }: {
   currentId: string;
   candidates: Candidate[];
-  direct?: boolean;
+  waitForHydration?: boolean;
 }) {
   const chooser = useRef<HTMLDialogElement>(null);
+  const hydrated = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
   const selected = useCatalogStore((s) => s.compareIds);
   const canAdd = (id: string) => new Set([...selected, currentId, id]).size <= 3;
   function compare(id: string) {
@@ -65,35 +71,34 @@ export function ProductDetailCompare({
       <button
         className={styles.compare}
         type="button"
-        disabled={full}
+        disabled={full || (waitForHydration && !hydrated)}
         title={full ? "เปรียบเทียบได้สูงสุด 3 รุ่น" : undefined}
         aria-haspopup="dialog"
-        onClick={() => (direct ? compare(candidates[0].id) : chooser.current?.showModal())}
+        onClick={() => chooser.current?.showModal()}
       >
-        {!direct && <GitCompareArrows size={16} />}เปรียบเทียบสินค้า
+        <GitCompareArrows size={16} />
+        เปรียบเทียบสินค้า
       </button>
-      {!direct && (
-        <dialog className={styles.popup} ref={chooser} aria-label="เลือกรุ่นเพื่อเปรียบเทียบ">
-          <div className={styles.dialogHeader}>
-            <h3>เลือกรุ่นเพื่อเปรียบเทียบ</h3>
-            <button type="button" aria-label="ปิด" onClick={() => chooser.current?.close()}>
-              <X size={18} />
-            </button>
-          </div>
-          {candidates.map((c) => (
-            <button
-              key={c.id}
-              className={styles.option}
-              type="button"
-              onClick={() => compare(c.id)}
-              disabled={!canAdd(c.id)}
-            >
-              {c.name}
-              {c.sku && <small>{c.sku}</small>}
-            </button>
-          ))}
-        </dialog>
-      )}
+      <dialog className={styles.popup} ref={chooser} aria-label="เลือกรุ่นเพื่อเปรียบเทียบ">
+        <div className={styles.dialogHeader}>
+          <h3>เลือกรุ่นเพื่อเปรียบเทียบ</h3>
+          <button type="button" aria-label="ปิด" onClick={() => chooser.current?.close()}>
+            <X size={18} />
+          </button>
+        </div>
+        {candidates.map((c) => (
+          <button
+            key={c.id}
+            className={styles.option}
+            type="button"
+            onClick={() => compare(c.id)}
+            disabled={!canAdd(c.id)}
+          >
+            {c.name}
+            {c.sku && <small>{c.sku}</small>}
+          </button>
+        ))}
+      </dialog>
     </>
   );
 }

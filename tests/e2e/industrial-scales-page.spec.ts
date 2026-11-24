@@ -199,12 +199,10 @@ test("native mobile touch opens Home industrial submenu and returns from detail"
   await page.goto("/");
   const header = page.locator(".site-header:visible");
   await header.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
-  const mobile = page.locator("#mobile-navigation");
-  await mobile.locator(".mobile-nav-category").first().locator("summary").tap();
+  const mobile = page.locator("#products-navigation-panel");
+  await mobile.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true }).tap();
   await mobile
-    .locator(".mobile-nav-category")
-    .first()
-    .getByRole("link", { name: "อุตสาหกรรมงานผลิต", exact: true })
+    .getByRole("link", { name: "เครื่องชั่งสำหรับโรงงาน", exact: true })
     .filter({ visible: true })
     .tap();
   await expect(page).toHaveURL(new RegExp(path + "$"));

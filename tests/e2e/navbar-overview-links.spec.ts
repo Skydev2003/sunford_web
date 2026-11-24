@@ -68,7 +68,7 @@ async function verifyChapterLayout(page: Page, width: number) {
 }
 
 for (const width of [320, 390, 834, 1440]) {
-  for (const route of ["/", "/contact-us"]) {
+  for (const route of ["/", "/service?section=contact"]) {
     test(`${route} every main name navigates directly and keeps separate submenu access at ${width}px`, async ({
       page,
     }) => {
@@ -82,23 +82,13 @@ for (const width of [320, 390, 834, 1440]) {
         const nav = header(page, route);
         if (width < 1024) await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
         const mainLink = () =>
-          width < 1024 && route === "/"
-            ? nav.locator(`.mobile-nav-category-link[href="${menu.href}"]`)
-            : nav
-                .locator(
-                  width >= 1024
-                    ? route === "/"
-                      ? ".desktop-nav"
-                      : "[data-products-nav]"
-                    : "#products-navigation-panel",
-                )
-                .getByRole("link", { name: menu.label, exact: true });
+          nav
+            .locator(width >= 1024 ? ".desktop-nav" : "#products-navigation-panel")
+            .getByRole("link", { name: menu.label, exact: true });
         await expect(mainLink()).toHaveAttribute("href", menu.href);
         if (width >= 1024) {
           await page.mouse.move(width - 4, 996);
           await mainLink().hover();
-        } else if (route === "/") {
-          await nav.getByLabel(`เปิดเมนูย่อย${menu.label}`, { exact: true }).click();
         } else {
           await nav.getByRole("button", { name: `เปิดเมนูย่อย${menu.label}`, exact: true }).click();
         }
@@ -118,7 +108,7 @@ for (const width of [320, 390, 834, 1440]) {
           await expect(mainLink()).toHaveAttribute("aria-expanded", "true");
           await expect(panel).toBeVisible();
           await page.keyboard.press("Escape");
-        } else if (route !== "/") {
+        } else {
           await nav.getByRole("button", { name: "เมนูหลัก", exact: true }).click();
         }
         if (index % 2) await mainLink().press("Enter");
@@ -129,12 +119,19 @@ for (const width of [320, 390, 834, 1440]) {
     });
   }
 
-  test(`overview chapters match the live Navbar product column at ${width}px`, async ({ page }) => {
+  test(`overview chapters and Navbar share product destinations at ${width}px`, async ({
+    page,
+  }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const category of productCategoryDefinitions) {
       const menu = menus.find((item) => item.href === `/products/category/${category.id}`)!;
+      const chapterMenu = getPrimaryNavigationItems(
+        defaultNavigation,
+        [],
+        "category-chapters",
+      ).find((item) => item.href === menu.href)!;
       await visit(page, menu.href);
       const nav = header(page, menu.href);
       if (width < 1024) {
@@ -168,7 +165,7 @@ for (const width of [320, 390, 834, 1440]) {
 
       const chapters = page.locator("#products-chapters > li > :is(a, button)");
       await expect(chapters.locator(":scope > span:last-child")).toHaveText(
-        expected.map((link) => link.label),
+        chapterMenu.links.map((link) => link.label),
       );
       for (const [index, link] of expected.entries()) {
         const button = chapters.nth(index);
@@ -183,7 +180,7 @@ for (const width of [320, 390, 834, 1440]) {
           expect(link.href).toBeTruthy();
           await expect(button).toBeEnabled();
         }
-        const configuredHref = menu.links.find(({ label }) => label === link.label)?.href;
+        const configuredHref = chapterMenu.links[index]?.href;
         const artwork =
           configuredHref &&
           `${configuredHref.replace("/products/category/", "/images/category-chapters/")}.webp`;
@@ -221,7 +218,10 @@ for (const width of [320, 390, 834, 1440]) {
       for (const [index, { disabled, href, label }] of expected.entries()) {
         if (disabled) continue;
         await chapters.nth(index).click();
-        await expect(page, label).toHaveURL((url) => url.pathname === href, { timeout: 20_000 });
+        const pathname = new URL(href!, page.url()).pathname;
+        await expect(page, label).toHaveURL((url) => url.pathname === pathname, {
+          timeout: 20_000,
+        });
         await expect(page.getByRole("dialog")).toHaveCount(0);
         await page.goBack();
         await expect(page).toHaveURL((url) => url.pathname === menu.href);
@@ -230,7 +230,7 @@ for (const width of [320, 390, 834, 1440]) {
   });
 }
 
-for (const route of ["/", "/contact-us"]) {
+for (const route of ["/", "/service?section=contact"]) {
   test(`${route} Services main link preserves opening in another tab`, async ({
     page,
     context,

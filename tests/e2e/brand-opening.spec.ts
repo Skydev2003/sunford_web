@@ -238,7 +238,7 @@ test("reduced motion shows an immediately usable homepage", async ({ page }) => 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expectReleased(page);
   expect((await openingFrames(page)).some((frame) => frame.visible)).toBe(false);
-  const consultation = page.locator('[data-hero-scene] a[href="/contact-us"]');
+  const consultation = page.locator('[data-hero-scene] a[href="/service?section=contact"]');
   await consultation.focus();
   await expect(consultation).toBeFocused();
 });

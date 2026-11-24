@@ -25,7 +25,7 @@ async function surfaceState(page: Page) {
 }
 
 async function ready(page: Page, route: string) {
-  await page.waitForURL((url) => url.pathname === route);
+  await page.waitForURL((url) => url.pathname + url.search === route);
   await expect(page.locator("main:visible")).toHaveCount(1);
   await page.evaluate(async () => {
     await document.fonts.ready;
@@ -54,7 +54,7 @@ const desktopRoutes = [
   "/guides/indicator-platform-compatibility",
   "/service/quotation",
   "/about-us",
-  "/contact-us",
+  "/service?section=contact",
   "/software/download",
   "/warranty/policy",
   "/explore",
@@ -66,7 +66,7 @@ const responsiveRoutes = [
   "/products/category/scales/industrial",
   "/guides/indicator-platform-compatibility",
   "/service/quotation",
-  "/contact-us",
+  "/service?section=contact",
 ];
 
 for (const width of [390, 834, 1440]) {
@@ -98,8 +98,8 @@ for (const width of [390, 834, 1440]) {
         if (await disclosure.count()) {
           await disclosure.locator("summary").click();
         } else {
-          await page.locator('a[href="/contact-us"]:visible').first().click();
-          await ready(page, "/contact-us");
+          await page.locator('a[href="/service?section=contact"]:visible').first().click();
+          await ready(page, "/service?section=contact");
           historySteps += 1;
         }
       }
@@ -145,8 +145,10 @@ test("mobile menu and search release scrolling and inert state during client nav
   await expect.poll(async () => (await surfaceState(page)).inert).toBe(false);
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
   await page.getByRole("button", { name: /ค้นหาสินค้า/ }).click();
-  await page.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" }).fill("G106698");
-  await page.locator('.search-results a[href="/products/wps10ks"]').click();
+  const search = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ", exact: true });
+  await expect(search).toHaveCount(1);
+  await search.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" }).fill("G106698");
+  await search.locator('.search-results a[href="/products/wps10ks"]').click();
   await ready(page, "/products/wps10ks");
   await expect(page.locator("main:visible h1")).toHaveText("WPS10KS");
   await expect.poll(async () => (await surfaceState(page)).inert).toBe(false);

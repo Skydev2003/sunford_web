@@ -1,9 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 
 const menus = getPrimaryNavigationItems(defaultNavigation);
-const routes = ["/", "/contact-us"];
+const routes = ["/", "/service?section=contact"];
 const duplicateKeyWarnings = new WeakMap<Page, string[]>();
 
 test.beforeEach(({ page }) => {
@@ -43,23 +44,10 @@ async function openMenu(page: Page, route: string, width: number, index: number)
   if (width >= 1024) {
     await page.mouse.move(width - 4, page.viewportSize()!.height - 4);
     const trigger = nav
-      .locator(route === "/" ? ".desktop-nav" : "[data-products-nav]")
-      .getByRole(route !== "/" && menu.href === "/service" ? "button" : "link", {
-        name: menu.label,
-        exact: true,
-      });
-    await trigger.hover();
+      .locator(".desktop-nav")
+      .getByRole("link", { name: menu.label, exact: true });
+    await trigger.press("ArrowDown");
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
-  } else if (route === "/") {
-    if (!(await nav.locator("#mobile-navigation").isVisible()))
-      await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-    const disclosures = nav.locator(".mobile-nav-group");
-    for (let other = 0; other < menus.length; other++) {
-      if (other !== index && (await disclosures.nth(other).getAttribute("open")) !== null)
-        await disclosures.nth(other).locator("summary").click();
-    }
-    if ((await disclosures.nth(index).getAttribute("open")) === null)
-      await disclosures.nth(index).locator("summary").click();
   } else {
     const back = nav.getByRole("button", { name: "เมนูหลัก", exact: true });
     if (await back.isVisible()) await back.click();
@@ -67,7 +55,7 @@ async function openMenu(page: Page, route: string, width: number, index: number)
       await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     await nav
       .getByRole("button", {
-        name: menu.href === "/service" ? menu.label : `เปิดเมนูย่อย${menu.label}`,
+        name: `เปิดเมนูย่อย${menu.label}`,
         exact: true,
       })
       .click();
@@ -89,7 +77,7 @@ async function checkEntry(entry: Locator, expected: { href: string; disabled?: b
       })),
     ).toEqual({ tag: "SPAN", tabIndex: -1 });
   } else {
-    await expect(entry).toHaveAttribute("href", expected.href);
+    await expect(entry).toHaveAttribute("href", catalogSubmenuDestination(expected.href));
     expect(await entry.getAttribute("aria-disabled")).toBeNull();
   }
 }
@@ -104,7 +92,7 @@ for (const width of [390, 834, 1440]) {
       "/products/category/scales",
       "/products/wps10ks",
       "/service/quotation",
-      "/contact-us",
+      "/service?section=contact",
     ]) {
       await visit(page, route);
       const shop = header(page, route).getByRole("link", { name: "ร้านค้า SUNFORD", exact: true });
@@ -218,6 +206,8 @@ for (const route of routes) {
           menus[index].links,
           ...menus[index].groups!.map((group) => group.links),
         ];
+        const hasLiveFeatures = menus[index].groups![0].label === "คุณสมบัติ";
+        if (hasLiveFeatures) await expect(columns.nth(1).getByRole("link").first()).toBeVisible();
         const boxes = await columns.evaluateAll((nodes) =>
           nodes.map((node) => {
             const { x, y, width, height } = node.getBoundingClientRect();
@@ -242,14 +232,19 @@ for (const route of routes) {
         }
         for (let column = 0; column < 3; column++) {
           const choices = columns.nth(column).getByRole("link");
-          await expect(choices).toHaveText(expectedColumns[column].map((link) => link.label));
-          for (let item = 0; item < expectedColumns[column].length; item++) {
-            await checkEntry(choices.nth(item), expectedColumns[column][item]);
+          const isFeatureColumn = hasLiveFeatures && column === 1;
+          const count = isFeatureColumn ? await choices.count() : expectedColumns[column].length;
+          if (isFeatureColumn) expect(count).toBeLessThanOrEqual(6);
+          else await expect(choices).toHaveText(expectedColumns[column].map((link) => link.label));
+          for (let item = 0; item < count; item++) {
+            if (!isFeatureColumn) {
+              await checkEntry(choices.nth(item), expectedColumns[column][item]);
+              entries++;
+            }
             const box = await choices.nth(item).boundingBox();
             expect(box!.width).toBeGreaterThan(0);
             expect(box!.x).toBeGreaterThanOrEqual(-1);
             expect(box!.x + box!.width).toBeLessThanOrEqual(width + 1);
-            entries++;
           }
         }
         if (expectedColumns.flat().some((link) => link.disabled)) {
@@ -266,7 +261,10 @@ for (const route of routes) {
           await expect(last).toBeInViewport();
         }
       }
-      expect(entries).toBe(99);
+      expect(entries).toBe(
+        menus.flatMap((menu) => [...menu.links, ...menu.groups!.flatMap((group) => group.links)])
+          .length,
+      );
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
@@ -333,9 +331,12 @@ for (const route of routes) {
               await expect(panel).toBeVisible();
             } else {
               await entry.click();
-              await expect(page).toHaveURL(new URL(expected.href, original).href, {
-                timeout: 15_000,
-              });
+              await expect(page).toHaveURL(
+                new URL(catalogSubmenuDestination(expected.href), original).href,
+                {
+                  timeout: 15_000,
+                },
+              );
               const main = page.locator("main:visible");
               await expect(main).toHaveCount(1);
               await expect(main.locator("h1").first()).not.toHaveText("");
@@ -361,7 +362,10 @@ for (const route of routes) {
           }
         }
       }
-      expect(checked).toBe(99);
+      expect(checked).toBe(
+        menus.flatMap((menu) => [...menu.links, ...menu.groups!.flatMap((group) => group.links)])
+          .length,
+      );
       expect(errors).toEqual([]);
       await page.keyboard.press("Escape");
     });
@@ -393,11 +397,11 @@ for (const route of routes) {
       .getByRole("link", { name: "จัดสเปค", exact: true });
     await guide.click();
     await expect(page).toHaveURL(/\/guides\/indicator-platform-compatibility$/);
-    await expect(page.locator("[data-products-header]")).toBeVisible();
+    await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   });
 }
 
-test("touch disabled choices, landscape navigation and 200 percent zoom remain usable", async ({
+test("touch menus, landscape navigation and 200 percent zoom remain usable", async ({
   browser,
   baseURL,
 }) => {
@@ -430,7 +434,10 @@ test("touch disabled choices, landscape navigation and 200 percent zoom remain u
           disabledChoices++;
         }
       }
-      expect(disabledChoices).toBe(28);
+      const disabledInSettings = menus
+        .flatMap((menu) => [...menu.links, ...menu.groups!.flatMap((group) => group.links)])
+        .filter((entry) => entry.disabled);
+      expect(disabledChoices).toBe(disabledInSettings.length);
       await page.keyboard.press("Escape");
     }
     await page.setViewportSize({ width: 844, height: 390 });
@@ -438,22 +445,14 @@ test("touch disabled choices, landscape navigation and 200 percent zoom remain u
       await visit(page, route);
       for (let index = 0; index < menus.length; index++) {
         const nav = header(page, route);
-        const trigger = nav
-          .locator(route === "/" ? ".desktop-nav" : "[data-products-nav]")
-          .getByRole(route !== "/" && index === 7 ? "button" : "link", {
-            name: menus[index].label,
-            exact: true,
-          });
+        await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+        const trigger = nav.locator("#products-navigation-panel").getByRole("link", {
+          name: menus[index].label,
+          exact: true,
+        });
         await trigger.tap();
-        if (route === "/" || index !== 7) {
-          await expect(page).toHaveURL(new URL(menus[index].href, baseURL).href, {
-            timeout: 15_000,
-          });
-          if (menus[index].href !== route) await page.goBack();
-        } else {
-          await expect(nav.locator('[data-nav-menu="/service"]:visible')).toBeVisible();
-          await page.keyboard.press("Escape");
-        }
+        await expect(page).toHaveURL(new URL(menus[index].href, baseURL).href, { timeout: 15_000 });
+        if (menus[index].href !== route) await page.goBack();
       }
     }
     const cdp = await context.newCDPSession(page);
@@ -464,9 +463,9 @@ test("touch disabled choices, landscape navigation and 200 percent zoom remain u
       deviceScaleFactor: 2,
       mobile: false,
     });
-    await visit(page, "/contact-us");
+    await visit(page, "/service?section=contact");
     for (let index = 0; index < menus.length; index++)
-      await expect(await openMenu(page, "/contact-us", 720, index)).toBeVisible();
+      await expect(await openMenu(page, "/service?section=contact", 720, index)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

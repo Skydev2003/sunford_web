@@ -59,7 +59,7 @@ for (const width of [1440, 390]) {
       products: Product[];
     };
     const visible = products;
-    await page.goto("/contact-us");
+    await page.goto("/service?section=contact");
     let first = true;
     for (const [index, parent] of groups.entries()) {
       const input =
@@ -105,7 +105,7 @@ for (const width of [1440, 390]) {
 for (const width of [320, 768, 1400, 1920]) {
   test(`product submenu keeps every group reachable at ${width}px`, async ({ page, request }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/contact-us");
+    await page.goto("/service?section=contact");
     const menu = await productMenu(page, width, "อุปกรณ์เสริม");
     const viewportMenu = page.locator("#products-navigation-panel:visible");
     await expect(viewportMenu.locator(":scope > div > div > p")).toHaveText([

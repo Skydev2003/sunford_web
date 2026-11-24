@@ -44,7 +44,7 @@ for (const width of [390, 834, 1440]) {
   }) => {
     await page.setViewportSize({ width, height: 900 });
     const { search, top } = await finderSource(page);
-    await navigate(page, "/contact-us");
+    await navigate(page, "/service?section=contact");
     await navigate(page, "/about-us");
     await page.locator('[data-products-header]:visible a[aria-label="SUNFORD หน้าแรก"]').click();
     await expect(page).toHaveURL("/");
@@ -56,7 +56,7 @@ for (const width of [390, 834, 1440]) {
 
 async function leaveAndReturn(
   page: Page,
-  paths = ["/contact-us", "/about-us", "/solutions", "/service"],
+  paths = ["/service?section=contact", "/about-us", "/solutions", "/service"],
 ) {
   for (const path of paths) {
     const footer = page.locator("footer:visible");
@@ -86,11 +86,11 @@ test("directory filters and expanded results survive eviction and repeated Back/
   await expect(page.getByRole("textbox", { name: "ค้นหาข้อมูล Sunford" })).toHaveValue("software");
   await expect(page.locator(".directory-card")).toHaveCount(count);
   await page.goForward();
-  await expect(page).toHaveURL("/contact-us");
+  await expect(page).toHaveURL("/service?section=contact");
   await page.locator('footer:visible a[href="/products"]:visible').click();
   await expect(page).toHaveURL("/products");
   await page.goBack();
-  await expect(page).toHaveURL("/contact-us");
+  await expect(page).toHaveURL("/service?section=contact");
   await page.goBack();
   await expect(page.getByRole("textbox", { name: "ค้นหาข้อมูล Sunford" })).toHaveValue("software");
 });
@@ -160,7 +160,7 @@ test("service tab survives eviction", async ({ page }) => {
   await page.goto("/service");
   const pickup = page.getByRole("tab", { name: "รับสินค้าที่โรงงาน", exact: true });
   await pickup.click();
-  await leaveAndReturn(page, ["/contact-us", "/about-us", "/solutions", "/products"]);
+  await leaveAndReturn(page, ["/service?section=contact", "/about-us", "/solutions", "/products"]);
   await expect(pickup).toHaveAttribute("aria-selected", "true");
 });
 
@@ -204,12 +204,12 @@ test("reload keeps existing products finder behavior and direct detail return us
 test("separate visits to the same service URL keep separate tab states", async ({ page }) => {
   await page.goto("/service");
   await page.getByRole("tab").last().click();
-  await page.locator('footer:visible a[href="/contact-us"]:visible').first().click();
-  await expect(page).toHaveURL("/contact-us");
+  await page.locator('footer:visible a[href="/service?section=contact"]:visible').first().click();
+  await expect(page).toHaveURL("/service?section=contact");
   await page.locator('footer:visible a[href="/service"]:visible').first().click();
   await expect(page.getByRole("tab").first()).toHaveAttribute("aria-selected", "true");
   await page.goBack();
-  await expect(page).toHaveURL("/contact-us");
+  await expect(page).toHaveURL("/service?section=contact");
   await page.goBack();
   await expect(page.getByRole("tab").last()).toHaveAttribute("aria-selected", "true");
 });
@@ -277,7 +277,7 @@ test("quotation picker draft reopens on Forward without issuing a quotation", as
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
 });
 
-test("storefront position and expanded product specifications restore through Back and Forward", async ({
+test("storefront position and scale specification scroll restore through Back and Forward", async ({
   page,
 }) => {
   await page.goto("/products");
@@ -289,17 +289,17 @@ test("storefront position and expanded product specifications restore through Ba
   expect(offset).toBeGreaterThan(0);
   await card.press("Enter");
   await expect(page).toHaveURL(/\/products\//);
-  const spec = page.locator("main:visible .product-spec-groups article > button").last();
-  await expect(spec).toBeVisible();
-  await spec.click();
-  await expect(spec).toHaveAttribute("aria-expanded", "true");
+  const main = page.locator("main:visible");
+  await main.getByRole("link", { name: "ดูสเปก", exact: true }).click();
+  await expect
+    .poll(async () => Math.round((await main.locator("#product-specifications").boundingBox())!.y))
+    .toBe(124);
+  const specOffset = await page.evaluate(() => window.scrollY);
   await page.goBack();
   await expect(card).toBeInViewport();
   await expect.poll(() => rail.evaluate((el) => el.scrollLeft)).toBe(offset);
   await page.goForward();
-  await expect(spec).toHaveAttribute("aria-expanded", "true");
-  await spec.click();
-  await expect(page.locator("main:visible .product-spec-groups dl:visible")).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(specOffset);
   await page.locator(".skip-link").focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#main-content$/);
@@ -319,7 +319,7 @@ test("expanded finder results survive cache eviction", async ({ page }) => {
   const href = (await product.getAttribute("href"))!;
   await product.click();
   await expect(page).toHaveURL(href);
-  await navigate(page, "/contact-us");
+  await navigate(page, "/service?section=contact");
   await navigate(page, "/about-us");
   await page.locator('[data-products-header]:visible a[aria-label="SUNFORD หน้าแรก"]').click();
   await expect(page).toHaveURL("/");

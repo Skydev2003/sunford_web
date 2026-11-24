@@ -7,7 +7,7 @@ for (const width of [390, 1440]) {
     page.on("request", (request) => {
       if (request.url().includes("/maps/thailand/")) requests.push(request.url());
     });
-    for (const path of ["/", "/products", "/contact-us"]) {
+    for (const path of ["/", "/products", "/service?section=contact"]) {
       await page.goto(path);
       const footer = page.locator("footer:visible");
       await footer.scrollIntoViewIfNeeded();

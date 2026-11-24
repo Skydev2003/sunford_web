@@ -85,8 +85,8 @@ for (const route of ["/", "/products/wps10ks"]) {
       await expect(dialog.locator(".empty-state")).toBeVisible();
       await expect(dialog.locator(".search-caption")).toHaveText("พบ 0 ผลิตภัณฑ์");
 
-      await input.fill("/contact-us CONTACT");
-      const content = dialog.locator('.search-results > a[href="/contact-us"]');
+      await input.fill("/service?section=contact CONTACT");
+      const content = dialog.locator('.search-results > a[href="/service?section=contact"]');
       await expect(content).toBeVisible();
       await expect(
         content.locator(":scope > img, :scope > [data-product-image-placeholder]"),

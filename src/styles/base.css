@@ -1,4 +1,7 @@
 :root {
+  --site-header-height: 48px;
+  --site-nav-width: 1024px;
+  --site-nav-gutter: 16px;
   --page-gutter: 1.25rem;
   --section-space: 2rem;
   --section-space-compact: 1rem;
@@ -199,6 +202,11 @@ html {
     --section-space: 3rem;
     --section-space-compact: 1.5rem;
     --section-space-feature: 4rem;
+  }
+}
+@media (min-width: 64rem) {
+  :root {
+    --site-header-height: 44px;
   }
 }
 @media (min-width: 80rem) {

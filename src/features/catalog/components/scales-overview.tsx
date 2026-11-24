@@ -1,13 +1,12 @@
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
 import {
   defaultNavigation,
   defaultNavigationExtras,
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
-import { defaultSite } from "@/features/site/data/settings";
 import { sunford } from "@/features/home/data/brand";
 
 // Catalogue photographs are used only for the matching Warehouse model.
@@ -18,28 +17,11 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G106193: "/images/products/scale-showcase/g106193-front-4k.webp",
 };
 
-const topics: Readonly<Record<string, { image: string; detail: string }>> = {
-  capacity: {
-    image: "/images/products/scale-showcase/g106131-front-4k.webp",
-    detail:
-      "เลือกพิกัดจากน้ำหนักสูงสุดที่ต้องชั่งจริง รวมภาชนะด้วย แล้วตรวจว่าจานชั่งมีขนาดพอสำหรับภาชนะที่ใช้",
-  },
-  resolution: {
-    image: "/images/products/scale-showcase/g106643-front-4k.webp",
-    detail:
-      "เลือกค่าละเอียดตามขั้นเล็กสุดที่ต้องอ่านบนจอ เช่น 1 กรัม และตรวจค่าความคลาดเคลื่อนในสเปกด้วย โดยเฉพาะเมื่อต้องชั่งปริมาณน้อย",
-  },
-  compare: {
-    image: "/images/category-chapters/scales/price.webp",
-    detail:
-      "เทียบพิกัด ความละเอียด ขนาดจานชั่ง และฟังก์ชันที่ใช้จริง เช่น นับชิ้น คำนวณราคา หรือพิมพ์ฉลาก จากข้อมูลของแต่ละรุ่น",
-  },
+const topicImages: Readonly<Record<string, string>> = {
+  capacity: "/images/products/scale-showcase/g106131-front-4k.webp",
+  resolution: "/images/products/scale-showcase/g106643-front-4k.webp",
+  compare: "/images/category-chapters/scales/price.webp",
 };
-
-async function getCopyrightYear() {
-  "use cache";
-  return new Date().getFullYear();
-}
 
 export async function ScalesOverview() {
   const {
@@ -60,15 +42,14 @@ export async function ScalesOverview() {
         return { ...product, fallbackImage: localPhoto };
       return product;
     });
-  const guide = buyingGuides.find(({ slug }) => slug === "scales")!;
-  const guideHref = "/guides/scales";
+  const guide = guidebookBuyingGuides.find(({ slug }) => slug === "scales")!;
   const stories = guide.sections.map((section) => ({
     id: section.id,
     title: section.title,
-    introduction: topics[section.id].detail,
-    image: topics[section.id].image,
-    href: `${guideHref}#${section.id}`,
-    content: <p>{topics[section.id].detail}</p>,
+    introduction: section.advice,
+    image: topicImages[section.id],
+    href: buyingGuideHref(guide.slug, section.id),
+    content: <p>{section.advice}</p>,
   }));
   const services = [
     {
@@ -96,11 +77,10 @@ export async function ScalesOverview() {
       href: sunford.downloads,
     },
   ];
-  const [navigation, site, copyrightYear] = await Promise.all([
-    getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
-    getSettings("site", defaultSite),
-    getCopyrightYear(),
-  ]);
+  const navigation = await getSettings("navigation", {
+    items: defaultNavigation,
+    ...defaultNavigationExtras,
+  });
   return (
     <ProductsOverview
       products={products}
@@ -109,8 +89,6 @@ export async function ScalesOverview() {
       categoryId="scales"
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
-      site={site}
-      copyrightYear={copyrightYear}
       stories={stories}
       services={services}
       accordion={stories}

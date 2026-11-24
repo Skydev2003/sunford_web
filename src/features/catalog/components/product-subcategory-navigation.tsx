@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { PRODUCT_IMAGE_PLACEHOLDER, ProductImage } from "@/components/ui/product-image";
 import { CatalogNavigationLink } from "./catalog-navigation-link";
 import styles from "./product-directory.module.css";
@@ -13,8 +13,11 @@ export function ProductSubcategoryNavigation({
   currentHref: string;
 }) {
   const trackRef = useRef<HTMLUListElement>(null);
+  const previousHref = useRef(currentHref);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (previousHref.current === currentHref) return;
+    previousHref.current = currentHref;
     const track = trackRef.current;
     const current = track?.querySelector('[aria-current="page"]');
     if (!track || !current) return;

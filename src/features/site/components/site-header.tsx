@@ -1,4 +1,5 @@
-import { SiteNavigation } from "./site-navigation";
+import { PrimaryNavigation } from "@/components/layout/primary-navigation";
+import { getNavbarListingFeatures } from "@/features/catalog/server/navbar-listing-features";
 import { getSettings } from "../server/documents";
 import {
   defaultNavigation,
@@ -6,6 +7,7 @@ import {
   resolveNavigationItems,
 } from "../data/navigation";
 import { defaultSite } from "../data/settings";
+import { getDisabledNavigationDestinations } from "../data/primary-navigation";
 
 export async function SiteHeader() {
   const [navigation, site] = await Promise.all([
@@ -13,17 +15,12 @@ export async function SiteHeader() {
     getSettings("site", defaultSite),
   ]);
   const items = resolveNavigationItems(navigation.items);
+  const disabledHrefs = [...getDisabledNavigationDestinations(items)];
   return (
-    <SiteNavigation
+    <PrimaryNavigation
       navigation={items}
       site={site}
-      extras={{
-        exploreLabel: navigation.exploreLabel,
-        exploreLinks: navigation.exploreLinks,
-        helpLabel: navigation.helpLabel,
-        helpLinks: navigation.helpLinks,
-        mobileLinks: defaultNavigationExtras.mobileLinks,
-      }}
+      listingFeatures={getNavbarListingFeatures(disabledHrefs).catch(() => ({}))}
     />
   );
 }

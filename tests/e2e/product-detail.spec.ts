@@ -2,14 +2,15 @@ import { expect, test } from "@playwright/test";
 import type { Product } from "@/features/catalog/types";
 import { relatedProducts } from "@/features/catalog/data/related-products";
 import { catalogProductGroup } from "@/features/catalog/data/catalog-supplements";
-import { buyingGuides } from "@/features/content/data/buying-guides";
+import { catalogFieldValue } from "@/features/catalog/data/catalog-decision-facts";
+import { buyingGuideHref, buyingGuides } from "@/features/content/data/buying-guides";
 
-test("inline specifications preserve Warehouse values and open one group at a time", async ({
+test("non-scale specifications preserve Warehouse values and open one group at a time", async ({
   page,
   request,
 }) => {
   const { products }: { products: Product[] } = await (await request.get("/api/products")).json();
-  const p = products.find((p) => p.warehouseSku === "G106438")!;
+  const p = products.find((p) => p.warehouseSku === "G107770")!;
   await page.goto(`/products/${p.slug}`, { waitUntil: "domcontentloaded" });
   const specs = page.locator("#product-specifications");
   const buttons = specs.locator("article > button");
@@ -85,6 +86,65 @@ test("inline specifications preserve Warehouse values and open one group at a ti
   }
 });
 
+test("scale specifications use page scrolling with a pinned photo and compact heading", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/products/warehouse-G106094");
+  const main = page.locator("main.product-detail");
+  const photo = main.locator(".detail-image");
+  const panel = main.getByRole("region", { name: "รายละเอียดเครื่องชั่ง", exact: true });
+  const specs = main.getByRole("region", { name: "สเปกสินค้า", exact: true });
+  const compactLabel = panel.getByText("สเปกสินค้า", { exact: true });
+  await expect(panel.getByRole("heading", { level: 1 })).toHaveText("ACS-30-JC21");
+  await expect(compactLabel).toBeHidden();
+  await expect(photo.locator("img")).toHaveAttribute("src", /acs30-jc21-pdp/);
+  const before = await photo.boundingBox();
+  expect(before).toEqual({ x: 64, y: 144, width: 688, height: 558 });
+  expect(await photo.locator("img").evaluate((image) => image.getAnimations().length)).toBe(0);
+
+  await expect(panel).toHaveCSS("overflow-y", "visible");
+  await page.mouse.move(1100, 460);
+  await page.mouse.wheel(0, 180);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  await expect(compactLabel).toBeVisible();
+  const compactHeader = compactLabel.locator("..");
+  expect(await compactHeader.boundingBox()).toMatchObject({ y: 96, height: 56 });
+  expect(await panel.evaluate((node) => node.scrollTop)).toBe(0);
+  expect(await photo.boundingBox()).toEqual({ ...before, y: 96 });
+
+  await main.getByRole("link", { name: "ดูสเปก", exact: true }).click();
+  await expect(specs).toBeFocused();
+  await expect.poll(async () => Math.round((await specs.boundingBox())!.y)).toBe(166);
+  expect(await photo.boundingBox()).toEqual({ ...before, y: 96 });
+  await expect(specs.getByText("200 กรัม", { exact: true })).toBeInViewport();
+  await expect(specs.getByText("ละเอียด 5 กรัม", { exact: true })).toBeVisible();
+
+  const related = main.getByRole("heading", { name: "สินค้าในหมวดเดียวกัน", exact: true });
+  await page.mouse.move(1100, 460);
+  await page.mouse.wheel(0, (await related.boundingBox())!.y - 100);
+  await expect(related).toBeInViewport();
+  expect((await photo.boundingBox())!.y).toBeLessThan(96);
+  expect(await panel.evaluate((node) => node.scrollTop)).toBe(0);
+
+  await page.setViewportSize({ width: 1440, height: 720 });
+  await page.evaluate(() => window.scrollTo({ top: 130, behavior: "instant" }));
+  expect((await photo.boundingBox())!.height).toBe(488);
+  await expect(main.getByRole("link", { name: "การรับประกันและบริการ" })).toBeInViewport({
+    ratio: 1,
+  });
+
+  for (const width of [390, 768]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect(compactLabel).toBeHidden();
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    const photoTop = (await photo.boundingBox())!.y;
+    await page.evaluate(() => window.scrollTo({ top: 300, behavior: "instant" }));
+    expect((await photo.boundingBox())!.y).toBeCloseTo(photoTop - 300, 0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+  }
+});
+
 test("each product group keeps its published related models and guide", async ({
   page,
   request,
@@ -94,7 +154,13 @@ test("each product group keeps its published related models and guide", async ({
     const p = products.find((p) => catalogProductGroup(p) === family)!;
     await page.goto(`/products/${p.slug}`);
     const main = page.locator("main.product-detail");
-    await expect(main.getByRole("heading", { level: 1 })).toHaveText(p.name);
+    const model =
+      family === "/products"
+        ? catalogFieldValue(
+            p.warehouseSpecifications?.find((row) => row.label === "รุ่นสินค้า")?.value,
+          )
+        : undefined;
+    await expect(main.getByRole("heading", { level: 1 })).toHaveText(model ?? p.name);
     const cards = main.locator(".related-products article");
     const expected = relatedProducts(p, products);
     await expect(cards).toHaveCount(expected.length);
@@ -107,7 +173,7 @@ test("each product group keeps its published related models and guide", async ({
     if (guide)
       await expect(main.getByRole("link", { name: "อ่านคู่มือ" })).toHaveAttribute(
         "href",
-        `/guides/${guide.slug}`,
+        buyingGuideHref(guide.slug),
       );
     else await expect(main.getByRole("link", { name: "อ่านคู่มือ" })).toHaveCount(0);
     if (p.warehouseSku) await expect(main.locator("[data-product-videos]")).toHaveCount(0);
@@ -127,7 +193,13 @@ test("long product names, sparse duplicate models and non-weighing products use 
   for (const p of cases) {
     await page.goto(`/products/${p.slug}`);
     const main = page.locator("main.product-detail");
-    await expect(main.locator("h1")).toHaveText(p.name);
+    const model =
+      catalogProductGroup(p) === "/products"
+        ? catalogFieldValue(
+            p.warehouseSpecifications?.find((row) => row.label === "รุ่นสินค้า")?.value,
+          )
+        : undefined;
+    await expect(main.locator("h1")).toHaveText(model ?? p.name);
     await expect(main.locator(".detail-copy")).toContainText(p.warehouseSku!);
     await expect(main.locator(".product-gallery")).toHaveCount(p.warehouseCard?.image ? 1 : 0);
     if (!p.warehouseCard?.capacity && !p.warehouseCard?.readability)

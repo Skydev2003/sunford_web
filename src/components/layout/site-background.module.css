@@ -1,20 +1,13 @@
 .surface {
-  --site-header-height: 48px;
   position: relative;
   min-height: 100vh;
   background: #fff;
 }
 
-.surface:has(> :global(.site-header)) {
+.surface[data-home-route] {
   padding-top: var(--site-header-height);
 }
 
 .surface[data-page-surface="paper"] {
   background: #f6f8fb;
-}
-
-@media (min-width: 64rem) {
-  .surface {
-    --site-header-height: 44px;
-  }
 }

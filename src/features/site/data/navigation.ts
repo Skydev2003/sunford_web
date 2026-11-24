@@ -1,3 +1,4 @@
+import { contactPath } from "@/features/content/data/contact-route";
 import type { NavigationGroup, NavigationItem } from "../types";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
 import { legacySoftwareCatalogPath, sunford } from "@/features/home/data/brand";
@@ -167,7 +168,7 @@ export const defaultNavigation: NavigationItem[] = [
         links: [
           { label: "ข้อมูลทางเทคนิคและคู่มือ", href: "/technical-specification" },
           { label: "สั่งซื้ออะไหล่", href: "/support/accessory" },
-          { label: "ติดต่อฝ่ายบริการ", href: "/contact-us" },
+          { label: "ติดต่อฝ่ายบริการ", href: contactPath },
         ],
       },
     ],
@@ -182,7 +183,7 @@ export const defaultNavigation: NavigationItem[] = [
       { label: "สำรวจข้อมูลทั้งหมด", href: "/explore" },
     ],
   },
-  { label: "ติดต่อเรา", href: "/contact-us", links: [] },
+  { label: "ติดต่อเรา", href: contactPath, links: [] },
 ];
 
 export const defaultNavigationGroups: Record<string, NavigationGroup[]> = Object.fromEntries(
@@ -244,7 +245,7 @@ export const defaultNavigationExtras = {
   ],
   helpLabel: "ให้เราช่วยคุณ",
   helpLinks: [
-    { label: "ติดต่อเรา", href: "/contact-us" },
+    { label: "ติดต่อเรา", href: contactPath },
     { label: "ลงทะเบียนรับประกัน", href: "/warranty/register" },
     { label: "ข้อมูลทางเทคนิค", href: "/technical-specification" },
   ],

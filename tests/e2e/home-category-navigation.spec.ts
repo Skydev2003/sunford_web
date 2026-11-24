@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
@@ -17,7 +18,7 @@ for (const width of [390, 768, 833, 834, 1024, 1400, 1440, 1920]) {
   test(`Home Navbar spacing matches category and company pages at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const measurements = [];
-    for (const route of ["/", "/products/category/scales", "/contact-us"]) {
+    for (const route of ["/", "/products/category/scales", "/service?section=contact"]) {
       await page.goto(route);
       const home = route === "/";
       const header = page.locator(home ? ".site-header:visible" : "[data-products-header]:visible");
@@ -26,7 +27,7 @@ for (const width of [390, 768, 833, 834, 1024, 1400, 1440, 1920]) {
       measurements.push(
         await header.evaluate((element, home) => {
           const nav = element.querySelector(home ? ".header-inner" : "[data-products-nav]")!;
-          const logo = nav.querySelector(home ? ".brand" : "a")!;
+          const logo = nav.querySelector("a")!;
           const links = home ? nav.querySelectorAll(".desktop-nav > a") : nav.children[1].children;
           const rect = (node: Element) => {
             const { x, y, width, height } = node.getBoundingClientRect();
@@ -97,47 +98,47 @@ for (const width of [1400, 1440, 1920]) {
       const parent = header.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
       await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
       await parent.hover();
-      const panel = header.locator(".submenu-panel.is-active");
+      const panel = header.locator("[data-nav-menu]");
       const definition = getPrimaryNavigationItems(defaultNavigation).find(
         (item) => item.href === `/products/category/${id}`,
       )!;
       const expected = definition.links;
-      await expect(
-        panel.locator(".submenu-group-primary .submenu-links").getByRole("link"),
-      ).toHaveText(expected.map(({ label }) => label));
-      await expect(panel.locator(".submenu-group-primary .submenu-links a")).toHaveText(
+      await expect(panel.locator('[data-nav-column="primary"]').getByRole("link")).toHaveText(
+        expected.map(({ label }) => label),
+      );
+      await expect(panel.locator('[data-nav-column="primary"] a')).toHaveText(
         expected.filter((link) => !link.disabled).map((link) => link.label),
       );
-      await expect(panel.locator('.submenu-group-primary [aria-disabled="true"]')).toHaveCount(
+      await expect(panel.locator('[data-nav-column="primary"] [aria-disabled="true"]')).toHaveCount(
         expected.filter((link) => link.disabled).length,
       );
-      await expect(panel.locator(".submenu-group-primary > p")).toHaveText(
+      await expect(panel.locator('[data-nav-column="primary"] > p')).toHaveText(
         definition.submenuLabel!,
       );
-      await expect(panel.locator(".submenu-group-secondary > p")).toHaveText(
-        definition.groups!.map((group) => group.label),
-      );
+      await expect(
+        panel.locator('[data-nav-column]:not([data-nav-column="primary"]) > p'),
+      ).toHaveText(definition.groups!.map((group) => group.label));
       for (const item of expected) {
         const link = panel
-          .locator(".submenu-group-primary")
+          .locator('[data-nav-column="primary"]')
           .getByRole("link", { name: item.label, exact: true });
         if (item.disabled) {
           await expect(link).toHaveAttribute("aria-disabled", "true");
           await expect(link).not.toHaveAttribute("href");
-        } else await expect(link).toHaveAttribute("href", item.href);
+        } else await expect(link).toHaveAttribute("href", catalogSubmenuDestination(item.href));
       }
       await expect(
-        panel.locator(`.submenu-group-primary a[href="${definition.href}"]`),
-      ).toHaveCount(1);
+        panel.locator(`[data-nav-column="primary"] a[href="${definition.href}"]`),
+      ).toHaveCount(0);
     }
     await header.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
-    const panel = header.locator(".submenu-panel.is-active");
+    const panel = header.locator("[data-nav-menu]");
     await expect(
       panel.getByRole("link", { name: "เกี่ยวกับ SUNFORD", exact: true }),
     ).toHaveAttribute("href", "/about-us");
     await expect(panel.getByRole("link", { name: "ติดต่อเรา", exact: true })).toHaveAttribute(
       "href",
-      "/contact-us",
+      "/service?section=contact",
     );
     await page.keyboard.press("Escape");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -157,11 +158,13 @@ for (const width of [390, 1440]) {
       if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       const parent =
         width < 1024
-          ? header.locator("#mobile-navigation").getByRole("link", { name: label, exact: true })
+          ? header
+              .locator("#products-navigation-panel")
+              .getByRole("link", { name: label, exact: true })
           : header.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
       await parent.click();
       await expect(page).toHaveURL(new URL(`/products/category/${id}`, page.url()).href);
-      await expect(page.locator(".site-header:visible")).toHaveCount(0);
+      await expect(page.locator(".site-header:visible")).not.toHaveAttribute("data-nav-home");
       await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
       await expect(
         page.locator(`[data-overview-category="${id}"]:visible`).getByRole("heading", { level: 1 }),
@@ -184,26 +187,22 @@ test("mobile native arrows expand children while names remain separate touch lin
   const page = await context.newPage();
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
-  const mobile = page.locator("#mobile-navigation");
-  await expect(mobile.locator(".mobile-nav-category-link")).toHaveText([
-    "ผลิตภัณฑ์ทั้งหมด",
-    ...productCategoryDefinitions.map(({ label }) => label),
-    "จัดสเปค",
-  ]);
+  const mobile = page.locator("#products-navigation-panel");
+  await expect(mobile.locator("[data-nav-category-row] > a")).toHaveText(labels);
   const group = mobile
-    .locator(".mobile-nav-category")
+    .locator("[data-nav-category-row]")
     .filter({ has: page.getByLabel("เปิดเมนูย่อยเครื่องชั่ง", { exact: true }) });
-  const arrow = group.locator("summary");
-  const linkBox = await group.locator(".mobile-nav-category-link").boundingBox();
+  const arrow = group.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true });
+  const linkBox = await group.getByRole("link", { name: "เครื่องชั่ง", exact: true }).boundingBox();
   const arrowBox = await arrow.boundingBox();
   expect(arrowBox!.width).toBeGreaterThanOrEqual(44);
   expect(linkBox!.x + linkBox!.width).toBeLessThanOrEqual(arrowBox!.x + 1);
   await arrow.tap();
-  await expect(group.locator("details")).toHaveAttribute("open", "");
-  const child = group.getByRole("link", { name: "ครัวเรือน", exact: true });
+  await expect(mobile.getByRole("button", { name: "เมนูหลัก", exact: true })).toBeFocused();
+  const child = mobile.getByRole("link", { name: "เครื่องชั่งครัวและกาแฟ", exact: true });
   await child.scrollIntoViewIfNeeded();
   await child.tap();
-  await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen$/);
+  await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen#product-listing-scales$/);
   await expect(page.locator('[data-product-subcategory-page="scale-kitchen"]')).toBeVisible();
   await expect(page.locator('#mock-product-results a[href^="/products/"]').first()).toBeVisible();
   await context.close();
@@ -217,11 +216,13 @@ test("Home keyboard preserves parent navigation and first-child focus", async ({
     .getByRole("link", { name: "เครื่องชั่ง", exact: true });
   await parent.focus();
   await page.keyboard.press("ArrowDown");
-  const panel = page.locator(".submenu-panel.is-active");
-  await expect(panel.getByRole("link", { name: "ครัวเรือน", exact: true })).toBeFocused();
+  const panel = page.locator("[data-nav-menu]");
+  await expect(
+    panel.getByRole("link", { name: "เครื่องชั่งครัวและกาแฟ", exact: true }),
+  ).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(parent).toBeFocused();
-  await expect(page.locator("#desktop-submenu")).toHaveAttribute("aria-hidden", "true");
+  await expect(page.locator("#products-navigation-panel")).toBeHidden();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/products\/category\/scales$/);
 });
