@@ -15,8 +15,14 @@ for (const width of [390, 1440]) {
       await expect(overview.getByRole("heading", { level: 1 })).toHaveText(label);
       await expect(overview.locator('a[href$="/applications"]')).toHaveCount(0);
       await expect(overview.locator('[data-return-scope="catalog-finder"]')).toHaveCount(0);
-      const filters = overview.getByRole("group", { name: "กรองผลิตภัณฑ์" });
-      const all = filters.getByRole("button", { name: "ทุกผลิตภัณฑ์", exact: true });
+      const platforms = id === "platforms";
+      const filters = overview.getByRole("group", {
+        name: platforms ? "กรองตามวัสดุ" : "กรองผลิตภัณฑ์",
+      });
+      const all = filters.getByRole("button", {
+        name: platforms ? "ทุกวัสดุ" : "ทุกผลิตภัณฑ์",
+        exact: true,
+      });
       await expect(all).toHaveAttribute("aria-pressed", "true");
       const group = filters.getByRole("button").nth(1);
       await group.click();

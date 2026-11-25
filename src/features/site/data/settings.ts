@@ -1,5 +1,7 @@
 import type { HeroSettings, SiteSettings } from "../types";
 import { sunford } from "@/features/home/data/brand";
+export const sunfordLogo = "/icon.svg";
+
 export const defaultHero: HeroSettings = {
   announcement: "เทคโนโลยีการชั่งและระบบจัดการข้อมูล เพื่อธุรกิจของคุณ",
   announcementLabel: "ให้เราช่วยเลือก",
@@ -17,7 +19,7 @@ export const defaultHero: HeroSettings = {
   })),
 };
 export const defaultSite: SiteSettings = {
-  logo: "/images/sunford-logo.png",
+  logo: sunfordLogo,
   name: "SUNFORD",
   phone: sunford.phone,
   phoneHref: sunford.phoneHref,
@@ -49,9 +51,8 @@ export const showcaseDefaults = {
   linkLabel: "ดูเพิ่มเติม",
 };
 export const storiesDefaults = {
-  eyebrow: "SUNFORD STORIES",
-  title: "เรื่องราวของคนทำธุรกิจ.",
-  description: "แรงบันดาลใจ ความรู้ และเทคนิคดี ๆ เพื่อให้ธุรกิจของคุณเติบโตไปด้วยกัน",
+  eyebrow: "INTERESTING ARTICLES",
+  title: "บทความน่ารู้",
   linkLabel: "ดูเรื่องราวทั้งหมด",
   href: "/news-and-activities",
   cardLabel: "SUNFORD BIZ TALK",

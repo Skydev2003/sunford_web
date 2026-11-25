@@ -36,7 +36,7 @@ async function settled(page: Page, route: string) {
   await page.evaluate(() => document.fonts.ready);
   await expect(
     page.getByRole("button", {
-      name: route === "/" ? "ค้นหาสินค้า" : "ค้นหาสินค้าและข้อมูล",
+      name: "ค้นหาสินค้าและข้อมูล",
       exact: true,
     }),
   ).toBeEnabled();

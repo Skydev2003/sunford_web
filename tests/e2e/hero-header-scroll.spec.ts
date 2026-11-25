@@ -11,10 +11,17 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: "reduce" });
+    const hydrationErrors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error" && /hydrat|server rendered HTML/i.test(message.text())) {
+        hydrationErrors.push(message.text());
+      }
+    });
     await page.goto("/");
     await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-ready", "true");
     const header = page.locator(".site-header");
     const glass = header.locator(".nav-glass");
+    await expect(header).toHaveAttribute("data-hero-backdrop-tracked", "");
     await expect(header).toHaveAttribute("data-hero-backdrop", "");
     await expect(header).toHaveCSS("position", "fixed");
     await expect(header).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
@@ -89,5 +96,7 @@ for (const viewport of [
     await expect(pos).toHaveAttribute("href", "/products/category/pos#product-lineup-pos");
     await pos.click();
     await expect(page).toHaveURL(/\/products\/category\/pos#product-lineup-pos$/);
+    await expect(header).not.toHaveAttribute("data-hero-backdrop-tracked");
+    expect(hydrationErrors).toEqual([]);
   });
 }

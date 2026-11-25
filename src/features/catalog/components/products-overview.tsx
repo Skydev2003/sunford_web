@@ -50,6 +50,7 @@ import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import type { NavigationItem } from "@/features/site/types";
 import type { ClientProduct } from "../types";
 import type { ProductCategory } from "../data/mock-categories";
+import { platformSubcategoryDefinitions } from "../data/platform-subcategory-definitions";
 import { sunford } from "@/features/home/data/brand";
 import { solutionImages } from "@/features/home/data/business-solutions";
 import {
@@ -422,16 +423,26 @@ export function ProductsOverview({
       }));
   const [lineupSelection, setLineupSelection] = useReturnState<{
     id: string | null;
+    materialId?: string | null;
     revision: number;
   } | null>("products-overview.lineupSelection", null);
   const lineupFilter = lineupSelection?.id ?? null;
+  const materialFilter = lineupSelection?.materialId ?? null;
   const lineupRevision = lineupSelection?.revision ?? 0;
-  const selectedGroup = categoryLineup
-    ? chapterItems.find((item) => !item.disabled && item.id === lineupFilter)
-    : undefined;
-  const selectLineupFilter = (id: string | null) => {
-    if (lineupFilter === id) return;
-    setLineupSelection({ id, revision: lineupRevision + 1 });
+  const selectedGroup =
+    categoryLineup && !platforms
+      ? chapterItems.find((item) => !item.disabled && item.id === lineupFilter)
+      : undefined;
+  const materialOptions = platforms
+    ? platformSubcategoryDefinitions.flatMap(({ id }) => {
+        const group = activeCategory?.subcategories.find((item) => item.id === id);
+        return group?.productIds.length ? [group] : [];
+      })
+    : [];
+  const selectedMaterial = materialOptions.find(({ id }) => id === materialFilter);
+  const selectLineupFilter = (id: string | null, materialId = materialFilter) => {
+    if (lineupFilter === id && materialFilter === materialId) return;
+    setLineupSelection({ id, materialId, revision: lineupRevision + 1 });
   };
   const railScope = categoryLineup ? `products-overview.${categoryId}` : undefined;
   const [restoredFinderOpen, setFinderOpen] = useReturnState("products-overview.finderOpen", false);
@@ -488,10 +499,13 @@ export function ProductsOverview({
   const lineup = categoryLineup
     ? [...featuredFirst, ...products.filter((product) => !hasLineupPhoto(product))]
     : featuredFirst.slice(0, 6);
-  const groupProducts = selectedGroup ? new Set(selectedGroup.productIds) : null;
-  const lineupProducts = groupProducts
-    ? lineup.filter((product) => groupProducts.has(product.id))
-    : lineup;
+  const placementProducts = selectedGroup ? new Set(selectedGroup.productIds) : null;
+  const materialProducts = selectedMaterial ? new Set(selectedMaterial.productIds) : null;
+  const lineupProducts = lineup.filter(
+    ({ id }) =>
+      (!placementProducts || placementProducts.has(id)) &&
+      (!materialProducts || materialProducts.has(id)),
+  );
   const hasFeaturedGallery = scales && featuredFirst.length > 0;
   const heroes = hasFeaturedGallery ? featuredFirst.slice(0, 2) : [];
   const playing =
@@ -1120,7 +1134,7 @@ export function ProductsOverview({
                   </button>
                 )}
               </div>
-              {categoryLineup && (
+              {categoryLineup && !platforms && (
                 <div className={styles.lineupFilters} role="group" aria-label="กรองผลิตภัณฑ์">
                   <SegmentedFilter value={selectedGroup?.id ?? "all"}>
                     <button
@@ -1142,6 +1156,33 @@ export function ProductsOverview({
                         onClick={() => selectLineupFilter(item.id)}
                       >
                         {item.label}
+                      </button>
+                    ))}
+                  </SegmentedFilter>
+                </div>
+              )}
+              {materialOptions.length > 0 && (
+                <div className={styles.lineupFilters} role="group" aria-label="กรองตามวัสดุ">
+                  <SegmentedFilter value={selectedMaterial?.id ?? "all"}>
+                    <button
+                      type="button"
+                      aria-pressed={!selectedMaterial}
+                      aria-controls="products-lineup"
+                      disabled={!hydrated}
+                      onClick={() => selectLineupFilter(null, null)}
+                    >
+                      ทุกวัสดุ
+                    </button>
+                    {materialOptions.map(({ id, label }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        aria-pressed={selectedMaterial?.id === id}
+                        aria-controls="products-lineup"
+                        disabled={!hydrated}
+                        onClick={() => selectLineupFilter(null, id)}
+                      >
+                        {label}
                       </button>
                     ))}
                   </SegmentedFilter>

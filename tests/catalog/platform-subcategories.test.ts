@@ -4,6 +4,8 @@ import sourceProducts from "../../src/features/content/data/products.json";
 import { getSnapshotProducts } from "../../src/features/content/data/catalog-snapshot";
 import { catalogProductGroup } from "../../src/features/catalog/data/catalog-supplements";
 import {
+  getPlatformMaterialId,
+  getPlatformPlacementSubcategories,
   getPlatformSubcategories,
   platformSubcategoryDefinitions,
 } from "../../src/features/catalog/data/platform-subcategories";
@@ -11,6 +13,45 @@ import type { Product } from "../../src/features/catalog/types";
 
 const products = getSnapshotProducts();
 const children = getPlatformSubcategories(products);
+
+test("platform placements use published identities and allow a verified model in both groups", () => {
+  const [floor, benchtop] = getPlatformPlacementSubcategories(products);
+  assert.equal(floor.productIds.length, 22);
+  assert.deepEqual(benchtop.productIds.toSorted(), ["sunford-10757", "sunford-10758"]);
+  assert.ok(floor.productIds.includes("sunford-10758"));
+  assert.equal(new Set([...floor.productIds, ...benchtop.productIds]).size, 23);
+
+  const publish = (warehouseSku: string, overrides: Partial<Product> = {}): Product => ({
+    ...products[0],
+    sourceId: undefined,
+    id: warehouseSku,
+    warehouseSku,
+    warehouseCategoryId: "platforms",
+    ...overrides,
+  });
+  const desk = publish("G107572");
+  const both = publish("G107589");
+  const floorOnly = publish("G107626");
+  const unknown = publish("UNKNOWN", { name: "TMS 3040" });
+  const [warehouseFloor, warehouseBenchtop] = getPlatformPlacementSubcategories([
+    desk,
+    both,
+    floorOnly,
+    unknown,
+  ]);
+  assert.deepEqual(warehouseFloor.productIds, ["G107589", "G107626"]);
+  assert.deepEqual(warehouseBenchtop.productIds, ["G107572", "G107589"]);
+  assert.equal(getPlatformMaterialId(desk), "platform-sus304");
+  assert.equal(getPlatformMaterialId(unknown), undefined);
+  assert.equal(
+    getPlatformMaterialId(
+      publish("G107572", {
+        warehouseSpecifications: [{ label: "วัสดุโครงสร้าง", value: "เฉพาะจาน SUS304" }],
+      }),
+    ),
+    undefined,
+  );
+});
 
 test("platform materials preserve the four owner labels and classify all 23 existing structures", () => {
   assert.deepEqual(

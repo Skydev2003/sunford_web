@@ -435,12 +435,13 @@ test("each scale keeps its solid or split background and matching text color", a
     const sku = (await item.getAttribute("data-warehouse-sku"))!;
     const { top, bottom, height, ink } = palette[sku];
     const card = item.getByRole("link");
-    await expect(card).toHaveCSS("background-color", top);
+    const face = card.locator("[data-scale-card-face]");
+    await expect(face).toHaveCSS("background-color", top);
     for (const text of await card.locator("h3, p").all()) {
       await expect(text).toHaveCSS("color", ink);
       await expect(text).toHaveCSS("opacity", "1");
     }
-    const contrast = await card.evaluate((link) => {
+    const contrast = await face.evaluate((surface) => {
       function luminance(rgb: string) {
         const [r, g, b] = rgb.match(/\d+/g)!.map((channel) => {
           const value = Number(channel) / 255;
@@ -448,8 +449,8 @@ test("each scale keeps its solid or split background and matching text color", a
         });
         return r * 0.2126 + g * 0.7152 + b * 0.0722;
       }
-      const background = luminance(getComputedStyle(link).backgroundColor);
-      return [...link.querySelectorAll("p")].map((text) => {
+      const background = luminance(getComputedStyle(surface).backgroundColor);
+      return [...surface.querySelectorAll("p")].map((text) => {
         const foreground = luminance(getComputedStyle(text).color);
         return (
           (Math.max(background, foreground) + 0.05) / (Math.min(background, foreground) + 0.05)
@@ -887,9 +888,10 @@ test("component showcase links eight pictured parts to their own products", asyn
   await expect(shelfItems.nth(3)).toHaveAttribute("data-warehouse-sku", "G107268");
   await expect(shelfItems.nth(4).getByRole("img", { name: /LP50.*AW31/ })).toBeAttached();
   await expect(shelfItems.nth(5)).toHaveAttribute("data-warehouse-sku", "G107787");
-  const aboutCard = shelfItems.first().getByRole("link");
-  await expect(aboutCard).toHaveAttribute("href", "/about-us");
-  await expect(aboutCard.getByRole("heading", { level: 3 })).toHaveText("แม่นยำในทุกน้ำหนัก");
+  const featuredCard = shelfItems.first().getByRole("link");
+  await expect(featuredCard).toHaveAttribute("href", "/products/warehouse-G106124");
+  await expect(featuredCard.getByText("ACS-30-FC31", { exact: true })).toBeVisible();
+  await expect(featuredCard.getByRole("heading", { level: 3 })).toHaveText("แม่นยำในทุกน้ำหนัก");
   await expect(section.getByRole("link", { name: /จัดสเปค/ })).toHaveCount(0);
   const cards = section.locator("li[data-warehouse-sku]");
   const skus = [
@@ -912,10 +914,10 @@ test("component showcase links eight pictured parts to their own products", asyn
     const titleId = await card.locator("h3").getAttribute("id");
     await expect(page.locator(`[id="${titleId}"]`)).toHaveCount(1);
   }
-  await aboutCard.focus();
-  await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/about-us$/);
-  await expect(page.getByRole("heading", { level: 1, name: /แม่นยำในทุกน้ำหนัก/ })).toBeVisible();
+  await featuredCard.scrollIntoViewIfNeeded();
+  await featuredCard.press("Enter");
+  await expect(page).toHaveURL(/\/products\/warehouse-G106124$/, { timeout: 20000 });
+  await expect(page.getByRole("heading", { level: 1, name: "ACS-30-FC31" })).toBeVisible();
 });
 
 test("product photos lead later shelves while the first shelf and non-product cards keep their layout", async ({
@@ -926,19 +928,18 @@ test("product photos lead later shelves while the first shelf and non-product ca
   const directory = page.locator("[data-products-directory]");
   await expect(directory).toBeVisible();
   const products = directory.locator("a[data-product-card-photo-first]");
-  const excluded = directory.locator(
-    "#products-rail-scales > li > a, #products-rail-indicators a[href='/about-us'], [data-software='weweigh2'] > a",
-  );
+  const excludedSelector =
+    "#products-rail-scales > li > a, #products-rail-indicators a[href='/products/warehouse-G106124'], [data-software='weweigh2'] > a";
+  const excluded = directory.locator(excludedSelector);
   await expect(excluded).toHaveCount(12);
   await expect(products.first()).toHaveCSS("display", "grid");
   for (const width of [320, 390, 768, 1326, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => document.fonts.ready);
-    const result = await directory.evaluate((index) => {
+    const result = await directory.evaluate((index, excludedSelector) => {
       const productLinks = [...index.querySelectorAll("ul[id^='products-rail-'] > li > a")].filter(
         (link) =>
-          link.getAttribute("href")?.startsWith("/products/") &&
-          !link.closest("#products-rail-scales"),
+          link.getAttribute("href")?.startsWith("/products/") && !link.matches(excludedSelector),
       );
       const invalid = productLinks.flatMap((link) => {
         const image = link.querySelector("img")!;
@@ -976,7 +977,7 @@ test("product photos lead later shelves while the first shelf and non-product ca
         invalid,
         fitsViewport: document.documentElement.scrollWidth <= innerWidth,
       };
-    });
+    }, excludedSelector);
     expect(result.count).toBeGreaterThanOrEqual(30);
     expect(result.invalid, `Card layout at ${width}px`).toEqual([]);
     expect(result.fitsViewport).toBe(true);
@@ -1021,7 +1022,9 @@ test("product photos lead later shelves while the first shelf and non-product ca
   await expect(page).toHaveURL((url) => url.pathname === destination);
 });
 
-test("the whole featured product card opens its SKU", async ({ page }) => {
+test("the featured scale card lifts on hover with a stable link at the bottom edge", async ({
+  page,
+}) => {
   await page.goto("/products");
   const card = page.locator("#products-rail-scales [data-warehouse-sku='G106315'] > a");
   const href = await card.getAttribute("href");
@@ -1042,22 +1045,79 @@ test("the whole featured product card opens its SKU", async ({ page }) => {
     });
   });
   expect(hits).toEqual([true, true, true, true]);
-  await card.hover();
-  await expect(card).toHaveCSS("translate", "none");
-  await expect(card.locator("img")).toHaveCSS("scale", "none");
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(card).toHaveCSS("translate", "0px -4px");
-  await expect(card.locator("img")).toHaveCSS("scale", "1.05");
+  const visualBounds = () =>
+    card.evaluate((link) =>
+      [
+        link,
+        ...link.querySelectorAll("[data-scale-card-face], h3, img, [data-scale-surface], svg"),
+      ].map((element) => {
+        const { x, y, width, height } = element.getBoundingClientRect();
+        return { x, y, width, height, element: element.tagName };
+      }),
+    );
+  const restBounds = await visualBounds();
   const box = (await card.boundingBox())!;
-  await expect
-    .poll(async () => (await card.locator("[data-scale-surface]").boundingBox())?.height)
-    .toBeCloseTo(box.height * 0.48, 1);
-  await card.locator("[data-product-highlight]").click();
+  const lowerEdge = { x: box.x + box.width / 2, y: box.y + box.height - 2 };
+  await page.mouse.move(lowerEdge.x, lowerEdge.y);
+  expect(await card.evaluate((link) => link.matches(":hover"))).toBe(true);
+  expect(await visualBounds()).toEqual(restBounds);
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await card.evaluate(async (link) => {
+    await Promise.allSettled(
+      link.getAnimations({ subtree: true }).map((animation) => animation.finished),
+    );
+  });
+  const liftedBounds = restBounds.map((bounds) => ({
+    ...bounds,
+    y: bounds.y - (bounds.element === "A" ? 0 : bounds.element === "IMG" ? 12 : 4),
+  }));
+  expect(await visualBounds()).toEqual(liftedBounds);
+  expect(await card.evaluate((link) => link.matches(":hover"))).toBe(true);
+  await page.mouse.click(lowerEdge.x, lowerEdge.y);
   await expect(page).toHaveURL((url) => url.pathname === href);
   await page.goBack();
   await card.focus();
   await card.press("Enter");
   await expect(page).toHaveURL((url) => url.pathname === href);
+});
+
+test("WPK5000 lifts without clipping more of the product photo", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/products");
+  const card = page.locator("#products-rail-scales").getByRole("link", { name: "WPK5000" });
+  await card.scrollIntoViewIfNeeded();
+  const image = card.getByRole("img", { name: "WPK5000" });
+  await expect
+    .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+  const photoBounds = () =>
+    image.evaluate((img) => {
+      const photo = img.getBoundingClientRect();
+      const clip = img.closest("[data-scale-artwork]")!.getBoundingClientRect();
+      return {
+        y: photo.top - clip.top,
+        width: photo.width,
+        height: photo.height,
+        clipped: [
+          clip.top - photo.top,
+          photo.bottom - clip.bottom,
+          clip.left - photo.left,
+          photo.right - clip.right,
+        ].map((distance) => Math.max(0, distance)),
+      };
+    });
+  const rest = await photoBounds();
+  const box = (await card.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height - 2);
+  await expect.poll(async () => (await photoBounds()).y).toBe(rest.y - 8);
+  const lifted = await photoBounds();
+  expect(lifted.width).toBe(rest.width);
+  expect(lifted.height).toBe(rest.height);
+  for (const [index, amount] of lifted.clipped.entries()) {
+    expect(amount).toBeLessThanOrEqual(rest.clipped[index]);
+  }
+  expect(await card.evaluate((link) => link.matches(":hover"))).toBe(true);
 });
 
 test("direct all-model finder keeps search and legacy query entry", async ({ page }) => {

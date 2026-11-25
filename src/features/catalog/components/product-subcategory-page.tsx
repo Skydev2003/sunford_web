@@ -18,6 +18,7 @@ import { chapterArtwork } from "../data/category-chapter-artwork";
 import {
   getProductSubcategoryPage,
   getProductSubcategoryPageByHref,
+  platformPlacementPages,
   resolveListingSubcategory,
 } from "../data/product-subcategory-pages";
 import { consumableSubtypeLinks } from "../data/additional-subcategory-pages";
@@ -27,11 +28,7 @@ import overview from "./products-overview.module.css";
 import styles from "./product-directory.module.css";
 
 const alternatives: Record<string, readonly { href: string; label: string }[]> = {
-  "platform-abs": [
-    { href: "/products/category/platforms/carbon-steel", label: "แท่นเหล็กคาร์บอน" },
-    { href: "/products/category/platforms/sus304", label: "แท่นสแตนเลส SUS304" },
-    { href: "/products/category/platforms/sus201", label: "แท่นสแตนเลส SUS201" },
-  ],
+  "platform-abs": platformPlacementPages,
   "pos-ios": [
     { href: "/products/category/pos/android", label: "ระบบ POS Android" },
     { href: "/products/category/pos/windows", label: "ระบบ POS Windows" },

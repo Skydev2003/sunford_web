@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { featuredEditorialArticles } from "../../src/features/content/data/editorial-sections";
 
 test("public editorial entry points offer real destinations without unpublished cards", async ({
   page,
@@ -8,40 +9,38 @@ test("public editorial entry points offer real destinations without unpublished 
   const stories = page.locator("#stories");
   await expect(stories.getByRole("heading", { level: 2 })).toBeVisible();
   await expect(stories.locator(".stories-track")).toBeVisible();
-  await expect(stories.locator('a[href^="/blogs/editorial/"]')).toHaveCount(0);
-  await expect(stories.getByRole("link", { name: "ดูเครื่องชั่งทั้งหมด" })).toHaveAttribute(
+  await expect(stories.getByRole("link", { name: "ดูเรื่องราวทั้งหมด" })).toHaveAttribute(
     "href",
-    "/products/category/scales",
+    "/business/blogs/editorial",
   );
 
-  const card = stories.locator(':scope .stories-track > a[data-focus-copy="1"]').first();
-  const groupTitle = await card.getByRole("heading").textContent();
-  const application = await card.getAttribute("href");
-  expect(application).toMatch(/^\/products\/category\/scales\/applications\/[^/]+$/);
-  await page.goto(application!);
-  await expect(
-    page.getByRole("heading", { name: groupTitle!, exact: true, level: 1 }),
-  ).toBeVisible();
-  await expect(page.getByRole("list", { name: "เครื่องชั่งสำหรับงานนี้" })).toBeVisible();
-
-  for (const [path, title] of [
-    ["/news-and-activities", "ข่าวสารและกิจกรรม"],
-    ["/business/blogs/editorial", "บทความจากซันฟอร์ด"],
-  ]) {
-    await page.goto(path);
-    const main = page.getByRole("main");
-    await expect(main.getByRole("heading", { name: title, exact: true, level: 1 })).toBeVisible();
-    await expect(main.getByRole("link", { name: "ดูแค็ตตาล็อกสินค้า" })).toHaveAttribute(
-      "href",
-      "/products",
-    );
-    await expect(main.getByRole("link", { name: "ดูข้อมูลทางเทคนิคและคู่มือ" })).toHaveAttribute(
-      "href",
-      "/technical-specification",
-    );
-    await expect(main).toContainText("ยังไม่มีข่าวหรือบทความที่เผยแพร่บนเว็บไซต์");
-    await expect(main.locator(".directory-card")).toHaveCount(0);
+  const cards = stories.locator(
+    '.stories-track > a[data-focus-copy="1"][href^="/blogs/editorial/"]',
+  );
+  await expect(cards).toHaveCount(9);
+  const headings = await cards.locator("h3").allTextContents();
+  for (const [index, { path }] of featuredEditorialArticles.entries()) {
+    const card = cards.nth(index);
+    await expect(card).toHaveAttribute("href", path);
+    const [article] = await Promise.all([page.waitForEvent("popup"), card.press("Enter")]);
+    await expect(article).toHaveURL(new URL(path, page.url()).href);
+    await expect(
+      article.getByRole("heading", { name: headings[index], exact: true, level: 1 }),
+    ).toBeVisible();
+    await expect(article.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(article.locator("main article p").first()).toBeVisible();
+    await article.close();
   }
+
+  await stories.getByRole("link", { name: "ดูเรื่องราวทั้งหมด" }).click();
+  await expect(page.getByRole("heading", { name: "บทความจากซันฟอร์ด", level: 1 })).toBeVisible();
+  await expect(page.locator("main .directory-card h2")).toHaveText(headings);
+
+  await page.goto("/news-and-activities");
+  const news = page.getByRole("main");
+  await expect(news.getByRole("heading", { name: "ข่าวสารและกิจกรรม", level: 1 })).toBeVisible();
+  await expect(news).toContainText("ยังไม่มีข่าวหรือบทความที่เผยแพร่บนเว็บไซต์");
+  await expect(news.locator(".directory-card")).toHaveCount(0);
 
   await page.goto("/explore");
   const directory = page.getByRole("main");
@@ -50,9 +49,10 @@ test("public editorial entry points offer real destinations without unpublished 
     "href",
     "/business/blogs/editorial",
   );
-  await expect(directory.locator('.directory-card[href^="/blogs/editorial/"]')).toHaveCount(0);
+  for (const { path } of featuredEditorialArticles)
+    await expect(directory.locator(`.directory-card[href="${path}"]`)).toBeVisible();
 
-  const retired = await page.goto("/blogs/editorial/do-you-need-a-home-scale");
+  const retired = await page.goto("/blogs/editorial/scale-power-and-battery-troubleshooting");
   await expect(page.getByRole("heading", { name: "ยังไม่พบหน้าที่คุณกำลังมองหา" })).toBeVisible();
   if (retired?.status() !== 404) {
     await expect(page.locator('meta[name="robots"][content="noindex"]').first()).toBeAttached();

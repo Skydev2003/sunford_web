@@ -4,7 +4,7 @@ import { defaultNavigation, resolveNavigationItems } from "../../src/features/si
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { getScaleSubcategories } from "../../src/features/catalog/data/scale-subcategories";
 import { getIndicatorSubcategories } from "../../src/features/catalog/data/indicator-subcategories";
-import { getPlatformSubcategories } from "../../src/features/catalog/data/platform-subcategories";
+import { getPlatformPlacementSubcategories } from "../../src/features/catalog/data/platform-subcategories";
 import { getPosSubcategories } from "../../src/features/catalog/data/pos-subcategories";
 import { getAccessorySubcategories } from "../../src/features/catalog/data/accessory-subcategories";
 
@@ -77,11 +77,11 @@ test("saved product links and stale groups sync without changing other CMS menus
   assert.equal(JSON.stringify(saved), original);
 });
 
-test("all product secondary groups match the real catalog's23 child IDs, displayed labels and order", () => {
+test("all product secondary groups match the catalog child IDs, displayed labels and order", () => {
   const resolvers = [
     getScaleSubcategories,
     getIndicatorSubcategories,
-    getPlatformSubcategories,
+    getPlatformPlacementSubcategories,
     getPosSubcategories,
     getAccessorySubcategories,
   ];
@@ -102,8 +102,8 @@ test("all product secondary groups match the real catalog's23 child IDs, display
   ];
   assert.deepEqual(defaultNavigation[0].groups, expected);
   const links = expected.flatMap((group) => group.links);
-  assert.equal(links.length, 23);
-  assert.equal(new Set(links.map((link) => link.href)).size, 23);
+  assert.equal(links.length, 21);
+  assert.equal(new Set(links.map((link) => link.href)).size, 21);
 });
 
 test("stale secondary groups normalize even when saved primary links already match; no other menu object changes", () => {

@@ -34,33 +34,17 @@ export function HeroScene({
     const scene = root.current;
     if (!scene || typeof IntersectionObserver === "undefined") return;
     const frame = scene.closest("[data-home-route]");
-    let header: HTMLElement | null | undefined;
     let headerInner: HTMLElement | null | undefined;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false;
-    let backdropFrame = 0;
     scene.dataset.enhanced = "true";
     const sync = () => setAllowed(visible && !document.hidden && !reduced.matches);
-    const syncBackdrop = () => {
-      backdropFrame = 0;
-      if (!header) return;
-      const atTop = scene.getBoundingClientRect().top >= -1;
-      if (!header.hasAttribute("data-hero-backdrop-tracked"))
-        header.dataset.heroBackdropTracked = "";
-      if (atTop && !header.hasAttribute("data-hero-backdrop")) header.dataset.heroBackdrop = "";
-      else if (!atTop && header.hasAttribute("data-hero-backdrop"))
-        delete header.dataset.heroBackdrop;
-    };
-    const requestBackdrop = () => {
-      if (!backdropFrame) backdropFrame = requestAnimationFrame(syncBackdrop);
-    };
     const measureHeader = () => {
-      if (!header || !headerInner) return;
+      if (!headerInner) return;
       const bounds = headerInner.getBoundingClientRect();
       const height = `${bounds.height}px`;
       if (scene.style.getPropertyValue("--hero-header-height") !== height)
         scene.style.setProperty("--hero-header-height", height);
-      requestBackdrop();
     };
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -72,7 +56,7 @@ export function HeroScene({
     observer.observe(scene);
     const resize = new ResizeObserver(measureHeader);
     const connectHeader = () => {
-      header = frame?.querySelector<HTMLElement>(":scope > .site-header");
+      const header = frame?.querySelector(":scope > .site-header");
       headerInner = header?.querySelector<HTMLElement>(".header-inner");
       if (!headerInner) return;
       headerObserver.disconnect();
@@ -82,7 +66,6 @@ export function HeroScene({
     const headerObserver = new MutationObserver(connectHeader);
     if (frame) headerObserver.observe(frame, { childList: true });
     connectHeader();
-    window.addEventListener("scroll", requestBackdrop, { passive: true });
     window.addEventListener("resize", measureHeader);
     document.addEventListener("visibilitychange", sync);
     reduced.addEventListener("change", sync);
@@ -91,16 +74,10 @@ export function HeroScene({
       observer.disconnect();
       resize.disconnect();
       headerObserver.disconnect();
-      window.removeEventListener("scroll", requestBackdrop);
       window.removeEventListener("resize", measureHeader);
-      cancelAnimationFrame(backdropFrame);
       document.removeEventListener("visibilitychange", sync);
       reduced.removeEventListener("change", sync);
       delete scene.dataset.enhanced;
-      if (header) {
-        delete header.dataset.heroBackdrop;
-        delete header.dataset.heroBackdropTracked;
-      }
     };
   }, []);
 

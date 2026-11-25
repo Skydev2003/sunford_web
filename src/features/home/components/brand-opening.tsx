@@ -5,7 +5,9 @@ import { useEffect, useRef } from "react";
 import styles from "./brand-opening.module.css";
 
 const timing = { grow: 450, name: 550, settled: 950, fade: 1550, end: 1850 };
-const symbolCenter = 95 / 690;
+const logoWidth = 498;
+const logoHeight = 74;
+const symbolCenter = 34.5 / logoWidth;
 
 export function BrandOpening({ logo, name }: { logo: string; name: string }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -63,13 +65,17 @@ export function BrandOpening({ logo, name }: { logo: string; name: string }) {
       }
       if (disposed || completed) return;
       const bounds = root.getBoundingClientRect();
-      const width = Math.min(440, bounds.width * 0.56, bounds.height * 0.85 * (690 / 141));
+      const width = Math.min(
+        440,
+        bounds.width / (2 * (1 - symbolCenter)),
+        bounds.height * 0.85 * (logoWidth / logoHeight),
+      );
       if (width < 1) {
         finish();
         return;
       }
       logoNode.style.width = `${width}px`;
-      const height = (width * 141) / 690;
+      const height = (width * logoHeight) / logoWidth;
       const pose = (scale: number, centered = false) =>
         `translate3d(${bounds.width / 2 - width * (centered ? 0.5 : symbolCenter) * scale}px, ${(bounds.height - height * scale) / 2}px, 0) scale(${scale})`;
       const animate = (
@@ -109,8 +115,12 @@ export function BrandOpening({ logo, name }: { logo: string; name: string }) {
       animate(
         word,
         [
-          { clipPath: "inset(0 79.7% 0 20.3%)", opacity: 0, filter: "blur(2px)" },
-          { clipPath: "inset(0 0% 0 20.3%)", opacity: 1, filter: "blur(0px)" },
+          {
+            clipPath: "inset(0 calc(100% - var(--logo-initial-width)) 0 var(--logo-initial-width))",
+            opacity: 0,
+            filter: "blur(2px)",
+          },
+          { clipPath: "inset(0 0% 0 var(--logo-initial-width))", opacity: 1, filter: "blur(0px)" },
         ],
         {
           delay: timing.name,
@@ -172,10 +182,25 @@ export function BrandOpening({ logo, name }: { logo: string; name: string }) {
       <div className={styles.backdrop} data-brand-opening-backdrop="" />
       <div className={styles.logo} data-brand-opening-logo="">
         <div className={styles.symbol} data-brand-opening-symbol="">
-          <Image src={logo} alt="" width={690} height={141} preload unoptimized draggable={false} />
+          <Image
+            src={logo}
+            alt=""
+            width={logoWidth}
+            height={logoHeight}
+            preload
+            unoptimized
+            draggable={false}
+          />
         </div>
         <div className={styles.word} data-brand-opening-word="">
-          <Image src={logo} alt="" width={690} height={141} unoptimized draggable={false} />
+          <Image
+            src={logo}
+            alt=""
+            width={logoWidth}
+            height={logoHeight}
+            unoptimized
+            draggable={false}
+          />
         </div>
       </div>
     </div>

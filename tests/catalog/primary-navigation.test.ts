@@ -130,10 +130,8 @@ const approvedMenus: MenuContract[] = [
       {
         label: "สินค้า",
         links: [
-          ["สแตนเลส SUS304", "/products/category/platforms/sus304", false],
-          ["สแตนเลส SUS201", "/products/category/platforms/sus201", false],
-          ["แท่นเหล็กคาร์บอน", "/products/category/platforms/carbon-steel", false],
-          ["พลาสติก ABS", "/products/category/platforms/abs", false],
+          ["แท่นชั่งตั้งพื้น", "/products/category/platforms/floor", false],
+          ["แท่นชั่งตั้งโต๊ะ", "/products/category/platforms/benchtop", false],
         ],
       },
       { label: "คุณสมบัติ", links: [] },
@@ -294,13 +292,13 @@ test("Navbar reserves five live feature columns beside the configured entries", 
   assert.equal(
     items.flatMap((item) => [...item.links, ...item.groups!.flatMap((group) => group.links)])
       .length,
-    64,
+    62,
   );
   const links = items.flatMap((item) => [
     ...item.links,
     ...item.groups!.flatMap((group) => group.links),
   ]);
-  assert.equal(links.filter((link) => !link.disabled).length, 64);
+  assert.equal(links.filter((link) => !link.disabled).length, 62);
   assert.equal(links.filter((link) => link.disabled).length, 0);
   assert.deepEqual(
     items.map((item) => columns(item).map((column) => column.links.length)),
@@ -308,7 +306,7 @@ test("Navbar reserves five live feature columns beside the configured entries", 
       [5, 4, 4],
       [4, 0, 3],
       [2, 0, 3],
-      [4, 0, 3],
+      [2, 0, 3],
       [3, 0, 4],
       [8, 0, 3],
       [3, 1, 2],
@@ -317,9 +315,9 @@ test("Navbar reserves five live feature columns beside the configured entries", 
   );
   assert.deepEqual(
     items[3].links.map((link) => link.label),
-    ["สแตนเลส SUS304", "สแตนเลส SUS201", "แท่นเหล็กคาร์บอน", "พลาสติก ABS"],
+    ["แท่นชั่งตั้งพื้น", "แท่นชั่งตั้งโต๊ะ"],
   );
-  assert.equal(items[3].links.length, 4);
+  assert.equal(items[3].links.length, 2);
   assert.ok(items[3].links.every((link) => !link.disabled));
 });
 
@@ -335,7 +333,7 @@ test("readiness follows the canonical destination across contexts without disabl
   const expectedLinks = approvedMenus.flatMap((item) =>
     item.columns.flatMap((column) => column.links),
   );
-  assert.equal(expectedLinks.length, 64);
+  assert.equal(expectedLinks.length, 62);
   const readiness = new Map<string, boolean>();
   for (const [, href, disabled] of expectedLinks) {
     if (readiness.has(href)) assert.equal(readiness.get(href), disabled, href);
@@ -468,10 +466,10 @@ test("product menus keep approved short names and direct parent links without ch
       ],
     ],
   );
-  assert.equal(children.length, 23);
+  assert.equal(children.length, 21);
   assert.deepEqual(
     items.map((item) => item.links.length),
-    [4, 2, 4, 3, 8],
+    [4, 2, 2, 3, 8],
   );
   for (const item of navigation) {
     assert.ok(item.href.startsWith("/"));
@@ -589,10 +587,8 @@ test("the scanner Navbar listing is separate from POS accessories and keeps chap
 test("catalog destinations stay linked for every runtime inventory while an explicit saved disable takes precedence", () => {
   const paths = [
     "/products/category/scales/analytical",
-    "/products/category/platforms/carbon-steel",
-    "/products/category/platforms/sus304",
-    "/products/category/platforms/sus201",
-    "/products/category/platforms/abs",
+    "/products/category/platforms/floor",
+    "/products/category/platforms/benchtop",
     "/products/category/pos/ios",
   ];
   const links = (ready?: string[], navigation = defaultNavigation) =>
@@ -601,8 +597,8 @@ test("catalog destinations stay linked for every runtime inventory while an expl
     );
   for (const ready of [undefined, [paths[0]], [], paths]) {
     const entries = links(ready);
-    assert.equal(entries.length, 64);
-    assert.equal(entries.filter((entry) => !entry.disabled).length, 64);
+    assert.equal(entries.length, 62);
+    assert.equal(entries.filter((entry) => !entry.disabled).length, 62);
     for (const path of paths) {
       const matching = entries.filter(({ href }) => href === path);
       assert.equal(matching.length, 1, path);

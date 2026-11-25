@@ -21,6 +21,7 @@ function clear(x, y, right, bottom, sampleX = 10, sampleY = 10) {
     data.fill(color, (row * info.width + X(x)) * 3, (row * info.width + X(right)) * 3);
   }
 }
+clear(38, 61, 212, 88); // Old wordmark
 clear(645, 125, 790, 213, 740, 128); // Document identifiers
 clear(101, 244, 321, 355);
 clear(343, 244, 525, 355);
@@ -34,4 +35,12 @@ clear(118, 954, 800, 991); // Warranty belongs to the selected products
 clear(122, 1033, 239, 1131);
 clear(339, 1032, 482, 1091);
 clear(347, 1098, 474, 1126);
-await sharp(data, { raw: info }).png().toFile("public/images/quotation-template.png");
+const logo = await sharp("src/app/icon.svg")
+  .resize({ width: X(169) })
+  .png()
+  .toBuffer();
+await sharp(data, { raw: info })
+  .composite([{ input: logo, left: X(40), top: Y(62.4) }])
+  .removeAlpha()
+  .png()
+  .toFile("public/images/quotation-template.png");

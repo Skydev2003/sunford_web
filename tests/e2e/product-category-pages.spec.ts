@@ -63,13 +63,13 @@ for (const width of [390, 834, 1440]) {
 
     test("subcategory search and picture navigation work", async ({ page }) => {
       test.slow();
-      await page.goto("/products/category/platforms/sus304");
+      await page.goto("/products/category/platforms/floor");
 
       const heading = page.getByRole("heading", { level: 1 });
       const search = page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
       const menu = page.getByRole("navigation", { name: "หมวดย่อยสินค้า" });
-      await expect(menu.getByRole("link")).toHaveCount(4);
-      await expect(menu.getByRole("link", { name: "สแตนเลส SUS304" })).toHaveAttribute(
+      await expect(menu.getByRole("link")).toHaveCount(2);
+      await expect(menu.getByRole("link", { name: "แท่นชั่งตั้งพื้น" })).toHaveAttribute(
         "aria-current",
         "page",
       );
@@ -87,25 +87,37 @@ for (const width of [390, 834, 1440]) {
 
       await search.fill("unknown-model-for-listing-test");
       await expect(page.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
-      await menu.getByRole("link", { name: "สแตนเลส SUS201" }).click();
-      await expect(page).toHaveURL(/\/products\/category\/platforms\/sus201$/);
-      await expect(menu.getByRole("link", { name: "สแตนเลส SUS201" })).toHaveAttribute(
+      await menu.getByRole("link", { name: "แท่นชั่งตั้งโต๊ะ" }).click();
+      await expect(page).toHaveURL(/\/products\/category\/platforms\/benchtop$/);
+      await expect(menu.getByRole("link", { name: "แท่นชั่งตั้งโต๊ะ" })).toHaveAttribute(
         "aria-current",
         "page",
       );
       await expect(search).toHaveValue("");
 
-      const abs = menu.getByRole("link", { name: "พลาสติก ABS" });
-      await abs.scrollIntoViewIfNeeded();
-      await expect(abs).toBeInViewport({ ratio: 0.95 });
+      const filters = page.getByRole("group", { name: "กรองตามคุณสมบัติ" });
+      const material = filters.getByRole("button", { name: "สแตนเลส SUS304", exact: true });
+      await material.click();
+      const series = filters.getByRole("button", { name: "ซีรีส์ TMS", exact: true });
+      await series.click();
+      await expect(material).toHaveAttribute("aria-pressed", "true");
+      await expect(series).toHaveAttribute("aria-pressed", "true");
+      const benchtop = page.locator('[data-product-subcategory-page="platform-benchtop"]:visible');
+      await expect(benchtop.locator("#mock-product-results article h3:visible")).toHaveText([
+        "TMS 3040",
+      ]);
+
+      const floor = menu.getByRole("link", { name: "แท่นชั่งตั้งพื้น" });
+      await floor.scrollIntoViewIfNeeded();
+      await expect(floor).toBeInViewport({ ratio: 0.95 });
       if (width === 390) {
-        await abs.tap();
+        await floor.tap();
       } else {
-        await abs.click();
+        await floor.click();
       }
-      await expect(page).toHaveURL(/\/products\/category\/platforms\/abs$/);
-      await expect(abs).toBeInViewport({ ratio: 0.95 });
-      await expect(abs).toHaveAttribute("aria-current", "page");
+      await expect(page).toHaveURL(/\/products\/category\/platforms\/floor$/);
+      await expect(floor).toBeInViewport({ ratio: 0.95 });
+      await expect(floor).toHaveAttribute("aria-current", "page");
     });
   });
 }
@@ -115,14 +127,14 @@ test("picture navigation keeps the product groups on feature and sibling listing
 }) => {
   test.slow();
   const menu = page.getByRole("navigation", { name: "หมวดย่อยสินค้า" });
-  const productMenus = getPrimaryNavigationItems(defaultNavigation);
+  const productMenus = getPrimaryNavigationItems(defaultNavigation, undefined, "category-chapters");
   for (const [family, first, next] of [
     ["scales", "kitchen", "price"],
     ["scales", "counting", "industrial"],
     ["indicators", "lcd", "led"],
     ["indicators", "rs232", "led"],
     ["indicators", "waterproof", "lcd"],
-    ["platforms", "sus304", "sus201"],
+    ["platforms", "sus304", "benchtop"],
     ["pos", "android", "windows"],
     ["accessories", "displays", "cables"],
     ["accessories", "thermal-paper", "printers"],
@@ -167,8 +179,8 @@ test("switching picture filters keeps the listing controls and skips the opening
     }
   });
 
-  const source = "/products/category/platforms/sus304";
-  const destination = "/products/category/platforms/sus201";
+  const source = "/products/category/platforms/floor";
+  const destination = "/products/category/platforms/benchtop";
   await page.goto(source);
   await expectStaggerMotion(page.getByRole("heading", { level: 1 }));
   await expect
@@ -187,16 +199,16 @@ test("switching picture filters keeps the listing controls and skips the opening
   const originalFooter = await footer.elementHandle();
   const originalHeading = await heading.elementHandle();
   await page.evaluate(() => window.scrollTo({ top: 120, behavior: "instant" }));
-  const sus201 = menu.getByRole("link", { name: "สแตนเลส SUS201" });
-  await expect(sus201).toBeInViewport({ ratio: 1 });
-  const linkBox = (await sus201.boundingBox())!;
+  const benchtop = menu.getByRole("link", { name: "แท่นชั่งตั้งโต๊ะ" });
+  await expect(benchtop).toBeInViewport({ ratio: 1 });
+  const linkBox = (await benchtop.boundingBox())!;
   // Click the visible link without letting Playwright recenter it in the viewport.
   await page.mouse.click(linkBox.x + linkBox.width / 2, linkBox.y + linkBox.height / 2);
   await expect(page).toHaveURL(new RegExp(`${destination}$`));
 
-  const listing = page.locator('[data-product-subcategory-page="platform-sus201"]');
+  const listing = page.locator('[data-product-subcategory-page="platform-benchtop"]');
   await expect(listing).toBeVisible();
-  await expect(sus201).toHaveAttribute("aria-current", "page");
+  await expect(benchtop).toHaveAttribute("aria-current", "page");
   await expect(listing.locator("#mock-product-results:visible")).toBeVisible();
   expect(await menu.evaluate((element, original) => element === original, originalMenu)).toBe(true);
   expect(await search.evaluate((element, original) => element === original, originalSearch)).toBe(
@@ -221,7 +233,7 @@ test("switching picture filters keeps the listing controls and skips the opening
 
   await page.goBack();
   await expect(page).toHaveURL(new RegExp(`${source}$`));
-  await expect(menu.getByRole("link", { name: "สแตนเลส SUS304" })).toHaveAttribute(
+  await expect(menu.getByRole("link", { name: "แท่นชั่งตั้งพื้น" })).toHaveAttribute(
     "aria-current",
     "page",
   );

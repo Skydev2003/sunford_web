@@ -59,6 +59,38 @@ async function showFraction(target: Locator, fraction: number) {
   }, fraction);
 }
 
+test("homepage scroll reveal scopes mutations to hydrated sections", async ({ page }) => {
+  const hydrationErrors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error" && /hydrat|server rendered HTML/i.test(message.text())) {
+      hydrationErrors.push(message.text());
+    }
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const productSection = page.locator("[data-home-motion]:has(#spotlight-title)");
+  await expect(productSection).toHaveAttribute("data-scroll-reveal-mode", "enabled");
+  const belowFold = await productSection.evaluate((section) => {
+    const probe = document.createElement("h2");
+    probe.id = "owned-reveal-probe";
+    probe.textContent = "Heading in a hydrated section";
+    section.append(probe);
+
+    const sibling = document.createElement("div");
+    sibling.dataset.homeMotion = "reveal";
+    const pending = document.createElement("h2");
+    pending.id = "unhydrated-reveal-probe";
+    pending.textContent = "Heading in a newly streamed sibling";
+    sibling.append(pending);
+    document.querySelector("#main-content")!.append(sibling);
+    return pending.getBoundingClientRect().top >= innerHeight;
+  });
+  expect(belowFold).toBe(true);
+  await expect(page.locator("#owned-reveal-probe")).toHaveCSS("opacity", "0");
+  await expect(page.locator("#unhydrated-reveal-probe")).toHaveCSS("opacity", "1");
+  expect(hydrationErrors).toEqual([]);
+});
+
 test("homepage heading reveals once when scrolled into view", async ({ page }) => {
   await installProbe(page);
   await page.goto("/");

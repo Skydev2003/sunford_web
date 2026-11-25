@@ -3,6 +3,7 @@ import type { Product } from "../../src/features/catalog/types";
 import type { NavigationItem } from "../../src/features/site/types";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
 import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
+import { getPlatformPlacementSubcategories } from "../../src/features/catalog/data/platform-subcategories";
 import siteContent from "../../data/site/content.json";
 
 const root = "/products/category";
@@ -21,10 +22,8 @@ const groups = [
     category: "platforms",
     parent: "โครงสร้างแท่นชั่ง",
     children: [
-      ["carbon-steel", "แท่นเหล็กคาร์บอน", "platform-carbon-steel"],
-      ["sus304", "สแตนเลส SUS304", "platform-sus304"],
-      ["sus201", "สแตนเลส SUS201", "platform-sus201"],
-      ["abs", "พลาสติก ABS", "platform-abs"],
+      ["floor", "แท่นชั่งตั้งพื้น", "platform-floor"],
+      ["benchtop", "แท่นชั่งตั้งโต๊ะ", "platform-benchtop"],
     ],
   },
   {
@@ -57,6 +56,12 @@ async function catalogue(request: APIRequestContext) {
 }
 
 function members(products: Product[], category: string, subcategory: string) {
+  if (category === "platforms") {
+    const ids = new Set(
+      getPlatformPlacementSubcategories(products).find(({ id }) => id === subcategory)?.productIds,
+    );
+    return products.filter(({ id }) => ids.has(id));
+  }
   return products.filter(
     (product) =>
       product.warehouseSku &&
@@ -193,10 +198,6 @@ test("tablet category entrances and direct listings agree with Warehouse members
       expect(response?.ok()).toBe(true);
       const main = page.locator(`[data-product-subcategory-page="${id}"]`);
       await expect(main).toBeVisible();
-      if (id === "platform-carbon-steel")
-        await expect(
-          main.getByRole("heading", { level: 1, name: "แท่นเหล็กคาร์บอน", exact: true }),
-        ).toBeVisible();
       const cards = main.locator("#mock-product-results article");
       for (let shown = 24; shown < expected.length; shown += 24)
         await main.getByRole("button", { name: /ดูเพิ่มเติม/ }).click();

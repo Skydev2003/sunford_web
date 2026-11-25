@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import {
   getContentPage,
   getContentPages,
+  getFeaturedEditorialArticles,
   importedPages,
 } from "@/features/content/server/content-repository";
 import { getStorefrontProducts, getProduct } from "@/features/catalog/server/product-repository";
@@ -22,8 +23,10 @@ import { SolutionsOverview } from "@/features/content/components/solutions-overv
 import { solutionDetails } from "@/features/content/data/solution-details";
 import { getProductSection } from "@/features/content/data/product-sections";
 import {
+  editorialArticlesPath,
   editorialUnavailable,
   getEditorialSection,
+  publishedEditorialArticlePaths,
 } from "@/features/content/data/editorial-sections";
 import { technicalManualRedirects } from "@/features/content/data/technical-manuals";
 import { softwareSupportPages } from "@/features/content/data/software-support";
@@ -50,7 +53,10 @@ export function generateStaticParams() {
   return staticContentParams(
     importedPages.filter(
       ({ path, kind }) =>
-        !explicitPaths.includes(path) && (kind !== "article" || Boolean(getEditorialSection(path))),
+        !explicitPaths.includes(path) &&
+        (kind !== "article" ||
+          publishedEditorialArticlePaths.has(path) ||
+          Boolean(getEditorialSection(path))),
     ),
   );
 }
@@ -63,7 +69,14 @@ export async function generateMetadata({
   const { path } = await params;
   const pathname = resolveContentPath(`/${path.join("/")}`);
   const editorial = getEditorialSection(pathname);
-  if (editorial) return { title: editorial.title, description: editorialUnavailable };
+  if (editorial)
+    return {
+      title: editorial.title,
+      description:
+        editorial.path === editorialArticlesPath
+          ? "รวมบทความและเคล็ดลับการใช้งานเครื่องชั่งจากซันฟอร์ด"
+          : editorialUnavailable,
+    };
   if (solutionDetails[pathname]) return { title: solutionDetails[pathname].title };
   const page = await getContentPage(pathname);
   const section = page && !page.managed ? getProductSection(page.path) : undefined;
@@ -95,17 +108,32 @@ export default async function SourceContentPage({
   const pathname = resolveContentPath(`/${path.join("/")}`);
   const editorial = getEditorialSection(pathname);
   if (editorial) {
+    const articles =
+      editorial.path === editorialArticlesPath ? await getFeaturedEditorialArticles() : [];
     return (
       <main id="main-content" className="source-content-page">
         <header className="content-heading container">
           <h1>{editorial.title}</h1>
-          <p>{editorialUnavailable}</p>
+          {!articles.length && <p>{editorialUnavailable}</p>}
         </header>
-        <nav className="container source-section-links" aria-label="ข้อมูลที่เปิดอ่านได้">
-          <Link href="/products">ดูแค็ตตาล็อกสินค้า</Link>
-          <Link href="/technical-specification">ดูข้อมูลทางเทคนิคและคู่มือ</Link>
-          <Link href="/products/category/scales">ดูเครื่องชั่งทั้งหมด</Link>
-        </nav>
+        {articles.length ? (
+          <div className="container">
+            <ContentDirectory
+              pages={articles.map(({ path, title, kind, cover }) => ({
+                path,
+                title,
+                kind,
+                image: cover,
+              }))}
+            />
+          </div>
+        ) : (
+          <nav className="container source-section-links" aria-label="ข้อมูลที่เปิดอ่านได้">
+            <Link href="/products">ดูแค็ตตาล็อกสินค้า</Link>
+            <Link href="/technical-specification">ดูข้อมูลทางเทคนิคและคู่มือ</Link>
+            <Link href="/products/category/scales">ดูเครื่องชั่งทั้งหมด</Link>
+          </nav>
+        )}
       </main>
     );
   }
@@ -119,6 +147,23 @@ export default async function SourceContentPage({
   if (solutionDetails[pathname]) return <SolutionsPage path={pathname} />;
   const page = await getContentPage(pathname);
   if (!page) notFound();
+  if (page.kind === "article") {
+    if (page.path !== pathname) redirect(page.path);
+    return (
+      <main id="main-content" className="source-content-page">
+        <header className="content-heading container">
+          <p className="eyebrow">SUNFORD STORIES</p>
+          <h1>{page.title}</h1>
+        </header>
+        <article
+          className="source-prose container source-article"
+          dangerouslySetInnerHTML={{
+            __html: page.html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, ""),
+          }}
+        />
+      </main>
+    );
+  }
   if (page.path === legacySoftwareCatalogPath) redirect(sunford.downloads);
   if (!page.managed && getProductSection(page.path)) redirect("/products");
   if (page.path === "/solutions") return <SolutionsOverview />;
@@ -187,11 +232,7 @@ export default async function SourceContentPage({
     <main id="main-content" className="source-content-page">
       <header className="content-heading container">
         <p className="eyebrow">
-          {page.kind === "collection"
-            ? "THE SUNFORD COLLECTION"
-            : page.kind === "article"
-              ? "SUNFORD STORIES"
-              : "SUNFORD"}
+          {page.kind === "collection" ? "THE SUNFORD COLLECTION" : "SUNFORD"}
         </p>
         <h1>{title}</h1>
         {sectionIntro && <p className="source-section-intro">{sectionIntro}</p>}
@@ -275,7 +316,7 @@ export default async function SourceContentPage({
           )}
           {!section && hasContent && (
             <article
-              className={`source-prose container ${page.kind === "article" ? "source-article" : ""}`}
+              className="source-prose container"
               dangerouslySetInnerHTML={{ __html: proseHtml }}
             />
           )}

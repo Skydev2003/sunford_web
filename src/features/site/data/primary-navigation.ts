@@ -1,6 +1,7 @@
 import { contactPath } from "@/features/content/data/contact-route";
 import type { NavigationItem } from "../types";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
+import { platformPlacementPages } from "@/features/catalog/data/product-subcategory-pages";
 import { siteMenuLabel } from "./site-menu-labels";
 
 const guideHref = "/guides/indicator-platform-compatibility";
@@ -171,12 +172,7 @@ export function getPrimaryNavigationItems(
     menu(
       categoryLabel("platforms", "โครงสร้างแท่นชั่ง"),
       "/products/category/platforms",
-      [
-        ["สแตนเลส SUS304", "/products/category/platforms/sus304"],
-        ["สแตนเลส SUS201", "/products/category/platforms/sus201"],
-        ["แท่นเหล็กคาร์บอน", "/products/category/platforms/carbon-steel"],
-        ["พลาสติก ABS", "/products/category/platforms/abs"],
-      ],
+      platformPlacementPages.map(({ label, href }) => [label, href]),
       [
         ["อินดิเคเตอร์แท่นชั่ง", "/products/category/indicators"],
         ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical"],

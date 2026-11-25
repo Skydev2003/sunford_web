@@ -39,7 +39,7 @@
     "id": "site",
     "kind": "settings",
     "data": {
-      "logo": "/images/sunford-logo.png",
+      "logo": "/icon.svg",
       "name": "SUNFORD",
       "phone": "03-427-6999",
       "phoneHref": "tel:034276999",
@@ -108,14 +108,13 @@
     "id": "stories",
     "kind": "settings",
     "data": {
-      "eyebrow": "SUNFORD STORIES",
-      "title": "เรื่องราวของคนทำธุรกิจ.",
-      "description": "แรงบันดาลใจ ความรู้ และเทคนิคดี ๆ เพื่อให้ธุรกิจของคุณเติบโตไปด้วยกัน",
+      "eyebrow": "SUNFORD",
+      "title": "เลือกเครื่องชั่งให้ตรงกับงาน",
       "linkLabel": "ดูเรื่องราวทั้งหมด",
       "href": "/news-and-activities",
       "cardLabel": "SUNFORD BIZ TALK",
       "readLabel": "อ่านเพิ่มเติม",
-      "videoTitle": "วิดีโอจาก Sunford"
+      "videoTitle": "ความสำเร็จของผู้ใช้งานจริง"
     }
   },
   {
@@ -207,20 +206,12 @@
                   "href": "/products?category=indicators&subcategory=indicator-waterproof"
                 },
                 {
-                  "label": "แท่นเหล็กคาร์บอน",
-                  "href": "/products?category=platforms&subcategory=platform-carbon-steel"
+                  "label": "แท่นชั่งตั้งพื้น",
+                  "href": "/products?category=platforms&subcategory=platform-floor"
                 },
                 {
-                  "label": "สแตนเลส SUS304",
-                  "href": "/products?category=platforms&subcategory=platform-sus304"
-                },
-                {
-                  "label": "สแตนเลส SUS201",
-                  "href": "/products?category=platforms&subcategory=platform-sus201"
-                },
-                {
-                  "label": "พลาสติก ABS เหนียวพิเศษ",
-                  "href": "/products?category=platforms&subcategory=platform-abs"
+                  "label": "แท่นชั่งตั้งโต๊ะ",
+                  "href": "/products?category=platforms&subcategory=platform-benchtop"
                 }
               ]
             },

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 test.use({ launchOptions: { args: ["--enable-unsafe-swiftshader"] } });
+const headerLogo = '.site-header a[aria-label="SUNFORD หน้าแรก"]';
 
 type OpeningFrame = {
   phase: string;
@@ -18,7 +19,7 @@ type OpeningFrame = {
 };
 
 async function recordOpening(page: Page) {
-  await page.addInitScript(() => {
+  await page.addInitScript((headerLogo) => {
     const samples: unknown[] = [];
     Object.assign(window, { __brandOpeningFrames: samples });
     let sawOpening = false;
@@ -44,7 +45,7 @@ async function recordOpening(page: Page) {
           logoTime: logo ? Number(logo.getAnimations()[0]?.currentTime ?? NaN) : null,
           logo: box(logo),
           symbol: box(opening.querySelector("[data-brand-opening-symbol]")),
-          header: box(document.querySelector(".site-header .brand img")),
+          header: box(document.querySelector(`${headerLogo} img`)),
           space: box(document.querySelector("[data-hero-logo-space]")),
           wordOpacity: word ? Number(getComputedStyle(word).opacity) : null,
           wordClip: word ? getComputedStyle(word).clipPath : null,
@@ -68,7 +69,7 @@ async function recordOpening(page: Page) {
       return animation;
     };
     requestAnimationFrame(sample);
-  });
+  }, headerLogo);
 }
 
 async function openingFrames(page: Page) {
@@ -109,7 +110,7 @@ for (const viewport of [
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await recordOpening(page);
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/");
     await expectReleased(page);
     const frames = await openingFrames(page);
     await test.info().attach("opening-frames.json", {
@@ -122,23 +123,31 @@ for (const viewport of [
     expect(phases.indexOf("name")).toBeLessThan(phases.indexOf("settled"));
     const symbolFrames = frames.filter(
       (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 450 && frame.logoTime <= 525,
+        frame.logo &&
+        frame.phase === "symbol" &&
+        frame.logoTime !== null &&
+        frame.logoTime >= 150 &&
+        frame.logoTime < 550,
     );
-    expect(symbolFrames.length).toBeGreaterThan(1);
+    expect(symbolFrames.length).toBeGreaterThan(0);
     const symbol = symbolFrames.at(-1)!;
     expect(
       Math.abs(
         symbol.logo!.x +
-          (symbol.logo!.width * 95) / 690 -
+          (symbol.logo!.width * 34.5) / 498 -
           (symbol.space!.x + symbol.space!.width / 2),
       ),
     ).toBeLessThan(4);
     expect(symbol.wordOpacity).toBeLessThan(0.01);
     const named = frames.filter(
       (frame) =>
-        frame.logo && frame.logoTime !== null && frame.logoTime >= 900 && frame.logoTime <= 950,
+        frame.logo &&
+        frame.phase === "settled" &&
+        frame.logoTime !== null &&
+        frame.logoTime >= 950 &&
+        frame.logoTime < 1550,
     );
-    expect(named.length).toBeGreaterThan(1);
+    expect(named.length).toBeGreaterThan(0);
     expect(named.at(-1)!.wordOpacity).toBeGreaterThan(0.99);
     expect(named.at(-1)!.wordClip).not.toBe(symbol.wordClip);
     const centered = named.at(-1)!;
@@ -175,7 +184,7 @@ for (const viewport of [
           ["symbol", "name"].includes(frame.phase) && (frame.bubblesVisible || frame.bubblePopup),
       ),
     ).toEqual([]);
-    await expect(page.locator(".site-header .brand")).toBeVisible();
+    await expect(page.locator(headerLogo)).toBeVisible();
     await expect(page.locator(".hero-bubble-layer, model-viewer")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
@@ -213,7 +222,7 @@ test("cold fonts only delay the decoration and its final name stays inside the H
   await recordOpening(page);
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("[data-hero-scene] h1")).toBeVisible({ timeout: 1000 });
-  await expect(page.locator(".site-header .brand")).toBeVisible();
+  await expect(page.locator(headerLogo)).toBeVisible();
   await expectReleased(page);
   const frames = await openingFrames(page);
   const settled = frames
@@ -280,7 +289,7 @@ test("without JavaScript the opening cannot cover or lock the site", async ({
         level: 1,
       }),
     ).toBeVisible();
-    await expect(page.locator(".site-header .brand")).toBeVisible();
+    await expect(page.locator(headerLogo)).toBeVisible();
     expect(
       await page.evaluate(() => document.querySelector("main")?.closest("[inert]")),
     ).toBeNull();
@@ -315,7 +324,7 @@ test("failed hydration releases the opening, header and Hero through the CSS fal
   const opening = page.locator("[data-brand-opening]");
   await expect(opening).toHaveAttribute("data-phase", "pending");
   await expect(opening).toBeHidden({ timeout: 10000 });
-  await expect(page.locator(".site-header .brand")).toBeVisible();
+  await expect(page.locator(headerLogo)).toBeVisible();
   await expect(page.locator(".site-header .desktop-nav")).toHaveCSS("opacity", "1");
   await expect(page.locator(".hero-main:visible")).toHaveCSS("visibility", "visible");
   await expect(

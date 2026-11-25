@@ -327,7 +327,9 @@ for (const [width, categorySectionGap] of [
       await previous.press("Enter");
       await expect(next).toBeEnabled();
 
-      const filters = page.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+      const filters = page.getByRole("group", {
+        name: category === "platforms" ? "กรองตามวัสดุ" : "กรองผลิตภัณฑ์",
+      });
       for (const filter of await filters.locator("button:enabled").all()) {
         await filter.press("Enter");
         await expect(filter).toHaveAttribute("aria-pressed", "true");

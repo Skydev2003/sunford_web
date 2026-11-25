@@ -16,6 +16,7 @@ import type { ProductCategory } from "../data/mock-categories";
 import { getProductSubcategoryPage } from "../data/product-subcategory-pages";
 import { catalogModelLabel } from "../data/catalog-card-names";
 import type { ProductListingFeature } from "../data/product-listing-features";
+import { isPlatformPlacementId } from "../data/platform-subcategory-definitions";
 import { CatalogProductCard, catalogProductPhoto } from "./catalog-product-card";
 import { CatalogSearchField } from "./catalog-search-field";
 import { useListingSearch } from "./product-subcategory-shell";
@@ -107,14 +108,16 @@ export function ProductCategoryMock({
     url.searchParams.delete("feature");
     window.history.replaceState(null, "", url);
   };
-  const toggleListingFeature = ({ id, exclusive }: ProductListingFeature) => {
+  const toggleListingFeature = ({ id, exclusive, exclusiveGroup }: ProductListingFeature) => {
     if (selectedFeatures.includes(id)) {
       setSelectedFeatures(selectedFeatures.filter((feature) => feature !== id));
       if (id === initialFeature) clearLinkedFeature();
       return;
     }
     const retained = exclusive
-      ? activeFeatures.filter((feature) => !feature.exclusive).map((feature) => feature.id)
+      ? activeFeatures
+          .filter((feature) => !feature.exclusive || feature.exclusiveGroup !== exclusiveGroup)
+          .map((feature) => feature.id)
       : selectedFeatures;
     if (initialFeature && !retained.includes(initialFeature)) clearLinkedFeature();
     setSelectedFeatures([...retained, id]);
@@ -489,18 +492,20 @@ export function ProductCategoryMock({
                     >
                       ทั้งหมด
                     </button>
-                    {activeCategory?.subcategories.map((item) => (
-                      <button
-                        type="button"
-                        key={item.id}
-                        aria-pressed={subcategory === item.id}
-                        onClick={() => selectSubcategory(item.id)}
-                      >
-                        {category === "scales"
-                          ? item.label.replace(/^เครื่องชั่ง/, "")
-                          : item.label}
-                      </button>
-                    ))}
+                    {activeCategory?.subcategories
+                      .filter(({ id }) => category !== "platforms" || isPlatformPlacementId(id))
+                      .map((item) => (
+                        <button
+                          type="button"
+                          key={item.id}
+                          aria-pressed={subcategory === item.id}
+                          onClick={() => selectSubcategory(item.id)}
+                        >
+                          {category === "scales"
+                            ? item.label.replace(/^เครื่องชั่ง/, "")
+                            : item.label}
+                        </button>
+                      ))}
                   </SegmentedFilter>
                 </div>
                 {activeCategory && (

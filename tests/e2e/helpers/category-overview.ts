@@ -46,51 +46,55 @@ export async function verifyCategoryOverview(
   expect(new Set(all).size).toBe(all.length);
   const filters = lineup.getByRole("group", { name: "กรองผลิตภัณฑ์" });
   const allFilter = filters.getByRole("button", { name: "ทุกผลิตภัณฑ์" });
-  await expect(allFilter).toBeEnabled();
-  await expect(allFilter).toHaveAttribute("aria-pressed", "true");
-  const chapters = main.locator("#products-chapters > li > :is(a, button)");
-  const groupFilters = (await filters.getByRole("button").all()).slice(1);
-  await expect(chapters).toHaveCount(groupFilters.length);
-  let hasNarrowerGroup = false;
-  for (const [i, filter] of groupFilters.entries()) {
-    await expect(filter).toHaveText(
-      await chapters.nth(i).locator(":scope > span:last-child").innerText(),
-    );
-    if (await chapters.nth(i).isDisabled()) {
-      await expect(filter).toBeDisabled();
-      continue;
-    }
-    await filter.press("Enter");
-    await expect(filter).toHaveAttribute("aria-pressed", "true");
-    const subset = await destinations();
-    expect(subset).toEqual(all.filter((href) => subset.includes(href)));
-    if (width === 1440) {
-      const listing = await page.context().newPage();
-      try {
-        const href = await chapters.nth(i).getAttribute("href");
-        await listing.goto(new URL(href!, page.url()).href);
-        const catalog = listing.locator("[data-product-subcategory-page]");
-        await expect(catalog).toBeVisible();
-        const more = catalog.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
-        while (await more.isVisible()) await more.click();
-        const listed = await catalog
-          .locator("article[data-model-only] > a")
-          .evaluateAll((links) =>
-            links.map((link) => new URL((link as HTMLAnchorElement).href).pathname),
-          );
-        expect(new Set(subset), href!).toEqual(new Set(listed));
-      } finally {
-        await listing.close();
+  if (id === "platforms") {
+    await expect(filters).toHaveCount(0);
+  } else {
+    await expect(allFilter).toBeEnabled();
+    await expect(allFilter).toHaveAttribute("aria-pressed", "true");
+    const chapters = main.locator("#products-chapters > li > :is(a, button)");
+    const groupFilters = (await filters.getByRole("button").all()).slice(1);
+    await expect(chapters).toHaveCount(groupFilters.length);
+    let hasNarrowerGroup = false;
+    for (const [i, filter] of groupFilters.entries()) {
+      await expect(filter).toHaveText(
+        await chapters.nth(i).locator(":scope > span:last-child").innerText(),
+      );
+      if (await chapters.nth(i).isDisabled()) {
+        await expect(filter).toBeDisabled();
+        continue;
       }
+      await filter.press("Enter");
+      await expect(filter).toHaveAttribute("aria-pressed", "true");
+      const subset = await destinations();
+      expect(subset).toEqual(all.filter((href) => subset.includes(href)));
+      if (width === 1440) {
+        const listing = await page.context().newPage();
+        try {
+          const href = await chapters.nth(i).getAttribute("href");
+          await listing.goto(new URL(href!, page.url()).href);
+          const catalog = listing.locator("[data-product-subcategory-page]");
+          await expect(catalog).toBeVisible();
+          const more = catalog.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
+          while (await more.isVisible()) await more.click();
+          const listed = await catalog
+            .locator("article[data-model-only] > a")
+            .evaluateAll((links) =>
+              links.map((link) => new URL((link as HTMLAnchorElement).href).pathname),
+            );
+          expect(new Set(subset), href!).toEqual(new Set(listed));
+        } finally {
+          await listing.close();
+        }
+      }
+      if (subset.length < all.length) hasNarrowerGroup = true;
+      await expect(lineup.getByRole("status")).toHaveText(
+        subset.length ? `${subset.length} รุ่น` : "ยังไม่มีรุ่นสินค้าในกลุ่มนี้",
+      );
     }
-    if (subset.length < all.length) hasNarrowerGroup = true;
-    await expect(lineup.getByRole("status")).toHaveText(
-      subset.length ? `${subset.length} รุ่น` : "ยังไม่มีรุ่นสินค้าในกลุ่มนี้",
-    );
+    expect(hasNarrowerGroup).toBe(true);
+    await allFilter.click();
+    expect(await destinations()).toEqual(all);
   }
-  expect(hasNarrowerGroup).toBe(true);
-  await allFilter.click();
-  expect(await destinations()).toEqual(all);
   const rail = main.locator("#products-lineup");
   if (await rail.evaluate((el) => el.scrollWidth > el.clientWidth + 1)) {
     await lineup.getByRole("button", { name: "เลื่อนผลิตภัณฑ์ถัดไป" }).press("Enter");

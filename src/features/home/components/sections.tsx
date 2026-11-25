@@ -42,9 +42,9 @@ export function BrandStoryTemplate() {
         <div className={storyStyles.copy}>
           <p className="eyebrow">BEHIND EVERY MEASUREMENT</p>
           <h2>
-            เบื้องหลังทุกตัวเลข
+            ความเที่ยงตรงของเรา
             <br />
-            คือ<span>ความตั้งใจของคุณ</span>
+            คือ<span>ความสำเร็จของคุณ</span>
           </h2>
           <p>
             Sunford เริ่มต้นจากความตั้งใจที่จะช่วยให้ผู้ประกอบการ โรงงาน ร้านค้าปลีก

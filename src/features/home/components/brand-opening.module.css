@@ -15,12 +15,13 @@
     radial-gradient(ellipse closest-side at 50% 42%, #1a191bd9 0%, #0c0b0d88 48%, transparent 100%);
 }
 .logo {
+  --logo-initial-width: calc(69 / 498 * 100%);
   position: absolute;
   top: 0;
   left: 0;
   width: 56%;
   max-width: 440px;
-  aspect-ratio: 690 / 141;
+  aspect-ratio: 498 / 74;
   transform-origin: 0 0;
   opacity: 0;
   will-change: transform, opacity;
@@ -31,10 +32,10 @@
   inset: 0;
 }
 .symbol {
-  clip-path: inset(0 79.7% 0 0);
+  clip-path: inset(0 calc(100% - var(--logo-initial-width)) 0 0);
 }
 .word {
-  clip-path: inset(0 79.7% 0 20.3%);
+  clip-path: inset(0 calc(100% - var(--logo-initial-width)) 0 var(--logo-initial-width));
   opacity: 0;
 }
 .logo img {

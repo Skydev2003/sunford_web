@@ -4,7 +4,10 @@ import { getStorefrontProducts } from "./product-repository";
 import { getCatalogPage } from "./catalog-page";
 import { getClientProducts } from "./client-products";
 import { getScaleSubcategories } from "../data/scale-subcategories";
-import { getPlatformSubcategories } from "../data/platform-subcategories";
+import {
+  getPlatformPlacementSubcategories,
+  getPlatformSubcategories,
+} from "../data/platform-subcategories";
 import { getPosSubcategories } from "../data/pos-subcategories";
 import { getIndicatorSubcategories } from "../data/indicator-subcategories";
 import { deduplicateConsumableSizes } from "../data/consumable-sizes";
@@ -39,7 +42,10 @@ export const getProductCategories = cache(async () => {
           id === "scales"
             ? getScaleSubcategories(catalog?.products ?? [])
             : id === "platforms"
-              ? getPlatformSubcategories(catalog?.products ?? [])
+              ? [
+                  ...getPlatformPlacementSubcategories(catalog?.products ?? []),
+                  ...getPlatformSubcategories(catalog?.products ?? []),
+                ]
               : id === "pos"
                 ? getPosSubcategories(catalog?.products ?? [])
                 : id === "indicators"

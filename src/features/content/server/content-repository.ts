@@ -8,7 +8,11 @@ import { getDocuments } from "@/features/site/server/documents";
 import { publicPath } from "../data/public-paths.mjs";
 import { solutions, solutionsIndex } from "../data/solutions";
 import { warehouseContentPage } from "../data/warehouse-content";
-import { getEditorialSection } from "../data/editorial-sections";
+import {
+  featuredEditorialArticles,
+  getEditorialSection,
+  publishedEditorialArticlePaths,
+} from "../data/editorial-sections";
 import { getProducts } from "@/features/catalog/server/product-repository";
 import { legacySoftwareCatalogPath } from "@/features/home/data/brand";
 import { contactPath, legacyContactPath } from "../data/contact-route";
@@ -67,8 +71,8 @@ export async function getContentPages(): Promise<SourcePage[]> {
       if (editorial.path !== page.path) return [];
       return [{ ...page, title: editorial.title, kind: "page", images: [] }];
     }
-    // Imported articles are route history. Warehouse has no website editorial publication.
-    if (page.kind === "article") return [];
+    if (page.kind === "article")
+      return publishedEditorialArticlePaths.has(normalize(page.path)) ? [page] : [];
     return [warehouseContentPage(page, products, false)];
   });
 }
@@ -105,10 +109,19 @@ export async function getContentPageIndex(): Promise<Record<string, SourcePage>>
 }
 export async function getContentPage(path: string) {
   const page = (await getContentPageIndex())[normalize(path)] as SourcePage | undefined;
-  if (page?.kind === "article") return undefined;
+  if (page?.kind === "article")
+    return publishedEditorialArticlePaths.has(normalize(page.path)) ? page : undefined;
   // The built-in service page does not project Warehouse data.
   if (page?.path === "/service" && page.kind === "page" && !page.managed) return page;
   return page ? warehouseContentPage(page, await getProducts()) : undefined;
+}
+
+export async function getFeaturedEditorialArticles() {
+  const pages = await getContentPageIndex();
+  return featuredEditorialArticles.flatMap(({ path, cover, summary }) => {
+    const page = pages[path];
+    return page?.kind === "article" ? [{ ...page, cover, summary }] : [];
+  });
 }
 
 export function getSourceProduct(slug: string) {

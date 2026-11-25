@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { platformSubcategoryPages } from "../../src/features/catalog/data/product-subcategory-pages";
+import { platformPlacementPages } from "../../src/features/catalog/data/product-subcategory-pages";
 import { verifyCategoryOverview } from "./helpers/category-overview";
 
 const path = "/products/category/platforms";
@@ -17,12 +17,33 @@ for (const width of [390, 1440]) {
     await verifyCategoryOverview(page, "platforms", width);
   });
 
+  test(`platform overview filters by material without placement tabs at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto(path);
+    const placements = page.getByRole("group", { name: "กรองผลิตภัณฑ์", exact: true });
+    const materials = page.getByRole("group", { name: "กรองตามวัสดุ", exact: true });
+    const products = page.locator("#products-lineup").getByRole("link");
+    await expect(placements).toHaveCount(0);
+    await expect(products.first()).toBeVisible();
+    const allCount = await products.count();
+    const sus304 = materials.getByRole("button", { name: "สแตนเลส SUS304", exact: true });
+    await sus304.click();
+    await expect(sus304).toHaveAttribute("aria-pressed", "true");
+    expect(await products.count()).toBeLessThan(allCount);
+    await expect(products.filter({ hasText: "TMS 3040" })).toBeVisible();
+    await expect(products.filter({ hasText: "TSS 3040" })).toBeVisible();
+    await materials.getByRole("button", { name: "ทุกวัสดุ" }).click();
+    await expect(products).toHaveCount(allCount);
+  });
+
   test(`platform chapters and reload keep category ownership at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
     const finder = page.getByRole("dialog", { name: title, exact: true });
     const catalog = finder.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" });
-    for (const { id, label: name, href, title } of platformSubcategoryPages) {
+    for (const { id, label: name, href, title } of platformPlacementPages) {
       const button = page
         .locator("#products-chapters")
         .getByText(name, { exact: true })
@@ -66,7 +87,7 @@ for (const width of [768, 834]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
-    await expect(page.locator("#products-chapters > li")).toHaveCount(4);
+    await expect(page.locator("#products-chapters > li")).toHaveCount(2);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

@@ -1,5 +1,6 @@
 "use client";
 import { useReturnState } from "@/features/site/history/return-state";
+import { sunfordLogo } from "@/features/site/data/settings";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { PdfBuyer } from "../data/quotation-pdf";
@@ -51,7 +52,7 @@ function ModelThumbnail({ product }: { product?: QuoteProduct }) {
 function SellerDetails() {
   return (
     <div className={styles.seller}>
-      <Image src="/images/sunford-logo.png" width={120} height={30} alt="SUNFORD" />
+      <Image src={sunfordLogo} width={120} height={30} alt="SUNFORD" />
       <div>
         <strong>{seller.name}</strong>
         <p>{seller.address}</p>

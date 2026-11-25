@@ -35,7 +35,7 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
     >
       <div className="category-feature-inner">
         <h2 id="category-feature-title">
-          เลือก <span>หมวดหมู่สินค้า</span>
+          สำรวจผลิตภัณฑ์ <span>เพิ่มประสิทธิภาพการทำงานของคุณ</span>
         </h2>
         <div className="category-feature-layout">
           <div
@@ -81,9 +81,6 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
             )}
           </div>
           <div className="category-feature-choices">
-            <p className="category-feature-intro">
-              เลือกผลิตภัณฑ์และโซลูชัน SUNFORD ที่เหมาะกับการใช้งานของคุณ
-            </p>
             <div className="category-feature-grid" aria-label="หมวดหมู่สินค้า SUNFORD">
               {items.map((item, index) => (
                 <article

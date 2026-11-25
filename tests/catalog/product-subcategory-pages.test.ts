@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   indicatorSubcategoryPages,
+  platformPlacementPages,
   platformSubcategoryPages,
   posSubcategoryPages,
   accessorySubcategoryPages,
@@ -43,6 +44,7 @@ test("Navbar selects real listing features, caps popular series at six, and keep
       id: `${series}${model}`,
       warehouseSku: `${series}${model}`,
       warehouseName: `Platform ${series} 4050`,
+      warehouseSubcategoryIds: ["platform-carbon-steel"],
     })),
   );
   const categories = [
@@ -57,8 +59,8 @@ test("Navbar selects real listing features, caps popular series at six, and keep
       id: "platforms",
       subcategories: [
         {
-          id: "platform-carbon-steel",
-          label: "แท่นเหล็กคาร์บอน",
+          id: "platform-floor",
+          label: "แท่นชั่งตั้งพื้น",
           productIds: platforms.map(({ id }) => id),
         },
       ],
@@ -84,6 +86,7 @@ test("Navbar selects real listing features, caps popular series at six, and keep
   assert.ok(
     series.every(
       ({ href, label }) =>
+        href.startsWith("/products/category/platforms/floor?") &&
         new URL(href, "https://example.test").searchParams.get("feature") === label,
     ),
   );
@@ -302,7 +305,14 @@ test("shared registry retains every existing scale path, title and return alias"
   );
 });
 
-test("four platform materials have exact own-parent routes and safe return contexts", () => {
+test("platform placements and legacy materials have exact routes and safe return contexts", () => {
+  assert.deepEqual(
+    platformPlacementPages.map((page) => [page.id, page.href]),
+    [
+      ["platform-floor", "/products/category/platforms/floor"],
+      ["platform-benchtop", "/products/category/platforms/benchtop"],
+    ],
+  );
   assert.deepEqual(
     platformSubcategoryPages.map((page) => [page.id, page.href]),
     [
@@ -312,7 +322,7 @@ test("four platform materials have exact own-parent routes and safe return conte
       ["platform-abs", "/products/category/platforms/abs"],
     ],
   );
-  for (const page of platformSubcategoryPages) {
+  for (const page of [...platformPlacementPages, ...platformSubcategoryPages]) {
     for (const prefix of ["/products?category=platforms&", "/products/category/platforms?"])
       assert.equal(
         resolveCategoryHref(`${prefix}subcategory=${page.id}&catalog=all&trace=keep#details`),
@@ -335,7 +345,14 @@ test("platform expansion preserves cross-family boundaries and broader parent al
     resolveCategoryHref("/collections/stainless-steel-platforms"),
     "/products/category/platforms",
   );
-  assert.equal(resolveCategoryHref("/product/benchtop-platforms"), "/products/category/platforms");
+  assert.equal(
+    resolveCategoryHref("/product/benchtop-platforms"),
+    "/products/category/platforms/benchtop",
+  );
+  assert.equal(
+    resolveCategoryHref("/collections/floor-platforms"),
+    "/products/category/platforms/floor",
+  );
   assert.equal(getProductReturnPage("/products/category/platforms/abs"), undefined);
 });
 

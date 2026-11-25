@@ -1,76 +1,66 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
-import { ProductImage } from "@/components/ui/product-image";
 import { FocusDragScroll } from "@/components/ui/focus-drag-scroll";
-import { getScaleApplications } from "@/features/catalog/server/scale-applications";
-import { warehouseBlurDataURL } from "@/features/catalog/server/warehouse-image-previews";
+import { editorialArticlesPath } from "@/features/content/data/editorial-sections";
+import { getFeaturedEditorialArticles } from "@/features/content/server/content-repository";
 import { getSettings } from "@/features/site/server/documents";
 import { storiesDefaults } from "@/features/site/data/settings";
 import { VideoGallery } from "@/features/content/components/video-gallery";
+import { storyCardDate } from "../data/story-cards";
 import { homepageYoutubeVideos } from "../data/youtube-video-links";
 import storyStyles from "./stories-section.module.css";
 
 export async function SunfordStories() {
-  const applications = await getScaleApplications();
-  const cards = applications
-    .flatMap(({ slug, label, products }) => {
-      const photo = products.find(({ image }) => image);
-      return photo ? [{ slug, label, photo, count: products.length }] : [];
-    })
-    .slice(0, 8);
-  const label = "เลือกเครื่องชั่งให้ตรงกับงาน";
-  const href = "/products/category/scales/applications";
+  const [copy, articles] = await Promise.all([
+    getSettings("stories", storiesDefaults),
+    getFeaturedEditorialArticles(),
+  ]);
+  if (!articles.length) return null;
   return (
     <section id="stories" className={storyStyles.section} aria-labelledby="stories-heading">
       <div className={storyStyles.heading}>
         <div>
-          <p className={storyStyles.eyebrow}>SUNFORD</p>
-          <h2 id="stories-heading">
-            เลือกเครื่องชั่ง<span>ให้ตรงกับงาน</span>
-          </h2>
-          <p className={storyStyles.intro}>สำรวจรุ่นเครื่องชั่งตามประเภทงานและธุรกิจของคุณ</p>
+          <p className={storyStyles.eyebrow}>{copy.eyebrow}</p>
+          <h2 id="stories-heading">{copy.title}</h2>
         </div>
-        <Link className={storyStyles.allStories} href="/products/category/scales">
-          ดูเครื่องชั่งทั้งหมด <ArrowRight size={15} aria-hidden="true" />
+        <Link className={storyStyles.allStories} href={editorialArticlesPath}>
+          {copy.linkLabel} <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </div>
-      {cards.length > 0 && (
-        <FocusDragScroll label={label} className={`stories-track ${storyStyles.track}`}>
-          {cards.map(({ slug, label, photo, count }, index) => (
+      <FocusDragScroll label={copy.title} className={`stories-track ${storyStyles.track}`}>
+        {articles.map(({ title, path, cover, summary, text }) => {
+          const date = storyCardDate(text);
+          return (
             <Link
-              href={`${href}/${slug}`}
-              key={slug}
+              href={path}
+              key={path}
               className={storyStyles.card}
               target="_blank"
               rel="noopener noreferrer"
             >
               <div className={storyStyles.photo}>
-                <ProductImage
-                  progressive
-                  blurDataURL={index < 3 ? warehouseBlurDataURL(photo.image) : undefined}
-                  src={photo.image}
-                  alt={photo.name}
-                  fill
-                  sizes="(width < 48rem) 82vw, 300px"
-                />
-                <span className={storyStyles.badge}>เลือกตามการใช้งาน</span>
+                <Image src={cover} alt="" fill sizes="(width < 48rem) 74vw, 320px" />
               </div>
               <div className={storyStyles.body}>
-                <h3>{label}</h3>
-                <p className={storyStyles.description}>
-                  ดูข้อมูลเครื่องชั่งที่เกี่ยวข้อง {count} รุ่น
-                </p>
+                {date && (
+                  <time className={storyStyles.date} dateTime={date.iso}>
+                    {date.label}
+                  </time>
+                )}
+                <h3>{title}</h3>
+                <p className={storyStyles.description}>{summary}</p>
                 <span className={storyStyles.readMore}>
-                  ดูรุ่นที่เกี่ยวข้อง{" "}
+                  {copy.readLabel}{" "}
                   <span>
                     <ChevronRight size={14} aria-hidden="true" />
                   </span>
                 </span>
               </div>
             </Link>
-          ))}
-        </FocusDragScroll>
-      )}
+          );
+        })}
+      </FocusDragScroll>
     </section>
   );
 }

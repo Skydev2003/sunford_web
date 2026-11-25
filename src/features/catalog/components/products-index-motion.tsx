@@ -5,16 +5,16 @@ import { useEffect, useRef } from "react";
 import styles from "./products-index-content.module.css";
 
 const duration = 2200;
-const logo = "/images/products/sunford-s-transparent.png";
+const logo = "/images/products/sunford-s-transparent.svg";
 const suffix = "/images/products/sunford-unford-transparent.svg";
-// Left edges in the 576-unit brand layout. Each sprite cell includes its italic overhang.
+// Each 90-unit sprite cell preserves the letter and its overhang in the 498-unit master.
 const letters = [
-  ["U", 80],
-  ["N", 161],
-  ["F", 249],
-  ["O", 323],
-  ["R", 406],
-  ["D", 488],
+  ["U", 68],
+  ["N", 138],
+  ["F", 214],
+  ["O", 279],
+  ["R", 351],
+  ["D", 422],
 ] as const;
 
 export function ProductsIndexMotion() {
@@ -127,8 +127,8 @@ export function ProductsIndexMotion() {
           <Image
             ref={imageRef}
             src={logo}
-            width={636}
-            height={640}
+            width={69}
+            height={74}
             alt=""
             unoptimized
             loading="eager"
@@ -141,7 +141,7 @@ export function ProductsIndexMotion() {
             data-letter={letter}
             className={styles.letter}
             style={{
-              left: `${(left / 576) * 100}%`,
+              left: `${(left / 498) * 100}%`,
               backgroundImage: `url("${suffix}")`,
               backgroundPositionX: `${index * 20}%`,
             }}

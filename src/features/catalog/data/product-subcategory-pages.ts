@@ -2,7 +2,11 @@ import { productCategoryDefinitions } from "./mock-categories";
 import type { ProductCategory } from "./mock-categories";
 import type { Product, ProductCardData } from "../types";
 import { getIndicatorSubcategories } from "./indicator-subcategories";
-import { platformSubcategoryDefinitions } from "./platform-subcategory-definitions";
+import {
+  platformPlacementDefinitions,
+  platformSubcategoryDefinitions,
+  type PlatformPlacementId,
+} from "./platform-subcategory-definitions";
 import { getPosSubcategories } from "./pos-subcategories";
 import { accessorySubcategoryDefinitions } from "./accessory-subcategories";
 import { scaleSubcategoryPages, type ScaleReturnContext } from "./scale-subcategory-pages";
@@ -43,6 +47,7 @@ export type ProductReturnContext =
   | ScaleReturnContext
   | keyof typeof indicatorSlugs
   | keyof typeof platformSlugs
+  | PlatformPlacementId
   | keyof typeof posSlugs
   | keyof typeof accessorySlugs
   | (typeof additionalScaleSubcategoryPages)[number]["id"]
@@ -81,6 +86,16 @@ export const platformSubcategoryPages = platformSubcategoryDefinitions.map((chil
   };
 });
 
+export const platformPlacementPages = platformPlacementDefinitions.map(({ id, label, slug }) => ({
+  id,
+  categoryId: "platforms" as const,
+  label,
+  title: label,
+  slug,
+  href: `/products/category/platforms/${slug}`,
+  returnContext: id,
+}));
+
 const posLabel = productCategoryDefinitions.find((category) => category.id === "pos")!.label;
 export const posSubcategoryPages = getPosSubcategories([]).map((child) => {
   const id = child.id as keyof typeof posSlugs;
@@ -118,6 +133,7 @@ export const productSubcategoryPages = [
     title: page.label,
   })),
   ...indicatorSubcategoryPages,
+  ...platformPlacementPages,
   ...platformSubcategoryPages,
   ...posSubcategoryPages,
   ...accessorySubcategoryPages,

@@ -28,9 +28,15 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>, enabled: bo
     let active = true;
     const update = () => {
       frame = 0;
+      const hero = surface.querySelector("[data-hero-scene]");
+      // The header owns these attributes even if the Hero hydrates first.
+      header.toggleAttribute("data-hero-backdrop-tracked", Boolean(hero));
+      header.toggleAttribute(
+        "data-hero-backdrop",
+        Boolean(hero && hero.getBoundingClientRect().top >= -1),
+      );
       if (header.hasAttribute("data-nav-open")) return;
       const opening = surface.querySelector<HTMLElement>("[data-brand-opening]");
-      const hero = surface.querySelector("[data-hero-scene]");
       if (
         hero &&
         opening &&
@@ -89,6 +95,8 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>, enabled: bo
       window.removeEventListener("resize", schedule);
       window.removeEventListener("pageshow", schedule);
       delete header.dataset.navTone;
+      delete header.dataset.heroBackdrop;
+      delete header.dataset.heroBackdropTracked;
     };
   }, [ref, enabled]);
 }

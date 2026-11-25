@@ -66,7 +66,7 @@ async function localModule(entry: string) {
 test("site settings are preserved locally even when a legacy CMS URL is configured", async () => {
   const site = await localModule("src/features/site/server/documents.ts");
   const settings = await site.getSettings("site", { name: "SUNFORD", logo: "missing" });
-  assert.equal(settings.logo, "/images/sunford-logo.png");
+  assert.equal(settings.logo, "/icon.svg");
   const documents = await site.getDocuments("settings");
   assert.equal(new Set(documents.map((row) => row.id)).size, documents.length);
   assert(documents.some((row) => row.id === "navigation"));

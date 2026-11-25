@@ -2,6 +2,7 @@ import type { Product } from "../types";
 import type { ProductCategory } from "./mock-categories";
 import { getSubmenuFeature, productListingFeatureHref } from "./catalog-submenu-destinations";
 import { getProductListingFeatures } from "./product-listing-features";
+import { isPlatformPlacementId } from "./platform-subcategory-definitions";
 import { productSubcategoryPages, resolveListingSubcategory } from "./product-subcategory-pages";
 
 export type NavbarListingFeatures = Record<string, { label: string; href: string }[]>;
@@ -21,7 +22,12 @@ export function buildNavbarListingFeatures(
   return Object.fromEntries(
     categories.map((category) => {
       const candidates = productSubcategoryPages
-        .filter(({ categoryId, href }) => categoryId === category.id && !disabled.has(href))
+        .filter(
+          ({ categoryId, href, id }) =>
+            categoryId === category.id &&
+            !disabled.has(href) &&
+            (categoryId !== "platforms" || isPlatformPlacementId(id)),
+        )
         .flatMap((page) => {
           const child = resolveListingSubcategory(page, category, published);
           if (!child) return [];
@@ -30,12 +36,14 @@ export function buildNavbarListingFeatures(
             category.id,
             page.id,
             published.filter(({ id }) => ids.has(id)),
-          ).map(({ id, label, productIds }) => ({
-            label,
-            href: productListingFeatureHref(page.href, category.id, id),
-            count: productIds.length,
-            preferred: getSubmenuFeature(page.id) === id || preferredScalePage[id] === page.id,
-          }));
+          )
+            .filter(({ exclusiveGroup }) => exclusiveGroup !== "material")
+            .map(({ id, label, productIds }) => ({
+              label,
+              href: productListingFeatureHref(page.href, category.id, id),
+              count: productIds.length,
+              preferred: getSubmenuFeature(page.id) === id || preferredScalePage[id] === page.id,
+            }));
         })
         .filter(({ href }) => !disabled.has(href));
       const ranked = candidates.sort((first, second) => second.count - first.count);

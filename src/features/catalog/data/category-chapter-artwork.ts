@@ -11,6 +11,8 @@ import ledArt from "../../../../public/images/category-chapters/indicators/led.w
 import carbonSteelArt from "../../../../public/images/category-chapters/platforms/carbon-steel.webp";
 import sus201Art from "../../../../public/images/category-chapters/platforms/sus201.webp";
 import sus304Art from "../../../../public/images/category-chapters/platforms/sus304.webp";
+import platformFloorArt from "../../../../public/images/imported/73affb8e71209dc1f9bb.png";
+import platformBenchtopArt from "../../../../public/images/imported/75accd084f5db8791ed2.png";
 import androidArt from "../../../../public/images/category-chapters/pos/android.webp";
 import windowsArt from "../../../../public/images/category-chapters/pos/windows.webp";
 import analyticalArt from "../../../../public/images/category-chapters/scales/analytical.webp";
@@ -29,6 +31,8 @@ export const chapterArtwork = new Map([
   ["/products/category/accessories/weights", accessoryWeightsArt.src],
   ["/products/category/indicators/lcd", lcdArt.src],
   ["/products/category/indicators/led", ledArt.src],
+  ["/products/category/platforms/floor", platformFloorArt.src],
+  ["/products/category/platforms/benchtop", platformBenchtopArt.src],
   ["/products/category/platforms/carbon-steel", carbonSteelArt.src],
   ["/products/category/platforms/sus201", sus201Art.src],
   ["/products/category/platforms/sus304", sus304Art.src],

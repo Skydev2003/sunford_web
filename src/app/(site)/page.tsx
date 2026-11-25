@@ -61,10 +61,7 @@ export default async function Home() {
           <SunfordVideos />
         </HomeMotion>
       </Suspense>
-      <ScrollReveal
-        rootId="main-content"
-        selector="[data-scroll-reveal], [data-home-motion] :is(h2, h3, p):not([data-scroll-reveal-grid] *)"
-      />
+      <ScrollReveal rootId="main-content" selector="#section-two-title" />
     </main>
   );
 }

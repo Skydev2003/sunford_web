@@ -1,3 +1,24 @@
+export const platformPlacementDefinitions = [
+  {
+    id: "platform-floor",
+    slug: "floor",
+    label: "แท่นชั่งตั้งพื้น",
+    collections: ["/collections/floor-platforms", "/collections/large-floor-platforms"],
+  },
+  {
+    id: "platform-benchtop",
+    slug: "benchtop",
+    label: "แท่นชั่งตั้งโต๊ะ",
+    collections: ["/collections/benchtop-platforms"],
+  },
+] as const;
+
+export type PlatformPlacementId = (typeof platformPlacementDefinitions)[number]["id"];
+
+export function isPlatformPlacementId(id: string): id is PlatformPlacementId {
+  return platformPlacementDefinitions.some((placement) => placement.id === id);
+}
+
 type PlatformMaterial = {
   id: string;
   label: string;

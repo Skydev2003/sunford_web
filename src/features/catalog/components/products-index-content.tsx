@@ -25,6 +25,10 @@ import { selectScaleShowcase, type PublishedScaleCard } from "../data/scale-show
 import styles from "./products-index-content.module.css";
 
 const categoryFamilies = new Set(["scales", "indicators", "platforms", "pos", "accessories"]);
+const aboutPhoto = "/images/hero/acs30-fc31-front";
+const aboutPhotoSrcSet = [288, 384, 576, 768]
+  .map((width) => `${aboutPhoto}-${width}.webp ${width}w`)
+  .join(", ");
 const showcaseHeadings: Partial<Record<string, { lead: string; detail: string }>> = {
   scales: { lead: "เครื่องชั่ง", detail: "มาตรฐานที่ไว้วางใจ" },
   indicators: { lead: "เลือกออกแบบ", detail: "ได้ด้วยตัวคุณเอง" },
@@ -172,7 +176,7 @@ export function ProductsIndexContent({
               )}
               {id === "indicators" && (
                 <li className={styles.card}>
-                  <Link href={sunford.about} className={styles.aboutCard}>
+                  <Link href="/products/warehouse-G106124" className={styles.aboutCard}>
                     <p className={styles.aboutEyebrow} lang="en">
                       SUNFORD PRECISION
                     </p>
@@ -180,16 +184,21 @@ export function ProductsIndexContent({
                       แม่นยำ
                       <span>ในทุกน้ำหนัก</span>
                     </h3>
-                    <div className={styles.aboutArt}>
-                      <Image
-                        src="/images/hero/acs30-jc21-front.webp"
-                        alt="เครื่องชั่งดิจิทัล SUNFORD รุ่น ACS-30-JC21"
-                        fill
+                    <picture className={styles.aboutArt}>
+                      <source
+                        type="image/webp"
+                        srcSet={aboutPhotoSrcSet}
                         sizes="(max-width: 736px) min(92vw, 285px), 368px"
                       />
-                    </div>
+                      <Image
+                        src={`${aboutPhoto}-384.webp`}
+                        alt="เครื่องชั่งดิจิทัล SUNFORD รุ่น ACS-30-FC31"
+                        fill
+                        unoptimized
+                      />
+                    </picture>
                     <span className={styles.aboutAction}>
-                      เกี่ยวกับ SUNFORD
+                      ACS-30-FC31
                       <span className={styles.aboutArrow}>
                         <ArrowUpRight size={18} aria-hidden="true" />
                       </span>

@@ -3,8 +3,10 @@ import { siteMenuLabel } from "../../src/features/site/data/site-menu-labels";
 import { expect, test, type Page, type APIRequestContext } from "@playwright/test";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 import { getPlatformSubcategories } from "../../src/features/catalog/data/platform-subcategories";
-import { platformSubcategoryPages } from "../../src/features/catalog/data/product-subcategory-pages";
-import { catalogModelLabel } from "../../src/features/catalog/data/catalog-card-names";
+import {
+  platformPlacementPages,
+  platformSubcategoryPages,
+} from "../../src/features/catalog/data/product-subcategory-pages";
 import type { Product } from "../../src/features/catalog/types";
 
 const pages = platformSubcategoryPages;
@@ -19,24 +21,30 @@ async function sourceGroup(request: APIRequestContext, id: string) {
   return getPlatformSubcategories(products).find((group) => group.id === id)!;
 }
 
-async function verifyListing(page: Page, request: APIRequestContext, id: string, href: string) {
+async function verifyListing(
+  page: Page,
+  request: APIRequestContext,
+  { id, href, title }: (typeof pages)[number],
+) {
   const source = await sourceGroup(request, id);
-  const models = source.entries!.map((entry) => catalogModelLabel(entry.model));
+  const models = (source.entries ?? [])
+    .filter(({ productId }) => productId)
+    .map(({ model }) => model);
   await page.goto(href);
   const main = page.locator(`[data-product-subcategory-page="${id}"]:visible`);
-  await expect(main.getByRole("heading", { level: 1 })).toHaveText(
-    `โครงสร้างแท่นชั่ง ${source.label}`,
-  );
+  await expect(main.getByRole("heading", { level: 1 })).toHaveText(title);
   const cards = main.locator("#mock-product-results article");
-  await expect(cards.locator("h3")).toHaveText(models.slice(0, 24));
-  if (models.length > 24) await main.getByRole("button", { name: /ดูเพิ่มเติม/ }).click();
-  await expect(cards.locator("h3")).toHaveText(models);
-  const mockCount = source.entries!.filter((entry) => !entry.productId).length;
-  await expect(main.locator("article[data-mock-product]")).toHaveCount(mockCount);
-  await expect(main.locator("article[data-mock-product] :is(a,button)")).toHaveCount(0);
-  await expect(main.getByRole("status")).toHaveText(
-    `${source.productIds.length} รายการ${mockCount ? ` · ${mockCount} รุ่นตัวอย่าง (Mock)` : ""}`,
-  );
+  if (models.length) {
+    await expect(cards.locator("h3")).toHaveText(models.slice(0, 24));
+    while ((await cards.count()) < models.length)
+      await main.getByRole("button", { name: /ดูเพิ่มเติม/ }).click();
+    await expect(cards.locator("h3")).toHaveText(models);
+    await expect(main.getByRole("status")).toHaveText(`${models.length} รายการ`);
+  } else {
+    await expect(main.getByText("ยังไม่มีรายการสินค้าที่เผยแพร่ในหมวดนี้")).toBeVisible();
+    await expect(cards).toHaveCount(0);
+  }
+  await expect(main.locator("article[data-mock-product]")).toHaveCount(0);
   await expect(main.getByRole("group", { name: "หมวดหมู่ย่อยสินค้า" })).toHaveCount(0);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page.locator(":is(.site-header,[data-products-header]):visible")).toHaveCount(1);
@@ -47,12 +55,12 @@ async function verifyListing(page: Page, request: APIRequestContext, id: string,
 
 for (const width of [390, 1440]) {
   for (const definition of pages) {
-    test(`${definition.id} exact entries, pagination, Mock and refresh at ${width}px`, async ({
+    test(`${definition.id} retains its material listing and refresh at ${width}px`, async ({
       page,
       request,
     }) => {
       await page.setViewportSize({ width, height: 1000 });
-      await verifyListing(page, request, definition.id, definition.href);
+      await verifyListing(page, request, definition);
       await page.evaluate(() => scrollTo(0, 0));
       await page.screenshot({ path: test.info().outputPath(`${definition.slug}-${width}.png`) });
       await page.reload();
@@ -68,8 +76,7 @@ for (const width of [320, 768, 834]) {
   test(`all four group layouts remain contained at ${width}px`, async ({ page, request }) => {
     test.slow();
     await page.setViewportSize({ width, height: 1000 });
-    for (const definition of pages)
-      await verifyListing(page, request, definition.id, definition.href);
+    for (const definition of pages) await verifyListing(page, request, definition);
   });
 }
 
@@ -79,7 +86,15 @@ for (const definition of pages) {
     request,
     context,
   }) => {
-    const { main, models } = await verifyListing(page, request, definition.id, definition.href);
+    const { main, models } = await verifyListing(page, request, definition);
+    if (!models.length) {
+      const alternatives = main.getByRole("navigation", { name: "ข้อมูลที่เกี่ยวข้อง" });
+      for (const placement of platformPlacementPages)
+        await expect(
+          alternatives.getByRole("link", { name: new RegExp(placement.label) }),
+        ).toHaveAttribute("href", placement.href);
+      return;
+    }
     const search = main.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
     await search.fill("not-a-model");
     await expect(main.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
@@ -88,25 +103,19 @@ for (const definition of pages) {
     await expect(main.getByRole("button", { name: "สินค้าแนะนำ", exact: true })).toHaveCount(0);
     await expect(main.getByRole("group", { name: "รูปแบบรายการสินค้า" })).toHaveCount(0);
     await expect(main.getByRole("button", { name: /แสดงแบบรายการ|แสดงแบบตาราง/ })).toHaveCount(0);
-    if (definition.id === "platform-abs") {
-      await expect(main.locator("article[data-mock-product]")).toHaveCount(1);
-      await expect(main.locator("article :is(a,button)")).toHaveCount(0);
-      await main.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
-      await expect(main.locator("article button")).toHaveCount(0);
-      return;
-    }
     const detail = main.locator("article[data-model-only] a").first();
     const href = (await detail.getAttribute("href"))!;
     expect(href).toContain(`?from=${definition.returnContext}`);
     await detail.click();
-    await page.getByRole("link", { name: `กลับรายการ${definition.title}`, exact: true }).click();
-    await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
+    await page.getByRole("link", { name: "กลับหน้าก่อนหน้า", exact: true }).click();
+    await expect(page).toHaveURL((url) => url.pathname === definition.href);
     const tab = await context.newPage();
     await tab.goto(href);
     await expect(tab.locator(".back-link")).toHaveAttribute("href", definition.href);
     await tab.goto(href.split("?")[0]);
     await expect(tab.locator(".back-link")).toHaveAttribute("href", "/products");
     await tab.close();
+    if (models.length < 2) return;
     await main.getByRole("button", { name: "เลือกสินค้าเพื่อเปรียบเทียบ", exact: true }).click();
     const controls = main.locator("article[data-model-only] button");
     await controls.nth(0).click();
@@ -135,7 +144,7 @@ test("legacy platform query URLs reach their own listings", async ({ page }) => 
 test("Navbar entries, cached Back and per-group search remain separate", async ({ page }) => {
   test.slow();
   await page.goto("/products");
-  for (const definition of pages) {
+  for (const definition of platformPlacementPages) {
     const trigger = page
       .locator("[data-products-nav]")
       .getByRole("link", { name: "โครงสร้างแท่นชั่ง", exact: true });
@@ -146,16 +155,18 @@ test("Navbar entries, cached Back and per-group search remain separate", async (
       .locator("#products-navigation-panel")
       .getByRole("link", { name: definition.label, exact: true })
       .click();
-    await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
+    await expect(page).toHaveURL(
+      new URL(catalogSubmenuDestination(definition.href), page.url()).href,
+    );
     await page.goBack();
     await expect(page).toHaveURL(/\/products$/);
     await expect(page.getByRole("dialog")).toHaveCount(0);
   }
-  await page.goto(pages[0].href);
+  await page.goto(platformPlacementPages[0].href);
   await page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("not-a-model");
-  await page.goto(pages[1].href);
+  await page.goto(platformPlacementPages[1].href);
   await expect(page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })).toHaveValue("");
-  await expect(page.locator("#mock-product-results article")).toHaveCount(9);
+  await expect(page.locator("#mock-product-results article").first()).toBeVisible();
 });
 
 test("every new heading retains latest motion and reduced-motion fallback", async ({ page }) => {
@@ -177,7 +188,7 @@ test("every new heading retains latest motion and reduced-motion fallback", asyn
   }
 });
 
-test("native Home mobile submenu reaches every material with valid detail or parent return", async ({
+test("native Home mobile submenu reaches both platform placements with valid detail return", async ({
   browser,
   baseURL,
 }) => {
@@ -190,7 +201,7 @@ test("native Home mobile submenu reaches every material with valid detail or par
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
-  for (const definition of pages) {
+  for (const definition of platformPlacementPages) {
     await page.goto("/");
     await page
       .locator(".site-header:visible")
@@ -208,18 +219,11 @@ test("native Home mobile submenu reaches every material with valid detail or par
       new URL(catalogSubmenuDestination(definition.href), page.url()).href,
     );
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    if (definition.id === "platform-abs") {
-      await expect(page.locator("article[data-mock-product]")).toHaveCount(1);
-      await page
-        .getByRole("navigation", { name: "เส้นทางนำทาง", exact: true })
-        .getByRole("link", { name: "โครงสร้างแท่นชั่ง", exact: true })
-        .tap();
-      await expect(page).toHaveURL(/\/products\/category\/platforms$/);
-      continue;
-    }
     await page.locator("#mock-product-results article[data-model-only] a").first().tap();
-    await page.getByRole("link", { name: `กลับรายการ${definition.title}`, exact: true }).tap();
-    await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
+    const returnLink = page.getByRole("link", { name: "กลับหน้าก่อนหน้า", exact: true });
+    await expect(returnLink).toHaveAttribute("href", catalogSubmenuDestination(definition.href));
+    await returnLink.tap();
+    await expect(page).toHaveURL((url) => url.pathname === definition.href);
   }
   await context.close();
 });

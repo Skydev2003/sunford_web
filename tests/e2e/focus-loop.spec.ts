@@ -119,9 +119,12 @@ for (const width of [1440, 390]) {
           await centered(track, current, width);
         } else {
           const href = await clearCard.getAttribute("href");
-          await clearCard.focus();
-          await page.keyboard.press("Enter");
-          await expect(page).toHaveURL(new URL(href!, page.url()).href);
+          const [article] = await Promise.all([
+            page.waitForEvent("popup"),
+            clearCard.press("Enter"),
+          ]);
+          await expect(article).toHaveURL(new URL(href!, page.url()).href);
+          await article.close();
         }
       });
     }

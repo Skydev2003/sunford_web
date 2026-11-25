@@ -343,8 +343,13 @@ for (const route of routes) {
               expect((await main.innerText()).trim().length).toBeGreaterThan(80);
               if (/^\/products\/category\/[^/]+$/.test(expected.href)) {
                 const lineup = main.locator('[data-overview-section="lineup"]');
-                const filters = lineup.getByRole("group", { name: "กรองผลิตภัณฑ์" });
-                await expect(filters.getByRole("button", { name: "ทุกผลิตภัณฑ์" })).toBeVisible();
+                const platforms = expected.href === "/products/category/platforms";
+                const filters = lineup.getByRole("group", {
+                  name: platforms ? "กรองตามวัสดุ" : "กรองผลิตภัณฑ์",
+                });
+                await expect(
+                  filters.getByRole("button", { name: platforms ? "ทุกวัสดุ" : "ทุกผลิตภัณฑ์" }),
+                ).toBeVisible();
                 await expect(filters.getByRole("link")).toHaveCount(0);
                 await expect(lineup.locator("#products-lineup > li:has(h3)").first()).toBeVisible();
               } else if (expected.href.startsWith("/products/category/")) {

@@ -1,6 +1,7 @@
 import { contactPath } from "@/features/content/data/contact-route";
 import type { NavigationGroup, NavigationItem } from "../types";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
+import { platformPlacementDefinitions } from "@/features/catalog/data/platform-subcategory-definitions";
 import { legacySoftwareCatalogPath, sunford } from "@/features/home/data/brand";
 
 const productSubmenuLabel = "ผลิตภัณฑ์ทั้งหมด";
@@ -31,12 +32,7 @@ const productSubcategories: Record<
     { id: "indicator-led", label: "LED" },
     { id: "indicator-waterproof", label: "กันน้ำ" },
   ],
-  platforms: [
-    { id: "platform-carbon-steel", label: "แท่นเหล็กคาร์บอน" },
-    { id: "platform-sus304", label: "สแตนเลส SUS304" },
-    { id: "platform-sus201", label: "สแตนเลส SUS201" },
-    { id: "platform-abs", label: "พลาสติก ABS" },
-  ],
+  platforms: platformPlacementDefinitions.map(({ id, label }) => ({ id, label })),
   pos: [
     { id: "pos-ios", label: "iOS" },
     { id: "pos-android", label: "Android" },

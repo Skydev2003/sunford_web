@@ -5,12 +5,15 @@ import {
   indicatorRs232SubcategoryPage,
 } from "./additional-subcategory-pages";
 import { warehouseFact } from "./warehouse-site-data";
+import { getPlatformMaterialId } from "./platform-subcategories";
+import { platformSubcategoryDefinitions } from "./platform-subcategory-definitions";
 
 export type ProductListingFeature = {
   id: string;
   label: string;
   productIds: string[];
   exclusive?: true;
+  exclusiveGroup?: "material";
 };
 
 type FeatureRule = Omit<ProductListingFeature, "productIds"> & {
@@ -42,6 +45,14 @@ const indicators: FeatureRule[] = [
       /^IP\s*67$/i.test(warehouseFact(product, "ระดับการป้องกัน IP").trim()),
   },
 ];
+
+const platformMaterials = platformSubcategoryDefinitions.map(({ id, label }): FeatureRule => ({
+  id,
+  label,
+  exclusive: true,
+  exclusiveGroup: "material",
+  matches: (product) => getPlatformMaterialId(product) === id,
+}));
 
 const pos = [
   {
@@ -95,10 +106,11 @@ const accessoryTypes: Record<string, readonly [string, RegExp][]> = {
 
 function matchingFeatures(products: readonly Product[], rules: readonly FeatureRule[]) {
   return rules
-    .map(({ id, label, exclusive, matches }) => ({
+    .map(({ id, label, exclusive, exclusiveGroup, matches }) => ({
       id,
       label,
       exclusive,
+      ...(exclusiveGroup && { exclusiveGroup }),
       productIds: products.filter(matches).map(({ id }) => id),
     }))
     .filter(({ productIds }) => productIds.length > 0);
@@ -132,10 +144,13 @@ export function getProductListingFeatures(
     case "indicators":
       return matchingFeatures(products, indicators);
     case "platforms":
-      return nameFeatures(products, (name) => {
-        const series = name.match(/\bPlatform\s+(?:Terminal\s+)?([A-Z]{2,5})\s*\d{4,6}\b/i)?.[1];
-        return series && `ซีรีส์ ${series.toUpperCase()}`;
-      });
+      return [
+        ...matchingFeatures(products, platformMaterials),
+        ...nameFeatures(products, (name) => {
+          const series = name.match(/\bPlatform\s+(?:Terminal\s+)?([A-Z]{2,5})\s*\d{4,6}\b/i)?.[1];
+          return series && `ซีรีส์ ${series.toUpperCase()}`;
+        }),
+      ];
     case "pos":
       return matchingFeatures(products, pos);
     case "accessories": {
