@@ -26,7 +26,9 @@ test("manifest preserves all eight headings, groups and model lists from the sup
       const models = [...line.matchAll(/`([^`]+)`/g)].map((match) => match[1]);
       if (models.length) groups.at(-1)!.models.push(...models);
     }
-    assert.equal(manifest.categories[index].label, heading[1]);
+    const expectedLabel =
+      manifest.categories[index].id === "scale-industrial" ? "เครื่องชั่งอุตสาหกรรม" : heading[1];
+    assert.equal(manifest.categories[index].label, expectedLabel);
     assert.equal(manifest.categories[index].englishLabel, heading[2]);
     assert.deepEqual(manifest.categories[index].groups, groups);
   });

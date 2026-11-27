@@ -67,7 +67,7 @@ public/
 
 ## แหล่งข้อมูลหลังถอด CMS
 
-ดู [กติกา Warehouse และใบเสนอราคา](spec.md#warehouse) สำหรับแหล่งข้อมูลสินค้า ราคา รูป และการออกเลข ส่วนตัวแปรเชื่อมต่อและการตรวจข้อมูลอยู่ใน [คู่มือเชื่อม Warehouse](docs/warehouse/direct-postgres.md)
+ดู [การใช้งานฐานข้อมูล Warehouse](AGENTS.md#การใช้งานฐานข้อมูล-warehouse-warehouse_db) สำหรับแหล่งข้อมูลสินค้า ราคา และรูปภาพ ส่วนตัวแปรเชื่อมต่อและการตรวจข้อมูลอยู่ใน [คู่มือเชื่อม Warehouse](docs/warehouse/direct-postgres.md)
 
 - ค่าตั้งเว็บและเมนูอยู่ใน `data/site/content.json` โดยมีตัวอ่านใน `src/features/site/`
 - ข้อมูลที่นำเข้าจากเว็บเดิมอยู่ใน `src/features/content/data/products.json` และ `pages.json` ในโฟลเดอร์เดียวกัน

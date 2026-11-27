@@ -2,26 +2,14 @@
 
 ## เลือกวิธีทำงานตามผลกระทบ
 
-- **งานเล็กที่โจทย์ชัดและย้อนกลับง่าย** เช่น เปลี่ยนข้อความ รูป หรือระยะห่างเฉพาะจุด ให้ถือคำขอเป็นการอนุมัติ ลงมือ ตรวจผล และรายงานในแชต
-- **งานหลายไฟล์ที่ขอบเขตชัด** เช่น ปรับเมนูทั้งมือถือและเดสก์ท็อป ให้สรุปแผนสั้น ๆ ในแชตก่อนแก้ ระบุไฟล์หรือส่วนที่กระทบกับวิธีตรวจ แล้วดำเนินงานต่อได้ภายในขอบเขตที่ขอ
-- **งานเสี่ยง แม้แก้เพียงไฟล์เดียว** เช่น เปลี่ยนราคา VAT การออกเลขใบเสนอราคา สิทธิ์เขียน Warehouse สัญญาระหว่างระบบ migration หรือการเปลี่ยนส่วนกลางที่กระทบทั่วเว็บ ให้เขียนข้อกำหนดใน `spec.md` และแผนใน `plan.md` ก่อน ระบุขอบเขต เกณฑ์รับงาน ผลกระทบ วิธีตรวจและย้อนกลับ รอเจ้าของอนุมัติก่อนแก้ระบบ การอนุมัติเดิมใช้ได้เมื่อครอบคลุมขอบเขตปัจจุบัน
-- เมื่อข้อมูลที่จำเป็นขาด ให้ถามเฉพาะจุดและพักส่วนที่ต้องใช้คำตอบ ถ้าพบว่าต้องขยายขอบเขต ให้แจ้งผลกระทบและขออนุมัติส่วนที่เพิ่ม งานที่เจ้าของกำหนดให้รอตรวจต้นแบบหรืออนุมัติแยก ให้ยึดเงื่อนไขนั้น
-- ยึดข้อความ รูป สเปกสินค้า และ API ที่ตรวจสอบได้จากบรีฟและแหล่งข้อมูลของโปรเจกต์ รักษางานเดิมของผู้ใช้และขอบเขตที่อนุมัติ
-
-## การทำงานพร้อมกันหลายแชต
-
-- เมื่อ Javis (แชตคุมงาน) รับโจทย์หน้าเว็บ ให้แยกขอบเขตและมอบหมายให้ Javis1 (branch `Javis1`), Javis2 (branch `Javis2`) หรือ Javis3 (branch `Javis3`) ตามงาน ส่งงานเล็กให้แชตเดียว ส่งงานที่ทำได้อิสระให้ทำคู่ขนาน และกำหนดให้มีผู้รับผิดชอบแก้ไฟล์ส่วนกลางเพียงรายเดียว
-- สำหรับโปรเจกต์นี้ Javis1, Javis2 และ Javis3 ใช้ GPT‑6.2 Sol (`gpt-6.2-sol`) ให้ Javis เลือกระดับ `effort` ของงานที่มอบหมายตามความซับซ้อนและความเสี่ยง ส่วน Javis ในแชตคุมงานใช้ GPT‑6.2 Astra (`gpt-6.2-astra`) และใช้ระดับ `effort` ที่เจ้าของเลือกไว้ในแชตนั้น งานเสี่ยงยังต้องรออนุมัติตามหัวข้อเลือกวิธีทำงานตามผลกระทบ
-- ให้ Javis1, Javis2 และ Javis3 ใช้ Git worktree เดิมของตนเมื่อมีอยู่ แชตที่ต้องแก้โค้ดพร้อมกันและยังไม่มี worktree ให้แยก worktree ก่อนเริ่มแก้ โดยใช้ branch `codex/<ชื่องาน>` จาก `Javis1` เมื่อต้องสร้าง branch สำหรับงานเพิ่ม ส่วนงานอ่านหรือตรวจทานใช้โฟลเดอร์เดิมได้
-- **Javis2 และ Javis3** ก่อนเริ่มงานใหม่ ให้รัน `git fetch origin` ใน worktree ของตน แล้วตรวจ `git log --oneline HEAD..origin/Javis1` ถ้ามีรายการให้รัน `git rebase origin/Javis1` ถ้าไม่มีให้เริ่มงานได้ทันที เมื่อทดสอบงานแล้วให้ commit และ push เฉพาะ branch ของตน แล้วส่งชื่อ branch, commit และผลตรวจให้ Javis
-- **Javis1** เป็นผู้รวมงานบน branch `Javis1` เมื่อรับงานจาก Javis2 หรือ Javis3 ให้ merge งานที่พร้อม ตรวจผลหลังรวม แล้ว `git push origin Javis1` เพื่อให้ทุกแชตมีฐานล่าสุดสำหรับงานถัดไป
-- **Javis** ติดตามงานจนทราบผล ตรวจหลักฐาน และสรุปให้เจ้าของในแชตคุมงาน ระบุ branch ที่เกี่ยวข้อง ผลตรวจ สถานะการรวม และข้อค้าง
+- **งานทั่วไปและงานหลายไฟล์ที่ขอบเขตชัด** เช่น เปลี่ยนข้อความ รูป ระยะห่าง ปรับ UI หรือเมนูทั้งมือถือและเดสก์ท็อป ให้ถือคำขอเป็นการอนุมัติและเริ่มลงมือทำได้ทันทีโดยไม่ต้องรอ ตรวจผลแล้วรายงานในแชต
+- **งานเสี่ยงที่มีผลกระทบสูง** เช่น เปลี่ยนโครงสร้างฐานข้อมูล สัญญาระหว่างระบบ สิทธิ์การเข้าถึงข้อมูล หรือการเปลี่ยนส่วนกลางที่อาจกระทบการทำงานหลักทั่วเว็บ ให้ประเมินผลกระทบและถามเจ้าของเพื่อยืนยันก่อนลงมือ
+- เมื่อข้อมูลที่จำเป็นขาด ให้ถามเฉพาะจุดและดำเนินงานส่วนที่ทำได้ไปก่อน ยึดข้อความ รูป สเปกสินค้า และ API ที่ตรวจสอบได้จากแหล่งข้อมูลของโปรเจกต์ และรักษางานเดิมของผู้ใช้
 
 ## เอกสารที่ใช้ทำงาน
 
-- อ่านข้อตกลงที่เกี่ยวข้องใน `spec.md` ค้น `MEMORY.md` ตามเรื่องที่กำลังทำ และเปิดเอกสารย้อนหลังเมื่อต้องการที่มาของการตัดสินใจ
-- ใช้แชตบันทึกแผนและผลตรวจของงานทั่วไป อัปเดต `spec.md` เมื่อข้อตกลงถาวรหรือสถานะที่คนถัดไปต้องใช้เปลี่ยนไป ใช้ `plan.md` สำหรับงานเสี่ยงที่ยังเปิด โดยแยกสิ่งที่ต้องทำออกจากผลที่ตรวจแล้ว
-- สำหรับงานเสี่ยงให้แยกความพร้อมของข้อมูลออกจากการอนุมัติ บันทึกคำอนุมัติจริงพร้อมขอบเขต เมื่อปิดงานให้ย้ายรายละเอียดที่จบแล้วไป `docs/archive/` และเก็บเฉพาะข้อสรุปที่ยังใช้ในไฟล์หลัก
+- ค้น `MEMORY.md` ตามเรื่องที่กำลังทำ และเปิดเอกสารใน `docs/` เมื่อต้องการที่มาของการตัดสินใจหรือรายละเอียดทางเทคนิค
+- ใช้แชตบันทึกแผน ขอบเขตที่อนุมัติ และผลตรวจของงาน สำหรับงานเสี่ยงให้แยกความพร้อมของข้อมูลออกจากการอนุมัติ และรอคำอนุมัติจริงก่อนลงมือ
 - ก่อนส่งมอบ ให้เลือกการตรวจตามผลกระทบ เช่น typecheck, lint, tests หรือ build งาน UI ให้ตรวจหน้าและพฤติกรรมจริงตามขนาดจอที่เกี่ยวข้อง รายงานสิ่งที่ตรวจผ่านและสิ่งที่ยังติดขัด
 
 ## Design & Brand Consistency
@@ -30,7 +18,8 @@
 - ตรวจ Design Tokens ใน `src/styles/base.css` และ Style ของ Component ที่ใช้งานจริงก่อนปรับ UI ใช้รูปแบบเดิมเมื่อไม่ได้รับคำสั่งให้เปลี่ยน
 - ใช้ [Tailwind CSS Docs](https://tailwindcss.com/docs) เป็นแหล่งอ้างอิงหลักด้านเทคนิคทุกครั้งที่ต้องใช้ข้อมูลในการออกแบบหรือกำหนด/ปรับค่ากลาง เช่น Spacing, Sizing, Typography, Colors, Breakpoints, Border Radius, Shadows และ Interaction States เปิดอ่านหัวข้อที่เกี่ยวข้องฉบับปัจจุบันก่อนตัดสินใจ ไม่จำกัดเฉพาะ Responsive
 - อ้างอิง Core Concepts ตามความเกี่ยวข้อง: Styling with utility classes, Hover/focus/other states, Responsive design, Dark mode, Theme variables, Colors, Adding custom styles, Detecting classes in source files และ Functions/directives ประยุกต์หลักการกับ CSS Modules/CSS เดิมของโปรเจกต์
-- บันทึก URL หัวข้อที่ใช้ วันที่ตรวจ เวอร์ชันเอกสารที่แสดง ค่ากลาง/หน่วยที่เลือก และเหตุผลการประยุกต์ในแชตสำหรับงานทั่วไป หรือใน Spec สำหรับงานเสี่ยง แยกค่าเริ่มต้นของ Tailwind ออกจาก Design Tokens ของ SUNFORD ให้ชัดเจน หากเอกสารไม่แสดงเวอร์ชันให้ระบุตามจริง
+- โลโก้หลักของ SUNFORD ใช้ไฟล์ `SUNFORD_LOGO_original_size.svg` เก็บต้นฉบับที่ `src/app/icon.svg` และแสดงผ่าน `/icon.svg` สีธีมบริษัทคือ **SUNFORD Red `#D91F27`** (sRGB `217, 31, 39`) ตามค่า fill ใน SVG ส่วน `--red` เป็นค่าสีเดิมสำหรับ UI เว็บไซต์
+- บันทึก URL หัวข้อที่ใช้ วันที่ตรวจ เวอร์ชันเอกสารที่แสดง ค่ากลาง/หน่วยที่เลือก และเหตุผลการประยุกต์ในแชต แยกค่าเริ่มต้นของ Tailwind ออกจาก Design Tokens ของ SUNFORD ให้ชัดเจน หากเอกสารไม่แสดงเวอร์ชันให้ระบุตามจริง
 - รักษา Brand Guideline และค่าที่เจ้าของอนุมัติไว้ หากค่าอ้างอิงต่างจากค่าปัจจุบัน ให้บันทึกเหตุผลและเสนอการเปลี่ยนตามระดับผลกระทบก่อนแก้ การอ้างอิงเอกสารนี้ไม่ใช่การอนุมัติติดตั้ง Tailwind เปลี่ยน Stack หรือแทนค่ากลางทั้งเว็บโดยอัตโนมัติ
 - ออกแบบและตรวจสอบแบบ Mobile-first / Responsive เสมอ ครอบคลุมมือถือ แท็บเล็ต และเดสก์ท็อปตามขอบเขตงาน
 - อ้างอิงแบรนด์ในช่องทางที่ใช้วางแผนของงานนั้น เมื่อขาดข้อมูลที่จำเป็นต่อการตัดสินใจด้านดีไซน์ ให้ถามเจ้าของ
@@ -41,55 +30,50 @@
 
 - Next.js 16 App Router, React 19 และ TypeScript 5
 - CSS Modules และ CSS ที่มีอยู่ใน `src/styles/` โดยโหลด Global Styles ผ่าน `src/app/globals.css`
-- ใช้ `pg` และ Prisma ORM 7 ตาม [กติกา Warehouse และใบเสนอราคา](spec.md#warehouse)
+- ใช้ `pg` และ Prisma ORM 7 ตามกติกาการใช้งานฐานข้อมูล `warehouse_db` ด้านล่าง
 - Node.js 24; ใช้คำสั่งตรวจสอบและ Release ที่กำหนดไว้ใน `package.json`
 
-ไม่เพิ่ม Tailwind CSS, UI Library, Dependency หรือเปลี่ยน Stack เว้นแต่อยู่ใน Spec และ Plan ที่ผู้ใช้อนุมัติ
+ไม่เพิ่ม Tailwind CSS, UI Library, Dependency หรือเปลี่ยน Stack เว้นแต่ผู้ใช้อนุมัติในแชต
+
+### การใช้งานฐานข้อมูล Warehouse (`warehouse_db`)
+
+- ข้อมูลสินค้า ราคา หน่วย สเปก และรูปภาพรายละเอียดสินค้าทั้งหมดต้องอ่านจากฐานข้อมูล `warehouse_db` (PostgreSQL) ฝั่งเซิร์ฟเวอร์แบบอ่านอย่างเดียวผ่าน `pg` และ `ecommerce.get_website_products(bigint,text[])` เท่านั้น ดู [คู่มือเชื่อม Warehouse](docs/warehouse/direct-postgres.md)
+- รูปภาพรายละเอียดสินค้าต้องมาจาก `warehouse_db` เท่านั้น ห้ามเพิ่มไฟล์รูปจากแหล่งอื่นเข้ามาในโปรเจกต์โดยพลการเพราะจะทำให้โปรเจกต์มีขนาดใหญ่และหนักเกินจำเป็น หากจำเป็นต้องเพิ่มรูปจากที่อื่นให้ถามเจ้าของก่อนเพิ่มเสมอ
+- ห้ามแก้ไขโครงสร้าง ลบตาราง หรือรัน migration ของ CMS/auth เดิมเข้า `warehouse_db`
 
 ## System & Code Integrity
 
-- แก้หรือสร้างไฟล์ภายในขอบเขตที่เจ้าของขอ ตรวจไฟล์ที่เกี่ยวข้องเพื่อประเมินผลกระทบได้ทันที
-- เมื่อแตะ Global Components, Shared UI, Layout หรือ Stylesheet หลัก ให้ตรวจผู้ใช้งานร่วมและเส้นทางที่ต้องทดสอบ เลือกวิธีทำงานตามผลกระทบจริง
-- ไฟล์ส่วนกลางรวมถึง `src/components/layout/`, `src/components/ui/`, `src/app/layout.tsx`, `src/app/(site)/layout.tsx`, `src/app/globals.css` และ `src/styles/`
-- หากจำเป็นต้องขยายขอบเขตไปยังไฟล์ส่วนกลาง ให้ระบุผลกระทบ จุดเสี่ยง Regression และวิธีย้อนกลับ แล้วขออนุมัติส่วนที่เพิ่มก่อนแก้ไข
-- รักษา Props, Data Contracts, Routes และพฤติกรรมเดิมที่อยู่นอกงาน ไม่ลบหรือเขียนทับการเปลี่ยนแปลงที่มีอยู่ของผู้ใช้
-- SUNFORD ไม่มีบริการรับสอบเทียบ (Calibration Service) ห้ามใส่ในเมนูหรือโฆษณาเป็นบริการของบริษัท
+- พัฒนาตามมาตรฐานเว็บของ Google (Google Web Standards & Search Essentials) โดยใช้ Semantic HTML (`<main>`, `<header>`, `<nav>`, `<section>`, `<article>`, `<footer>`) และลำดับหัวข้อ (`<h1>`–`<h6>`) ที่สะท้อนโครงสร้างเนื้อหาจริง เพื่อให้ทั้ง Googlebot และเทคโนโลยีช่วยเหลือ (Accessibility / ARIA) ประมวลผลหน้าเว็บได้อย่างแม่นยำ
+- รองรับ Crawlability และ Indexability ตามแนวทาง SEO ของ Google โดยใช้ลิงก์ `<a href="...">` หรือ Next.js `<Link>` ที่มี URL จริงสำหรับการนำทางทั้งหมด กำหนด Metadata (`title`, `description`, Canonical URL, Open Graph) และ Structured Data (JSON-LD) ให้ตรงกับเนื้อหาที่เรนเดอร์จากฝั่งเซิร์ฟเวอร์ (SSR)
+- ป้องกันปัญหา Layout Shift (CLS) และการพังทลายของโครงสร้างหน้าเว็บ โดยกำหนดมิติ (`width`/`height` หรือ `aspect-ratio`) ของสื่อและพื้นที่รอข้อมูลเสมอ เมื่อแตะไฟล์ส่วนกลาง (`src/components/layout/`, `src/components/ui/`, `src/app/layout.tsx`, `src/app/(site)/layout.tsx`, `src/app/globals.css`, `src/styles/`) ให้ตรวจสอบหน้าและเส้นทางที่ใช้ร่วมกันทั้งหมด
+- รักษา Props, Data Contracts, Routes, Clean URLs และพฤติกรรมเดิมที่อยู่นอกขอบเขตงาน ไม่ลบหรือเขียนทับงานเดิมของผู้ใช้
+- SUNFORD ไม่มีบริการรับสอบเทียบ (Calibration Service) ห้ามใส่ในเมนู เนื้อหา หรือ Metadata เป็นบริการของบริษัท
 
 ## Next.js Performance Strategy
 
-- ใช้ React Server Components (RSC) เป็นค่าเริ่มต้นสำหรับการอ่านข้อมูลฝั่งเซิร์ฟเวอร์
-- ใช้ Client Component (`"use client"`) เฉพาะส่วนที่มี Interactivity จริงเท่านั้น
-
-<!-- BEGIN:nextjs-agent-rules -->
+- ใช้ React Server Components (RSC) และ Server-Side Rendering (SSR) / Static Prerendering เป็นค่าเริ่มต้นตามแนวทาง SSR/SEO ที่ Google แนะนำ เพื่อให้เซิร์ฟเวอร์ส่ง HTML ที่มีเนื้อหาหลักครบถ้วนตั้งแต่คำขอแรก ช่วยให้ Googlebot จัดทำดัชนีได้ทันทีและลดภาระ JavaScript ฝั่งไคลเอนต์
+- ใช้ Client Component (`"use client"`) เฉพาะส่วนที่มี Interactivity จริงเท่านั้น แยกขอบเขต `<Suspense>` เฉพาะจุดที่ต้องรอข้อมูลเพื่อไม่ให้บล็อกการแสดงผลเนื้อหาหลัก
+- ปรับแต่งประสิทธิภาพตามเกณฑ์ Google Core Web Vitals:
+  - **LCP (Largest Contentful Paint):** โหลดสื่อสำคัญเหนือรอยพับด้วยลำดับความสำคัญสูง (`priority` / `preload`) ใช้ฟอร์แมตภาพสมัยใหม่ (AVIF/WebP) พร้อมระบุ `sizes` ตามขนาดแสดงผลจริง และใช้รูปสินค้าจาก `warehouse_db` เพื่อไม่ให้โปรเจกต์แบกไฟล์สื่อเกินจำเป็น
+  - **INP (Interaction to Next Paint):** ลดการทำงานหนักบน Main Thread หลีกเลี่ยงการ re-render หรือ hydration ที่ไม่จำเป็น และใช้แอนิเมชันผ่านคุณสมบัติที่ประมวลผลบน Compositor (`transform`, `opacity`)
+  - **CLS (Cumulative Layout Shift):** จองพื้นที่ขั้นต่ำให้เนื้อหาแบบไดนามิก ฟอนต์ และกรอบรูปภาพเสมอ เพื่อรักษาความนิ่งของหน้าเว็บขณะโหลด
 
 ## This is NOT the Next.js you know
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
-
-<!-- BEGIN:nextjs-agent-feedback -->
+Next.js 16 ในโปรเจกต์นี้มีการเปลี่ยนแปลง API โครงสร้างไฟล์ และข้อตกลงที่ต่างจากเวอร์ชันเก่าในข้อมูลฝึกสอนของโมเดล ให้เปิดอ่านคู่มือใน `node_modules/next/dist/docs/` ก่อนเขียนหรือแก้ไขโค้ดเสมอ ปฏิบัติตามคำเตือน Deprecation และยึดแนวทาง App Router, React Server Components (RSC), มาตรฐาน SEO/SSR ของ Google รวมถึงกฎการใช้ข้อมูลและรูปสินค้าจาก `warehouse_db` ของโปรเจกต์นี้เป็นหลัก
 
 ## Report Next.js feedback
 
-The project owner enabled `experimental.agentFeedback`, authorizing this feedback pass. When enabled, `next dev` writes this block and restores it if removed. Commit `AGENTS.md` with your work to keep the tree clean.
+โปรเจกต์นี้เปิดใช้ `experimental.agentFeedback` ในระหว่างทำงานตามคำขอของผู้ใช้ ให้รวบรวมเฉพาะข้อเท็จจริงแบบไม่ระบุตัวตนเมื่อพบปัญหาของเฟรมเวิร์ก Next.js ที่สำคัญหรือเกิดซ้ำ เช่น:
 
-During the current user request, retain anonymized facts as feedback candidates for meaningful or recurring Next.js issues:
+- อาการค้าง โปรเซสหลุด หน่วยความจำเต็ม (OOM) หรือความช้าผิดปกติระหว่างการทำ SSR และ Build
+- พฤติกรรม ผลลัพธ์ของการเรนเดอร์ ข้อผิดพลาด หรือข้อความวินิจฉัยของ Next.js ที่ไม่ถูกต้อง
+- เอกสารคู่มือที่ขาดหาย ไม่ชัดเจน หรือขัดแย้งกันเอง
+- พฤติกรรมของ CLI, codemod หรือการอัปเกรดที่ไม่เป็นไปตามคาดและต้องใช้วิธีแก้ปัญหาอ้อม (workaround)
 
-- Crashes, hangs, OOMs, or unexpected slowness
-- Incorrect behavior, output, errors, or diagnostics
-- Missing, unclear, or conflicting documentation
-- Unexpected CLI, codemod, Skill, or upgrade behavior and non-obvious workarounds
+ให้ทำงานของผู้ใช้ต่อเนื่องโดยไม่ต้องหยุดรายงานทันที การดีบักโค้ดทั่วไปไม่ถือเป็น feedback ต้องตรวจสอบและยืนยันการแก้ไขให้เรียบร้อยก่อนเสมอ ห้ามส่งโค้ดของโปรเจกต์, log, path, URL, ข้อมูลลับ (secrets), ข้อมูลส่วนบุคคล หรือข้อมูลสินค้าจาก `warehouse_db` ออกไปเด็ดขาด
 
-Continue the current user request without reporting immediately. Routine debugging is not feedback. Verify changes before retaining them as feedback candidates. Never retain code, logs, paths, URLs, secrets, personal information, or project-specific data.
-
-Retain qualifying friction even if it is later fixed or worked around; record the final outcome during the reporting pass.
-
-Before the final response, run one reporting pass. If candidates remain, from this file's directory run `npx --no-install next internal agent-feedback-instructions` once without piping or truncating its output. Follow its output or error guidance. If a network sandbox blocks it, retry with network access; if it still returns no output, continue normally.
-
-<!-- END:nextjs-agent-feedback -->
+หากมีรายการปัญหาของ Next.js ที่เข้าเกณฑ์ข้างต้น ก่อนส่งคำตอบสุดท้ายให้รัน `npx --no-install next internal agent-feedback-instructions` จากโฟลเดอร์รูทของโปรเจกต์หนึ่งครั้งโดยไม่ตัดทอนผลลัพธ์และทำตามคำแนะนำที่ได้ หากถูกบล็อกจากเครือข่ายหรือไม่มีผลลัพธ์ให้ทำงานต่อตามปกติ
 
 ## Production releases
 
@@ -97,7 +81,7 @@ Javis1 เป็นผู้ปล่อย Production เพียงคนเ�
 
 ## Product promotional imagery
 
-- Use a straight-on front view for every product, following its supplied product photo.
-- Deliver product imagery without added headlines, promotional text, buttons, or interface elements. Text and calls to action are added separately on the website.
-- Preserve the real product's shape, colors, logo, and physically printed markings. Do not invent product features.
-- Default to a minimal black studio background with directional highlights and a smooth falloff into deep shadow. Let the lower body and base fade softly into black while keeping the display readable, following the current premium campaign direction.
+- ใช้มุมมองด้านหน้าตรง (straight-on front view) สำหรับสินค้าทุกรุ่น โดยอ้างอิงจากภาพถ่ายสินค้าจริงและใช้รูปภาพรายละเอียดสินค้าจาก `warehouse_db` เป็นหลัก หากจำเป็นต้องเพิ่มไฟล์ภาพจากแหล่งอื่นเข้าโปรเจกต์ ให้ขออนุมัติเจ้าของก่อนเสมอเพื่อไม่ให้โปรเจกต์หนัก
+- ส่งมอบภาพสินค้าโดยไม่ฝังหัวข้อ ข้อความโฆษณา ปุ่ม หรือองค์ประกอบ UI ลงในไฟล์ภาพ ข้อความและปุ่ม Call to Action ทั้งหมดต้องแยกมาเรนเดอร์ด้วย Semantic HTML และ CSS บนหน้าเว็บเพื่อรองรับมาตรฐาน Google SEO, SSR, Accessibility และการแสดงผลทุกขนาดจอ
+- รักษารูปทรง สี โลโก้ และสัญลักษณ์ที่พิมพ์บนตัวสินค้าจริงไว้ครบถ้วน ห้ามแต่งเติมฟีเจอร์หรือส่วนประกอบที่ไม่มีอยู่จริงบนตัวสินค้า
+- ใช้พื้นหลังสตูดิโอสีดำมินิมอลเป็นค่าเริ่มต้น พร้อมแสงไฮไลต์ที่มีทิศทางและการไล่ระดับเงามืดอย่างนุ่มนวล ให้ส่วนล่างและฐานของตัวเครื่องกลืนเข้ากับสีดำอย่างเป็นธรรมชาติโดยที่หน้าจอแสดงผลยังอ่านได้ชัดเจน ตามทิศทางแคมเปญพรีเมียมของ SUNFORD
