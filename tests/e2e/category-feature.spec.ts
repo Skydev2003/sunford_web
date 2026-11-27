@@ -92,19 +92,17 @@ test("category selection changes its media while preserving every description an
       expect(source.status()).toBe(200);
       expect(source.headers()["content-type"]).toMatch(/^image\/webp\b/);
     }
-    const optimized = await page.request.get(
+    const displayed = await page.request.get(
       await image.evaluate((node: HTMLImageElement) => node.currentSrc),
     );
-    expect(optimized.status()).toBe(200);
-    expect(optimized.headers()["content-type"]).toMatch(/^image\//);
+    expect(displayed.status()).toBe(200);
+    expect(displayed.headers()["content-type"]).toMatch(/^image\//);
     await expect(image).toHaveAttribute(
       "alt",
       (await button.locator(".category-feature-card-heading").innerText()).trim(),
     );
     sources.add((await image.getAttribute("src"))!);
-    expect(new URL((await image.getAttribute("src"))!, page.url()).searchParams.get("url")).toBe(
-      expectedImages[index],
-    );
+    await expect(image).toHaveAttribute("src", expectedImages[index]);
     await expect(image).toHaveCSS("object-fit", "contain");
     await expect(section.locator(".category-feature-media img")).toHaveCount(index === 1 ? 2 : 1);
     if (index === 1)
@@ -137,8 +135,7 @@ test("category selection changes its media while preserving every description an
       expect(product).toBeTruthy();
       expect(entry.title).toBe(product.name);
       expect(entry.href).toBe(`/products/${product.slug}`);
-      const url = new URL(entry.image!, page.url());
-      expect(url.searchParams.get("url") ?? url.pathname).toBe(product.image);
+      expect(entry.image).toBe(product.image);
     }
     expect(await originals.first().getAttribute("href")).toMatch(/^\/products\//);
     expect(
@@ -172,15 +169,12 @@ test("a category belt product opens its existing product details with Enter", as
 
 test("failed category artwork retains its frame and category navigation", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.route("**/_next/image?*", (route) => {
-    const source = new URL(route.request().url()).searchParams.get("url") ?? "";
-    return source === "/images/pd/WPS10KS.png" ? route.abort() : route.continue();
-  });
+  await page.route("**/images/pd/WPS10KS.png", (route) => route.abort());
   await page.goto("/");
   const section = page.locator("#product-experience");
   await section.scrollIntoViewIfNeeded();
   const media = section.locator(".category-feature-media");
-  await expect(media.locator(".media-placeholder")).toBeVisible();
+  await expect(media.locator("[data-product-image-placeholder]")).toBeVisible();
   const frame = (await media.boundingBox())!;
   expect(frame.width / frame.height).toBeCloseTo(16 / 9, 2);
   await section.getByRole("button", { name: "สำรวจ อินดิเคเตอร์แท่นชั่ง", exact: true }).click();
@@ -335,6 +329,7 @@ test("category media precedes readable two-column choices on mobile and sits alo
 }, testInfo) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
+  await page.route("**/_next/image?*", (route) => route.fulfill({ status: 402 }));
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const section = page.locator("#product-experience");
@@ -368,6 +363,15 @@ test("category media precedes readable two-column choices on mobile and sits alo
         await expect
           .poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth))
           .toBeGreaterThan(0);
+        await expect(image).not.toHaveAttribute("src", /product-image-placeholder/);
+        const thumbnail = section
+          .locator(".category-feature-product:not(.is-duplicate) img")
+          .first();
+        await thumbnail.scrollIntoViewIfNeeded();
+        await expect
+          .poll(() => thumbnail.evaluate((node: HTMLImageElement) => node.naturalWidth))
+          .toBeGreaterThan(0);
+        await expect(thumbnail).not.toHaveAttribute("src", /product-image-placeholder/);
         expect(await button.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(
           true,
         );

@@ -50,33 +50,33 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                 <div className="category-feature-pole">
                   <ProductImage
                     progressive
+                    unoptimized
                     placeholder="product"
                     src={selected.companionImage}
                     alt="ไฟสัญญาณสามสี SUNFORD RYG-POLE"
                     fill
-                    sizes="(min-width: 64rem) 18vw, 32vw"
                   />
                 </div>
                 <div className="category-feature-printer">
                   <ProductImage
                     progressive
+                    unoptimized
                     placeholder="product"
                     src={selected.image}
                     alt={selected.title}
                     fill
-                    sizes="(min-width: 64rem) 32vw, 56vw"
                   />
                 </div>
               </div>
             ) : (
               <ProductImage
                 progressive
+                unoptimized
                 key={selected.id}
                 placeholder="product"
                 src={selected.image}
                 alt={selected.title}
                 fill
-                sizes="(min-width: 96rem) 900px, (min-width: 64rem) 55vw, 100vw"
               />
             )}
           </div>
@@ -135,13 +135,13 @@ export function CategoryFeaturePanels({ items }: { items: CategoryFeatureItem[] 
                       >
                         <ProductImage
                           progressive
+                          unoptimized
                           placeholder="product"
                           src={entry.image}
                           fallbackSrc={entry.fallbackImage}
                           alt=""
                           width={70}
                           height={70}
-                          sizes="70px"
                         />
                       </Link>
                     );
