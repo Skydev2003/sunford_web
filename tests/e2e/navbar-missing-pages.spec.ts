@@ -1,10 +1,15 @@
 import { expect, test, type Page } from "@playwright/test";
 import { formatBaht } from "../../src/features/catalog/data/price-format";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
+import { getHeaderNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
 import type { Product } from "../../src/features/catalog/types";
 
 const root = "/products/category";
+const headerMenus = new Map(
+  getHeaderNavigationItems(defaultNavigation).map((menu) => [menu.href, menu]),
+);
 const accessories = `${root}/accessories`;
 const printers = `${accessories}/printers`;
 const paper = `${accessories}/thermal-paper`;
@@ -12,10 +17,10 @@ const labels = `${accessories}/labels`;
 const consumables = `${accessories}/consumables`;
 const scaleGuide = "/technical-specification?guide=scales";
 const entries = [
-  ["เครื่องชั่ง", "นับจำนวนชิ้น", `${root}/scales/counting`, [scaleGuide]],
+  ["เครื่องชั่ง", "นับจำนวน", `${root}/scales/counting`, [scaleGuide]],
   [
     "เครื่องชั่ง",
-    "เตือนน้ำหนักขาด–เกิน",
+    "เตือนน้ำหนักขาดเกิน",
     `${root}/scales/checkweighing`,
     [`${root}/scales/industrial`, "/solutions/checkweighing"],
   ],
@@ -79,10 +84,13 @@ for (const width of [390, 1440]) {
         }
         await expect(column.getByText("คุณสมบัติ", { exact: true })).toBeVisible();
       }
-      for (const { id, label: parent } of productCategoryDefinitions) {
+      for (const { id } of productCategoryDefinitions) {
+        const menu = headerMenus.get(`${root}/${id}`)!;
+        if (menu.groups?.[0]?.label !== "คุณสมบัติ") continue;
+        const parent = menu.label;
         await openFeatures(parent);
         await expect(column.getByRole("link").first()).toBeVisible();
-        const links = await column.getByRole("link").evaluateAll((nodes) =>
+        const links = await column.locator("a[href]").evaluateAll((nodes) =>
           nodes.map((node) => ({
             label: node.textContent!.trim(),
             href: node.getAttribute("href")!,
@@ -90,7 +98,11 @@ for (const width of [390, 1440]) {
         );
         expect(links.length).toBeLessThanOrEqual(6);
         expect(new Set(links.map(({ label }) => label)).size).toBe(links.length);
-        for (const [index, { label, href }] of links.entries()) {
+        const filteredLinks = links.filter(({ href }) =>
+          new URL(href, page.url()).searchParams.has("feature"),
+        );
+        if (!filteredLinks.length) await page.keyboard.press("Escape");
+        for (const [index, { label, href }] of filteredLinks.entries()) {
           await test.step(`${parent} → ${label}`, async () => {
             if (index > 0) await openFeatures(parent);
             const url = new URL(href, page.url());
@@ -103,7 +115,14 @@ for (const width of [390, 1440]) {
             else await link.click();
             await expect(page).toHaveURL(url.href);
             const listing = page.locator(url.hash);
-            const filter = listing.getByRole("button", { name: label, exact: true });
+            const filterLabels: Record<string, string> = {
+              "indicator-rs232": "เชื่อมต่อ RS232",
+              ip67: "กันน้ำ IP67",
+            };
+            const filter = listing.getByRole("button", {
+              name: filterLabels[url.searchParams.get("feature")!] ?? label,
+              exact: true,
+            });
             await expect(filter).toHaveAttribute("aria-pressed", "true");
             await expect(filter).toBeInViewport();
             await expect(page.getByRole("heading", { level: 1 })).toBeInViewport();
@@ -125,21 +144,19 @@ test("the home Navbar supports keyboard activation of the new links", async ({ p
     .getByRole("link", { name: "เครื่องชั่ง", exact: true });
   await trigger.focus();
   await trigger.press("ArrowDown");
-  const link = page
-    .locator("#products-navigation-panel")
-    .getByRole("link", { name: "นับจำนวนชิ้น" });
+  const link = page.locator("#products-navigation-panel").getByRole("link", { name: "นับจำนวน" });
   await expect(link).toBeVisible();
   await link.focus();
   await link.press("Enter");
   await expect(page).toHaveURL(
     /\/scales\/counting\?feature=scale-counting#product-listing-scales$/,
   );
-  await expect(page.getByRole("heading", { level: 1, name: "นับจำนวนชิ้น" })).toBeVisible({
+  await expect(page.getByRole("heading", { level: 1, name: "นับจำนวน" })).toBeVisible({
     timeout: 20_000,
   });
   const listing = page.locator("#product-listing-scales:visible");
   await expect(listing).toBeInViewport();
-  await expect(listing.getByRole("button", { name: "นับจำนวนชิ้น", exact: true })).toHaveAttribute(
+  await expect(listing.getByRole("button", { name: "นับจำนวน", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",
   );

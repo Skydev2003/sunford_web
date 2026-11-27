@@ -8,9 +8,18 @@ import { productSubcategoryPages, resolveListingSubcategory } from "./product-su
 export type NavbarListingFeatures = Record<string, { label: string; href: string }[]>;
 
 const preferredScalePage: Record<string, string> = {
-  tare: "scale-kitchen",
+  "device-connection": "scale-industrial",
   "water-resistant": "scale-water-dust",
+  "price-computing": "scale-price",
 };
+
+const scaleFeatureOrder = [
+  "device-connection",
+  "water-resistant",
+  "price-computing",
+  "scale-counting",
+  "scale-checkweighing",
+];
 
 export function buildNavbarListingFeatures(
   categories: readonly Pick<ProductCategory, "id" | "subcategories">[],
@@ -42,6 +51,7 @@ export function buildNavbarListingFeatures(
               label,
               href: productListingFeatureHref(page.href, category.id, id),
               count: productIds.length,
+              order: scaleFeatureOrder.indexOf(id),
               preferred: getSubmenuFeature(page.id) === id || preferredScalePage[id] === page.id,
             }));
         })
@@ -56,7 +66,11 @@ export function buildNavbarListingFeatures(
       }
       const links = [...byLabel.values()]
         .slice(0, 6)
-        .sort((first, second) => first.label.length - second.label.length)
+        .sort((first, second) =>
+          category.id === "scales"
+            ? first.order - second.order
+            : first.label.length - second.label.length,
+        )
         .map(({ label, href }) => ({ label, href }));
       return [`/products/category/${category.id}`, links];
     }),

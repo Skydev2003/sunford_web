@@ -35,6 +35,19 @@ function supportsFeature(product: Product, feature: RegExp) {
     : feature.test(product.warehouseName ?? "") && !option.test(product.warehouseName ?? "");
 }
 
+export function hasDeviceConnection(product: Product) {
+  return (
+    product.warehouseSpecifications?.some(
+      ({ label, value }) =>
+        /เชื่อมต่อ|พอร์[ตท]|เครื่องพิมพ์|ลิ้นชัก|port|interface/i.test(label) &&
+        /ส่งข้อมู[ล]?|เครื่องพิมพ์|ลิ้นชัก|อุปกรณ์เสริม|\b(?:RS[-\s]?232|Bluetooth|USB|POS|Wi[-\s]?Fi|LAN|Ethernet)\b/i.test(
+          value,
+        ) &&
+        !option.test(`${label} ${value}`),
+    ) ?? false
+  );
+}
+
 function hasRs232(product: Product) {
   return (
     product.warehouseSpecifications?.some(
@@ -71,14 +84,14 @@ function definePage<Category extends "scales" | "indicators" | "accessories", Id
 }
 
 export const additionalScaleSubcategoryPages = [
-  definePage("scales", "scale-counting", "counting", "นับจำนวนชิ้น", [scaleGuide], (product) =>
+  definePage("scales", "scale-counting", "counting", "นับจำนวน", [scaleGuide], (product) =>
     supportsFeature(product, counting),
   ),
   definePage(
     "scales",
     "scale-checkweighing",
     "checkweighing",
-    "เตือนน้ำหนักขาด–เกิน",
+    "เตือนน้ำหนักขาดเกิน",
     [
       { href: `${scales}/industrial`, label: "เครื่องชั่งอุตสาหกรรม" },
       { href: "/solutions/checkweighing", label: "โซลูชันตรวจสอบน้ำหนัก" },

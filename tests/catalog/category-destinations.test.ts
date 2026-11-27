@@ -98,12 +98,12 @@ test("CMS legacy and corrected links project identically with live feature colum
   const legacy = getPrimaryNavigationItems(defaultNavigation);
   assert.deepEqual(getPrimaryNavigationItems(corrected), legacy);
   assert.deepEqual(defaultNavigation, before);
-  assert.deepEqual(
-    legacy.slice(1, 6).map((item) => item.groups![0]),
-    Array.from({ length: 5 }, () => ({ label: "คุณสมบัติ", links: [] })),
-  );
+  assert.deepEqual(legacy.find(({ href }) => href === "/products/category/scales")?.groups?.[0], {
+    label: "คุณสมบัติ",
+    links: [],
+  });
   const services = legacy.find((item) => item.href === "/service")!;
-  assert.ok(services.groups![0].links.some((link) => link.href === "/software/download"));
+  assert.ok(services.groups![0].links.some((link) => link.href === "/business/blogs/editorial"));
   assert.ok(
     !services.groups!.flatMap((group) => group.links).some((link) => link.href === "/solutions"),
   );

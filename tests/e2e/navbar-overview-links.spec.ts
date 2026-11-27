@@ -167,7 +167,14 @@ for (const width of [320, 390, 834, 1440]) {
       await expect(chapters.locator(":scope > span:last-child")).toHaveText(
         chapterMenu.links.map((link) => link.label),
       );
-      for (const [index, link] of expected.entries()) {
+      expect(
+        new Set(expected.map((item) => item.href && new URL(item.href, page.url()).pathname)),
+      ).toEqual(new Set(chapterMenu.links.map((item) => (item.disabled ? null : item.href))));
+      for (const [index, chapterLink] of chapterMenu.links.entries()) {
+        const link =
+          expected.find(
+            (item) => item.href && new URL(item.href, page.url()).pathname === chapterLink.href,
+          ) ?? expected[index];
         const button = chapters.nth(index);
         if (link.disabled) {
           expect(link.href).toBeNull();
@@ -215,10 +222,10 @@ for (const width of [320, 390, 834, 1440]) {
       }
       if (category.id === "accessories")
         await page.screenshot({ path: test.info().outputPath("accessory-chapters.png") });
-      for (const [index, { disabled, href, label }] of expected.entries()) {
+      for (const [index, { disabled, href, label }] of chapterMenu.links.entries()) {
         if (disabled) continue;
         await chapters.nth(index).click();
-        const pathname = new URL(href!, page.url()).pathname;
+        const pathname = new URL(href, page.url()).pathname;
         await expect(page, label).toHaveURL((url) => url.pathname === pathname, {
           timeout: 20_000,
         });

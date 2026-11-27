@@ -69,14 +69,15 @@ for (const width of [390, 1440]) {
       await openCategoryMenu(header, category.label, width);
       const panel = header.locator("#products-navigation-panel");
       const sections = panel.locator("[data-nav-column]");
-      await expect(sections).toHaveCount(3);
+      await expect(sections).toHaveCount(1 + category.groups!.length);
       await expect(sections.locator(":scope > p")).toHaveText([
         category.submenuLabel!,
         ...category.groups!.map((group) => group.label),
       ]);
       const expected = [category.links, ...category.groups!.map((group) => group.links)];
-      for (let column = 0; column < 3; column++) {
-        if (column === 1 && category.groups![0].label === "คุณสมบัติ") {
+      const featureGroup = category.groups![0];
+      for (let column = 0; column < expected.length; column++) {
+        if (column === 1 && featureGroup.label === "คุณสมบัติ" && featureGroup.links.length === 0) {
           const features = sections.nth(column).getByRole("link");
           await expect(features.first()).toBeVisible();
           expect(await features.count()).toBeLessThanOrEqual(6);
@@ -107,10 +108,10 @@ for (const width of [390, 1440]) {
       );
       if (width >= 1024) {
         expect(boxes[1].x).toBeGreaterThan(boxes[0].x + boxes[0].width);
-        expect(boxes[2].x).toBeGreaterThan(boxes[1].x + boxes[1].width);
+        if (boxes[2]) expect(boxes[2].x).toBeGreaterThan(boxes[1].x + boxes[1].width);
       } else {
         expect(boxes[1].y).toBeGreaterThan(boxes[0].y);
-        expect(boxes[2].y).toBeGreaterThan(boxes[1].y);
+        if (boxes[2]) expect(boxes[2].y).toBeGreaterThan(boxes[1].y);
         await expect(page.locator("main:visible")).toHaveAttribute("inert", "");
       }
       await page.screenshot({
@@ -123,11 +124,11 @@ for (const width of [390, 1440]) {
         await header.getByRole("button", { name: "เมนูหลัก", exact: true }).click();
       }
     }
-    await header.getByRole("button", { name: "บริการ", exact: true }).click();
+    await openCategoryMenu(header, "บริการช่วยเหลือ", width);
     const panel = header.locator("#products-navigation-panel");
     await expect(
-      panel.getByRole("link", { name: "เกี่ยวกับ SUNFORD", exact: true }),
-    ).toHaveAttribute("href", "/about-us");
+      panel.getByRole("link", { name: "เกี่ยวกับผลิตภัณฑ์", exact: true }),
+    ).toHaveAttribute("href", "/support/technical-assistance");
     await expect(panel.getByRole("link", { name: "ติดต่อเรา", exact: true })).toHaveAttribute(
       "href",
       "/service?section=contact",
@@ -177,15 +178,15 @@ for (const width of [390, 1440]) {
     }
     const header = page.locator("[data-products-header]:visible");
     if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-    await openCategoryMenu(header, "บริการ", width);
+    await openCategoryMenu(header, "บริการช่วยเหลือ", width);
     await header
       .locator("#products-navigation-panel")
-      .getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true })
+      .getByRole("link", { name: "บทความ", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/software\/download$/);
+    await expect(page).toHaveURL("/business/blogs/editorial");
     await expect(header.locator("#products-navigation-panel")).toHaveCount(0);
     if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-    await openCategoryMenu(header, "เครื่องชั่ง", width);
+    await openCategoryMenu(header, "บริการช่วยเหลือ", width);
     await header
       .locator("#products-navigation-panel")
       .getByRole("link", { name: "ลงทะเบียนรับประกัน", exact: true })

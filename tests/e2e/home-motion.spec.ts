@@ -136,20 +136,39 @@ test("spotlight loops without playback controls and respects visibility and moti
   await expect(video).toHaveJSProperty("paused", false);
 });
 
-test("spotlight resolves the current Warehouse product without responsive overflow", async ({
+test("spotlight resolves the current Warehouse product and fills one viewport below the header", async ({
   page,
 }) => {
+  test.setTimeout(90_000);
   for (const viewport of [
+    { width: 320, height: 568 },
     { width: 390, height: 844 },
-    { width: 768, height: 1024 },
-    { width: 1440, height: 900 },
+    { width: 667, height: 375 },
+    { width: 834, height: 1194 },
+    { width: 1366, height: 768 },
+    { width: 1920, height: 1080 },
   ]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
     const spotlight = page.locator(".product-spotlight");
     const video = spotlight.locator(".spotlight-product-video");
-    await video.scrollIntoViewIfNeeded();
     await expect(spotlight).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    await spotlight.evaluate((section) => {
+      const headerHeight = document
+        .querySelector("header.site-header")!
+        .getBoundingClientRect().height;
+      window.scrollTo({
+        top: window.scrollY + section.getBoundingClientRect().top - headerHeight,
+        behavior: "instant",
+      });
+    });
+    const header = await page.locator("header.site-header").boundingBox();
+    const bounds = await spotlight.boundingBox();
+    expect(bounds!.y).toBeCloseTo(header!.height, 0);
+    expect(bounds!.y + bounds!.height).toBeCloseTo(viewport.height, 0);
+    await expect(spotlight.locator(".spotlight-copy")).toBeInViewport({ ratio: 1 });
+    await expect(video).toBeInViewport({ ratio: 1 });
     await expect(spotlight.getByRole("heading", { name: "WPS10KS", exact: true })).toBeVisible();
     await expect(video).toHaveAttribute("src", "/videos/wps10ks-panel-aligned-1080p.mp4");
     await expect(video).toHaveAttribute(

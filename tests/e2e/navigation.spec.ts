@@ -2,7 +2,10 @@ import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
-import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
+import {
+  getHeaderNavigationItems,
+  getPrimaryNavigationItems,
+} from "../../src/features/site/data/primary-navigation";
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -220,7 +223,7 @@ test("eight company menus expose real destinations without calibration or a top 
   await expect(page.locator("#products-navigation-panel")).toBeHidden();
   await page
     .locator(".desktop-nav")
-    .getByRole("link", { name: "บริการ", exact: true })
+    .getByRole("link", { name: "บริการช่วยเหลือ", exact: true })
     .press("ArrowDown");
   await page
     .locator("[data-nav-menu]")
@@ -245,27 +248,30 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   const toggle = page.getByRole("button", { name: "เปิดเมนู", exact: true });
   await toggle.click();
   const mobile = page.locator("#products-navigation-panel");
-  await expect(mobile.locator("[data-nav-category-row]")).toHaveCount(8);
-  await expect(mobile.locator("[data-nav-category-row] > a")).toHaveText(labels);
+  await expect(mobile.locator("[data-nav-category-row] > a")).toHaveText(
+    getHeaderNavigationItems(defaultNavigation).map(({ label }) => label),
+  );
   const indicators = mobile.getByRole("button", {
-    name: "เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง",
+    name: "เปิดเมนูย่อยอินดิเคเตอร์",
     exact: true,
   });
   await indicators.press("Enter");
   await expect(mobile.getByRole("button", { name: "เมนูหลัก", exact: true })).toBeFocused();
-  await expect(mobile.getByRole("link", { name: "LCD", exact: true })).toBeVisible();
+  await expect(mobile.getByRole("link", { name: "อุตสาหกรรม", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(mobile).toHaveCount(0);
   await expect(toggle).toBeFocused();
   await toggle.click();
   await page
-    .locator('#products-navigation-panel button[aria-label="เปิดเมนูย่อยอินดิเคเตอร์แท่นชั่ง"]')
+    .locator('#products-navigation-panel button[aria-label="เปิดเมนูย่อยอินดิเคเตอร์"]')
     .click();
   await page
     .locator("#products-navigation-panel")
-    .getByRole("link", { name: "LCD", exact: true })
+    .getByRole("link", { name: "อุตสาหกรรม", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/products\/category\/indicators\/lcd#product-listing-indicators$/);
+  await expect(page).toHaveURL(
+    /\/products\/category\/indicators\/industrial#product-listing-indicators$/,
+  );
   await expect(page.locator("#products-navigation-panel")).toHaveCount(0);
 });
 
@@ -276,10 +282,13 @@ test("mobile software and warranty links remain reachable in a short viewport", 
   await page.goto("/");
   await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
   const mobile = page.locator("#products-navigation-panel");
-  const serviceMenu = mobile.locator('button[aria-label="เปิดเมนูย่อยบริการ"]');
-  await serviceMenu.click();
-  await mobile.getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true }).click();
-  await expect(page).toHaveURL("/software/download");
+  const serviceMenu = mobile.getByRole("button", {
+    name: "เปิดเมนูย่อยบริการช่วยเหลือ",
+    exact: true,
+  });
+  await mobile.getByRole("button", { name: "เปิดเมนูย่อยซอฟต์แวร์", exact: true }).click();
+  await mobile.getByRole("link", { name: "การพาณิชย์และค้าปลีก", exact: true }).click();
+  await expect(page).toHaveURL("/software/download#retail-software");
   await expect(page.getByRole("main").locator("#retail-software")).toBeVisible();
   await expect(mobile).toHaveCount(0);
   await page.goto("/");

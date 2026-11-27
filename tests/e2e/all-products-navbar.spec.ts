@@ -1,4 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+import { defaultNavigation } from "../../src/features/site/data/navigation";
+import { getHeaderNavigationItems } from "../../src/features/site/data/primary-navigation";
 
 const routes = ["/", "/service?section=contact"] as const;
 
@@ -16,16 +18,38 @@ async function visit(page: Page, route: string, width = 1440) {
   else await expect(header(page, route).getByRole("button").first()).toBeEnabled();
 }
 
+async function expectShopMenu(panel: Locator) {
+  const columns = panel.locator("[data-nav-column]");
+  await expect(columns.locator(":scope > p")).toHaveText(["สินค้า", "ลิงก์ด่วน"]);
+  await expect(columns.nth(0).getByRole("link")).toHaveText([
+    "เครื่องชั่ง",
+    "โครงสร้างแท่นชั่ง",
+    "อินดิเคเตอร์",
+    "ระบบ POS",
+    "ระบบ MES",
+    "อุปกรณ์เสริม",
+  ]);
+  const quickLinks = columns.nth(1).getByRole("link");
+  await expect(quickLinks).toHaveText(["เลือกซื้อสินค้า", "ลงทะเบียนรับประกัน", "ใบเสนอราคา"]);
+  await expect(quickLinks.nth(0)).toHaveAttribute("href", "https://sunfordshop.com/");
+  await expect(quickLinks.nth(1)).toHaveAttribute("href", "/warranty/register");
+  await expect(quickLinks.nth(2)).toHaveAttribute("href", "/service/quotation");
+  await expect(columns.nth(0).getByRole("link", { name: "ระบบ MES" })).toHaveAttribute(
+    "href",
+    "/solution/mes",
+  );
+}
+
 for (const route of routes) {
   test(`${route} opens the logo-aligned all-products menu and navigates directly`, async ({
     page,
   }) => {
     await visit(page, route);
     const nav = header(page, route);
-    const allProducts = nav.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true });
+    const allProducts = nav.getByRole("link", { name: "ร้าน", exact: true });
     const scales = nav.getByRole("link", { name: "เครื่องชั่ง", exact: true });
     await expect(allProducts).toHaveCount(1);
-    await expect(allProducts).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+    await expect(allProducts).toHaveText("ร้าน");
     await expect(allProducts).toHaveAttribute("aria-expanded", "false");
     const positions = await Promise.all([allProducts.boundingBox(), scales.boundingBox()]);
     expect(positions[0]!.x).toBeLessThan(positions[1]!.x);
@@ -40,8 +64,7 @@ for (const route of routes) {
       await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
     }
-    await expect(panel.locator("a")).toHaveCount(13);
-    await expect(panel.locator("p")).toHaveText(["สินค้า", "การใช้งาน", "ช่วยเหลือ"]);
+    await expectShopMenu(panel);
     const first = await panel.locator("a").first().boundingBox();
     const logo = await nav.locator('a[href="/"]:visible').first().boundingBox();
     expect(Math.abs(first!.x - logo!.x)).toBeLessThanOrEqual(1);
@@ -57,7 +80,7 @@ for (const route of routes) {
   test(`${route} preserves native modified-link navigation`, async ({ page }) => {
     await visit(page, route);
     const original = page.url();
-    const link = header(page, route).getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true });
+    const link = header(page, route).getByRole("link", { name: "ร้าน", exact: true });
     const [next] = await Promise.all([
       page.context().waitForEvent("page"),
       link.click({ modifiers: ["Control"] }),
@@ -89,11 +112,11 @@ for (const route of routes) {
         await expect(nav.locator(".nav-glass")).toHaveCSS("background-color", "rgb(0, 0, 0)");
         await expect(nav).toHaveCSS("color", "rgb(207, 207, 207)");
       }
-      const link = nav.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true });
+      const link = nav.getByRole("link", { name: "ร้าน", exact: true });
       await expect(link).toBeVisible();
-      await nav.getByLabel("เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", { exact: true }).tap();
+      await nav.getByLabel("เปิดเมนูย่อยร้าน", { exact: true }).tap();
       const panel = nav.locator("[data-all-products]:visible");
-      await expect(panel.locator("a")).toHaveCount(13);
+      await expectShopMenu(panel);
       await page.screenshot({ path: test.info().outputPath("mobile-menu.png") });
       await nav.getByRole("button", { name: "เมนูหลัก", exact: true }).tap();
       await link.tap();
@@ -168,19 +191,19 @@ for (const width of [834, 930, 1023, 1024, 1440]) {
             .filter((rect) => rect.bottom <= 50 && rect.right > rect.x),
         )
       ).sort((left, right) => left.x - right.x);
-      expect(boxes).toHaveLength(width < 1024 ? 4 : 11);
+      expect(boxes).toHaveLength(
+        width < 1024 ? 4 : getHeaderNavigationItems(defaultNavigation).length + 3,
+      );
       expect(boxes.every((box) => box.x >= 0 && box.right <= width)).toBe(true);
       for (let index = 1; index < boxes.length; index++)
         expect(boxes[index].x).toBeGreaterThanOrEqual(boxes[index - 1].right - 0.5);
       if (width < 1024) {
         await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
-        await nav
-          .getByRole("button", { name: "เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", exact: true })
-          .click();
+        await nav.getByRole("button", { name: "เปิดเมนูย่อยร้าน", exact: true }).click();
         await expect(nav.locator("[data-all-products]:visible")).toBeVisible();
         return;
       }
-      await nav.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).press("ArrowDown");
+      await nav.getByRole("link", { name: "ร้าน", exact: true }).press("ArrowDown");
       const menu = nav.locator("[data-all-products]:visible");
       await expect(menu.locator("a").first()).toBeFocused();
       const firstLink = await menu.locator("a").first().boundingBox();
@@ -199,7 +222,7 @@ test("same-route all-products link closes an open internal submenu", async ({ pa
   const scales = nav.getByRole("link", { name: "เครื่องชั่ง", exact: true });
   await scales.hover();
   await expect(page.locator("#products-navigation-panel")).toBeVisible();
-  await nav.getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true }).click();
+  await nav.getByRole("link", { name: "ร้าน", exact: true }).click();
   await expect(page).toHaveURL(/\/products$/);
   await expect(page.locator("#products-navigation-panel")).not.toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);

@@ -15,12 +15,12 @@ const groups = [
   },
   {
     category: "indicators",
-    parent: "อินดิเคเตอร์แท่นชั่ง",
+    parent: "อินดิเคเตอร์",
     children: [["waterproof", "กันน้ำ", "indicator-waterproof"]],
   },
   {
     category: "platforms",
-    parent: "โครงสร้างแท่นชั่ง",
+    parent: "แท่นชั่ง",
     children: [
       ["floor", "แท่นชั่งตั้งพื้น", "platform-floor"],
       ["benchtop", "แท่นชั่งตั้งโต๊ะ", "platform-benchtop"],
@@ -28,7 +28,7 @@ const groups = [
   },
   {
     category: "pos",
-    parent: "ระบบ POS",
+    parent: "POS",
     children: [["ios", "iOS", "pos-ios"]],
   },
 ] as const;
@@ -94,13 +94,23 @@ async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard"
     const panelId = "#products-navigation-panel";
     const panel = header.locator(`${panelId} [data-nav-menu="${parentHref}"]`);
     const features = panel.locator('[data-nav-column="uses"]');
-    await expect(features.locator("p").first()).toHaveText("คุณสมบัติ");
-    for (const [slug, label] of children) {
+    if (category !== "pos") await expect(features.locator("p").first()).toHaveText("คุณสมบัติ");
+    const navChildren =
+      category === "pos"
+        ? [
+            ["android", "Android"],
+            ["windows", "Windows"],
+          ]
+        : children;
+    for (const [slug, label] of navChildren) {
       const href = `${parentHref}/${slug}`;
       const link =
         category === "indicators" && slug === "waterproof"
-          ? features.getByRole("link", { name: "กันน้ำ IP67", exact: true })
-          : panel.getByRole("link", { name: label, exact: true });
+          ? features.getByRole("link", { name: "กันน้ำกันฝุ่น", exact: true })
+          : panel.getByRole("link", {
+              name: slug === "analytical" ? "ห้องปฏิบัติการ" : label,
+              exact: true,
+            });
       await expect(link).toBeVisible();
       if (!savedDisabled.has(href)) {
         await expect(link).toHaveAttribute("href", catalogSubmenuDestination(href));
@@ -110,17 +120,8 @@ async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard"
         await expect(link).not.toHaveAttribute("href", /.+/);
       }
     }
-    if (category === "pos") {
-      for (const [label, slug] of [
-        ["Android", "android"],
-        ["Windows", "windows"],
-      ]) {
-        await expect(panel.getByRole("link", { name: label, exact: true })).toHaveAttribute(
-          "href",
-          catalogSubmenuDestination(`${parentHref}/${slug}`),
-        );
-      }
-    }
+    if (category === "pos")
+      await expect(panel.getByRole("link", { name: "iOS", exact: true })).toHaveCount(0);
     if (touch) await header.getByRole("button", { name: "ปิดเมนู", exact: true }).tap();
     else await page.keyboard.press("Escape");
   }
@@ -140,7 +141,7 @@ test("desktop keyboard menus offer the same destinations across the homepage and
   await page.goto("/");
   await homeReady(page);
   await verifyMenu(page, true, "keyboard");
-  await page.locator(".desktop-nav").getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด" }).click();
+  await page.locator(".desktop-nav").getByRole("link", { name: "ร้าน", exact: true }).click();
   await expect(page).toHaveURL(/\/products$/);
   await verifyMenu(page, false, "keyboard");
   await page.reload();

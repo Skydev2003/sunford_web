@@ -193,6 +193,26 @@
   cursor: default;
   text-decoration: none;
 }
+.menuContent[data-nav-menu="/solutions"] {
+  padding-inline: var(--site-nav-gutter);
+}
+.menuContent[data-nav-menu="/solutions"] :is(a, .menuUnavailable) {
+  color: inherit;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  min-height: 44px;
+  align-content: center;
+}
+@media (width < 22rem) {
+  .menuContent[data-nav-menu="/solutions"] {
+    container-type: inline-size;
+    padding-inline: clamp(0.5rem, 3vw, var(--site-nav-gutter));
+  }
+  .menuContent[data-nav-menu="/solutions"] :is(a, .menuUnavailable) {
+    font-size: clamp(0.65rem, calc(100cqi / 24), 0.75rem);
+  }
+}
 .menuBack {
   display: inline-flex;
   align-items: center;
@@ -216,7 +236,7 @@
 .headerOpen .navTools > :is(button, a):not(.menuTrigger) {
   visibility: hidden;
 }
-@media (min-width: 64rem) {
+@media (min-width: 64rem) and (hover: hover) and (pointer: fine) {
   .menuContent[data-all-products] :is(a, .menuUnavailable) {
     min-height: revert;
     align-content: revert;
@@ -269,6 +289,12 @@
     grid-template-columns: 240px repeat(2, 212px) minmax(0, 1fr);
     gap: 32px;
     align-items: start;
+  }
+  .menuContent[data-nav-menu="/solutions"] {
+    grid-template-columns: repeat(3, minmax(max-content, 1fr));
+  }
+  .menuContent[data-nav-menu="/solutions"] :is(a, .menuUnavailable) {
+    min-height: 0;
   }
   .menuContent p {
     line-height: 18px;

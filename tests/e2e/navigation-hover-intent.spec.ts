@@ -106,7 +106,7 @@ for (const route of ["/", "/service?section=contact"]) {
     await page.mouse.move(10, 950);
     await scales.hover();
     await expect(panel(page).locator("[data-nav-hover-reveal]")).toHaveCount(1);
-    await trigger(page, route, "อินดิเคเตอร์แท่นชั่ง").hover();
+    await trigger(page, route, "อินดิเคเตอร์").hover();
     const indicators = panel(page).locator('[data-nav-menu="/products/category/indicators"]');
     await expect(indicators.locator("[data-nav-hover-item]").first()).toHaveCSS(
       "animation-name",
@@ -121,30 +121,46 @@ for (const route of ["/", "/service?section=contact"]) {
     ).toHaveCSS("animation-name", "none");
   });
 
-  test(`${route} touch at 1024px follows the category link without a hover reveal`, async ({
-    browser,
-    baseURL,
-  }) => {
-    const page = await browser.newPage({
+  for (const width of [1024, 1194]) {
+    test(`${route} touch-only screens at ${width}px can open submenus and follow category links`, async ({
+      browser,
       baseURL,
-      viewport: { width: 1024, height: 900 },
-      hasTouch: true,
+    }) => {
+      const page = await browser.newPage({
+        baseURL,
+        viewport: { width, height: 834 },
+        hasTouch: true,
+      });
+      try {
+        await visit(page, route, width);
+        const nav = header(page, route);
+        expect(
+          await page.evaluate(() => matchMedia("(hover: none) and (pointer: coarse)").matches),
+        ).toBe(true);
+        await expect(nav.locator(".desktop-nav")).toBeHidden();
+        const toggle = nav.getByRole("button", { name: "เปิดเมนู", exact: true });
+        await toggle.tap();
+        await nav.getByRole("button", { name: "เปิดเมนูย่อยโซลูชัน", exact: true }).tap();
+        const solutions = panel(page).locator('[data-nav-menu="/solutions"]');
+        await expect(solutions).toBeVisible();
+        const last = solutions.getByRole("link", { name: /QR Code \(POS\)$/ });
+        await last.tap();
+        await expect(page).toHaveURL("/solutions/pos-label-printing");
+        await expect(panel(page)).toHaveCount(0);
+
+        const destinationNav = header(page, "/solutions/pos-label-printing");
+        await destinationNav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
+        await destinationNav
+          .locator("[data-nav-category-row]")
+          .getByRole("link", { name: "เครื่องชั่ง", exact: true })
+          .tap();
+        await expect(page).toHaveURL("/products/category/scales");
+        await expect(panel(page)).toHaveCount(0);
+      } finally {
+        await page.close();
+      }
     });
-    try {
-      await visit(page, route, 1024);
-      await page.emulateMedia({ reducedMotion: "no-preference" });
-      expect(await page.evaluate(() => matchMedia("(hover: none)").matches)).toBe(true);
-      await pauseTimers(page);
-      await trigger(page, route).hover();
-      await page.clock.runFor(hoverDelay + 50);
-      await expect(panel(page).locator("[data-nav-hover-reveal]")).not.toBeVisible();
-      await trigger(page, route).tap();
-      await expect(page).toHaveURL(/\/products\/category\/scales$/);
-      await expect(page.locator("[data-nav-hover-reveal]")).toHaveCount(0);
-    } finally {
-      await page.close();
-    }
-  });
+  }
 }
 
 for (const route of variants) {
@@ -154,7 +170,7 @@ for (const route of variants) {
     await visit(page, route);
     await pauseTimers(page);
     const first = trigger(page, route);
-    const second = trigger(page, route, "อินดิเคเตอร์แท่นชั่ง");
+    const second = trigger(page, route, "อินดิเคเตอร์");
     await first.hover();
     await page.clock.runFor(hoverDelay - 1);
     await expect(first).toHaveAttribute("aria-expanded", "false");

@@ -202,7 +202,7 @@ test("native mobile touch opens Home industrial submenu and returns from detail"
   const mobile = page.locator("#products-navigation-panel");
   await mobile.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true }).tap();
   await mobile
-    .getByRole("link", { name: "เครื่องชั่งสำหรับโรงงาน", exact: true })
+    .getByRole("link", { name: "อุตสาหกรรม", exact: true })
     .filter({ visible: true })
     .tap();
   await expect(page).toHaveURL(new RegExp(path + "$"));

@@ -2,6 +2,7 @@ import type { Product } from "../types";
 import {
   additionalAccessorySubcategoryPages,
   additionalScaleSubcategoryPages,
+  hasDeviceConnection,
   indicatorRs232SubcategoryPage,
 } from "./additional-subcategory-pages";
 import { warehouseFact } from "./warehouse-site-data";
@@ -21,18 +22,24 @@ type FeatureRule = Omit<ProductListingFeature, "productIds"> & {
 };
 
 const scales: FeatureRule[] = [
-  ...additionalScaleSubcategoryPages,
+  {
+    id: "device-connection",
+    label: "เชื่อมต่ออุปกรณ์",
+    matches: hasDeviceConnection,
+  },
   {
     id: "water-resistant",
-    label: "กันน้ำ",
+    label: "กันน้ำกันฝุ่น",
     matches: (product) => product.warehouseSubcategoryIds?.includes("scale-water-dust"),
   },
   {
-    id: "tare",
-    label: "หักน้ำหนักภาชนะ",
+    id: "price-computing",
+    label: "คำนวณราคา",
     matches: (product) =>
-      /^(รองรับ|ใช่|yes|true)$/i.test(warehouseFact(product, "หักน้ำหนักภาชนะ").trim()),
+      product.warehouseSubcategoryIds?.includes("scale-price") ||
+      /^(รองรับ|ใช่|yes|true)$/i.test(warehouseFact(product, "คำนวณราคาสินค้า").trim()),
   },
+  ...additionalScaleSubcategoryPages,
 ];
 
 const indicators: FeatureRule[] = [

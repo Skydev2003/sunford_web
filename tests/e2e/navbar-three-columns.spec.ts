@@ -1,9 +1,14 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
-import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
+import {
+  getHeaderNavigationItems,
+  getPrimaryNavigationItems,
+} from "../../src/features/site/data/primary-navigation";
 
 const menus = getPrimaryNavigationItems(defaultNavigation);
+const headerMenus = getHeaderNavigationItems(defaultNavigation);
+const headerLabels = new Map(headerMenus.map(({ href, label }) => [href, label]));
 const routes = ["/", "/service?section=contact"];
 const duplicateKeyWarnings = new WeakMap<Page, string[]>();
 
@@ -37,15 +42,19 @@ async function visit(page: Page, route: string) {
     ).toBeEnabled();
 }
 
-async function openMenu(page: Page, route: string, width: number, index: number) {
+async function openMenu(
+  page: Page,
+  route: string,
+  width: number,
+  index: number,
+  menu = menus[index],
+) {
   const nav = header(page, route);
-  const menu = menus[index];
+  const label = headerLabels.get(menu.href)!;
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
   if (width >= 1024) {
     await page.mouse.move(width - 4, page.viewportSize()!.height - 4);
-    const trigger = nav
-      .locator(".desktop-nav")
-      .getByRole("link", { name: menu.label, exact: true });
+    const trigger = nav.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
     await trigger.press("ArrowDown");
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
   } else {
@@ -55,7 +64,7 @@ async function openMenu(page: Page, route: string, width: number, index: number)
       await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     await nav
       .getByRole("button", {
-        name: `เปิดเมนูย่อย${menu.label}`,
+        name: `เปิดเมนูย่อย${label}`,
         exact: true,
       })
       .click();
@@ -184,8 +193,8 @@ test("catalogue toolbar still selects products and opens comparison after Navbar
 });
 
 for (const route of routes) {
-  for (const width of [320, 390, 768, 833, 834, 1023, 1024, 1440]) {
-    test(`${route} all eight panels retain three columns and disabled choices at ${width}px`, async ({
+  for (const width of [280, 320, 390, 768, 833, 834, 1023, 1024, 1440, 1920, 2560]) {
+    test(`${route} all Navbar panels retain their configured columns and disabled choices at ${width}px`, async ({
       page,
     }) => {
       test.setTimeout(120_000);
@@ -193,20 +202,22 @@ for (const route of routes) {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await visit(page, route);
       let entries = 0;
-      for (let index = 0; index < menus.length; index++) {
-        const panel = await openMenu(page, route, width, index);
+      for (let index = 0; index < headerMenus.length; index++) {
+        const menu = headerMenus[index];
+        const panel = await openMenu(page, route, width, index, menu);
+        expect(
+          await panel.evaluate((node) => node.scrollWidth - node.clientWidth),
+          menu.label,
+        ).toBeLessThanOrEqual(1);
         const columns = panel.locator("[data-nav-column]");
-        await expect(columns).toHaveCount(3);
+        await expect(columns).toHaveCount(1 + menu.groups!.length);
         await expect(columns.locator(":scope > p")).toHaveText([
-          menus[index].submenuLabel!,
-          menus[index].groups![0].label,
-          "ช่วยเหลือ",
+          menu.submenuLabel!,
+          ...menu.groups!.map((group) => group.label),
         ]);
-        const expectedColumns = [
-          menus[index].links,
-          ...menus[index].groups!.map((group) => group.links),
-        ];
-        const hasLiveFeatures = menus[index].groups![0].label === "คุณสมบัติ";
+        const expectedColumns = [menu.links, ...menu.groups!.map((group) => group.links)];
+        const features = menu.groups![0];
+        const hasLiveFeatures = features.label === "คุณสมบัติ" && features.links.length === 0;
         if (hasLiveFeatures) await expect(columns.nth(1).getByRole("link").first()).toBeVisible();
         const boxes = await columns.evaluateAll((nodes) =>
           nodes.map((node) => {
@@ -215,7 +226,7 @@ for (const route of routes) {
           }),
         );
         if (width >= 1024) {
-          for (let column = 1; column < 3; column++) {
+          for (let column = 1; column < expectedColumns.length; column++) {
             expect(boxes[column].x).toBeGreaterThanOrEqual(
               boxes[column - 1].x + boxes[column - 1].width,
             );
@@ -227,10 +238,12 @@ for (const route of routes) {
           }
           expect(boxes[0].width).toBeLessThanOrEqual(360);
         } else {
-          expect(boxes[1].y).toBeGreaterThanOrEqual(boxes[0].y + boxes[0].height);
-          expect(boxes[2].y).toBeGreaterThanOrEqual(boxes[1].y + boxes[1].height);
+          for (let column = 1; column < boxes.length; column++) {
+            const previous = boxes[column - 1];
+            expect(boxes[column].y).toBeGreaterThanOrEqual(previous.y + previous.height);
+          }
         }
-        for (let column = 0; column < 3; column++) {
+        for (let column = 0; column < expectedColumns.length; column++) {
           const choices = columns.nth(column).getByRole("link");
           const isFeatureColumn = hasLiveFeatures && column === 1;
           const count = isFeatureColumn ? await choices.count() : expectedColumns[column].length;
@@ -250,20 +263,24 @@ for (const route of routes) {
         if (expectedColumns.flat().some((link) => link.disabled)) {
           const unavailable = panel.locator('[aria-disabled="true"]').first();
           const ready = panel.locator("a[href]").first();
-          expect(await unavailable.evaluate((node) => getComputedStyle(node).color)).not.toBe(
-            await ready.evaluate((node) => getComputedStyle(node).color),
+          const unavailableColor = await unavailable.evaluate(
+            (node) => getComputedStyle(node).color,
           );
+          const readyColor = await ready.evaluate((node) => getComputedStyle(node).color);
+          if (menu.href === "/solutions") expect(unavailableColor).toBe(readyColor);
+          else expect(unavailableColor).not.toBe(readyColor);
         }
-        if (width === 390 || width === 1440) {
+        const last = panel.locator("[data-nav-column] a").last();
+        await last.focus();
+        await expect(last).toBeInViewport({ ratio: 1 });
+        if (width === 390 || width === 1440)
           await page.screenshot({ path: test.info().outputPath(`menu-${index}-${width}.png`) });
-          const last = columns.last().getByRole("link").last();
-          await last.scrollIntoViewIfNeeded();
-          await expect(last).toBeInViewport();
-        }
       }
       expect(entries).toBe(
-        menus.flatMap((menu) => [...menu.links, ...menu.groups!.flatMap((group) => group.links)])
-          .length,
+        headerMenus.flatMap((menu) => [
+          ...menu.links,
+          ...menu.groups!.flatMap((group) => group.links),
+        ]).length,
       );
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
@@ -291,6 +308,12 @@ for (const route of routes) {
       page,
     }) => {
       test.setTimeout(240_000);
+      await page.context().route("https://sunfordshop.com/**", (request) =>
+        request.fulfill({
+          contentType: "text/html",
+          body: "<main><h1>SUNFORD Shop</h1><p>เลือกซื้อเครื่องชั่งดิจิทัลและอุปกรณ์ SUNFORD อย่างเป็นทางการพร้อมบริการหลังการขายและการรับประกัน</p></main>",
+        }),
+      );
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await visit(page, route);
@@ -384,7 +407,7 @@ for (const route of routes) {
     await visit(page, route);
     const panel = await openMenu(page, route, 1440, 3);
     const trigger = header(page, route).getByRole("link", {
-      name: "โครงสร้างแท่นชั่ง",
+      name: "แท่นชั่ง",
       exact: true,
     });
     await trigger.press("ArrowDown");
@@ -452,7 +475,7 @@ test("touch menus, landscape navigation and 200 percent zoom remain usable", asy
         const nav = header(page, route);
         await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
         const trigger = nav.locator("#products-navigation-panel").getByRole("link", {
-          name: menus[index].label,
+          name: headerLabels.get(menus[index].href),
           exact: true,
         });
         await trigger.tap();
@@ -477,4 +500,36 @@ test("touch menus, landscape navigation and 200 percent zoom remain usable", asy
   } finally {
     await context.close();
   }
+});
+
+test("short desktop menus reset scroll when hovering to another menu and unlock on resize", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1040, height: 260 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const route = "/service?section=contact";
+  await visit(page, route);
+  const nav = header(page, route);
+  const panel = nav.locator("#products-navigation-panel");
+  await page.mouse.move(4, 220);
+  await nav.locator(".desktop-nav").getByRole("link", { name: "โซลูชัน", exact: true }).hover();
+  await expect(panel.locator('[data-nav-menu="/solutions"]')).toBeVisible();
+  await panel.evaluate((node) => {
+    node.scrollTop = node.scrollHeight;
+  });
+  expect(await panel.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+  await nav.locator(".desktop-nav").getByRole("link", { name: "เครื่องชั่ง", exact: true }).hover();
+  await expect(panel.locator('[data-nav-menu="/products/category/scales"]')).toBeVisible();
+  await expect(panel.locator('[data-nav-column="uses"] a').first()).toBeVisible();
+  expect(await panel.evaluate((node) => node.scrollTop)).toBe(0);
+
+  await page.setViewportSize({ width: 1023, height: 260 });
+  await expect(panel).toHaveCount(0);
+  await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
+  await nav.getByRole("button", { name: "เปิดเมนูย่อยโซลูชัน", exact: true }).click();
+  await expect(panel.locator('[data-nav-menu="/solutions"]')).toBeVisible();
+  await page.setViewportSize({ width: 1024, height: 260 });
+  await expect(panel).toHaveCount(0);
+  await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
+  await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
 });

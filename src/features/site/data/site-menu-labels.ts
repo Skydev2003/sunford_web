@@ -2,9 +2,10 @@ import { contactPath } from "@/features/content/data/contact-route";
 const labels = {
   "/products": "ผลิตภัณฑ์ทั้งหมด",
   "/products/category/scales": "เครื่องชั่ง",
-  "/products/category/scales/price": "เครื่องชั่งคำนวณราคา",
-  "/products/category/scales/kitchen": "เครื่องชั่งครัวและกาแฟ",
-  "/products/category/scales/industrial": "เครื่องชั่งสำหรับโรงงาน",
+  "/products/category/scales/analytical": "ห้องปฏิบัติการ",
+  "/products/category/scales/industrial": "อุตสาหกรรม",
+  "/products/category/scales/price": "พาณิชยกรรมและบริการ",
+  "/products/category/scales/kitchen": "ไลฟ์สไตล์",
   "/products/category/indicators": "อินดิเคเตอร์แท่นชั่ง",
   "/products/category/platforms": "โครงสร้างแท่นชั่ง",
   "/products/category/pos": "ระบบ POS",

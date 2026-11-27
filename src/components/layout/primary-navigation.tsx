@@ -26,6 +26,7 @@ import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import styles from "./primary-navigation.module.css";
 const subscribe = () => () => {};
+const desktopNavigationQuery = "(min-width: 64rem) and (hover: hover) and (pointer: fine)";
 const hasSubmenu = (item: NavigationItem) =>
   item.links.length > 0 || item.groups?.some((group) => group.links.length > 0);
 
@@ -73,6 +74,7 @@ export function PrimaryNavigation({
   const navRef = useRef<HTMLElement>(null);
   useHeaderSurface(navRef, homePage);
   const linksRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoveredTrigger = useRef<HTMLElement | null>(null);
@@ -105,11 +107,7 @@ export function PrimaryNavigation({
     if (hoveredTrigger.current === trigger) return;
     clearHover();
     hoveredTrigger.current = trigger;
-    if (
-      blockedTrigger.current === trigger ||
-      !matchMedia("(min-width: 64rem) and (hover: hover) and (pointer: fine)").matches
-    )
-      return;
+    if (blockedTrigger.current === trigger || !matchMedia(desktopNavigationQuery).matches) return;
     hoverTimer.current = setTimeout(() => {
       hoverTimer.current = null;
       if (
@@ -133,16 +131,13 @@ export function PrimaryNavigation({
     setOpenedByHover(false);
     setMenuIndex(index);
     requestAnimationFrame(() => {
-      navRef.current?.querySelector<HTMLAnchorElement>("#products-navigation-panel a")?.focus();
+      panelRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
     });
   };
   const openMobileSubmenu = (index: number) => {
     setMenuIndex(index);
     requestAnimationFrame(() => {
-      const panel = navRef.current?.querySelector<HTMLElement>("#products-navigation-panel");
-      if (!panel) return;
-      panel.scrollTop = 0;
-      panel.querySelector("button")?.focus({ preventScroll: true });
+      panelRef.current?.querySelector("button")?.focus({ preventScroll: true });
     });
   };
   const returnToMobileMenu = () => {
@@ -155,6 +150,9 @@ export function PrimaryNavigation({
         [index]?.focus();
     });
   };
+  useLayoutEffect(() => {
+    if (menuIndex !== null) panelRef.current?.scrollTo(0, 0);
+  }, [menuIndex]);
   useLayoutEffect(() => {
     if (!menuOpen) return;
     setNavigationOpen(true);
@@ -207,7 +205,7 @@ export function PrimaryNavigation({
     };
   }, [mobileMenu, closeMenu]);
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 64rem)");
+    const query = window.matchMedia(desktopNavigationQuery);
     const resize = () => closeMenu();
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && query.matches) closeMenu();
@@ -394,7 +392,7 @@ export function PrimaryNavigation({
           </div>
         </nav>
         {(activeMenu || mobileMenu) && (
-          <div id="products-navigation-panel" className={styles.navMenu}>
+          <div ref={panelRef} id="products-navigation-panel" className={styles.navMenu}>
             {mobileMenu && !activeMenu ? (
               <div className={styles.mobileMenuItems}>
                 {headerNavigation.map((item, index) => (
@@ -449,7 +447,7 @@ export function PrimaryNavigation({
                       data-nav-column={groupIndex === 0 ? "uses" : "help"}
                     >
                       <p>{group.label}</p>
-                      {group.label === "คุณสมบัติ" ? (
+                      {group.label === "คุณสมบัติ" && group.links.length === 0 ? (
                         <Suspense fallback={null}>
                           <ListingFeatureLinks
                             categoryHref={activeMenu.href}

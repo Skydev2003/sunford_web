@@ -23,7 +23,9 @@ test("Navbar selects real listing features, caps popular series at six, and keep
       id: "a",
       warehouseSku: "A",
       warehouseCategoryId: "scales",
-      warehouseSpecifications: [{ label: "หักน้ำหนักภาชนะ", value: "รองรับ" }],
+      warehouseSpecifications: [
+        { label: "เงื่อนไขการเชื่อมต่อ", value: "ส่งข้อมูลผ่านพอร์ท RS232" },
+      ],
     },
     {
       id: "b",
@@ -31,7 +33,7 @@ test("Navbar selects real listing features, caps popular series at six, and keep
       warehouseCategoryId: "scales",
       warehouseSpecifications: [
         { label: "นับจำนวนชิ้น", value: "รองรับ" },
-        { label: "หักน้ำหนักภาชนะ", value: "รองรับ" },
+        { label: "เงื่อนไขการเชื่อมต่อ", value: "ส่งข้อมูลผ่านพอร์ท RS232" },
       ],
     },
     {
@@ -71,12 +73,12 @@ test("Navbar selects real listing features, caps popular series at six, and keep
   const features = buildNavbarListingFeatures(categories, products);
   assert.deepEqual(features["/products/category/scales"], [
     {
-      label: "นับจำนวนชิ้น",
-      href: "/products/category/scales/counting?feature=scale-counting#product-listing-scales",
+      label: "เชื่อมต่ออุปกรณ์",
+      href: "/products/category/scales/industrial?feature=device-connection#product-listing-scales",
     },
     {
-      label: "หักน้ำหนักภาชนะ",
-      href: "/products/category/scales/kitchen?feature=tare#product-listing-scales",
+      label: "นับจำนวน",
+      href: "/products/category/scales/counting?feature=scale-counting#product-listing-scales",
     },
   ]);
   const series = features["/products/category/platforms"];
@@ -92,12 +94,12 @@ test("Navbar selects real listing features, caps popular series at six, and keep
     ),
   );
   const fallback = buildNavbarListingFeatures(categories, products, [
-    "/products/category/scales/kitchen",
+    "/products/category/scales/industrial",
   ]);
   assert.ok(
     fallback["/products/category/scales"]
-      .find(({ label }) => label === "หักน้ำหนักภาชนะ")
-      ?.href.startsWith("/products/category/scales/industrial?"),
+      .find(({ label }) => label === "เชื่อมต่ออุปกรณ์")
+      ?.href.startsWith("/products/category/scales/kitchen?"),
   );
   assert.deepEqual(buildNavbarListingFeatures(categories, [])["/products/category/scales"], []);
 });
@@ -110,7 +112,7 @@ test("listing filters use verified scale features and keep indicator water ratin
       warehouseCategoryId: "scales",
       warehouseSpecifications: [
         { label: "นับจำนวนชิ้น", value: "รองรับ" },
-        { label: "หักน้ำหนักภาชนะ", value: "รองรับ" },
+        { label: "เงื่อนไขการเชื่อมต่อ", value: "ส่งข้อมูลผ่านพอร์ท RS232" },
       ],
     },
     {
@@ -126,9 +128,25 @@ test("listing filters use verified scale features and keep indicator water ratin
       ({ label, productIds, exclusive }) => [label, productIds, exclusive],
     ),
     [
-      ["นับจำนวนชิ้น", ["scale-a"], undefined],
-      ["หักน้ำหนักภาชนะ", ["scale-a"], undefined],
+      ["เชื่อมต่ออุปกรณ์", ["scale-a"], undefined],
+      ["นับจำนวน", ["scale-a"], undefined],
     ],
+  );
+  const fullScale = {
+    id: "scale-full",
+    warehouseSku: "scale-full",
+    warehouseCategoryId: "scales",
+    warehouseSubcategoryIds: ["scale-water-dust", "scale-price"],
+    warehouseSpecifications: [
+      { label: "เงื่อนไขการเชื่อมต่อ", value: "ส่งข้อมูลผ่านพอร์ท RS232" },
+      { label: "คำนวณราคาสินค้า", value: "รองรับ" },
+      { label: "นับจำนวนชิ้น", value: "รองรับ" },
+      { label: "เตือนน้ำหนักขาด–เกิน", value: "รองรับ" },
+    ],
+  } as Product;
+  assert.deepEqual(
+    getProductListingFeatures("scales", "scale-industrial", [fullScale]).map(({ label }) => label),
+    ["เชื่อมต่ออุปกรณ์", "กันน้ำกันฝุ่น", "คำนวณราคา", "นับจำนวน", "เตือนน้ำหนักขาดเกิน"],
   );
 
   const indicators = ["IP67", "IP68"].map((rating) => ({
