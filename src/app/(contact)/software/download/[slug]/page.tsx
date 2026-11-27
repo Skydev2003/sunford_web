@@ -29,6 +29,7 @@ async function getBuiltInSupportPage(slug: string) {
   if (!support) return;
   const pathname = `/software/download/${slug}`;
   const page = (await getContentPageIndex())[pathname];
+  if (!page && support.standalone) return support;
   if (page?.path === pathname && !page.managed) return support;
 }
 
@@ -62,13 +63,7 @@ export default async function SoftwareSupportPage({ params }: Props) {
     <main id="main-content" className="source-content-page">
       <header className="content-heading container">
         <h1>{page.title}</h1>
-        {needsSupport && (
-          <p>
-            {slug === "sunford-pos-android"
-              ? "รุ่นนี้ยังไม่มีคู่มือ วิดีโอแนะนำ หรือไฟล์ดาวน์โหลดที่ยืนยันสำหรับเผยแพร่บนเว็บไซต์"
-              : "หน้านี้ยังไม่มีไฟล์ดาวน์โหลดที่ยืนยันแล้ว"}
-          </p>
-        )}
+        {page.description && <p>{page.description}</p>}
       </header>
       {isRls && (
         <nav
@@ -89,13 +84,25 @@ export default async function SoftwareSupportPage({ params }: Props) {
       <nav className="container source-section-links" aria-label="ดาวน์โหลดและคู่มือ">
         {downloads?.map(({ href, label, platform }) => (
           <a key={href} href={href}>
-            {isRls ? "ดาวน์โหลดโปรแกรม" : `${label} (${platform})`}
+            {slug === "sunford-rls1800" ? "ดาวน์โหลดโปรแกรม" : `${label} (${platform})`}
           </a>
         ))}
         {page.guide && <Link href={page.guide.href}>{page.guide.label}</Link>}
         <Link href="/software/download">ดูรายการดาวน์โหลดทั้งหมด</Link>
         {needsSupport && <Link href={contactPath}>ติดต่อฝ่ายบริการ</Link>}
       </nav>
+      {page.videos?.length ? (
+        <section className="container source-prose" aria-labelledby="software-videos">
+          <h2 id="software-videos">วิดีโอสอนใช้งาน</h2>
+          <ul>
+            {page.videos.map(({ href, label }) => (
+              <li key={href}>
+                <a href={href}>{label}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </main>
   );
 }

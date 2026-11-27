@@ -53,12 +53,6 @@ import type { ProductCategory } from "../data/mock-categories";
 import { platformSubcategoryDefinitions } from "../data/platform-subcategory-definitions";
 import { sunford } from "@/features/home/data/brand";
 import { solutionImages } from "@/features/home/data/business-solutions";
-import {
-  defaultSpotlightImage,
-  defaultSpotlightProductId,
-  defaultSpotlightVideo,
-  defaultSpotlightPoster,
-} from "@/features/home/data/image-slots";
 import { selectComponentShowcase } from "../data/component-showcase";
 import { ProductCardCaption } from "./product-card-caption";
 import { catalogProductPhoto } from "./catalog-product-card";
@@ -280,10 +274,14 @@ function ReferenceModal({
 function FinderQuerySync({
   onOpen,
   onClose,
+  onCompare,
+  onCompareExit,
   categoryId,
 }: {
   onOpen?: () => void;
   onClose?: () => void;
+  onCompare?: () => void;
+  onCompareExit: () => void;
   categoryId?: string;
 }) {
   const params = useSearchParams();
@@ -292,7 +290,14 @@ function FinderQuerySync({
   const category = params.get("category");
   const subcategory = params.get("subcategory");
   const catalog = params.get("catalog");
+  const compareRequested = params.get("compare") === "1";
   useEffect(() => {
+    if (!compareRequested || !onCompare) return;
+    onCompare();
+    return onCompareExit;
+  }, [compareRequested, onCompare, onCompareExit]);
+  useEffect(() => {
+    if (compareRequested && onCompare) return;
     const current = new URL(window.location.href);
     const destination = resolveCategoryHref(`${current.pathname}${current.search}${current.hash}`);
     if (
@@ -330,7 +335,17 @@ function FinderQuerySync({
     }
     if (category || subcategory || catalog === "all") onOpen?.();
     else onClose?.();
-  }, [category, subcategory, catalog, onOpen, onClose, categoryId, router]);
+  }, [
+    category,
+    subcategory,
+    catalog,
+    compareRequested,
+    onCompare,
+    onOpen,
+    onClose,
+    categoryId,
+    router,
+  ]);
   return null;
 }
 
@@ -394,8 +409,9 @@ export function ProductsOverview({
       : categoryId === "accessories"
         ? {
             title: "เครื่องชั่ง",
-            detail: "ดูเครื่องชั่งสำหรับครัวเรือน การผลิต คำนวณราคา และงานวิเคราะห์",
-            image: defaultSpotlightImage,
+            detail:
+              "ดูเครื่องชั่งสำหรับครัวเรือนและบุคคล อุตสาหกรรม ร้านค้าและบริการ และงานวิเคราะห์",
+            image: "/images/products/acs30-jc21-cutout.png",
             href: "/products/category/scales",
             linkLabel: "ดูเครื่องชั่ง",
           }
@@ -534,12 +550,23 @@ export function ProductsOverview({
     };
   });
   const startCompare = useCatalogStore((state) => state.startCompare);
-  const compare = () => {
+  const clearCompare = useCatalogStore((state) => state.clearCompare);
+  const compare = useCallback(() => {
     startCompare();
     setFinderOpen(true);
-  };
+  }, [startCompare, setFinderOpen]);
   const openFinder = useCallback(() => setFinderOpen(true), [setFinderOpen]);
   const closeFinder = useCallback(() => setFinderOpen(false), [setFinderOpen]);
+  const dismissFinder = () => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("compare") === "1") {
+      for (const key of ["compare", "category", "subcategory", "catalog"]) {
+        url.searchParams.delete(key);
+      }
+      window.history.replaceState(null, "", url);
+    }
+    closeFinder();
+  };
   const syncChapters = useCallback(() => {
     const track = chapterTrack.current;
     if (track)
@@ -853,6 +880,8 @@ export function ProductsOverview({
         <FinderQuerySync
           onOpen={categoryLineup ? undefined : openFinder}
           onClose={indexContent ? closeFinder : undefined}
+          onCompare={indexContent ? compare : undefined}
+          onCompareExit={clearCompare}
           categoryId={activeCategory?.id}
         />
       </Suspense>
@@ -990,7 +1019,7 @@ export function ProductsOverview({
                   }}
                 >
                   {heroes.map((product, index) => {
-                    const video = product.id === defaultSpotlightProductId;
+                    const video = product.id === "acs30-jc21";
                     return (
                       <li
                         key={product.id}
@@ -1021,8 +1050,8 @@ export function ProductsOverview({
                         <div className={styles.heroArt}>
                           {video ? (
                             <video
-                              src={defaultSpotlightVideo}
-                              poster={defaultSpotlightPoster}
+                              src="/videos/jc21-panel-aligned-1080p.mp4"
+                              poster="/images/products/jc21-panel-aligned-poster.png"
                               muted
                               loop
                               playsInline
@@ -1380,7 +1409,7 @@ export function ProductsOverview({
                     companionEquipment,
                     {
                       title: "แอปพลิเคชันและซอฟต์แวร์",
-                      detail: "สำหรับงานค้าปลีก การผลิตอุตสาหกรรม และการดูแลครัวเรือนกับสุขภาพ",
+                      detail: "ซอฟต์แวร์สำหรับหมวดร้านค้าและบริการ อุตสาหกรรม และครัวเรือนและบุคคล",
                       image: solutionImages.software,
                       ...softwareLink,
                     },
@@ -1567,7 +1596,7 @@ export function ProductsOverview({
       {!categoryLineup && (
         <ReferenceModal
           open={finderOpen}
-          onClose={closeFinder}
+          onClose={dismissFinder}
           title={activeCategory ? `ดู${activeCategory.label}ทั้งหมด` : "ดูสินค้าทั้งหมด"}
           large
           finder

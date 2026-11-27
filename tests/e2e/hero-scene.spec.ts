@@ -7,9 +7,7 @@ const heroPoster = (page: Page) => scene(page).locator("[data-hero-poster] img")
 const posterRequest = /\/videos\/sunford-poster[^/]*\.(?:jpg|webp)$/;
 const nextSection = (page: Page) => page.locator('[data-home-section="2"]');
 async function ready(page: Page) {
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 15000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await expect(scene(page)).toHaveAttribute("data-ready", "true");
   await page.evaluate(() => document.fonts.ready);
 }
@@ -44,9 +42,7 @@ for (const [width, height] of [
   [320, 700],
   [844, 390],
 ]) {
-  test(`video Hero keeps its text order and reserved logo space at ${width}x${height}`, async ({
-    page,
-  }) => {
+  test(`video Hero keeps its text and action order at ${width}x${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.emulateMedia({ reducedMotion: "reduce" });
     const requests: string[] = [],
@@ -66,25 +62,18 @@ for (const [width, height] of [
         "img:visible:not([data-hero-poster] img), [data-hero-product], [data-hero-object], canvas",
       ),
     ).toHaveCount(0);
-    const blank = scene(page).locator("[data-hero-logo-space]");
-    await expect(blank.locator("[data-brand-opening]")).toBeHidden();
-    await expect(blank).toHaveAttribute("aria-hidden", "true");
     const heading = (await scene(page).locator("h1").boundingBox())!;
-    const space = (await blank.boundingBox())!;
     const cta = scene(page).getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" });
     const button = (await cta.boundingBox())!;
     const bounds = (await scene(page).boundingBox())!;
-    expect(space.height).toBeGreaterThan(0);
     expect(Math.abs(bounds.y + bounds.height - height)).toBeLessThan(2);
     expect(button.y + button.height).toBeLessThanOrEqual(height - 10);
     const description = (await scene(page).locator("p").boundingBox())!;
     expect(description.y + description.height).toBeLessThanOrEqual(height - 10);
     const nextBounds = (await nextSection(page).boundingBox())!;
     expect(nextBounds.y).toBeGreaterThanOrEqual(height - 1);
-    expect(space.y).toBeGreaterThan(heading.y + heading.height);
-    expect(button.y).toBeGreaterThanOrEqual(space.y + space.height);
+    expect(button.y).toBeGreaterThan(heading.y + heading.height);
     expect(button.y + button.height).toBeLessThanOrEqual(bounds.y + bounds.height);
-    expect(Math.abs(space.x + space.width / 2 - width / 2)).toBeLessThan(1);
     await expect(cta).toHaveAttribute("href", "/service?section=contact");
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(
       false,
@@ -102,10 +91,9 @@ for (const [width, height] of [
   });
 }
 
-test("Hero readiness and video playback do not wait for the logo", async ({ page }) => {
+test("Hero content and video playback start on opening the homepage", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(scene(page)).toHaveAttribute("data-opening", "false");
   await expect(scene(page)).toHaveAttribute("data-ready", "true");
   await expect(scene(page).getByRole("heading", { name: title })).toBeVisible();
   await expect
@@ -176,7 +164,7 @@ test("the next content uses the shared reveal without a second brand film", asyn
 });
 
 for (const width of [1440, 390]) {
-  test(`without JavaScript the video poster, reserved logo space and consultation remain usable at ${width}px`, async ({
+  test(`without JavaScript the video poster and consultation remain usable at ${width}px`, async ({
     browser,
     baseURL,
   }) => {
@@ -205,11 +193,6 @@ for (const width of [1440, 390]) {
       await expect(heroPoster(page)).toBeVisible();
       await expect(scene(page).locator("video")).toBeHidden();
       await expect(scene(page).locator("video[src], video source")).toHaveCount(0);
-      const space = scene(page).locator("[data-hero-logo-space]");
-      await expect(space).toBeVisible();
-      expect((await space.boundingBox())!.height).toBeGreaterThan(0);
-      await expect(space.locator("[data-brand-opening]")).toBeHidden();
-      await expect(page.locator("[data-brand-opening]")).toBeHidden();
       const contact = page.waitForResponse((response) => {
         const url = new URL(response.url());
         return (

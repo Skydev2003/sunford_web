@@ -27,7 +27,7 @@ test("homepage Header search opens, finds a SKU and closes with JavaScript enabl
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
   const input = dialog.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" });

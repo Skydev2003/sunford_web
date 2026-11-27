@@ -91,9 +91,9 @@ export function BusinessSolutionsTemplate() {
               <p className={styles.cardEyebrow}>SOFTWARE & APPLICATIONS</p>
               <h3>แอปพลิเคชันและซอฟต์แวร์</h3>
               <p className={styles.cardDescription}>
-                สำหรับงานค้าปลีก การผลิตอุตสาหกรรม
+                สำหรับร้านค้าและบริการ อุตสาหกรรม
                 <br />
-                และการดูแลครัวเรือนกับสุขภาพ
+                และการใช้งานในครัวเรือน
               </p>
             </div>
             <div className={styles.cardArtwork}>

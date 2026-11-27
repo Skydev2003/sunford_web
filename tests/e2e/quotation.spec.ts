@@ -174,7 +174,7 @@ for (const route of ["/", "/service?section=contact"]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(route);
     if (route === "/")
-      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+      await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const nav = page.locator(route === "/" ? ".desktop-nav" : "[data-products-nav]");
     const services = nav.getByText("บริการ", { exact: true });
     await expect(services).toBeEnabled();

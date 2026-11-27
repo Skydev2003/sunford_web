@@ -245,7 +245,7 @@ for (const width of [390, 1440]) {
     await page.route(/\/_next\/image\?/, (route) => route.abort());
     await page.route("**/api/quotations/issue", (route) => route.abort());
     await page.goto("/");
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     await page.locator("#category-feature-media").scrollIntoViewIfNeeded();
     await expect(page.locator(`#category-feature-media ${placeholder}`).first()).toBeVisible();
     await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();

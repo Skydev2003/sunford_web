@@ -47,9 +47,7 @@ test("real background tabs pause video without Playwright's forced focus", async
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto(baseURL!);
     await page.bringToFront();
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-      timeout: 15000,
-    });
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const scene = page.locator("[data-hero-scene]");
     await test.info().attach("native-initial-state.json", {
       body: JSON.stringify(

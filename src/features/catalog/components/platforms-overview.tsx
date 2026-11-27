@@ -26,7 +26,7 @@ const modelPhotos: Readonly<Record<string, string>> = {
   G107633: "/images/imported/e9d32c0db502fd0f9717.png",
   G107640: "/images/imported/5a8c450d126a23152282.png",
   G107657: "/images/imported/7557c79447a8a5f71165.png",
-  G107664: "/images/imported/f03fd071497037c3e90f.png",
+  G107664: "/images/imported/0df2cedfd9dd9e48cbb2.png",
   G107671: "/images/imported/0df2cedfd9dd9e48cbb2.png",
   G107701: "/images/imported/70ccb27b4aab09b1d298.png",
   G107718: "/images/imported/73e68501627a43fb96b6.png",

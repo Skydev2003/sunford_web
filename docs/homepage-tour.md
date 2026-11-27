@@ -52,14 +52,13 @@ src/app/layout.tsx
 page.tsx
   → hero.tsx
     → hero-scene.tsx                  ฉากวิดีโอ หัวเรื่อง คำอธิบาย และปุ่ม
-    → brand-opening.tsx              โลโก้และการเคลื่อนไหวตอนเปิด
 ```
 
-- ไฟล์เริ่ม: [hero.tsx](../src/features/home/components/hero.tsx) เป็นตัวประกอบ ใช้ [hero-scene.tsx](../src/features/home/components/hero-scene.tsx) แสดงเนื้อหาจริง และส่งโลโก้จาก [brand-opening.tsx](../src/features/home/components/brand-opening.tsx)
-- หน้าตาหลัก: [hero-scene.module.css](../src/features/home/components/hero-scene.module.css) และ [brand-opening.module.css](../src/features/home/components/brand-opening.module.css) มี global rules ของ Hero จาก globals.css ร่วมด้วย
-- หัวเรื่องและคำบนปุ่ม “ปรึกษาผู้เชี่ยวชาญ” เขียนอยู่ใน `hero-scene.tsx` โดยตรง ลิงก์ปุ่ม `/contact-us` ก็อยู่ตรงนี้
+- [hero.tsx](../src/features/home/components/hero.tsx) ใช้ [hero-scene.tsx](../src/features/home/components/hero-scene.tsx) แสดง Hero ทันทีเมื่อเปิดหน้าแรก
+- สไตล์ของฉากอยู่ใน [hero-scene.module.css](../src/features/home/components/hero-scene.module.css)
+- หัวเรื่องและคำบนปุ่ม “ปรึกษาผู้เชี่ยวชาญ” อยู่ใน `hero-scene.tsx` ปุ่มเปิด `/service?section=contact`
 - ฉากที่ใช้อยู่เป็น [sunford-web.mp4](../public/videos/sunford-web.mp4) และภาพรอก่อนวิดีโอ [sunford-poster.jpg](../public/videos/sunford-poster.jpg) path ถูกระบุใน `hero-scene.tsx`
-- โลโก้/ชื่อรับมาจาก `site.logo` / `site.name` ผ่าน props ส่วนคำอธิบายรับ `featured.descriptionOverride` ที่หน้าแรกเตรียมจาก `heroSlideData`; ถ้าไม่มีข้อความนี้ใช้ `companyIntro.description` จาก [brand.ts](../src/features/home/data/brand.ts) ซึ่งเป็นข้อความที่เห็นในการตรวจรอบนี้
+- คำอธิบายใช้ `featured.descriptionOverride` ที่หน้าแรกเตรียมจาก `heroSlideData` ถ้าไม่มีข้อความนี้จะใช้ `companyIntro.description` จาก [brand.ts](../src/features/home/data/brand.ts)
 - สีพื้นปุ่มใช้ `var(--red)` จาก [base.css](../src/styles/base.css) แต่สี hover, ขนาดและระยะบางค่ากำหนดเฉพาะใน CSS ของ Hero
 
 หน้าแรกส่ง `showAnnouncement={false}` จึงไม่เห็นแถบประกาศ แม้มีโค้ด `HeroAnnouncement` อยู่ใน `hero.tsx`

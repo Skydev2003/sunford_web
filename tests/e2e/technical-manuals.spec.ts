@@ -28,9 +28,9 @@ for (const width of [390, 1440]) {
     const usageLinks = sidebar.getByRole("link");
     await expect(usageLinks).toHaveText([
       "การใช้งานและการดูแลรักษาเครื่องชั่ง",
-      "ครัวเรือน",
-      "การผลิต",
-      "คำนวณราคา",
+      "ครัวเรือนและบุคคล",
+      "อุตสาหกรรม",
+      "ร้านค้าและบริการ",
       "งานวิเคราะห์",
     ]);
     expect(
@@ -71,7 +71,7 @@ for (const width of [390, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );
-    const industrial = sidebar.getByRole("link", { name: "การผลิต", exact: true });
+    const industrial = sidebar.getByRole("link", { name: "อุตสาหกรรม", exact: true });
     if (!(await sidebar.isVisible())) await main.getByText("สารบัญคู่มือ", { exact: true }).click();
     if (!(await industrial.isVisible())) await usage.click();
     await industrial.click();

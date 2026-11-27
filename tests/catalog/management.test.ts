@@ -266,19 +266,19 @@ test("product content separates line breaks, headings and lists while retaining 
 
 test("homepage destinations follow product IDs through slug changes and disable missing targets", () => {
   const products = getSnapshotProducts();
-  assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/acs30-jc21");
+  assert.equal(resolveHomeLink("spotlight", undefined, products), "/products/wps10ks");
   const legacySpotlight = products.find((product) => product.id === defaultSpotlightProductId)!;
   const warehouseProducts = products
     .filter((product) => product.id !== defaultSpotlightProductId)
     .concat({
       ...legacySpotlight,
-      id: "warehouse-G106094",
-      slug: "warehouse-G106094",
+      id: "warehouse-G106698",
+      slug: "warehouse-G106698",
       warehouseSku: defaultSpotlightWarehouseSku,
     });
   assert.equal(
     resolveHomeLink("spotlight", undefined, warehouseProducts),
-    "/products/warehouse-G106094",
+    "/products/warehouse-G106698",
   );
   assert.equal(resolveHomeLink("digital", undefined, products), "/products/category/scales");
   const target = { productId: "wps10ks" };
@@ -315,7 +315,7 @@ test("homepage image defaults preserve the current artwork in five independent p
   const defaults = defaultHomeImages();
   assert.equal(homeImageSlots.length, 5);
   assert.equal(new Set(homeImageSlots.map((slot) => slot.id)).size, 5);
-  assert.equal(defaults.spotlight, "/images/products/acs30-jc21-cutout.png");
+  assert.equal(defaults.spotlight, "/images/products/wps10ks.png");
   assert.equal(defaults.smart, "/images/pd/RLS1100.png");
   assert.equal(defaults.digital, "/images/pd/WPS10KS.png");
   assert.equal(defaults.accessories, "/images/pd/TRP-58B.png");

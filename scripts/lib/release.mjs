@@ -36,7 +36,7 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
 
   assertReady();
   if (check) {
-    log("Ready: fetch origin → sync Javis1 → rebase onto origin/main → checks → push HEAD:main.");
+    log("Ready: fetch origin → sync branches → validate and push only a new revision.");
     log("No fetch, rebase, checks, database writes or push were run.");
     return;
   }
@@ -63,7 +63,14 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
   }
   assertReady();
   const revision = git(["rev-parse", "HEAD"]).stdout.trim();
+  const noNewRevision =
+    "main already has this revision. No new production deployment was triggered.";
+  if (git(["rev-parse", "origin/main"]).stdout.trim() === revision) {
+    log(noNewRevision);
+    return;
+  }
 
+  const checksStartedAt = performance.now();
   log("Checking the release with quotation writes disabled...");
   if (runChecks) {
     runChecks();
@@ -79,12 +86,16 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
       NEXT_TELEMETRY_DISABLED: "1",
     };
     for (const script of checks) {
+      const startedAt = performance.now();
       log(`Running ${script}...`);
       const result = spawnSync("bun", ["run", script], { cwd: root, env, stdio: "inherit" });
+      const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
       if (result.error || result.status !== 0)
-        throw new Error(`${script} failed. Production was not pushed.`);
+        throw new Error(`${script} failed after ${seconds}s. Production was not pushed.`);
+      log(`${script} passed in ${seconds}s.`);
     }
   }
+  log(`Local release checks took ${((performance.now() - checksStartedAt) / 1000).toFixed(1)}s.`);
 
   assertReady();
   if (git(["rev-parse", "HEAD"]).stdout.trim() !== revision)
@@ -96,7 +107,7 @@ export function releaseProduction({ root, check = false, runChecks, log = consol
   )
     throw new Error("origin/main changed during validation. Run bun run deploy again.");
   if (git(["rev-parse", "origin/main"]).stdout.trim() === revision) {
-    log("main already has this revision. No new production deployment was triggered.");
+    log(noNewRevision);
     return;
   }
   git(["push", "origin", "HEAD:refs/heads/main"]);

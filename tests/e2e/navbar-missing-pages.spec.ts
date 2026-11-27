@@ -119,7 +119,7 @@ for (const width of [390, 1440]) {
 test("the home Navbar supports keyboard activation of the new links", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const trigger = page
     .locator(".desktop-nav")
     .getByRole("link", { name: "เครื่องชั่ง", exact: true });

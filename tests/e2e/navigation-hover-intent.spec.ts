@@ -16,7 +16,7 @@ async function visit(page: Page, route: string, width = 1440) {
   await page.evaluate(() => document.fonts.ready);
   await expect(header(page, route)).toBeVisible();
   if (route === "/")
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   else await expect(header(page, route).getByRole("button").first()).toBeEnabled();
 }
 
@@ -52,7 +52,7 @@ async function enterHistoryRoute(page: Page, route: string, mobile = false) {
   }
   await expect(page).toHaveURL(new URL(route, page.url()).href);
   if (route === "/")
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   else await expect(header(page, route).getByRole("button").first()).toBeEnabled();
   return previous;
 }

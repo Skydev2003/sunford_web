@@ -37,7 +37,7 @@ main.page {
 
 .back a:hover,
 .warranty:hover {
-  text-decoration: underline;
+  transform: var(--text-hover-lift, none);
 }
 
 .layout {

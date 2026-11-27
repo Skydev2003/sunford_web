@@ -16,7 +16,7 @@
     "db:studio": "prisma studio",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --check . --cache --cache-strategy content",
     "hooks:install": "git config --local core.hooksPath .githooks",
     "content:import": "node scripts/import-sunford.mjs",
     "warehouse:images": "tsx scripts/cache-warehouse-images.ts",

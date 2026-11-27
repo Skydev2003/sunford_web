@@ -295,7 +295,7 @@ for (const route of ["/", "/service?section=contact"]) {
     const home = route === "/";
     await page.goto(route);
     if (home)
-      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+      await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const nav = page.locator(home ? ".desktop-nav" : "[data-products-nav]");
     const logo = page.locator(home ? ".brand" : '[data-products-nav] a[href="/"]');
     const panel = page.locator(home ? "[data-nav-menu]" : "#products-navigation-panel");
@@ -327,7 +327,7 @@ test("wide menus fit the viewport and preserve the logo-aligned origin and hover
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   for (const width of [1400, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     for (const label of ["เครื่องชั่ง", "โครงสร้างแท่นชั่ง", "บริการ"]) {

@@ -4,6 +4,9 @@ import { additionalScaleSubcategoryPages } from "@/features/catalog/data/additio
 type Destination = { href: string; label: string };
 type Solution = {
   title: string;
+  description?: string;
+  parent?: Destination;
+  emptyMessage?: string;
   links: readonly Destination[];
   evidence?: (product: Product) => string | undefined;
 };
@@ -15,6 +18,11 @@ const industrial = { href: catalog + "/scales/industrial", label: "สำรว�
 const indicators = { href: catalog + "/indicators", label: "สำรวจอินดิเคเตอร์แท่นชั่ง" };
 const printers = { href: catalog + "/accessories/printers", label: "สำรวจเครื่องพิมพ์" };
 const pos = { href: catalog + "/pos", label: "สำรวจระบบ POS" };
+const mes = { href: "/solution/mes", label: "ระบบ MES" };
+const batchControl = { href: "/solution/mes/batch-control", label: "ควบคุมชุดการผลิต" };
+const formulaControl = { href: "/solution/mes/formula-control", label: "ควบคุมสูตรการผลิต" };
+const mesProductAvailability = "ยังไม่มีรายการสินค้าที่ระบุว่ารองรับงานนี้ในแค็ตตาล็อก";
+const retailPriceLabelSkus = new Set(["G106209", "G106407", "G108562"]);
 
 const unconfirmed =
   /ไม่รองรับ|ไม่มี|สั่งเพิ่ม|ตัวเลือก|เพิ่มเติม|เพิ่มบลูทูธ|ออปชั[่น]+|\boptional\b|\bnot supported\b/i;
@@ -94,6 +102,18 @@ export const solutionDetails: Readonly<Record<string, Solution>> = {
     links: [pos, { href: catalog + "/accessories/pos", label: "สำรวจอุปกรณ์ POS" }, details],
     evidence: (product) => softwareLicense(product, /\bconnect\s+pos\b/i),
   },
+  "/solutions/price-label-printing": {
+    title: "ชั่งคำนวณราคาและพิมพ์ฉลากสินค้าหน้าร้าน",
+    description:
+      "ตั้งราคาต่อหน่วยเพื่อคำนวณราคาสินค้าจากน้ำหนักที่ชั่งได้ แล้วส่งข้อมูลไปพิมพ์ฉลากราคาผ่านเครื่องพิมพ์ภายนอกที่รองรับ",
+    emptyMessage: "ขณะนี้ยังไม่มีรุ่นที่รองรับงานนี้เผยแพร่ในแค็ตตาล็อก",
+    links: [printers, { href: catalog + "/scales/price", label: "สำรวจเครื่องชั่งคำนวณราคา" }],
+    evidence: (product) => {
+      if (product.warehouseSku && retailPriceLabelSkus.has(product.warehouseSku.toUpperCase())) {
+        return "คำนวณราคาตามน้ำหนักและส่งข้อมูลไปพิมพ์ฉลากกับเครื่องพิมพ์ภายนอก";
+      }
+    },
+  },
   "/solutions/checkweighing": {
     title: "ตรวจน้ำหนักขาด–เกิน",
     links: [
@@ -141,7 +161,23 @@ export const solutionDetails: Readonly<Record<string, Solution>> = {
     evidence: (product) => softwareLicense(product, /\bconnect\s+driver\b/i),
   },
   "/solution/erp": { title: "ระบบ ERP", links: [software, details] },
-  "/solution/mes": { title: "ระบบ MES", links: [industrial, software] },
+  [mes.href]: { title: mes.label, links: [batchControl, formulaControl, industrial, software] },
+  [batchControl.href]: {
+    title: batchControl.label,
+    description:
+      "สำหรับงานชั่งที่แบ่งการผลิตเป็นชุด ใช้ชุดการผลิตเป็นจุดอ้างอิงเพื่อเชื่อมค่าน้ำหนักจากเครื่องชั่งกับข้อมูลของการผลิตรอบนั้น",
+    parent: mes,
+    emptyMessage: mesProductAvailability,
+    links: [formulaControl, industrial],
+  },
+  [formulaControl.href]: {
+    title: formulaControl.label,
+    description:
+      "สำหรับงานชั่งวัตถุดิบตามสูตรการผลิต ใช้น้ำหนักที่ระบุในสูตรเป็นเกณฑ์เทียบกับน้ำหนักที่ชั่งได้ของวัตถุดิบแต่ละรายการ",
+    parent: mes,
+    emptyMessage: mesProductAvailability,
+    links: [batchControl, software],
+  },
 };
 
 export function getSolutionEvidence(solution: Solution, products: readonly Product[]) {

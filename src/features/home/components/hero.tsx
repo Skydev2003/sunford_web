@@ -1,7 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
-import type { HeroSettings, SiteSettings } from "@/features/site/types";
-import { BrandOpening } from "./brand-opening";
+import type { HeroSettings } from "@/features/site/types";
 import { HeroScene } from "./hero-scene";
 
 export function HeroAnnouncement({ settings }: { settings: Omit<HeroSettings, "slides"> }) {
@@ -18,22 +17,16 @@ export function HeroAnnouncement({ settings }: { settings: Omit<HeroSettings, "s
 export function Hero({
   description,
   settings,
-  brand,
   showAnnouncement = true,
 }: {
   description?: ReactNode;
   settings: Omit<HeroSettings, "slides">;
-  brand: Pick<SiteSettings, "logo" | "name">;
   showAnnouncement?: boolean;
 }) {
   return (
     <>
       {showAnnouncement && <HeroAnnouncement settings={settings} />}
-      <HeroScene
-        description={description}
-        showAnnouncement={showAnnouncement}
-        logo={<BrandOpening logo={brand.logo} name={brand.name} />}
-      />
+      <HeroScene description={description} showAnnouncement={showAnnouncement} />
     </>
   );
 }

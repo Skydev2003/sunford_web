@@ -15,17 +15,19 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, Search, Menu, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
 import { ShopIcon } from "./shop-icon";
 import { useHeaderSurface } from "./use-header-surface";
-import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
+import { getHeaderNavigationItems } from "@/features/site/data/primary-navigation";
 import { catalogSubmenuDestination } from "@/features/catalog/data/catalog-submenu-destinations";
 import type { NavbarListingFeatures } from "@/features/catalog/data/navbar-listing-features";
 import type { NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import styles from "./primary-navigation.module.css";
 const subscribe = () => () => {};
+const hasSubmenu = (item: NavigationItem) =>
+  item.links.length > 0 || item.groups?.some((group) => group.links.length > 0);
 
 function ListingFeatureLinks({
   categoryHref,
@@ -48,7 +50,7 @@ export function PrimaryNavigation({
   site: SiteSettings;
   listingFeatures: Promise<NavbarListingFeatures>;
 }) {
-  const headerNavigation = getPrimaryNavigationItems(navigation);
+  const headerNavigation = getHeaderNavigationItems(navigation);
 
   const hydrated = useSyncExternalStore(
     subscribe,
@@ -317,27 +319,34 @@ export function PrimaryNavigation({
             onClick={activateLink}
             onFocus={closeMenu}
           >
-            <Image src={site.logo} alt={site.name} width={106} height={26} loading="eager" />
+            <Image src={site.logo} alt={site.name} width={82} height={17} loading="eager" />
           </Link>
           <div ref={linksRef} className={`desktop-nav ${styles.navLinks}`}>
             {headerNavigation.map((item, index) => (
               <Link
                 key={item.href}
                 href={item.href}
-                onMouseMove={(event) => scheduleOpen(index, event.currentTarget)}
+                onMouseMove={(event) => {
+                  if (hasSubmenu(item)) scheduleOpen(index, event.currentTarget);
+                  else if (openedByHover) closeMenu();
+                }}
                 onMouseLeave={(event) => leaveTrigger(event.currentTarget)}
                 onFocus={(event) => {
+                  if (!hasSubmenu(item)) {
+                    closeMenu();
+                    return;
+                  }
                   if (event.currentTarget.matches(":focus-visible")) {
                     clearHover();
                     setOpenedByHover(false);
                     setMenuIndex(index);
                   }
                 }}
-                aria-haspopup="true"
-                aria-expanded={menuIndex === index}
-                aria-controls="products-navigation-panel"
+                aria-haspopup={hasSubmenu(item) || undefined}
+                aria-expanded={hasSubmenu(item) ? menuIndex === index : undefined}
+                aria-controls={hasSubmenu(item) ? "products-navigation-panel" : undefined}
                 onKeyDown={(event) => {
-                  if (event.key === "ArrowDown") {
+                  if (hasSubmenu(item) && event.key === "ArrowDown") {
                     event.preventDefault();
                     openWithKeyboard(index);
                   }
@@ -359,7 +368,7 @@ export function PrimaryNavigation({
                   setSearchOpen(true);
                 }}
               >
-                <Search aria-hidden="true" />
+                <span className={styles.searchIcon} aria-hidden="true" />
               </button>
             </Tooltip>
             <Tooltip>
@@ -393,16 +402,18 @@ export function PrimaryNavigation({
                     <Link href={item.href} onClick={activateLink}>
                       {item.label}
                     </Link>
-                    <button
-                      disabled={!hydrated}
-                      type="button"
-                      aria-label={`เปิดเมนูย่อย${item.label}`}
-                      aria-expanded={menuIndex === index}
-                      aria-controls="products-navigation-panel"
-                      onClick={() => openMobileSubmenu(index)}
-                    >
-                      <ChevronRight aria-hidden="true" />
-                    </button>
+                    {hasSubmenu(item) && (
+                      <button
+                        disabled={!hydrated}
+                        type="button"
+                        aria-label={`เปิดเมนูย่อย${item.label}`}
+                        aria-expanded={menuIndex === index}
+                        aria-controls="products-navigation-panel"
+                        onClick={() => openMobileSubmenu(index)}
+                      >
+                        <ChevronRight aria-hidden="true" />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

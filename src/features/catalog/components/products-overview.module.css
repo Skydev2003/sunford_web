@@ -227,7 +227,7 @@
   color: var(--red) !important;
 }
 .textLink:hover {
-  text-decoration: underline;
+  transform: var(--text-hover-lift, none);
 }
 .heroDark .textLink {
   color: #fff !important;
@@ -415,8 +415,16 @@
   flex: 1;
   flex-direction: column;
 }
+.lineupLink h3 {
+  transition: transform 250ms ease;
+}
 .lineupLink:is(:hover, :focus-visible) h3 {
   color: var(--red);
+}
+.lineupLink:hover h3 {
+  transform: var(--text-hover-lift, none);
+}
+.lineupLink:focus-visible h3 {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
@@ -701,7 +709,7 @@
   margin-bottom: 10px;
 }
 .footerColumn a:hover {
-  text-decoration: underline;
+  transform: var(--text-hover-lift, none);
 }
 .footerContact {
   padding-block: 24px 12px;

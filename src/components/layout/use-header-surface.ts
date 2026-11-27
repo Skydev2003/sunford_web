@@ -36,25 +36,12 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>, enabled: bo
         Boolean(hero && hero.getBoundingClientRect().top >= -1),
       );
       if (header.hasAttribute("data-nav-open")) return;
-      const opening = surface.querySelector<HTMLElement>("[data-brand-opening]");
-      if (
-        hero &&
-        opening &&
-        opening.dataset.phase !== "complete" &&
-        document.documentElement.dataset.homeOpening !== "skip"
-      ) {
-        header.dataset.navTone = isLightSurface(hero) ? "light" : "dark";
-        return;
-      }
       const top = header.querySelector(".header-inner")?.getBoundingClientRect();
       const y = (top?.height ?? 58) / 2;
       const lightSamples = [0.25, 0.5, 0.75].filter((fraction) => {
         const content = document
           .elementsFromPoint(innerWidth * fraction, y)
-          .find(
-            (element) =>
-              element.closest("main, footer") && !element.closest("[data-brand-opening]"),
-          );
+          .find((element) => element.closest("main, footer"));
         const section = content?.closest("section, article, main, footer") ?? content;
         return isLightSurface(section);
       }).length;
@@ -77,7 +64,7 @@ export function useHeaderSurface(ref: RefObject<HTMLElement | null>, enabled: bo
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["data-phase", "data-nav-open"],
+      attributeFilter: ["data-nav-open"],
     });
     const resize = new ResizeObserver(schedule);
     resize.observe(surface);

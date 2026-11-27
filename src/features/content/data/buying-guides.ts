@@ -30,7 +30,7 @@ const guideLayouts: BuyingGuide[] = [
         ],
         links: [
           { label: "ดูเครื่องชั่งทั้งหมด", href: "/products/category/scales" },
-          { label: "อุตสาหกรรมงานผลิต", href: "/products/category/scales/industrial" },
+          { label: "อุตสาหกรรม", href: "/products/category/scales/industrial" },
         ],
       },
       {

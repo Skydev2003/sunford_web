@@ -46,8 +46,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: clamp(12px, 2.5dvh, 28px);
+  justify-content: space-between;
+  gap: clamp(24px, 5dvh, 56px);
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -75,14 +75,6 @@
 .scene .heading span:last-child {
   color: var(--red);
   font-size: clamp(22px, min(2.9vw, 4.4dvh), 35px);
-}
-
-.logoSpace {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  max-width: 620px;
-  pointer-events: none;
 }
 
 .actions {
@@ -129,10 +121,6 @@
   padding-block: clamp(16px, 3dvh, 24px);
 }
 
-.logoSpace {
-  width: 90%;
-}
-
 .description {
   max-width: 480px;
   font-size: 15px;
@@ -141,10 +129,6 @@
 @media (min-width: 40rem) {
   .scene :global(.hero-main).main {
     padding-block: clamp(16px, 3.5dvh, 32px) clamp(16px, 3.5dvh, 32px);
-  }
-
-  .logoSpace {
-    width: 60%;
   }
 
   .description {

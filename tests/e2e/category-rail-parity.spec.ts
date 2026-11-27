@@ -11,7 +11,7 @@ test("keyboard navigation reveals an offscreen product and restores its filtered
   await next.click();
   await expect.poll(() => track.evaluate((list) => list.scrollLeft)).toBeGreaterThan(0);
   const group = page.getByRole("group", { name: "กรองผลิตภัณฑ์" });
-  const industrial = group.getByRole("button", { name: "การผลิต", exact: true });
+  const industrial = group.getByRole("button", { name: "อุตสาหกรรม", exact: true });
   await industrial.click();
   await expect(industrial).toHaveAttribute("aria-pressed", "true");
   await expect.poll(() => track.evaluate((list) => list.scrollLeft)).toBe(0);

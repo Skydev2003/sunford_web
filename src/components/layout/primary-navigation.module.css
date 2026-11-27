@@ -64,7 +64,7 @@
 }
 .logo img {
   width: 100%;
-  height: auto;
+  height: 17px;
   object-fit: contain;
 }
 .navLinks {
@@ -74,6 +74,11 @@
   display: flex;
   align-items: center;
 }
+.navLinks > :is(button, a),
+.mobileCategoryRow > a,
+.mobileMenuItems > :is(a, button) {
+  font-size: 12px;
+}
 .mobileCategoryRow {
   display: flex;
   align-items: center;
@@ -81,7 +86,6 @@
 }
 .mobileCategoryRow > a {
   flex: 1;
-  font-size: 28px;
   font-weight: 600;
   line-height: 1.45;
   min-height: 44px;
@@ -103,11 +107,17 @@
 }
 .navTools :is(button, a) {
   position: relative;
-  min-width: 42px;
+  width: 42px;
   height: 44px;
   display: grid;
   place-items: center;
-  padding: 8px;
+  padding: 0;
+}
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  mask: url("/images/navigation/search.svg") center / contain no-repeat;
 }
 .navTools svg {
   width: 20px;
@@ -131,7 +141,6 @@
   gap: 8px;
 }
 .mobileMenuItems > :is(a, button) {
-  font-size: 28px;
   line-height: 1.45;
   font-weight: 600;
   min-height: 44px;
@@ -157,7 +166,7 @@
 .menuContent :is(a, .menuUnavailable) {
   display: inline-block;
   padding-block: 5px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 }
 .menuContent a > span {
@@ -218,6 +227,10 @@
   .headerOpen .navTools > :is(button, a):not(.menuTrigger) {
     visibility: revert;
   }
+  .nav,
+  .menuContent {
+    max-width: calc(980px + 2 * var(--site-nav-gutter));
+  }
   .nav {
     gap: 24px;
   }
@@ -231,7 +244,6 @@
   .navLinks > :is(button, a) {
     min-height: 44px;
     padding: 0;
-    font-size: 12px;
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
@@ -240,7 +252,7 @@
     gap: 0;
   }
   .navTools :is(button, a) {
-    min-width: 38px;
+    width: 38px;
   }
   .navTools .menuTrigger {
     display: none;
@@ -252,41 +264,26 @@
     padding: 0;
   }
   .menuContent {
-    max-width: var(--site-nav-width);
     margin: auto;
-    padding: 40px var(--site-nav-gutter) 56px;
-    grid-template-columns: fit-content(360px) max-content max-content;
+    padding: 38px var(--site-nav-gutter) 78px;
+    grid-template-columns: 240px repeat(2, 212px) minmax(0, 1fr);
     gap: 32px;
+    align-items: start;
+  }
+  .menuContent p {
+    line-height: 18px;
+  }
+  .menuContent :is(a, .menuUnavailable) {
+    padding-block: 3px;
   }
   .menuPrimary :is(a, .menuUnavailable) {
-    font-size: 22px;
+    line-height: 32px;
   }
   .menuGroup :is(a, .menuUnavailable) {
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  .menuContent[data-all-products] {
-    grid-template-columns: fit-content(360px) max-content max-content;
-    align-items: start;
-    gap: 32px;
-    padding-bottom: 74px;
-  }
-  .menuContent[data-all-products] .menuPrimary :is(a, .menuUnavailable) {
-    font-size: clamp(24px, 2vw, 30px);
-  }
-  .menuContent[data-all-products] .menuGroup :is(a, .menuUnavailable) {
-    font-size: 14px;
-  }
-  .productMenuContent {
-    grid-template-columns: fit-content(360px) max-content max-content;
-    align-items: start;
-  }
-  .productMenuContent .menuPrimary :is(a, .menuUnavailable) {
-    font-size: 24px;
+    line-height: 18px;
   }
   .productMenuContent .menuGroup :is(a, .menuUnavailable) {
     min-height: 0;
-    font-size: 14px;
   }
 }
 @media (min-width: 64rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {

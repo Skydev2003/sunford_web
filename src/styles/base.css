@@ -47,6 +47,11 @@
   --background: #fff;
   --foreground: #1d1d1f;
 }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root {
+    --text-hover-lift: translateY(-2px);
+  }
+}
 * {
   box-sizing: border-box;
 }

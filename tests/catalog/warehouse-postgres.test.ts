@@ -1,5 +1,6 @@
 import test, { mock } from "node:test";
 import assert from "node:assert/strict";
+import { PHASE_PRODUCTION_BUILD, PHASE_PRODUCTION_SERVER } from "next/constants";
 import { Pool } from "pg";
 import {
   closeWarehousePool,
@@ -86,6 +87,20 @@ test("Warehouse configuration never falls back to CMS and enforces bounded read-
   assert.equal(options.options, "-c default_transaction_read_only=on");
   assert.equal(options.max, 3);
   assert.equal(options.statement_timeout, 10000);
+});
+
+test("Warehouse lowers the connection limit only during a Next.js production build", () => {
+  const env = {
+    WAREHOUSE_DATABASE_URL: "postgresql://warehouse/db",
+    WAREHOUSE_COMPANY_ID: "1",
+    NODE_ENV: "production",
+  };
+  const build = warehouseConnectionOptions({ ...env, NEXT_PHASE: PHASE_PRODUCTION_BUILD });
+  const runtime = warehouseConnectionOptions({ ...env, NEXT_PHASE: PHASE_PRODUCTION_SERVER });
+
+  assert.equal(build.max, 1);
+  assert.equal(build.options, runtime.options);
+  assert.equal(runtime.max, 3);
 });
 
 const row = {

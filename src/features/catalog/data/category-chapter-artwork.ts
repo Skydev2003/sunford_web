@@ -3,7 +3,7 @@ import accessoryConsumablesArt from "../../../../public/images/imported/b75fc9d2
 import accessoryDisplaysArt from "../../../../public/images/warehouse-cache/4c172be89857466d1696b0c5dd2132ec097616429090c509bb8eadf16d6721db.webp";
 import accessoryElectronicsArt from "../../../../public/images/category-chapters/accessories/electronics.webp";
 import accessoryMechanicalArt from "../../../../public/images/imported/1e5f0488fd49ae368b6e.jpeg";
-import accessoryPosArt from "../../../../public/images/imported/92b5cabed48b08e487f1.png";
+import accessoryPosArt from "../../../../public/images/imported/92b5cabed48b08e487f1.webp";
 import accessoryPrintersArt from "../../../../public/images/products/category-cutouts/thermal-receipt-printer.webp";
 import accessoryWeightsArt from "../../../../public/images/products/precision-weights.webp";
 import lcdArt from "../../../../public/images/category-chapters/indicators/lcd.webp";

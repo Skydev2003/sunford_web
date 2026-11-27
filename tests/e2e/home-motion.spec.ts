@@ -15,9 +15,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto("/");
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-      timeout: 15000,
-    });
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const sections = page.locator('[data-home-motion="reveal"]');
     await expect(sections).toHaveCount(5);
     await expect(page.locator("#main-content")).toHaveAttribute(
@@ -143,19 +141,25 @@ test("spotlight resolves the current Warehouse product without responsive overfl
 }) => {
   for (const viewport of [
     { width: 390, height: 844 },
+    { width: 768, height: 1024 },
     { width: 1440, height: 900 },
   ]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
     const spotlight = page.locator(".product-spotlight");
     const video = spotlight.locator(".spotlight-product-video");
-    await spotlight.scrollIntoViewIfNeeded();
+    await video.scrollIntoViewIfNeeded();
     await expect(spotlight).toBeVisible();
-    await expect(video).toHaveAttribute("src", "/videos/jc21-panel-aligned-1080p.mp4");
-    await expect(video).toHaveAttribute("poster", /jc21-panel-aligned-poster\.png$/);
+    await expect(spotlight.getByRole("heading", { name: "WPS10KS", exact: true })).toBeVisible();
+    await expect(video).toHaveAttribute("src", "/videos/wps10ks-panel-aligned-1080p.mp4");
+    await expect(video).toHaveAttribute(
+      "poster",
+      "/images/products/wps10ks-panel-aligned-poster.webp",
+    );
+    await expect(video).toHaveJSProperty("paused", false);
     await expect(spotlight.locator(".spotlight-visual")).toHaveAttribute(
       "href",
-      "/products/warehouse-G106094",
+      "/products/wps10ks",
     );
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       viewport.width,
@@ -205,14 +209,19 @@ test("without JavaScript content and poster stay visible without extra scroll sc
 });
 
 test("failed video keeps its poster and product link", async ({ page }) => {
-  await page.route("**/videos/jc21-panel-aligned-1080p.mp4", (route) => route.abort());
+  await page.route("**/videos/wps10ks-panel-aligned-1080p.mp4", (route) => route.abort());
   await page.goto("/");
   const spotlight = page.locator(".product-spotlight");
   await spotlight.scrollIntoViewIfNeeded();
-  await expect(spotlight.locator(".spotlight-visual img")).toBeVisible();
-  await expect(spotlight.locator(".spotlight-visual")).toHaveAttribute(
-    "href",
-    "/products/warehouse-G106094",
-  );
+  const poster = spotlight.locator(".spotlight-visual img");
+  await expect(poster).toBeVisible();
+  await expect
+    .poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(0);
+  const link = spotlight.locator(".spotlight-visual");
+  await expect(link).toHaveAttribute("href", "/products/wps10ks");
   await expect(spotlight.getByRole("button")).toHaveCount(0);
+  await link.click();
+  await expect(page).toHaveURL(/\/products\/wps10ks$/);
+  await expect(page.getByRole("heading", { name: "WPS10KS", exact: true, level: 1 })).toBeVisible();
 });

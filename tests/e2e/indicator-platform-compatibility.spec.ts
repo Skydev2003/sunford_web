@@ -83,10 +83,7 @@ for (const [width, entry] of [
     ]) {
       await page.goto(entry);
       if (entry === "/") {
-        await expect(page.locator("[data-brand-opening]")).toHaveAttribute(
-          "data-phase",
-          "complete",
-        );
+        await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
         await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
         await page.getByRole("button", { name: "เปิดเมนูย่อยบริการ", exact: true }).click();
       } else
@@ -136,7 +133,7 @@ for (const route of ["/", "/service?section=contact"]) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route);
     if (route === "/")
-      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+      await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const nav = page.locator(
       route === "/" ? ".site-header:visible" : "[data-products-header]:visible",
     );
@@ -148,7 +145,7 @@ for (const route of ["/", "/service?section=contact"]) {
     await page.setViewportSize({ width: 834, height: 900 });
     await page.goto(route);
     if (route === "/")
-      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+      await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const nav = page.locator(
       route === "/" ? ".site-header:visible" : "[data-products-header]:visible",
     );

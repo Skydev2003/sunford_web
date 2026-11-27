@@ -21,9 +21,7 @@ test("video strip drags without playing, hides its scrollbar and still opens on 
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 15000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const track = page.locator(".video-track");
   await expect(track).toHaveCSS("scrollbar-width", "none");
   await dragLeft(page, track);
@@ -60,9 +58,7 @@ test("story strip drags without navigating and links remain keyboard accessible"
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 15000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const track = page.locator(".stories-track");
   await expect(track).toHaveCSS("scrollbar-width", "none");
   await dragLeft(page, track);
@@ -91,9 +87,7 @@ test("touch swipes still scroll both strips without opening cards or overflowing
   });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 15000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const cdp = await context.newCDPSession(page);
   for (const selector of [".stories-track", ".video-track"]) {
     const track = page.locator(selector);

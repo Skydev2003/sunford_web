@@ -19,7 +19,7 @@ const productSubcategories: Record<
 > = {
   scales: [
     { id: "scale-price", label: "คำนวณราคาหน้าร้าน" },
-    { id: "scale-industrial", label: "อุตสาหกรรมงานผลิต" },
+    { id: "scale-industrial", label: "อุตสาหกรรม" },
     { id: "scale-analytical", label: "งานวิเคราะห์ความแม่นยำสูง" },
     { id: "scale-kitchen", label: "งานครัวและกาแฟ" },
     { id: "scale-water-dust", label: "กันน้ำและกันฝุ่น 100%" },
@@ -76,7 +76,7 @@ export const defaultNavigation: NavigationItem[] = [
     links: [{ label: "โซลูชันทั้งหมด", href: "/solutions" }],
     groups: [
       {
-        label: "ค้าปลีก อาหารและกาแฟ",
+        label: "ร้านค้าและบริการ",
         links: [
           { label: "ร้านค้าและตลาดสด", href: "/product/commercial" },
           { label: "ร้านกาแฟ", href: "/collections/coffee-scales" },
@@ -86,7 +86,7 @@ export const defaultNavigation: NavigationItem[] = [
         ],
       },
       {
-        label: "อุตสาหกรรมและการผลิต",
+        label: "อุตสาหกรรม",
         links: [
           { label: "เครื่องชั่งสำหรับโรงงาน", href: "/product/industrial" },
           { label: "ระบบ MES สำหรับการผลิต", href: "/solution/mes" },
@@ -116,9 +116,9 @@ export const defaultNavigation: NavigationItem[] = [
     links: [{ label: "ดาวน์โหลดซอฟต์แวร์", href: sunford.downloads }],
     groups: [
       {
-        label: "ค้าปลีกและระบบ POS",
+        label: "ร้านค้าและบริการ",
         links: [
-          { label: "ซอฟต์แวร์สำหรับค้าปลีก", href: "/software/download#retail-software" },
+          { label: "ซอฟต์แวร์สำหรับร้านค้าและบริการ", href: "/software/download#retail-software" },
           { label: "SUNFORD POS Android", href: "/software/download/sunford-pos-android" },
           { label: "SUNFORD SmartRetail POS", href: "/software/download/sunford-pos-smart-retail" },
           { label: "SUNFORD POS Basic", href: "/software/download/sunford-pos-basic" },
@@ -127,7 +127,7 @@ export const defaultNavigation: NavigationItem[] = [
         ],
       },
       {
-        label: "งานชั่งและการผลิต",
+        label: "อุตสาหกรรม",
         links: [
           { label: "ซอฟต์แวร์สำหรับอุตสาหกรรม", href: "/software/download#industrial-software" },
           { label: "SUNFORD WeWeigh", href: "/software/download/sunford-we-weight" },
@@ -140,9 +140,12 @@ export const defaultNavigation: NavigationItem[] = [
         ],
       },
       {
-        label: "ครัวเรือนและสุขภาพ",
+        label: "ครัวเรือนและบุคคล",
         links: [
-          { label: "ซอฟต์แวร์สำหรับครัวเรือน", href: "/software/download#household-software" },
+          {
+            label: "ซอฟต์แวร์สำหรับครัวเรือนและบุคคล",
+            href: "/software/download#household-software",
+          },
           { label: "SUNFORD FITDAYS", href: "/software/download/fitdays" },
         ],
       },

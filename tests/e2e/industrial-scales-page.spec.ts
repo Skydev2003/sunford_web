@@ -113,7 +113,7 @@ test("industrial detail context supports return, fresh tabs and context-free det
   await detail.click();
   await expect(page).toHaveURL(new URL(href, page.url()).href);
   const back = page.getByRole("link", {
-    name: "กลับรายการเครื่องชั่งอุตสาหกรรมงานผลิต",
+    name: "กลับหน้าก่อนหน้า",
     exact: true,
   });
   await expect(back).toHaveAttribute("href", path);
@@ -122,10 +122,10 @@ test("industrial detail context supports return, fresh tabs and context-free det
   const tab = await context.newPage();
   await tab.goto(href);
   await expect(
-    tab.getByRole("link", { name: "กลับรายการเครื่องชั่งอุตสาหกรรมงานผลิต", exact: true }),
+    tab.getByRole("link", { name: "กลับรายการเครื่องชั่งอุตสาหกรรม", exact: true }),
   ).toBeVisible();
   await tab.goto(href.split("?")[0]);
-  await expect(tab.locator(".back-link")).toHaveText("ผลิตภัณฑ์ทั้งหมด");
+  await expect(tab.locator(".back-link")).toHaveText("กลับไปที่ร้าน");
   await expect(tab.locator(".back-link")).toHaveAttribute("href", "/products");
   await tab.close();
 });
@@ -141,12 +141,12 @@ test("old URLs, guide and scales chapter reach industrial without finder", async
     await expect(page.getByRole("dialog")).toHaveCount(0);
   }
   await page.goto("/guides/scales");
-  await page.getByRole("link", { name: "อุตสาหกรรมงานผลิต", exact: true }).click();
+  await page.getByRole("link", { name: "อุตสาหกรรม", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(path + "$"));
   await page.goto("/products/category/scales");
   await page
     .locator("#products-chapters")
-    .getByRole("link", { name: "การผลิต", exact: true })
+    .getByRole("link", { name: "อุตสาหกรรม", exact: true })
     .click();
   await expect(page).toHaveURL(new RegExp(path + "$"));
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -176,7 +176,7 @@ test("industrial chapter clears an obsolete finder query before returning throug
   );
   await page
     .locator("#products-chapters")
-    .getByRole("link", { name: "การผลิต", exact: true })
+    .getByRole("link", { name: "อุตสาหกรรม", exact: true })
     .click();
   await expect(page).toHaveURL(new RegExp(path + "$"));
   await page.goBack();
@@ -208,9 +208,7 @@ test("native mobile touch opens Home industrial submenu and returns from detail"
   await expect(page).toHaveURL(new RegExp(path + "$"));
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.locator("#mock-product-results article[data-model-only] a").first().tap();
-  await page
-    .getByRole("link", { name: "กลับรายการเครื่องชั่งอุตสาหกรรมงานผลิต", exact: true })
-    .tap();
+  await page.locator("main a.back-link[href='" + path + "']").tap();
   await expect(page).toHaveURL(new RegExp(path + "$"));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await context.close();

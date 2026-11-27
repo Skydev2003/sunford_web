@@ -4,6 +4,7 @@ import { lanUatAddresses, nipHost } from "./scripts/lib/lan-uat.mjs";
 import { contentRewrites } from "./src/features/content/data/static-content-params";
 import { contactPath, legacyContactPath } from "./src/features/content/data/contact-route";
 import { technicalManualRedirects } from "./src/features/content/data/technical-manuals";
+import importedProductImageAliases from "./src/features/content/data/imported-product-image-aliases.json";
 
 const lanOrigins = lanUatAddresses(networkInterfaces()).flatMap((address) => [
   address,
@@ -21,10 +22,17 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    return contentRewrites.map(({ source, destination }) => ({
-      source: encodeURI(source),
-      destination,
-    }));
+    return [
+      ...contentRewrites.map(({ source, destination }) => ({
+        source: encodeURI(source),
+        destination,
+      })),
+      // Return image bytes at legacy URLs so Next's image optimizer can still read them.
+      ...Object.entries(importedProductImageAliases).map(([source, destination]) => ({
+        source: `/images/imported/${source}`,
+        destination: `/images/imported/${destination}`,
+      })),
+    ];
   },
   devIndicators: false,
   // Allow both direct LAN IPs and their UAT hostnames; keep the allowlist exact.
@@ -37,7 +45,7 @@ const nextConfig: NextConfig = {
   ],
   experimental: {
     agentFeedback: true,
-    cpus: 1,
+    cpus: 2,
   },
   images: {
     formats: ["image/avif", "image/webp"],

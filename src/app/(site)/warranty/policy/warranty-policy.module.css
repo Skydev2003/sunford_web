@@ -81,7 +81,11 @@
   line-height: 1.5;
 }
 
-.contents a:hover,
+.contents a:hover {
+  color: var(--red);
+  transform: var(--text-hover-lift, none);
+}
+
 .related a {
   color: var(--red);
   text-decoration: underline;

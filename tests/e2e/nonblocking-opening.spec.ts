@@ -19,11 +19,12 @@ for (const viewport of [
       await page.goto("/", { waitUntil: "commit" });
       const hero = page.locator("[data-hero-scene]");
       await expect(hero.locator("h1")).toBeAttached();
+      await expect(page.locator("[data-brand-opening]")).toHaveCount(0);
       await expect(hero).toHaveCSS("background-color", "rgb(0, 0, 0)");
       await expect(hero.locator("h1")).toBeVisible({ timeout: 500 });
       await expect(hero.locator("p")).toBeVisible();
       await expect(hero.locator("video[src], video source")).toHaveCount(0);
-      await expect(page.locator(".site-header .brand")).toBeVisible();
+      await expect(page.getByRole("link", { name: "SUNFORD หน้าแรก", exact: true })).toBeVisible();
       const cta = hero.getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ" });
       await expect(cta).toBeVisible();
       expect(
@@ -43,37 +44,23 @@ for (const viewport of [
     }
   });
 
-  test(`the logo stays in its reserved space and leaves search clickable at ${viewport.width}px`, async ({
-    page,
-  }) => {
+  test(`search is usable immediately on the homepage at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/", { waitUntil: "domcontentloaded" });
-    const opening = page.locator("[data-brand-opening]");
-    await expect(opening).toHaveAttribute("data-phase", "symbol");
+    await expect(page.locator("[data-brand-opening]")).toHaveCount(0);
     const hero = page.locator("[data-hero-scene]");
     await expect(hero.locator("h1")).toBeVisible({ timeout: 500 });
     await expect(hero.locator("p")).toBeVisible();
     await expect(hero).toHaveAttribute("data-ready", "true");
-    await expect(page.locator(".site-header .brand")).toBeVisible();
-    await expect(opening).toHaveCSS("pointer-events", "none");
-    const bounds = (await opening.boundingBox())!;
-    const space = (await hero.locator("[data-hero-logo-space]").boundingBox())!;
-    expect(bounds.x).toBeGreaterThanOrEqual(space.x - 1);
-    expect(bounds.y).toBeGreaterThanOrEqual(space.y - 1);
-    expect(bounds.x + bounds.width).toBeLessThanOrEqual(space.x + space.width + 1);
-    expect(bounds.y + bounds.height).toBeLessThanOrEqual(space.y + space.height + 1);
-    expect(await opening.getAttribute("data-phase")).not.toBe("complete");
-    await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
+    await page.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }).click();
     await expect(page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" })).toBeHidden();
   });
 }
 
-test("a delayed logo font dependency cannot hold Hero content or video playback", async ({
-  page,
-}) => {
+test("a delayed font download cannot hold Hero content or video playback", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   let release!: () => void;
   const fonts = new Promise<void>((resolve) => (release = resolve));
@@ -85,7 +72,6 @@ test("a delayed logo font dependency cannot hold Hero content or video playback"
     await page.goto("/", { waitUntil: "domcontentloaded" });
     const hero = page.locator("[data-hero-scene]");
     await expect(hero).toHaveAttribute("data-enhanced", "true");
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "pending");
     await expect(hero.locator("h1")).toBeVisible({ timeout: 1500 });
     await expect(hero.locator("p")).toBeVisible();
     await expect(hero).toHaveAttribute("data-ready", "true");
@@ -102,13 +88,12 @@ test("a delayed logo font dependency cannot hold Hero content or video playback"
   }
 });
 
-test("consultation works during the logo and the contact page gets its own Header surface", async ({
+test("consultation works on opening the homepage and the contact page gets its own Header surface", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "symbol");
   const cta = page.getByRole("link", { name: "ปรึกษาผู้เชี่ยวชาญ", exact: true });
   await expect(cta).toBeVisible({ timeout: 500 });
   await cta.click();

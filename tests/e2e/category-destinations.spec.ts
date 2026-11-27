@@ -23,7 +23,7 @@ for (const width of [390, 1440]) {
     for (const [label, child] of [
       ["ร้านค้าและตลาดสด", "scale-price", "คำนวณราคาหน้าร้าน"],
       ["ร้านกาแฟ", "scale-kitchen", "งานครัวและกาแฟ"],
-      ["เครื่องชั่งสำหรับโรงงาน", "scale-industrial", "อุตสาหกรรมงานผลิต"],
+      ["เครื่องชั่งสำหรับโรงงาน", "scale-industrial", "อุตสาหกรรม"],
       ["เครื่องชั่งสำหรับห้องแล็บ", "scale-analytical", "งานวิเคราะห์ความแม่นยำสูง"],
     ]) {
       await page.goto("/solutions");

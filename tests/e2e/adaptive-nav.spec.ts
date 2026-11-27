@@ -8,10 +8,13 @@ async function expectTone(page: Page, tone: "light" | "dark") {
     "background-color",
     tone === "light" ? "rgba(255, 255, 255, 0.72)" : "rgba(17, 17, 17, 0.5)",
   );
-  await expect(header).toHaveCSS(
-    "color",
-    tone === "light" ? "rgb(39, 49, 66)" : "rgb(207, 207, 207)",
-  );
+  const foreground = tone === "light" ? "rgb(39, 49, 66)" : "rgb(207, 207, 207)";
+  await expect(header).toHaveCSS("color", foreground);
+  const searchIcon = header
+    .getByRole("button", { name: "ค้นหาสินค้าและข้อมูล" })
+    .locator("span[aria-hidden='true']");
+  await expect(searchIcon).toHaveCSS("background-color", foreground);
+  await expect(searchIcon).toHaveCSS("mask-image", /search\.svg/);
 }
 
 async function beneathNav(page: Page, selector: string) {
@@ -30,15 +33,14 @@ async function expectInteriorNavigation(page: Page) {
 }
 
 for (const width of [1440, 390]) {
-  test(`opening overlay does not change the navigation surface at ${width}px`, async ({ page }) => {
+  test(`the homepage opens on the dark Hero at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/", { waitUntil: "domcontentloaded" });
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "symbol");
+    await expect(page.locator("[data-brand-opening]")).toHaveCount(0);
     await expectTone(page, "dark");
     await expect(page.locator(".site-header")).toHaveCount(1);
     await expect(page.locator(".nav-glass")).toHaveCount(1);
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
-    await expectTone(page, "dark");
+    await expect(page.locator("[data-hero-scene] h1")).toBeVisible();
   });
 
   test(`navigation preserves homepage dark surfaces, including expanded menus at ${width}px`, async ({
@@ -69,9 +71,7 @@ for (const width of [1440, 390]) {
     } else {
       await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       await expect(header.locator("#products-navigation-panel")).toBeVisible();
-      await header
-        .getByRole("button", { name: "เปิดเมนูย่อยผลิตภัณฑ์ทั้งหมด", exact: true })
-        .click();
+      await header.getByRole("button", { name: "เปิดเมนูย่อยร้าน", exact: true }).click();
       await expect(header.locator("[data-nav-menu] a").first()).toBeVisible();
     }
     await expect(header).toHaveAttribute("data-nav-tone", "dark");
@@ -91,7 +91,7 @@ for (const width of [1440, 390]) {
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/Indicator");
+    await page.goto("/products/category/indicators");
     await expectInteriorNavigation(page);
     await page.screenshot({ path: test.info().outputPath(`indicator-light-${width}.png`) });
     await page

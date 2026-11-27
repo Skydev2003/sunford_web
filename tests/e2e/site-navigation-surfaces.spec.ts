@@ -35,7 +35,7 @@ async function ready(page: Page, route: string) {
     );
   });
   if (route === "/") {
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   }
 }
 

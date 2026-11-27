@@ -19,7 +19,7 @@ for (const width of [390, 834, 1440]) {
     expect(direct.surface).toBe("rgb(255, 255, 255)");
 
     await page.goto("/");
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     await expect(page.locator('[data-home-route="true"]')).toHaveCSS(
       "background-color",
       "rgb(0, 0, 0)",

@@ -87,8 +87,16 @@
 .photoCardCopy {
   min-height: 7.625rem;
 }
+.photoFirst h3 {
+  transition: transform 250ms ease;
+}
 .photoFirst:is(:hover, :focus-visible) h3 {
   color: var(--red);
+}
+.photoFirst:hover h3 {
+  transform: var(--text-hover-lift, none);
+}
+.photoFirst:focus-visible h3 {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }

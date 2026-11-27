@@ -5,9 +5,7 @@ test("homepage stories show all nine Sunford articles in the dark focus carousel
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 15000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const section = page.locator("#stories");
   const track = section.locator(".stories-track");
   const cards = track.locator(':scope > a[data-focus-copy="1"]');

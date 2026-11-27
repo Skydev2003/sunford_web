@@ -201,7 +201,7 @@ for (const width of [390, 1440]) {
     await page.screenshot({ path: test.info().outputPath(`added-source-product-${width}.png`) });
 
     await page.goto("/", { waitUntil: "domcontentloaded" });
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     await page.getByRole("button", { name: /^ค้นหาสินค้า(?:และข้อมูล)?$/ }).click();
     const search = page.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" });
     await search.fill("S000005");

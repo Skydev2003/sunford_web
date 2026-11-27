@@ -26,8 +26,7 @@
   color: var(--red);
 }
 .store-hero-help > a:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  transform: var(--text-hover-lift, none);
 }
 .store-shelf {
   position: relative;
@@ -131,10 +130,16 @@
   font-weight: 600;
   line-height: 1.5;
   white-space: nowrap;
+  transition: transform 250ms ease;
 }
 .store-category:hover > span,
 .store-category.is-active > span {
   color: var(--red);
+}
+.store-category:hover > span {
+  transform: var(--text-hover-lift, none);
+}
+.store-category.is-active > span {
   text-decoration: underline;
   text-underline-offset: 5px;
 }

@@ -9,6 +9,7 @@ import {
   getProductSubcategoryPage,
   getProductReturnPage,
   getReadySubcategoryHrefs,
+  resolveListingSubcategory,
 } from "../../src/features/catalog/data/product-subcategory-pages";
 import { scaleSubcategoryPages } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
@@ -52,7 +53,7 @@ test("Navbar selects real listing features, caps popular series at six, and keep
       id: "scales",
       subcategories: [
         { id: "scale-kitchen", label: "ครัวเรือน", productIds: ["a"] },
-        { id: "scale-industrial", label: "การผลิต", productIds: ["a", "b", "mock"] },
+        { id: "scale-industrial", label: "อุตสาหกรรม", productIds: ["a", "b", "mock"] },
       ],
     },
     {
@@ -432,6 +433,9 @@ test("additional listings have distinct canonical paths and safe product return 
     ["scales", "counting", "scale-counting"],
     ["scales", "checkweighing", "scale-checkweighing"],
     ["indicators", "rs232", "indicator-rs232"],
+    ["indicators", "laboratory", "indicator-laboratory"],
+    ["indicators", "industrial", "indicator-industrial"],
+    ["indicators", "commercial", "indicator-commercial"],
     ["accessories", "electronics", "accessory-electronics"],
     ["accessories", "printers", "accessory-printers"],
     ["accessories", "scanners-and-cash-drawers", "accessory-scanners-and-cash-drawers"],
@@ -445,6 +449,37 @@ test("additional listings have distinct canonical paths and safe product return 
     assert.equal(getProductReturnPage(href), undefined);
     assert.equal(resolveCategoryHref(`/products?category=${category}&subcategory=${id}`), href);
     assert.equal(getProductSubcategoryPage(id, "pos"), undefined);
+  }
+});
+
+test("indicator application pages list only present Warehouse indicators verified for that use", () => {
+  const warehouseProduct = (sku: string) =>
+    ({ id: sku, warehouseSku: sku, warehouseCategoryId: "indicators" }) as Product;
+  const industrial = ["G107763", "G107770", "G107787", "G107794", "G107800", "G107817"];
+  const commercial = ["G107848"];
+  const products = [
+    ...industrial.map(warehouseProduct),
+    ...commercial.map(warehouseProduct),
+    warehouseProduct("G107831"),
+    { ...warehouseProduct("G107817"), id: "wrong-family", warehouseCategoryId: "scales" },
+    { ...warehouseProduct("G107848"), id: "archived", sourceId: "10784", warehouseSku: undefined },
+  ];
+  for (const [id, label, expected] of [
+    ["indicator-laboratory", "ห้องปฏิบัติการ", []],
+    ["indicator-industrial", "อุตสาหกรรม", industrial],
+    ["indicator-commercial", "ร้านค้าและบริการ", commercial],
+  ] as const) {
+    const definition = getProductSubcategoryPage(id, "indicators");
+    assert.ok(definition, id);
+    assert.equal(definition.label, label);
+    assert.deepEqual(
+      resolveListingSubcategory(definition, { subcategories: [] }, products)?.productIds,
+      expected,
+    );
+    assert.deepEqual(
+      resolveListingSubcategory(definition, { subcategories: [] }, [])?.productIds,
+      [],
+    );
   }
 });
 

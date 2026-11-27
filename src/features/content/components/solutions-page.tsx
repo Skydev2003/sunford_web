@@ -19,10 +19,17 @@ export async function SolutionsPage({ path }: { path: string }) {
         <ChevronRight size={14} aria-hidden="true" />
         <Link href="/solutions">โซลูชัน</Link>
         <ChevronRight size={14} aria-hidden="true" />
+        {solution.parent && (
+          <>
+            <Link href={solution.parent.href}>{solution.parent.label}</Link>
+            <ChevronRight size={14} aria-hidden="true" />
+          </>
+        )}
         <span aria-current="page">{title}</span>
       </nav>
       <section className={`container ${styles.empty}`} aria-labelledby="solution-title">
         <h1 id="solution-title">{title}</h1>
+        {solution.description && <p>{solution.description}</p>}
         {evidence.length ? (
           <>
             <h2>ข้อมูลที่แค็ตตาล็อกระบุ</h2>
@@ -43,7 +50,8 @@ export async function SolutionsPage({ path }: { path: string }) {
           </>
         ) : (
           <p data-solution-evidence-empty>
-            ขณะนี้ยังไม่มีข้อมูลเผยแพร่ที่ยืนยันรายละเอียดสำหรับหัวข้อนี้
+            {solution.emptyMessage ??
+              "ขณะนี้ยังไม่มีข้อมูลเผยแพร่ที่ยืนยันรายละเอียดสำหรับหัวข้อนี้"}
           </p>
         )}
         <nav className={styles.footer} aria-label="ข้อมูลที่เกี่ยวข้อง">

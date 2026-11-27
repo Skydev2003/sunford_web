@@ -385,8 +385,16 @@
 .card[data-directory-card] .copy {
   padding: 0;
 }
+.card[data-directory-card] .copy a > :is(h2, h3) {
+  transition: transform 250ms ease;
+}
 .card[data-directory-card] .copy a:is(:hover, :focus-visible) {
   color: var(--red);
+}
+.card[data-directory-card] .copy a:hover > :is(h2, h3) {
+  transform: var(--text-hover-lift, none);
+}
+.card[data-directory-card] .copy a:focus-visible {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }

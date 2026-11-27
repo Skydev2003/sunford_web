@@ -1,4 +1,4 @@
-/* Keep responsive overrides last. Feature styles share the design tokens in base.css. */
+/* Feature styles share the design tokens and link hover motion in base.css. Keep responsive overrides last. */
 @import "../styles/base.css";
 @import "../styles/tooltip.css";
 @import "../styles/hero.css";

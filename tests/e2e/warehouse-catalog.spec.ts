@@ -81,7 +81,7 @@ test("Home search and comparison include Warehouse products awaiting photos", as
     (p: { image: string; warehouseSku: string }) => !p.image && /^G\d+$/.test(p.warehouseSku),
   );
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
   const search = page.getByRole("textbox", { name: "ค้นหาสินค้า Sunford" });
   if (awaitingPhoto) {

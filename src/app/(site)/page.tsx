@@ -11,7 +11,7 @@ import { BrandStory } from "@/features/home/components/sections";
 import { getHomeProducts } from "@/features/home/server/home-products";
 import { getHomeImages, getHomeLinkTargets } from "@/features/home/server/home-images";
 import { getSettings } from "@/features/site/server/documents";
-import { defaultHero, catalogDefaults, defaultSite } from "@/features/site/data/settings";
+import { defaultHero, catalogDefaults } from "@/features/site/data/settings";
 import { heroSlideData } from "@/features/home/data/hero-slides";
 import { companyIntro } from "@/features/home/data/brand";
 import { getClientProducts } from "@/features/catalog/server/client-products";
@@ -21,15 +21,11 @@ import styles from "@/features/home/components/home-page.module.css";
 const showHomepageCatalog = false;
 
 export default async function Home() {
-  const [hero, site] = await Promise.all([
-    getSettings("hero", defaultHero),
-    getSettings("site", defaultSite),
-  ]);
+  const hero = await getSettings("hero", defaultHero);
   const { slides, ...heroCopy } = hero;
   return (
     <main id="main-content" className={styles.page}>
       <Hero
-        brand={{ logo: site.logo, name: site.name }}
         description={
           slides.some((slide) => slide.description) ? (
             <Suspense fallback={companyIntro.description}>

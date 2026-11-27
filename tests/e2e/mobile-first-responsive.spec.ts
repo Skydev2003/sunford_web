@@ -274,11 +274,9 @@ for (const motion of ["reduce", "no-preference"] as const) {
     ]) {
       await settled(page, route);
       if (route === "/")
-        await expect(page.locator("[data-brand-opening]")).toHaveAttribute(
-          "data-phase",
-          "complete",
-          { timeout: 15_000 },
-        );
+        await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true", {
+          timeout: 15_000,
+        });
       for (const viewport of [
         { width: 667, height: 375 },
         { width: 844, height: 390 },

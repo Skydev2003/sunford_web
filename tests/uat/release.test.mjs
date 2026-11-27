@@ -130,6 +130,26 @@ test("check mode never fetches, rebases, checks or pushes", (t) => {
   assert.equal(f.remoteHead("main"), f.initial);
 });
 
+test("release skips validation when the fetched main already contains the exact revision", (t) => {
+  const f = fixture(t);
+  const revision = f.commit("feature.txt");
+  f.git(["push", "origin", "HEAD:main"]);
+  // Keep the local tracking ref stale until the release fetches origin.
+  f.git(["update-ref", "refs/remotes/origin/main", f.initial]);
+  const messages = [];
+
+  f.release({
+    log: (message) => messages.push(message),
+    runChecks() {
+      assert.fail("checks must not run for a revision already on main");
+    },
+  });
+
+  assert.equal(f.git(["rev-parse", "origin/main"]), revision);
+  assert.equal(f.remoteHead("main"), revision);
+  assert.ok(messages.some((message) => message.includes("already has this revision")));
+});
+
 test("failed validation never pushes production", (t) => {
   const f = fixture(t);
   f.commit("feature.txt");

@@ -18,9 +18,9 @@ export const usageGuide = {
 };
 
 export const productAdvice = [
-  { label: "ครัวเรือน", slug: "lifestyle" },
-  { label: "การผลิต", slug: "industry" },
-  { label: "คำนวณราคา", slug: "retail" },
+  { label: "ครัวเรือนและบุคคล", slug: "lifestyle" },
+  { label: "อุตสาหกรรม", slug: "industry" },
+  { label: "ร้านค้าและบริการ", slug: "retail" },
   { label: "งานวิเคราะห์", slug: "laboratory" },
 ].map(({ label, slug }) => ({ label, href: technicalManualPath(slug) }));
 

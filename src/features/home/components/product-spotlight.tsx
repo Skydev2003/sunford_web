@@ -39,7 +39,7 @@ export async function ProductSpotlight({
       progressive
       blurDataURL={warehouseBlurDataURL(image)}
       src={image ?? defaultSpotlightImage}
-      alt={product ? `SUNFORD ${product.name}` : "เครื่องชั่ง Sunford JC21"}
+      alt={product ? `SUNFORD ${product.name}` : "เครื่องชั่ง SUNFORD WPS10KS"}
       fill
       sizes="(width < 48rem) 100vw, 1000px"
     />
@@ -53,9 +53,9 @@ export async function ProductSpotlight({
         <div className="spotlight-copy">
           <h2 id="spotlight-title">
             {catalogModelLabel(copy.title)
-              .split(/(\bJC21\b)/)
+              .split(/(\bWPS10KS\b)/)
               .map((part, index) =>
-                part === "JC21" ? (
+                part === "WPS10KS" ? (
                   <span key={index} className="spotlight-model">
                     {part}
                   </span>

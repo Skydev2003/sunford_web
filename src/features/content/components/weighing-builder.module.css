@@ -1,6 +1,7 @@
 .layout {
   display: grid;
   align-items: start;
+  scroll-margin-block-start: calc(var(--site-header-height) + 16px);
 }
 .sidebar,
 .toolbar {

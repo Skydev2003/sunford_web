@@ -321,7 +321,7 @@ const categories = [
 const categoryName = (index: number) => categories[index - 1].label;
 const scaleNames = [
   "คำนวณราคาหน้าร้าน",
-  "อุตสาหกรรมงานผลิต",
+  "อุตสาหกรรม",
   "งานวิเคราะห์ความแม่นยำสูง",
   "งานครัวและกาแฟ",
   "กันน้ำและกันฝุ่น 100%",

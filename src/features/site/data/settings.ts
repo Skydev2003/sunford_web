@@ -28,8 +28,8 @@ export const defaultSite: SiteSettings = {
   messenger: sunford.messenger,
 };
 export const spotlightDefaults = {
-  title: "SUNFORD JC21",
-  accent: "ชั่งน้ำหนัก คำนวณราคา อ่านชัดทั้งสองด้าน",
+  title: "SUNFORD WPS10KS",
+  accent: "ชั่งน้ำหนัก นับจำนวน พร้อมมาตรฐาน IP67",
   description: "",
   primaryLabel: "ดูเพิ่มเติม",
   secondaryLabel: "ปรึกษาผู้เชี่ยวชาญ",

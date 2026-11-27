@@ -52,8 +52,8 @@ test("lineup selection moves the dark pill, realigns on resize, and keeps keyboa
   await expect(selected).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(selected).toHaveCSS("z-index", "1");
   await expect(tray).toHaveCSS("background-color", "rgb(232, 232, 237)");
-  const kitchen = filters.getByRole("button", { name: "ครัวเรือน" });
-  const industrial = filters.getByRole("button", { name: "การผลิต" });
+  const kitchen = filters.getByRole("button", { name: "ครัวเรือนและบุคคล" });
+  const industrial = filters.getByRole("button", { name: "อุตสาหกรรม" });
   await industrial.evaluate((button) => {
     const indicator = button.parentElement?.querySelector("[data-segmented-indicator]");
     if (!indicator || !(button instanceof HTMLButtonElement)) throw new Error("Missing filter UI");

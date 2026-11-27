@@ -303,7 +303,7 @@ test("the home and catalogue Navbar expose both support destinations", async ({ 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await page
     .locator(".desktop-nav")
     .getByRole("link", { name: "บริการ", exact: true })

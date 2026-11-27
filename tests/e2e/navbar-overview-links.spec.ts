@@ -18,7 +18,7 @@ async function visit(page: Page, route: string) {
   await page.goto(route);
   await page.evaluate(() => document.fonts.ready);
   if (route === "/")
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   else
     await expect(
       header(page, route).getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }),

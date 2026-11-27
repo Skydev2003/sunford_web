@@ -112,7 +112,12 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
       ? pricedSelection.reduce((sum, option) => sum + (option.price ?? 0), 0)
       : (quotationTotals(sourceNet)?.gross ?? 0) / 100;
   return (
-    <section className={styles.layout} aria-label="เลือกอุปกรณ์จัดชุด">
+    <section
+      id="build-your-set"
+      className={styles.layout}
+      aria-label="เลือกอุปกรณ์จัดชุด"
+      tabIndex={-1}
+    >
       <aside className={styles.sidebar} aria-label="ชุดที่เลือก">
         <header className={styles.total} aria-live="polite" aria-atomic="true">
           <h2>ยอดรวมทั้งสิ้น</h2>

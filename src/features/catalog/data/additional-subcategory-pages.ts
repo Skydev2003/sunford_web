@@ -96,7 +96,47 @@ export const indicatorRs232SubcategoryPage = definePage(
   hasRs232,
 );
 
-export const additionalIndicatorSubcategoryPages = [indicatorRs232SubcategoryPage];
+// Imported indicator collections cross-checked against docs/warehouse/sku-category-mapping.csv.
+const indicatorApplicationGroups = [
+  {
+    slug: "laboratory",
+    label: "ห้องปฏิบัติการ",
+    warehouseSkus: [],
+  },
+  {
+    slug: "industrial",
+    label: "อุตสาหกรรม",
+    warehouseSkus: ["G107763", "G107770", "G107787", "G107794", "G107800", "G107817"],
+  },
+  {
+    slug: "commercial",
+    label: "ร้านค้าและบริการ",
+    warehouseSkus: ["G107848"],
+  },
+] as const;
+
+export const additionalIndicatorSubcategoryPages = [
+  indicatorRs232SubcategoryPage,
+  ...indicatorApplicationGroups.map(({ slug, label, warehouseSkus }) => {
+    const skus = new Set<string>(warehouseSkus);
+    return {
+      ...definePage(
+        "indicators",
+        `indicator-${slug}` as const,
+        slug,
+        label,
+        [
+          {
+            href: "/guides/indicator-platform-compatibility",
+            label: "คู่มือเลือกหัวอ่านและแท่นชั่ง",
+          },
+        ],
+        ({ warehouseSku }) => skus.has(warehouseSku ?? ""),
+      ),
+      title: `อินดิเคเตอร์แท่นชั่ง ${label}`,
+    };
+  }),
+];
 
 export const additionalAccessorySubcategoryPages = [
   definePage(

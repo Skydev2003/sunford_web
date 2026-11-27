@@ -64,7 +64,7 @@ test("touch navigation expands scales and follows the household destination", as
 test("software menu opens the downloads directory and its category anchors", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await page.locator(".desktop-nav").getByRole("link", { name: "บริการ", exact: true }).hover();
   await page
     .locator("[data-nav-menu]")

@@ -264,7 +264,7 @@ for (const width of [1440, 390]) {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     for (const category of [0, 1]) {
       await page.goto("/");
-      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+      await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
       const section = page.locator("#product-experience");
       await section.locator(".category-feature-trigger").nth(category).click();
       const belt = section.locator(".category-feature-belt");
@@ -302,7 +302,7 @@ test("moving accessory links open on the first touch tap", async ({ browser, bas
   try {
     const page = await context.newPage();
     await page.goto("/");
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     await page.getByRole("button", { name: "สำรวจ อุปกรณ์เสริม", exact: true }).tap();
     const belt = page.locator(".category-feature-belt");
     await belt.scrollIntoViewIfNeeded();

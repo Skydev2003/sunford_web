@@ -271,8 +271,7 @@ footer {
 }
 .footer-bottom a:hover {
   color: #fff;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  transform: var(--text-hover-lift, none);
 }
 .site-footer .footer-main {
   padding-left: 0;
@@ -389,9 +388,12 @@ footer {
   outline-offset: 4px;
   border-radius: 2px;
 }
-.site-footer a:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+.site-footer .footer-contact-text {
+  transition: transform 250ms ease;
+}
+.site-footer :is(.footer-company, .footer-links) > a:hover,
+.site-footer .footer-contact-row:hover .footer-contact-text {
+  transform: var(--text-hover-lift, none);
 }
 .site-footer .footer-brand {
   grid-column: auto;

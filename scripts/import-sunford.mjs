@@ -7,6 +7,7 @@ import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { publicContent, publicPath } from "../src/features/content/data/public-paths.mjs";
 import assert from "node:assert/strict";
+import importedProductImageAliases from "../src/features/content/data/imported-product-image-aliases.json" with { type: "json" };
 
 const option = (name) => {
   const index = process.argv.indexOf(name);
@@ -123,8 +124,16 @@ if (option("--apply-staged")) {
     assert(/^https:\/\//.test(asset.source));
     const extension = path.extname(new URL(asset.source).pathname).toLowerCase();
     assert([".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif", ".svg"].includes(extension));
-    const name = `${createHash("sha256").update(asset.source).digest("hex").slice(0, 20)}${extension}`;
-    assert.equal(asset.path, `/images/imported/${name}`);
+    const sourceName = `${createHash("sha256").update(asset.source).digest("hex").slice(0, 20)}${extension}`;
+    const optimizedName = importedProductImageAliases[sourceName] ?? sourceName;
+    const name = path.basename(asset.path);
+    const previousWebpName = `${path.parse(sourceName).name}.webp`;
+    assert(
+      asset.path === `/images/imported/${name}` &&
+        (name === sourceName ||
+          name === optimizedName ||
+          (name === previousWebpName && importedProductImageAliases[name] === optimizedName)),
+    );
     const bytes = await readFile(path.join(stage, "assets", name));
     assert.equal(createHash("sha256").update(bytes).digest("hex"), asset.sha256);
     const target = path.join("public/images/imported", name);
@@ -763,15 +772,21 @@ await Promise.all(
         const extension = path.extname(parsed.pathname).toLowerCase();
         if (![".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif", ".svg"].includes(extension))
           throw new Error("No supported image extension");
-        const name = `${digest(url)}${extension}`;
+        const sourceName = `${digest(url)}${extension}`;
+        const alias = importedProductImageAliases[sourceName];
+        const name = alias ?? sourceName;
         const target = path.join(assetDir, name);
         try {
           await readFile(target);
         } catch {
-          const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
-          if (!response.ok || !response.headers.get("content-type")?.startsWith("image/"))
-            throw new Error("Image unavailable");
-          await writeFile(target, Buffer.from(await response.arrayBuffer()));
+          if (alias) {
+            await writeFile(target, await readFile(path.join("public/images/imported", alias)));
+          } else {
+            const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+            if (!response.ok || !response.headers.get("content-type")?.startsWith("image/"))
+              throw new Error("Image unavailable");
+            await writeFile(target, Buffer.from(await response.arrayBuffer()));
+          }
         }
         assets.set(url, `/images/imported/${name}`);
         report.assets++;

@@ -55,9 +55,9 @@ bun run deploy
 
 1. ตรวจว่าอยู่ branch `Javis1`, working tree สะอาด และไม่มี rebase/merge ค้าง
 2. `git fetch origin` แล้ว rebase บน `origin/Javis1` และ `origin/main` ตามลำดับ เฉพาะเมื่อมี commit จาก branch นั้นที่ยังไม่อยู่ใน `HEAD`
-3. รัน lint, format check, schema validation, UAT/catalogue tests และ build ด้วย Bun โดย Next.js ตรวจ TypeScript ระหว่าง build ขั้นตรวจงานปิดการเชื่อมต่อทะเบียนเขียน ส่วนสินค้ายังคงอ่าน Warehouse ผ่าน pool แบบ read-only
-4. ตรวจว่าระหว่าง build ไม่มีไฟล์หรือ commit เปลี่ยน และ fetch `main` อีกครั้ง ถ้า `main` มีงานใหม่ที่ยังไม่อยู่ใน revision ที่ตรวจจะหยุด ให้รันใหม่เพื่อ rebase และตรวจอีกครั้ง
-5. ถ้า `main` มี revision นี้แล้ว สคริปต์จบโดยไม่สร้าง deployment ใหม่ ถ้ามี revision ใหม่ สคริปต์จะ push `HEAD` ที่ตรวจแล้วเข้า `main` เพื่อให้ Vercel Git integration ปล่อย Production
+3. เทียบ SHA กับ `origin/main` ที่เพิ่ง fetch ถ้าตรงกันจะจบทันที เพราะไม่มี revision ใหม่ให้ปล่อย
+4. สำหรับ revision ใหม่ รัน lint, format check, schema validation, UAT/catalogue tests และ build ด้วย Bun พร้อมแสดงเวลาของแต่ละขั้นและเวลารวม Next.js ตรวจ TypeScript ระหว่าง build ขั้นตรวจงานปิดการเชื่อมต่อทะเบียนเขียน ส่วนสินค้ายังคงอ่าน Warehouse ผ่าน pool แบบ read-only
+5. ตรวจว่าระหว่าง build ไม่มีไฟล์หรือ commit เปลี่ยน และ fetch `main` อีกครั้ง ถ้า `main` มีงานใหม่ที่ยังไม่อยู่ใน revision ที่ตรวจจะหยุด ให้รันใหม่เพื่อ rebase และตรวจอีกครั้ง หาก SHA ตรงกับ `main` แล้วให้จบ ถ้ามี revision ใหม่ สคริปต์จะ push `HEAD` ที่ตรวจแล้วเข้า `main` เพื่อให้ Vercel Git integration ปล่อย Production
 
 ไม่มีการ force-push, auto-commit หรือ auto-stash ไม่เขียนทับ local branch `main` และไม่ rewrite remote `Javis1` หากมี rebase conflict ให้แก้ไฟล์แล้ว `git add` และ `git rebase --continue` หรือยกเลิกด้วย `git rebase --abort` จากนั้นรัน `bun run deploy` ใหม่ หากตรวจงานไม่ผ่านจะไม่ push Production หาก branch protection ปฏิเสธการ push ให้หยุดและประสานผู้ดูแล repository ห้ามข้ามขั้นตอนด้วยการ push เองหรือ deploy ผ่าน Vercel CLI
 
@@ -68,6 +68,10 @@ bun run deploy --check
 ```
 
 ผลลัพธ์ push สำเร็จแปลว่าส่ง commit เข้า GitHub แล้ว ต้องรอ Vercel build สำเร็จและตรวจ `/api/health` ว่า revision ตรงกันก่อนถือว่าเว็บ live
+
+เมื่อตรวจ deploy ที่ช้า ให้ใช้เวลาที่สคริปต์แสดงก่อน push และเทียบกับ Build Logs ของ revision เดียวกันบน Vercel หลัง push แยกเวลาติดตั้ง dependencies, เตรียมทะเบียน, สร้างหน้า Next.js และ upload ผล build
+
+`format:check` ใช้ Prettier cache ตามเนื้อหาไฟล์ ไฟล์ที่เพิ่มหรือมีเนื้อหาเปลี่ยนจะถูกตรวจ เมื่อเพิ่มหรืออัปเกรด Prettier plugin ให้ล้าง cache เพราะ Prettier ไม่รวมเวอร์ชัน plugin ใน cache key
 
 Build Command บน Vercel ยังคงเป็น `npm run vercel-build` ตาม `vercel.json` ซึ่งเรียก `scripts/vercel-build.mjs` เพื่อ validate environment, migrate ทะเบียนเอกสารเฉพาะ Production และ build อย่าเปลี่ยนเป็น `bun run deploy` เพราะคำสั่งนั้นใช้จัดการ Git ในเครื่อง
 

@@ -67,10 +67,7 @@ for (const width of [1440, 390]) {
       }) => {
         await page.emulateMedia({ reducedMotion: "reduce" });
         await page.goto("/");
-        await expect(page.locator("[data-brand-opening]")).toHaveAttribute(
-          "data-phase",
-          "complete",
-        );
+        await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
         const track = page.locator(selector);
         await track.scrollIntoViewIfNeeded();
         const count = await track.locator('[data-focus-copy="1"]').count();

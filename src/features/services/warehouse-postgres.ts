@@ -1,3 +1,4 @@
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
 import { Pool, type PoolConfig, type QueryResultRow } from "pg";
 import type { WarehouseCardFact } from "../catalog/data/warehouse-card-data";
 import { isPublicWarehouseItem, parseWarehouseProducts } from "../catalog/data/warehouse-products";
@@ -13,7 +14,8 @@ export function warehouseConnectionOptions(
     throw new Error("Configure a positive WAREHOUSE_COMPANY_ID");
   return {
     connectionString,
-    max: 3,
+    // Next sets this phase before starting the workers that pre-render pages.
+    max: env.NEXT_PHASE === PHASE_PRODUCTION_BUILD ? 1 : 3,
     connectionTimeoutMillis: 5000,
     idleTimeoutMillis: 30000,
     statement_timeout: 10000,

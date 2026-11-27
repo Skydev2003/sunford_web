@@ -509,8 +509,7 @@
 @media (hover: hover) {
   .help a:hover,
   .sectionHeading a:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
+    transform: var(--text-hover-lift, none);
   }
   .controls button:enabled:hover svg {
     background: #eeeef0;

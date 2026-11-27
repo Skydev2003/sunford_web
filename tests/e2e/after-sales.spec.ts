@@ -107,7 +107,7 @@ async function expectHorizontalFit(main: Locator) {
 
 async function openServiceFromHome(page: Page, width: number) {
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const mobile = width < 1024;
   if (mobile) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
   const service = page

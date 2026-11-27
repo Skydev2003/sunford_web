@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -74,11 +74,14 @@ test("DRV and price-scale preparation article keep real explanatory content", ()
   assert.equal(load(drv.html)("iframe").length, 2, "Existing Driver videos must remain");
 });
 
-test("all Biz Talk episodes retain their existing video and have a verified local cover", () => {
+test("all Biz Talk episodes retain their videos and any remaining covers are local files", () => {
   const episodes = pages.filter((page) => /\/SUNFORD_BIZ_TALK_EP\.\d+$/.test(page.path));
   assert.equal(episodes.length, 27);
   for (const episode of episodes) {
-    assert(episode.images[0]?.startsWith("/images/imported/"), `Missing cover: ${episode.path}`);
+    for (const cover of episode.images) {
+      assert(cover.startsWith("/images/imported/"), `Non-local cover: ${episode.path}`);
+      assert(existsSync(path.join("public", cover)), `Missing cover file: ${cover}`);
+    }
     assert.equal(load(episode.html)("iframe").length, 1, `Lost video: ${episode.path}`);
   }
 });

@@ -16,6 +16,30 @@ test("every Solutions card and both business systems have an internal destinatio
   }
 });
 
+test("the MES overview links to separate batch and formula workflow pages", () => {
+  const overview = solutionDetails["/solution/mes"];
+  const workflows = [
+    ["/solution/mes/batch-control", "ควบคุมชุดการผลิต"],
+    ["/solution/mes/formula-control", "ควบคุมสูตรการผลิต"],
+  ] as const;
+
+  for (const [href, label] of workflows) {
+    assert.ok(
+      overview.links.some((link) => link.href === href && link.label === label),
+      href,
+    );
+    const workflow = solutionDetails[href];
+    assert.equal(workflow?.title, label);
+    assert.ok(workflow.description, href);
+    assert.equal(workflow.parent?.href, "/solution/mes");
+    const siblingHref = workflows.find(([destination]) => destination !== href)?.[0];
+    assert.ok(
+      workflow.links.some((link) => link.href === siblingHref),
+      href,
+    );
+  }
+});
+
 test("solution evidence uses published products with an explicit connection fact", () => {
   const product = (id: string, value: string, sku?: string) =>
     ({
@@ -37,4 +61,23 @@ test("solution evidence uses published products with an explicit connection fact
   ]);
   assert.deepEqual(getSolutionEvidence(solutionDetails["/solution/erp"], products), []);
   assert.deepEqual(getSolutionEvidence(solutionDetails["/solution/mes"], products), []);
+});
+
+test("retail price and label printing lists documented models with an external printer", () => {
+  const solution = solutionDetails["/solutions/price-label-printing"];
+  assert.equal(solution?.title, "ชั่งคำนวณราคาและพิมพ์ฉลากสินค้าหน้าร้าน");
+  const models = [
+    ["G106209", "TCS60JE62ZR"],
+    ["G106407", "TCS-150-JE62ZR"],
+    ["G108562", "TIS-150-JE62ZR"],
+    ["TIS150JE62ZR", "TIS-150-JE62ZR"],
+    ["G-SET19", "TCS-60-JE62ZR + 233B"],
+  ];
+  const products = models.map(([warehouseSku, name]) => ({ name, warehouseSku }) as Product);
+  const evidence = getSolutionEvidence(solution, products);
+  assert.deepEqual(
+    evidence.map(({ product }) => product),
+    products.slice(0, 3),
+  );
+  assert.ok(evidence.every(({ fact }) => fact.includes("เครื่องพิมพ์ภายนอก")));
 });

@@ -37,15 +37,6 @@ export const navigationStartScript = `
     }
     track();
   });
-  const root = document.documentElement;
-  const skipOpening = () => { root.dataset.homeOpening = "skip"; };
-  root.dataset.homeOpening = location.pathname === "/" && navigation?.type !== "back_forward"
-    ? "ready" : "skip";
-  window.addEventListener("popstate", skipOpening);
-  window.addEventListener("pagehide", skipOpening);
-  window.addEventListener("pageshow", (event) => {
-    if (event.persisted) skipOpening();
-  });
   if (navigation?.type !== "reload") return;
   const restoration = history.scrollRestoration;
   history.scrollRestoration = "manual";

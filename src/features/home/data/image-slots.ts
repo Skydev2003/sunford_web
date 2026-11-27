@@ -1,8 +1,8 @@
-export const defaultSpotlightProductId = "acs30-jc21";
-export const defaultSpotlightWarehouseSku = "G106094";
-export const defaultSpotlightImage = "/images/products/acs30-jc21-cutout.png";
-export const defaultSpotlightVideo = "/videos/jc21-panel-aligned-1080p.mp4";
-export const defaultSpotlightPoster = "/images/products/jc21-panel-aligned-poster.png";
+export const defaultSpotlightProductId = "wps10ks";
+export const defaultSpotlightWarehouseSku = "G106698";
+export const defaultSpotlightImage = "/images/products/wps10ks.png";
+export const defaultSpotlightVideo = "/videos/wps10ks-panel-aligned-1080p.mp4";
+export const defaultSpotlightPoster = "/images/products/wps10ks-panel-aligned-poster.webp";
 
 export function isDefaultSpotlightProduct(product: { id: string; warehouseSku?: string }): boolean {
   return (
@@ -15,7 +15,7 @@ export const homeImageSlots = [
   {
     id: "spotlight",
     title: "รูปสินค้าเด่นบนพื้นดำ",
-    description: "รูปสินค้า JC21 แบบพื้นหลังโปร่งใส สำหรับแบนเนอร์สินค้าเด่นกึ่งกลางหน้า",
+    description: "รูปสินค้า WPS10KS แบบพื้นหลังโปร่งใส สำหรับแบนเนอร์สินค้าเด่นกึ่งกลางหน้า",
   },
   { id: "digital", title: "เครื่องชั่งดิจิทัล", description: "การ์ดหมวดเครื่องชั่งดิจิทัล" },
   { id: "smart", title: "เครื่องชั่งอัจฉริยะ", description: "การ์ดหมวดเครื่องชั่งอัจฉริยะ" },

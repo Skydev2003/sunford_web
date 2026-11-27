@@ -27,7 +27,6 @@ async function getDefinition(params: Props["params"]) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const definition = await getDefinition(params);
-  if (definition?.id === "scale-industrial") return { title: "เครื่องชั่งอุตสาหกรรมงานผลิต" };
   return {
     title:
       (definition?.categoryId === "scales" ? definition.label : definition?.title) ?? "ไม่พบข้อมูล",

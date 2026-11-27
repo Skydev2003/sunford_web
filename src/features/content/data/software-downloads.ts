@@ -15,7 +15,7 @@ export const softwareDownloadGroups: {
 }[] = [
   {
     id: "retail-software",
-    name: "ค้าปลีก",
+    name: "ร้านค้าและบริการ",
     products: [
       {
         slug: "sunford-rls1100",
@@ -23,7 +23,13 @@ export const softwareDownloadGroups: {
         downloads: [
           {
             platform: "Windows",
-            label: "เปิดตัวติดตั้ง",
+            label: "เครื่องผลิตตั้งแต่ พ.ศ. 2568 เป็นต้นไป",
+            filename: "517_RLS_SUNFORD_2.0.14.32.exe",
+            href: driveFile("1NjZxuU4WHGjqODKAX6NmUza-WnKmMNHy"),
+          },
+          {
+            platform: "Windows",
+            label: "เครื่องผลิต พ.ศ. 2567 และก่อนหน้า",
             filename: "RLS1000_SETUP_SUNFORD_2.0.0_T7.exe",
             href: driveFile("1ISol4SrRrs5PqUhQVpgoUtEZmz3CVlSe"),
           },
@@ -59,6 +65,9 @@ export const softwareDownloadGroups: {
           },
         ],
       },
+      { slug: "sunford-pos-smart-android", name: "SUNFORD POS Smart Android", downloads: [] },
+      { slug: "sunford-pos-android", name: "SUNFORD POS Android", downloads: [] },
+      { slug: "sunford-pos-basic", name: "SUNFORD POS Basic", downloads: [] },
     ],
   },
   {
@@ -96,11 +105,12 @@ export const softwareDownloadGroups: {
           { platform: "Android", label: "Google Play", href: googlePlay("com.weweighApp") },
         ],
       },
+      { slug: "sunford-drv", name: "SUNFORD DRV", downloads: [] },
     ],
   },
   {
     id: "household-software",
-    name: "ครัวเรือนและสุขภาพ",
+    name: "ครัวเรือนและบุคคล",
     products: [
       {
         slug: "fitdays",

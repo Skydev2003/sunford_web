@@ -25,9 +25,7 @@ for (const width of [320, 390, 768, 1440]) {
       route.fulfill({ contentType: "text/html", body: "YouTube destination" }),
     );
     await page.goto("/", { waitUntil: "domcontentloaded" });
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-      timeout: 20000,
-    });
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const gallery = page.locator(".video-gallery");
     await gallery.scrollIntoViewIfNeeded();
     const cards = gallery.locator('.video-track > a[data-focus-copy="1"]');
@@ -78,9 +76,7 @@ test("keyboard activation opens the source clip, and all twelve local thumbnail 
     route.fulfill({ contentType: "text/html", body: "YouTube destination" }),
   );
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 20000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const card = page.locator('.video-track > a[data-focus-copy="1"]').nth(1);
   await card.focus();
   const opened = page.waitForEvent("popup");

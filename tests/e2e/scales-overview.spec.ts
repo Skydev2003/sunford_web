@@ -5,9 +5,9 @@ import { verifyCategoryOverview } from "./helpers/category-overview";
 
 const scalePath = "/products/category/scales";
 const chapterNames: Record<string, string> = {
-  "scale-kitchen": "ครัวเรือน",
-  "scale-industrial": "การผลิต",
-  "scale-price": "คำนวณราคา",
+  "scale-kitchen": "ครัวเรือนและบุคคล",
+  "scale-industrial": "อุตสาหกรรม",
+  "scale-price": "ร้านค้าและบริการ",
   "scale-analytical": "งานวิเคราะห์",
 };
 const children = defaultNavigation[0]
@@ -59,9 +59,9 @@ for (const width of [390, 1440]) {
     const filters = overview.getByRole("group", { name: "กรองผลิตภัณฑ์" });
     await expect(filters.getByRole("button")).toHaveText([
       "ทุกผลิตภัณฑ์",
-      "ครัวเรือน",
-      "การผลิต",
-      "คำนวณราคา",
+      "ครัวเรือนและบุคคล",
+      "อุตสาหกรรม",
+      "ร้านค้าและบริการ",
       "งานวิเคราะห์",
     ]);
     await expect(filters.getByRole("link")).toHaveCount(0);
@@ -71,7 +71,7 @@ for (const width of [390, 1440]) {
     await expect(analysis).toHaveAttribute("aria-pressed", "true");
     await expect(overview.locator('a[href$="/applications"]')).toHaveCount(0);
 
-    await overview.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล" }).click();
+    await page.getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true }).click();
     const search = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
     await expect(search).toBeVisible();
     await page.keyboard.press("Escape");

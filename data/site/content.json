@@ -77,8 +77,8 @@
     "id": "spotlight",
     "kind": "settings",
     "data": {
-      "title": "SUNFORD JC21",
-      "accent": "ชั่งน้ำหนัก คำนวณราคา อ่านชัดทั้งสองด้าน",
+      "title": "SUNFORD WPS10KS",
+      "accent": "ชั่งน้ำหนัก นับจำนวน พร้อมมาตรฐาน IP67",
       "description": "",
       "primaryLabel": "ดูเพิ่มเติม",
       "secondaryLabel": "ปรึกษาผู้เชี่ยวชาญ",
@@ -161,7 +161,7 @@
                   "href": "/products?category=scales&subcategory=scale-price"
                 },
                 {
-                  "label": "อุตสาหกรรมงานผลิต",
+                  "label": "อุตสาหกรรม",
                   "href": "/products?category=scales&subcategory=scale-industrial"
                 },
                 {
@@ -266,7 +266,7 @@
           ],
           "groups": [
             {
-              "label": "ค้าปลีก อาหารและกาแฟ",
+              "label": "ร้านค้าและบริการ",
               "links": [
                 {
                   "label": "ร้านค้าและตลาดสด",
@@ -291,7 +291,7 @@
               ]
             },
             {
-              "label": "อุตสาหกรรมและการผลิต",
+              "label": "อุตสาหกรรม",
               "links": [
                 {
                   "label": "เครื่องชั่งสำหรับโรงงาน",
@@ -369,10 +369,10 @@
           ],
           "groups": [
             {
-              "label": "ค้าปลีกและระบบ POS",
+              "label": "ร้านค้าและบริการ",
               "links": [
                 {
-                  "label": "ซอฟต์แวร์สำหรับค้าปลีก",
+                  "label": "ซอฟต์แวร์สำหรับร้านค้าและบริการ",
                   "href": "/software/download#retail-software"
                 },
                 {
@@ -398,7 +398,7 @@
               ]
             },
             {
-              "label": "งานชั่งและการผลิต",
+              "label": "อุตสาหกรรม",
               "links": [
                 {
                   "label": "ซอฟต์แวร์สำหรับอุตสาหกรรม",
@@ -423,10 +423,10 @@
               ]
             },
             {
-              "label": "ครัวเรือนและสุขภาพ",
+              "label": "ครัวเรือนและบุคคล",
               "links": [
                 {
-                  "label": "ซอฟต์แวร์สำหรับครัวเรือน",
+                  "label": "ซอฟต์แวร์สำหรับครัวเรือนและบุคคล",
                   "href": "/software/download#household-software"
                 },
                 {

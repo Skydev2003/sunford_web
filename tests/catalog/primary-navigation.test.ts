@@ -1,9 +1,38 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
-import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
+import {
+  getHeaderNavigationItems,
+  getPrimaryNavigationItems,
+} from "../../src/features/site/data/primary-navigation";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
+
+test("the shared header follows the approved Figma order and preserves submenu destinations", () => {
+  const menus = getHeaderNavigationItems(defaultNavigation);
+  assert.deepEqual(
+    menus.map(({ label, href }) => [label, href]),
+    [
+      ["ร้าน", "/products"],
+      ["เครื่องชั่ง", "/products/category/scales"],
+      ["แท่นชั่ง", "/products/category/platforms"],
+      ["อินดิเคเตอร์", "/products/category/indicators"],
+      ["จัดสเปค", "/guides/indicator-platform-compatibility"],
+      ["ซอฟต์แวร์", "/software/download"],
+      ["อุปกรณ์เสริม", "/products/category/accessories"],
+      ["POS", "/products/category/pos"],
+      ["MES", "/solution/mes"],
+      ["บริการช่วยเหลือ", "/service"],
+    ],
+  );
+  assert.ok(
+    menus[5].groups?.some(({ links }) =>
+      links.some(({ href }) => href === "/software/download/sunford-pos-android"),
+    ),
+  );
+  assert.deepEqual(menus[8].links, []);
+  assert.ok(menus[9].links.some(({ href }) => href === "/warranty/register"));
+});
 
 test("Navbar submenu links add a catalogue section and only seed the matching feature", () => {
   const targets = [
@@ -404,11 +433,11 @@ test("the five chapter rails keep their category labels and product destinations
         actual.links.map(({ label, href, disabled }) => [label, href, Boolean(disabled)]),
         columns[0].links.map(([label, destination, disabled]) => [
           destination === "/products/category/scales/kitchen"
-            ? "ครัวเรือน"
+            ? "ครัวเรือนและบุคคล"
             : destination === "/products/category/scales/industrial"
-              ? "การผลิต"
+              ? "อุตสาหกรรม"
               : destination === "/products/category/scales/price"
-                ? "คำนวณราคา"
+                ? "ร้านค้าและบริการ"
                 : label,
           destination,
           disabled,

@@ -13,6 +13,60 @@ const verifiedDownloads = [
   "https://play.google.com/store/apps/details?id=cn.fitdays.fitdays",
   "https://apps.apple.com/th/app/fitdays/id1434527961",
 ];
+const rls1100NewDownload = "https://drive.google.com/file/d/1NjZxuU4WHGjqODKAX6NmUza-WnKmMNHy/view";
+const supportVideos = [
+  ["SUNFORD POS Smart Android", "sunford-pos-smart-android", "9Yf5J6LnhLE"],
+  ["SUNFORD POS Android", "sunford-pos-android", "k0-hlqHCNYI"],
+  ["SUNFORD POS Basic", "sunford-pos-basic", "SECGw6dYPks"],
+  ["SUNFORD DRV", "sunford-drv", "x8j_dMU7NXc"],
+] as const;
+
+test("download labels lift on pointer hover without adding an underline", async ({ page }) => {
+  await page.goto("/software/download");
+  const link = page.getByRole("main").locator('a[href="/software/download/sunford-pos-basic"]');
+  const label = link.locator("strong");
+  await link.hover();
+  await expect(label).toHaveCSS("text-decoration-line", "none");
+  await expect(label).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, -2)");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(label).toHaveCSS("transform", "none");
+  await link.click();
+  await expect(page).toHaveURL("/software/download/sunford-pos-basic");
+});
+
+test("download directory opens the four software support pages", async ({ page }) => {
+  const main = page.getByRole("main");
+  for (const [name, slug, video] of supportVideos) {
+    await page.goto("/software/download");
+    const path = `/software/download/${slug}`;
+    await main.locator(`a[href="${path}"]`).click({ timeout: 5000 });
+    await expect(page).toHaveURL(path);
+    await expect(main.getByRole("heading", { level: 1 })).toHaveText(new RegExp(`^${name}$`, "i"));
+    await expect(main.locator(`a[href="https://www.youtube.com/watch?v=${video}"]`)).toBeVisible();
+  }
+});
+
+test("RLS1100 shows both year-specific installers in the directory, detail page, and guide", async ({
+  page,
+}) => {
+  for (const path of [
+    "/software/download",
+    "/software/download/sunford-rls1100",
+    "/technical-specification/guides/rls1100",
+    "/technical-specification?guide=rls1100",
+  ]) {
+    await page.goto(path);
+    const main = page.getByRole("main");
+    await expect(main.getByRole("link", { name: /2568.*เป็นต้นไป/ })).toHaveAttribute(
+      "href",
+      rls1100NewDownload,
+    );
+    await expect(main.getByRole("link", { name: /2567.*ก่อนหน้า/ })).toHaveAttribute(
+      "href",
+      verifiedDownloads[0],
+    );
+  }
+});
 
 for (const width of [390, 1440]) {
   test(`download directory preserves category anchors and verified files at ${width}px`, async ({
@@ -27,11 +81,26 @@ for (const width of [390, 1440]) {
     await expect(heading).toHaveCSS("text-align", "center");
     await expect(main.locator("header p")).toHaveCSS("text-align", "center");
     await expect(main.getByRole("navigation")).toHaveCount(0);
+    await expect(main.getByRole("heading", { level: 2 })).toHaveText([
+      "ร้านค้าและบริการ",
+      "อุตสาหกรรม",
+      "ครัวเรือนและบุคคล",
+    ]);
     for (const [id, models] of [
-      ["retail-software", ["SUNFORD RLS1100", "SUNFORD RLS1800", "SUNFORD SmartRetail POS"]],
+      [
+        "retail-software",
+        [
+          "SUNFORD RLS1100",
+          "SUNFORD RLS1800",
+          "SUNFORD SmartRetail POS",
+          "SUNFORD POS Smart Android",
+          "SUNFORD POS Android",
+          "SUNFORD POS Basic",
+        ],
+      ],
       [
         "industrial-software",
-        ["SUNFORD Connect INDUS 1.10", "LP Label Editor สำหรับ LP50", "WeWeigh"],
+        ["SUNFORD Connect INDUS 1.10", "LP Label Editor สำหรับ LP50", "WeWeigh", "SUNFORD DRV"],
       ],
       ["household-software", ["Fitdays"]],
     ] as const) {
@@ -44,12 +113,12 @@ for (const width of [390, 1440]) {
     }
     await expect(
       main.locator("#industrial-software").getByRole("heading", { level: 3 }),
-    ).toHaveText(["Windows", "Android"]);
+    ).toHaveText(["Windows", "Android", "คู่มือและวิดีโอ"]);
     const links = main.locator('a[href^="https://"]');
-    await expect(links).toHaveCount(verifiedDownloads.length);
+    await expect(links).toHaveCount(verifiedDownloads.length + 1);
     expect(
       await links.evaluateAll((items) => items.map((item) => item.getAttribute("href"))),
-    ).toEqual(verifiedDownloads);
+    ).toEqual([rls1100NewDownload, ...verifiedDownloads]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
@@ -124,9 +193,7 @@ for (const width of [390, 1440]) {
     await page.goto("/software/download/sunford-pos-android");
     const main = page.getByRole("main");
     await expect(main.getByRole("heading", { level: 1 })).toHaveText("SUNFORD POS ANDROID");
-    await expect(
-      main.getByText(/ยังไม่มีคู่มือ วิดีโอแนะนำ หรือไฟล์ดาวน์โหลดที่ยืนยัน/),
-    ).toBeVisible();
+    await expect(main.getByRole("link", { name: /จัดการหลังร้าน/ })).toBeVisible();
     await expect(main.getByRole("link", { name: "ติดต่อฝ่ายบริการ" })).toHaveAttribute(
       "href",
       "/service?section=contact",
@@ -134,9 +201,9 @@ for (const width of [390, 1440]) {
     await expect(main.locator(".video-card, iframe")).toHaveCount(0);
     await page.goto("/software/download/sunford-rls1100");
     await expect(main.getByRole("heading", { level: 1 })).toContainText("RLS1100");
-    await expect(main.getByRole("link", { name: "ดาวน์โหลดโปรแกรม" })).toHaveAttribute(
+    await expect(main.getByRole("link", { name: /2568.*เป็นต้นไป/ })).toHaveAttribute(
       "href",
-      verifiedDownloads[0],
+      rls1100NewDownload,
     );
     await expect(main.getByRole("link", { name: "คู่มือติดตั้ง RLS1100" })).toHaveAttribute(
       "href",
@@ -171,21 +238,22 @@ for (const width of [390, 1440]) {
       await expect(
         main.getByRole("heading", { level: 1, name: "SUNFORD POS ANDROID" }),
       ).toBeVisible();
-      await expect(
-        main.getByText(/ยังไม่มีคู่มือ วิดีโอแนะนำ หรือไฟล์ดาวน์โหลดที่ยืนยัน/),
-      ).toBeVisible();
+      await expect(main.getByRole("link", { name: /จัดการหลังร้าน/ })).toBeVisible();
       await expect(main.getByRole("link", { name: "ติดต่อฝ่ายบริการ" })).toBeVisible();
       await page.goto("/software/download/sunford-rls1100");
       await expect(main.getByRole("heading", { level: 1 })).toContainText("RLS1100");
-      const download = main.getByRole("link", { name: "ดาวน์โหลดโปรแกรม" });
-      await expect(download).toBeVisible();
-      await expect(download).toHaveAttribute("href", verifiedDownloads[0]);
+      await expect(main.getByRole("link", { name: /2567.*ก่อนหน้า/ })).toHaveAttribute(
+        "href",
+        verifiedDownloads[0],
+      );
       await main.getByRole("link", { name: "SUNFORD RLS1800", exact: true }).click();
       await expect(page).toHaveURL("/software/download/sunford-rls1800");
       await expect(main.getByRole("heading", { level: 1 })).toBeVisible();
       await expect(main.getByRole("heading", { level: 1 })).toContainText("RLS1800");
-      await expect(download).toBeVisible();
-      await expect(download).toHaveAttribute("href", verifiedDownloads[1]);
+      await expect(main.getByRole("link", { name: "ดาวน์โหลดโปรแกรม" })).toHaveAttribute(
+        "href",
+        verifiedDownloads[1],
+      );
     } finally {
       await context.close();
     }
@@ -223,10 +291,14 @@ test("software detail routes expose only verified downloads or current support o
     const links = $("main.source-content-page a[href]")
       .map((_, link) => $(link).attr("href"))
       .get();
+    const downloads = indexes.map((index) => verifiedDownloads[index]);
+    if (slug === "sunford-rls1100") downloads.unshift(rls1100NewDownload);
     expect(
-      links.filter((link) => /^https?:/i.test(link)),
+      links.filter(
+        (link) => /^https?:/i.test(link) && !link.startsWith("https://www.youtube.com/"),
+      ),
       path,
-    ).toEqual(indexes.map((index) => verifiedDownloads[index]));
+    ).toEqual(downloads);
     expect(links, path).toContain("/software/download");
     if (guides[slug])
       expect(links, path).toContain("/technical-specification/guides/" + guides[slug]);

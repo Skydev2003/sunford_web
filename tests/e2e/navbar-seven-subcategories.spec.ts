@@ -71,7 +71,7 @@ function members(products: Product[], category: string, subcategory: string) {
 }
 
 async function homeReady(page: Page) {
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
 }
 
 async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard" | "mouse") {

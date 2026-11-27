@@ -22,7 +22,7 @@ test("catalog chapters show the directory press and hover feedback and keep keyb
 
   const chapter = page
     .locator("#products-chapters")
-    .getByRole("link", { name: "ครัวเรือน", exact: true });
+    .getByRole("link", { name: "ครัวเรือนและบุคคล", exact: true });
   await chapter.hover();
   await expect(chapter.locator(":scope > :first-child")).toHaveCSS(
     "transform",
@@ -52,7 +52,7 @@ test.describe("mobile catalog menus", () => {
     await expect(page.locator('[data-controls-ready="true"]')).toBeVisible();
     const chapter = page
       .locator("#products-chapters")
-      .getByRole("link", { name: "ครัวเรือน", exact: true });
+      .getByRole("link", { name: "ครัวเรือนและบุคคล", exact: true });
     await chapter.scrollIntoViewIfNeeded();
     const bounds = await chapter.boundingBox();
     if (!bounds) throw new Error("The kitchen chapter is not visible");

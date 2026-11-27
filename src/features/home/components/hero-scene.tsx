@@ -8,11 +8,9 @@ import styles from "./hero-scene.module.css";
 
 export function HeroScene({
   description,
-  logo,
   showAnnouncement = false,
 }: {
   description?: ReactNode;
-  logo: ReactNode;
   showAnnouncement?: boolean;
 }) {
   const root = useRef<HTMLElement>(null);
@@ -89,7 +87,6 @@ export function HeroScene({
       aria-labelledby="hero-title"
       data-hero-scene=""
       data-home-section="1"
-      data-opening="false"
       data-ready="true"
       data-running={allowed}
     >
@@ -135,9 +132,6 @@ export function HeroScene({
         <h1 id="hero-title" className={styles.heading}>
           <span>เครื่องชั่ง</span> <span>สำหรับธุรกิจของคุณ</span>
         </h1>
-        <div className={styles.logoSpace} data-hero-logo-space="" aria-hidden="true">
-          {logo}
-        </div>
         <div className={styles.actions}>
           <Link className={styles.cta} href={contactPath} prefetch={false}>
             ปรึกษาผู้เชี่ยวชาญ

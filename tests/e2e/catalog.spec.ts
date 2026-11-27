@@ -32,12 +32,11 @@ test("homepage introduces Sunford through the brand video and consultation", asy
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const heading = page.getByRole("heading", { level: 1 });
   const hero = page.locator("[data-hero-scene]");
   await expect(heading).toHaveText("เครื่องชั่ง สำหรับธุรกิจของคุณ");
   await expect(hero.locator("video")).toHaveAttribute("src", "/videos/sunford-web.mp4");
-  await expect(hero.locator("[data-hero-logo-space] [data-brand-opening]")).toBeHidden();
   await expect(
     hero.locator("[data-hero-product], img:visible:not([data-hero-poster] img)"),
   ).toHaveCount(0);

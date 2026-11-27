@@ -23,9 +23,7 @@ test("leaving an in-progress section reveal and going Back does not crash the ca
     };
   });
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 10000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await page.evaluate(() => {
     const heading = document.querySelector("#stories-heading")!;
     scrollTo({ top: heading.getBoundingClientRect().top + scrollY - 180, behavior: "instant" });
@@ -38,7 +36,7 @@ test("leaving an in-progress section reveal and going Back does not crash the ca
   await expect(page).toHaveURL(/\/products$/);
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await expect(page.locator("#stories-heading")).not.toBeEmpty();
   await expect(page.getByRole("heading", { name: "ไม่สามารถโหลดข้อมูลได้ในขณะนี้" })).toHaveCount(
     0,

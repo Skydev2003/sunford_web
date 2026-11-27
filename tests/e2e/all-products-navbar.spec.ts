@@ -12,7 +12,7 @@ async function visit(page: Page, route: string, width = 1440) {
   await page.goto(route);
   await page.evaluate(() => document.fonts.ready);
   if (route === "/")
-    await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   else await expect(header(page, route).getByRole("button").first()).toBeEnabled();
 }
 
@@ -82,10 +82,7 @@ for (const route of routes) {
       const page = await context.newPage();
       await page.goto(route);
       if (route === "/")
-        await expect(page.locator("[data-brand-opening]")).toHaveAttribute(
-          "data-phase",
-          "complete",
-        );
+        await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
       const nav = header(page, route);
       await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
       if (route === "/") {

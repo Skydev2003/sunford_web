@@ -13,9 +13,7 @@ test.describe("mobile centered previews", () => {
           );
       }
       await page.goto("/", { waitUntil: "domcontentloaded" });
-      await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-        timeout: 15000,
-      });
+      await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
       const track = page.locator(selector);
       const cards = track.locator(':scope > [data-focus-copy="1"]');
       await track.scrollIntoViewIfNeeded();
@@ -95,9 +93,7 @@ test("three videos stay sharp and the next video becomes gradually clearer witho
     );
   await page.setViewportSize({ width: 1440, height: 950 });
   await page.goto("/");
-  await expect(page.locator("[data-brand-opening]")).toHaveAttribute("data-phase", "complete", {
-    timeout: 15000,
-  });
+  await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   const track = page.locator(".video-track");
   const cards = track.locator(':scope > a[data-focus-copy="1"]');
   await track.scrollIntoViewIfNeeded();

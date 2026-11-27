@@ -87,7 +87,9 @@ for (const route of ["/products/category/scales", "/software/download", "/servic
           { timeout: 45000 },
         );
         await expectStaggerMotion(page.locator("#products-title"));
-        const kitchen = page.locator("#products-chapters").getByRole("link", { name: "ครัวเรือน" });
+        const kitchen = page
+          .locator("#products-chapters")
+          .getByRole("link", { name: "ครัวเรือนและบุคคล" });
         await kitchen.click();
         await expect(page.locator('[data-product-subcategory-page="scale-kitchen"]')).toBeVisible();
         await page.goBack();

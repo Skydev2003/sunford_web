@@ -2,10 +2,34 @@ import { contactPath } from "@/features/content/data/contact-route";
 import type { NavigationItem } from "../types";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
 import { platformPlacementPages } from "@/features/catalog/data/product-subcategory-pages";
+import { sunford } from "@/features/home/data/brand";
 import { siteMenuLabel } from "./site-menu-labels";
 
 const guideHref = "/guides/indicator-platform-compatibility";
 type MenuEntry = [label: string, href: string];
+
+const headerMenu: MenuEntry[] = [
+  ["ร้าน", "/products"],
+  ["เครื่องชั่ง", "/products/category/scales"],
+  ["แท่นชั่ง", "/products/category/platforms"],
+  ["อินดิเคเตอร์", "/products/category/indicators"],
+  ["จัดสเปค", guideHref],
+  ["ซอฟต์แวร์", sunford.downloads],
+  ["อุปกรณ์เสริม", "/products/category/accessories"],
+  ["POS", "/products/category/pos"],
+  ["MES", sunford.mes],
+  ["บริการช่วยเหลือ", "/service"],
+];
+
+export function getHeaderNavigationItems(navigation: NavigationItem[]): NavigationItem[] {
+  const itemsByHref = new Map(
+    [...navigation, ...getPrimaryNavigationItems(navigation)].map((item) => [item.href, item]),
+  );
+  return headerMenu.map(([label, href]) => {
+    const menu = itemsByHref.get(href);
+    return { ...menu, label, href, links: menu?.links ?? [] };
+  });
+}
 
 export function getDisabledNavigationDestinations(navigation: NavigationItem[]) {
   return new Set(
@@ -108,9 +132,15 @@ export function getPrimaryNavigationItems(
       categoryLabel("scales", "เครื่องชั่ง"),
       "/products/category/scales",
       [
-        ["ครัวเรือน", "/products/category/scales/kitchen"],
-        ["การผลิต", "/products/category/scales/industrial"],
-        ["คำนวณราคา", "/products/category/scales/price"],
+        [
+          surface === "navbar" ? "ครัวเรือน" : "ครัวเรือนและบุคคล",
+          "/products/category/scales/kitchen",
+        ],
+        [surface === "navbar" ? "การผลิต" : "อุตสาหกรรม", "/products/category/scales/industrial"],
+        [
+          surface === "navbar" ? "คำนวณราคา" : "ร้านค้าและบริการ",
+          "/products/category/scales/price",
+        ],
         ["งานวิเคราะห์", "/products/category/scales/analytical"],
       ],
       [
