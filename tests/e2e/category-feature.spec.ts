@@ -74,8 +74,8 @@ test("category selection changes its media while preserving every description an
   const expectedImages = [
     "/images/pd/WPS10KS.png",
     "/images/pd/TRP-58B.png",
-    "/videos/ChatGPT%20Image%20Nov%204%2C%202026%2C%2001_57_30%20PM.png",
-    "/videos/ChatGPT%20Image%20Nov%204%2C%202026%2C%2001_57_44%20PM.png",
+    "/images/pd/platform-spotlight.webp",
+    "/images/pd/indicator-spotlight.webp",
   ];
   const sources = new Set<string>();
   for (let index = 0; index < 4; index++) {
@@ -87,6 +87,11 @@ test("category selection changes its media while preserving every description an
     await expect
       .poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth))
       .toBeGreaterThan(0);
+    if (expectedImages[index].endsWith(".webp")) {
+      const source = await page.request.get(expectedImages[index]);
+      expect(source.status()).toBe(200);
+      expect(source.headers()["content-type"]).toMatch(/^image\/webp\b/);
+    }
     const optimized = await page.request.get(
       await image.evaluate((node: HTMLImageElement) => node.currentSrc),
     );

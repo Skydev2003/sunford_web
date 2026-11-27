@@ -12,7 +12,7 @@
   left: -210px;
   width: 1100px;
   height: 480px;
-  border: 60px solid #fff7fa;
+  border: 60px solid color-mix(in srgb, var(--home-brand-red) 4%, white);
   border-radius: 50%;
   transform: rotate(20deg);
   content: none;
@@ -130,7 +130,7 @@
   transition: transform 0.6s ease;
 }
 .quoteCard > svg {
-  color: #cc2445;
+  color: var(--home-brand-red);
 }
 .quoteCard p {
   margin-top: -3px;
@@ -149,7 +149,7 @@
   height: 3px;
   margin: 7px auto 0;
   border-radius: 50%;
-  background: #f3284e;
+  background: var(--home-brand-red);
   transform: rotate(-7deg);
 }
 .sideCards {
@@ -165,8 +165,8 @@
   text-align: center;
 }
 .noteCard > svg {
-  color: #ff3d66;
-  filter: drop-shadow(0 3px 3px #ff46661a);
+  color: var(--home-brand-red);
+  filter: drop-shadow(0 3px 3px color-mix(in srgb, var(--home-brand-red) 10%, transparent));
 }
 .noteCard p {
   font-weight: 500;
@@ -177,7 +177,7 @@
   width: 30px;
   height: 2px;
   margin-left: 9px;
-  background: #ff3d66;
+  background: var(--home-brand-red);
 }
 .gallery[data-tilt="left"] .quoteCard {
   transform: rotate(6deg);
@@ -186,7 +186,7 @@
   transform: rotate(-4deg);
 }
 .gallery button:focus-visible {
-  outline: 3px solid #e7193c;
+  outline: 3px solid var(--home-brand-red);
   outline-offset: 5px;
 }
 .currentPhoto {
@@ -204,7 +204,7 @@
   color: #f5f5f7;
 }
 .copy > :global(.eyebrow) {
-  color: #ff1745;
+  color: var(--home-brand-red);
 }
 .copy h2 {
   margin-block: 12px 14px;
@@ -213,7 +213,7 @@
   letter-spacing: -1px;
 }
 .copy h2 span {
-  color: #f71943;
+  color: var(--home-brand-red);
 }
 .copy > p:not(:global(.eyebrow)) {
   margin-top: 12px;
@@ -240,7 +240,7 @@
   margin-bottom: 6px;
   border-radius: 50%;
   background: #1c1c1e;
-  color: #fa1d49;
+  color: var(--home-brand-red);
 }
 .value strong {
   color: #f5f5f7;
@@ -263,13 +263,13 @@
   gap: 16px;
   padding: 12px 22px;
   border-radius: 999px;
-  background: #ff123e;
+  background: var(--home-brand-red);
   color: #fff;
   font-size: 13px;
-  box-shadow: 0 10px 25px #ff15451a;
+  box-shadow: 0 10px 25px color-mix(in srgb, var(--home-brand-red) 10%, transparent);
 }
 .storyLink:hover {
-  background: #db0f35;
+  background: color-mix(in srgb, var(--home-brand-red) 85%, black);
 }
 .signature {
   display: flex;
@@ -277,7 +277,7 @@
   gap: 12px;
 }
 .signature strong {
-  color: #fb1642;
+  color: var(--home-brand-red);
   font-size: 22px;
   font-style: italic;
   letter-spacing: -1px;

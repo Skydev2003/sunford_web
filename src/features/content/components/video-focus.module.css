@@ -19,7 +19,7 @@
   transition: none;
 }
 .section .card:focus-visible {
-  outline: 3px solid #e71843;
+  outline: 3px solid var(--home-brand-red, #e71843);
   outline-offset: 3px;
   filter: none;
   opacity: 1;

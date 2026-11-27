@@ -11,7 +11,7 @@
   text-align: left;
 }
 .eyebrow {
-  color: #ff1644;
+  color: var(--home-brand-red);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 2.3px;
@@ -24,7 +24,7 @@
   line-height: 1.4;
 }
 .heading h2 span {
-  color: #f4113d;
+  color: var(--home-brand-red);
 }
 .intro {
   margin-top: 4px;
@@ -41,7 +41,7 @@
   padding: 10px 20px;
   border-radius: 999px;
   background: #1c1c1e;
-  color: #ff4c60;
+  color: var(--home-brand-red);
   font-size: 12px;
 }
 .allStories:hover {
@@ -74,7 +74,7 @@
   box-shadow: 0 10px 28px #0008;
 }
 .card:focus-visible {
-  outline: 3px solid #e71843;
+  outline: 3px solid var(--home-brand-red);
   outline-offset: 3px;
   filter: none;
   opacity: 1;
@@ -127,7 +127,7 @@
   align-items: center;
   gap: 10px;
   margin-top: auto;
-  color: #ff4c60;
+  color: var(--home-brand-red);
   font-size: 13px;
   font-weight: 500;
 }

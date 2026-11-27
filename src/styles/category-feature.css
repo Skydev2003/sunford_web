@@ -20,7 +20,7 @@
 
 .category-feature-inner > h2 span,
 .category-feature-belt-label span {
-  color: #ff4c60;
+  color: var(--home-brand-red);
 }
 
 .category-feature-layout {
@@ -92,11 +92,14 @@
     transform 0.3s;
 }
 .category-feature-panel.is-active {
-  background: linear-gradient(#2c1d20 40%, #1b1617);
+  background: linear-gradient(
+    color-mix(in srgb, var(--home-brand-red) 10%, #1b1b1b) 40%,
+    color-mix(in srgb, var(--home-brand-red) 3%, #171717)
+  );
 }
 .category-feature-panel:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px #d7192d4d;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--home-brand-red) 30%, transparent);
 }
 .category-feature-trigger {
   display: block;
@@ -126,7 +129,7 @@
   color: #cfcfcf;
 }
 .category-feature-panel.is-active .category-feature-icon {
-  color: #ff4c60;
+  color: var(--home-brand-red);
 }
 .category-feature-description {
   margin-top: 8px;
@@ -185,7 +188,7 @@
   transform: translateY(-4px);
 }
 .category-feature :is(button, a):focus-visible {
-  outline: 3px solid var(--red);
+  outline: 3px solid var(--home-brand-red);
   outline-offset: 3px;
 }
 @keyframes category-feature-scroll {

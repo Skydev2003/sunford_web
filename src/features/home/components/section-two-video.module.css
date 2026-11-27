@@ -77,7 +77,7 @@
 
 .poster:hover .play,
 .poster:focus-visible .play {
-  background: #d7192d;
+  background: var(--home-brand-red);
 }
 
 .poster:focus-visible {
