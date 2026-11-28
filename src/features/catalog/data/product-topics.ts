@@ -34,7 +34,7 @@ export const topicGroups = [
     topics: [
       { id: "android", label: "POS ระบบ Android", href: "/Product/POS/Android" },
       { id: "windows", label: "POS ระบบ Windows", href: "/Product/POS/Windows" },
-      { id: "pos-software", label: "ซอฟต์แวร์ POS", href: "/software/download" },
+      { id: "pos-software", label: "ซอฟต์แวร์ POS", href: "/software" },
       { id: "printers", label: "เครื่องพิมพ์", href: "/collections/printers" },
       { id: "peripherals", label: "อุปกรณ์ต่อพ่วง", href: "/product/scale-peripherals" },
     ],

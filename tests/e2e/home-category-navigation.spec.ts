@@ -1,3 +1,4 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
 import { expect, test } from "@playwright/test";
 import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
@@ -18,7 +19,7 @@ for (const width of [390, 768, 833, 834, 1024, 1400, 1440, 1920]) {
   test(`Home Navbar spacing matches category and company pages at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const measurements = [];
-    for (const route of ["/", "/products/category/scales", "/service?section=contact"]) {
+    for (const route of ["/", "/scales", "/service?section=contact"]) {
       await page.goto(route);
       const home = route === "/";
       const header = page.locator(home ? ".site-header:visible" : "[data-products-header]:visible");
@@ -96,11 +97,11 @@ for (const width of [1400, 1440, 1920]) {
     expect(rectangles.at(-1)!.right).toBeLessThanOrEqual(inner!.x + inner!.width + 1);
     for (const { id, label } of productCategoryDefinitions) {
       const parent = header.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
-      await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
+      await expect(parent).toHaveAttribute("href", `/${id}`);
       await parent.hover();
       const panel = header.locator("[data-nav-menu]");
       const definition = getPrimaryNavigationItems(defaultNavigation).find(
-        (item) => item.href === `/products/category/${id}`,
+        (item) => item.href === `/${id}`,
       )!;
       const expected = definition.links;
       await expect(panel.locator('[data-nav-column="primary"]').getByRole("link")).toHaveText(
@@ -163,12 +164,12 @@ for (const width of [390, 1440]) {
               .getByRole("link", { name: label, exact: true })
           : header.locator(".desktop-nav").getByRole("link", { name: label, exact: true });
       await parent.click();
-      await expect(page).toHaveURL(new URL(`/products/category/${id}`, page.url()).href);
+      await expect(page).toHaveURL(new URL(`/${id}`, page.url()).href);
       await expect(page.locator(".site-header:visible")).not.toHaveAttribute("data-nav-home");
       await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
       await expect(
         page.locator(`[data-overview-category="${id}"]:visible`).getByRole("heading", { level: 1 }),
-      ).toHaveText(label);
+      ).toHaveText(catalogPageTitle(`/${id}`, label));
     }
   });
 }
@@ -199,10 +200,10 @@ test("mobile native arrows expand children while names remain separate touch lin
   expect(linkBox!.x + linkBox!.width).toBeLessThanOrEqual(arrowBox!.x + 1);
   await arrow.tap();
   await expect(mobile.getByRole("button", { name: "เมนูหลัก", exact: true })).toBeFocused();
-  const child = mobile.getByRole("link", { name: "ไลฟ์สไตล์", exact: true });
+  const child = mobile.getByRole("link", { name: "ครัวเรือนและบุคคล", exact: true });
   await child.scrollIntoViewIfNeeded();
   await child.tap();
-  await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen#product-listing-scales$/);
+  await expect(page).toHaveURL(/\/scales\/kitchen#product-listing-scales$/);
   await expect(page.locator('[data-product-subcategory-page="scale-kitchen"]')).toBeVisible();
   await expect(page.locator('#mock-product-results a[href^="/products/"]').first()).toBeVisible();
   await context.close();
@@ -222,7 +223,7 @@ test("Home keyboard preserves parent navigation and first-child focus", async ({
   await expect(parent).toBeFocused();
   await expect(page.locator("#products-navigation-panel")).toBeHidden();
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/products\/category\/scales$/);
+  await expect(page).toHaveURL(/\/scales$/);
 });
 
 test("Home category links work before hydration", async ({ page }) => {
@@ -236,11 +237,11 @@ test("Home category links work before hydration", async ({ page }) => {
   try {
     await page.goto("/", { waitUntil: "commit" });
     await expect(page.locator(".desktop-nav > a")).toHaveText(labels);
-    const parent = page.locator('.desktop-nav a[href="/products/category/platforms"]');
+    const parent = page.locator('.desktop-nav a[href="/platforms"]');
     await expect(parent).toBeVisible();
     await parent.click({ noWaitAfter: true });
-    await page.waitForURL(/\/products\/category\/platforms$/, { waitUntil: "commit" });
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("โครงสร้างแท่นชั่ง");
+    await page.waitForURL(/\/platforms$/, { waitUntil: "commit" });
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("แท่นชั่ง");
   } finally {
     release();
     await page.unrouteAll({ behavior: "wait" });

@@ -1,3 +1,5 @@
+import { productCategoryPath } from "../data/category-paths";
+import { platformSpecBuilderPath } from "../data/platform-spec-builder-path";
 import Image from "next/image";
 import Link from "next/link";
 import { CatalogNavigationLink } from "./catalog-navigation-link";
@@ -5,6 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Fragment } from "react";
 import { ProductImage } from "@/components/ui/product-image";
 import { sunford } from "@/features/home/data/brand";
+import { catalogPageTitles } from "@/features/site/data/site-menu-labels";
 import type { ClientProduct } from "../types";
 import type { ProductCategory } from "../data/mock-categories";
 import { catalogCardName } from "../data/catalog-card-names";
@@ -57,9 +60,7 @@ export function ProductsIndexContent({
     <div className={styles.index} data-products-directory data-overview-section="index">
       <header className={styles.intro}>
         <ProductsIndexMotion />
-        <h1 id="products-title">
-          <span className={styles.accessibleTitle}>เครื่องชั่งน้ำหนักล้ำสมัย</span>
-        </h1>
+        <h1 id="products-title">{catalogPageTitles["/products"]}</h1>
         <div className={styles.help}>
           <p>
             ปรึกษาผู้เชี่ยวชาญ
@@ -81,7 +82,7 @@ export function ProductsIndexContent({
               <li key={id} className={styles.category}>
                 <CatalogNavigationLink
                   className={styles.categoryLink}
-                  href={`/products/category/${id}`}
+                  href={productCategoryPath(id)}
                 >
                   <div className={styles.categoryImage}>
                     <ProductImage
@@ -101,10 +102,7 @@ export function ProductsIndexContent({
             );
           })}
           <li className={styles.category}>
-            <CatalogNavigationLink
-              className={styles.categoryLink}
-              href="/guides/indicator-platform-compatibility"
-            >
+            <CatalogNavigationLink className={styles.categoryLink} href={platformSpecBuilderPath}>
               <div className={`${styles.categoryImage} ${styles.categoryImagePair}`}>
                 <div>
                   <Image
@@ -176,7 +174,7 @@ export function ProductsIndexContent({
               )}
               {id === "indicators" && (
                 <li className={styles.card}>
-                  <Link href="/products/warehouse-G106124" className={styles.aboutCard}>
+                  <Link href="/products/acs-30-fc31" className={styles.aboutCard}>
                     <p className={styles.aboutEyebrow} lang="en">
                       SUNFORD PRECISION
                     </p>

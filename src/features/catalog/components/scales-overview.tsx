@@ -1,3 +1,4 @@
+import type { OverviewFeature } from "../data/catalog-overview-features";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
@@ -20,10 +21,12 @@ const modelPhotos: Readonly<Record<string, string>> = {
 const topicImages: Readonly<Record<string, string>> = {
   capacity: "/images/products/scale-showcase/g106131-front-4k.webp",
   resolution: "/images/products/scale-showcase/g106643-front-4k.webp",
-  compare: "/images/category-chapters/scales/price.webp",
+  compare: "/images/category-chapters/scales/retail.webp",
 };
 
-export async function ScalesOverview() {
+export async function ScalesOverview({
+  overviewFeature,
+}: { overviewFeature?: OverviewFeature } = {}) {
   const {
     products: catalogProducts,
     categories,
@@ -56,7 +59,7 @@ export async function ScalesOverview() {
       title: "ชั่งซื้อขายได้อย่างมั่นใจ",
       detail:
         "มีใบรับรองการสอบเทียบเครื่องมือวัด ที่แสดงผลการสอบเทียบพร้อมค่าวความไม่แน่นอนในการวัดตามมาตรฐาน ISO/IEC 17025 ที่ช่วยสร้างความเชื่อมั่นให้ผู้ประกอบการ ในการควบคุมต้นทุน และการปรับปรุงประสิทธิภาพการผลิต",
-      href: "/products/category/scales/price",
+      href: "/scales/retail",
     },
     {
       title: "รับประกันสูงสุดถึง 3 ปี",
@@ -68,7 +71,7 @@ export async function ScalesOverview() {
       title: "การใช้งานหลากหลาย",
       detail:
         "มีรุ่นปุ่มภาษาไทยและไทย–อังกฤษ รุ่นจอสองด้าน และรุ่นคำนวณเงินทอน สำหรับพื้นที่เปียกมีรุ่น IP67 และแท่นสเตนเลส SUS304",
-      href: "/products/category/scales/industrial",
+      href: "/scales/industrial",
     },
     {
       title: "จากหน้าร้านถึงโรงงาน",
@@ -87,6 +90,7 @@ export async function ScalesOverview() {
       categories={[category]}
       cardNames={cardNames}
       categoryId="scales"
+      overviewFeature={overviewFeature}
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       stories={stories}

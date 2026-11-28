@@ -11,7 +11,7 @@ for (const [width, inset, gapAbove, cardHeight, imageSize] of [
   }) => {
     await page.setViewportSize({ width, height: 1218 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/products/category/scales");
+    await page.goto("/scales");
     const hero = page.locator('[data-overview-section="hero"]');
     const tabs = hero.getByRole("tab");
     await expect(tabs).toHaveCount(2);

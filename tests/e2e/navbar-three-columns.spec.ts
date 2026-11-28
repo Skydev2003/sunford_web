@@ -1,14 +1,18 @@
+import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
+import { isProductCategoryPath } from "../../src/features/catalog/data/category-paths";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import {
   getHeaderNavigationItems,
   getPrimaryNavigationItems,
 } from "../../src/features/site/data/primary-navigation";
 
-const menus = getPrimaryNavigationItems(defaultNavigation);
 const headerMenus = getHeaderNavigationItems(defaultNavigation);
 const headerLabels = new Map(headerMenus.map(({ href, label }) => [href, label]));
+const menus = getPrimaryNavigationItems(defaultNavigation).filter(({ href }) =>
+  headerLabels.has(href),
+);
 const routes = ["/", "/service?section=contact"];
 const duplicateKeyWarnings = new WeakMap<Page, string[]>();
 
@@ -98,7 +102,7 @@ for (const width of [390, 834, 1440]) {
     for (const route of [
       "/",
       "/products",
-      "/products/category/scales",
+      "/scales",
       "/products/wps10ks",
       "/service/quotation",
       "/service?section=contact",
@@ -364,9 +368,13 @@ for (const route of routes) {
               await expect(main).toHaveCount(1);
               await expect(main.locator("h1").first()).not.toHaveText("");
               expect((await main.innerText()).trim().length).toBeGreaterThan(80);
-              if (/^\/products\/category\/[^/]+$/.test(expected.href)) {
+              if (["/indicators", "/platforms/indicators"].includes(expected.href)) {
+                const filters = main.getByRole("navigation", { name: "คุณสมบัติอินดิเคเตอร์" });
+                await expect(filters.getByRole("link", { name: "ทุกผลิตภัณฑ์" })).toBeVisible();
+                await expect(main.locator("#products-lineup > li:has(h3)").first()).toBeVisible();
+              } else if (isProductCategoryPath(expected.href)) {
                 const lineup = main.locator('[data-overview-section="lineup"]');
-                const platforms = expected.href === "/products/category/platforms";
+                const platforms = expected.href === "/platforms";
                 const filters = lineup.getByRole("group", {
                   name: platforms ? "กรองตามวัสดุ" : "กรองผลิตภัณฑ์",
                 });
@@ -375,10 +383,8 @@ for (const route of routes) {
                 ).toBeVisible();
                 await expect(filters.getByRole("link")).toHaveCount(0);
                 await expect(lineup.locator("#products-lineup > li:has(h3)").first()).toBeVisible();
-              } else if (expected.href.startsWith("/products/category/")) {
-                await expect(
-                  main.locator('a[href^="/products/"]:not([href^="/products/category/"])').first(),
-                ).toBeAttached();
+              } else if (Boolean(getProductSubcategoryPageByHref(expected.href))) {
+                await expect(main.locator('a[href^="/products/"]').first()).toBeAttached();
               }
               if (page.url() !== original) {
                 await page.goBack();
@@ -405,7 +411,12 @@ for (const route of routes) {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await visit(page, route);
-    const panel = await openMenu(page, route, 1440, 3);
+    const panel = await openMenu(
+      page,
+      route,
+      1440,
+      menus.findIndex(({ href }) => href === "/platforms"),
+    );
     const trigger = header(page, route).getByRole("link", {
       name: "แท่นชั่ง",
       exact: true,
@@ -420,11 +431,10 @@ for (const route of routes) {
     }
     await page.keyboard.press("Escape");
     await expect(trigger).toBeFocused();
-    const guide = header(page, route)
-      .locator(route === "/" ? ".desktop-nav" : "[data-products-nav]")
-      .getByRole("link", { name: "จัดสเปค", exact: true });
+    await trigger.press("ArrowDown");
+    const guide = panel.getByRole("link", { name: "จัดสเปค", exact: true });
     await guide.click();
-    await expect(page).toHaveURL(/\/guides\/indicator-platform-compatibility$/);
+    await expect(page).toHaveURL("/platforms/spec-builder");
     await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   });
 }
@@ -519,7 +529,7 @@ test("short desktop menus reset scroll when hovering to another menu and unlock 
   });
   expect(await panel.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
   await nav.locator(".desktop-nav").getByRole("link", { name: "เครื่องชั่ง", exact: true }).hover();
-  await expect(panel.locator('[data-nav-menu="/products/category/scales"]')).toBeVisible();
+  await expect(panel.locator('[data-nav-menu="/scales"]')).toBeVisible();
   await expect(panel.locator('[data-nav-column="uses"] a').first()).toBeVisible();
   expect(await panel.evaluate((node) => node.scrollTop)).toBe(0);
 

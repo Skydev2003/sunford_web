@@ -108,9 +108,9 @@ for (const viewport of [
     const pos = shopMenu
       .locator('[data-nav-column="primary"]')
       .getByRole("link", { name: "ระบบ POS", exact: true });
-    await expect(pos).toHaveAttribute("href", "/products/category/pos#product-lineup-pos");
+    await expect(pos).toHaveAttribute("href", "/pos#product-lineup-pos");
     await pos.click();
-    await expect(page).toHaveURL(/\/products\/category\/pos#product-lineup-pos$/);
+    await expect(page).toHaveURL(/\/pos#product-lineup-pos$/);
     await expect(header).not.toHaveAttribute("data-hero-backdrop-tracked");
     expect(hydrationErrors).toEqual([]);
   });

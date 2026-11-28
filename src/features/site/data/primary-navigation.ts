@@ -1,25 +1,36 @@
 import { contactPath } from "@/features/content/data/contact-route";
+import { mesPaths } from "@/features/content/data/mes-paths";
+import { isProductCategoryPath } from "@/features/catalog/data/category-paths";
+import { productListingFeatureHref } from "@/features/catalog/data/catalog-submenu-destinations";
+import {
+  indicatorOverviewFeatures,
+  platformIndicatorsPath,
+  platformStructuresPath,
+  platformStructureTypes,
+  scaleOverviewFeatures,
+} from "@/features/catalog/data/catalog-overview-features";
+import { scaleSpecBuilderPath } from "@/features/catalog/data/scale-spec-builder-path";
+import { platformSpecBuilderPath } from "@/features/catalog/data/platform-spec-builder-path";
 import { editorialArticlesPath } from "@/features/content/data/editorial-sections";
 import type { NavigationItem } from "../types";
 import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
 import { platformPlacementPages } from "@/features/catalog/data/product-subcategory-pages";
+import { posPlatformLabels } from "@/features/catalog/data/pos-subcategories";
 import { sunford } from "@/features/home/data/brand";
-import { siteMenuLabel } from "./site-menu-labels";
+import { catalogPageTitles, siteMenuLabel } from "./site-menu-labels";
 
-const guideHref = "/guides/indicator-platform-compatibility";
+const guideHref = platformSpecBuilderPath;
 const componentShopHref =
   "https://sunfordshop.com/%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B8%84%E0%B9%89%E0%B8%B2/?sort=6";
-type MenuEntry = [label: string, href: string];
+type MenuEntry = [label: string, href: string, subtitle?: string];
 
 const headerMenu: MenuEntry[] = [
-  ["ร้าน", "/products"],
-  ["เครื่องชั่ง", "/products/category/scales"],
-  ["แท่นชั่ง", "/products/category/platforms"],
-  ["อินดิเคเตอร์", "/products/category/indicators"],
-  ["จัดสเปค", guideHref],
+  [catalogPageTitles["/products"], "/products"],
+  [catalogPageTitles["/scales"], "/scales"],
+  [catalogPageTitles["/platforms"], "/platforms"],
   ["ซอฟต์แวร์", sunford.downloads],
-  ["อุปกรณ์เสริม", "/products/category/accessories"],
-  ["POS", "/products/category/pos"],
+  ["อุปกรณ์เสริม", "/accessories"],
+  ["POS", "/pos"],
   ["MES", sunford.mes],
   ["โซลูชัน", "/solutions"],
   ["บริการช่วยเหลือ", "/service"],
@@ -28,15 +39,48 @@ const headerMenu: MenuEntry[] = [
 type HeaderGroup = { label: string; links: MenuEntry[] };
 
 const contactGroup: HeaderGroup = { label: "ช่วยเหลือ", links: [["ติดต่อเรา", contactPath]] };
+const onlineShop: MenuEntry = ["เลือกซื้อที่ร้านออนไลน์", "https://sunfordshop.com/"];
+const quotation: MenuEntry = ["ขอใบเสนอราคา", "/service/quotation"];
+const businessHelp: HeaderGroup = {
+  label: "ช่วยเหลือ",
+  links: [
+    ["ให้คำปรึกษาแนะนำ", contactPath],
+    ["ทดลองใช้งานจริง", contactPath],
+    onlineShop,
+    quotation,
+    ...contactGroup.links,
+  ],
+};
+
+function configuredMenu(
+  href: string,
+  label: string,
+  [primary, ...groups]: [HeaderGroup, ...HeaderGroup[]],
+  disabled: ReadonlySet<string>,
+): NavigationItem {
+  const link = ([label, href, subtitle]: MenuEntry) => ({
+    label,
+    href,
+    ...(subtitle ? { subtitle } : {}),
+    ...(!href || disabled.has(href) ? { disabled: true } : {}),
+  });
+  return {
+    href,
+    label,
+    submenuLabel: primary.label,
+    links: primary.links.map(link),
+    groups: groups.map((group) => ({ label: group.label, links: group.links.map(link) })),
+  };
+}
 
 const headerSubmenus: Partial<Record<string, [HeaderGroup, ...HeaderGroup[]]>> = {
   [sunford.downloads]: [
     {
       label: "ซอฟต์แวร์",
       links: [
-        ["การพาณิชย์และค้าปลีก", `${sunford.downloads}#retail-software`],
-        ["การผลิตอุตสาหกรรม", `${sunford.downloads}#industrial-software`],
-        ["ครัวเรือนและสุขภาพ", `${sunford.downloads}#household-software`],
+        ["การพาณิชย์และค้าปลีก", `${sunford.downloads}/retail`],
+        ["การผลิตอุตสาหกรรม", `${sunford.downloads}/industrial`],
+        ["ครัวเรือนและสุขภาพ", `${sunford.downloads}/household`],
       ],
     },
     contactGroup,
@@ -45,11 +89,11 @@ const headerSubmenus: Partial<Record<string, [HeaderGroup, ...HeaderGroup[]]>> =
     {
       label: "สินค้า",
       links: [
-        ["ควบคุมชุดการผลิต", `${sunford.mes}/batch-control`],
-        ["ควบคุมสูตรการผลิต", `${sunford.mes}/formula-control`],
+        ["Batch MES", mesPaths.batchControl, "ควบคุมชุดการผลิต"],
+        ["Batch formula MES", mesPaths.formulaControl, "ควบคุมสูตรการผลิต"],
       ],
     },
-    contactGroup,
+    businessHelp,
   ],
   "/solutions": [
     {
@@ -58,7 +102,7 @@ const headerSubmenus: Partial<Record<string, [HeaderGroup, ...HeaderGroup[]]>> =
         ["ส่งข้อมูลน้ำหนักเข้าคอมพิวเตอร์ (แบบใช้สาย)", "/solutions/rs232"],
         ["ส่งข้อมูลน้ำหนักเข้าคอมพิวเตอร์ (แบบไร้สาย)", "/solutions/wireless"],
         ["บันทึกข้อมูลน้ำหนักลง USB Drive", "/solutions/usb-drive"],
-        ["ตั้งค่าพารามิเตอร์และรูปแบบการรับส่งข้อมูล", ""],
+        ["ตั้งค่าพารามิเตอร์และรูปแบบการรับส่งข้อมูล", "/solutions/data-format"],
         ["ปรับรูปแบบข้อมูลส่งออกด้วยไดรเวอร์", "/solutions/driver"],
         ["เชื่อมต่อเครื่องชั่งกับอุปกรณ์ PLC", "/solutions/plc"],
       ],
@@ -72,7 +116,7 @@ const headerSubmenus: Partial<Record<string, [HeaderGroup, ...HeaderGroup[]]>> =
         ["พิมพ์สติ๊กเกอร์น้ำหนัก วันที่ บาร์โค้ด และ QR Code", "/solutions/label-printing"],
         ["บันทึกรายงานการชั่งบน Windows", "/solutions/windows"],
         ["บันทึกรายงานการชั่งบน Android (ขั้นต้น)", "/solutions/android"],
-        ["บันทึกรายงานการชั่งบน Android (ขั้นสูง)", ""],
+        ["บันทึกรายงานการชั่งบน Android (ขั้นสูง)", "/solutions/android-advanced"],
         ["ชั่งน้ำหนักพร้อมสร้าง Lot No. และ Serial No.", "/solutions/lot-serial"],
       ],
     },
@@ -94,23 +138,9 @@ export function getHeaderNavigationItems(navigation: NavigationItem[]): Navigati
     [...navigation, ...getPrimaryNavigationItems(navigation)].map((item) => [item.href, item]),
   );
   const disabled = getDisabledNavigationDestinations(navigation);
-  const link = ([label, href]: MenuEntry) => ({
-    label,
-    href,
-    ...(!href || disabled.has(href) ? { disabled: true } : {}),
-  });
   return headerMenu.map(([label, href]) => {
     const submenu = headerSubmenus[href];
-    if (submenu) {
-      const [primary, ...groups] = submenu;
-      return {
-        label,
-        href,
-        submenuLabel: primary.label,
-        links: primary.links.map(link),
-        groups: groups.map((group) => ({ label: group.label, links: group.links.map(link) })),
-      };
-    }
+    if (submenu) return configuredMenu(href, label, submenu, disabled);
     const menu = itemsByHref.get(href);
     return { ...menu, label, href, links: menu?.links ?? [] };
   });
@@ -159,11 +189,26 @@ export function getPrimaryNavigationItems(
     return [...byDestination.values()];
   };
   const help = links([
-    ["คู่มือและสเปก", "/technical-specification"],
-    ["ลงทะเบียนรับประกัน", "/warranty/register"],
-    ["เงื่อนไขรับประกัน", "/warranty/policy"],
+    ["คู่มือและสเปก", "/service/technical-specification"],
+    ["ลงทะเบียนรับประกัน", "/service/warranty/register"],
+    ["เงื่อนไขรับประกัน", "/service/warranty/policy"],
     ["ติดต่อฝ่ายบริการ", contactPath],
   ]);
+  const overviewFeatureLinks = (
+    category: string,
+    features: readonly (readonly [string, string])[],
+  ) =>
+    links(
+      features.map(([id, label]) => [label, productListingFeatureHref(category, id)]),
+      "configured",
+    );
+  const indicatorFeatures = links(
+    indicatorOverviewFeatures.map(([id, label]) => [
+      label,
+      `${platformIndicatorsPath}?feature=${id}`,
+    ]),
+    "configured",
+  );
   const productLinks = navigation.find((item) => item.href === "/products")?.links ?? [];
   const categoryLabel = (id: string, fallback: string) =>
     productLinks.find((link) => new URLSearchParams(link.href.split("?")[1]).get("category") === id)
@@ -183,7 +228,7 @@ export function getPrimaryNavigationItems(
     submenuLabel,
     links: links(children, childOrder),
     groups: [
-      surface === "navbar" && href.startsWith("/products/category/")
+      surface === "navbar" && isProductCategoryPath(href)
         ? { label: "คุณสมบัติ", links: [] }
         : {
             label: secondaryLabel,
@@ -201,12 +246,12 @@ export function getPrimaryNavigationItems(
           submenuLabel: "สินค้า",
           links: links(
             [
-              ["เครื่องชั่ง", "/products/category/scales"],
-              ["โครงสร้างแท่นชั่ง", "/products/category/platforms"],
-              ["อินดิเคเตอร์", "/products/category/indicators"],
-              ["ระบบ POS", "/products/category/pos"],
+              [catalogPageTitles["/scales"], "/scales"],
+              [catalogPageTitles["/platforms"], "/platforms"],
+              [catalogPageTitles["/indicators"], platformIndicatorsPath],
+              ["ระบบ POS", "/pos"],
               ["ระบบ MES", sunford.mes],
-              ["อุปกรณ์เสริม", "/products/category/accessories"],
+              ["อุปกรณ์เสริม", "/accessories"],
             ],
             "configured",
             false,
@@ -216,9 +261,23 @@ export function getPrimaryNavigationItems(
               label: "ลิงก์ด่วน",
               links: links(
                 [
-                  ["เลือกซื้อสินค้า", "https://sunfordshop.com/"],
-                  ["ลงทะเบียนรับประกัน", "/warranty/register"],
-                  ["ใบเสนอราคา", "/service/quotation"],
+                  ["เครื่องชั่งร้านค้าทั่วไป", "/scales/retail"],
+                  ["เครื่องชั่งอุตสาหกรรม", "/scales/industrial"],
+                  ["เครื่องชั่งประกอบเอง", guideHref],
+                  ["เครื่องชั่งขนาดเล็ก", "/scales/household"],
+                ],
+                "configured",
+                false,
+              ),
+            },
+            {
+              label: "ช่วยเหลือ",
+              links: links(
+                [
+                  ["ขอใบเสนอราคา", "/service/quotation"],
+                  ["เลือกซื้อที่ร้านออนไลน์", "https://sunfordshop.com/"],
+                  ["เงื่อนไขรับประกัน", "/service/warranty/policy"],
+                  ["ติดต่อเรา", contactPath],
                 ],
                 "configured",
                 false,
@@ -230,91 +289,100 @@ export function getPrimaryNavigationItems(
           "ผลิตภัณฑ์ทั้งหมด",
           "/products",
           [
-            ["เครื่องชั่ง", "/products/category/scales"],
-            ["อินดิเคเตอร์แท่นชั่ง", "/products/category/indicators"],
-            ["โครงสร้างแท่นชั่ง", "/products/category/platforms"],
-            ["ระบบ POS", "/products/category/pos"],
-            ["อุปกรณ์เสริม", "/products/category/accessories"],
+            ["เครื่องชั่ง", "/scales"],
+            ["อินดิเคเตอร์แท่นชั่ง", "/indicators"],
+            ["โครงสร้างแท่นชั่ง", "/platforms"],
+            ["ระบบ POS", "/pos"],
+            ["อุปกรณ์เสริม", "/accessories"],
           ],
           [
-            ["เครื่องชั่งคำนวณราคา", "/products/category/scales/price"],
-            ["เครื่องชั่งครัวและกาแฟ", "/products/category/scales/kitchen"],
-            ["เครื่องชั่งสำหรับโรงงาน", "/products/category/scales/industrial"],
-            ["ดาวน์โหลดซอฟต์แวร์ POS", "/software/download#retail-software"],
+            ["เครื่องชั่งคำนวณราคา", "/scales/retail"],
+            ["เครื่องชั่งครัวและกาแฟ", "/scales/household"],
+            ["เครื่องชั่งสำหรับโรงงาน", "/scales/industrial"],
+            ["ดาวน์โหลดซอฟต์แวร์ POS", "/software/retail"],
           ],
           help,
           "สินค้า",
           "การใช้งาน",
         ),
-    menu(
-      categoryLabel("scales", "เครื่องชั่ง"),
-      "/products/category/scales",
-      surface === "navbar"
-        ? [
-            ["ห้องปฏิบัติการ", "/products/category/scales/analytical"],
-            ["อุตสาหกรรม", "/products/category/scales/industrial"],
-            ["พาณิชยกรรมและบริการ", "/products/category/scales/price"],
-            ["ไลฟ์สไตล์", "/products/category/scales/kitchen"],
-          ]
-        : [
-            ["ครัวเรือนและบุคคล", "/products/category/scales/kitchen"],
-            ["อุตสาหกรรม", "/products/category/scales/industrial"],
-            ["ร้านค้าและบริการ", "/products/category/scales/price"],
-            ["งานวิเคราะห์", "/products/category/scales/analytical"],
-          ],
-      [
-        ["กันน้ำ", "/products/category/scales/water-dust"],
-        ["นับจำนวนชิ้น", "/products/category/scales/counting"],
-        ["เตือนน้ำหนักขาด–เกิน", "/products/category/scales/checkweighing"],
-        ["ตั้งโต๊ะ", "/products/category/scales/benchtop"],
-        ["ตั้งพื้น", "/products/category/scales/floor"],
-      ],
-      surface === "navbar"
-        ? links(
-            [
-              ["เลือกซื้อเครื่องชั่ง", "https://sunfordshop.com/"],
-              ["เงื่อนไขรับประกัน", "/warranty/policy"],
-              ["ติดต่อเรา", contactPath],
-            ],
-            "configured",
-          )
-        : links([
-            ["คู่มือและสเปก", "/technical-specification"],
-            ["ขอใบเสนอราคา", "/service/quotation"],
-            ["ลงทะเบียนรับประกัน", "/warranty/register"],
-            ["ติดต่อฝ่ายบริการ", contactPath],
-          ]),
-      "สินค้า",
-      "คุณสมบัติ",
-      "configured",
-    ),
     surface === "navbar"
       ? {
-          label: siteMenuLabel("/products/category/indicators", "อินดิเคเตอร์แท่นชั่ง"),
-          href: "/products/category/indicators",
+          label: siteMenuLabel("/scales", "เครื่องชั่ง"),
+          href: "/scales",
           submenuLabel: "สินค้า",
           links: links(
             [
-              ["อุตสาหกรรม", "/products/category/indicators/industrial"],
-              ["พาณิชยกรรมและบริการ", "/products/category/indicators/commercial"],
+              [catalogPageTitles["/scales/laboratory"], "/scales/laboratory"],
+              [catalogPageTitles["/scales/industrial"], "/scales/industrial"],
+              [catalogPageTitles["/scales/retail"], "/scales/retail"],
+              [catalogPageTitles["/scales/household"], "/scales/household"],
+              [catalogPageTitles[scaleSpecBuilderPath], scaleSpecBuilderPath],
+            ],
+            "configured",
+            false,
+          ),
+          groups: [
+            {
+              label: "คุณสมบัติ",
+              links: overviewFeatureLinks("scales", scaleOverviewFeatures),
+            },
+            {
+              label: "ช่วยเหลือ",
+              links: links(
+                [
+                  ["ขอใบเสนอราคา", scaleSpecBuilderPath],
+                  ["เลือกซื้อที่ร้านออนไลน์", "https://sunfordshop.com/"],
+                  ["เงื่อนไขรับประกัน", "/service/warranty/policy"],
+                  ["ติดต่อเรา", contactPath],
+                ],
+                "configured",
+                false,
+              ),
+            },
+          ],
+        }
+      : menu(
+          categoryLabel("scales", "เครื่องชั่ง"),
+          "/scales",
+          [
+            ["ครัวเรือนและบุคคล", "/scales/household"],
+            ["อุตสาหกรรม", "/scales/industrial"],
+            ["ร้านค้าและบริการ", "/scales/retail"],
+            ["งานวิเคราะห์", "/scales/laboratory"],
+          ],
+          [
+            ["กันน้ำ", "/scales/water-dust"],
+            ["นับจำนวนชิ้น", "/scales/counting"],
+            ["เตือนน้ำหนักขาด–เกิน", "/scales/checkweighing"],
+            ["ตั้งโต๊ะ", "/scales/benchtop"],
+            ["ตั้งพื้น", "/scales/floor"],
+          ],
+          links([
+            ["คู่มือและสเปก", "/service/technical-specification"],
+            ["ขอใบเสนอราคา", "/service/quotation"],
+            ["ลงทะเบียนรับประกัน", "/service/warranty/register"],
+            ["ติดต่อฝ่ายบริการ", contactPath],
+          ]),
+          "สินค้า",
+          "คุณสมบัติ",
+          "configured",
+        ),
+    surface === "navbar"
+      ? {
+          label: siteMenuLabel("/indicators", "อินดิเคเตอร์แท่นชั่ง"),
+          href: "/indicators",
+          submenuLabel: "สินค้า",
+          links: links(
+            [
+              ["อุตสาหกรรม", "/indicators/industrial"],
+              ["พาณิชยกรรมและบริการ", "/indicators/commercial"],
             ],
             "configured",
           ),
           groups: [
             {
               label: "คุณสมบัติ",
-              links: [
-                ...links(
-                  [
-                    ["เชื่อมต่ออุปกรณ์", "/products/category/indicators/rs232"],
-                    ["กันน้ำกันฝุ่น", "/products/category/indicators/waterproof"],
-                  ],
-                  "configured",
-                ),
-                { label: "คำนวณราคา", href: "", disabled: true },
-                { label: "นับจำนวน", href: "", disabled: true },
-                { label: "เตือนน้ำหนักขาดเกิน", href: "", disabled: true },
-              ],
+              links: indicatorFeatures,
             },
             {
               label: "ช่วยเหลือ",
@@ -330,20 +398,20 @@ export function getPrimaryNavigationItems(
         }
       : menu(
           categoryLabel("indicators", "อินดิเคเตอร์แท่นชั่ง"),
-          "/products/category/indicators",
+          "/indicators",
           [
-            ["LCD", "/products/category/indicators/lcd"],
-            ["LED", "/products/category/indicators/led"],
+            ["LCD", "/indicators/lcd"],
+            ["LED", "/indicators/led"],
           ],
           [
-            ["เชื่อมต่อ RS232", "/products/category/indicators/rs232"],
-            ["ดูโครงสร้างแท่นชั่ง", "/products/category/platforms"],
-            ["ดูจอและไฟเตือน", "/products/category/accessories/displays"],
+            ["เชื่อมต่อ RS232", "/indicators/rs232"],
+            ["ดูโครงสร้างแท่นชั่ง", "/platforms"],
+            ["ดูจอและไฟเตือน", "/accessories/displays"],
           ],
           links([
             ["คู่มือเลือกหัวอ่านและแท่นชั่ง", guideHref],
             ["ขอใบเสนอราคา", "/service/quotation"],
-            ["เงื่อนไขรับประกัน", "/warranty/policy"],
+            ["เงื่อนไขรับประกัน", "/service/warranty/policy"],
             ["ติดต่อฝ่ายบริการ", contactPath],
           ]),
           "สินค้า",
@@ -351,33 +419,39 @@ export function getPrimaryNavigationItems(
         ),
     surface === "navbar"
       ? {
-          label: siteMenuLabel("/products/category/platforms", "โครงสร้างแท่นชั่ง"),
-          href: "/products/category/platforms",
+          label: siteMenuLabel("/platforms", "โครงสร้างแท่นชั่ง"),
+          href: "/platforms",
           submenuLabel: "สินค้า",
           links: links(
             [
-              ["แท่นชั่งตั้งโต๊ะ", "/products/category/platforms/benchtop"],
-              ["แท่นชั่งตั้งพื้น", "/products/category/platforms/floor"],
+              ["อินดิเคเตอร์", platformIndicatorsPath],
+              ["โครงสร้างแท่นชั่ง", platformStructuresPath],
+              ["จัดสเปค", guideHref],
             ],
             "configured",
+            false,
           ),
           groups: [
             {
               label: "คุณสมบัติ",
-              links: links(
-                [
-                  ["สแตนเลส 304", "/products/category/platforms/sus304"],
-                  ["สแตนเลส 201", "/products/category/platforms/sus201"],
-                  ["เหล็กคาร์บอน", "/products/category/platforms/carbon-steel"],
-                ],
-                "configured",
-              ),
+              links: indicatorFeatures,
+              linksByProduct: {
+                [platformIndicatorsPath]: indicatorFeatures,
+                [platformStructuresPath]: links(
+                  platformStructureTypes.map(({ id, label }) => [
+                    label,
+                    `${platformStructuresPath}?type=${id}`,
+                  ]),
+                  "configured",
+                ),
+              },
             },
             {
               label: "ช่วยเหลือ",
               links: links(
                 [
-                  ["เลือกซื้อแท่นชั่ง", componentShopHref],
+                  ["ขอใบเสนอราคา", "/service/quotation"],
+                  ["เลือกซื้อที่ร้านออนไลน์", componentShopHref],
                   ["ติดต่อเรา", contactPath],
                 ],
                 "configured",
@@ -387,12 +461,12 @@ export function getPrimaryNavigationItems(
         }
       : menu(
           categoryLabel("platforms", "โครงสร้างแท่นชั่ง"),
-          "/products/category/platforms",
+          "/platforms",
           platformPlacementPages.map(({ label, href }) => [label, href]),
           [
-            ["อินดิเคเตอร์แท่นชั่ง", "/products/category/indicators"],
-            ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical"],
-            ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics"],
+            ["อินดิเคเตอร์แท่นชั่ง", "/indicators"],
+            ["ชิ้นส่วนแท่น", "/accessories/mechanical"],
+            ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/accessories/electronics"],
           ],
           links([
             ["คู่มือเลือกหัวอ่านและแท่นชั่ง", guideHref],
@@ -405,105 +479,91 @@ export function getPrimaryNavigationItems(
           "configured",
         ),
     surface === "navbar"
-      ? {
-          label: siteMenuLabel("/products/category/pos", "ระบบ POS"),
-          href: "/products/category/pos",
-          submenuLabel: "สินค้า",
-          links: links(
-            [
-              ["Android", "/products/category/pos/android"],
-              ["Windows", "/products/category/pos/windows"],
-            ],
-            "configured",
-          ),
-          groups: [
+      ? configuredMenu(
+          "/pos",
+          siteMenuLabel("/pos", "ระบบ POS"),
+          [
             {
-              label: "ช่วยเหลือ",
-              links: links(
-                [
-                  [
-                    "เลือกซื้อเครื่อง POS",
-                    "https://sunfordshop.com/%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B8%84%E0%B9%89%E0%B8%B2/18/SUNFORD%20POS%20&%20Gadget",
-                  ],
-                  ["ติดต่อเรา", contactPath],
-                ],
-                "configured",
-              ),
+              label: "สินค้า",
+              links: [
+                [posPlatformLabels.android, "/pos/android"],
+                [posPlatformLabels.windows, "/pos/windows"],
+              ],
             },
+            businessHelp,
           ],
-        }
+          savedDisabled,
+        )
       : menu(
           categoryLabel("pos", "ระบบ POS"),
-          "/products/category/pos",
+          "/pos",
           [
-            ["iOS", "/products/category/pos/ios"],
-            ["Android", "/products/category/pos/android"],
-            ["Windows", "/products/category/pos/windows"],
+            ["iOS", "/pos/ios"],
+            [posPlatformLabels.android, "/pos/android"],
+            [posPlatformLabels.windows, "/pos/windows"],
           ],
           [
-            ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-            ["สแกนเนอร์และลิ้นชัก", "/products/category/accessories/scanners-and-cash-drawers"],
+            ["เครื่องพิมพ์", "/accessories/printers"],
+            ["สแกนเนอร์และลิ้นชัก", "/accessories/scanners-and-cash-drawers"],
           ],
           links([
-            ["คู่มือและสเปก", "/technical-specification"],
+            ["คู่มือและสเปก", "/service/technical-specification"],
             ["ขอใบเสนอราคา", "/service/quotation"],
-            ["ลงทะเบียนรับประกัน", "/warranty/register"],
+            ["ลงทะเบียนรับประกัน", "/service/warranty/register"],
             ["ติดต่อฝ่ายบริการ", contactPath],
           ]),
           "สินค้า",
           "อุปกรณ์ที่ใช้ร่วมกัน",
         ),
     surface === "navbar"
-      ? {
-          label: siteMenuLabel("/products/category/accessories", "อุปกรณ์เสริม"),
-          href: "/products/category/accessories",
-          submenuLabel: "สินค้า",
-          links: links(
-            [
-              ["อุปกรณ์ส่งข้อมูล", "/products/category/accessories/cables"],
-              ["อุปกรณ์ต่อพ่วง", "/products/category/accessories/displays"],
-              ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-              ["ชิ้นส่วนเสริม", "/products/category/accessories/mechanical"],
-              ["วัสดุสิ้นเปลือง", "/products/category/accessories/consumables"],
-            ],
-            "configured",
-            false,
-          ),
-          groups: [
+      ? configuredMenu(
+          "/accessories",
+          siteMenuLabel("/accessories", "อุปกรณ์เสริม"),
+          [
+            {
+              label: "สินค้า",
+              links: [
+                ["อุปกรณ์ส่งข้อมูล", "/accessories/cables"],
+                ["อุปกรณ์ต่อพ่วง", "/accessories/displays"],
+                ["เครื่องพิมพ์", "/accessories/printers"],
+                ["ชิ้นส่วนเสริม", "/accessories/mechanical"],
+                ["วัสดุสิ้นเปลือง", "/accessories/consumables"],
+              ],
+            },
             {
               label: "ช่วยเหลือ",
-              links: links(
-                [
-                  ["เลือกซื้ออุปกรณ์เสริม", componentShopHref],
-                  ["ติดต่อเรา", contactPath],
-                ],
-                "configured",
-              ),
+              links: [
+                ["เลือกเครื่องชั่งเพื่อประกอบ", scaleSpecBuilderPath],
+                ["เลือกแท่นชั่งเพื่อประกอบ", platformSpecBuilderPath],
+                onlineShop,
+                ...contactGroup.links,
+              ],
             },
           ],
-        }
+          savedDisabled,
+        )
       : menu(
           categoryLabel("accessories", "อุปกรณ์เสริม"),
-          "/products/category/accessories",
+          "/accessories",
           [
-            ["อุปกรณ์ POS", "/products/category/accessories/pos"],
-            ["จอและไฟเตือน", "/products/category/accessories/displays"],
-            ["สายและหัวต่อ", "/products/category/accessories/cables"],
-            ["เครื่องพิมพ์", "/products/category/accessories/printers"],
-            ["ชิ้นส่วนแท่น", "/products/category/accessories/mechanical"],
-            ["ลูกตุ้มน้ำหนัก", "/products/category/accessories/weights"],
-            ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/products/category/accessories/electronics"],
-            ["อื่น ๆ", "/products/category/accessories/consumables"],
+            ["อุปกรณ์ POS", "/accessories/pos"],
+            ["จอและไฟเตือน", "/accessories/displays"],
+            ["สายและหัวต่อ", "/accessories/cables"],
+            ["เครื่องพิมพ์", "/accessories/printers"],
+            ["ชิ้นส่วนแท่น", "/accessories/mechanical"],
+            ["ลูกตุ้มน้ำหนัก", "/accessories/weights"],
+            ["โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์", "/accessories/electronics"],
+            ["อื่น ๆ", "/accessories/consumables"],
           ],
           [
-            ["กระดาษและฉลาก", "/products/category/accessories/consumables"],
-            ["กระดาษความร้อน", "/products/category/accessories/thermal-paper"],
-            ["ฉลากและสติ๊กเกอร์", "/products/category/accessories/labels"],
+            ["กระดาษและฉลาก", "/accessories/consumables"],
+            ["กระดาษความร้อน", "/accessories/thermal-paper"],
+            ["ฉลากและสติ๊กเกอร์", "/accessories/labels"],
           ],
           links([
             ["สอบถามอุปกรณ์ที่ใช้ร่วมกัน", contactPath],
             ["ขอใบเสนอราคา", "/service/quotation"],
-            ["เงื่อนไขรับประกัน", "/warranty/policy"],
+            ["เงื่อนไขรับประกัน", "/service/warranty/policy"],
             ["ติดต่อฝ่ายบริการ", contactPath],
           ]),
           "สินค้า",
@@ -514,61 +574,57 @@ export function getPrimaryNavigationItems(
       "จัดสเปค",
       guideHref,
       [
-        ["เลือกอินดิเคเตอร์", "/products/category/indicators"],
-        ["เลือกแท่นชั่ง", "/products/category/platforms"],
-        ["ดูอุปกรณ์เสริม", "/products/category/accessories"],
+        ["เลือกอินดิเคเตอร์", "/indicators"],
+        ["เลือกแท่นชั่ง", "/platforms"],
+        ["ดูอุปกรณ์เสริม", "/accessories"],
       ],
       [["สอบถามความเข้ากันได้", contactPath]],
       links([
         ["ขอใบเสนอราคา", "/service/quotation"],
-        ["เงื่อนไขรับประกัน", "/warranty/policy"],
+        ["เงื่อนไขรับประกัน", "/service/warranty/policy"],
         ...(surface === "navbar" ? [] : [["ติดต่อฝ่ายบริการ", contactPath] satisfies MenuEntry]),
       ]),
       "เลือกอุปกรณ์",
       "ตรวจสอบก่อนเลือก",
     ),
     surface === "navbar"
-      ? {
-          label: siteMenuLabel("/service", "บริการ"),
-          href: "/service",
-          submenuLabel: "บริการ",
-          links: links(
-            [
-              ["ขอใบเสนอราคา", "/service/quotation"],
-              ["ลงทะเบียนรับประกัน", "/warranty/register"],
-              ["บริการหลังการขาย", "/service"],
-            ],
-            "configured",
-            false,
-          ),
-          groups: [
+      ? configuredMenu(
+          "/service",
+          siteMenuLabel("/service", "บริการ"),
+          [
+            {
+              label: "บริการ",
+              links: [
+                ["ลงทะเบียนรับประกัน", "/service/warranty/register"],
+                ["บริการหลังการขาย", "/service"],
+              ],
+            },
             {
               label: "เอกสาร",
-              links: links(
-                [
-                  ["บทความ", editorialArticlesPath],
-                  ["เกี่ยวกับผลิตภัณฑ์", "/support/technical-assistance"],
-                ],
-                "configured",
-              ),
+              links: [
+                ["บทความ", editorialArticlesPath],
+                ["เกี่ยวกับผลิตภัณฑ์", "/service/technical-assistance"],
+                ["เงื่อนไขการรับประกัน", "/service/warranty/policy"],
+              ],
             },
-            { label: "ช่วยเหลือ", links: links([["ติดต่อเรา", contactPath]]) },
+            contactGroup,
           ],
-        }
+          savedDisabled,
+        )
       : menu(
           "บริการ",
           "/service",
           [
-            ["ลงทะเบียนรับประกัน", "/warranty/register"],
+            ["ลงทะเบียนรับประกัน", "/service/warranty/register"],
             ["ขอใบเสนอราคา", "/service/quotation"],
           ],
           [
-            ["ดาวน์โหลดซอฟต์แวร์", "/software/download"],
-            ["คู่มือและสเปก", "/technical-specification"],
+            ["ดาวน์โหลดซอฟต์แวร์", "/software"],
+            ["คู่มือและสเปก", "/service/technical-specification"],
           ],
           links([
-            ["เงื่อนไขรับประกัน", "/warranty/policy"],
-            ["นโยบายยกเลิกและคืนสินค้า", "/cancel-and-return/policy"],
+            ["เงื่อนไขรับประกัน", "/service/warranty/policy"],
+            ["นโยบายยกเลิกและคืนสินค้า", "/service/cancel-and-return/policy"],
             ["เกี่ยวกับ SUNFORD", "/about-us"],
             ["ติดต่อเรา", contactPath],
           ]),

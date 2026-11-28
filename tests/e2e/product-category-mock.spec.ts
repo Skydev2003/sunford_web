@@ -1078,7 +1078,7 @@ test("all five server-rendered buying guides retain complete content in feature 
     }
     if (index === buyingGuides.length - 1) {
       await modal.getByRole("link", { name: "ดูเพิ่มเติม", exact: true }).click();
-      await expect(page).toHaveURL("/technical-specification?guide=accessories");
+      await expect(page).toHaveURL("/service/technical-specification?guide=accessories");
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(guide.title);
     } else await page.keyboard.press("Escape");
   }

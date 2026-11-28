@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const variants = ["/", "/service?section=contact", "/products/category/scales"] as const;
+const variants = ["/", "/service?section=contact", "/scales"] as const;
 const hoverDelay = 600;
 const header = (page: Page, route: string) =>
   page.locator(route === "/" ? ".site-header:visible" : "[data-products-header]:visible");
@@ -26,8 +26,7 @@ async function pauseTimers(page: Page) {
 }
 
 async function enterHistoryRoute(page: Page, route: string, mobile = false) {
-  const previous =
-    route === "/service?section=contact" ? "/products/category/scales" : "/service?section=contact";
+  const previous = route === "/service?section=contact" ? "/scales" : "/service?section=contact";
   await visit(page, previous, mobile ? 390 : 1440);
   if (mobile) await page.setViewportSize({ width: 390, height: 844 });
   const nav = header(page, previous);
@@ -107,7 +106,7 @@ for (const route of ["/", "/service?section=contact"]) {
     await scales.hover();
     await expect(panel(page).locator("[data-nav-hover-reveal]")).toHaveCount(1);
     await trigger(page, route, "อินดิเคเตอร์").hover();
-    const indicators = panel(page).locator('[data-nav-menu="/products/category/indicators"]');
+    const indicators = panel(page).locator('[data-nav-menu="/indicators"]');
     await expect(indicators.locator("[data-nav-hover-item]").first()).toHaveCSS(
       "animation-name",
       /navHoverReveal$/,
@@ -154,7 +153,7 @@ for (const route of ["/", "/service?section=contact"]) {
           .locator("[data-nav-category-row]")
           .getByRole("link", { name: "เครื่องชั่ง", exact: true })
           .tap();
-        await expect(page).toHaveURL("/products/category/scales");
+        await expect(page).toHaveURL("/scales");
         await expect(panel(page)).toHaveCount(0);
       } finally {
         await page.close();
@@ -208,12 +207,12 @@ for (const route of variants) {
     await expect(first).toBeFocused();
     await expect(first).toHaveAttribute("aria-expanded", "false");
     await page.mouse.up();
-    await expect(page).toHaveURL(/\/products\/category\/scales$/);
+    await expect(page).toHaveURL(/\/scales$/);
     await page.clock.runFor(1000);
     await expect(page.locator("#products-navigation-panel")).not.toBeVisible();
     await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
     await leave(page);
-    const next = trigger(page, "/products/category/scales");
+    const next = trigger(page, "/scales");
     await next.hover();
     await page.clock.runFor(hoverDelay - 1);
     await expect(next).toHaveAttribute("aria-expanded", "false");
@@ -333,24 +332,19 @@ test("browser history closes an open menu before restoring a cached category pag
 }) => {
   await visit(page, "/service?section=contact");
   await trigger(page, "/service?section=contact").click();
-  await expect(page).toHaveURL(/\/products\/category\/scales$/);
+  await expect(page).toHaveURL(/\/scales$/);
   await page.mouse.move(1435, 950);
-  await trigger(page, "/products/category/scales").hover();
+  await trigger(page, "/scales").hover();
   await expect(panel(page)).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/service\?section=contact$/);
   await expect(panel(page)).not.toBeVisible();
   await page.goForward();
-  await expect(page).toHaveURL(/\/products\/category\/scales$/);
+  await expect(page).toHaveURL(/\/scales$/);
   await expect(panel(page)).not.toBeVisible();
 });
 
-const historyRoutes = [
-  "/",
-  "/products",
-  "/products/category/scales",
-  "/service?section=contact",
-] as const;
+const historyRoutes = ["/", "/products", "/scales", "/service?section=contact"] as const;
 
 for (const route of historyRoutes) {
   test(`${route} cached keyboard menu stays closed after Back and Forward with pointer away`, async ({
@@ -430,12 +424,10 @@ for (const route of ["/", "/service?section=contact"]) {
       await nav.getByRole("button", { name: "เปิดเมนู", exact: true }).tap();
       await nav.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true }).tap();
       const links = route === "/" ? nav.locator("[data-nav-menu]:visible") : panel(page);
-      const child = links
-        .locator('a[href="/products/category/scales/price#product-listing-scales"]')
-        .first();
+      const child = links.locator('a[href="/scales/retail"]').first();
       await expect(child).toBeVisible();
       await child.tap();
-      await expect(page).toHaveURL(/\/products\/category\/scales\/price#product-listing-scales$/);
+      await expect(page).toHaveURL(/\/scales\/retail$/);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
       expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
     } finally {

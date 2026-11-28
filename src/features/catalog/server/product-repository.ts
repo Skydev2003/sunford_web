@@ -3,7 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { products } from "../data/products";
 import type { Product } from "../types";
 import { getSnapshotProducts } from "@/features/content/data/catalog-snapshot";
-import { findCatalogProduct } from "../data/product-lookup";
+import { findCatalogProduct, productPrimaryCategory } from "../data/product-lookup";
 import { attachProductTopics } from "./product-topics";
 import {
   getOfficialProducts,
@@ -51,4 +51,18 @@ async function getEditorialProducts(): Promise<Product[]> {
 export async function getProduct(slug: string) {
   const product = findCatalogProduct(await getProducts(), slug);
   return product ? warehouseDetailProduct(product) : undefined;
+}
+
+export async function getProductNavigationCategories() {
+  "use cache";
+  cacheLife({ stale: 30, revalidate: 60, expire: 300 });
+  cacheTag("products");
+  const catalog = await getProducts();
+  return Object.fromEntries(
+    [...new Set(catalog.map(({ slug }) => slug))].flatMap((slug) => {
+      const product = findCatalogProduct(catalog, slug);
+      const category = product && productPrimaryCategory(product);
+      return category ? [[encodeURIComponent(slug), `/${category}`]] : [];
+    }),
+  ) as Record<string, string>;
 }

@@ -57,26 +57,24 @@ for (const width of [320, 390, 834, 1440]) {
     const families = ["scales", "indicators", "platforms", "pos", "accessories"];
     const subgroups = families.map(
       (family) =>
-        productSubcategoryPages.find((entry) =>
-          entry.href.startsWith(`/products/category/${family}/`),
-        )!.href,
+        productSubcategoryPages.find((entry) => entry.href.startsWith(`/${family}/`))!.href,
     );
     const paths = [
       ...new Set([
         "/",
         "/products",
-        "/products/category/scales",
-        "/products/category/indicators/lcd",
+        "/scales",
+        "/indicators/lcd",
         "/explore",
         "/service/quotation",
         "/not-a-sunford-page",
-        ...families.map((family) => `/products/category/${family}`),
+        ...families.map((family) => `/products/${family}`),
         ...subgroups,
-        "/products/category/scales/industrial",
+        "/scales/industrial",
         `/products/${products[0].slug}`,
         `/guides/${buyingGuides[0].slug}`,
-        "/guides/indicator-platform-compatibility",
-        "/software/download",
+        "/platforms/spec-builder",
+        "/software",
         "/service",
         "/service?section=contact",
         "/about-us",

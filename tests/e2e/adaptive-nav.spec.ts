@@ -91,7 +91,7 @@ for (const width of [1440, 390]) {
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/products/category/indicators");
+    await page.goto("/indicators");
     await expectInteriorNavigation(page);
     await page.screenshot({ path: test.info().outputPath(`indicator-light-${width}.png`) });
     await page

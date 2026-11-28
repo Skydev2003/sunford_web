@@ -8,11 +8,13 @@ import {
 } from "../data/navigation";
 import { defaultSite } from "../data/settings";
 import { getDisabledNavigationDestinations } from "../data/primary-navigation";
+import { getProductNavigationCategories } from "@/features/catalog/server/product-repository";
 
 export async function SiteHeader() {
-  const [navigation, site] = await Promise.all([
+  const [navigation, site, productCategories] = await Promise.all([
     getSettings("navigation", { items: defaultNavigation, ...defaultNavigationExtras }),
     getSettings("site", defaultSite),
+    getProductNavigationCategories().catch(() => ({})),
   ]);
   const items = resolveNavigationItems(navigation.items);
   const disabledHrefs = [...getDisabledNavigationDestinations(items)];
@@ -20,6 +22,7 @@ export async function SiteHeader() {
     <PrimaryNavigation
       navigation={items}
       site={site}
+      productCategories={productCategories}
       listingFeatures={getNavbarListingFeatures(disabledHrefs).catch(() => ({}))}
     />
   );

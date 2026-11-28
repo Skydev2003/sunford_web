@@ -53,7 +53,7 @@ test("touch category selection and product taps open the linked pages", async ({
   await page.goto("/products");
   const category = page.locator("#products-categories").getByRole("link", { name: "อุปกรณ์เสริม" });
   await category.tap();
-  await expect(page).toHaveURL("/products/category/accessories");
+  await expect(page).toHaveURL("/accessories");
   await page.goBack();
   const link = page.locator("#products-rail-scales a").first();
   const href = await link.getAttribute("href");

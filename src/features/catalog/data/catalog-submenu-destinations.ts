@@ -1,5 +1,4 @@
-import { productCategoryDefinitions } from "./mock-categories";
-import { getProductSubcategoryPageByHref } from "./product-subcategory-pages";
+import { productCategoryPath } from "./category-paths";
 
 const submenuFeatures: Record<string, string> = {
   "scale-counting": "scale-counting",
@@ -12,24 +11,17 @@ export const getSubmenuFeature = (subcategoryId: string) => submenuFeatures[subc
 export const productListingAnchor = (categoryId: string) => `product-listing-${categoryId}`;
 export const productLineupAnchor = (categoryId: string) => `product-lineup-${categoryId}`;
 
-export function productListingFeatureHref(href: string, categoryId: string, featureId: string) {
+export const platformCatalogSections = {
+  structures: productListingAnchor("platforms"),
+  indicators: productLineupAnchor("indicators"),
+};
+
+export function productListingFeatureHref(categoryId: string, featureId: string, group?: string) {
   const query = new URLSearchParams({ feature: featureId });
-  return `${href}?${query}#${productListingAnchor(categoryId)}`;
+  if (group) query.set("group", group);
+  return `${productCategoryPath(categoryId)}?${query}`;
 }
 
 export function catalogSubmenuDestination(href: string): string {
-  if (href.includes("#")) return href;
-  const subcategory = getProductSubcategoryPageByHref(href);
-  if (subcategory) {
-    const feature = getSubmenuFeature(subcategory.id);
-    const anchor = productListingAnchor(subcategory.categoryId);
-    if (!feature) return `${href}#${anchor}`;
-    if (!href.includes("?"))
-      return productListingFeatureHref(href, subcategory.categoryId, feature);
-    const target = new URL(href, "https://sunford.local");
-    if (!target.searchParams.has("feature")) target.searchParams.set("feature", feature);
-    return `${target.pathname}${target.search}#${anchor}`;
-  }
-  const category = productCategoryDefinitions.find(({ id }) => href === `/products/category/${id}`);
-  return category ? `${href}#${productLineupAnchor(category.id)}` : href;
+  return href.split("#")[0];
 }

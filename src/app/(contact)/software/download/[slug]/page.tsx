@@ -88,7 +88,7 @@ export default async function SoftwareSupportPage({ params }: Props) {
           </a>
         ))}
         {page.guide && <Link href={page.guide.href}>{page.guide.label}</Link>}
-        <Link href="/software/download">ดูรายการดาวน์โหลดทั้งหมด</Link>
+        <Link href="/software">ดูรายการดาวน์โหลดทั้งหมด</Link>
         {needsSupport && <Link href={contactPath}>ติดต่อฝ่ายบริการ</Link>}
       </nav>
       {page.videos?.length ? (

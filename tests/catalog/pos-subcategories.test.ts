@@ -15,8 +15,8 @@ test("owner-confirmed POS platforms keep iOS empty and map P1/P4 Android and P1W
     children.map(({ id, label }) => ({ id, label })),
     [
       { id: "pos-ios", label: "iOS" },
-      { id: "pos-android", label: "Android" },
-      { id: "pos-windows", label: "Windows" },
+      { id: "pos-android", label: "Positive" },
+      { id: "pos-windows", label: "Hardware" },
     ],
   );
   assert.deepEqual(children[0].productIds, []);

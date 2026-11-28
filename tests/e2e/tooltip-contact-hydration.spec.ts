@@ -94,7 +94,7 @@ for (const width of [320, 390]) {
       await expect(open).toBeFocused();
       await open.click();
       await header.getByRole("link", { name: "เครื่องชั่ง", exact: true }).click();
-      await expect(page).toHaveURL(/\/products\/category\/scales$/);
+      await expect(page).toHaveURL(/\/scales$/);
       await expect(page.locator("main:visible")).not.toHaveAttribute("inert", "");
       await page.goBack();
       await expect(page).toHaveURL(/\/service\?section=contact$/);

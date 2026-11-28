@@ -1,14 +1,17 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
+import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
 import { expect, test } from "@playwright/test";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
+import { isProductCategoryPath } from "../../src/features/catalog/data/category-paths";
 import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-subcategory-pages";
 import { guidebookBuyingGuides } from "../../src/features/content/data/buying-guides";
 
 const categories = [
-  ["scales", "เครื่องชั่ง"],
-  ["indicators", "อินดิเคเตอร์แท่นชั่ง"],
-  ["platforms", "โครงสร้างแท่นชั่ง"],
-  ["pos", "ระบบ POS"],
-  ["accessories", "อุปกรณ์เสริม"],
+  ["scales", "เครื่องชั่ง", "เครื่องชั่ง"],
+  ["indicators", "อินดิเคเตอร์แท่นชั่ง", "อินดิเคเตอร์"],
+  ["platforms", "โครงสร้างแท่นชั่ง", "แท่นชั่ง"],
+  ["pos", "ระบบ POS", "POS"],
+  ["accessories", "อุปกรณ์เสริม", "อุปกรณ์เสริม"],
 ] as const;
 
 test.beforeEach(async ({ page }) => {
@@ -44,20 +47,26 @@ for (const width of [390, 1440]) {
     for (const [id, label] of categories) {
       await page.goto(`/guides/${id}`);
       await page.getByRole("link", { name: "ดูสินค้าในหมวดนี้", exact: false }).click();
-      await expect(page).toHaveURL(new RegExp(`/products/category/${id}$`));
-      await expect(page.locator("main#main-content:visible h1")).toHaveText(label);
+      await expect(page).toHaveURL(new RegExp(`/${id}$`));
+      await expect(page.locator("main#main-content:visible h1")).toHaveText(
+        catalogPageTitle(`/${id}`, label),
+      );
       await expect(page.getByRole("dialog")).toHaveCount(0);
       const guide = guidebookBuyingGuides.find((item) => item.slug === id)!;
       for (const link of guide.sections
         .flatMap((section) => section.links)
-        .filter((link) => link.href.startsWith("/products/category/"))) {
-        await page.goto(`/guides/${id}`);
-        await page
+        .filter(
+          ({ href }) =>
+            Boolean(getProductSubcategoryPageByHref(href)) || isProductCategoryPath(href),
+        )) {
+        await page.goto(`/service/technical-specification?guide=${id}`);
+        const entry = page
           .locator("main#main-content:visible article")
-          .getByRole("link", { name: link.label, exact: true })
-          .click();
+          .getByRole("link", { name: link.label, exact: true });
+        await expect(entry).toHaveAttribute("href", link.href);
         const target = new URL(resolveCategoryHref(link.href), page.url());
-        await expect(page).toHaveURL(target.href);
+        await entry.press("Enter");
+        await expect(page).toHaveURL(target.href, { timeout: 15_000 });
         if (target.searchParams.has("subcategory"))
           await expect(page.getByRole("dialog")).toBeVisible();
         else await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -72,6 +81,11 @@ for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/");
     const footer = page.locator(".site-footer:visible");
+    if (width < 1024)
+      await footer
+        .locator("summary")
+        .filter({ hasText: /^ผลิตภัณฑ์$/ })
+        .click();
     for (const [label, id] of [
       ["เครื่องชั่ง", "scales"],
       ["อุปกรณ์เสริม", "accessories"],
@@ -79,7 +93,7 @@ for (const width of [390, 1440]) {
     ])
       await expect(footer.getByRole("link", { name: label, exact: true })).toHaveAttribute(
         "href",
-        `/products/category/${id}`,
+        `/${id}`,
       );
     const previews = page.locator("#product-experience");
     await expect(previews.getByRole("button", { name: /^สำรวจ / })).toHaveCount(4);
@@ -89,18 +103,21 @@ for (const width of [390, 1440]) {
       "accessories",
     );
     await expect(page).toHaveURL(/\/$/);
-    for (const [id, label] of categories) {
+    for (const [id, label, navLabel] of categories) {
       await page.goto("/");
+      await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
       const header = page.locator(".site-header:visible");
       if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       const link = header
-        .getByRole("link", { name: label, exact: true })
+        .getByRole("link", { name: navLabel, exact: true })
         .filter({ visible: true })
         .first();
-      await expect(link).toHaveAttribute("href", `/products/category/${id}`);
+      await expect(link).toHaveAttribute("href", `/${id}`);
       await link.click();
-      await expect(page).toHaveURL(new RegExp(`/products/category/${id}$`));
-      await expect(page.locator("main#main-content:visible h1")).toHaveText(label);
+      await expect(page).toHaveURL(new RegExp(`/${id}$`));
+      await expect(page.locator("main#main-content:visible h1")).toHaveText(
+        catalogPageTitle(`/${id}`, label),
+      );
     }
   });
 }

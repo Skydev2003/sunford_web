@@ -2,14 +2,15 @@ import { expect, test } from "@playwright/test";
 
 import { verifyCategoryOverview } from "./helpers/category-overview";
 
-const path = "/products/category/pos";
+const path = "/pos";
+const subcategoryRoot = "/pos";
 const label = "ระบบ POS";
 const title = "ดูสินค้าทั้งหมด";
 const catalogPath = "/products?category=pos";
 const chapters = [
   ["pos-ios", "iOS"],
-  ["pos-android", "Android"],
-  ["pos-windows", "Windows"],
+  ["pos-android", "Positive"],
+  ["pos-windows", "Hardware"],
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -34,7 +35,7 @@ for (const width of [390, 1440]) {
         .locator("#products-chapters")
         .getByText(name, { exact: true })
         .locator("..");
-      const href = `${path}/${id.replace("pos-", "")}`;
+      const href = `${subcategoryRoot}/${id.replace("pos-", "")}`;
       await expect(button).toBeVisible();
       const enabled = await button.isEnabled();
       if (!enabled) await page.goto(href);
@@ -47,9 +48,9 @@ for (const width of [390, 1440]) {
       const count = await listing.locator("article[data-model-only]").count();
       if (id === "pos-ios" && count === 0) {
         await expect(listing.locator("[data-subcategory-empty]")).toBeVisible();
-        await expect(listing.getByRole("link", { name: "ระบบ POS Android" })).toHaveAttribute(
+        await expect(listing.getByRole("link", { name: "ระบบ POS Positive" })).toHaveAttribute(
           "href",
-          `${path}/android`,
+          `${subcategoryRoot}/android`,
         );
       } else {
         expect(count).toBeGreaterThan(0);
@@ -60,7 +61,7 @@ for (const width of [390, 1440]) {
       await expect(page).toHaveURL(new RegExp(path + "$"));
     }
     await page.goto(`${path}?subcategory=pos-android&trace=keep`);
-    await expect(page).toHaveURL(new RegExp(path + "/android\\?trace=keep$"));
+    await expect(page).toHaveURL(new RegExp(subcategoryRoot + "/android\\?trace=keep$"));
     await page.reload();
     await expect(page.locator('[data-product-subcategory-page="pos-android"]')).toBeVisible();
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
@@ -107,9 +108,7 @@ test("POS cache navigation preserves a single active chrome and overlay host", a
     .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
     .click();
   const directory = page.locator("[data-products-directory]");
-  await expect(
-    directory.locator('#products-categories a[href^="/products/category/"]'),
-  ).toHaveCount(5);
+  await expect(directory.locator('#products-categories a[href^="/products/"]')).toHaveCount(5);
   await page.goto("/products?catalog=all");
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");

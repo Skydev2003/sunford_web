@@ -59,6 +59,17 @@ test("a verified complete kit includes its head exactly once in either selection
   assert.deepEqual(quotationTotals(10000 * 2), { net: 20000, vat: 1400, gross: 21400 });
 });
 
+test("direct model selections accept priced Warehouse SKUs outside the pairing presets", () => {
+  assert.deepEqual(
+    selectedQuoteItems(
+      ["scale-sku", "accessory-sku", "stale-sku", "scale-sku"],
+      [],
+      new Set(["scale-sku", "accessory-sku"]),
+    ),
+    { items: [{ id: "scale-sku" }, { id: "accessory-sku" }], pending: ["stale-sku"] },
+  );
+});
+
 test("Warehouse SKU, unit and net price are preserved to the satang", () => {
   const item = {
     warehouseSku: "001",

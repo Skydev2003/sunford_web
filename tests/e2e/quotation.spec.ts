@@ -176,12 +176,15 @@ for (const route of ["/", "/service?section=contact"]) {
     if (route === "/")
       await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     const nav = page.locator(route === "/" ? ".desktop-nav" : "[data-products-nav]");
-    const services = nav.getByText("บริการ", { exact: true });
+    const services = nav.getByText("บริการช่วยเหลือ", { exact: true });
     await expect(services).toBeEnabled();
     await services.press("ArrowDown");
-    await page.getByRole("link", { name: "ใบเสนอราคา", exact: true }).click();
+    await page
+      .locator('[data-nav-menu="/service"]')
+      .getByRole("link", { name: "ขอใบเสนอราคา", exact: true })
+      .click();
     await expect(page).toHaveURL(/\/service\/quotation$/);
-    await expect(page.getByRole("heading", { level: 1, name: "ใบเสนอราคา" })).toBeVisible({
+    await expect(page.getByRole("heading", { level: 1, name: "ขอใบเสนอราคา" })).toBeVisible({
       timeout: 20000,
     });
   });

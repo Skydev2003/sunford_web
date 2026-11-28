@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import {
   getContentPage,
   getContentPages,
@@ -21,6 +21,8 @@ import { AboutPage } from "@/features/content/components/about-page";
 import { SolutionsPage } from "@/features/content/components/solutions-page";
 import { SolutionsOverview } from "@/features/content/components/solutions-overview";
 import { solutionDetails } from "@/features/content/data/solution-details";
+import { getSolutionGuidance } from "@/features/content/data/solution-guidance";
+import { mainPageRedirects, sectionPagePath } from "@/features/site/data/main-page-paths";
 import { getProductSection } from "@/features/content/data/product-sections";
 import {
   editorialArticlesPath,
@@ -43,21 +45,26 @@ export function generateStaticParams() {
     legacyContactPath,
     "/service",
     "/warranty/register",
+    "/warranty/policy",
     "/cancel-and-return/policy",
     "/technical-specification",
-    "/software/download",
+    "/software",
     legacySoftwareCatalogPath,
+    ...mainPageRedirects.flatMap(({ source, destination }) => [source, destination.split("#")[0]]),
+    ...Object.keys(solutionDetails),
     ...softwareSupportPages.map(({ slug }) => `/software/download/${slug}`),
     ...technicalManualRedirects.map(({ source }) => source),
   ];
   return staticContentParams(
-    importedPages.filter(
-      ({ path, kind }) =>
-        !explicitPaths.includes(path) &&
-        (kind !== "article" ||
-          publishedEditorialArticlePaths.has(path) ||
-          Boolean(getEditorialSection(path))),
-    ),
+    importedPages
+      .filter(
+        ({ path, kind }) =>
+          !explicitPaths.includes(path) &&
+          (kind !== "article" ||
+            publishedEditorialArticlePaths.has(path) ||
+            Boolean(getEditorialSection(path))),
+      )
+      .map((page) => ({ ...page, path: sectionPagePath(page.path) })),
   );
 }
 
@@ -76,8 +83,13 @@ export async function generateMetadata({
         editorial.path === editorialArticlesPath
           ? "รวมบทความและเคล็ดลับการใช้งานเครื่องชั่งจากซันฟอร์ด"
           : editorialUnavailable,
+      alternates: { canonical: `https://sunford-web.vercel.app${editorial.path}` },
     };
-  if (solutionDetails[pathname]) return { title: solutionDetails[pathname].title };
+  const solution = solutionDetails[pathname];
+  if (solution) {
+    const description = solution.description ?? getSolutionGuidance(pathname)?.summary;
+    return { title: solution.title, description };
+  }
   const page = await getContentPage(pathname);
   const section = page && !page.managed ? getProductSection(page.path) : undefined;
   if (page?.path === "/about-us" && !page.managed) {
@@ -97,6 +109,10 @@ export async function generateMetadata({
   return {
     title: section?.title ?? page?.title ?? "ไม่พบข้อมูล",
     description: page?.text.replace(/\s+/g, " ").slice(0, 160),
+    ...(page &&
+      sectionPagePath(page.path) !== page.path && {
+        alternates: { canonical: `https://sunford-web.vercel.app${sectionPagePath(page.path)}` },
+      }),
   };
 }
 export default async function SourceContentPage({
@@ -130,25 +146,29 @@ export default async function SourceContentPage({
         ) : (
           <nav className="container source-section-links" aria-label="ข้อมูลที่เปิดอ่านได้">
             <Link href="/products">ดูแค็ตตาล็อกสินค้า</Link>
-            <Link href="/technical-specification">ดูข้อมูลทางเทคนิคและคู่มือ</Link>
-            <Link href="/products/category/scales">ดูเครื่องชั่งทั้งหมด</Link>
+            <Link href="/service/technical-specification">ดูข้อมูลทางเทคนิคและคู่มือ</Link>
+            <Link href="/scales">ดูเครื่องชั่งทั้งหมด</Link>
           </nav>
         )}
       </main>
     );
   }
   const subcategoryDestination = resolveCategoryHref(pathname);
-  if (getProductSubcategoryPageByHref(subcategoryDestination)) redirect(subcategoryDestination);
+  if (
+    subcategoryDestination !== pathname &&
+    getProductSubcategoryPageByHref(subcategoryDestination)
+  )
+    redirect(subcategoryDestination);
   if (path.includes("products")) {
     const product = await getProduct(path.at(-1)!);
-    if (product) redirect(`/products/${product.slug}`);
+    if (product) permanentRedirect(`/products/${encodeURIComponent(product.slug)}`);
   }
   if (pathname === "/solutions") return <SolutionsOverview />;
   if (solutionDetails[pathname]) return <SolutionsPage path={pathname} />;
   const page = await getContentPage(pathname);
   if (!page) notFound();
   if (page.kind === "article") {
-    if (page.path !== pathname) redirect(page.path);
+    if (page.path !== pathname) redirect(sectionPagePath(page.path));
     return (
       <main id="main-content" className="source-content-page">
         <header className="content-heading container">
@@ -242,7 +262,7 @@ export default async function SourceContentPage({
           </a>
         )}
       </header>
-      {/^\/software\/download\/sunford-rls(1100|1800)$/.test(page.path) && (
+      {/^\/software\/sunford-rls(1100|1800)$/.test(page.path) && (
         <nav
           className="container source-section-links"
           aria-label="เลือกซอฟต์แวร์ตามรุ่นเครื่องชั่ง RLS"

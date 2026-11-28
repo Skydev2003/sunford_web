@@ -4,11 +4,12 @@ const news = {
 } as const;
 
 const articles = {
-  path: "/business/blogs/editorial",
+  path: "/service/articles",
   title: "บทความจากซันฟอร์ด",
 } as const;
 
 export const editorialArticlesPath = articles.path;
+export const legacyEditorialArticlesPath = "/business/blogs/editorial";
 export const featuredEditorialArticles = [
   {
     path: "/blogs/editorial/tcs-platform-scale-transit-screws",
@@ -67,7 +68,12 @@ export const editorialUnavailable = "ยังไม่มีข่าวหร�
 
 export function getEditorialSection(path: string) {
   if (path === news.path) return news;
-  if (path === articles.path || path === "/blogs/editorial" || path === "/business") {
+  if (
+    path === articles.path ||
+    path === legacyEditorialArticlesPath ||
+    path === "/blogs/editorial" ||
+    path === "/business"
+  ) {
     return articles;
   }
   return undefined;

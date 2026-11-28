@@ -39,16 +39,16 @@
   text-decoration: none;
 }
 
-.tray > button[aria-pressed="true"] {
+.tray > :is(button[aria-pressed="true"], a[aria-current="true"]) {
   background: #1d1d1f;
   color: #fff;
 }
 
-.tray[data-segmented-ready] > button[aria-pressed="true"] {
+.tray[data-segmented-ready] > :is(button[aria-pressed="true"], a[aria-current="true"]) {
   background: transparent;
 }
 
-.tray > :is(button[aria-pressed="false"]:not(:disabled), a):hover {
+.tray > :is(button[aria-pressed="false"]:not(:disabled), a:not([aria-current="true"])):hover {
   background: rgb(255 255 255 / 45%);
 }
 

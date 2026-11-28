@@ -69,7 +69,7 @@ async function clean(page: Page, errors: string[]) {
   expect(await page.evaluate(() => Reflect.get(window, "staggerMarkerWrites"))).toBe(0);
 }
 
-for (const route of ["/products/category/scales", "/software/download", "/service"]) {
+for (const route of ["/scales", "/software", "/service"]) {
   test(`development delayed child hydration stays clean on cold load and reload: ${route}`, async ({
     page,
   }) => {
@@ -95,8 +95,8 @@ for (const route of ["/products/category/scales", "/software/download", "/servic
         await page.goBack();
         await expect(page.locator("#products-title")).toBeVisible();
       } else if (route.includes("software")) {
-        await page.goto("/software/download#retail-software");
-        await expect(page).toHaveURL("/software/download#retail-software");
+        await page.goto("/software#retail-software");
+        await expect(page).toHaveURL("/software#retail-software");
         await expect(page.locator("#retail-software h2")).toBeInViewport();
       } else {
         const tab = page.getByRole("tab").nth(1);
@@ -123,7 +123,7 @@ for (const width of [390, 1440]) {
     test.setTimeout(180000);
     await page.setViewportSize({ width, height: 1000 });
     const state = await probe(page);
-    await page.goto("/products/category/scales/benchtop", { waitUntil: "domcontentloaded" });
+    await page.goto("/scales/benchtop", { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })).toBeVisible({
       timeout: 45000,
     });

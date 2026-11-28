@@ -49,6 +49,24 @@
 - รักษา Props, Data Contracts, Routes, Clean URLs และพฤติกรรมเดิมที่อยู่นอกขอบเขตงาน ไม่ลบหรือเขียนทับงานเดิมของผู้ใช้
 - SUNFORD ไม่มีบริการรับสอบเทียบ (Calibration Service) ห้ามใส่ในเมนู เนื้อหา หรือ Metadata เป็นบริการของบริษัท
 
+## กฎโครงสร้าง URL และ Product Slug (SEO & Public Routing)
+
+- **โครงสร้างหน้าหลักและหน้าสินค้า:**
+  - หน้าหมวดหมู่หลักใช้ Flat URL ตามเมนูหลัก (เช่น `/retail`, `/scales`, `/platforms`, `/software`, `/accessories`, `/pos`, `/mes`, `/solutions`, `/support`) ห้ามใส่ `/category/` นำหน้า
+  - หน้ารายละเอียดสินค้ารายรุ่นทั้งหมดต้องรวมศูนย์ไว้ที่ `/products/[slug]` เพียงจุดเดียว ห้ามแยก URL ตามหมวดหมู่ซ้ำซ้อน
+- **มาตรฐานการตั้งชื่อ Product Slug:**
+  - ต้องใช้ชื่อรุ่นสินค้าทางการ (Model Name / Model Code) แปลงเป็นตัวพิมพ์เล็กคั่นด้วยขีดกลาง (lowercase kebab-case) เท่านั้น เช่น `ACS-30-JC21` → `/products/acs-30-jc21`
+  - **ห้ามเด็ดขาด (Strict Prohibition):** ห้ามนำรหัสอ้างอิงภายในระบบคลังสินค้า (เช่น `warehouse-*`, SKU, หรือ Internal Database ID) มาใช้สร้าง Public URL หรือแสดงในลิงก์สาธารณะ
+- **การรองรับลิงก์เดิมและ SEO:**
+  - หากมีการเปลี่ยน Slug ของสินค้า หรือพบลิงก์รูปแบบเก่า (`warehouse-*`) ให้ตั้งค่า Permanent Redirect (301/308) ไปยัง URL รุ่นสินค้าที่ถูกต้องเสมอ
+  - หน้ารายละเอียดสินค้า `/products/[slug]` ต้องระบุ `canonical` URL ที่ถูกต้อง และส่งค่าหมวดหลัก (`primaryCategory`) เพื่อใช้แสดงผล Breadcrumb และสถานะ Active บน Navbar
+
+## กฎการจัดการ Submenu และ Filter URL (No Hash Navigation on Navbar)
+
+- **ห้ามใช้ hash anchor (`#...`) ใน Navbar และ Mega Menu** ลิงก์ในเมนูต้องชี้ไปยังหน้าเว็บหรือ URL ตัวกรองโดยตรง URL ที่ต่างกันเฉพาะ fragment เป็นส่วนต่าง ๆ ของหน้าเดียวกัน
+- **หมวดย่อยสินค้าและหน้าโซลูชัน** ใช้ route จริง `/<main-menu>/<sub-slug>` พร้อมเรนเดอร์เนื้อหาจากเซิร์ฟเวอร์และกำหนด `generateMetadata` ให้ตรงกับหน้า
+- **คุณสมบัติและประเภทโครงสร้างย่อย** ใช้พารามิเตอร์บนหน้าที่แสดงรายการสินค้าหมวดนั้น ให้หน้านั้นอ่านค่าจาก `searchParams` เปิดตัวกรองและเลื่อนไปยังรายการ โดยกำหนด canonical เป็น Path ของหน้านั้นโดยตัดพารามิเตอร์ออก หมวดแท่นชั่งใช้ `/platforms/indicators?feature=...` สำหรับอินดิเคเตอร์ และ `/platforms/structures?type=...` สำหรับรูปแบบโครงสร้าง
+
 ## Next.js Performance Strategy
 
 - ใช้ React Server Components (RSC) และ Server-Side Rendering (SSR) / Static Prerendering เป็นค่าเริ่มต้นตามแนวทาง SSR/SEO ที่ Google แนะนำ เพื่อให้เซิร์ฟเวอร์ส่ง HTML ที่มีเนื้อหาหลักครบถ้วนตั้งแต่คำขอแรก ช่วยให้ Googlebot จัดทำดัชนีได้ทันทีและลดภาระ JavaScript ฝั่งไคลเอนต์

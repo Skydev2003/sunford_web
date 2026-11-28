@@ -22,7 +22,7 @@ import { useHeaderSurface } from "./use-header-surface";
 import { getHeaderNavigationItems } from "@/features/site/data/primary-navigation";
 import { catalogSubmenuDestination } from "@/features/catalog/data/catalog-submenu-destinations";
 import type { NavbarListingFeatures } from "@/features/catalog/data/navbar-listing-features";
-import type { NavigationItem, SiteSettings } from "@/features/site/types";
+import type { NavigationGroup, NavigationItem, SiteSettings } from "@/features/site/types";
 import { useCatalogStore } from "@/stores/catalog-store";
 import styles from "./primary-navigation.module.css";
 const subscribe = () => () => {};
@@ -42,13 +42,115 @@ function ListingFeatureLinks({
   return render(use(features)[categoryHref] ?? []);
 }
 
+function ProductFeatureColumns({
+  menu,
+  features,
+  mobile,
+  renderLink,
+  renderLinks,
+}: {
+  menu: NavigationItem;
+  features: Record<string, NavigationGroup["links"]>;
+  mobile: boolean;
+  renderLink: (
+    href: string,
+    label: string,
+    disabled?: boolean,
+    featureShortcut?: boolean,
+  ) => ReactNode;
+  renderLinks: (items: NavigationGroup["links"]) => ReactNode;
+}) {
+  const [product, setProduct] = useState(() => menu.links.find(({ href }) => features[href])?.href);
+  const panel = useRef<HTMLDivElement>(null);
+  const panelId = "products-navigation-features";
+
+  return (
+    <>
+      <div className={styles.menuPrimary} data-nav-column="primary">
+        <p>{menu.submenuLabel}</p>
+        {menu.links.map(({ href, label, disabled }, order) => (
+          <div
+            key={href}
+            className={styles.productFeatureRow}
+            data-feature-selected={href === product || undefined}
+            data-nav-hover-item
+            style={{ "--nav-item-order": order } as CSSProperties}
+            onPointerEnter={(event) => {
+              if (!mobile && event.pointerType === "mouse" && features[href]) setProduct(href);
+            }}
+            onFocus={() => {
+              if (!mobile && features[href]) setProduct(href);
+            }}
+            onKeyDown={(event) => {
+              if (mobile || event.key !== "ArrowRight" || !features[href]) return;
+              event.preventDefault();
+              setProduct(href);
+              requestAnimationFrame(() => {
+                panel.current?.querySelector<HTMLAnchorElement>(`#${panelId}-${order} a`)?.focus();
+              });
+            }}
+          >
+            {renderLink(href, label, disabled, !mobile && Boolean(features[href]))}
+            {mobile && features[href] && (
+              <button
+                type="button"
+                className={styles.productFeatureToggle}
+                aria-label={`คุณสมบัติ ${label}`}
+                aria-controls={`${panelId}-${order}`}
+                aria-expanded={href === product}
+                onClick={(event) => {
+                  const opening = href !== product;
+                  setProduct(opening ? href : undefined);
+                  if (!opening) return;
+                  requestAnimationFrame(() => {
+                    const group = panel.current?.querySelector(`#${panelId}-${order}`);
+                    if (event.detail === 0) group?.querySelector("a")?.focus();
+                    else group?.scrollIntoView({ block: "nearest", behavior: "instant" });
+                  });
+                }}
+              >
+                คุณสมบัติ
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <div
+        id={panelId}
+        ref={panel}
+        className={styles.menuGroup}
+        data-nav-column="uses"
+        hidden={mobile && !product}
+      >
+        {menu.links.map(
+          ({ href, label }, order) =>
+            features[href] && (
+              <div
+                key={href}
+                id={`${panelId}-${order}`}
+                role="group"
+                aria-label={`คุณสมบัติ / ${label}`}
+                hidden={href !== product}
+              >
+                <p>คุณสมบัติ / {label === "โครงสร้างแท่นชั่ง" ? "โครงสร้างแท่น" : label}</p>
+                {renderLinks(features[href])}
+              </div>
+            ),
+        )}
+      </div>
+    </>
+  );
+}
+
 export function PrimaryNavigation({
   navigation,
   site,
+  productCategories,
   listingFeatures,
 }: {
   navigation: NavigationItem[];
   site: SiteSettings;
+  productCategories: Record<string, string>;
   listingFeatures: Promise<NavbarListingFeatures>;
 }) {
   const headerNavigation = getHeaderNavigationItems(navigation);
@@ -62,6 +164,16 @@ export function PrimaryNavigation({
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
   const [openedByHover, setOpenedByHover] = useState(false);
   const pathname = usePathname();
+  const productSlug = pathname?.match(/^\/products\/([^/]+)$/)?.[1];
+  const productCategory = productSlug && productCategories[productSlug];
+  const menuSection =
+    productCategory === "/indicators" || /^\/(?:indicators(?:\/|$)|platforms\/)/.test(pathname)
+      ? "/platforms"
+      : pathname === "/scales/custom-spec"
+        ? "/scales"
+        : productCategory;
+  const menuCurrent = (href: string) =>
+    href === pathname ? "page" : href === menuSection ? "location" : undefined;
   const homePage = pathname === "/";
   const menuOpen = mobileMenu || menuIndex !== null;
   const [menuPathname, setMenuPathname] = useState(pathname);
@@ -222,7 +334,14 @@ export function PrimaryNavigation({
     if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     closeMenu();
   };
-  const link = (href: string, label: string, disabled = false) => {
+  const link = (
+    href: string,
+    label: string,
+    disabled = false,
+    featureShortcut = false,
+    subtitle?: string,
+  ) => {
+    const description = subtitle && <span className={styles.menuSubtitle}>{subtitle}</span>;
     if (disabled) {
       return (
         <span
@@ -232,33 +351,23 @@ export function PrimaryNavigation({
           aria-disabled="true"
         >
           {label}
+          {description}
         </span>
       );
     }
     const destination = catalogSubmenuDestination(href);
-    const [path, anchor] = destination.split("#");
-    const sameCatalogPage =
-      (anchor?.startsWith("product-listing-") || anchor?.startsWith("product-lineup-")) &&
-      path.split("?")[0] === pathname;
+    const external = /^https?:\/\//i.test(destination);
     return (
       <Link
         key={`${href}:${label}`}
         href={destination}
-        scroll={sameCatalogPage ? false : undefined}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
         onClick={activateLink}
-        onNavigate={
-          sameCatalogPage
-            ? () => {
-                requestAnimationFrame(() => {
-                  document
-                    .getElementById(anchor)
-                    ?.scrollIntoView({ block: "start", behavior: "instant" });
-                });
-              }
-            : undefined
-        }
+        aria-keyshortcuts={featureShortcut ? "ArrowRight" : undefined}
       >
         <span>{label}</span>
+        {description}
       </Link>
     );
   };
@@ -269,10 +378,11 @@ export function PrimaryNavigation({
         data-nav-hover-item
         style={{ "--nav-item-order": order } as CSSProperties}
       >
-        {link(item.href, item.label, item.disabled)}
+        {link(item.href, item.label, item.disabled, false, item.subtitle)}
       </div>
     ));
   const activeMenu = menuIndex === null ? null : headerNavigation[menuIndex];
+  const productFeatures = activeMenu?.groups?.[0]?.linksByProduct;
   return (
     <>
       <header
@@ -324,6 +434,7 @@ export function PrimaryNavigation({
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={menuCurrent(item.href)}
                 onMouseMove={(event) => {
                   if (hasSubmenu(item)) scheduleOpen(index, event.currentTarget);
                   else if (openedByHover) closeMenu();
@@ -370,7 +481,13 @@ export function PrimaryNavigation({
               </button>
             </Tooltip>
             <Tooltip>
-              <a href="https://sunfordshop.com/" aria-label="ร้านค้า SUNFORD" onClick={closeMenu}>
+              <a
+                href="https://sunfordshop.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="ร้านค้า SUNFORD"
+                onClick={closeMenu}
+              >
                 <ShopIcon />
               </a>
             </Tooltip>
@@ -397,7 +514,11 @@ export function PrimaryNavigation({
               <div className={styles.mobileMenuItems}>
                 {headerNavigation.map((item, index) => (
                   <div key={item.href} className={styles.mobileCategoryRow} data-nav-category-row>
-                    <Link href={item.href} onClick={activateLink}>
+                    <Link
+                      href={item.href}
+                      aria-current={menuCurrent(item.href)}
+                      onClick={activateLink}
+                    >
                       {item.label}
                     </Link>
                     {hasSubmenu(item) && (
@@ -436,30 +557,42 @@ export function PrimaryNavigation({
                       เมนูหลัก
                     </button>
                   )}
-                  <div className={styles.menuPrimary} data-nav-column="primary">
-                    <p>{activeMenu.submenuLabel ?? activeMenu.label}</p>
-                    {renderGroupLinks(activeMenu.links)}
-                  </div>
-                  {activeMenu.groups?.map((group, groupIndex) => (
-                    <div
-                      key={group.label}
-                      className={styles.menuGroup}
-                      data-nav-column={groupIndex === 0 ? "uses" : "help"}
-                    >
-                      <p>{group.label}</p>
-                      {group.label === "คุณสมบัติ" && group.links.length === 0 ? (
-                        <Suspense fallback={null}>
-                          <ListingFeatureLinks
-                            categoryHref={activeMenu.href}
-                            features={listingFeatures}
-                            render={renderGroupLinks}
-                          />
-                        </Suspense>
-                      ) : (
-                        renderGroupLinks(group.links)
-                      )}
+                  {productFeatures ? (
+                    <ProductFeatureColumns
+                      menu={activeMenu}
+                      features={productFeatures}
+                      mobile={mobileMenu}
+                      renderLink={link}
+                      renderLinks={renderGroupLinks}
+                    />
+                  ) : (
+                    <div className={styles.menuPrimary} data-nav-column="primary">
+                      <p>{activeMenu.submenuLabel ?? activeMenu.label}</p>
+                      {renderGroupLinks(activeMenu.links)}
                     </div>
-                  ))}
+                  )}
+                  {activeMenu.groups?.map((group, groupIndex) =>
+                    group.linksByProduct ? null : (
+                      <div
+                        key={group.label}
+                        className={styles.menuGroup}
+                        data-nav-column={groupIndex === 0 ? "uses" : "help"}
+                      >
+                        <p>{group.label}</p>
+                        {group.label === "คุณสมบัติ" && group.links.length === 0 ? (
+                          <Suspense fallback={null}>
+                            <ListingFeatureLinks
+                              categoryHref={activeMenu.href}
+                              features={listingFeatures}
+                              render={renderGroupLinks}
+                            />
+                          </Suspense>
+                        ) : (
+                          renderGroupLinks(group.links)
+                        )}
+                      </div>
+                    ),
+                  )}
                 </div>
               )
             )}

@@ -1,6 +1,12 @@
 const driveFile = (id: string) => `https://drive.google.com/file/d/${id}/view`;
 const googlePlay = (id: string) => `https://play.google.com/store/apps/details?id=${id}`;
 
+export const softwareDownloadTopics = {
+  retail: { id: "retail-software", title: "การพาณิชย์และค้าปลีก" },
+  industrial: { id: "industrial-software", title: "การผลิตอุตสาหกรรม" },
+  household: { id: "household-software", title: "ครัวเรือนและสุขภาพ" },
+};
+
 type Download = {
   platform: "Windows" | "Android" | "iOS";
   label: string;

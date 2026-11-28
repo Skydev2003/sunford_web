@@ -11,11 +11,13 @@ import { warehouseContentPage } from "../data/warehouse-content";
 import {
   featuredEditorialArticles,
   getEditorialSection,
+  legacyEditorialArticlesPath,
   publishedEditorialArticlePaths,
 } from "../data/editorial-sections";
 import { getProducts } from "@/features/catalog/server/product-repository";
 import { legacySoftwareCatalogPath } from "@/features/home/data/brand";
 import { contactPath, legacyContactPath } from "../data/contact-route";
+import { sectionPagePath } from "@/features/site/data/main-page-paths";
 
 export { getSnapshotProducts } from "../data/catalog-snapshot";
 
@@ -68,8 +70,8 @@ export async function getContentPages(): Promise<SourcePage[]> {
     if (normalize(page.path) === legacySoftwareCatalogPath) return [];
     const editorial = getEditorialSection(page.path);
     if (editorial) {
-      if (editorial.path !== page.path) return [];
-      return [{ ...page, title: editorial.title, kind: "page", images: [] }];
+      if (editorial.path !== page.path && page.path !== legacyEditorialArticlesPath) return [];
+      return [{ ...page, path: editorial.path, title: editorial.title, kind: "page", images: [] }];
     }
     if (page.kind === "article")
       return publishedEditorialArticlePaths.has(normalize(page.path)) ? [page] : [];
@@ -120,7 +122,9 @@ export async function getFeaturedEditorialArticles() {
   const pages = await getContentPageIndex();
   return featuredEditorialArticles.flatMap(({ path, cover, summary }) => {
     const page = pages[path];
-    return page?.kind === "article" ? [{ ...page, cover, summary }] : [];
+    return page?.kind === "article"
+      ? [{ ...page, path: sectionPagePath(page.path), cover, summary }]
+      : [];
   });
 }
 
@@ -136,7 +140,7 @@ export async function getPageSearchIndex() {
   return (await getContentPages())
     .filter((page) => page.kind !== "product" && page.path !== "/")
     .map(({ path, title }) => ({
-      path: normalize(path) === legacyContactPath ? contactPath : path,
+      path: normalize(path) === legacyContactPath ? contactPath : sectionPagePath(path),
       title,
     }));
 }

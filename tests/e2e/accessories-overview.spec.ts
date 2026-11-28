@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 import { accessorySubcategoryDefinitions } from "../../src/features/catalog/data/accessory-subcategories";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
 
-const path = "/products/category/accessories";
+const path = "/accessories";
+const subcategoryRoot = "/accessories";
 const label = "อุปกรณ์เสริม";
 const title = `ดู${label}ทั้งหมด`;
 const guide = buyingGuides.find(({ slug }) => slug === "accessories")!;
@@ -50,10 +51,10 @@ for (const width of [390, 834, 1440]) {
     await expect(page.locator("#products-lineup").getByRole("link").first()).toBeAttached();
     await expect(chapters.last()).toHaveText("อื่น ๆ");
     await chapters.last().click();
-    await expect(page).toHaveURL(`${path}/consumables`);
+    await expect(page).toHaveURL(`${subcategoryRoot}/consumables`);
     const filters = page.getByRole("navigation", { name: "หมวดย่อยสินค้า" });
     const selected = filters.locator('a[aria-current="page"]');
-    await expect(selected).toHaveAttribute("href", `${path}/consumables`);
+    await expect(selected).toHaveAttribute("href", `${subcategoryRoot}/consumables`);
     const image = selected.locator("img");
     await image.scrollIntoViewIfNeeded();
     const source = await image.evaluate(async (node: HTMLImageElement) => {
@@ -61,7 +62,7 @@ for (const width of [390, 834, 1440]) {
       const url = new URL(node.currentSrc);
       return url.searchParams.get("url") ?? url.pathname;
     });
-    expect(source).toBe(artwork.get(`${path}/consumables`));
+    expect(source).toBe(artwork.get(`${subcategoryRoot}/consumables`));
     const products = page.locator("article[data-model-only]");
     const total = await products.count();
     for (const type of ["กระดาษความร้อน", "ฉลากและสติ๊กเกอร์"]) {
@@ -148,7 +149,7 @@ for (const width of [390, 834, 1440]) {
       .getByRole("link", { name: "เครื่องพิมพ์", exact: true })
       .click();
     const listing = page.locator('[data-product-subcategory-page="accessory-printers"]:visible');
-    await expect(page).toHaveURL(`${path}/printers`, { timeout: 15_000 });
+    await expect(page).toHaveURL(`${subcategoryRoot}/printers`, { timeout: 15_000 });
     await expect(listing).toBeVisible({ timeout: 15_000 });
     await expect(listing.getByRole("status")).toHaveText(`${printerLinks.length} รายการ`);
     const more = listing.getByRole("button", { name: /^ดูเพิ่มเติม \(/ });
@@ -167,10 +168,10 @@ for (const width of [390, 834, 1440]) {
     await expect(essentials.locator(":scope > li")).toHaveCount(2);
     await expect(
       essentials.getByRole("link", { name: "ดูเครื่องชั่ง", exact: true }),
-    ).toHaveAttribute("href", "/products/category/scales");
+    ).toHaveAttribute("href", "/scales");
     await expect(essentials.getByRole("link", { name: "ดูระบบ POS", exact: true })).toHaveAttribute(
       "href",
-      "/products/category/pos",
+      "/pos",
     );
     const accordion = main.locator('[data-overview-section="accordion"]');
     await expect(accordion.getByRole("heading", { level: 2 })).toHaveText(
@@ -198,7 +199,7 @@ for (const width of [390, 1440]) {
     await page.goto(path);
     const finder = page.getByRole("dialog", { name: title, exact: true });
     for (const { id, label: name } of accessorySubcategoryDefinitions) {
-      const href = `${path}/${id.replace("accessory-", "")}`;
+      const href = `${subcategoryRoot}/${id.replace("accessory-", "")}`;
       const chapterName = chapterNames[id];
       if (chapterName)
         await page
@@ -215,7 +216,7 @@ for (const width of [390, 1440]) {
       await expect(page).toHaveURL(new RegExp(path + "$"));
     }
     await page.goto(`${path}?subcategory=accessory-cables&trace=keep`);
-    await expect(page).toHaveURL(new RegExp(path + "/cables\\?trace=keep$"));
+    await expect(page).toHaveURL(new RegExp(subcategoryRoot + "/cables\\?trace=keep$"));
     await page.reload();
     await expect(page.locator('[data-product-subcategory-page="accessory-cables"]')).toBeVisible();
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");

@@ -130,7 +130,7 @@ test("legacy accessory query URLs reach their own listings", async ({ page }) =>
   for (const definition of pages) {
     for (const href of [
       `/products?category=accessories&subcategory=${definition.id}`,
-      `/products/category/accessories?subcategory=${definition.id}`,
+      `/accessories?subcategory=${definition.id}`,
     ]) {
       await page.goto(href);
       await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
@@ -183,7 +183,7 @@ test("Accessory titles use the existing subgroup motion profile and reduced fall
   const capturedHeading = () =>
     page.evaluate(() => Reflect.get(window, "accessoryHeadingMotion") as unknown[]);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/products/category/platforms/sus201");
+  await page.goto("/platforms/sus201");
   await expect.poll(capturedHeading).not.toEqual([]);
   const reference = await capturedHeading();
   for (const definition of pages) {
@@ -234,7 +234,7 @@ test("native Home mobile submenu reaches every accessory group with valid detail
         .getByRole("navigation", { name: "เส้นทางนำทาง", exact: true })
         .getByRole("link", { name: "อุปกรณ์เสริม", exact: true })
         .tap();
-      await expect(page).toHaveURL(/\/products\/category\/accessories$/);
+      await expect(page).toHaveURL(/\/accessories$/);
       continue;
     }
     await page.locator("#mock-product-results article[data-model-only] a").first().tap();
@@ -249,8 +249,8 @@ test("shared LED-R1 returns to the accessory or indicator group that opened it",
 }) => {
   const hrefs: string[] = [];
   for (const [href, title] of [
-    ["/products/category/accessories/displays", "อุปกรณ์เสริม จอแสดงผลเสริมและระบบต่อพ่วง"],
-    ["/products/category/indicators/led", "อินดิเคเตอร์แท่นชั่ง LED"],
+    ["/accessories/displays", "อุปกรณ์เสริม จอแสดงผลเสริมและระบบต่อพ่วง"],
+    ["/indicators/led", "อินดิเคเตอร์แท่นชั่ง LED"],
   ]) {
     await page.goto(href);
     const card = page
@@ -268,18 +268,18 @@ test("shared LED-R1 returns to the accessory or indicator group that opened it",
 
 test("consumables legacy and guide links reach the dedicated size list", async ({ page }) => {
   await page.goto("/Product/Consumables");
-  await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
+  await expect(page).toHaveURL(/\/accessories\/consumables$/);
   const listing = page.locator('[data-product-subcategory-page="accessory-consumables"]');
   await expect(
     listing.locator("#mock-product-results article[data-model-only]").first(),
   ).toBeVisible();
   await page.goto("/guides/accessories");
   await page.getByRole("link", { name: "ดูวัสดุสิ้นเปลือง", exact: true }).click();
-  await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
-  await page.goto("/products/category/accessories");
+  await expect(page).toHaveURL(/\/accessories\/consumables$/);
+  await page.goto("/accessories");
   const guide = page.locator('[data-overview-section="accordion"]');
   await guide.getByText("เลือกวัสดุสิ้นเปลือง", { exact: true }).click();
   await guide.getByRole("link", { name: /ดูวัสดุสิ้นเปลือง/ }).click();
-  await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
+  await expect(page).toHaveURL(/\/accessories\/consumables$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });

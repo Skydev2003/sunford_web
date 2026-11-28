@@ -56,7 +56,7 @@ export const softwareSupportPages: SoftwareSupportPage[] = [
     slug: "sunford-pos-smart-retail",
     title: "SUNFORD SmartRetail POS",
     guide: {
-      href: "/technical-specification/guides/sql-server",
+      href: "/service/technical-specification/guides/sql-server",
       label: "คู่มือติดตั้ง SQL Server",
     },
   },
@@ -64,7 +64,7 @@ export const softwareSupportPages: SoftwareSupportPage[] = [
     slug: "sunford-rls1100",
     title: "SUNFORD RLS สำหรับรุ่น RLS1100",
     guide: {
-      href: "/technical-specification/guides/rls1100",
+      href: "/service/technical-specification/guides/rls1100",
       label: "คู่มือติดตั้ง RLS1100",
     },
   },
@@ -93,7 +93,7 @@ export const softwareSupportPages: SoftwareSupportPage[] = [
     slug: "sunford-lp50-label-printer",
     title: "SUNFORD LP50 Label Printer",
     guide: {
-      href: "/technical-specification/guides/lp50",
+      href: "/service/technical-specification/guides/lp50",
       label: "คู่มือออกแบบฉลากและสลิป LP50",
     },
   },

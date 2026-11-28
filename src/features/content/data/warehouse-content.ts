@@ -1,6 +1,7 @@
 import { load } from "cheerio";
 import type { SourcePage } from "../types";
 import type { Product } from "@/features/catalog/types";
+import { sectionPagePath } from "@/features/site/data/main-page-paths";
 
 // Blank document layouts are independent of live Warehouse values.
 const layouts = new WeakMap<SourcePage, string>();
@@ -39,7 +40,7 @@ export function warehouseContentPage(
     page.path.startsWith("/solutions") ||
     page.path.startsWith("/software") ||
     page.path === "/applications-and-softwares" ||
-    page.path === "/technical-specification";
+    sectionPagePath(page.path) === "/service/technical-specification";
   if (!productContent) return page;
   const software = products.filter(
     (product) => product.warehouseGroup === "โปรแกรมและสิทธิ์ใช้งาน",

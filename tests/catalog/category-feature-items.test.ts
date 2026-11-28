@@ -26,11 +26,7 @@ test("software belt uses the three existing solution images and download anchors
   assert.equal(entries.length, 3);
   assert.deepEqual(
     entries.map((entry) => entry.href),
-    [
-      "/software/download#retail-software",
-      "/software/download#industrial-software",
-      "/software/download#household-software",
-    ],
+    ["/software#retail-software", "/software#industrial-software", "/software#household-software"],
   );
   assert(entries.every((entry) => page.images.includes(entry.image) && entry.title));
 });

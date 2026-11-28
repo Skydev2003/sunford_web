@@ -2,8 +2,9 @@ import { expect, test } from "@playwright/test";
 import { platformPlacementPages } from "../../src/features/catalog/data/product-subcategory-pages";
 import { verifyCategoryOverview } from "./helpers/category-overview";
 
-const path = "/products/category/platforms";
-const label = "โครงสร้างแท่นชั่ง";
+const path = "/platforms/structures";
+const subcategoryRoot = "/platforms";
+const label = "แท่นชั่ง";
 const title = "ดูสินค้าทั้งหมด";
 const catalogPath = "/products?category=platforms";
 
@@ -23,9 +24,13 @@ for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
     const placements = page.getByRole("group", { name: "กรองผลิตภัณฑ์", exact: true });
-    const materials = page.getByRole("group", { name: "กรองตามวัสดุ", exact: true });
+    const materials = page.getByRole("group", { name: "กรองตามวัสดุ" });
     const products = page.locator("#products-lineup").getByRole("link");
+    const chapters = page.locator("#products-chapters");
     await expect(placements).toHaveCount(0);
+    for (const { label } of platformPlacementPages) {
+      await expect(chapters.getByText(label, { exact: true })).toBeVisible();
+    }
     await expect(products.first()).toBeVisible();
     const allCount = await products.count();
     const sus304 = materials.getByRole("button", { name: "สแตนเลส SUS304", exact: true });
@@ -57,8 +62,8 @@ for (const width of [390, 1440]) {
       await page.goBack();
       await expect(page).toHaveURL(new RegExp(path + "$"));
     }
-    await page.goto(`${path}?subcategory=platform-sus304&trace=keep`);
-    await expect(page).toHaveURL(new RegExp(path + "/sus304\\?trace=keep$"));
+    await page.goto(`${subcategoryRoot}?subcategory=platform-sus304&trace=keep`);
+    await expect(page).toHaveURL(new RegExp(subcategoryRoot + "/sus304\\?trace=keep$"));
     await page.reload();
     await expect(page.locator('[data-product-subcategory-page="platform-sus304"]')).toBeVisible();
     expect(new URL(page.url()).searchParams.get("trace")).toBe("keep");
@@ -85,9 +90,11 @@ for (const width of [390, 1440]) {
 for (const width of [768, 834]) {
   test(`platform overview remains responsive at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    await page.goto(path);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
-    await expect(page.locator("#products-chapters > li")).toHaveCount(2);
+    await page.goto(subcategoryRoot);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("แท่นชั่ง");
+    await expect(
+      page.getByRole("navigation", { name: "เลือกส่วนประกอบและจัดสเปคแท่นชั่ง" }).getByRole("link"),
+    ).toHaveCount(3);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
@@ -101,26 +108,24 @@ test("platform cache navigation preserves a single active chrome and overlay hos
   await page.setViewportSize({ width: 1440, height: 1000 });
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(path);
+  await page.goto(subcategoryRoot);
   await page
     .locator("[data-products-nav]:visible")
-    .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
+    .getByRole("link", { name: "ร้าน", exact: true })
     .click();
   const directory = page.locator("[data-products-directory]");
-  await expect(
-    directory.locator('#products-categories a[href^="/products/category/"]'),
-  ).toHaveCount(5);
+  await expect(directory.locator('#products-categories a[href^="/products/"]')).toHaveCount(5);
   await page.goto("/products?catalog=all");
   await expect(page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await page.goBack();
   await expect(directory).toBeVisible();
   await page.goBack();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("แท่นชั่ง");
   for (const [target, heading] of [
     ["เครื่องชั่ง", "เครื่องชั่ง"],
     [label, label],
-    ["ระบบ POS", "ระบบ POS"],
+    ["POS", "ระบบ POS"],
     [label, label],
   ]) {
     await page
@@ -148,7 +153,7 @@ test("platform cache navigation preserves a single active chrome and overlay hos
   await comparison.getByRole("button", { name: "ปิด", exact: true }).click();
   await page.keyboard.press("Escape");
   await page.goBack();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("แท่นชั่ง");
   await page
     .locator("[data-products-header]:visible")
     .getByRole("button", { name: "ค้นหาสินค้าและข้อมูล", exact: true })
@@ -165,9 +170,7 @@ test("platform cache navigation preserves a single active chrome and overlay hos
   await expect(page.locator(".site-header:visible")).toHaveCSS("height", "44px");
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(0);
   await page.goBack();
-  await expect(
-    page.locator('[data-overview-category="platforms"]:visible #products-title'),
-  ).toHaveText(label);
+  await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toHaveText(label);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   expect(errors).toEqual([]);
 });

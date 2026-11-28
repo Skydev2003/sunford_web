@@ -1,3 +1,4 @@
+import type { OverviewFeature } from "../data/catalog-overview-features";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
@@ -22,7 +23,7 @@ const topicImages: Readonly<Record<string, string>> = {
   scales: "/images/category-chapters/pos/android.webp",
 };
 
-export async function POSOverview() {
+export async function POSOverview({ overviewFeature }: { overviewFeature?: OverviewFeature } = {}) {
   const {
     products: catalogProducts,
     categories,
@@ -85,6 +86,7 @@ export async function POSOverview() {
       categories={[category]}
       cardNames={cardNames}
       categoryId="pos"
+      overviewFeature={overviewFeature}
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       stories={stories}

@@ -12,7 +12,7 @@ for (const host of ["localhost", "127.0.0.1"]) {
     test.setTimeout(90000);
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(`http://${host}:3000/guides/indicator-platform-compatibility`);
+    await page.goto(`http://${host}:3000/platforms/spec-builder`);
     const connected = await page.evaluate(
       () =>
         new Promise<boolean>((done) => {
@@ -57,7 +57,7 @@ test("actual source hot update and restoration retain the selected head", async 
   const modified = Buffer.from(original.toString().replace(before, after));
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("http://localhost:3000/guides/indicator-platform-compatibility");
+  await page.goto("http://localhost:3000/platforms/spec-builder");
   await page.getByRole("button", { name: "เลือก Indicator-AW31", exact: true }).click();
   await expect(page.getByRole("button", { name: "เลือก TMS-60-AW31", exact: true })).toBeVisible();
   try {

@@ -124,7 +124,7 @@ for (const width of [320, 768, 1400, 1920]) {
     expect(box.y + box.height).toBeLessThanOrEqual(901);
     await page.screenshot({ path: test.info().outputPath(`product-children-${width}.png`) });
     await last.click();
-    await expect(page).toHaveURL(/\/products\/category\/accessories\/consumables$/);
+    await expect(page).toHaveURL(/\/accessories\/consumables$/);
     await expect(
       page.getByRole("region", { name: "แคตตาล็อกสินค้า Sunford" }).getByRole("status"),
     ).toHaveText(
@@ -167,8 +167,8 @@ test("child URLs support refresh, same-family links, local changes, clearing and
   expect(new URL(page.url()).searchParams.get("subcategory")).toBeNull();
   const previous = page.url();
   const menu = await productMenu(page, 1440, "ระบบ POS");
-  await menu.getByRole("link", { name: "Windows", exact: true }).click();
-  await expect(page).toHaveURL(/\/products\/category\/pos\/windows$/);
+  await menu.getByRole("link", { name: "Hardware", exact: true }).click();
+  await expect(page).toHaveURL(/\/pos\/windows$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.goBack();
   await expect(page).toHaveURL(previous);
@@ -177,10 +177,10 @@ test("child URLs support refresh, same-family links, local changes, clearing and
     "true",
   );
   await page.goForward();
-  await expect(page).toHaveURL(/\/products\/category\/pos\/windows$/);
+  await expect(page).toHaveURL(/\/pos\/windows$/);
   const sameFamily = await productMenu(page, 1440, "ระบบ POS");
-  await sameFamily.getByRole("link", { name: "Android", exact: true }).click();
-  await expect(page).toHaveURL(/\/products\/category\/pos\/android$/);
+  await sameFamily.getByRole("link", { name: "Positive", exact: true }).click();
+  await expect(page).toHaveURL(/\/pos\/android$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page
     .getByRole("navigation", { name: "เส้นทางนำทาง", exact: true })
@@ -213,8 +213,8 @@ test("unknown and cross-family child IDs fall back safely, while canonical iOS r
         .getByRole("button", { name: "ทั้งหมด", exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
   }
-  await page.goto("/products/category/pos/ios");
-  await expect(page).toHaveURL(/\/products\/category\/pos\/ios$/);
+  await page.goto("/pos/ios");
+  await expect(page).toHaveURL(/\/pos\/ios$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(catalog.getByRole("status")).toHaveText("0 รายการ");
   await expect(

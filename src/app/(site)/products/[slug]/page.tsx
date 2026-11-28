@@ -4,10 +4,13 @@ import { ProductReturnLink } from "@/features/catalog/components/product-return-
 import { relatedProducts } from "@/features/catalog/data/related-products";
 import { catalogProductGroup } from "@/features/catalog/data/catalog-supplements";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
+import { productCategorySlugs } from "@/features/catalog/data/category-paths";
+import { findCatalogProduct, productPrimaryCategory } from "@/features/catalog/data/product-lookup";
+import { mesSlug } from "@/features/content/data/mes-paths";
 import { buyingGuideHref, buyingGuides } from "@/features/content/data/buying-guides";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { ProductDetailCompare, ReadabilityHelp } from "./product-detail-compare";
 import { clientProductData, productCardData } from "@/features/catalog/data/client-products";
@@ -43,6 +46,13 @@ import { ProductSpecifications } from "./product-specifications";
 import { ScaleProductDetail } from "./scale-product-detail";
 import { scaleDetailSpecifications } from "./scale-detail-specifications";
 import scaleStyles from "./scale-product-detail.module.css";
+import { catalogPageTitle } from "@/features/site/data/site-menu-labels";
+
+const siteOrigin = "https://sunford-web.vercel.app";
+
+function canonicalProductUrl(slug: string) {
+  return `${siteOrigin}/products/${encodeURIComponent(slug)}`;
+}
 
 // Resolve the product before streaming so unknown URLs retain an HTTP 404.
 // Catalogue reads remain cached; this route deliberately allows URL resolution.
@@ -50,7 +60,12 @@ export const instant = false;
 export const ensureStatic = "navigation";
 
 export async function generateStaticParams() {
-  return (await getProducts()).map((p) => ({ slug: p.slug }));
+  const products = await getProducts();
+  const conflict = [...productCategorySlugs, mesSlug].find((slug) =>
+    findCatalogProduct(products, slug),
+  );
+  if (conflict) throw new Error(`A catalog item uses the reserved URL /products/${conflict}`);
+  return [...new Set(products.map(({ slug }) => slug).filter(Boolean))].map((slug) => ({ slug }));
 }
 export async function generateMetadata({
   params,
@@ -65,21 +80,54 @@ async function getProductMetadata(slug: string): Promise<Metadata> {
   "use cache";
 
   const product = await getProduct(slug);
+  if (!product || !product.slug) return { title: "ไม่พบสินค้า" };
+  if (product.slug !== slug) return { title: product.name };
+  const title = [product.name, product.subtitle].filter(Boolean).join(" — ");
+  const description =
+    product.description || `ข้อมูลและรายละเอียดสินค้า ${product.name} จาก SUNFORD`;
+  const canonical = canonicalProductUrl(product.slug);
   return {
-    title: product ? [product.name, product.subtitle].filter(Boolean).join(" — ") : "ไม่พบสินค้า",
-    description: product?.description || undefined,
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      ...(product.image && { images: [new URL(product.image, siteOrigin).href] }),
+    },
   };
 }
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const product = await getProduct((await params).slug);
-  if (!product) notFound();
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  if (!product || !product.slug) notFound();
+  if (product.slug !== slug) {
+    const query = new URLSearchParams();
+    for (const [key, values] of Object.entries(await searchParams)) {
+      for (const value of [values ?? []].flat()) query.append(key, value);
+    }
+    permanentRedirect(
+      `/products/${encodeURIComponent(product.slug)}${query.size ? `?${query}` : ""}`,
+    );
+  }
   const [site, storefront] = await Promise.all([
     getSettings("site", defaultSite),
     getStorefrontProducts(),
   ]);
   const related = relatedProducts(product, storefront);
   const family = catalogProductGroup(product);
-  const category = productCategoryDefinitions.find((item) => item.path === family);
+  const primaryCategory = productPrimaryCategory(product);
+  const category = productCategoryDefinitions.find((item) => item.id === primaryCategory);
+  const categoryPath =
+    primaryCategory === "indicators" ? "/platforms/indicators" : `/${primaryCategory}`;
+  const breadcrumbLabel = catalogPageTitle(categoryPath, category?.label ?? "ร้าน");
   const isScale = category?.id === "scales";
   const guide = buyingGuides.find((item) => item.productHref === family);
   const source = product.warehouseSku
@@ -211,13 +259,62 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <Link href={buyingGuideHref(guide.slug)}>อ่านคู่มือ</Link>
     </aside>
   );
+  const canonical = canonicalProductUrl(product.slug);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Product",
+        name: isScale ? (fact("รุ่นสินค้า") ?? product.name) : product.name,
+        url: canonical,
+        ...(product.description && { description: product.description }),
+        ...(product.image && { image: new URL(product.image, siteOrigin).href }),
+        ...(brand && { brand: { "@type": "Brand", name: brand } }),
+        ...(product.price != null &&
+          product.price > 0 && {
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "THB",
+              price: product.price,
+              url: canonical,
+            },
+          }),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: breadcrumbLabel,
+            item: `${siteOrigin}${categoryPath}`,
+          },
+          { "@type": "ListItem", position: 2, name: product.name, item: canonical },
+        ],
+      },
+    ],
+  };
 
   return (
     <main
       id="main-content"
       className={`product-detail ${styles.page}${isScale ? ` ${scaleStyles.page}` : ""}`}
       data-scroll-reveal={isScale ? "static" : undefined}
+      data-primary-category={primaryCategory}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+        }}
+      />
+      <nav aria-label="เส้นทางสินค้า" className="container">
+        <Link href={categoryPath} className="text-link back-link">
+          {breadcrumbLabel}
+        </Link>
+        <span aria-hidden="true"> › </span>
+        <span aria-current="page">{product.name}</span>
+      </nav>
       {isScale ? (
         <ScaleProductDetail
           name={fact("รุ่นสินค้า") ?? product.name}
@@ -254,8 +351,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className={styles.hero}>
             {gallery}
             <div className={`detail-copy ${styles.copy}`}>
-              {categoryName && family && (
-                <Link href={family} className={styles.category}>
+              {categoryName && category && (
+                <Link href={categoryPath} className={styles.category}>
                   {categoryName}
                 </Link>
               )}

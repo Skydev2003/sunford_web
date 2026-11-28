@@ -267,7 +267,7 @@ for (const width of [390, 1440]) {
       page.getByRole("dialog", { name: "เปรียบเทียบสินค้า", exact: true }).locator(placeholder),
     ).toBeVisible();
 
-    await page.goto("/guides/indicator-platform-compatibility");
+    await page.goto("/platforms/spec-builder");
     const builder = page.getByRole("region", { name: "เลือกอุปกรณ์จัดชุด" });
     await expect(builder.locator("article").first().locator(placeholder)).toBeVisible();
     const selectable = builder.locator("article button:enabled");
@@ -314,12 +314,12 @@ for (const width of [390, 1440]) {
         : route.abort(),
     );
     for (const path of [
-      "/products/category/scales",
-      "/products/category/indicators",
-      "/products/category/platforms",
-      "/products/category/pos",
-      "/products/category/accessories",
-      "/products/category/scales/industrial",
+      "/scales",
+      "/indicators",
+      "/platforms",
+      "/pos",
+      "/accessories",
+      "/scales/industrial",
       "/solutions",
     ]) {
       await page.goto(path);

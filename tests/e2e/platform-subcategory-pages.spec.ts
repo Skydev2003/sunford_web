@@ -132,7 +132,7 @@ test("legacy platform query URLs reach their own listings", async ({ page }) => 
   for (const definition of pages) {
     for (const href of [
       `/products?category=platforms&subcategory=${definition.id}`,
-      `/products/category/platforms?subcategory=${definition.id}`,
+      `/platforms?subcategory=${definition.id}`,
     ]) {
       await page.goto(href);
       await expect(page).toHaveURL(new URL(definition.href, page.url()).href);

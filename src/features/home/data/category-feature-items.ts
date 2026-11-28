@@ -1,6 +1,7 @@
 import { load } from "cheerio";
 import type { Product } from "@/features/catalog/types";
 import type { SourcePage } from "@/features/content/types";
+import { resolveCategoryHref } from "@/features/catalog/data/category-destinations";
 
 export type CategoryFeatureEntry = {
   id: string;
@@ -47,8 +48,10 @@ export function pageFeatureEntries(
       !value.startsWith("//") &&
       !/[\\\r\n]/.test(value) &&
       !/^\/(admin|api)(\/|$)/i.test(value);
-    if (title && image && href && local(image) && local(href))
-      entries.set(href, { id: href, title, image, href });
+    if (title && image && href && local(image) && local(href)) {
+      const destination = resolveCategoryHref(href);
+      entries.set(destination, { id: destination, title, image, href: destination });
+    }
   });
   return [...entries.values()];
 }

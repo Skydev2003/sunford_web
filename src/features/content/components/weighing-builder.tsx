@@ -6,12 +6,14 @@ import { Monitor, Layers, Cable, Search, Check, Plus, ChevronRight, Trash2 } fro
 import { ProductImage } from "@/components/ui/product-image";
 import styles from "./weighing-builder.module.css";
 import { quotationTotals } from "@/features/catalog/data/quotation";
+import { QuoteSelectionLink } from "@/features/catalog/components/quote-selection-link";
 import { formatBaht } from "@/features/catalog/data/price-format";
+import { contactPath } from "../data/contact-route";
 
 import type { WeighingOption } from "../data/weighing-options";
 const categories = [
-  { kind: "head", label: "หัวอ่าน", icon: Monitor },
   { kind: "platform", label: "แท่นชั่ง", icon: Layers },
+  { kind: "head", label: "อินดิเคเตอร์", icon: Monitor },
   { kind: "accessory", label: "อุปกรณ์เสริม", icon: Cable },
 ] as const;
 
@@ -23,7 +25,10 @@ function optionName(option: WeighingOption) {
 }
 
 export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
-  const [kind, setKind] = useReturnState<WeighingOption["kind"]>("weighing-builder.kind", "head");
+  const [kind, setKind] = useReturnState<WeighingOption["kind"]>(
+    "weighing-builder.kind",
+    "platform",
+  );
   const heading = useRef<HTMLHeadingElement>(null);
   const [query, setQuery] = useReturnState("weighing-builder.query", "");
   const [group, setGroup] = useReturnState("weighing-builder.group", "");
@@ -43,12 +48,26 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
     });
   const head = selected.find((o) => o.kind === "head");
   const platform = selected.find((o) => o.kind === "platform");
+  const hasCompatibleAccessories = (headCode: string) =>
+    options.some(
+      (option) => option.kind === "accessory" && option.compatibleCodes?.includes(headCode),
+    );
   const first = selected[0];
   const headPlatformPairs = Object.fromEntries(
     options.filter((o) => o.kind === "head").map((o) => [o.code, o.compatibleCodes ?? []]),
   );
   const pairedPlatforms = new Set(Object.values(headPlatformPairs).flat());
-  const groups = [...new Set(options.map((o) => o.group).filter(Boolean))];
+  const confirmedPair = Boolean(
+    head && platform && headPlatformPairs[head.code]?.includes(platform.code),
+  );
+  const groups = [
+    ...new Set(
+      options
+        .filter((o) => o.kind === kind)
+        .map((o) => o.group)
+        .filter(Boolean),
+    ),
+  ];
   const visible = options.filter(
     (o) =>
       o.kind === kind &&
@@ -58,10 +77,12 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
         first?.kind !== "platform" ||
         headPlatformPairs[o.code]?.includes(first.code)) &&
       (kind !== "platform" ||
-        (first?.kind === "head"
-          ? headPlatformPairs[first.code]?.includes(o.code)
-          : pairedPlatforms.has(o.code))) &&
-      [o.code, o.description, o.group].join(" ").toLowerCase().includes(query.trim().toLowerCase()),
+        first?.kind !== "head" ||
+        headPlatformPairs[first.code]?.includes(o.code)) &&
+      [o.code, o.displayName, o.description, o.group]
+        .join(" ")
+        .toLowerCase()
+        .includes(query.trim().toLowerCase()),
   );
   function openStep(next: WeighingOption["kind"]) {
     setKind(next);
@@ -89,7 +110,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
         const platformCode = option.kind === "platform" ? option.code : first.code;
         if (!headPlatformPairs[headCode]?.includes(platformCode)) return;
         if (selected[1]?.code !== option.code) setSelected([first, option]);
-        openStep("accessory");
+        if (hasCompatibleAccessories(headCode)) openStep("accessory");
       }
     } else if (head && platform) {
       setSelected((previous) =>
@@ -139,7 +160,9 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                 type="button"
                 className={styles.category}
                 aria-pressed={tab === kind}
-                disabled={tab === "accessory" && !(head && platform)}
+                disabled={
+                  tab === "accessory" && !(head && platform && hasCompatibleAccessories(head.code))
+                }
                 onClick={() => openStep(tab)}
               >
                 <Icon size={18} aria-hidden="true" />
@@ -192,15 +215,14 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
           ))}
         </div>
         <div className={styles.selection}>
-          {head && platform ? (
-            <a
+          {confirmedPair ? (
+            <QuoteSelectionLink
               className={styles.quoteLink}
-              href={`/service/quotation?${new URLSearchParams(selected.map((item) => ["model", item.code]))}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              models={selected.map((item) => item.code)}
+              newTab
             >
               ทำใบเสนอราคา ↗
-            </a>
+            </QuoteSelectionLink>
           ) : (
             <button
               type="button"
@@ -219,7 +241,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
             {kind === "platform" && first?.kind === "head"
               ? `แท่นชั่งสำหรับ ${first.displayName ?? first.code}`
               : kind === "head" && first?.kind === "platform"
-                ? `หัวอ่านสำหรับ ${first.displayName ?? first.code}`
+                ? `อินดิเคเตอร์สำหรับ ${first.displayName ?? first.code}`
                 : categories.find((tab) => tab.kind === kind)?.label}
           </h2>
           <div className={styles.fields}>
@@ -253,7 +275,12 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
         <div className={styles.cards}>
           {visible.map((o) => {
             const active = selected.some((item) => item.code === o.code);
-            const pending = o.kind === "head" && !headPlatformPairs[o.code]?.length;
+            const pending =
+              o.kind === "head"
+                ? !headPlatformPairs[o.code]?.length
+                : o.kind === "platform" && !pairedPlatforms.has(o.code);
+            const pendingLabel =
+              o.kind === "platform" ? "รอยืนยันรุ่นอินดิเคเตอร์" : "รอยืนยันรุ่นแท่นชั่ง";
             const newTab = o.detailHref.startsWith("/products/");
             return (
               <article key={o.code}>
@@ -299,13 +326,13 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
                   </span>
                 </div>
                 <button
-                  aria-label={pending ? `${o.code} รอยืนยันรุ่นแท่นชั่ง` : `เลือก ${o.code}`}
+                  aria-label={pending ? `${o.code} ${pendingLabel}` : `เลือก ${o.code}`}
                   disabled={pending}
                   aria-pressed={active}
                   onClick={() => choose(o)}
                 >
                   {pending ? (
-                    "รอยืนยันรุ่นแท่นชั่ง"
+                    pendingLabel
                   ) : (
                     <>
                       {active ? <Check size={15} /> : <Plus size={15} />}{" "}
@@ -317,7 +344,18 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
             );
           })}
         </div>
-        {!visible.length && (
+        {kind === "platform" && !pairedPlatforms.size ? (
+          <p>
+            ยังไม่มีข้อมูลยืนยันคู่หัวอ่านและแท่นชั่งในแค็ตตาล็อก ลองดู{" "}
+            <a className={styles.guideLink} href="#recommended-sets">
+              ชุดสำเร็จที่แนะนำ
+            </a>{" "}
+            หรือ{" "}
+            <a className={styles.guideLink} href={contactPath}>
+              ปรึกษา SUNFORD
+            </a>
+          </p>
+        ) : !visible.length ? (
           <p>
             ไม่พบรุ่นที่ตรงกับการค้นหา{" "}
             <button
@@ -329,7 +367,7 @@ export function WeighingBuilder({ options }: { options: WeighingOption[] }) {
               ล้างตัวกรอง
             </button>
           </p>
-        )}
+        ) : null}
       </div>
     </section>
   );

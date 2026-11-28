@@ -63,7 +63,7 @@ test("category filters show matching products and restore the catalogue", async 
   await expect(catalogue.locator("article")).toHaveCount(24);
   await navigation.getByRole("link", { name: /^อุตสาหกรรม/ }).click();
   await expect(page).toHaveURL(/\/product\/industrial$/);
-  await expect(catalogue.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่งอุตสาหกรรม");
+  await expect(catalogue.getByRole("heading", { level: 1 })).toHaveText("อุตสาหกรรม");
   await expect(catalogue.getByRole("heading", { name: "WPS10KS", exact: true })).toBeVisible();
   await expect(catalogue.locator("article")).toHaveCount(24);
   await navigation.getByRole("link", { name: /^เครื่องชั่งทั้งหมด/ }).click();

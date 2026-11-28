@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const scales = "/products/category/scales";
+const scales = "/scales";
 
 test("catalog chapters show the directory press and hover feedback and keep keyboard navigation", async ({
   page,

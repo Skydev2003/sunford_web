@@ -16,9 +16,7 @@ for (const width of [390, 1440]) {
         const page = await context.newPage();
         await page.goto("/products");
         const directory = page.locator("[data-products-directory]");
-        await expect(
-          directory.getByRole("heading", { level: 1, name: "เครื่องชั่งน้ำหนักล้ำสมัย" }),
-        ).toBeAttached();
+        await expect(directory.getByRole("heading", { level: 1, name: "ร้าน" })).toBeAttached();
         const wordmark = directory.locator("[data-products-logo]");
         await expect(wordmark.locator("img")).toBeVisible();
         expect(
@@ -31,13 +29,11 @@ for (const width of [390, 1440]) {
         await expect(directory.locator("[data-products-header-wash], header canvas")).toHaveCount(
           0,
         );
-        const category = directory
-          .locator('#products-categories a[href="/products/category/scales"]')
-          .first();
+        const category = directory.locator('#products-categories a[href="/scales"]').first();
         await expect(category).toBeVisible();
         await expect(directory.locator("#products-rail-scales a").first()).toBeVisible();
         await category.click();
-        await expect(page).toHaveURL(/\/products\/category\/scales$/);
+        await expect(page).toHaveURL(/\/scales$/);
       } finally {
         await context.close();
       }
@@ -84,7 +80,7 @@ test("category links and consultation lead to their destinations", async ({ page
   await expect(categories).toHaveCount(6);
   await expect(page.locator('[aria-controls="products-categories"]')).toHaveCount(0);
   await categories.first().click();
-  await expect(page).toHaveURL("/products/category/scales");
+  await expect(page).toHaveURL("/scales");
   await page.goBack();
   const contact = directory.getByRole("link", { name: /ให้เราช่วยเลือก/ });
   const href = await contact.getAttribute("href");
@@ -220,8 +216,8 @@ for (const reducedMotion of ["reduce", "no-preference"] as const) {
 for (const [route, trackId, width] of [
   ["/products", "products-rail-scales", 390],
   ["/products", "products-rail-scales", 1521],
-  ["/products/category/indicators", "products-lineup", 390],
-  ["/products/category/indicators", "products-lineup", 1440],
+  ["/indicators", "products-lineup", 390],
+  ["/indicators", "products-lineup", 1440],
 ] as const) {
   test(`product shelf buttons follow the specified duration on ${route} at ${width}px`, async ({
     page,
@@ -325,7 +321,7 @@ for (const width of [768, 1440]) {
 
 for (const [route, selector] of [
   ["/products", "#products-categories a"],
-  ["/products/category/scales", "#products-chapters a[href]"],
+  ["/scales", "#products-chapters a[href]"],
   ["/products?catalog=all", "#catalog-categories button:enabled"],
 ]) {
   test(`image menus show the pointer over their visible content on ${route}`, async ({ page }) => {

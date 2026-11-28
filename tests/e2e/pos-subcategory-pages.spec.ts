@@ -117,7 +117,7 @@ test("old POS queries, exact legacy aliases and guide links reach own pages", as
   for (const definition of posSubcategoryPages)
     for (const href of [
       `/products?category=pos&subcategory=${definition.id}`,
-      `/products/category/pos?subcategory=${definition.id}`,
+      `/pos?subcategory=${definition.id}`,
     ]) {
       await page.goto(href);
       await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
@@ -125,7 +125,7 @@ test("old POS queries, exact legacy aliases and guide links reach own pages", as
     }
   for (const slug of ["android", "windows"]) {
     await page.goto(`/Product/POS/${slug}`);
-    await expect(page).toHaveURL(new RegExp(`/products/category/pos/${slug}$`));
+    await expect(page).toHaveURL(new RegExp(`/pos/${slug}$`));
     await page.goto("/guides/pos");
     await page
       .getByRole("link", {
@@ -133,18 +133,30 @@ test("old POS queries, exact legacy aliases and guide links reach own pages", as
         exact: true,
       })
       .click();
-    await expect(page).toHaveURL(new RegExp(`/products/category/pos/${slug}$`));
+    await expect(page).toHaveURL(new RegExp(`/pos/${slug}$`));
   }
 });
 
-test("POS overview chapter opens Android directly", async ({ page }) => {
-  await page.goto("/products/category/pos");
+test("POS overview chapter opens Positive at the Android URL", async ({ page }) => {
+  await page.goto("/pos");
   await page
     .locator("#products-chapters")
-    .getByRole("link", { name: "Android", exact: true })
+    .getByRole("link", { name: "Positive", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/products\/category\/pos\/android$/);
+  await expect(page).toHaveURL(/\/pos\/android$/);
+  await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toContainText("Positive");
+  await expect(page).toHaveTitle(/Positive/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page
+    .getByRole("navigation", { name: "หมวดย่อยสินค้า" })
+    .getByRole("link", {
+      name: "Hardware",
+      exact: true,
+    })
+    .click();
+  await expect(page).toHaveURL("/pos/windows");
+  await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toContainText("Hardware");
+  await expect(page).toHaveTitle(/Hardware/);
 });
 
 test("Navbar includes real empty iOS destination and cached history stays separate", async ({
@@ -167,9 +179,9 @@ test("Navbar includes real empty iOS destination and cached history stays separa
     await expect(page).toHaveURL(/\/products$/);
     await expect(page.getByRole("dialog")).toHaveCount(0);
   }
-  await page.goto("/products/category/pos/android");
+  await page.goto("/pos/android");
   await page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("no-pos-model");
-  await page.goto("/products/category/pos/windows");
+  await page.goto("/pos/windows");
   await expect(page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })).toHaveValue("");
   await expect(page.locator("#mock-product-results article")).toHaveCount(1);
 });
@@ -178,7 +190,7 @@ test("POS titles use the existing subgroup motion profile and reduced fallback",
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/products/category/platforms/sus201");
+  await page.goto("/platforms/sus201");
   const reference = await page.locator("h1").evaluate((el) => ({
     name: getComputedStyle(el).animationName,
     duration: getComputedStyle(el).animationDuration,
@@ -230,7 +242,7 @@ test("native Home POS menu reaches all platforms and valid detail or parent retu
         .getByRole("navigation", { name: "เส้นทางนำทาง", exact: true })
         .getByRole("link", { name: "ระบบ POS", exact: true })
         .tap();
-      await expect(page).toHaveURL(/\/products\/category\/pos$/);
+      await expect(page).toHaveURL(/\/pos$/);
       continue;
     }
     await page.locator("#mock-product-results article[data-model-only] a").first().tap();

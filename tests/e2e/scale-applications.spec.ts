@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const overview = "/products/category/scales";
+const overview = "/scales";
 for (const [width, slug] of [
   [390, "cafes"],
   [1440, "bakeries"],
@@ -9,7 +9,7 @@ for (const [width, slug] of [
     test.slow();
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto(`${overview}/applications/${slug}`);
+    await page.goto(`/scales/applications/${slug}`);
     const main = page.getByRole("main");
     await expect(main.getByRole("heading", { level: 1 })).not.toBeEmpty();
     await expect(

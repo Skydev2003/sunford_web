@@ -1,9 +1,9 @@
 import { buyingGuideHref } from "@/features/content/data/buying-guides";
 import type { Product } from "../types";
+import { platformSpecBuilderPath } from "./platform-spec-builder-path";
 
-const categoryRoot = "/products/category";
-const accessories = `${categoryRoot}/accessories`;
-const scales = `${categoryRoot}/scales`;
+const accessories = "/accessories";
+const scales = "/scales";
 const printers = { href: `${accessories}/printers`, label: "เครื่องพิมพ์" };
 const thermalPaper = { href: `${accessories}/thermal-paper`, label: "กระดาษความร้อน" };
 const labels = { href: `${accessories}/labels`, label: "ฉลากและสติ๊กเกอร์" };
@@ -11,7 +11,7 @@ const cables = { href: `${accessories}/cables`, label: "สายและหั
 const consumables = { href: `${accessories}/consumables`, label: "วัสดุสิ้นเปลือง" };
 const scaleGuide = { href: buyingGuideHref("scales"), label: "คู่มือเลือกเครื่องชั่ง" };
 const labelPrinting = { href: "/solutions/label-printing", label: "โซลูชันงานพิมพ์ฉลาก" };
-const pos = { href: `${categoryRoot}/pos`, label: "ระบบ POS" };
+const pos = { href: "/pos", label: "ระบบ POS" };
 const scannerAndCashDrawerSkus = new Set([
   "G107374",
   "G107381",
@@ -73,7 +73,7 @@ function definePage<Category extends "scales" | "indicators" | "accessories", Id
     slug,
     label,
     title: label,
-    href: `${categoryRoot}/${categoryId}/${slug}`,
+    href: `/${categoryId}/${slug}`,
     returnContext: id,
     relatedLinks,
     matches: (product: Product) =>
@@ -140,7 +140,7 @@ export const additionalIndicatorSubcategoryPages = [
         label,
         [
           {
-            href: "/guides/indicator-platform-compatibility",
+            href: platformSpecBuilderPath,
             label: "คู่มือเลือกหัวอ่านและแท่นชั่ง",
           },
         ],
@@ -158,8 +158,8 @@ export const additionalAccessorySubcategoryPages = [
     "electronics",
     "โหลดเซลล์และอะไหล่อิเล็กทรอนิกส์",
     [
-      { href: `${categoryRoot}/platforms`, label: "โครงสร้างแท่นชั่ง" },
-      { href: "/guides/indicator-platform-compatibility", label: "คู่มือเลือกหัวอ่านและแท่นชั่ง" },
+      { href: "/platforms", label: "โครงสร้างแท่นชั่ง" },
+      { href: platformSpecBuilderPath, label: "คู่มือเลือกหัวอ่านและแท่นชั่ง" },
       cables,
     ],
     ({ warehouseGroup, warehouseName = "" }) => {

@@ -1,3 +1,4 @@
+import { productCategoryPath } from "./category-paths";
 import type { Product } from "../types";
 import type { ProductCategory } from "./mock-categories";
 import { getSubmenuFeature, productListingFeatureHref } from "./catalog-submenu-destinations";
@@ -49,7 +50,11 @@ export function buildNavbarListingFeatures(
             .filter(({ exclusiveGroup }) => exclusiveGroup !== "material")
             .map(({ id, label, productIds }) => ({
               label,
-              href: productListingFeatureHref(page.href, category.id, id),
+              href: productListingFeatureHref(
+                category.id,
+                id,
+                category.id === "accessories" ? page.id : undefined,
+              ),
               count: productIds.length,
               order: scaleFeatureOrder.indexOf(id),
               preferred: getSubmenuFeature(page.id) === id || preferredScalePage[id] === page.id,
@@ -72,7 +77,7 @@ export function buildNavbarListingFeatures(
             : first.label.length - second.label.length,
         )
         .map(({ label, href }) => ({ label, href }));
-      return [`/products/category/${category.id}`, links];
+      return [productCategoryPath(category.id), links];
     }),
   );
 }

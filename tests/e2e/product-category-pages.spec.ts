@@ -1,3 +1,4 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
 import { expect, test } from "@playwright/test";
 import { getProductSubcategoryPage } from "../../src/features/catalog/data/product-subcategory-pages";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
@@ -21,9 +22,11 @@ for (const width of [390, 1440]) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     for (const { id, label } of productCategoryDefinitions) {
-      const path = `/products/category/${id}`;
+      const path = `/${id}`;
       await page.goto(path);
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+        catalogPageTitle(new URL(page.url()).pathname, label),
+      );
       await expect(page.locator("#products-lineup > li > a").first()).toBeVisible();
       await expect(page.locator('[data-return-scope="catalog-finder"]')).toHaveCount(0);
       await expect(
@@ -63,7 +66,7 @@ for (const width of [390, 834, 1440]) {
 
     test("subcategory search and picture navigation work", async ({ page }) => {
       test.slow();
-      await page.goto("/products/category/platforms/floor");
+      await page.goto("/platforms/floor");
 
       const heading = page.getByRole("heading", { level: 1 });
       const search = page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
@@ -88,7 +91,7 @@ for (const width of [390, 834, 1440]) {
       await search.fill("unknown-model-for-listing-test");
       await expect(page.getByRole("heading", { name: "ยังไม่พบสินค้าที่คุณค้นหา" })).toBeVisible();
       await menu.getByRole("link", { name: "แท่นชั่งตั้งโต๊ะ" }).click();
-      await expect(page).toHaveURL(/\/products\/category\/platforms\/benchtop$/);
+      await expect(page).toHaveURL(/\/platforms\/benchtop$/);
       await expect(menu.getByRole("link", { name: "แท่นชั่งตั้งโต๊ะ" })).toHaveAttribute(
         "aria-current",
         "page",
@@ -115,7 +118,7 @@ for (const width of [390, 834, 1440]) {
       } else {
         await floor.click();
       }
-      await expect(page).toHaveURL(/\/products\/category\/platforms\/floor$/);
+      await expect(page).toHaveURL(/\/platforms\/floor$/);
       await expect(floor).toBeInViewport({ ratio: 0.95 });
       await expect(floor).toHaveAttribute("aria-current", "page");
     });
@@ -139,7 +142,7 @@ test("picture navigation keeps the product groups on feature and sibling listing
     ["accessories", "displays", "cables"],
     ["accessories", "thermal-paper", "printers"],
   ]) {
-    const prefix = `/products/category/${family}`;
+    const prefix = `/products/${family}`;
     const source = `${prefix}/${first}`;
     const destination = `${prefix}/${next}`;
     const productLinks = productMenus.find(({ href }) => href === prefix)!.links;
@@ -179,8 +182,8 @@ test("switching picture filters keeps the listing controls and skips the opening
     }
   });
 
-  const source = "/products/category/platforms/floor";
-  const destination = "/products/category/platforms/benchtop";
+  const source = "/platforms/floor";
+  const destination = "/platforms/benchtop";
   await page.goto(source);
   await expectStaggerMotion(page.getByRole("heading", { level: 1 }));
   await expect
@@ -244,9 +247,11 @@ for (const width of [320, 768, 834, 1920]) {
   test(`category pages keep products reachable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     for (const { id, label } of productCategoryDefinitions) {
-      await page.goto(`/products/category/${id}`);
+      await page.goto(`/${id}`);
       if (["scales", "indicators", "platforms", "pos", "accessories"].includes(id)) {
-        await expect(page.getByRole("heading", { level: 1 })).toHaveText(label);
+        await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+          catalogPageTitle(new URL(page.url()).pathname, label),
+        );
         await expect(
           page
             .locator('[data-overview-section="chapters"]')
@@ -259,7 +264,9 @@ for (const width of [320, 768, 834, 1920]) {
         continue;
       }
       const catalog = page.getByRole("region", { name: catalogName });
-      await expect(catalog.getByRole("heading", { level: 1 })).toHaveText(label);
+      await expect(catalog.getByRole("heading", { level: 1 })).toHaveText(
+        catalogPageTitle(new URL(page.url()).pathname, label),
+      );
       await expect(
         catalog.getByRole("link", { name: "สินค้าทั้งหมด", exact: true }),
       ).toBeInViewport();
@@ -282,9 +289,9 @@ test("unknown or foreign child cannot escape the scale overview or open a finder
   page,
 }) => {
   for (const child of ["unknown-child", "pos-ios"]) {
-    await page.goto(`/products/category/scales?category=pos&subcategory=${child}`);
+    await page.goto(`/scales?category=pos&subcategory=${child}`);
     await expect(page.getByRole("heading", { level: 1, name: "เครื่องชั่ง" })).toBeVisible();
     await expect(page.locator('[data-return-scope="catalog-finder"]')).toHaveCount(0);
-    expect(new URL(page.url()).pathname).toBe("/products/category/scales");
+    expect(new URL(page.url()).pathname).toBe("/scales");
   }
 });

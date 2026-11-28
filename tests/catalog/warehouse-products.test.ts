@@ -312,7 +312,7 @@ test("all five category projections contain only actual mapped products", () => 
   }
 });
 
-test("official accessories keep their SKU routes, live prices and photo priority", () => {
+test("official accessories retain their SKU identity and use public model routes", () => {
   for (const [sku, id, group] of [
     ["G107121", "10712", "accessory-cables"],
     ["G107145", "10714", "accessory-cables"],
@@ -326,7 +326,9 @@ test("official accessories keep their SKU routes, live prices and photo priority
     const local = warehouseCatalog([item], editorial)[0];
     assert.equal(local.sourceId, id);
     assert.equal(local.id, `warehouse-${sku}`);
-    assert.equal(local.slug, local.id);
+    assert.match(local.slug, /^[\p{L}\p{M}\p{N}]+(?:-[\p{L}\p{M}\p{N}]+)*$/u);
+    assert.notEqual(local.slug, sku.toLowerCase());
+    assert(!local.slug.startsWith("warehouse-"));
     assert.equal(local.category, "accessories");
     assert.deepEqual(local.warehouseSubcategoryIds, [group]);
     assert.match(local.image, /^\/images\/imported\//);

@@ -14,18 +14,18 @@ const templates = [
   "/",
   "/products",
   "/explore",
-  "/products/category/scales",
-  "/products/category/indicators",
-  "/products/category/platforms",
-  "/products/category/pos",
-  "/products/category/accessories",
+  "/scales",
+  "/indicators",
+  "/platforms",
+  "/pos",
+  "/accessories",
   "/products/wps10ks",
   "/products/warehouse-G107404",
   "/service?section=contact",
   "/service",
   "/about-us",
   "/solutions",
-  "/guides/indicator-platform-compatibility",
+  "/platforms/spec-builder",
   "/service/quotation",
 ];
 
@@ -265,11 +265,11 @@ for (const motion of ["reduce", "no-preference"] as const) {
     for (const route of [
       "/",
       "/products",
-      "/products/category/scales",
+      "/scales",
       "/products/wps10ks",
       "/service?section=contact",
       "/service",
-      "/guides/indicator-platform-compatibility",
+      "/platforms/spec-builder",
       "/service/quotation",
     ]) {
       await settled(page, route);

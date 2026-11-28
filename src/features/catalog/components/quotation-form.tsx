@@ -1,8 +1,9 @@
 "use client";
 import { useReturnState } from "@/features/site/history/return-state";
 import { sunfordLogo } from "@/features/site/data/settings";
+import { siteMenuLink } from "@/features/site/data/site-menu-labels";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import type { PdfBuyer } from "../data/quotation-pdf";
 import type { QuotationIssue } from "../data/quotation-issue";
 import { useSearchParams } from "next/navigation";
@@ -14,14 +15,18 @@ import { Modal } from "@/components/ui/modal";
 import { formatPrice } from "../data/price-format";
 import {
   quotationTotals,
+  quoteModelKey,
   seller,
   selectedQuoteItems,
   type QuotePreset,
   type QuoteProduct,
 } from "../data/quotation";
 import styles from "./quotation-form.module.css";
+import { readQuoteSelection } from "./quote-selection-link";
 
 const amount = (satang: number) => formatPrice(satang / 100);
+const subscribeSelection = () => () => {};
+const initialSelection = () => "[]";
 const pickerCategories = [{ id: "all", label: "ผลิตภัณฑ์ทั้งหมด" }, ...productCategoryDefinitions];
 type Selection = {
   key: number;
@@ -91,8 +96,18 @@ export function QuotationFromSelection({
   products: QuoteProduct[];
   presets: QuotePreset[];
 }) {
-  const models = useSearchParams().getAll("model");
-  const initial = selectedQuoteItems(models, presets);
+  const params = useSearchParams();
+  const selection = useSyncExternalStore(
+    subscribeSelection,
+    () => readQuoteSelection(params.get("selection")),
+    initialSelection,
+  );
+  const saved: unknown = JSON.parse(selection);
+  const models =
+    Array.isArray(saved) && saved.length
+      ? saved.filter((code): code is string => typeof code === "string")
+      : params.getAll("model");
+  const initial = selectedQuoteItems(models, presets, new Set(products.map(({ id }) => id)));
   return (
     <QuotationForm
       key={JSON.stringify(initial)}
@@ -114,7 +129,7 @@ export function QuotationForm({
 }) {
   const byId = new Map(products.map((product) => [product.id, product]));
   function modelKey(id: string) {
-    return (byId.get(id)?.name ?? id).trim().toLowerCase();
+    return quoteModelKey(byId.get(id)?.name ?? id);
   }
   const [rows, setRows] = useReturnState<Selection[]>("quotation-form.rows", () => {
     if (!initial.items.length) return [{ key: 0, id: "", quantity: "1" }];
@@ -328,7 +343,7 @@ export function QuotationForm({
     <main id="main-content" className={styles.page}>
       <div className={styles.editor}>
         <div className={styles.heading}>
-          <h1>ใบเสนอราคา</h1>
+          <h1>{siteMenuLink("/service/quotation").label}</h1>
         </div>
         <SellerDetails />
         <form onSubmit={print}>

@@ -33,9 +33,9 @@ for (const width of [1440, 390]) {
       if (width < 1024) await page.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
       const nav = page.locator(width < 1024 ? "#products-navigation-panel" : ".desktop-nav");
       const parent = nav.getByRole("link", { name: label, exact: true });
-      await expect(parent).toHaveAttribute("href", `/products/category/${id}`);
+      await expect(parent).toHaveAttribute("href", `/${id}`);
       await parent.click();
-      await expect(page).toHaveURL(new URL(`/products/category/${id}`, page.url()).href);
+      await expect(page).toHaveURL(new URL(`/${id}`, page.url()).href);
       const chapters = page.locator('[data-overview-section="chapters"]:visible');
       await expect(chapters.getByRole("heading", { level: 1, name: label })).toBeVisible();
       await expect(chapters.getByRole("link", { name: "สินค้าทั้งหมด", exact: true })).toHaveCount(
@@ -49,7 +49,7 @@ for (const width of [1440, 390]) {
       await expect(page).toHaveURL(/\/products$/);
       await expect(page.locator("[data-products-directory]:visible")).toBeVisible();
       await page.goBack();
-      await expect(page).toHaveURL(new URL(`/products/category/${id}`, page.url()).href);
+      await expect(page).toHaveURL(new URL(`/${id}`, page.url()).href);
       if (id !== "accessories") {
         await expect(
           page.getByRole("heading", { level: 1, name: label, exact: true }),
@@ -87,9 +87,7 @@ for (const width of [1440, 390]) {
       .click();
     await expect(page).toHaveURL(/\/products$/);
     await expect(
-      page
-        .locator("main:visible")
-        .getByRole("heading", { level: 1, name: "เครื่องชั่งน้ำหนักล้ำสมัย", exact: true }),
+      page.locator("main:visible").getByRole("heading", { level: 1, name: "ร้าน", exact: true }),
     ).toBeAttached();
     await expect(
       page
@@ -143,9 +141,7 @@ test("catalog category URLs support direct entry, refresh, local changes and bro
     // Check server HTML; streamed content can remain hidden with scripting disabled.
     await expect(staticPage.locator("h1")).toHaveText("ผลิตภัณฑ์ทั้งหมด");
     for (const { id } of productCategoryDefinitions)
-      await expect(
-        staticPage.locator(`[data-products-nav] a[href="/products/category/${id}"]`),
-      ).toHaveCount(1);
+      await expect(staticPage.locator(`[data-products-nav] a[href="/${id}"]`)).toHaveCount(1);
   } finally {
     await context.close();
   }
@@ -251,27 +247,25 @@ test("mobile groups expand with the keyboard, close on Escape and navigate to a 
   await expect(mobile.locator("[data-nav-category-row] > a")).toHaveText(
     getHeaderNavigationItems(defaultNavigation).map(({ label }) => label),
   );
-  const indicators = mobile.getByRole("button", {
-    name: "เปิดเมนูย่อยอินดิเคเตอร์",
+  const platforms = mobile.getByRole("button", {
+    name: "เปิดเมนูย่อยแท่นชั่ง",
     exact: true,
   });
-  await indicators.press("Enter");
+  await platforms.press("Enter");
   await expect(mobile.getByRole("button", { name: "เมนูหลัก", exact: true })).toBeFocused();
-  await expect(mobile.getByRole("link", { name: "อุตสาหกรรม", exact: true })).toBeVisible();
+  await expect(mobile.getByRole("link", { name: "อินดิเคเตอร์", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(mobile).toHaveCount(0);
   await expect(toggle).toBeFocused();
   await toggle.click();
   await page
-    .locator('#products-navigation-panel button[aria-label="เปิดเมนูย่อยอินดิเคเตอร์"]')
+    .locator('#products-navigation-panel button[aria-label="เปิดเมนูย่อยแท่นชั่ง"]')
     .click();
   await page
     .locator("#products-navigation-panel")
-    .getByRole("link", { name: "อุตสาหกรรม", exact: true })
+    .getByRole("link", { name: "อินดิเคเตอร์", exact: true })
     .click();
-  await expect(page).toHaveURL(
-    /\/products\/category\/indicators\/industrial#product-listing-indicators$/,
-  );
+  await expect(page).toHaveURL("/platforms/indicators");
   await expect(page.locator("#products-navigation-panel")).toHaveCount(0);
 });
 
@@ -288,7 +282,7 @@ test("mobile software and warranty links remain reachable in a short viewport", 
   });
   await mobile.getByRole("button", { name: "เปิดเมนูย่อยซอฟต์แวร์", exact: true }).click();
   await mobile.getByRole("link", { name: "การพาณิชย์และค้าปลีก", exact: true }).click();
-  await expect(page).toHaveURL("/software/download#retail-software");
+  await expect(page).toHaveURL("/software#retail-software");
   await expect(page.getByRole("main").locator("#retail-software")).toBeVisible();
   await expect(mobile).toHaveCount(0);
   await page.goto("/");
@@ -369,7 +363,7 @@ test("wide menus fit the viewport and preserve the logo-aligned origin and hover
 test("product buying guides and responsive layouts remain available", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/guides/pos#systems");
-  await expect(page).toHaveURL("/technical-specification?guide=pos#systems");
+  await expect(page).toHaveURL("/service/technical-specification?guide=pos#systems");
   await expect(page.locator("#systems h2")).toHaveText("เปรียบเทียบ Android / Windows");
   for (const width of [320, 390, 768, 1100, 1399, 1400, 1440]) {
     await page.setViewportSize({ width, height: 900 });
@@ -390,7 +384,7 @@ test("desktop company destinations remain available before hydration", async ({ 
   try {
     await page.goto("/", { waitUntil: "commit" });
     await expect(page.locator(".desktop-nav > a")).toHaveText(labels);
-    await expect(page.locator('.desktop-nav a[href="/products/category/scales"]')).toBeVisible();
+    await expect(page.locator('.desktop-nav a[href="/scales"]')).toBeVisible();
     await page.locator('.desktop-nav a[href="/service"]').click({ noWaitAfter: true });
     await page.waitForURL(/\/service$/, { waitUntil: "commit" });
     await expect(page.locator("main")).toBeVisible();

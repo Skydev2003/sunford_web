@@ -22,7 +22,7 @@ const supportVideos = [
 ] as const;
 
 test("download labels lift on pointer hover without adding an underline", async ({ page }) => {
-  await page.goto("/software/download");
+  await page.goto("/software");
   const link = page.getByRole("main").locator('a[href="/software/download/sunford-pos-basic"]');
   const label = link.locator("strong");
   await link.hover();
@@ -37,7 +37,7 @@ test("download labels lift on pointer hover without adding an underline", async 
 test("download directory opens the four software support pages", async ({ page }) => {
   const main = page.getByRole("main");
   for (const [name, slug, video] of supportVideos) {
-    await page.goto("/software/download");
+    await page.goto("/software");
     const path = `/software/download/${slug}`;
     await main.locator(`a[href="${path}"]`).click({ timeout: 5000 });
     await expect(page).toHaveURL(path);
@@ -50,10 +50,10 @@ test("RLS1100 shows both year-specific installers in the directory, detail page,
   page,
 }) => {
   for (const path of [
-    "/software/download",
+    "/software",
     "/software/download/sunford-rls1100",
-    "/technical-specification/guides/rls1100",
-    "/technical-specification?guide=rls1100",
+    "/service/technical-specification/guides/rls1100",
+    "/service/technical-specification?guide=rls1100",
   ]) {
     await page.goto(path);
     const main = page.getByRole("main");
@@ -74,7 +74,7 @@ for (const width of [390, 1440]) {
   }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/software/download");
+    await page.goto("/software");
     const main = page.getByRole("main");
     const heading = main.getByRole("heading", { level: 1 });
     await expect(heading).toHaveText("ดาวน์โหลดซอฟต์แวร์");
@@ -104,8 +104,8 @@ for (const width of [390, 1440]) {
       ],
       ["household-software", ["Fitdays"]],
     ] as const) {
-      await page.goto(`/software/download#${id}`);
-      await expect(page).toHaveURL(`/software/download#${id}`);
+      await page.goto(`/software#${id}`);
+      await expect(page).toHaveURL(`/software#${id}`);
       await expect(main.locator(`#${id}`).getByRole("heading", { level: 2 })).toBeInViewport();
       await expect(main.locator(`#${id}`).getByRole("heading", { level: 4 })).toHaveText([
         ...models,
@@ -129,7 +129,7 @@ test("download deep links work without JavaScript", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   try {
     const page = await context.newPage();
-    await page.goto("/software/download#industrial-software");
+    await page.goto("/software#industrial-software");
     const main = page.getByRole("main");
     await expect(main.locator("#industrial-software")).toBeInViewport();
     await expect(main.getByRole("link", { name: /เปิดไฟล์ ZIP.*Windows/ })).toHaveAttribute(
@@ -151,25 +151,25 @@ for (const width of [390, 1440]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     const redirect = await request.get("/applications-and-softwares", { maxRedirects: 0 });
     expect(redirect.status()).toBe(307);
-    expect(redirect.headers().location).toBe("/software/download");
+    expect(redirect.headers().location).toBe("/software");
     await page.goto("/applications-and-softwares#industrial-software");
-    await expect(page).toHaveURL("/software/download#industrial-software");
+    await expect(page).toHaveURL("/software#industrial-software");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("ดาวน์โหลดซอฟต์แวร์");
     await expect(page.locator(".software-catalog")).toHaveCount(0);
-    const posPath = "/products/category/pos";
+    const posPath = "/pos";
     const card = page.locator("main:visible #products-essentials > li").filter({
       has: page.getByRole("heading", { name: "แอปพลิเคชันและซอฟต์แวร์", exact: true }),
     });
     const posLink = card.getByRole("link", { name: "ดูระบบ POS", exact: true });
     const downloadLink = card.getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์", exact: true });
     for (const id of ["indicators", "platforms", "accessories", "scales"]) {
-      await page.goto(`/products/category/${id}`);
+      await page.goto(`/${id}`);
       await expect(posLink).toHaveAttribute("href", posPath);
       await expect(downloadLink).toHaveCount(0);
     }
     for (const [category, link, path] of [
       ["scales", posLink, posPath],
-      ["pos", downloadLink, "/software/download"],
+      ["pos", downloadLink, "/software"],
     ] as const) {
       await expect(page.locator(`[data-overview-category="${category}"]:visible`)).toHaveAttribute(
         "data-controls-ready",
@@ -207,7 +207,7 @@ for (const width of [390, 1440]) {
     );
     await expect(main.getByRole("link", { name: "คู่มือติดตั้ง RLS1100" })).toHaveAttribute(
       "href",
-      "/technical-specification/guides/rls1100",
+      "/service/technical-specification/guides/rls1100",
     );
     const models = main.getByRole("navigation", { name: "เลือกซอฟต์แวร์ตามรุ่นเครื่องชั่ง RLS" });
     await models.getByRole("link", { name: "SUNFORD RLS1800", exact: true }).click();
@@ -299,9 +299,9 @@ test("software detail routes expose only verified downloads or current support o
       ),
       path,
     ).toEqual(downloads);
-    expect(links, path).toContain("/software/download");
+    expect(links, path).toContain("/software");
     if (guides[slug])
-      expect(links, path).toContain("/technical-specification/guides/" + guides[slug]);
+      expect(links, path).toContain("/service/technical-specification/guides/" + guides[slug]);
     if (!indexes.length) expect(links, path).toContain("/service?section=contact");
     expect(
       $("main.source-content-page .video-card, main.source-content-page iframe").length,
@@ -318,7 +318,7 @@ test("retired manual paths redirect to readable local guides and unknown softwar
     ["/software/download/sunford-pos-smart-retail/sql-server-settings", "sql-server"],
     ["/software/download/sunford-lp50-label-printer/settings", "lp50"],
   ]) {
-    const target = "/technical-specification/guides/" + slug;
+    const target = "/service/technical-specification/guides/" + slug;
     const redirect = await request.get(path, { maxRedirects: 0 });
     expect(redirect.status()).toBe(308);
     expect(redirect.headers().location).toBe(target);

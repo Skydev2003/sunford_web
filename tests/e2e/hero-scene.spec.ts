@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { load } from "cheerio";
 import { contactLocations } from "../../src/features/content/data/contact-locations";
 
 const title = "เครื่องชั่ง สำหรับธุรกิจของคุณ";
@@ -6,6 +7,25 @@ const scene = (page: Page) => page.locator("[data-hero-scene]");
 const heroPoster = (page: Page) => scene(page).locator("[data-hero-poster] img");
 const posterRequest = /\/videos\/sunford-poster[^/]*\.(?:jpg|webp)$/;
 const nextSection = (page: Page) => page.locator('[data-home-section="2"]');
+
+test("home response contains Hero markup and page-specific search metadata", async ({
+  request,
+}) => {
+  const response = await request.get("/");
+  expect(response.ok()).toBe(true);
+  const $ = load(await response.text());
+  const hero = $("[data-hero-scene]");
+  expect(hero.find("h1").text()).toContain("เครื่องชั่ง");
+  expect(hero.find("[data-hero-poster] img").attr("src")).toMatch(posterRequest);
+  expect(hero.find('a[href*="section=contact"]')).toHaveLength(1);
+  expect($("head title").text()).toBe("SUNFORD เครื่องชั่งดิจิทัลและโซลูชันการชั่ง");
+  expect($('head meta[name="description"]').attr("content")).toContain("บริการหลังการขาย");
+  expect($('head link[rel="canonical"]').attr("href")).toBe("https://sunford-web.vercel.app/");
+  expect($('head meta[property="og:image"]').attr("content")).toBe(
+    "https://sunford-web.vercel.app/videos/sunford-poster-1920.webp",
+  );
+});
+
 async function ready(page: Page) {
   await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
   await expect(scene(page)).toHaveAttribute("data-ready", "true");

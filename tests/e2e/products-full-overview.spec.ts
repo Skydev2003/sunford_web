@@ -64,19 +64,12 @@ for (const width of [390, 768, 1440]) {
     const nav = page.getByRole("navigation", { name: "เลือกหมวดผลิตภัณฑ์" });
     const links = nav.getByRole("link");
     const builder = nav.getByRole("link", { name: "จัดสเปค", exact: true });
-    const guide = "/guides/indicator-platform-compatibility";
+    const guide = "/platforms/spec-builder";
     await expect(builder).toHaveAttribute("href", guide);
     await expect(links).toHaveCount(6);
     expect(
       await links.evaluateAll((items) => items.map((item) => item.getAttribute("href"))),
-    ).toEqual([
-      "/products/category/scales",
-      "/products/category/indicators",
-      "/products/category/platforms",
-      "/products/category/pos",
-      "/products/category/accessories",
-      guide,
-    ]);
+    ).toEqual(["/scales", "/indicators", "/platforms", "/pos", "/accessories", guide]);
 
     if (width < 1440) {
       await nav.getByRole("button", { name: "เลื่อนหมวดผลิตภัณฑ์ถัดไป" }).click();
@@ -125,7 +118,7 @@ for (const width of [320, 390, 736, 737, 768, 834, 1024, 1068, 1440, 1521, 1920,
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/products");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("เครื่องชั่งน้ำหนักล้ำสมัย");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("ร้าน");
     const directory = page.locator("[data-products-directory]");
     const sections = directory.locator("[data-products-category-section]");
     await expect(sections).toHaveCount(5);
@@ -598,7 +591,7 @@ test("smart system showcase opens seven featured systems in order and keeps plat
   }
   await expect(
     page.locator("#products-categories").getByRole("link", { name: "โครงสร้างแท่นชั่ง" }),
-  ).toHaveAttribute("href", "/products/category/platforms");
+  ).toHaveAttribute("href", "/platforms");
   await rail.getByRole("link", { name: "LP50", exact: true }).focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/products\/warehouse-G107282$/);
@@ -1134,7 +1127,7 @@ test("direct all-model finder keeps search and legacy query entry", async ({ pag
   await page.keyboard.press("Escape");
   await expect(finder).not.toBeVisible();
   await page.goto("/products?category=scales&subcategory=scale-kitchen");
-  await expect(page).toHaveURL(/\/products\/category\/scales\/kitchen$/);
+  await expect(page).toHaveURL(/\/scales\/kitchen$/);
   await expect(page.locator('[data-scale-subcategory-page="scale-kitchen"]')).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
@@ -1144,8 +1137,8 @@ test("Navbar category/industrial navigation retains one active header/footer thr
 }) => {
   await page.goto("/products");
   for (const [name, href] of [
-    ["เครื่องชั่ง", "/products/category/scales"],
-    ["การผลิต", "/products/category/scales/industrial"],
+    ["เครื่องชั่ง", "/scales"],
+    ["การผลิต", "/scales/industrial"],
   ]) {
     const panel = await openScalesMenu(page);
     if (name === "เครื่องชั่ง")
@@ -1183,7 +1176,7 @@ test("Navbar hover reveals each submenu and honors reduced motion and keyboard i
     [indicators, "indicators"],
   ] as const) {
     await trigger.hover();
-    const menu = panel.locator(`[data-nav-menu="/products/category/${category}"]`);
+    const menu = panel.locator(`[data-nav-menu="/${category}"]`);
     await expect(menu).toHaveAttribute("data-nav-hover-reveal");
     const entries = menu.locator('[data-nav-column="primary"] [data-nav-hover-item]');
     await expect(entries.first()).toHaveCSS("animation-duration", "0.32s");
@@ -1205,7 +1198,7 @@ test("Navbar hover reveals each submenu and honors reduced motion and keyboard i
   await indicators.hover();
   await expect(panel.locator("[data-nav-hover-item]").first()).toHaveCSS("animation-name", "none");
 
-  await page.goto("/products/category/scales");
+  await page.goto("/scales");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(page.locator("[data-products-header] button:visible").first()).toBeEnabled();
   await page.mouse.move(10, 400);
@@ -1485,7 +1478,7 @@ test("server response contains actual category products without motion hiding", 
 test("shared scales hero pauses for reduced motion, supports keyboard tabs, play and offscreen pause", async ({
   page,
 }) => {
-  await page.goto("/products/category/scales");
+  await page.goto("/scales");
   const hero = page.locator('[data-overview-section="hero"]');
   const tabs = hero.getByRole("tab");
   await expect(
@@ -1515,7 +1508,7 @@ test.describe("shared scales gallery touch gestures", () => {
     context,
   }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.goto("/products/category/scales");
+    await page.goto("/scales");
     const track = page.locator('[data-overview-section="hero"] ul');
     await track.scrollIntoViewIfNeeded();
     await expect(

@@ -79,8 +79,8 @@ async function expectContactAndPolicies(main: Locator, contactHref = "/service?s
   await expect(contact).toHaveAccessibleName("ติดต่อเรา");
   await expect(contact).toHaveAttribute("href", contactHref);
   for (const [label, href] of [
-    ["นโยบายการรับประกัน", "/warranty/policy"],
-    ["เงื่อนไขการเปลี่ยนและคืนสินค้า", "/cancel-and-return/policy"],
+    ["นโยบายการรับประกัน", "/service/warranty/policy"],
+    ["เงื่อนไขการเปลี่ยนและคืนสินค้า", "/service/cancel-and-return/policy"],
   ]) {
     const link = main.getByRole("link", { name: label, exact: true });
     await expect(link).toBeVisible();
@@ -114,7 +114,7 @@ async function openServiceFromHome(page: Page, width: number) {
     .locator(
       mobile ? "header:visible #products-navigation-panel" : "header:visible [data-products-nav]",
     )
-    .getByRole("link", { name: "บริการ", exact: true });
+    .getByRole("link", { name: "บริการช่วยเหลือ", exact: true });
   await expect(service).toHaveAttribute("href", "/service");
   await service.click();
   await expect(page).toHaveURL("/service", { timeout: 15_000 });

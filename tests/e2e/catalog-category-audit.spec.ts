@@ -70,7 +70,7 @@ test("noncatalog pages and unknown routes keep their own behavior", async ({ pag
     "/about-us",
     "/service?section=contact",
     "/service",
-    "/software/download",
+    "/software",
     "/solutions",
   ]) {
     const response = await page.goto(path);

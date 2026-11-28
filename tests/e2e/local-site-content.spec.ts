@@ -13,7 +13,7 @@ for (const width of [390, 834, 1440]) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.setViewportSize({ width, height: 960 });
-    for (const path of ["/about-us", "/service?section=contact", "/software/download"]) {
+    for (const path of ["/about-us", "/service?section=contact", "/software"]) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       await expect(

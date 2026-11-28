@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("public routes keep one shared header, footer and content search", async ({ page }) => {
-  for (const route of ["/", "/products", "/explore", "/about-us", "/software/download"]) {
+  for (const route of ["/", "/products", "/explore", "/about-us", "/software"]) {
     await page.goto(route);
     await expect(page.locator(".site-header")).toHaveCount(1);
     await expect(page.getByRole("contentinfo")).toHaveCount(1);
@@ -11,8 +11,8 @@ test("public routes keep one shared header, footer and content search", async ({
   await page.getByRole("button", { name: "ค้นหาสินค้า", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "ค้นพบสิ่งที่ใช่สำหรับคุณ" });
   await dialog.getByRole("textbox").fill("รับประกัน");
-  await expect(dialog.locator('a[href="/warranty/register"]')).toBeVisible();
-  await dialog.locator('a[href="/warranty/register"]').click();
+  await expect(dialog.locator('a[href="/service/warranty/register"]')).toBeVisible();
+  await dialog.locator('a[href="/service/warranty/register"]').click();
   await expect(page).toHaveURL(/\/warranty\/register$/);
   await expect(page.locator(".site-header")).toHaveCount(1);
 });

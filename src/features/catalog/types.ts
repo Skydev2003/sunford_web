@@ -22,6 +22,7 @@ export type CatalogScope = {
 export type Product = {
   id: string;
   slug: string;
+  legacySlug?: string;
   name: string;
   category: Exclude<CategoryId, "all">;
   subtitle: string;

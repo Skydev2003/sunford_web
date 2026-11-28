@@ -1,3 +1,9 @@
+import Link from "next/link";
+import {
+  platformStructuresPath,
+  platformStructureTypes,
+  type OverviewFeature,
+} from "../data/catalog-overview-features";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
@@ -8,6 +14,8 @@ import {
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
 import { sunford } from "@/features/home/data/brand";
+import { platformCatalogSections } from "../data/catalog-submenu-destinations";
+import styles from "./products-overview.module.css";
 
 // Legacy stand-alone platform photos verified against their Warehouse SKU and size.
 const modelPhotos: Readonly<Record<string, string>> = {
@@ -43,7 +51,9 @@ const topicImages: Readonly<Record<string, string>> = {
   indicators: "/images/products/component-showcase/g107770-front-4k.webp",
 };
 
-export async function PlatformsOverview() {
+export async function PlatformsOverview({
+  overviewFeature,
+}: { overviewFeature?: OverviewFeature } = {}) {
   const {
     products: catalogProducts,
     categories,
@@ -107,6 +117,29 @@ export async function PlatformsOverview() {
       categories={[category]}
       cardNames={cardNames}
       categoryId="platforms"
+      heading="โครงสร้างแท่นชั่ง"
+      overviewFeature={overviewFeature}
+      primaryLineupId={platformCatalogSections.structures}
+      listingHref={platformStructuresPath}
+      listingFilters={
+        <nav className={styles.sectionInner} aria-label="รูปแบบโครงสร้างแท่นชั่ง">
+          <ul className={styles.structureChoices} role="list">
+            {platformStructureTypes.map(({ id, label, description }) => (
+              <li key={id}>
+                <Link
+                  className={styles.filterChoice}
+                  href={`${platformStructuresPath}?type=${id}`}
+                  scroll={false}
+                  aria-current={overviewFeature?.id === id ? "true" : undefined}
+                >
+                  <strong>{label}</strong>
+                  <span>{description}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      }
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       stories={stories}

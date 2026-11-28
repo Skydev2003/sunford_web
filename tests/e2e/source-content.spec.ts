@@ -32,7 +32,7 @@ test("imported company, collection, software and warranty pages are available", 
   await expect(page.locator("main")).toContainText("จุดเริ่มต้นของเรา");
   await page.goto("/collections/Smart weighing");
   await expect(page.locator(".product-card").first()).toBeVisible();
-  await page.goto("/software/download");
+  await page.goto("/software");
   await expect(
     page.getByRole("main").getByRole("heading", { name: "SUNFORD RLS1100" }),
   ).toBeVisible();
@@ -41,7 +41,7 @@ test("imported company, collection, software and warranty pages are available", 
   await expect(
     page.getByRole("main").getByRole("link", { name: "ติดต่อฝ่ายบริการ" }),
   ).toHaveAttribute("href", "/service?section=contact");
-  await page.goto("/warranty/register");
+  await page.goto("/service/warranty/register");
   await expect(page.getByRole("link", { name: "เปิดแบบฟอร์ม Sunford" })).toHaveAttribute(
     "href",
     "https://www.sunford.co/warranty/register",
@@ -64,12 +64,7 @@ test("directory searches public content and mobile content pages do not overflow
   await page.goto("/explore");
   await page.getByRole("textbox", { name: "ค้นหาข้อมูล Sunford" }).fill("รับประกัน");
   await expect(page.locator(".directory-card").first()).toContainText("รับประกัน");
-  for (const path of [
-    "/about-us",
-    "/software/download",
-    "/products/10639",
-    "/service?section=contact",
-  ]) {
+  for (const path of ["/about-us", "/software", "/products/10639", "/service?section=contact"]) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(path);
     expect(

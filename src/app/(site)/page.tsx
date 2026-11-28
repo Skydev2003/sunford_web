@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { Hero } from "@/features/home/components/hero";
@@ -19,6 +20,29 @@ import styles from "@/features/home/components/home-page.module.css";
 
 // Temporarily hide the homepage catalogue while keeping /products available.
 const showHomepageCatalog = false;
+
+const homeTitle = "SUNFORD เครื่องชั่งดิจิทัลและโซลูชันการชั่ง";
+const homeDescription =
+  "เลือกเครื่องชั่งดิจิทัล เครื่องชั่งอุตสาหกรรม อินดิเคเตอร์และแท่นชั่ง พร้อมโซลูชันเชื่อมต่อข้อมูล ระบบ POS และบริการหลังการขายจาก SUNFORD";
+const homeUrl = "https://sunford-web.vercel.app/";
+
+export const metadata: Metadata = {
+  title: { absolute: homeTitle },
+  description: homeDescription,
+  alternates: { canonical: homeUrl },
+  openGraph: {
+    type: "website",
+    title: homeTitle,
+    description: homeDescription,
+    url: homeUrl,
+    images: [
+      {
+        url: `${homeUrl}videos/sunford-poster-1920.webp`,
+        alt: "SUNFORD เครื่องชั่งสำหรับธุรกิจของคุณ",
+      },
+    ],
+  },
+};
 
 export default async function Home() {
   const hero = await getSettings("hero", defaultHero);

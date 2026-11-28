@@ -5,39 +5,45 @@ import {
   solutionDetails,
 } from "../../src/features/content/data/solution-details";
 import { solutions } from "../../src/features/content/data/solutions";
+import { getSolutionGuidance } from "../../src/features/content/data/solution-guidance";
 import type { Product } from "../../src/features/catalog/types";
 
 test("every Solutions card and both business systems have an internal destination", () => {
   assert.equal(solutions.length, 14);
-  for (const path of [...solutions.map((item) => item.path), "/solution/erp", "/solution/mes"]) {
+  for (const path of [...solutions.map((item) => item.path), "/solutions/erp", "/mes"]) {
     const detail = solutionDetails[path];
     assert.ok(detail?.title && detail.links.length > 0, path);
     for (const { href } of detail.links) assert.match(href, /^\/[^/]/, path);
   }
 });
 
-test("the MES overview links to separate batch and formula workflow pages", () => {
-  const overview = solutionDetails["/solution/mes"];
+test("the MES overview links to both dedicated workflow pages", () => {
+  const overview = solutionDetails["/mes"];
   const workflows = [
-    ["/solution/mes/batch-control", "ควบคุมชุดการผลิต"],
-    ["/solution/mes/formula-control", "ควบคุมสูตรการผลิต"],
+    ["batch-control", "ควบคุมชุดการผลิต"],
+    ["formula-control", "ควบคุมสูตรการผลิต"],
   ] as const;
 
-  for (const [href, label] of workflows) {
+  for (const [id, label] of workflows) {
+    const href = `/mes/${id}`;
     assert.ok(
       overview.links.some((link) => link.href === href && link.label === label),
       href,
     );
-    const workflow = solutionDetails[href];
+    const workflow = overview.sections?.find((section) => section.id === id);
     assert.equal(workflow?.title, label);
     assert.ok(workflow.description, href);
-    assert.equal(workflow.parent?.href, "/solution/mes");
-    const siblingHref = workflows.find(([destination]) => destination !== href)?.[0];
-    assert.ok(
-      workflow.links.some((link) => link.href === siblingHref),
-      href,
-    );
   }
+});
+
+test("published legacy solutions retain practical guidance and their original source URL", () => {
+  for (const { path, sourceUrl } of solutions) {
+    const guidance = getSolutionGuidance(path);
+    assert.ok(guidance?.summary && guidance.preparation, path);
+    assert.equal(guidance.sourceUrl, sourceUrl);
+    assert.equal(new URL(guidance.sourceUrl).hostname, "www.sunford.co");
+  }
+  assert.equal(getSolutionGuidance("/mes"), undefined);
 });
 
 test("solution evidence uses published products with an explicit connection fact", () => {
@@ -59,8 +65,8 @@ test("solution evidence uses published products with an explicit connection fact
   assert.deepEqual(getSolutionEvidence(solutionDetails["/solutions/wireless"], products), [
     { product: wireless, fact: "ส่งข้อมูลผ่าน Bluetooth" },
   ]);
-  assert.deepEqual(getSolutionEvidence(solutionDetails["/solution/erp"], products), []);
-  assert.deepEqual(getSolutionEvidence(solutionDetails["/solution/mes"], products), []);
+  assert.deepEqual(getSolutionEvidence(solutionDetails["/solutions/erp"], products), []);
+  assert.deepEqual(getSolutionEvidence(solutionDetails["/mes"], products), []);
 });
 
 test("retail price and label printing lists documented models with an external printer", () => {

@@ -1,3 +1,4 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
 import { expect, test, type Page } from "@playwright/test";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 
@@ -77,7 +78,7 @@ for (const [id, count, label] of [
       const title = overview.locator("#products-title");
       const chapters = overview.locator("#products-chapters > li");
       try {
-        await page.goto(`/products/category/${id}`, { waitUntil: "domcontentloaded" });
+        await page.goto(`/${id}`, { waitUntil: "domcontentloaded" });
         await expect(chapters).toHaveCount(count);
         await expectStaggerMotion(title);
         await expectStaggerMotion(chapters.first());
@@ -154,7 +155,7 @@ for (const [id, count, label] of [
 
   test(`${id} reduced motion displays content without entrance animations`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto(`/products/category/${id}`);
+    await page.goto(`/${id}`);
     await expect(page.locator("#products-title")).toHaveCSS("opacity", "1");
     for (const chapter of await page.locator("#products-chapters > li").all())
       await expect(chapter).toHaveCSS("opacity", "1");
@@ -178,7 +179,7 @@ for (const [id, count, label] of [
     });
     const page = await context.newPage();
     await page.goto(`${baseURL}/products/category/${id}`);
-    await expect(page.locator("#products-title")).toHaveText(label);
+    await expect(page.locator("#products-title")).toHaveText(catalogPageTitle(`/${id}`, label));
     await expect(page.locator("#products-title")).toHaveCSS("animation-name", "none");
     await expect(page.locator("#products-title")).toHaveCSS("opacity", "1");
     for (const chapter of await page.locator("#products-chapters > li").all())
@@ -195,20 +196,17 @@ for (const [id, count, label] of [
     const details = page.locator('[data-overview-section="accordion"] details').nth(1);
     await expect(details.locator("summary")).toBeAttached();
     if (id === "indicators" || id === "platforms") {
-      await expect(details.locator("a").first()).toHaveAttribute(
-        "href",
-        "/guides/indicator-platform-compatibility",
-      );
+      await expect(details.locator("a").first()).toHaveAttribute("href", "/platforms/spec-builder");
     } else {
       await expect(details.locator("a")).toHaveCount(0);
     }
     const guideLinks = page.locator(
-      `[data-overview-section="index"] a[href^="/technical-specification?guide=${id}-"]`,
+      `[data-overview-section="index"] a[href^="/service/technical-specification?guide=${id}-"]`,
     );
     await expect(guideLinks.first()).toBeAttached();
     await expect(page.locator("#products-chapters a").first()).toHaveAttribute(
       "href",
-      new RegExp(`^/products/category/${id}/`),
+      new RegExp(`^/${id}/`),
     );
     await context.close();
   });
@@ -257,7 +255,11 @@ test("normal-motion client entry and cached history keep controls usable", async
     await expect(overview.locator("#products-title")).toBeVisible();
     await page.mouse.move(1400, 700);
     await expect(overview.locator("#products-title")).toHaveCSS("scale", "none");
-    await expect(overview.getByRole("group", { name: "กรองผลิตภัณฑ์" })).toBeVisible();
+    const filters =
+      id === "indicators"
+        ? overview.getByRole("navigation", { name: "คุณสมบัติอินดิเคเตอร์" })
+        : overview.getByRole("group", { name: "กรองผลิตภัณฑ์" });
+    await expect(filters).toBeVisible();
   }
   await page.goBack();
   await expect(page.locator('[data-overview-category="scales"]:visible #products-title')).toHaveCSS(

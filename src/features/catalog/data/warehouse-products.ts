@@ -1,5 +1,5 @@
 import mapping from "./warehouse-product-mapping.json";
-import { warehouseDisplayName } from "./catalog-card-names";
+import { warehouseDisplayName, warehouseModelName } from "./catalog-card-names";
 import type { Product } from "../types";
 
 export type WarehouseItem = {
@@ -146,6 +146,16 @@ export function warehousePhotoUrl(
     : source;
 }
 
+function publicModelSlug(item: WarehouseItem, displayName: string) {
+  const model = warehouseModelName(item.sku, item.product_name);
+  const publicName = model === item.sku ? displayName : model;
+  return publicName
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{M}\p{N}]+/gu, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export function warehouseCatalog(
   items: WarehouseItem[],
   editorial: Product[],
@@ -174,7 +184,8 @@ export function warehouseCatalog(
       return [
         {
           id: routeOwner?.id ?? `warehouse-${item.sku}`,
-          slug: routeOwner?.slug ?? `warehouse-${encodeURIComponent(item.sku)}`,
+          slug: publicModelSlug(item, displayName),
+          legacySlug: routeOwner?.slug,
           name: displayName,
           storefrontName: displayName,
           warehouseName: item.product_name,

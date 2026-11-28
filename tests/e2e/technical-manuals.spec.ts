@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const index = "/technical-specification";
+const index = "/service/technical-specification";
 const guideRoot = `${index}/guides`;
 const slugs = [
   "basic-usage",

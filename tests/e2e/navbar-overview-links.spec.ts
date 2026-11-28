@@ -1,3 +1,4 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
@@ -126,7 +127,7 @@ for (const width of [320, 390, 834, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const category of productCategoryDefinitions) {
-      const menu = menus.find((item) => item.href === `/products/category/${category.id}`)!;
+      const menu = menus.find((item) => item.href === `/${category.id}`)!;
       const chapterMenu = getPrimaryNavigationItems(
         defaultNavigation,
         [],
@@ -189,8 +190,7 @@ for (const width of [320, 390, 834, 1440]) {
         }
         const configuredHref = chapterMenu.links[index]?.href;
         const artwork =
-          configuredHref &&
-          `${configuredHref.replace("/products/category/", "/images/category-chapters/")}.webp`;
+          configuredHref && `${configuredHref.replace(/^\//, "/images/category-chapters/")}.webp`;
         if (artwork && existsSync(`public${artwork}`)) {
           const image = button.locator("img");
           await image.scrollIntoViewIfNeeded();
@@ -213,7 +213,9 @@ for (const width of [320, 390, 834, 1440]) {
         }
       }
       await verifyChapterLayout(page, width);
-      await expect(page.locator("h1").first()).toHaveText(category.label);
+      await expect(page.locator("h1").first()).toHaveText(
+        catalogPageTitle(`/${category.id}`, category.label),
+      );
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );

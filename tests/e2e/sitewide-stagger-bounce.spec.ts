@@ -43,17 +43,17 @@ async function expectStaticRegion(region: Locator) {
 
 const templates = [
   "/products",
-  "/products/category/scales",
-  "/products/category/scales/benchtop",
-  "/products/category/indicators/lcd",
-  "/products/category/platforms/abs",
-  "/products/category/pos/ios",
-  "/products/category/pos/android",
-  "/products/category/pos/windows",
+  "/scales",
+  "/scales/benchtop",
+  "/indicators/lcd",
+  "/platforms/abs",
+  "/pos/ios",
+  "/pos/android",
+  "/pos/windows",
   "/products/acs30-jc21",
   "/solutions",
   "/solutions/rs232",
-  "/software/download",
+  "/software",
   "/software/download/sunford-drv",
   "/blogs/editorial",
   "/guides/scales",
@@ -161,7 +161,7 @@ for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await recordStaggerMotion(page);
     for (const id of ["scales", "indicators", "platforms", "pos", "accessories"]) {
-      await page.goto(`/products/category/${id}`);
+      await page.goto(`/${id}`);
       await expect(page.locator(`[data-overview-category="${id}"]`)).toHaveAttribute(
         "data-controls-ready",
         "true",

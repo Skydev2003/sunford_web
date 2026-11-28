@@ -16,7 +16,7 @@ test("long details group related specifications without rewriting values or losi
   const rows = [
     { label: "พิกัดน้ำหนักสูงสุด", html: "30kg" },
     { label: "แบตเตอรี่", html: "6V 4Ah" },
-    { label: "การเชื่อมต่อ", html: '<a href="/software/download">RS232</a>' },
+    { label: "การเชื่อมต่อ", html: '<a href="/software">RS232</a>' },
     { label: "น้ำหนักสุทธิ", html: "3.2kg" },
     { label: "รับประกันคุณภาพ", html: "1 ปี" },
     { label: "คุณสมบัติพิเศษที่ไม่รู้จัก", html: "ข้อมูลต้องเก็บครบ" },

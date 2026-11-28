@@ -15,8 +15,9 @@ import {
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
 import { sunford } from "@/features/home/data/brand";
+import { catalogPageTitles } from "@/features/site/data/site-menu-labels";
 import styles from "@/features/catalog/components/products-overview.module.css";
-export const metadata: Metadata = { title: "ผลิตภัณฑ์ทั้งหมด" };
+export const metadata: Metadata = { title: catalogPageTitles["/products"] };
 export default function ProductsPage() {
   return (
     <Suspense fallback={<SiteLoading />}>

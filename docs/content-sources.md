@@ -2,6 +2,8 @@
 
 Public content was imported and checked on 26 October 2026. The main content source is sunford.co, including complete product introductions, specifications, galleries, collections, software, articles, services and policies. See [the import audit](content-import.md) for coverage and unavailable source material. The original Sunford Shop images below remain useful as clean product photography for the hero and existing brand assets.
 
+The 14 `/solutions/*` articles use the imported Sunford editorial content in `src/features/content/data/solutions.json`. Each detail page summarizes the use case and preparation steps and links to its original article. All 14 source URLs returned HTTP 200 when checked on 28 November 2026. Product eligibility, specifications and pricing on the current site use Warehouse data.
+
 The products landing page follows the supplied [Apple Thailand Store layout reference](https://www.apple.com/th/store): a large introduction, image category rail, horizontal product and accessory shelves, assistance cards, benefits and quick links. Images and content remain Sunford's. Missing editorial photos have reserved image slots. The complete searchable catalogue is available from the category rail and “ดูทั้งหมด” control.
 
 The interactive homepage category panels follow the four-column section on [Sunford's homepage](https://www.sunford.co/), checked on 27 October 2026. Hovering or selecting a category changes the shared background and reveals its details. Titles and descriptions use the local `showcase` settings in `data/site/content.json` with source-backed defaults; links respect the configured homepage destinations. Backgrounds are stored locally in `public/images/home-categories/`:

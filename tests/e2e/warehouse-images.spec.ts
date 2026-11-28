@@ -127,7 +127,8 @@ test("builder uses the live Warehouse kit photo and falls back to CMS on load fa
   });
   for (const fallback of [false, true]) {
     failPrimary = fallback;
-    await page.goto("/guides/indicator-platform-compatibility");
+    await page.goto("/platforms/spec-builder");
+    await page.getByRole("button", { name: "อินดิเคเตอร์", exact: true }).click();
     await page.getByRole("button", { name: "เลือก Indicator-AW31", exact: true }).click();
     const choose = page.getByRole("button", { name: "เลือก TMS-60-AW31", exact: true });
     const card = page.locator("article").filter({ has: choose });

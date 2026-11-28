@@ -1,3 +1,4 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
 import { expect, test } from "@playwright/test";
 import { productCategoryDefinitions } from "../../src/features/catalog/data/mock-categories";
 
@@ -8,13 +9,28 @@ for (const width of [390, 1440]) {
     }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
-      const category = `/products/category/${id}`;
-      await page.goto(`${category}/applications`);
+      const category = id === "indicators" ? "/platforms/indicators" : `/${id}`;
+      await page.goto(`/${id}/applications`);
       await expect(page).toHaveURL(category);
       const overview = page.locator(`[data-overview-category="${id}"]:visible`);
-      await expect(overview.getByRole("heading", { level: 1 })).toHaveText(label);
+      await expect(overview.getByRole("heading", { level: 1 })).toHaveText(
+        catalogPageTitle(`/${id}`, label),
+      );
       await expect(overview.locator('a[href$="/applications"]')).toHaveCount(0);
       await expect(overview.locator('[data-return-scope="catalog-finder"]')).toHaveCount(0);
+      if (id === "indicators") {
+        const features = overview.getByRole("navigation", { name: "คุณสมบัติอินดิเคเตอร์" });
+        await expect(features.getByRole("link", { name: "ทุกผลิตภัณฑ์" })).toHaveAttribute(
+          "aria-current",
+          "true",
+        );
+        const connectivity = features.getByRole("link", { name: "เชื่อมต่ออุปกรณ์" });
+        await connectivity.click();
+        await expect(connectivity).toHaveAttribute("aria-current", "true");
+        await expect(page).toHaveURL("/platforms/indicators?feature=connectivity");
+        await expect(overview.locator('[data-overview-section="hero"]')).toHaveCount(0);
+        return;
+      }
       const platforms = id === "platforms";
       const filters = overview.getByRole("group", {
         name: platforms ? "กรองตามวัสดุ" : "กรองผลิตภัณฑ์",

@@ -280,7 +280,7 @@ test("homepage destinations follow product IDs through slug changes and disable 
     resolveHomeLink("spotlight", undefined, warehouseProducts),
     "/products/warehouse-G106698",
   );
-  assert.equal(resolveHomeLink("digital", undefined, products), "/products/category/scales");
+  assert.equal(resolveHomeLink("digital", undefined, products), "/scales");
   const target = { productId: "wps10ks" };
   assert.equal(resolveHomeLink("digital", target, products), "/products/wps10ks");
   assert.equal(

@@ -117,7 +117,7 @@ test("indicator and accessory cards show a short highlight and price with the mo
   const source = products.find((product) => product.name === "SW31")!;
   expect(source.warehouseSubcategoryIds).toContain("indicator-led");
   expect(source.warehouseCard?.connection?.trim()).toBeTruthy();
-  await page.goto("/products/category/indicators?subcategory=indicator-led");
+  await page.goto("/indicators?subcategory=indicator-led");
   const catalog = page.getByRole("region", { name: catalogName });
   await catalog.getByRole("textbox", { name: "ค้นหารุ่นสินค้า", exact: true }).fill("SW31");
   const card = catalog
@@ -130,7 +130,7 @@ test("indicator and accessory cards show a short highlight and price with the mo
   const waterproof = products.filter((product) =>
     product.warehouseSubcategoryIds?.includes("indicator-waterproof"),
   );
-  await page.goto("/products/category/indicators/waterproof");
+  await page.goto("/indicators/waterproof");
   const realCards = page.locator("#mock-product-results article[data-model-only]");
   if (waterproof.length) {
     await expect(realCards).toHaveCount(waterproof.length);

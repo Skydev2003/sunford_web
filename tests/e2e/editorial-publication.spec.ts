@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { featuredEditorialArticles } from "../../src/features/content/data/editorial-sections";
+import { sectionPagePath } from "../../src/features/site/data/main-page-paths";
 
 test("public editorial entry points offer real destinations without unpublished cards", async ({
   page,
@@ -11,19 +12,20 @@ test("public editorial entry points offer real destinations without unpublished 
   await expect(stories.locator(".stories-track")).toBeVisible();
   await expect(stories.getByRole("link", { name: "ดูเรื่องราวทั้งหมด" })).toHaveAttribute(
     "href",
-    "/business/blogs/editorial",
+    "/service/articles",
   );
 
   const cards = stories.locator(
-    '.stories-track > a[data-focus-copy="1"][href^="/blogs/editorial/"]',
+    '.stories-track > a[data-focus-copy="1"][href^="/service/articles/"]',
   );
   await expect(cards).toHaveCount(9);
   const headings = await cards.locator("h3").allTextContents();
   for (const [index, { path }] of featuredEditorialArticles.entries()) {
     const card = cards.nth(index);
-    await expect(card).toHaveAttribute("href", path);
+    const destination = sectionPagePath(path);
+    await expect(card).toHaveAttribute("href", destination);
     const [article] = await Promise.all([page.waitForEvent("popup"), card.press("Enter")]);
-    await expect(article).toHaveURL(new URL(path, page.url()).href);
+    await expect(article).toHaveURL(new URL(destination, page.url()).href);
     await expect(
       article.getByRole("heading", { name: headings[index], exact: true, level: 1 }),
     ).toBeVisible();
@@ -47,12 +49,14 @@ test("public editorial entry points offer real destinations without unpublished 
   await directory.getByRole("button", { name: "เรื่องราวและข่าวสาร" }).click();
   await expect(directory.getByRole("link", { name: /บทความจากซันฟอร์ด/ })).toHaveAttribute(
     "href",
-    "/business/blogs/editorial",
+    "/service/articles",
   );
   for (const { path } of featuredEditorialArticles)
-    await expect(directory.locator(`.directory-card[href="${path}"]`)).toBeVisible();
+    await expect(
+      directory.locator(`.directory-card[href="${sectionPagePath(path)}"]`),
+    ).toBeVisible();
 
-  const retired = await page.goto("/blogs/editorial/scale-power-and-battery-troubleshooting");
+  const retired = await page.goto("/service/articles/scale-power-and-battery-troubleshooting");
   await expect(page.getByRole("heading", { name: "ยังไม่พบหน้าที่คุณกำลังมองหา" })).toBeVisible();
   if (retired?.status() !== 404) {
     await expect(page.locator('meta[name="robots"][content="noindex"]').first()).toBeAttached();

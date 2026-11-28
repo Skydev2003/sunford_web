@@ -71,17 +71,17 @@ test("Navbar selects real listing features, caps popular series at six, and keep
   ];
   const products = [...scales, ...platforms] as Product[];
   const features = buildNavbarListingFeatures(categories, products);
-  assert.deepEqual(features["/products/category/scales"], [
+  assert.deepEqual(features["/scales"], [
     {
       label: "เชื่อมต่ออุปกรณ์",
-      href: "/products/category/scales/industrial?feature=device-connection#product-listing-scales",
+      href: "/scales?feature=device-connection",
     },
     {
       label: "นับจำนวน",
-      href: "/products/category/scales/counting?feature=scale-counting#product-listing-scales",
+      href: "/scales?feature=scale-counting",
     },
   ]);
-  const series = features["/products/category/platforms"];
+  const series = features["/platforms"];
   assert.deepEqual(
     series.map(({ label }) => label),
     ["ซีรีส์ FCS", "ซีรีส์ TCS", "ซีรีส์ FSS", "ซีรีส์ TSS", "ซีรีส์ BCS", "ซีรีส์ BSS"],
@@ -89,19 +89,17 @@ test("Navbar selects real listing features, caps popular series at six, and keep
   assert.ok(
     series.every(
       ({ href, label }) =>
-        href.startsWith("/products/category/platforms/floor?") &&
+        href.startsWith("/platforms?") &&
         new URL(href, "https://example.test").searchParams.get("feature") === label,
     ),
   );
-  const fallback = buildNavbarListingFeatures(categories, products, [
-    "/products/category/scales/industrial",
-  ]);
+  const fallback = buildNavbarListingFeatures(categories, products, ["/scales/industrial"]);
   assert.ok(
-    fallback["/products/category/scales"]
+    fallback["/scales"]
       .find(({ label }) => label === "เชื่อมต่ออุปกรณ์")
-      ?.href.startsWith("/products/category/scales/kitchen?"),
+      ?.href.startsWith("/scales?feature=device-connection"),
   );
-  assert.deepEqual(buildNavbarListingFeatures(categories, [])["/products/category/scales"], []);
+  assert.deepEqual(buildNavbarListingFeatures(categories, [])["/scales"], []);
 });
 
 test("listing filters use verified scale features and keep indicator water ratings exact", () => {
@@ -266,17 +264,13 @@ test("Navbar readiness follows the actual listing's Warehouse cards as members a
     },
   ];
   assert.deepEqual(getReadySubcategoryHrefs(categories, []), []);
-  assert.deepEqual(getReadySubcategoryHrefs(categories, cards), [
-    "/products/category/platforms/sus304",
-  ]);
+  assert.deepEqual(getReadySubcategoryHrefs(categories, cards), ["/platforms/sus304"]);
   categories[0].subcategories[0].productIds.push("scale", "scale");
   assert.deepEqual(getReadySubcategoryHrefs(categories, cards), [
-    "/products/category/scales/analytical",
-    "/products/category/platforms/sus304",
+    "/scales/laboratory",
+    "/platforms/sus304",
   ]);
-  assert.deepEqual(getReadySubcategoryHrefs(categories, cards.slice(1)), [
-    "/products/category/platforms/sus304",
-  ]);
+  assert.deepEqual(getReadySubcategoryHrefs(categories, cards.slice(1)), ["/platforms/sus304"]);
   assert.deepEqual(getReadySubcategoryHrefs([{ ...categories[1], id: "scales" }], cards), []);
 });
 
@@ -284,13 +278,13 @@ test("LCD LED and waterproof indicators have exact canonical pages and whitelist
   assert.deepEqual(
     indicatorSubcategoryPages.map((page) => [page.id, page.href]),
     [
-      ["indicator-lcd", "/products/category/indicators/lcd"],
-      ["indicator-led", "/products/category/indicators/led"],
-      ["indicator-waterproof", "/products/category/indicators/waterproof"],
+      ["indicator-lcd", "/indicators/lcd"],
+      ["indicator-led", "/indicators/led"],
+      ["indicator-waterproof", "/indicators/waterproof"],
     ],
   );
   for (const page of indicatorSubcategoryPages) {
-    for (const prefix of ["/products?category=indicators&", "/products/category/indicators?"])
+    for (const prefix of ["/products?category=indicators&", "/indicators?"])
       assert.equal(
         resolveCategoryHref(`${prefix}subcategory=${page.id}&catalog=all&trace=keep#details`),
         `${page.href}?trace=keep#details`,
@@ -303,46 +297,53 @@ test("LCD LED and waterproof indicators have exact canonical pages and whitelist
 test("indicator IDs cannot hijack another family and unknown returns stay unresolved", () => {
   for (const href of [
     "/products?category=pos&subcategory=indicator-lcd",
-    "/products/category/scales?subcategory=indicator-led",
-    "/products/category/indicators?subcategory=scale-price",
-    "/products/category/indicators?subcategory=unknown",
+    "/scales?subcategory=indicator-led",
+    "/platforms/indicators?subcategory=scale-price",
+    "/platforms/indicators?subcategory=unknown",
   ])
     assert.equal(resolveCategoryHref(href), href);
-  for (const context of ["https://example.com", "/products/category/indicators/lcd", "unknown"])
+  for (const context of ["https://example.com", "/indicators/lcd", "unknown"])
     assert.equal(getProductReturnPage(context), undefined);
 });
 
-test("shared registry retains every existing scale path, title and return alias", () => {
+test("shared registry retains scale paths and return aliases and uses current menu titles", () => {
+  const menuTitles: Record<string, string> = {
+    "/scales/laboratory": "ห้องปฏิบัติการ",
+    "/scales/industrial": "อุตสาหกรรม",
+    "/scales/retail": "ร้านค้าและบริการ",
+    "/scales/household": "ครัวเรือนและบุคคล",
+    "/scales/water-dust": "กันน้ำกันฝุ่น",
+  };
   for (const page of scaleSubcategoryPages) {
     assert.equal(getProductSubcategoryPage(page.id, "scales")?.href, page.href);
-    assert.equal(getProductReturnPage(page.returnContext)?.title, page.label);
+    assert.equal(
+      getProductReturnPage(page.returnContext)?.title,
+      menuTitles[page.href] ?? page.label,
+    );
     assert.equal(getProductReturnPage(page.id)?.href, page.href);
   }
-  assert.equal(
-    getProductReturnPage("industrial-scales")?.href,
-    "/products/category/scales/industrial",
-  );
+  assert.equal(getProductReturnPage("industrial-scales")?.href, "/scales/industrial");
 });
 
 test("platform placements and legacy materials have exact routes and safe return contexts", () => {
   assert.deepEqual(
     platformPlacementPages.map((page) => [page.id, page.href]),
     [
-      ["platform-floor", "/products/category/platforms/floor"],
-      ["platform-benchtop", "/products/category/platforms/benchtop"],
+      ["platform-floor", "/platforms/floor"],
+      ["platform-benchtop", "/platforms/benchtop"],
     ],
   );
   assert.deepEqual(
     platformSubcategoryPages.map((page) => [page.id, page.href]),
     [
-      ["platform-carbon-steel", "/products/category/platforms/carbon-steel"],
-      ["platform-sus304", "/products/category/platforms/sus304"],
-      ["platform-sus201", "/products/category/platforms/sus201"],
-      ["platform-abs", "/products/category/platforms/abs"],
+      ["platform-carbon-steel", "/platforms/carbon-steel"],
+      ["platform-sus304", "/platforms/sus304"],
+      ["platform-sus201", "/platforms/sus201"],
+      ["platform-abs", "/platforms/abs"],
     ],
   );
   for (const page of [...platformPlacementPages, ...platformSubcategoryPages]) {
-    for (const prefix of ["/products?category=platforms&", "/products/category/platforms?"])
+    for (const prefix of ["/products?category=platforms&", "/platforms?"])
       assert.equal(
         resolveCategoryHref(`${prefix}subcategory=${page.id}&catalog=all&trace=keep#details`),
         `${page.href}?trace=keep#details`,
@@ -355,37 +356,28 @@ test("platform placements and legacy materials have exact routes and safe return
 test("platform expansion preserves cross-family boundaries and broader parent aliases", () => {
   for (const href of [
     "/products?category=pos&subcategory=platform-sus304",
-    "/products/category/scales?subcategory=platform-abs",
-    "/products/category/platforms?subcategory=indicator-lcd",
-    "/products/category/platforms?subcategory=unknown",
+    "/scales?subcategory=platform-abs",
+    "/platforms?subcategory=indicator-lcd",
+    "/platforms?subcategory=unknown",
   ])
     assert.equal(resolveCategoryHref(href), href);
-  assert.equal(
-    resolveCategoryHref("/collections/stainless-steel-platforms"),
-    "/products/category/platforms",
-  );
-  assert.equal(
-    resolveCategoryHref("/product/benchtop-platforms"),
-    "/products/category/platforms/benchtop",
-  );
-  assert.equal(
-    resolveCategoryHref("/collections/floor-platforms"),
-    "/products/category/platforms/floor",
-  );
-  assert.equal(getProductReturnPage("/products/category/platforms/abs"), undefined);
+  assert.equal(resolveCategoryHref("/collections/stainless-steel-platforms"), "/platforms");
+  assert.equal(resolveCategoryHref("/product/benchtop-platforms"), "/platforms/benchtop");
+  assert.equal(resolveCategoryHref("/collections/floor-platforms"), "/platforms/floor");
+  assert.equal(getProductReturnPage("/platforms/abs"), undefined);
 });
 
 test("three POS platforms have exact own-parent pages and safe originating contexts", () => {
   assert.deepEqual(
     posSubcategoryPages.map((page) => [page.id, page.href]),
     [
-      ["pos-ios", "/products/category/pos/ios"],
-      ["pos-android", "/products/category/pos/android"],
-      ["pos-windows", "/products/category/pos/windows"],
+      ["pos-ios", "/pos/ios"],
+      ["pos-android", "/pos/android"],
+      ["pos-windows", "/pos/windows"],
     ],
   );
   for (const page of posSubcategoryPages) {
-    for (const prefix of ["/products?category=pos&", "/products/category/pos?"])
+    for (const prefix of ["/products?category=pos&", "/pos?"])
       assert.equal(
         resolveCategoryHref(`${prefix}subcategory=${page.id}&catalog=all&trace=keep#details`),
         `${page.href}?trace=keep#details`,
@@ -398,28 +390,28 @@ test("three POS platforms have exact own-parent pages and safe originating conte
 test("POS expansion preserves unknown and cross-family boundaries", () => {
   for (const href of [
     "/products?category=unknown&subcategory=pos-ios",
-    "/products/category/platforms?subcategory=pos-android",
-    "/products/category/pos?subcategory=indicator-lcd",
-    "/products/category/pos?subcategory=unknown",
+    "/platforms?subcategory=pos-android",
+    "/pos?subcategory=indicator-lcd",
+    "/pos?subcategory=unknown",
   ])
     assert.equal(resolveCategoryHref(href), href);
-  assert.equal(getProductReturnPage("/products/category/pos/ios"), undefined);
-  assert.equal(resolveCategoryHref("/product/pos"), "/products/category/pos");
+  assert.equal(getProductReturnPage("/pos/ios"), undefined);
+  assert.equal(resolveCategoryHref("/product/pos"), "/pos");
 });
 
 test("five accessory groups have exact own-parent routes and whitelisted return contexts", () => {
   assert.deepEqual(
     accessorySubcategoryPages.map((page) => [page.id, page.href]),
     [
-      ["accessory-displays", "/products/category/accessories/displays"],
-      ["accessory-cables", "/products/category/accessories/cables"],
-      ["accessory-mechanical", "/products/category/accessories/mechanical"],
-      ["accessory-pos", "/products/category/accessories/pos"],
-      ["accessory-consumables", "/products/category/accessories/consumables"],
+      ["accessory-displays", "/accessories/displays"],
+      ["accessory-cables", "/accessories/cables"],
+      ["accessory-mechanical", "/accessories/mechanical"],
+      ["accessory-pos", "/accessories/pos"],
+      ["accessory-consumables", "/accessories/consumables"],
     ],
   );
   for (const page of accessorySubcategoryPages) {
-    for (const prefix of ["/products?category=accessories&", "/products/category/accessories?"])
+    for (const prefix of ["/products?category=accessories&", "/accessories?"])
       assert.equal(
         resolveCategoryHref(`${prefix}subcategory=${page.id}&catalog=all&trace=keep#details`),
         `${page.href}?trace=keep#details`,
@@ -432,9 +424,9 @@ test("five accessory groups have exact own-parent routes and whitelisted return 
 test("accessory expansion preserves broader aliases and cross-family boundaries", () => {
   for (const href of [
     "/products?category=pos&subcategory=accessory-pos",
-    "/products/category/accessories?subcategory=pos-ios",
-    "/products/category/indicators?subcategory=accessory-displays",
-    "/products/category/accessories?subcategory=unknown",
+    "/accessories?subcategory=pos-ios",
+    "/platforms/indicators?subcategory=accessory-displays",
+    "/accessories?subcategory=unknown",
   ])
     assert.equal(resolveCategoryHref(href), href);
   for (const href of [
@@ -442,8 +434,8 @@ test("accessory expansion preserves broader aliases and cross-family boundaries"
     "/product/scale-peripherals",
     "/collections/printers",
   ])
-    assert.equal(resolveCategoryHref(href), "/products/category/accessories");
-  assert.equal(getProductReturnPage("/products/category/accessories/pos"), undefined);
+    assert.equal(resolveCategoryHref(href), "/accessories");
+  assert.equal(getProductReturnPage("/accessories/pos"), undefined);
 });
 
 test("additional listings have distinct canonical paths and safe product return contexts", () => {
@@ -461,7 +453,7 @@ test("additional listings have distinct canonical paths and safe product return 
     ["accessories", "thermal-paper", "accessory-thermal-paper"],
     ["accessories", "labels", "accessory-labels"],
   ]) {
-    const href = `/products/category/${category}/${slug}`;
+    const href = `/${category}/${slug}`;
     assert.equal(getProductSubcategoryPage(id, category)?.href, href);
     assert.equal(getProductReturnPage(id)?.href, href);
     assert.equal(getProductReturnPage(href), undefined);

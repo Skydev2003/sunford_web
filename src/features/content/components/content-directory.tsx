@@ -1,6 +1,7 @@
 "use client";
 import { useReturnState } from "@/features/site/history/return-state";
 import Link from "next/link";
+import { sectionPageHref } from "@/features/site/data/main-page-paths";
 import { Search } from "lucide-react";
 import { ProductImage } from "@/components/ui/product-image";
 import type { SourcePage } from "../types";
@@ -8,6 +9,8 @@ import type { SourcePage } from "../types";
 export type DirectoryEntry = Pick<SourcePage, "path" | "title" | "kind"> & { image?: string };
 
 function group(page: DirectoryEntry) {
+  if (page.kind === "article" || /^\/service\/articles(?:\/|$)/.test(page.path))
+    return "เรื่องราวและข่าวสาร";
   if (page.kind === "collection" || /^\/(product|indicator)/i.test(page.path)) return "ผลิตภัณฑ์";
   if (/software/i.test(page.path)) return "ซอฟต์แวร์";
   if (/support|warranty|manual|service|policy/i.test(page.path)) return "บริการและการสนับสนุน";
@@ -68,7 +71,7 @@ export function ContentDirectory({
       </p>
       <div className="directory-grid">
         {visible.map((page) => (
-          <Link className="directory-card" key={page.path} href={page.path}>
+          <Link className="directory-card" key={page.path} href={sectionPageHref(page.path)}>
             {(page.kind === "article" || page.image || group(page) === "ซอฟต์แวร์") && (
               <div className="directory-card-image">
                 <ProductImage

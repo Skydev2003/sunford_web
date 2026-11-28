@@ -5,7 +5,7 @@ test("keyboard navigation reveals an offscreen product and restores its filtered
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/products/category/scales");
+  await page.goto("/scales");
   const track = page.locator("#products-lineup");
   const next = page.getByRole("button", { name: "เลื่อนผลิตภัณฑ์ถัดไป", exact: true });
   await next.click();
@@ -55,9 +55,9 @@ test("keyboard navigation reveals an offscreen product and restores its filtered
   await expect(essentials.first()).toBeFocused();
   await expect(essentials.first()).toBeInViewport({ ratio: 1 });
   await expect(essentials.first()).toHaveAccessibleName("ดูอุปกรณ์เสริม");
-  await expect(essentials.first()).toHaveAttribute("href", "/products/category/accessories");
+  await expect(essentials.first()).toHaveAttribute("href", "/accessories");
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL("/products/category/accessories");
+  await expect(page).toHaveURL("/accessories");
   await expect(page.getByRole("heading", { level: 1, name: "อุปกรณ์เสริม" })).toBeVisible();
 });
 
@@ -156,7 +156,7 @@ test("the scale lineup prepares offscreen images before advancing and keeps dist
     });
   });
   try {
-    await page.goto("/products/category/scales", { waitUntil: "domcontentloaded" });
+    await page.goto("/scales", { waitUntil: "domcontentloaded" });
     const track = page.locator("#products-lineup");
     const images = track.locator(":scope > li > a img");
     for (const icon of await page.locator("#products-chapters img").all()) {
@@ -181,7 +181,7 @@ test("the scale lineup prepares offscreen images before advancing and keeps dist
 test("the lineup shows the WPS10KS model, photo, highlight and price in one product link", async ({
   page,
 }) => {
-  await page.goto("/products/category/scales");
+  await page.goto("/scales");
   const product = page.locator("#products-lineup > li").filter({
     has: page.getByRole("heading", { name: "WPS10KS", exact: true }),
   });
@@ -266,7 +266,7 @@ for (const [width, categorySectionGap] of [
     const shelfGap = await railGap(firstShelf);
 
     for (const category of ["scales", "indicators", "platforms", "pos", "accessories"]) {
-      await page.goto(`/products/category/${category}`);
+      await page.goto(`/${category}`);
       await expect(page.locator(`[data-overview-category="${category}"]:visible`)).toHaveAttribute(
         "data-controls-ready",
         "true",
@@ -327,12 +327,15 @@ for (const [width, categorySectionGap] of [
       await previous.press("Enter");
       await expect(next).toBeEnabled();
 
-      const filters = page.getByRole("group", {
-        name: category === "platforms" ? "กรองตามวัสดุ" : "กรองผลิตภัณฑ์",
-      });
-      for (const filter of await filters.locator("button:enabled").all()) {
+      const indicators = category === "indicators";
+      const filters = indicators
+        ? page.getByRole("navigation", { name: "คุณสมบัติอินดิเคเตอร์" })
+        : page.getByRole("group", {
+            name: category === "platforms" ? "กรองตามวัสดุ" : "กรองผลิตภัณฑ์",
+          });
+      for (const filter of await filters.locator(indicators ? "a[href]" : "button:enabled").all()) {
         await filter.press("Enter");
-        await expect(filter).toHaveAttribute("aria-pressed", "true");
+        await expect(filter).toHaveAttribute(indicators ? "aria-current" : "aria-pressed", "true");
         const cards = track.locator(":scope > li:has(h3)");
         if (!(await cards.count())) {
           await expect(
@@ -353,7 +356,7 @@ test("the scales overview restores the featured carousel between the chapters an
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/products/category/scales");
+  await page.goto("/scales");
 
   const gallery = page.getByRole("region", { name: "สินค้าเด่น SUNFORD" });
   await expect(gallery.locator("xpath=preceding-sibling::*[1]")).toHaveAttribute(

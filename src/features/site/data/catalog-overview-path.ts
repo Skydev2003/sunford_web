@@ -1,5 +1,5 @@
+import { isProductCategoryPath } from "@/features/catalog/data/category-paths";
+
 export function isCatalogOverviewPath(pathname: string) {
-  return /^\/products(?:\/category\/(?:scales|indicators|platforms|pos|accessories))?$/.test(
-    pathname,
-  );
+  return pathname === "/products" || isProductCategoryPath(pathname);
 }

@@ -16,8 +16,21 @@ export type WeighingOption = {
   includesHead?: boolean;
   netUnitSatang?: number | null;
   compatibleCodes?: string[];
+  connections?: string[];
 };
+
+function includesProduct(value: string, product: Product) {
+  const tokens = value
+    .split(/[,;\n/]+/)
+    .map((token) => token.trim().toUpperCase())
+    .filter(Boolean);
+  return [product.warehouseSku, product.warehouseName, product.name].some(
+    (name) => name && tokens.includes(name.toUpperCase()),
+  );
+}
+
 export function getWeighingOptions(products: Product[]): WeighingOption[] {
+  products = products.filter((product) => product.warehouseSku);
   const heads = products.filter((p) => p.warehouseCategoryId === "indicators");
   const platforms = products.filter(
     (p) =>
@@ -27,19 +40,19 @@ export function getWeighingOptions(products: Product[]): WeighingOption[] {
   );
   const accessories = products.filter((p) => p.warehouseCategoryId === "accessories");
   const knownPairs = new Map<string, Set<string>>();
+  const bundledHeads = new Map<string, string[]>();
   for (const platform of platforms) {
     const headFact = warehouseFact(platform, "รุ่นหัวอ่านที่รองรับ");
+    const included = heads
+      .filter((head) => platform.warehouseComponents?.some(({ sku }) => sku === head.warehouseSku))
+      .map((head) => head.warehouseSku!);
+    bundledHeads.set(platform.warehouseSku!, included);
     for (const head of heads) {
       const platformFact = warehouseFact(head, "รุ่นแท่นชั่งที่รองรับ");
-      const tokens = (value: string) => value.split(/[,;\n/]+/).map((x) => x.trim().toUpperCase());
-      const matches = (value: string, p: Product) =>
-        tokens(value).some(
-          (x) => x === p.warehouseSku?.toUpperCase() || x === p.name.toUpperCase(),
-        );
       if (
-        matches(headFact, head) ||
-        matches(platformFact, platform) ||
-        platform.warehouseComponents?.some((c) => c.sku === head.warehouseSku)
+        included.length
+          ? included.includes(head.warehouseSku!)
+          : includesProduct(headFact, head) || includesProduct(platformFact, platform)
       ) {
         const set = knownPairs.get(head.warehouseSku!) ?? new Set<string>();
         set.add(platform.warehouseSku!);
@@ -54,7 +67,9 @@ export function getWeighingOptions(products: Product[]): WeighingOption[] {
         ? [...(knownPairs.get(p.warehouseSku!) ?? [])]
         : kind === "platform"
           ? [...knownPairs].filter(([, v]) => v.has(p.warehouseSku!)).map(([sku]) => sku)
-          : [];
+          : heads
+              .filter((head) => includesProduct(warehouseFact(p, "รุ่นหัวอ่านที่รองรับ"), head))
+              .map((head) => head.warehouseSku!);
     return {
       code: p.warehouseSku!,
       displayName: p.name,
@@ -62,15 +77,19 @@ export function getWeighingOptions(products: Product[]): WeighingOption[] {
       group: p.warehouseGroup ?? "",
       kind,
       image: p.image,
+      fallbackImage: p.fallbackImage,
       productId: p.id,
       price: p.price ?? null,
       detailHref: `/products/${p.slug}`,
       sku: p.warehouseSku,
-      includesHead:
-        kind === "platform" &&
-        Boolean(p.warehouseComponents?.some((c) => heads.some((h) => h.warehouseSku === c.sku))),
+      includesHead: kind === "platform" && Boolean(bundledHeads.get(p.warehouseSku!)?.length),
       netUnitSatang: p.warehouseNetUnitSatang,
       compatibleCodes,
+      connections: p.warehouseSpecifications
+        ?.filter(
+          ({ label, value }) => /เชื่อมต่อ|พอร์ต|port|interface/i.test(label) && value.trim(),
+        )
+        .map(({ value }) => value.trim()),
     };
   });
 }

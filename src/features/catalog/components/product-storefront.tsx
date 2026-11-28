@@ -285,7 +285,7 @@ export function ProductStorefront({
                   <span className="store-card-link">ติดต่อเรา</span>
                 </div>
               </Link>
-              <Link href="/warranty/register" className="store-editorial-card">
+              <Link href="/service/warranty/register" className="store-editorial-card">
                 <p className="store-card-eyebrow">การรับประกันสินค้า</p>
                 <h3>
                   มั่นใจได้มากกว่า
@@ -299,7 +299,7 @@ export function ProductStorefront({
                   ลงทะเบียนรับประกัน <ChevronRight size={16} />
                 </span>
               </Link>
-              <Link href="/technical-specification" className="store-editorial-card">
+              <Link href="/service/technical-specification" className="store-editorial-card">
                 <p className="store-card-eyebrow">บริการและการสนับสนุน</p>
                 <h3>
                   รู้จักเครื่องชั่งของคุณ
@@ -320,7 +320,7 @@ export function ProductStorefront({
             title="ประสบการณ์แบบ Sunford."
             subtitle="มากกว่าการชั่งน้ำหนัก"
           >
-            <Link href="/software/download" className="store-editorial-card store-solution-card">
+            <Link href="/software" className="store-editorial-card store-solution-card">
               <p className="store-card-eyebrow">แอปพลิเคชันและซอฟต์แวร์</p>
               <h3>
                 เชื่อมต่อข้อมูล.
@@ -375,9 +375,9 @@ export function ProductStorefront({
             <div>
               <button onClick={() => openCatalogue()}>ผลิตภัณฑ์ทั้งหมด</button>
               <Link href={contactPath}>ติดต่อเรา</Link>
-              <Link href="/software/download">ดาวน์โหลดซอฟต์แวร์</Link>
-              <Link href="/warranty/register">ลงทะเบียนรับประกัน</Link>
-              <Link href="/cancel-and-return/policy">การคืนสินค้า</Link>
+              <Link href="/software">ดาวน์โหลดซอฟต์แวร์</Link>
+              <Link href="/service/warranty/register">ลงทะเบียนรับประกัน</Link>
+              <Link href="/service/cancel-and-return/policy">การคืนสินค้า</Link>
               <Link href="/explore">สำรวจ Sunford</Link>
             </div>
           </section>

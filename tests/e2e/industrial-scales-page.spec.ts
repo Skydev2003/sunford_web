@@ -3,7 +3,7 @@ import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-moti
 import { getScaleSubcategories } from "../../src/features/catalog/data/scale-subcategories";
 import type { Product } from "../../src/features/catalog/types";
 
-const path = "/products/category/scales/industrial";
+const path = "/scales/industrial";
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
@@ -18,7 +18,7 @@ test("switching from price to industrial keeps the listing in its route's group"
     }
   });
 
-  const pricePath = "/products/category/scales/price";
+  const pricePath = "/scales/price";
   await page.goto(pricePath);
   const price = page.locator('[data-scale-subcategory-page="scale-price"]');
   const priceSearch = price.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" });
@@ -121,9 +121,7 @@ test("industrial detail context supports return, fresh tabs and context-free det
   await expect(page).toHaveURL(new RegExp(path + "$"));
   const tab = await context.newPage();
   await tab.goto(href);
-  await expect(
-    tab.getByRole("link", { name: "กลับรายการเครื่องชั่งอุตสาหกรรม", exact: true }),
-  ).toBeVisible();
+  await expect(tab.getByRole("link", { name: "กลับรายการอุตสาหกรรม", exact: true })).toBeVisible();
   await tab.goto(href.split("?")[0]);
   await expect(tab.locator(".back-link")).toHaveText("กลับไปที่ร้าน");
   await expect(tab.locator(".back-link")).toHaveAttribute("href", "/products");
@@ -134,7 +132,7 @@ test("old URLs, guide and scales chapter reach industrial without finder", async
   for (const url of [
     "/product/industrial",
     "/products?category=scales&subcategory=scale-industrial",
-    "/products/category/scales?subcategory=scale-industrial",
+    "/scales?subcategory=scale-industrial",
   ]) {
     await page.goto(url);
     await expect(page).toHaveURL(new RegExp(path + "$"));
@@ -143,7 +141,7 @@ test("old URLs, guide and scales chapter reach industrial without finder", async
   await page.goto("/guides/scales");
   await page.getByRole("link", { name: "อุตสาหกรรม", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(path + "$"));
-  await page.goto("/products/category/scales");
+  await page.goto("/scales");
   await page
     .locator("#products-chapters")
     .getByRole("link", { name: "อุตสาหกรรม", exact: true })
@@ -170,7 +168,7 @@ test("industrial heading retains latest entrance and reduced-motion fallback", a
 test("industrial chapter clears an obsolete finder query before returning through history", async ({
   page,
 }) => {
-  await page.goto("/products/category/scales?catalog=all");
+  await page.goto("/scales?catalog=all");
   await expect(page.getByRole("dialog", { name: "ดูเครื่องชั่งทั้งหมด", exact: true })).toHaveCount(
     0,
   );
@@ -180,7 +178,7 @@ test("industrial chapter clears an obsolete finder query before returning throug
     .click();
   await expect(page).toHaveURL(new RegExp(path + "$"));
   await page.goBack();
-  await expect(page).toHaveURL(/\/products\/category\/scales$/);
+  await expect(page).toHaveURL(/\/scales$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 

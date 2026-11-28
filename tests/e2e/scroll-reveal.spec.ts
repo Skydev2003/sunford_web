@@ -123,7 +123,7 @@ test("homepage heading reveals once when scrolled into view", async ({ page }) =
 
 for (const [path, heading] of [
   ["/products", "products-category-indicators"],
-  ["/products/category/scales", "products-services-title"],
+  ["/scales", "products-services-title"],
 ] as const) {
   test(`below-fold heading at ${path} reveals once without staging the page title`, async ({
     page,
@@ -151,7 +151,7 @@ for (const [path, heading] of [
 
 test("product listing reveals grid cards with only four repeating delays", async ({ page }) => {
   await installProbe(page);
-  await page.goto("/products/category/scales/industrial");
+  await page.goto("/scales/industrial");
   const listing = page.locator("[data-scroll-reveal-listing]");
   await expect(listing).toHaveAttribute("data-scroll-reveal-mode", "enabled");
   const card = listing.locator("#mock-product-results > article").nth(9);

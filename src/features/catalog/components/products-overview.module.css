@@ -1396,6 +1396,49 @@
   scroll-padding-inline: var(--overview-gutter);
   scrollbar-width: thin;
 }
+.structureChoices {
+  margin: 0 0 var(--section-space-compact);
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--card-padding-compact);
+}
+.filterChoice {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--background);
+  color: var(--ink);
+}
+.structureChoices .filterChoice {
+  height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.375rem;
+  padding: var(--card-padding-compact);
+  line-height: 1.5;
+}
+.structureChoices .filterChoice span {
+  color: var(--muted);
+}
+.filterChoice:is(:hover, :focus-visible, [aria-current="true"]) {
+  border-color: var(--red);
+}
+.filterChoice[aria-current="true"] {
+  color: var(--red);
+  font-weight: 600;
+}
+.featureStatus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--section-space-compact);
+  margin-block: 0 var(--section-space-compact);
+}
 .lineupStatus {
   position: absolute;
   width: 1px;

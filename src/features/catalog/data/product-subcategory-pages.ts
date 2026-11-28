@@ -10,6 +10,7 @@ import {
 import { getPosSubcategories } from "./pos-subcategories";
 import { accessorySubcategoryDefinitions } from "./accessory-subcategories";
 import { scaleSubcategoryPages, type ScaleReturnContext } from "./scale-subcategory-pages";
+import { catalogPageTitle } from "@/features/site/data/site-menu-labels";
 import {
   additionalAccessorySubcategoryPages,
   additionalIndicatorSubcategoryPages,
@@ -65,7 +66,7 @@ export const indicatorSubcategoryPages = getIndicatorSubcategories([]).map((chil
     label: child.label,
     title: `${indicatorLabel} ${child.label}`,
     slug: indicatorSlugs[id],
-    href: `/products/category/indicators/${indicatorSlugs[id]}`,
+    href: `/indicators/${indicatorSlugs[id]}`,
     returnContext: id,
   };
 });
@@ -81,7 +82,7 @@ export const platformSubcategoryPages = platformSubcategoryDefinitions.map((chil
     label: child.label,
     title: id === "platform-carbon-steel" ? child.label : `${platformLabel} ${child.label}`,
     slug: platformSlugs[id],
-    href: `/products/category/platforms/${platformSlugs[id]}`,
+    href: `/platforms/${platformSlugs[id]}`,
     returnContext: id,
   };
 });
@@ -92,7 +93,7 @@ export const platformPlacementPages = platformPlacementDefinitions.map(({ id, la
   label,
   title: label,
   slug,
-  href: `/products/category/platforms/${slug}`,
+  href: `/platforms/${slug}`,
   returnContext: id,
 }));
 
@@ -105,7 +106,7 @@ export const posSubcategoryPages = getPosSubcategories([]).map((child) => {
     label: child.label,
     title: `${posLabel} ${child.label}`,
     slug: posSlugs[id],
-    href: `/products/category/pos/${posSlugs[id]}`,
+    href: `/pos/${posSlugs[id]}`,
     returnContext: id,
   };
 });
@@ -121,7 +122,7 @@ export const accessorySubcategoryPages = accessorySubcategoryDefinitions.map((ch
     label: child.label,
     title: `${accessoryLabel} ${child.label}`,
     slug: accessorySlugs[id],
-    href: `/products/category/accessories/${accessorySlugs[id]}`,
+    href: `/accessories/${accessorySlugs[id]}`,
     returnContext: id,
   };
 });
@@ -130,7 +131,7 @@ export const productSubcategoryPages = [
   ...scaleSubcategoryPages.map((page) => ({
     ...page,
     categoryId: "scales" as const,
-    title: page.label,
+    title: catalogPageTitle(page.href, page.label),
   })),
   ...indicatorSubcategoryPages,
   ...platformPlacementPages,

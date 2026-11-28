@@ -26,6 +26,9 @@ for (const page of sourcePages) {
     );
 }
 export function resolveContentPath(path: string) {
+  if (path === "/service/technical-assistance") return "/support/technical-assistance";
+  if (path.startsWith("/service/articles/"))
+    return path.replace("/service/articles/", "/blogs/editorial/");
   return publicPath(originalPaths.get(path) ?? path);
 }
 

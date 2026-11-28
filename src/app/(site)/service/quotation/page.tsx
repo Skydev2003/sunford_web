@@ -6,8 +6,10 @@ import { QuotationFromSelection } from "@/features/catalog/components/quotation-
 import { getWeighingOptions } from "@/features/content/data/weighing-options";
 import { pricedProducts } from "@/features/catalog/data/quotation";
 import { getCurrentProducts } from "@/features/catalog/server/product-repository";
+import { siteMenuLink } from "@/features/site/data/site-menu-labels";
 
-export const metadata: Metadata = { title: "ใบเสนอราคา" };
+const title = siteMenuLink("/service/quotation").label;
+export const metadata: Metadata = { title };
 
 async function WarehouseQuotation() {
   await connection();
@@ -20,7 +22,7 @@ async function WarehouseQuotation() {
   } catch {
     return (
       <main id="main-content">
-        <h1>ใบเสนอราคา</h1>
+        <h1>{title}</h1>
         <p role="alert">โหลดรายการสินค้าและราคาจาก Warehouse ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</p>
       </main>
     );

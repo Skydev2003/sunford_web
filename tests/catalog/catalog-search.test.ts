@@ -158,8 +158,8 @@ test("all matches are ranked before display slicing so late exact results are re
 
 test("content pages use normalized AND, retain order and have no empty-query results", () => {
   const pages = [
-    { title: "การรับประกัน", path: "/warranty/register" },
-    { title: "การรับประกัน", path: "/warranty/policy" },
+    { title: "การรับประกัน", path: "/service/warranty/register" },
+    { title: "การรับประกัน", path: "/service/warranty/policy" },
     { title: "Other", path: "/warranty" },
   ];
   for (const query of ["รับประกัน WARRANTY", " warranty  รับประกัน warranty "])

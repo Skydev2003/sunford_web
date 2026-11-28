@@ -1,4 +1,5 @@
 import { contactPath } from "@/features/content/data/contact-route";
+import { mesPaths } from "@/features/content/data/mes-paths";
 // Public information checked against sunford.co on 26 October 2026.
 // Short introduction follows the company's existing About page.
 export const companyIntro = {
@@ -20,11 +21,11 @@ export const sunford = {
   contact: contactPath,
   service: "/service",
   accessories: "/product/scale-accessories",
-  downloads: "/software/download",
-  warranty: "/warranty/register",
-  warrantyPolicy: "/warranty/policy",
-  erp: "/solution/erp",
-  mes: "/solution/mes",
+  downloads: "/software",
+  warranty: "/service/warranty/register",
+  warrantyPolicy: "/service/warranty/policy",
+  erp: "/solutions/erp",
+  mes: mesPaths.overview,
   catalogue: "/products",
   line: "https://line.me/R/ti/p/@sunford",
   // Verified against the contact widget on the original SUNFORD website.

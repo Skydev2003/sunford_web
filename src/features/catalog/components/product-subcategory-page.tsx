@@ -1,3 +1,4 @@
+import { productCategoryPath } from "../data/category-paths";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
@@ -23,6 +24,7 @@ import {
 } from "../data/product-subcategory-pages";
 import { consumableSubtypeLinks } from "../data/additional-subcategory-pages";
 import { getProductListingFeatures } from "../data/product-listing-features";
+import { posPlatformLabels } from "../data/pos-subcategories";
 import { sunford } from "@/features/home/data/brand";
 import overview from "./products-overview.module.css";
 import styles from "./product-directory.module.css";
@@ -30,8 +32,8 @@ import styles from "./product-directory.module.css";
 const alternatives: Record<string, readonly { href: string; label: string }[]> = {
   "platform-abs": platformPlacementPages,
   "pos-ios": [
-    { href: "/products/category/pos/android", label: "ระบบ POS Android" },
-    { href: "/products/category/pos/windows", label: "ระบบ POS Windows" },
+    { href: "/pos/android", label: `ระบบ POS ${posPlatformLabels.android}` },
+    { href: "/pos/windows", label: `ระบบ POS ${posPlatformLabels.windows}` },
   ],
 };
 
@@ -48,7 +50,7 @@ export async function ProductSubcategoryLayout({
   ]);
   const category = categories.find((item) => item.id === categoryId);
   if (!category) notFound();
-  const categoryHref = `/products/category/${categoryId}`;
+  const categoryHref = productCategoryPath(categoryId);
   const categoryMenu = getPrimaryNavigationItems(
     resolveNavigationItems(navigation.items),
     readySubcategoryHrefs,
@@ -132,7 +134,7 @@ export async function ProductSubcategoryPage({
     (subcategoryId === "accessory-consumables"
       ? consumableSubtypeLinks
       : (alternatives[subcategoryId] ?? []));
-  const categoryHref = `/products/category/${categoryId}`;
+  const categoryHref = productCategoryPath(categoryId);
   const guideHref = buyingGuideHref(categoryId);
   return (
     <>

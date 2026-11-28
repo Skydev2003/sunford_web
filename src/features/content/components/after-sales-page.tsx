@@ -72,7 +72,13 @@ function ServiceInstructions({ service }: { service: AfterSalesService }) {
   );
 }
 
-export function AfterSalesPage({ contact }: { contact: ReactNode }) {
+export function AfterSalesPage({
+  contact,
+  initialContact = false,
+}: {
+  contact: ReactNode;
+  initialContact?: boolean;
+}) {
   const [selectedService, setSelectedService] = useReturnState(
     "after-sales-page.selected",
     initialServiceTab,
@@ -82,25 +88,30 @@ export function AfterSalesPage({ contact }: { contact: ReactNode }) {
   const contactSelected = useSyncExternalStore(
     subscribeReturnOrigin,
     readContactSection,
-    serverHydration,
+    () => initialContact,
   );
   const selected = contactSelected ? contactIndex : selectedService;
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  const activePanel = useRef<HTMLDivElement>(null);
-  const needsAnchorHandoff = useRef(!interactive);
+  const needsAnchorHandoff = useRef(true);
 
   useLayoutEffect(() => {
     if (!interactive || !needsAnchorHandoff.current) return;
-    needsAnchorHandoff.current = false;
     const hash = window.location.hash;
+    if (!hash) {
+      needsAnchorHandoff.current = false;
+      return;
+    }
     const actionAnchor = hash === "#service-contact" || hash === "#service-policies";
-    const target = actionAnchor ? document.getElementById(hash.slice(1)) : activePanel.current;
-    if (!target || hash !== `#${target.id}`) return;
+    if (!actionAnchor && hash !== `#service-panel-${sections[selected]?.id}`) return;
+    const target = document.getElementById(hash.slice(1));
+    if (!target || target.hidden) return;
 
-    // The anchor can move above the viewport when the other server-rendered panels collapse.
-    const { top } = target.getBoundingClientRect();
-    if (top < 0 || top >= window.innerHeight)
+    // Cancel the native hash scroll to the original, uncollapsed panel position.
+    const frame = requestAnimationFrame(() => {
+      needsAnchorHandoff.current = false;
       target.scrollIntoView({ block: "start", behavior: "instant" });
+    });
+    return () => cancelAnimationFrame(frame);
   }, [interactive, selected]);
 
   function selectSection(index: number) {
@@ -160,7 +171,10 @@ export function AfterSalesPage({ contact }: { contact: ReactNode }) {
   ) : (
     <nav className={styles.menu} aria-label="ประเภทบริการหลังการขาย">
       {sections.map((service) => (
-        <a key={service.id} href={`#service-panel-${service.id}`}>
+        <a
+          key={service.id}
+          href={`${initialContact && service.id !== "contact" ? "/service" : ""}#service-panel-${service.id}`}
+        >
           {service.name}
         </a>
       ))}
@@ -188,13 +202,13 @@ export function AfterSalesPage({ contact }: { contact: ReactNode }) {
         )}
         <div className={styles.reader}>
           {sections.map((service, index) => {
-            const hidden = interactive && selected !== index;
-            const Heading = interactive || index === 0 ? "h1" : "h2";
+            const active = selected === index;
+            const hidden = (interactive || initialContact) && !active;
+            const Heading = active ? "h1" : "h2";
             const instruction = afterSalesServices[index];
             return (
               <div
                 className={styles.panel}
-                ref={interactive && !hidden ? activePanel : undefined}
                 key={service.id}
                 id={`service-panel-${service.id}`}
                 role={interactive ? "tabpanel" : undefined}
@@ -228,7 +242,7 @@ export function AfterSalesPage({ contact }: { contact: ReactNode }) {
                 aria-label="ข้อมูลที่เกี่ยวข้อง"
               >
                 <Link href={sunford.warrantyPolicy}>นโยบายการรับประกัน</Link>
-                <Link href="/cancel-and-return/policy">เงื่อนไขการเปลี่ยนและคืนสินค้า</Link>
+                <Link href="/service/cancel-and-return/policy">เงื่อนไขการเปลี่ยนและคืนสินค้า</Link>
               </nav>
             </div>
           )}

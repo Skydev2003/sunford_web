@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { warehouseSiteProducts } from "../../src/features/catalog/data/warehouse-site-data";
+import type { Product } from "../../src/features/catalog/types";
 import { warehouseCatalog } from "../../src/features/catalog/data/warehouse-products";
 import { getSnapshotProducts } from "../../src/features/content/data/catalog-snapshot";
 import { getWeighingOptions } from "../../src/features/content/data/weighing-options";
@@ -363,4 +364,32 @@ test("legacy product documents keep structural tags but clear prose and media wi
   assert.match(document.html, /class="layout"/);
   assert.match(document.html, /width="400" height="300"/);
   assert.doesNotMatch(document.html, /OLD|old.jpg/);
+});
+
+test("weighing options use the bundled head and exact accessory compatibility from Warehouse", () => {
+  const product = (
+    sku: string,
+    category: Product["warehouseCategoryId"],
+    specs: Product["warehouseSpecifications"] = [],
+  ) =>
+    ({
+      id: sku,
+      slug: sku.toLowerCase(),
+      name: sku,
+      warehouseSku: sku,
+      warehouseCategoryId: category,
+      warehouseSpecifications: specs,
+    }) as Product;
+  const bundled = product("KIT", "platforms", [{ label: "รุ่นหัวอ่านที่รองรับ", value: "H10" }]);
+  bundled.warehouseComponents = [{ sku: "H1", quantity: 1 }];
+  const options = getWeighingOptions([
+    product("H1", "indicators", [{ label: "พอร์ตสื่อสาร", value: "RS232" }]),
+    product("H10", "indicators"),
+    bundled,
+    product("A1", "accessories", [{ label: "รุ่นหัวอ่านที่รองรับ", value: "H10" }]),
+  ]);
+  assert.deepEqual(options.find(({ code }) => code === "H1")?.compatibleCodes, ["KIT"]);
+  assert.deepEqual(options.find(({ code }) => code === "H1")?.connections, ["RS232"]);
+  assert.deepEqual(options.find(({ code }) => code === "H10")?.compatibleCodes, []);
+  assert.deepEqual(options.find(({ code }) => code === "A1")?.compatibleCodes, ["H10"]);
 });

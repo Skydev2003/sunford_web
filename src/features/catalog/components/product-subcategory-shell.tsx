@@ -1,4 +1,5 @@
 "use client";
+import { productCategoryPath } from "../data/category-paths";
 
 import { createContext, useContext, type ComponentProps, type ReactNode } from "react";
 import Link from "next/link";
@@ -62,8 +63,10 @@ export function ProductSubcategoryShell({
         </div>
         <nav className={`${overview.sectionInner} ${styles.breadcrumb}`} aria-label="เส้นทางนำทาง">
           <Link href="/products">ผลิตภัณฑ์ทั้งหมด</Link>
-          <Link href={`/products/category/${categoryId}`}>{categoryLabel}</Link>
-          <span aria-current="page">{definition.label.replace(/^เครื่องชั่ง/, "")}</span>
+          <Link href={productCategoryPath(categoryId)}>{categoryLabel}</Link>
+          <span aria-current="page">
+            {scales ? definition.title : definition.label.replace(/^เครื่องชั่ง/, "")}
+          </span>
         </nav>
         <header className={`${overview.sectionInner} ${styles.listingHeader}`}>
           <h1 id={titleId}>

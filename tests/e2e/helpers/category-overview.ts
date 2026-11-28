@@ -1,3 +1,4 @@
+import { catalogPageTitle } from "../../../src/features/site/data/site-menu-labels";
 import { expect, type Page } from "@playwright/test";
 import { productCategoryDefinitions } from "../../../src/features/catalog/data/mock-categories";
 import { buyingGuideHref, buyingGuides } from "../../../src/features/content/data/buying-guides";
@@ -10,13 +11,15 @@ export async function verifyCategoryOverview(
   await page.setViewportSize({ width, height: 1000 });
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(`/products/category/${id}`);
+  await page.goto(id === "platforms" ? "/platforms/structures" : `/${id}`);
   const main = page.locator(`[data-overview-category="${id}"]:visible main`);
   const category = productCategoryDefinitions.find((item) => item.id === id)!;
   const hasSpecLink = id === "indicators" || id === "platforms";
   const pos = id === "pos";
   const usesEditorialLayout = id === "scales" || hasSpecLink || pos;
-  await expect(main.getByRole("heading", { level: 1 })).toHaveText(category.label);
+  await expect(main.getByRole("heading", { level: 1 })).toHaveText(
+    id === "platforms" ? category.label : catalogPageTitle(`/${category.id}`, category.label),
+  );
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);
   await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
   await expect(page.locator("footer:visible")).toHaveCount(1);
@@ -48,6 +51,12 @@ export async function verifyCategoryOverview(
   const allFilter = filters.getByRole("button", { name: "ทุกผลิตภัณฑ์" });
   if (id === "platforms") {
     await expect(filters).toHaveCount(0);
+  } else if (id === "indicators") {
+    const features = lineup.getByRole("navigation", { name: "คุณสมบัติอินดิเคเตอร์" });
+    await expect(features.getByRole("link", { name: "ทุกผลิตภัณฑ์" })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   } else {
     await expect(allFilter).toBeEnabled();
     await expect(allFilter).toHaveAttribute("aria-pressed", "true");
@@ -204,8 +213,8 @@ export async function verifyCategoryOverview(
     ]);
     const companion =
       id === "indicators"
-        ? { title: "โครงสร้างแท่นชั่ง", href: "/products/category/platforms" }
-        : { title: "อินดิเคเตอร์แท่นชั่ง", href: "/products/category/indicators" };
+        ? { title: "โครงสร้างแท่นชั่ง", href: "/platforms/structures" }
+        : { title: "อินดิเคเตอร์แท่นชั่ง", href: "/platforms/indicators" };
     const card = main.locator("#products-essentials > li").first();
     await expect(card.getByRole("heading", { level: 3 })).toHaveText(companion.title);
     await expect(card.getByRole("link", { name: `ดู${companion.title}` })).toHaveAttribute(
@@ -225,11 +234,11 @@ export async function verifyCategoryOverview(
     await expect(essentials.locator(":scope > li")).toHaveCount(2);
     await expect(essentials.getByRole("link", { name: "ดูอุปกรณ์เสริม" })).toHaveAttribute(
       "href",
-      "/products/category/accessories",
+      "/accessories",
     );
     await expect(essentials.getByRole("link", { name: "ดาวน์โหลดซอฟต์แวร์" })).toHaveAttribute(
       "href",
-      "/software/download",
+      "/software",
     );
   }
   const accordion = main.locator('[data-overview-section="accordion"]');
@@ -242,8 +251,8 @@ export async function verifyCategoryOverview(
     if (!hasSpecLink) await expect(accordion.locator("a[href]")).toHaveCount(0);
   }
   const disclosures = accordion.locator("details");
-  const specLinkName = "ไปหน้าจัดสเปคเครื่องชั่ง";
-  const specPath = "/guides/indicator-platform-compatibility";
+  const specLinkName = "ไปหน้าจัดสเปคแท่นชั่ง";
+  const specPath = "/platforms/custom-spec";
   await expect(disclosures.locator("summary")).toHaveText(guide.sections.map((s) => s.title));
   const keyPoints =
     id === "scales"
@@ -289,7 +298,7 @@ export async function verifyCategoryOverview(
   if (hasSpecLink) {
     await accordion.getByRole("link", { name: specLinkName, exact: true }).click();
     await expect(page).toHaveURL(specPath, { timeout: 15_000 });
-    await expect(page.getByRole("heading", { level: 1, name: "จัดสเปคเครื่องชั่ง" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "จัดสเปค" })).toBeVisible();
   }
   expect(errors).toEqual([]);
 }

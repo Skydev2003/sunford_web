@@ -4,6 +4,11 @@ import { lanUatAddresses, nipHost } from "./scripts/lib/lan-uat.mjs";
 import { contentRewrites } from "./src/features/content/data/static-content-params";
 import { contactPath, legacyContactPath } from "./src/features/content/data/contact-route";
 import { technicalManualRedirects } from "./src/features/content/data/technical-manuals";
+import {
+  legacyScaleOverviewPaths,
+  mainPageRedirects,
+  sectionPageRedirects,
+} from "./src/features/site/data/main-page-paths";
 import importedProductImageAliases from "./src/features/content/data/imported-product-image-aliases.json";
 
 const lanOrigins = lanUatAddresses(networkInterfaces()).flatMap((address) => [
@@ -14,11 +19,25 @@ const lanOrigins = lanUatAddresses(networkInterfaces()).flatMap((address) => [
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      ...mainPageRedirects.map((redirect) => ({
+        ...redirect,
+        permanent: true,
+        // Keep legacy scale selections available to Proxy so it can remove consumed filters.
+        ...(legacyScaleOverviewPaths.includes(redirect.source) && {
+          missing: [{ type: "query" as const, key: "subcategory" }],
+        }),
+      })),
+      {
+        source: "/Indicator",
+        destination: "/platforms/indicators",
+        permanent: true,
+      },
       { source: legacyContactPath, destination: contactPath, permanent: false },
       ...technicalManualRedirects.map(({ source, ...redirect }) => ({
         ...redirect,
         source: encodeURI(source),
       })),
+      ...sectionPageRedirects.map((redirect) => ({ ...redirect, permanent: true })),
     ];
   },
   async rewrites() {

@@ -74,6 +74,10 @@
   display: flex;
   align-items: center;
 }
+.navLinks > a[aria-current="location"]:not([href="/platforms"]),
+.mobileCategoryRow > a[aria-current="location"]:not([href="/platforms"]) {
+  text-decoration: underline;
+}
 .navLinks > :is(button, a),
 .mobileCategoryRow > a,
 .mobileMenuItems > :is(a, button) {
@@ -158,9 +162,12 @@
   display: grid;
   gap: 32px;
 }
-.menuContent p {
+.menuContent :is(p, .menuSubtitle) {
   color: var(--nav-muted);
   font-size: 12px;
+  line-height: 1.5;
+}
+.menuContent p {
   margin: 0 0 12px;
 }
 .menuContent :is(a, .menuUnavailable) {
@@ -173,9 +180,29 @@
   display: inline-block;
   transform-origin: left center;
 }
+.menuContent .menuSubtitle {
+  display: block;
+  font-weight: 400;
+}
 .menuPrimary :is(a, .menuUnavailable) {
   font-size: 24px;
   line-height: 1.4;
+}
+.productFeatureRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  inline-size: fit-content;
+}
+.productFeatureToggle {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding-inline: 8px;
+  font-size: 14px;
+}
+.productFeatureRow[data-feature-selected] > a,
+.productFeatureToggle[aria-expanded="true"] {
+  text-decoration: underline;
 }
 .productMenuContent > div {
   min-width: 0;
@@ -296,9 +323,6 @@
   .menuContent[data-nav-menu="/solutions"] :is(a, .menuUnavailable) {
     min-height: 0;
   }
-  .menuContent p {
-    line-height: 18px;
-  }
   .menuContent :is(a, .menuUnavailable) {
     padding-block: 3px;
   }
@@ -316,7 +340,7 @@
   .menuContent a > span {
     transition: transform 180ms ease;
   }
-  .menuContent a:hover > span {
+  .menuContent a:hover > span:not(.menuSubtitle) {
     transform: scale(1.06);
   }
   .menuContent[data-nav-hover-reveal] [data-nav-column="uses"] {

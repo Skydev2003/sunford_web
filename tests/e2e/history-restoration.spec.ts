@@ -165,7 +165,7 @@ test("service tab survives eviction", async ({ page }) => {
 });
 
 test("builder filters survive eviction", async ({ page }) => {
-  await page.goto("/guides/indicator-platform-compatibility");
+  await page.goto("/platforms/spec-builder");
   const search = page.getByRole("searchbox");
   await search.fill("QA missing item");
   const disclosures = page.locator("main:visible details");

@@ -1,3 +1,4 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
 import { expect, test, type Locator } from "@playwright/test";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
@@ -128,7 +129,7 @@ for (const width of [390, 1440]) {
     const panel = header.locator("#products-navigation-panel");
     await expect(
       panel.getByRole("link", { name: "เกี่ยวกับผลิตภัณฑ์", exact: true }),
-    ).toHaveAttribute("href", "/support/technical-assistance");
+    ).toHaveAttribute("href", "/service/technical-assistance");
     await expect(panel.getByRole("link", { name: "ติดต่อเรา", exact: true })).toHaveAttribute(
       "href",
       "/service?section=contact",
@@ -170,7 +171,9 @@ for (const width of [390, 1440]) {
           page.locator(`[data-product-subcategory-page="${subcategory.id}"]`),
         ).toBeVisible();
       } else {
-        await expect(page.locator("main:visible h1")).toHaveText(category.label);
+        await expect(page.locator("main:visible h1")).toHaveText(
+          catalogPageTitle(category.href, category.label),
+        );
       }
       await expect(
         page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true }),
@@ -183,7 +186,7 @@ for (const width of [390, 1440]) {
       .locator("#products-navigation-panel")
       .getByRole("link", { name: "บทความ", exact: true })
       .click();
-    await expect(page).toHaveURL("/business/blogs/editorial");
+    await expect(page).toHaveURL("/service/articles");
     await expect(header.locator("#products-navigation-panel")).toHaveCount(0);
     if (width < 1024) await header.getByRole("button", { name: "เปิดเมนู", exact: true }).click();
     await openCategoryMenu(header, "บริการช่วยเหลือ", width);

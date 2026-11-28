@@ -18,6 +18,11 @@ import overview from "@/features/catalog/components/products-overview.module.css
 import styles from "./solutions-overview.module.css";
 
 const businessIcons = [Store, Factory, FlaskConical];
+const solutionCardPaths = [
+  ...solutions.map(({ path }) => path),
+  "/solutions/data-format",
+  "/solutions/android-advanced",
+];
 
 export async function SolutionsOverview() {
   const products = await getProducts();
@@ -117,15 +122,15 @@ export async function SolutionsOverview() {
           showControls={false}
           revealTabFocus
         >
-          {solutions.map((item) => (
-            <li key={item.id}>
+          {solutionCardPaths.map((path) => (
+            <li key={path}>
               <Link
-                href={item.path}
+                href={path}
                 prefetch={false}
-                aria-label={solutionDetails[item.path].title}
+                aria-label={solutionDetails[path].title}
                 className={styles.solutionCard}
               >
-                <h3>{solutionDetails[item.path].title}</h3>
+                <h3>{solutionDetails[path].title}</h3>
                 <span aria-hidden="true">
                   ดูรายละเอียด <ArrowRight size={18} />
                 </span>

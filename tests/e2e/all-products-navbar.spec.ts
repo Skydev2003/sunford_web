@@ -20,23 +20,38 @@ async function visit(page: Page, route: string, width = 1440) {
 
 async function expectShopMenu(panel: Locator) {
   const columns = panel.locator("[data-nav-column]");
-  await expect(columns.locator(":scope > p")).toHaveText(["สินค้า", "ลิงก์ด่วน"]);
+  await expect(columns.locator(":scope > p")).toHaveText(["สินค้า", "ลิงก์ด่วน", "ช่วยเหลือ"]);
   await expect(columns.nth(0).getByRole("link")).toHaveText([
     "เครื่องชั่ง",
-    "โครงสร้างแท่นชั่ง",
+    "แท่นชั่ง",
     "อินดิเคเตอร์",
     "ระบบ POS",
     "ระบบ MES",
     "อุปกรณ์เสริม",
   ]);
   const quickLinks = columns.nth(1).getByRole("link");
-  await expect(quickLinks).toHaveText(["เลือกซื้อสินค้า", "ลงทะเบียนรับประกัน", "ใบเสนอราคา"]);
-  await expect(quickLinks.nth(0)).toHaveAttribute("href", "https://sunfordshop.com/");
-  await expect(quickLinks.nth(1)).toHaveAttribute("href", "/warranty/register");
-  await expect(quickLinks.nth(2)).toHaveAttribute("href", "/service/quotation");
+  await expect(quickLinks).toHaveText([
+    "เครื่องชั่งร้านค้าทั่วไป",
+    "เครื่องชั่งอุตสาหกรรม",
+    "เครื่องชั่งประกอบเอง",
+    "เครื่องชั่งขนาดเล็ก",
+  ]);
+  await expect(quickLinks.nth(0)).toHaveAttribute("href", "/scales/retail");
+  await expect(quickLinks.nth(1)).toHaveAttribute("href", "/scales/industrial");
+  await expect(quickLinks.nth(2)).toHaveAttribute("href", "/platforms/custom-spec");
+  await expect(quickLinks.nth(3)).toHaveAttribute("href", "/scales/household");
+  const assistance = columns.nth(2).getByRole("link");
+  await expect(assistance).toHaveText([
+    "ขอใบเสนอราคา",
+    "เลือกซื้อที่ร้านออนไลน์",
+    "เงื่อนไขรับประกัน",
+    "ติดต่อเรา",
+  ]);
+  await expect(assistance.nth(0)).toHaveAttribute("href", "/service/quotation");
+  await expect(assistance.nth(1)).toHaveAttribute("href", "https://sunfordshop.com/");
   await expect(columns.nth(0).getByRole("link", { name: "ระบบ MES" })).toHaveAttribute(
     "href",
-    "/solution/mes",
+    "/mes",
   );
 }
 

@@ -1,6 +1,6 @@
 import { expect, test, type Locator } from "@playwright/test";
 
-const scales = "/products/category/scales";
+const scales = "/scales";
 
 async function expectIndicatorAtSelection(tray: Locator) {
   const indicator = tray.locator("[data-segmented-indicator]");

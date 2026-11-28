@@ -1,4 +1,12 @@
+import Link from "next/link";
+import {
+  indicatorOverviewFeatures,
+  platformIndicatorsPath,
+  type OverviewFeature,
+} from "../data/catalog-overview-features";
+import { platformCatalogSections } from "../data/catalog-submenu-destinations";
 import { ProductsOverview } from "./products-overview";
+import { SegmentedFilter } from "./segmented-filter";
 import { getProductCategories } from "../server/product-categories";
 import { buyingGuideHref, guidebookBuyingGuides } from "@/features/content/data/buying-guides";
 import { getSettings } from "@/features/site/server/documents";
@@ -8,6 +16,7 @@ import {
   resolveNavigationItems,
 } from "@/features/site/data/navigation";
 import { sunford } from "@/features/home/data/brand";
+import styles from "./products-overview.module.css";
 
 // Catalogue photographs are used only for the matching Warehouse model.
 const modelPhotos: Readonly<Record<string, string>> = {
@@ -26,7 +35,9 @@ const topicImages: Readonly<Record<string, string>> = {
   compare: "/images/category-chapters/indicators/led.webp",
 };
 
-export async function IndicatorsOverview() {
+export async function IndicatorsOverview({
+  overviewFeature,
+}: { overviewFeature?: OverviewFeature } = {}) {
   const {
     products: catalogProducts,
     categories,
@@ -89,6 +100,32 @@ export async function IndicatorsOverview() {
       categories={[category]}
       cardNames={cardNames}
       categoryId="indicators"
+      overviewFeature={overviewFeature}
+      primaryLineupId={platformCatalogSections.indicators}
+      listingHref={platformIndicatorsPath}
+      listingFilters={
+        <nav className={styles.lineupFilters} aria-label="คุณสมบัติอินดิเคเตอร์">
+          <SegmentedFilter value={overviewFeature?.id ?? "all"}>
+            <Link
+              href={platformIndicatorsPath}
+              scroll={false}
+              aria-current={overviewFeature ? undefined : "true"}
+            >
+              ทุกผลิตภัณฑ์
+            </Link>
+            {indicatorOverviewFeatures.map(([id, label]) => (
+              <Link
+                key={id}
+                href={`${platformIndicatorsPath}?feature=${id}`}
+                scroll={false}
+                aria-current={overviewFeature?.id === id ? "true" : undefined}
+              >
+                {label}
+              </Link>
+            ))}
+          </SegmentedFilter>
+        </nav>
+      }
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       stories={stories}

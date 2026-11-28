@@ -134,7 +134,7 @@ test("legacy indicator query URLs reach their own listings", async ({ page }) =>
   for (const definition of pages) {
     for (const href of [
       `/products?category=indicators&subcategory=${definition.id}`,
-      `/products/category/indicators?subcategory=${definition.id}`,
+      `/indicators?subcategory=${definition.id}`,
     ]) {
       await page.goto(href);
       await expect(page).toHaveURL(new URL(definition.href, page.url()).href);

@@ -1,7 +1,7 @@
 import { expect, test, type Locator } from "@playwright/test";
 import { load } from "cheerio";
 
-const listing = "/products/category/scales/kitchen";
+const listing = "/scales/kitchen";
 const firstModel = "SUNFORD WPK5000";
 
 function optimizedSource(url: URL) {
@@ -111,7 +111,7 @@ test("a product grid starts a lower row before it scrolls into view", async ({ p
     });
   });
   try {
-    await page.goto("/products/category/scales/industrial", { waitUntil: "domcontentloaded" });
+    await page.goto("/scales/industrial", { waitUntil: "domcontentloaded" });
     const photo = page.locator("#mock-product-results article a img").last();
     await expect(photo).toHaveAttribute("loading", "lazy");
     await photo.evaluate((image) => {

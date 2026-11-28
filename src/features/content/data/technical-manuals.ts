@@ -1,6 +1,6 @@
 import { legacyPathCandidates } from "./public-paths.mjs";
 
-export const technicalManualIndex = "/technical-specification";
+export const technicalManualIndex = "/service/technical-specification";
 export const technicalManualPath = (slug: string) => `${technicalManualIndex}/guides/${slug}`;
 export const guidebookChapterPath = (slug: string) =>
   `${technicalManualIndex}?guide=${encodeURIComponent(slug)}`;

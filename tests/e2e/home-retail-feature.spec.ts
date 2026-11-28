@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-const coffeePath = "/products/category/scales/kitchen";
-const marketPath = "/products/category/scales/applications/wholesale-markets";
+const coffeePath = "/scales/kitchen";
+const marketPath = "/scales/applications/wholesale-markets";
 
 for (const [width, reducedMotion] of [
   [390, "reduce"],

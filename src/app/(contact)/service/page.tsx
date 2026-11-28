@@ -10,15 +10,25 @@ import SourceContentPage, {
 
 const pathname = "/service";
 const props = { params: Promise.resolve({ path: ["service"] }) };
+export const instant = false;
+type Props = { searchParams: Promise<{ section?: string | string[] }> };
 
-export function generateMetadata(): Promise<Metadata> {
-  return getSourceMetadata(props);
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const metadata = await getSourceMetadata(props);
+  return (await searchParams).section === "contact"
+    ? { ...metadata, title: "ติดต่อเรา" }
+    : metadata;
 }
 
-export default async function ServiceRoute() {
+export default async function ServiceRoute({ searchParams }: Props) {
   const page = (await getContentPageIndex())[pathname];
   if (page?.path === pathname && page.kind === "page" && !page.managed)
-    return <AfterSalesPage contact={<ContactChannels />} />;
+    return (
+      <AfterSalesPage
+        contact={<ContactChannels />}
+        initialContact={(await searchParams).section === "contact"}
+      />
+    );
   return (
     <Suspense fallback={<SiteLoading />}>
       <SourceContentPage {...props} />

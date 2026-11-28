@@ -1,5 +1,5 @@
+import { catalogPageTitle } from "../../src/features/site/data/site-menu-labels";
 import { catalogSubmenuDestination } from "../../src/features/catalog/data/catalog-submenu-destinations";
-import { siteMenuLabel } from "../../src/features/site/data/site-menu-labels";
 import { expect, test, type Page, type APIRequestContext } from "@playwright/test";
 import { expectStaggerMotion, recordStaggerMotion } from "./helpers/stagger-motion";
 import { getScaleSubcategories } from "../../src/features/catalog/data/scale-subcategories";
@@ -8,6 +8,9 @@ import { catalogModelLabel } from "../../src/features/catalog/data/catalog-card-
 import type { Product } from "../../src/features/catalog/types";
 
 const pages = scaleSubcategoryPages.filter((page) => page.id !== "scale-industrial");
+const navbarPages = scaleSubcategoryPages.filter(({ slug }) =>
+  ["price", "industrial", "analytical", "kitchen"].includes(slug),
+);
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
@@ -24,7 +27,9 @@ async function verifyListing(page: Page, request: APIRequestContext, id: string,
   const models = source.entries!.map((entry) => catalogModelLabel(entry.model));
   await page.goto(href);
   const main = page.locator(`[data-scale-subcategory-page="${id}"]:visible`);
-  await expect(main.getByRole("heading", { level: 1 })).toHaveText(source.label);
+  await expect(main.getByRole("heading", { level: 1 })).toHaveText(
+    catalogPageTitle(href, source.label),
+  );
   const cards = main.locator("#mock-product-results article");
   await expect(cards.locator("h3")).toHaveText(models.slice(0, 24));
   if (models.length > 24) await main.getByRole("button", { name: /ดูเพิ่มเติม/ }).click();
@@ -56,7 +61,7 @@ for (const width of [390, 1440]) {
       await page.reload();
       await expect(
         page.locator(`[data-scale-subcategory-page="${definition.id}"]:visible h1`),
-      ).toHaveText(definition.label);
+      ).toHaveText(catalogPageTitle(definition.href, definition.label));
       await expect(page.getByRole("dialog")).toHaveCount(0);
     });
   }
@@ -116,7 +121,7 @@ test("all legacy scale queries and recognized thematic URLs reach their own list
   for (const definition of pages) {
     for (const href of [
       `/products?category=scales&subcategory=${definition.id}`,
-      `/products/category/scales?subcategory=${definition.id}`,
+      `/scales?subcategory=${definition.id}`,
     ]) {
       await page.goto(href);
       await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
@@ -129,25 +134,22 @@ test("all legacy scale queries and recognized thematic URLs reach their own list
     ["/collections/coffee-scales", "kitchen"],
   ]) {
     await page.goto(old);
-    await expect(page).toHaveURL(new RegExp(`/products/category/scales/${slug}$`));
+    await expect(page).toHaveURL(new RegExp(`/scales/${slug}$`));
   }
 });
 
 test("Navbar entries, cached Back and per-group search remain separate", async ({ page }) => {
-  test.slow();
   await page.goto("/products");
-  for (const definition of pages) {
+  for (const definition of navbarPages) {
     const trigger = page
       .locator("[data-products-nav]")
       .getByRole("link", { name: "เครื่องชั่ง", exact: true });
     await trigger.focus();
     await trigger.press("ArrowDown");
     await expect(trigger).toHaveAttribute("aria-expanded", "true", { timeout: 1_000 });
-    await page
-      .locator("#products-navigation-panel")
-      .getByRole("link", { name: definition.label.replace(/^เครื่องชั่ง/, ""), exact: true })
-      .click();
-    await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
+    const destination = catalogSubmenuDestination(definition.href);
+    await page.locator(`#products-navigation-panel a[href="${destination}"]`).first().click();
+    await expect(page).toHaveURL(new URL(destination, page.url()).href);
     await page.goBack();
     await expect(page).toHaveURL(/\/products$/);
     await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -156,7 +158,10 @@ test("Navbar entries, cached Back and per-group search remain separate", async (
   await page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" }).fill("not-a-model");
   await page.goto(pages[1].href);
   await expect(page.getByRole("textbox", { name: "ค้นหารุ่นสินค้า" })).toHaveValue("");
-  await expect(page.locator("#mock-product-results article")).toHaveCount(9);
+  const group = await sourceGroup(page.request, pages[1].id);
+  await expect(page.locator("#mock-product-results article")).toHaveCount(
+    Math.min(group.entries!.length, 24),
+  );
 });
 
 test("every new heading retains latest motion and reduced-motion fallback", async ({ page }) => {
@@ -178,11 +183,10 @@ test("every new heading retains latest motion and reduced-motion fallback", asyn
   }
 });
 
-test("native Home mobile submenu reaches every new group and returns from detail", async ({
+test("native Home mobile submenu reaches configured groups and returns from detail", async ({
   browser,
   baseURL,
 }) => {
-  test.slow();
   const context = await browser.newContext({
     baseURL,
     viewport: { width: 390, height: 844 },
@@ -191,27 +195,23 @@ test("native Home mobile submenu reaches every new group and returns from detail
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
-  for (const definition of pages) {
+  for (const definition of navbarPages) {
     await page.goto("/");
+    await expect(page.locator("[data-hero-scene]")).toHaveAttribute("data-enhanced", "true");
     await page
       .locator(".site-header:visible")
       .getByRole("button", { name: "เปิดเมนู", exact: true })
       .tap();
     const group = page.locator("#products-navigation-panel");
     await group.getByRole("button", { name: "เปิดเมนูย่อยเครื่องชั่ง", exact: true }).tap();
-    await group
-      .getByRole("link", {
-        name: siteMenuLabel(definition.href, definition.label.replace(/^เครื่องชั่ง/, "")),
-        exact: true,
-      })
-      .tap();
-    await expect(page).toHaveURL(
-      new URL(catalogSubmenuDestination(definition.href), page.url()).href,
-    );
+    const destination = catalogSubmenuDestination(definition.href);
+    await group.locator(`a[href="${destination}"]`).first().tap();
+    await expect(page).toHaveURL(new URL(destination, page.url()).href);
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    await page.locator("#mock-product-results article[data-model-only] a").first().tap();
-    await page.getByRole("link", { name: `กลับรายการ${definition.label}`, exact: true }).tap();
-    await expect(page).toHaveURL(new URL(definition.href, page.url()).href);
+    await page.locator('#mock-product-results article a[href^="/products/"]').first().tap();
+    await expect(page).toHaveURL(/\/products\/[^/?#]+(?:[?#].*)?$/);
+    await page.locator("main a.back-link").first().tap();
+    await expect(page).toHaveURL((url) => url.pathname === definition.href);
   }
   await context.close();
 });

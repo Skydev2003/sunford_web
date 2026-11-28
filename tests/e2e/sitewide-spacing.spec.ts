@@ -12,7 +12,7 @@ for (const width of [320, 390, 768, 1024, 1280, 1440, 1920]) {
   test(`quotation and builder use one page gutter at ${width}px`, async ({ page }) => {
     const gutter = width >= 1280 ? 48 : width >= 768 ? 32 : 20;
     const section = width >= 1280 ? 64 : width >= 768 ? 48 : 32;
-    for (const route of ["/service/quotation", "/guides/indicator-platform-compatibility"]) {
+    for (const route of ["/service/quotation", "/platforms/spec-builder"]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(route);
       const main = page.locator("main:visible");
@@ -48,7 +48,7 @@ for (const width of [390, 768, 1440]) {
       ["/solutions", "#solutions-all"],
       ["/service?section=contact", `section${moduleClass("locations")}`],
       ["/about-us", `section${moduleClass("story")}`],
-      ["/products/category/scales", '[data-overview-section="lineup"]'],
+      ["/scales", '[data-overview-section="lineup"]'],
     ]) {
       await page.goto(route);
       const main = page.locator("main:visible");

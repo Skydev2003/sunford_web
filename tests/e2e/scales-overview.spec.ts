@@ -3,7 +3,7 @@ import { getScaleSubcategoryPage } from "../../src/features/catalog/data/scale-s
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { verifyCategoryOverview } from "./helpers/category-overview";
 
-const scalePath = "/products/category/scales";
+const scalePath = "/scales";
 const chapterNames: Record<string, string> = {
   "scale-kitchen": "ครัวเรือนและบุคคล",
   "scale-industrial": "อุตสาหกรรม",
@@ -26,9 +26,7 @@ for (const width of [390, 1440]) {
   }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(`${scalePath}?subcategory=scale-kitchen&trace=keep#scale-section`);
-    await expect(page).toHaveURL(
-      /\/products\/category\/scales\/kitchen\?trace=keep#scale-section$/,
-    );
+    await expect(page).toHaveURL(/\/scales\/kitchen\?trace=keep#scale-section$/);
     await page.reload();
     await expect(page.locator('[data-scale-subcategory-page="scale-kitchen"]')).toBeVisible();
     await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -141,9 +139,7 @@ test("scales and full catalog keep the right overlay host across cached navigati
     .getByRole("link", { name: "ผลิตภัณฑ์ทั้งหมด", exact: true })
     .click();
   const directory = page.locator("[data-products-directory]");
-  await expect(
-    directory.locator('#products-categories a[href^="/products/category/"]'),
-  ).toHaveCount(5);
+  await expect(directory.locator('#products-categories a[href^="/products/"]')).toHaveCount(5);
   await page.goto("/products?catalog=all");
   const full = page.getByRole("dialog", { name: "ดูสินค้าทั้งหมด", exact: true });
   await expect(full).toBeVisible();
@@ -161,7 +157,7 @@ test("scales and full catalog keep the right overlay host across cached navigati
     .locator("[data-products-header]:visible")
     .getByRole("link", { name: "อินดิเคเตอร์แท่นชั่ง", exact: true })
     .click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("อินดิเคเตอร์แท่นชั่ง");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("อินดิเคเตอร์");
   await expect(page.locator("[data-products-footer]:visible")).toHaveCount(1);
   await expect(page.locator("footer:visible")).toHaveCount(1);
   await expect(page.locator("[data-products-header]:visible")).toHaveCount(1);

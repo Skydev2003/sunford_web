@@ -1,3 +1,4 @@
+import type { OverviewFeature } from "../data/catalog-overview-features";
 import Link from "next/link";
 import { ProductsOverview } from "./products-overview";
 import { getProductCategories } from "../server/product-categories";
@@ -18,7 +19,9 @@ const topicImages: Readonly<Record<string, string>> = {
   consumables: "/images/imported/b75fc9d2b3417192cc3c.png",
 };
 
-export async function AccessoriesOverview() {
+export async function AccessoriesOverview({
+  overviewFeature,
+}: { overviewFeature?: OverviewFeature } = {}) {
   const {
     products: catalogProducts,
     categories,
@@ -92,6 +95,7 @@ export async function AccessoriesOverview() {
       categories={[{ ...category, subcategories }]}
       cardNames={cardNames}
       categoryId="accessories"
+      overviewFeature={overviewFeature}
       navigation={resolveNavigationItems(navigation.items)}
       readySubcategoryHrefs={readySubcategoryHrefs}
       stories={stories}

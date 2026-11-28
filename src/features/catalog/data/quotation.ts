@@ -75,7 +75,13 @@ export type QuotePreset = {
   includesCodes?: string[];
 };
 
-export function selectedQuoteItems(models: string[], presets: QuotePreset[]) {
+export const quoteModelKey = (name: string) => name.trim().toLowerCase();
+
+export function selectedQuoteItems(
+  models: string[],
+  presets: QuotePreset[],
+  pricedIds: ReadonlySet<string> = new Set(),
+) {
   const byCode = new Map(presets.map((item) => [item.code, item]));
   const items: { id: string; includedIn?: string; model?: string }[] = [];
   const pending: string[] = [];
@@ -92,6 +98,7 @@ export function selectedQuoteItems(models: string[], presets: QuotePreset[]) {
     const includedIn = kitByModel.get(code);
     if (includedIn) items.push({ id: item?.pricedId ?? code, includedIn, model: code });
     else if (item?.pricedId) items.push({ id: item.pricedId });
+    else if (!item && pricedIds.has(code)) items.push({ id: code });
     else pending.push(item?.label ?? code);
   }
   return { items, pending };

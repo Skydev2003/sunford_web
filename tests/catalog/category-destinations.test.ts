@@ -1,3 +1,4 @@
+import { getProductSubcategoryPageByHref } from "../../src/features/catalog/data/product-subcategory-pages";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { resolveCategoryHref } from "../../src/features/catalog/data/category-destinations";
@@ -5,33 +6,32 @@ import { resolveHomeLink } from "../../src/features/home/data/link-targets";
 import { getPrimaryNavigationItems } from "../../src/features/site/data/primary-navigation";
 import { defaultNavigation } from "../../src/features/site/data/navigation";
 import { buyingGuides } from "../../src/features/content/data/buying-guides";
+import { isProductCategoryPath } from "../../src/features/catalog/data/category-paths";
 
 test("known category links retain their category and exact current subcategory", () => {
   for (const href of [
-    "/products/category/scales?subcategory=scale-industrial",
+    "/scales?subcategory=scale-industrial",
+    "/products/scales?subcategory=scale-industrial",
     "/products?category=scales&subcategory=scale-industrial",
   ])
-    assert.equal(resolveCategoryHref(href), "/products/category/scales/industrial");
+    assert.equal(resolveCategoryHref(href), "/scales/industrial");
   for (const [old, expected] of [
-    ["/Product/Digital-weighing", "/products/category/scales"],
-    ["/Indicator/", "/products/category/indicators"],
-    ["/product/scale-platforms", "/products/category/platforms"],
-    ["/Product/POS", "/products/category/pos"],
-    ["/product/scale-accessories", "/products/category/accessories"],
-    ["/product/commercial", "/products/category/scales/price"],
-    ["/collections/coffee-scales", "/products/category/scales/kitchen"],
-    ["/product/industrial", "/products/category/scales/industrial"],
-    ["/product/laboratory", "/products/category/scales/analytical"],
-    ["/Product/POS/Android", "/products/category/pos/android"],
-    ["/Product/POS/Windows", "/products/category/pos/windows"],
-    ["/product/Consumables", "/products/category/accessories/consumables"],
+    ["/Product/Digital-weighing", "/scales"],
+    ["/Indicator/", "/platforms/indicators"],
+    ["/product/scale-platforms", "/platforms"],
+    ["/Product/POS", "/pos"],
+    ["/product/scale-accessories", "/accessories"],
+    ["/product/commercial", "/scales/retail"],
+    ["/collections/coffee-scales", "/scales/household"],
+    ["/product/industrial", "/scales/industrial"],
+    ["/product/laboratory", "/scales/laboratory"],
+    ["/Product/POS/Android", "/pos/android"],
+    ["/Product/POS/Windows", "/pos/windows"],
+    ["/product/Consumables", "/accessories/consumables"],
   ])
     assert.equal(resolveCategoryHref(old), expected);
-  assert.equal(
-    resolveCategoryHref("/collections/stainless-steel-platforms"),
-    "/products/category/platforms",
-  );
-  assert.equal(resolveCategoryHref("/collections/printers"), "/products/category/accessories");
+  assert.equal(resolveCategoryHref("/collections/stainless-steel-platforms"), "/platforms");
+  assert.equal(resolveCategoryHref("/collections/printers"), "/accessories");
 });
 
 test("unrelated links stay unchanged and a corrected category cannot retain stale filters", () => {
@@ -40,8 +40,8 @@ test("unrelated links stay unchanged and a corrected category cannot retain stal
     "/products?catalog=all",
     "/products/acs30-jc21",
     "/solutions/pos",
-    "/solution/mes",
-    "/software/download#retail-software",
+    "/mes",
+    "/software#retail-software",
     "/custom-page",
     "https://www.sunford.co/Indicator",
     "//example.com/Indicator",
@@ -52,7 +52,30 @@ test("unrelated links stay unchanged and a corrected category cannot retain stal
     resolveCategoryHref(
       "/Product/POS/Android?category=scales&subcategory=wrong&catalog=all&ref=guide#details",
     ),
-    "/products/category/pos/android?ref=guide#details",
+    "/pos/android?ref=guide#details",
+  );
+});
+
+test("renamed main pages preserve queries and use the correct section anchor", () => {
+  assert.equal(
+    resolveCategoryHref("/products/category/platforms?ref=guide"),
+    "/platforms?ref=guide",
+  );
+  assert.equal(
+    resolveCategoryHref("/products/indicators#product-lineup-indicators"),
+    "/platforms/indicators#product-lineup-indicators",
+  );
+  assert.equal(
+    resolveCategoryHref("/software/download?ref=guide#retail-software"),
+    "/software?ref=guide#retail-software",
+  );
+  assert.equal(
+    resolveCategoryHref("/guides/indicator-platform-compatibility"),
+    "/platforms/custom-spec",
+  );
+  assert.equal(
+    resolveCategoryHref("/products/mes/batch-control?ref=guide"),
+    "/mes/batch-control?ref=guide",
   );
 });
 
@@ -61,18 +84,18 @@ test("new listing routes only consume filter parameters for their own category",
     resolveCategoryHref(
       "/products?category=accessories&subcategory=accessory-printers&catalog=all&ref=menu#details",
     ),
-    "/products/category/accessories/printers?ref=menu#details",
+    "/accessories/printers?ref=menu#details",
   );
-  const crossCategory = "/products/category/pos?subcategory=accessory-printers&ref=menu";
+  const crossCategory = "/pos?subcategory=accessory-printers&ref=menu";
   assert.equal(resolveCategoryHref(crossCategory), crossCategory);
 });
 
 test("Home default and CMS category targets normalize while custom and disabled targets remain authoritative", () => {
-  assert.equal(resolveHomeLink("digital", undefined, []), "/products/category/scales");
-  assert.equal(resolveHomeLink("accessories", undefined, []), "/products/category/accessories");
+  assert.equal(resolveHomeLink("digital", undefined, []), "/scales");
+  assert.equal(resolveHomeLink("accessories", undefined, []), "/accessories");
   assert.equal(
     resolveHomeLink("spotlight", { pagePath: "/Indicator" }, []),
-    "/products/category/indicators",
+    "/platforms/indicators",
   );
   assert.equal(resolveHomeLink("smart", { pagePath: "/about-us" }, []), "/about-us");
   assert.equal(resolveHomeLink("digital", { pagePath: "/products" }, []), "/products");
@@ -98,12 +121,9 @@ test("CMS legacy and corrected links project identically with live feature colum
   const legacy = getPrimaryNavigationItems(defaultNavigation);
   assert.deepEqual(getPrimaryNavigationItems(corrected), legacy);
   assert.deepEqual(defaultNavigation, before);
-  assert.deepEqual(legacy.find(({ href }) => href === "/products/category/scales")?.groups?.[0], {
-    label: "คุณสมบัติ",
-    links: [],
-  });
+  assert.equal(legacy.find(({ href }) => href === "/scales")?.groups?.[0].links.length, 5);
   const services = legacy.find((item) => item.href === "/service")!;
-  assert.ok(services.groups![0].links.some((link) => link.href === "/business/blogs/editorial"));
+  assert.ok(services.groups![0].links.some((link) => link.href === "/service/articles"));
   assert.ok(
     !services.groups!.flatMap((group) => group.links).some((link) => link.href === "/solutions"),
   );
@@ -111,15 +131,20 @@ test("CMS legacy and corrected links project identically with live feature colum
   assert.equal(solutions.groups!.flatMap((group) => group.links).length, 18);
   assert.ok(
     solutions.groups![0].links.some(
-      (link) => link.label === "ร้านกาแฟ" && link.href === "/products/category/scales/kitchen",
+      (link) => link.label === "ร้านกาแฟ" && link.href === "/scales/household",
     ),
   );
 });
 
 test("each guide returns to its own current Navbar category and has no legacy category targets", () => {
   for (const guide of buyingGuides) {
-    assert.equal(guide.productHref, `/products/category/${guide.slug}`);
+    assert.equal(guide.productHref, `/${guide.slug}`);
     for (const { href } of guide.sections.flatMap((section) => section.links))
-      assert.ok(href.startsWith("/products/category/") || href === "/software/download", href);
+      assert.ok(
+        Boolean(getProductSubcategoryPageByHref(href)) ||
+          isProductCategoryPath(href) ||
+          href === "/software",
+        href,
+      );
   }
 });

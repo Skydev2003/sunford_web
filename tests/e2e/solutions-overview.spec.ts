@@ -173,9 +173,11 @@ test("business anchors and all14 detail links retain reload and history behavior
     await expect(page).toHaveURL(new RegExp(`${item.path}$`));
     const detail = page.locator(`main[data-solution-detail="${item.path}"]:visible`);
     await expect(detail.getByRole("heading", { level: 1, name: title, exact: true })).toBeVisible();
+    const guidance = detail.locator("[data-solution-guidance]");
+    await expect(guidance.getByRole("heading", { name: "ก่อนนำไปใช้งาน" })).toBeVisible();
     await expect(
-      detail.locator("[data-solution-evidence], [data-solution-evidence-empty]"),
-    ).toBeVisible();
+      guidance.getByRole("link", { name: "อ่านบทความต้นฉบับของ SUNFORD" }),
+    ).toHaveAttribute("href", item.sourceUrl);
     await expect(detail.getByRole("link", { name: "สอบถามซันฟอร์ด" })).toHaveAttribute(
       "href",
       "/service?section=contact",

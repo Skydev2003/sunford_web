@@ -60,7 +60,7 @@ export function MarketRetailFeature({ sizes }: { sizes: string }) {
       heading="ชั่งขายหน้าร้าน"
       label="ค้าส่งและตลาดสด"
       image="/images/products/market-retail-editorial.webp"
-      href="/products/category/scales/applications/wholesale-markets"
+      href="/scales/applications/wholesale-markets"
       sizes={sizes}
     />
   );
@@ -98,7 +98,7 @@ export function HomeRetailFeature({ sizes }: { sizes: string }) {
       heading="ชั่งให้พอดี"
       label="ครัวและกาแฟ"
       image="/images/products/home-retail-editorial.webp"
-      href="/products/category/scales/kitchen"
+      href="/scales/household"
       sizes={sizes}
     />
   );

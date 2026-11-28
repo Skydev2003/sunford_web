@@ -2,6 +2,7 @@ import { contactPath } from "@/features/content/data/contact-route";
 import type { NavigationGroup, NavigationItem } from "../types";
 import { productCategoryDefinitions } from "@/features/catalog/data/mock-categories";
 import { platformPlacementDefinitions } from "@/features/catalog/data/platform-subcategory-definitions";
+import { posPlatformLabels } from "@/features/catalog/data/pos-subcategories";
 import { legacySoftwareCatalogPath, sunford } from "@/features/home/data/brand";
 
 const productSubmenuLabel = "ผลิตภัณฑ์ทั้งหมด";
@@ -35,8 +36,8 @@ const productSubcategories: Record<
   platforms: platformPlacementDefinitions.map(({ id, label }) => ({ id, label })),
   pos: [
     { id: "pos-ios", label: "iOS" },
-    { id: "pos-android", label: "Android" },
-    { id: "pos-windows", label: "Windows" },
+    { id: "pos-android", label: posPlatformLabels.android },
+    { id: "pos-windows", label: posPlatformLabels.windows },
   ],
   accessories: [
     { id: "accessory-displays", label: "จอแสดงผลเสริมและระบบต่อพ่วง" },
@@ -89,7 +90,7 @@ export const defaultNavigation: NavigationItem[] = [
         label: "อุตสาหกรรม",
         links: [
           { label: "เครื่องชั่งสำหรับโรงงาน", href: "/product/industrial" },
-          { label: "ระบบ MES สำหรับการผลิต", href: "/solution/mes" },
+          { label: "ระบบ MES สำหรับการผลิต", href: sunford.mes },
           { label: "ตรวจน้ำหนักขาด–เกิน", href: "/solutions/checkweighing" },
           { label: "สร้าง Lot No. และ Serial No.", href: "/solutions/lot-serial" },
           { label: "เชื่อมต่ออุปกรณ์ PLC", href: "/solutions/plc" },
@@ -118,7 +119,7 @@ export const defaultNavigation: NavigationItem[] = [
       {
         label: "ร้านค้าและบริการ",
         links: [
-          { label: "ซอฟต์แวร์สำหรับร้านค้าและบริการ", href: "/software/download#retail-software" },
+          { label: "ซอฟต์แวร์สำหรับร้านค้าและบริการ", href: "/software/retail" },
           { label: "SUNFORD POS Android", href: "/software/download/sunford-pos-android" },
           { label: "SUNFORD SmartRetail POS", href: "/software/download/sunford-pos-smart-retail" },
           { label: "SUNFORD POS Basic", href: "/software/download/sunford-pos-basic" },
@@ -129,7 +130,7 @@ export const defaultNavigation: NavigationItem[] = [
       {
         label: "อุตสาหกรรม",
         links: [
-          { label: "ซอฟต์แวร์สำหรับอุตสาหกรรม", href: "/software/download#industrial-software" },
+          { label: "ซอฟต์แวร์สำหรับอุตสาหกรรม", href: "/software/industrial" },
           { label: "SUNFORD WeWeigh", href: "/software/download/sunford-we-weight" },
           { label: "SUNFORD INDUS", href: "/software/download/sunford-indus" },
           { label: "SUNFORD DRV", href: "/software/download/sunford-drv" },
@@ -144,7 +145,7 @@ export const defaultNavigation: NavigationItem[] = [
         links: [
           {
             label: "ซอฟต์แวร์สำหรับครัวเรือนและบุคคล",
-            href: "/software/download#household-software",
+            href: "/software/household",
           },
           { label: "SUNFORD FITDAYS", href: "/software/download/fitdays" },
         ],
@@ -157,15 +158,15 @@ export const defaultNavigation: NavigationItem[] = [
     href: "/service",
     links: [
       { label: "บริการหลังการขาย", href: "/service" },
-      { label: "ลงทะเบียนรับประกัน", href: "/warranty/register" },
-      { label: "นโยบายการรับประกัน", href: "/warranty/policy" },
-      { label: "การยกเลิกและคืนสินค้า", href: "/cancel-and-return/policy" },
+      { label: "ลงทะเบียนรับประกัน", href: "/service/warranty/register" },
+      { label: "นโยบายการรับประกัน", href: "/service/warranty/policy" },
+      { label: "การยกเลิกและคืนสินค้า", href: "/service/cancel-and-return/policy" },
     ],
     groups: [
       {
         label: "ข้อมูลและความช่วยเหลือ",
         links: [
-          { label: "ข้อมูลทางเทคนิคและคู่มือ", href: "/technical-specification" },
+          { label: "ข้อมูลทางเทคนิคและคู่มือ", href: "/service/technical-specification" },
           { label: "สั่งซื้ออะไหล่", href: "/support/accessory" },
           { label: "ติดต่อฝ่ายบริการ", href: contactPath },
         ],
@@ -178,7 +179,7 @@ export const defaultNavigation: NavigationItem[] = [
     links: [
       { label: "รู้จักซันฟอร์ด", href: "/about-us" },
       { label: "ข่าวสารและกิจกรรม", href: "/news-and-activities" },
-      { label: "บทความ", href: "/business/blogs/editorial" },
+      { label: "บทความ", href: "/service/articles" },
       { label: "สำรวจข้อมูลทั้งหมด", href: "/explore" },
     ],
   },
@@ -245,8 +246,8 @@ export const defaultNavigationExtras = {
   helpLabel: "ให้เราช่วยคุณ",
   helpLinks: [
     { label: "ติดต่อเรา", href: contactPath },
-    { label: "ลงทะเบียนรับประกัน", href: "/warranty/register" },
-    { label: "ข้อมูลทางเทคนิค", href: "/technical-specification" },
+    { label: "ลงทะเบียนรับประกัน", href: "/service/warranty/register" },
+    { label: "ข้อมูลทางเทคนิค", href: "/service/technical-specification" },
   ],
   mobileLinks: [] as NavigationGroup["links"],
 };

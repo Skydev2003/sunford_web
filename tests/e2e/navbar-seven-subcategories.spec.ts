@@ -6,7 +6,7 @@ import { catalogSubmenuDestination } from "../../src/features/catalog/data/catal
 import { getPlatformPlacementSubcategories } from "../../src/features/catalog/data/platform-subcategories";
 import siteContent from "../../data/site/content.json";
 
-const root = "/products/category";
+const root = "";
 const groups = [
   {
     category: "scales",
@@ -98,8 +98,8 @@ async function verifyMenu(page: Page, home: boolean, input: "touch" | "keyboard"
     const navChildren =
       category === "pos"
         ? [
-            ["android", "Android"],
-            ["windows", "Windows"],
+            ["android", "Positive"],
+            ["windows", "Hardware"],
           ]
         : children;
     for (const [slug, label] of navChildren) {

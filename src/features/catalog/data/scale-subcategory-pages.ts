@@ -1,15 +1,17 @@
 import manifest from "./scale-category-models.json";
 
 const slugs = {
-  "scale-price": "price",
+  "scale-price": "retail",
   "scale-industrial": "industrial",
-  "scale-analytical": "analytical",
-  "scale-kitchen": "kitchen",
+  "scale-analytical": "laboratory",
+  "scale-kitchen": "household",
   "scale-water-dust": "water-dust",
   "scale-benchtop": "benchtop",
   "scale-floor": "floor",
   "scale-pole": "pole",
 } as const;
+
+export const primaryScaleGroups = ["laboratory", "industrial", "retail", "household"];
 
 export type ScaleReturnContext = keyof typeof slugs | "industrial-scales";
 
@@ -19,7 +21,7 @@ export const scaleSubcategoryPages = manifest.categories.map((category) => {
     id,
     label: category.label,
     slug: slugs[id],
-    href: `/products/category/scales/${slugs[id]}`,
+    href: `/scales/${slugs[id]}`,
     returnContext: id === "scale-industrial" ? ("industrial-scales" as const) : id,
   };
 });

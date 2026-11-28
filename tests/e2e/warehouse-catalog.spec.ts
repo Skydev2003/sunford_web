@@ -249,7 +249,7 @@ for (const width of [390, 834, 1440]) {
     await page.setViewportSize({ width, height: 960 });
     const { products } = await (await request.get("/api/products")).json();
     for (const category of ["scales", "indicators", "platforms", "pos", "accessories"]) {
-      await page.goto(`/products/category/${category}`);
+      await page.goto(`/${category}`);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       const member = products.find(
         (p: { warehouseCategoryId: string; image: string }) => p.warehouseCategoryId === category,
@@ -326,7 +326,7 @@ for (const width of [390, 834, 1440]) {
       const members = products.filter((p: { warehouseSubcategoryIds?: string[] }) =>
         p.warehouseSubcategoryIds?.includes(id),
       );
-      await page.goto(`/products/category/accessories/${group}`);
+      await page.goto(`/accessories/${group}`);
       for (const item of members.slice(0, 2))
         await expect(page.locator(`main a[href^="/products/${item.slug}"]`).first()).toBeVisible();
       if (!members.length) {

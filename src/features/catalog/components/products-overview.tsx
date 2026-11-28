@@ -1,4 +1,7 @@
 "use client";
+import { productCategoryPath } from "../data/category-paths";
+import { platformSpecBuilderPath } from "../data/platform-spec-builder-path";
+import type { OverviewFeature } from "../data/catalog-overview-features";
 import { useReturnState } from "@/features/site/history/return-state";
 import { useCatalogStore } from "@/stores/catalog-store";
 import { getPrimaryNavigationItems } from "@/features/site/data/primary-navigation";
@@ -18,6 +21,7 @@ import {
 import Link from "next/link";
 import { CatalogNavigationLink } from "./catalog-navigation-link";
 import { useCatalogAnchor } from "./use-catalog-anchor";
+import { catalogPageTitle } from "@/features/site/data/site-menu-labels";
 import { chapterArtwork } from "../data/category-chapter-artwork";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resolveCategoryHref } from "../data/category-destinations";
@@ -98,8 +102,8 @@ const categoryServiceIcons = new Map([
   [sunford.warrantyPolicy, ShieldCheck],
   [sunford.warranty, ClipboardCheck],
   [sunford.downloads, Download],
-  ["/products/category/scales/price", FileCheck],
-  ["/products/category/scales/industrial", Settings2],
+  ["/scales/retail", FileCheck],
+  ["/scales/industrial", Settings2],
 ]);
 type GalleryProps = {
   id: string;
@@ -309,7 +313,7 @@ function FinderQuerySync({
     }
     if (categoryId) {
       const url = new URL(window.location.href);
-      if (url.pathname !== `/products/category/${categoryId}`) return;
+      if (url.pathname !== productCategoryPath(categoryId)) return;
       if (!checkedNavigation.current) {
         checkedNavigation.current = true;
         const navigation = performance.getEntriesByType("navigation")[0] as
@@ -360,6 +364,11 @@ export function ProductsOverview({
   accordion,
   categoryId,
   indexContent,
+  primaryLineupId,
+  listingFilters,
+  listingHref,
+  overviewFeature,
+  heading,
 }: {
   products: ClientProduct[];
   categories: ProductCategory[];
@@ -371,6 +380,11 @@ export function ProductsOverview({
   accordion: AccordionItem[];
   categoryId?: string;
   indexContent?: ReactNode;
+  primaryLineupId?: string;
+  listingFilters?: ReactNode;
+  listingHref?: string;
+  overviewFeature?: OverviewFeature;
+  heading?: string;
 }) {
   const router = useRouter();
   const activeCategory = categories.find((category) => category.id === categoryId);
@@ -381,10 +395,31 @@ export function ProductsOverview({
   const pos = categoryId === "pos";
   const usesEditorialLayout = categoryLineup;
   const lineupAnchor = categoryLineup && categoryId ? productLineupAnchor(categoryId) : undefined;
-  useCatalogAnchor(lineupAnchor);
+  const headingAnchor = lineupAnchor === primaryLineupId ? undefined : lineupAnchor;
+  useCatalogAnchor(headingAnchor);
+  useCatalogAnchor(primaryLineupId);
+  const primaryResultsId = primaryLineupId ?? "catalog-feature-results";
+  const featureStatusRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (!overviewFeature) return;
+    let frame: number;
+    const scrollToResults = () => {
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => {
+          featureStatusRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+        });
+      });
+    };
+    if (document.readyState === "complete") scrollToResults();
+    else window.addEventListener("load", scrollToResults, { once: true });
+    return () => {
+      window.removeEventListener("load", scrollToResults);
+      cancelAnimationFrame(frame);
+    };
+  }, [overviewFeature]);
   const categoryEntrance = Boolean(indexContent) || categoryLineup;
   const categoryItems = activeCategory?.subcategories ?? categories;
-  const categoryHref = categoryId ? `/products/category/${categoryId}` : undefined;
+  const categoryHref = categoryId ? productCategoryPath(categoryId) : undefined;
   const categoryMenu = categoryHref
     ? getPrimaryNavigationItems(navigation, readySubcategoryHrefs, "category-chapters").find(
         (item) => item.href === categoryHref,
@@ -395,7 +430,7 @@ export function ProductsOverview({
         title: "โครงสร้างแท่นชั่ง",
         detail: "เลือกขนาดแท่น พิกัดน้ำหนัก และวัสดุให้เหมาะกับหน้างานและอินดิเคเตอร์ที่ใช้",
         image: "/images/products/category-families/platforms.webp",
-        href: "/products/category/platforms",
+        href: "/platforms/structures",
         linkLabel: "ดูโครงสร้างแท่นชั่ง",
       }
     : platforms
@@ -403,7 +438,7 @@ export function ProductsOverview({
           title: "อินดิเคเตอร์แท่นชั่ง",
           detail: "เลือกหัวอ่านที่รองรับโหลดเซลล์ของแท่น พร้อมจอและพอร์ตเชื่อมต่อที่เหมาะกับงาน",
           image: "/images/products/category-families/indicators.webp",
-          href: "/products/category/indicators",
+          href: "/platforms/indicators",
           linkLabel: "ดูอินดิเคเตอร์แท่นชั่ง",
         }
       : categoryId === "accessories"
@@ -412,19 +447,19 @@ export function ProductsOverview({
             detail:
               "ดูเครื่องชั่งสำหรับครัวเรือนและบุคคล อุตสาหกรรม ร้านค้าและบริการ และงานวิเคราะห์",
             image: "/images/products/acs30-jc21-cutout.png",
-            href: "/products/category/scales",
+            href: "/scales",
             linkLabel: "ดูเครื่องชั่ง",
           }
         : {
             title: "อุปกรณ์เสริม",
             detail: "เครื่องพิมพ์ จอแสดงผล และอุปกรณ์ POS เพื่อขยายการใช้งานให้เหมาะกับธุรกิจ",
             image: solutionImages.accessories,
-            href: "/products/category/accessories",
+            href: "/accessories",
             linkLabel: "ดูอุปกรณ์เสริม",
           };
   const softwareLink = pos
     ? { href: sunford.downloads, linkLabel: "ดาวน์โหลดซอฟต์แวร์" }
-    : { href: "/products/category/pos", linkLabel: "ดูระบบ POS" };
+    : { href: "/pos", linkLabel: "ดูระบบ POS" };
   const chapterItems = categoryMenu
     ? categoryMenu.links.map((link) => {
         const category = activeCategory?.subcategories.find(
@@ -434,7 +469,7 @@ export function ProductsOverview({
       })
     : categoryItems.map((category) => ({
         ...category,
-        href: getProductSubcategoryPage(category.id)?.href ?? `/products/category/${category.id}`,
+        href: getProductSubcategoryPage(category.id)?.href ?? productCategoryPath(category.id),
         disabled: false,
       }));
   const [lineupSelection, setLineupSelection] = useReturnState<{
@@ -445,10 +480,10 @@ export function ProductsOverview({
   const lineupFilter = lineupSelection?.id ?? null;
   const materialFilter = lineupSelection?.materialId ?? null;
   const lineupRevision = lineupSelection?.revision ?? 0;
-  const selectedGroup =
-    categoryLineup && !platforms
-      ? chapterItems.find((item) => !item.disabled && item.id === lineupFilter)
-      : undefined;
+  const showChapterFilters = categoryLineup && !platforms && !indicators;
+  const selectedGroup = showChapterFilters
+    ? chapterItems.find((item) => !item.disabled && item.id === lineupFilter)
+    : undefined;
   const materialOptions = platforms
     ? platformSubcategoryDefinitions.flatMap(({ id }) => {
         const group = activeCategory?.subcategories.find((item) => item.id === id);
@@ -517,10 +552,25 @@ export function ProductsOverview({
     : featuredFirst.slice(0, 6);
   const placementProducts = selectedGroup ? new Set(selectedGroup.productIds) : null;
   const materialProducts = selectedMaterial ? new Set(selectedMaterial.productIds) : null;
+  const featureProducts = overviewFeature ? new Set(overviewFeature.productIds) : null;
   const lineupProducts = lineup.filter(
     ({ id }) =>
+      (!featureProducts || featureProducts.has(id)) &&
       (!placementProducts || placementProducts.has(id)) &&
       (!materialProducts || materialProducts.has(id)),
+  );
+  const filterBaseHref = listingHref ?? categoryHref;
+  const featureBadge = overviewFeature && filterBaseHref && (
+    <p
+      ref={featureStatusRef}
+      className={`${styles.sectionInner} ${styles.featureStatus}`}
+      data-active-catalog-feature
+    >
+      <span>{overviewFeature.label}</span>
+      <Link className={styles.textLink} href={filterBaseHref}>
+        ล้างตัวกรอง
+      </Link>
+    </p>
   );
   const hasFeaturedGallery = scales && featuredFirst.length > 0;
   const heroes = hasFeaturedGallery ? featuredFirst.slice(0, 2) : [];
@@ -616,7 +666,7 @@ export function ProductsOverview({
     )
       return;
     const url = new URL(href, window.location.origin);
-    if (activeCategory && url.pathname === `/products/category/${activeCategory.id}`) {
+    if (activeCategory && url.pathname === productCategoryPath(activeCategory.id)) {
       event.preventDefault();
       if (`${url.search}${url.hash}` !== `${window.location.search}${window.location.hash}`)
         window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
@@ -799,9 +849,9 @@ export function ProductsOverview({
                     <ProductImage src={item.image} alt="" fill sizes="(width < 48rem) 80vw, 38vw" />
                     {(indicators || platforms) && (
                       <Link
-                        href="/guides/indicator-platform-compatibility"
+                        href={platformSpecBuilderPath}
                         className={styles.ecosystemSpecLink}
-                        aria-label="ไปหน้าจัดสเปคเครื่องชั่ง"
+                        aria-label="ไปหน้าจัดสเปคแท่นชั่ง"
                       >
                         <ArrowUpRight size={20} aria-hidden="true" />
                       </Link>
@@ -869,6 +919,64 @@ export function ProductsOverview({
     </section>
   );
 
+  function renderLineupProduct(product: ClientProduct, index: number) {
+    const componentPhoto = componentPhotos.get(product.id);
+    const photo = catalogProductPhoto(product) || componentPhoto;
+    const fallbackPhoto = componentPhoto || product.fallbackImage;
+    const name = cardNames[product.id] ?? product.name;
+    return (
+      <li
+        key={product.id}
+        ref={usesEditorialLayout && index === 0 ? matchServiceCardHeight : undefined}
+        className={styles.productTile}
+        data-scroll-reveal={usesEditorialLayout ? "shelf" : undefined}
+        data-scroll-reveal-order={usesEditorialLayout ? index % 4 : undefined}
+      >
+        <Link
+          href={`/products/${product.slug}`}
+          prefetch
+          className={styles.lineupLink}
+          aria-label={`ดูรายละเอียด ${name}`}
+        >
+          <div className={styles.lineupArt}>
+            {categoryLineup && !photo && !fallbackPhoto ? (
+              <span className={styles.lineupPlaceholder}>ยังไม่มีภาพสินค้า</span>
+            ) : (
+              <>
+                <ProductImage
+                  placeholder="product"
+                  progressive
+                  eager={usesEditorialLayout && lineupRevision === 0 && index < 4}
+                  prioritize={!usesEditorialLayout && lineupRevision === 0 && index < 6}
+                  src={photo}
+                  fallbackSrc={fallbackPhoto}
+                  alt={`SUNFORD ${name}`}
+                  fill
+                  sizes={
+                    usesEditorialLayout
+                      ? "(min-width: 67.5rem) calc((50vw + 27rem) / 3.75), (min-width: 64rem) max(16rem, calc((100vw - 6.75rem) / 3.75)), (min-width: 48rem) clamp(16rem, 34vw, 21rem), min(76vw, 18rem)"
+                      : "(max-width: 736px) min(calc(100vw - 60px), 309px), 313px"
+                  }
+                />
+                {categoryLineup && (
+                  <span className={`${styles.lineupPlaceholder} ${styles.lineupError}`}>
+                    ยังไม่มีภาพสินค้า
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+          <ProductCardCaption
+            className={styles.lineupCopy}
+            name={name}
+            highlight={product.highlight}
+            price={product.price}
+          />
+        </Link>
+      </li>
+    );
+  }
+
   return (
     <div
       className={`${styles.overview} ${categoryEntrance ? styles.categoryEntrance : ""} ${categoryId ? styles.categoryOverview : ""} ${categoryLineup ? styles.categoryLineup : ""} ${usesEditorialLayout ? styles.editorialOverview : ""}`}
@@ -908,14 +1016,19 @@ export function ProductsOverview({
           <>
             <section
               className={styles.chapters}
-              id={lineupAnchor}
+              id={headingAnchor}
               aria-labelledby="products-title"
               data-overview-section="chapters"
             >
               <div
                 className={`${styles.sectionInner} ${activeCategory ? styles.categoryHeading : ""}`}
               >
-                <h1 id="products-title">{activeCategory?.label ?? "ผลิตภัณฑ์"}</h1>
+                <h1 id="products-title">
+                  {heading ??
+                    (categoryHref
+                      ? catalogPageTitle(categoryHref, activeCategory?.label ?? "ผลิตภัณฑ์")
+                      : "ผลิตภัณฑ์")}
+                </h1>
               </div>
               <div className={styles.chapterRail}>
                 {railScope ? (
@@ -1139,6 +1252,7 @@ export function ProductsOverview({
             )}
 
             <section
+              id={primaryResultsId}
               className={`${styles.section} ${styles.paper} ${styles.lineup}`}
               aria-labelledby="products-lineup-title"
               data-overview-section="lineup"
@@ -1163,7 +1277,10 @@ export function ProductsOverview({
                   </button>
                 )}
               </div>
-              {categoryLineup && !platforms && (
+              {indicators && featureBadge}
+              {listingFilters}
+              {!indicators && featureBadge}
+              {showChapterFilters && (
                 <div className={styles.lineupFilters} role="group" aria-label="กรองผลิตภัณฑ์">
                   <SegmentedFilter value={selectedGroup?.id ?? "all"}>
                     <button
@@ -1234,67 +1351,7 @@ export function ProductsOverview({
                 {lineupProducts.length === 0 && categoryLineup && (
                   <li className={styles.lineupEmpty}>ยังไม่มีรุ่นสินค้าในกลุ่มนี้</li>
                 )}
-                {lineupProducts.map((product, index) => {
-                  const componentPhoto = componentPhotos.get(product.id);
-                  const photo = catalogProductPhoto(product) || componentPhoto;
-                  const fallbackPhoto = componentPhoto || product.fallbackImage;
-                  const name = cardNames[product.id] ?? product.name;
-                  return (
-                    <li
-                      key={product.id}
-                      ref={usesEditorialLayout && index === 0 ? matchServiceCardHeight : undefined}
-                      className={styles.productTile}
-                      data-scroll-reveal={usesEditorialLayout ? "shelf" : undefined}
-                      data-scroll-reveal-order={usesEditorialLayout ? index % 4 : undefined}
-                    >
-                      <Link
-                        href={`/products/${product.slug}`}
-                        prefetch
-                        className={styles.lineupLink}
-                        aria-label={`ดูรายละเอียด ${name}`}
-                      >
-                        <div className={styles.lineupArt}>
-                          {categoryLineup && !photo && !fallbackPhoto ? (
-                            <span className={styles.lineupPlaceholder}>ยังไม่มีภาพสินค้า</span>
-                          ) : (
-                            <>
-                              <ProductImage
-                                placeholder="product"
-                                progressive
-                                eager={usesEditorialLayout && lineupRevision === 0 && index < 4}
-                                prioritize={
-                                  !usesEditorialLayout && lineupRevision === 0 && index < 6
-                                }
-                                src={photo}
-                                fallbackSrc={fallbackPhoto}
-                                alt={`SUNFORD ${name}`}
-                                fill
-                                sizes={
-                                  usesEditorialLayout
-                                    ? "(min-width: 67.5rem) calc((50vw + 27rem) / 3.75), (min-width: 64rem) max(16rem, calc((100vw - 6.75rem) / 3.75)), (min-width: 48rem) clamp(16rem, 34vw, 21rem), min(76vw, 18rem)"
-                                    : "(max-width: 736px) min(calc(100vw - 60px), 309px), 313px"
-                                }
-                              />
-                              {categoryLineup && (
-                                <span
-                                  className={`${styles.lineupPlaceholder} ${styles.lineupError}`}
-                                >
-                                  ยังไม่มีภาพสินค้า
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </div>
-                        <ProductCardCaption
-                          className={styles.lineupCopy}
-                          name={name}
-                          highlight={product.highlight}
-                          price={product.price}
-                        />
-                      </Link>
-                    </li>
-                  );
-                })}
+                {lineupProducts.map((product, index) => renderLineupProduct(product, index))}
               </Gallery>
             </section>
 
@@ -1541,7 +1598,7 @@ export function ProductsOverview({
                 onClick={(event) => {
                   if (
                     service.href === "/products" ||
-                    (activeCategory && service.href === `/products/category/${activeCategory.id}`)
+                    (activeCategory && service.href === productCategoryPath(activeCategory.id))
                   ) {
                     activateLink(event, service.href);
                     setService(null);
